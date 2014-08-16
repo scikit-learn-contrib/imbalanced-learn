@@ -45,6 +45,7 @@ s = {
 
 def vizualization1():
 
+    from sklearn.datasets import make_classification
     x, y = make_classification(n_classes=3, class_sep=3, weights=[0.2, 0.1, 0.7], \
                                n_informative=2, n_redundant=0, flip_y=0,\
                                n_features=2, n_clusters_per_class=1,\
@@ -64,6 +65,9 @@ def vizualization1():
 
     # -------------------------------- // -------------------------------- #
     # Visualization
+    import matplotlib
+    matplotlib.rcParams.update(s)
+    import matplotlib.pyplot as plt
 
     f, ax = plt.subplots(2, 2, figsize=(14, 10))
     f.suptitle("Unbalanced Classification", fontsize=16)
@@ -103,22 +107,39 @@ def vizualization1():
 
 def vizualization2():
 
+    from sklearn.datasets import make_classification
     x, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],\
                                n_informative=3, n_redundant=1, flip_y=0,\
                                n_features=20, n_clusters_per_class=1,\
                                n_samples=5000, random_state=10)
 
 
-    ud = UnbalancedDataset(random_state=2)
-    ud.fit(x, y)
 
-    ox, oy = ud.OverSampler()
-    sx, sy = ud.smote(k = 5)
-    bx1, by1 = ud.b_smote1(k = 5, m = 10)
-    bx2, by2 = ud.b_smote2(k = 5, m = 10)
-    svmx, svmy = ud.SVM_smote(svm_args={'class_weight' : 'auto'})
+    from UnbalancedDataset import OverSampler, SMOTE, bSMOTE1, bSMOTE2, SVM_SMOTE
+
+    ratio = 1
+    new = ratio * 500
+
+    # -------------------------------- // -------------------------------- #
+    # Datasets
+    OS = OverSampler(random_state=1)
+    ox, oy = OS.fit_transform(x, y)
+
+    smote = SMOTE(random_state=1)
+    sx, sy = smote.fit_transform(x, y)
+
+    bsmote1 = bSMOTE1(random_state=1)
+    bsx1, bsy1 = bsmote1.fit_transform(x, y)
+
+    bsmote2 = bSMOTE2(random_state=1)
+    bsx2, bsy2 = bsmote2.fit_transform(x, y)
+
+    svmsmote = SVM_SMOTE(random_state=1, svm_args={'class_weight' : 'auto'})
+    svmx, svmy = svmsmote.fit_transform(x, y)
 
 
+    # -------------------------------- // -------------------------------- #
+    # PCA
     from sklearn.decomposition import PCA
     pca = PCA(n_components = 2)
 
@@ -126,12 +147,15 @@ def vizualization2():
 
     ox = pca.transform(ox)
     sx = pca.transform(sx)
-    bx1 = pca.transform(bx1)
-    bx2 = pca.transform(bx2)
+    bsx1 = pca.transform(bsx1)
+    bsx2 = pca.transform(bsx2)
     svmx = pca.transform(svmx)
 
     # -------------------------------- // -------------------------------- #
     # Visualization
+    import matplotlib
+    matplotlib.rcParams.update(s)
+    import matplotlib.pyplot as plt
 
     f, ax = plt.subplots(2, 3, figsize=(16, 9))
     f.suptitle("Over-sampling with SMOTE: comparison", fontsize=16)
@@ -142,29 +166,29 @@ def vizualization2():
 
     for e, c in zip(set(y), ['purple', 'g']):
         ax[0, 1].scatter(x[y==e, 0], x[y==e, 1], color = c, alpha = 0.5)
-    ax[0, 1].scatter(ox[:, 0], ox[:, 1], color = 'y', alpha = 0.3)
+    ax[0, 1].scatter(ox[-new:, 0], ox[-new:, 1], color = 'y', alpha = 0.3)
     ax[0, 1].set_title('Random Over-sampling', fontsize=12)
 
 
     for e, c in zip(set(y), ['purple', 'g']):
         ax[0, 2].scatter(x[y==e, 0], x[y==e, 1], color = c, alpha = 0.5)
-    ax[0, 2].scatter(sx[:, 0], sx[:, 1], color = 'y', alpha = 0.3)
+    ax[0, 2].scatter(sx[-new:, 0], sx[-new:, 1], color = 'y', alpha = 0.3)
     ax[0, 2].set_title('SMOTE', fontsize=12)
 
 
     for e, c in zip(set(y), ['purple', 'g']):
         ax[1, 0].scatter(x[y==e, 0], x[y==e, 1], color = c, alpha = 0.5)
-    ax[1, 0].scatter(bx1[:, 0], bx1[:, 1], color = 'y', alpha = 0.3)
+    ax[1, 0].scatter(bsx1[-new:, 0], bsx1[-new:, 1], color = 'y', alpha = 0.3)
     ax[1, 0].set_title('Borderline-SMOTE type 1', fontsize=12)
 
     for e, c in zip(set(y), ['purple', 'g']):
         ax[1, 1].scatter(x[y==e, 0], x[y==e, 1], color = c, alpha = 0.5)
-    ax[1, 1].scatter(bx2[:, 0], bx2[:, 1], color = 'y', alpha = 0.3)
+    ax[1, 1].scatter(bsx2[-new:, 0], bsx2[-new:, 1], color = 'y', alpha = 0.3)
     ax[1, 1].set_title('Borderline-SMOTE type 2', fontsize=12)
 
     for e, c in zip(set(y), ['purple', 'g']):
         ax[1, 2].scatter(x[y==e, 0], x[y==e, 1], color = c, alpha = 0.5)
-    ax[1, 2].scatter(svmx[:, 0], svmx[:, 1], color = 'y', alpha = 0.3)
+    ax[1, 2].scatter(svmx[-new:, 0], svmx[-new:, 1], color = 'y', alpha = 0.3)
     ax[1, 2].set_title('SVM-SMOTE', fontsize=12)
 
     # Hide ticks
@@ -172,19 +196,9 @@ def vizualization2():
     plt.setp([a.get_yticklabels() for a in ax[:, 1]], visible=False)
     plt.setp([a.get_yticklabels() for a in ax[:, 2]], visible=False)
 
-
     plt.show()
 
 if __name__ == '__main__':
-
-    from UnbalancedClassification import UnbalancedDataset
-    from sklearn.datasets import make_classification
-
-
-    import matplotlib
-    matplotlib.rcParams.update(s)
-
-    import matplotlib.pyplot as plt
 
     vizualization2()
 
