@@ -26,6 +26,10 @@ Bellow is a list of the methods currently implemented in this module.
 
 This is a work in progress. Any comments, suggestions or corrections are welcome.
 
+Dependenceies:
+* Numpy
+* Scikit-Learn
+
 References:
 
 * SMOTE - "SMOTE: synthetic minority over-sampling technique" by Chawla, N.V et al.
