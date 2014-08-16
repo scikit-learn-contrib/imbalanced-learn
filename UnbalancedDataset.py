@@ -1021,34 +1021,3 @@ class Pipeline:
 
         # Return the resampled dataset.
         return x, y
-        
-
-if __name__ == '__main__':
-
-    from sklearn.datasets import make_classification
-    x, y = make_classification(n_classes=2, class_sep=1, weights=[0.9, 0.1], \
-                               n_informative=2, n_redundant=0, flip_y=0,\
-                               n_features=2, n_clusters_per_class=1,\
-                               n_samples=500, random_state=10)
-
-
-    test = UnderSampler()
-
-    test.fit(x, y)
-
-    a, b = test.transform()
-
-    test2 = TomekLinks()
-    c, d = test2.fit_transform(x, y)
-
-    test3 = ClusterCentroids()
-    e, f = test3.fit_transform(x, y)
-
-
-    pip = Pipeline(x, y)
-    g, h = pip.pipeline([TomekLinks(), ClusterCentroids()])
-
-    i, j = pip.pipeline([TomekLinks(), SVM_SMOTE(k=6, svm_args={'class_weight' : 'auto'}), UnderSampler(random_state=1)])
-    i, j = pip.pipeline([TomekLinks(), SMOTE(), UnderSampler(random_state=1)])
-    i, j = pip.pipeline([TomekLinks(), bSMOTE1(), UnderSampler(random_state=1)])
-    i, j = pip.pipeline([TomekLinks(), bSMOTE2(random_state=1), UnderSampler(random_state=1)])
