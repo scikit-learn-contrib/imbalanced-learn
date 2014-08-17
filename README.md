@@ -26,10 +26,14 @@ Bellow is a list of the methods currently implemented in this module.
 
 This is a work in progress. Any comments, suggestions or corrections are welcome.
 
+Dependenceies:
+* Numpy
+* Scikit-Learn
+
 References:
 
-SMOTE - "SMOTE: synthetic minority over-sampling technique" by Chawla, N.V et al.
+* SMOTE - "SMOTE: synthetic minority over-sampling technique" by Chawla, N.V et al.
 
-Borderline SMOTE -  "Borderline-SMOTE: A New Over-Sampling Method in Imbalanced Data Sets Learning, Hui Han, Wen-Yuan Wang, Bing-Huan Mao"
+* Borderline SMOTE -  "Borderline-SMOTE: A New Over-Sampling Method in Imbalanced Data Sets Learning, Hui Han, Wen-Yuan Wang, Bing-Huan Mao"
 
-SVM_SMOTE - "Borderline Over-sampling for Imbalanced Data Classification, Nguyen, Cooper, Kamei"
+* SVM_SMOTE - "Borderline Over-sampling for Imbalanced Data Classification, Nguyen, Cooper, Kamei"
