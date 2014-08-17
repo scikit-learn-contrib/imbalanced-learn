@@ -43,69 +43,7 @@ s = {
   "figure.subplot.bottom"  : 0.07
 }
 
-def vizualization1():
-
-    from sklearn.datasets import make_classification
-    x, y = make_classification(n_classes=3, class_sep=3, weights=[0.2, 0.1, 0.7], \
-                               n_informative=2, n_redundant=0, flip_y=0,\
-                               n_features=2, n_clusters_per_class=1,\
-                               n_samples=500, random_state=10)
-
-
-    uc = UnbalancedDataset(random_state=2)
-    uc.fit(x, y)
-
-    ux, uy = uc.UnderSampler(ratio = 1)
-    ox, oy = uc.OverSampler(ratio = 1)
-    sx, sy = uc.smote(k= 5)
-    bx, by = uc.b_smote1()
-    cx, cy = uc.ClusterCentroids(ratio = 1, kargs={'n_jobs' : -1})
-    svmx, svmy = uc.SVM_smote(svm_args={'class_weight' : 'auto'})
-
-
-    # -------------------------------- // -------------------------------- #
-    # Visualization
-    import matplotlib
-    matplotlib.rcParams.update(s)
-    import matplotlib.pyplot as plt
-
-    f, ax = plt.subplots(2, 2, figsize=(14, 10))
-    f.suptitle("Unbalanced Classification", fontsize=16)
-
-    for e, c in zip(set(y), ['r', 'b', 'g']):
-        ax[0, 0].scatter(x[y==e, 0], x[y==e, 1], color = c)
-    ax[0, 0].set_title('Original', fontsize=12)
-
-
-    for e, c in zip(set(y), ['r', 'b', 'g']):
-        ax[0, 1].scatter(x[y==e, 0], x[y==e, 1], color = c)
-    ax[0, 1].scatter(sx[:, 0], sx[:, 1], color = 'y', alpha = 0.5)
-    ax[0, 1].set_title('SMOTE', fontsize=12)
-
-
-    for e, c in zip(set(uy), ['r', 'b', 'g']):
-        ax[1, 0].scatter(ux[uy==e, 0], ux[uy==e, 1], color = c)
-    ax[1, 0].set_title('Under Sampling', fontsize=12)
-
-    '''
-    for e, c in zip(set(oy), ['r', 'b', 'g']):
-        ax[1, 1].scatter(cx[cy==e, 0], cx[cy==e, 1], color = c)
-    ax[1, 1].set_title('Cluster Centroids Under Sampling', fontsize=12)
-    '''
-
-    for e, c in zip(set(y), ['r', 'b', 'g']):
-        ax[1, 1].scatter(x[y==e, 0], x[y==e, 1], color = c)
-    ax[1, 1].scatter(svmx[:, 0], svmx[:, 1], color = 'y', alpha = 0.5)
-    ax[1, 1].set_title('SMOTE', fontsize=12)
-
-    # Hide ticks
-    plt.setp([a.get_xticklabels() for a in ax[0, :]], visible=False)
-    plt.setp([a.get_yticklabels() for a in ax[:, 1]], visible=False)
-
-    plt.show()
-
-
-def vizualization2():
+def vizualization():
 
     from sklearn.datasets import make_classification
     x, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],\
@@ -200,5 +138,5 @@ def vizualization2():
 
 if __name__ == '__main__':
 
-    vizualization2()
+    vizualization()
 
