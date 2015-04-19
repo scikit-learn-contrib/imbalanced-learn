@@ -69,215 +69,6 @@ from numpy import sum as nsum
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
-#                                 Functions!!!
-# ----------------------------------- // ----------------------------------- #
-# ----------------------------------- // ----------------------------------- #
-# ----------------------------------- // ----------------------------------- #
-def is_tomek(y, nn_index, class_type):
-    """
-    is_tomek uses the target vector and the first neighbour of every sample
-    point and looks for Tomek pairs. Returning a boolean vector with True for
-    majority Tomek links.
-
-    :param y:
-        Target vector of the data set, necessary to keep track of whether a
-        sample belongs to minority or not
-
-    :param nn_index:
-        The index of the closes nearest neighbour to a sample point.
-
-    :param class_type:
-        The label of the minority class.
-
-    :return:
-        Boolean vector on len( # samples ), with True for majority samples that
-        are Tomek links.
-    """
-
-    # Initialize the boolean result as false, and also a counter
-    links = zeros(len(y), dtype=bool)
-    count = 0
-
-    # Loop through each sample and looks whether it belongs to the minority
-    # class. If it does, we don't consider it since we want to keep all
-    # minority samples. If, however, it belongs to the majority sample we look
-    # at its first neighbour. If its closest neighbour also has the current
-    # sample as its closest neighbour, the two form a Tomek link.
-    for ind, ele in enumerate(y):
-
-        if ele == class_type:
-            continue
-
-        if y[nn_index[ind]] == class_type:
-
-            # If they form a tomek link, put a True marker on this sample, and
-            # increase counter by one.
-            if nn_index[nn_index[ind]] == ind:
-                links[ind] = True
-                count += 1
-
-    print("%i Tomek links found." % count)
-
-    return links
-
-
-def make_samples(x, nn_data, y_type, nn_num, n_samples, step_size=1., random_state=None):
-    """
-    A support function that returns artificial samples constructed along the
-    line connecting nearest neighbours.
-
-    :param x:
-        Minority points for which new samples are going to be created.
-
-    :param nn_data:
-        Data set carrying all the neighbours to be used
-
-    :param y_type:
-        The minority target value, just so the function can return the target
-        values for the synthetic variables with correct length in a clear
-        format
-
-    :param nn_num:
-        The number of nearest neighbours to be used.
-
-    :param y_type:
-        The number of synthetic samples to create.
-
-    :param random_state:
-        Seed for random number generation.
-
-    :return:
-
-        new: Synthetically generated samples.
-
-        y_new: Target values for synthetic samples.
-    """
-
-    # A matrix to store the synthetic samples
-    new = zeros((n_samples, len(x.T)))
-
-    # Set seeds
-    seed(random_state)
-    seeds = randint(low=0, high=100*len(nn_num.flatten()), size=n_samples)
-
-    # Randomly pick samples to construct neighbours from
-    seed(random_state)
-    samples = randint(low=0, high=len(nn_num.flatten()), size=n_samples)
-
-    # Loop over the NN matrix and create new samples
-    for i, n in enumerate(samples):
-        # NN lines relate to original sample, columns to its nearest neighbours
-        row, col = divmod(n, len(nn_num.T))
-
-        # Take a step of random size (0,1) in the direction of the n nearest
-        # neighbours
-        seed(seeds[i])
-        step = step_size * uniform()
-
-        # Construct synthetic sample
-        new[i] = x[row] - step * (x[row] - nn_data[nn_num[row, col]])
-
-    # The returned target vector is simply a repetition of the minority label
-    y_new = ones(len(new)) * y_type
-
-    return new, y_new
-
-
-def in_danger(sample, y, m, class_type, nn_obj):
-    """
-    Function to determine whether a given minority samples is in Danger as
-    defined by Chawla, N.V et al., in: SMOTE: synthetic minority over-sampling
-    technique.
-
-    A minority sample is in danger if more than half of its nearest neighbours
-    belong to the majority class. The exception being a minority sample for
-    which all its nearest neighbours are from the majority class, in which case
-    it is considered noise.
-
-    :param sample:
-        Sample for which danger level is to be found.
-
-    :param y:
-        Full target vector to check to which class the neighbours of sample
-        belong to.
-
-    :param m:
-        The number of nearest neighbours to consider.
-
-    :param class_type:
-        The value of the target variable for the minority class.
-
-    :param nn_obj:
-        A scikit-learn NearestNeighbour object already fitted.
-
-    :return:
-        True or False depending whether a sample is in danger or not.
-    """
-
-    # Find NN for current sample
-    x = nn_obj.kneighbors(sample.reshape((1, len(sample))),
-                          return_distance=False)[:, 1:]
-
-    # Count how many NN belong to the minority class
-    minority = 0
-    for nn in x[0]:
-        if y[nn] != class_type:
-            continue
-        else:
-            minority += 1
-
-    # Return True of False for in danger and not in danger or noise samples.
-    if minority <= m/2 or minority == m:
-        # for minority == k the sample is considered to be noise and won't be
-        # used, similarly to safe samples
-        return False
-    else:
-        return True
-
-
-def is_noise(sample, y, class_type, nn_obj):
-    """
-    Function to determine whether a given minority sample is noise as defined
-    in [1].
-
-    A minority sample is noise if all its nearest neighbours belong to
-    the majority class.
-
-    :param sample:
-        Sample for which danger level is to be found.
-
-    :param y:
-        Full target vector to check to which class the neighbours of sample
-        belong to.
-
-    :param class_type:
-        The value of the target variable for the monority class.
-
-    :param nn_obj:
-        A scikit-learn NearestNeighbour object already fitted.
-
-    :return:
-        True or False depending whether a sample is in danger or not.
-    """
-
-    # Find NN for current sample
-    x = nn_obj.kneighbors(sample.reshape((1, len(sample))),
-                          return_distance=False)[:, 1:]
-
-    # Check if any neighbour belong to the minority class.
-    for nn in x[0]:
-        if y[nn] != class_type:
-            continue
-        else:
-            return False
-
-    # If the loop completed, it is noise.
-    return True
-
-
-# ----------------------------------- // ----------------------------------- #
-# ----------------------------------- // ----------------------------------- #
-# ----------------------------------- // ----------------------------------- #
 #                                Parent Class!
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
@@ -439,6 +230,211 @@ class UnbalancedDataset(object):
 
         return self.out_x, self.out_y
 
+    # ----------------------------------- // ----------------------------------- #
+    #                                Static Methods
+    # ----------------------------------- // ----------------------------------- #
+    @staticmethod
+    def is_tomek(y, nn_index, class_type):
+        """
+        is_tomek uses the target vector and the first neighbour of every sample
+        point and looks for Tomek pairs. Returning a boolean vector with True for
+        majority Tomek links.
+
+        :param y:
+            Target vector of the data set, necessary to keep track of whether a
+            sample belongs to minority or not
+
+        :param nn_index:
+            The index of the closes nearest neighbour to a sample point.
+
+        :param class_type:
+            The label of the minority class.
+
+        :return:
+            Boolean vector on len( # samples ), with True for majority samples that
+            are Tomek links.
+        """
+
+        # Initialize the boolean result as false, and also a counter
+        links = zeros(len(y), dtype=bool)
+        count = 0
+
+        # Loop through each sample and looks whether it belongs to the minority
+        # class. If it does, we don't consider it since we want to keep all
+        # minority samples. If, however, it belongs to the majority sample we look
+        # at its first neighbour. If its closest neighbour also has the current
+        # sample as its closest neighbour, the two form a Tomek link.
+        for ind, ele in enumerate(y):
+
+            if ele == class_type:
+                continue
+
+            if y[nn_index[ind]] == class_type:
+
+                # If they form a tomek link, put a True marker on this sample, and
+                # increase counter by one.
+                if nn_index[nn_index[ind]] == ind:
+                    links[ind] = True
+                    count += 1
+
+        print("%i Tomek links found." % count)
+
+        return links
+
+    @staticmethod
+    def make_samples(x, nn_data, y_type, nn_num, n_samples, step_size=1., random_state=None):
+        """
+        A support function that returns artificial samples constructed along the
+        line connecting nearest neighbours.
+
+        :param x:
+            Minority points for which new samples are going to be created.
+
+        :param nn_data:
+            Data set carrying all the neighbours to be used
+
+        :param y_type:
+            The minority target value, just so the function can return the target
+            values for the synthetic variables with correct length in a clear
+            format
+
+        :param nn_num:
+            The number of nearest neighbours to be used.
+
+        :param y_type:
+            The number of synthetic samples to create.
+
+        :param random_state:
+            Seed for random number generation.
+
+        :return:
+
+            new: Synthetically generated samples.
+
+            y_new: Target values for synthetic samples.
+        """
+
+        # A matrix to store the synthetic samples
+        new = zeros((n_samples, len(x.T)))
+
+        # Set seeds
+        seed(random_state)
+        seeds = randint(low=0, high=100*len(nn_num.flatten()), size=n_samples)
+
+        # Randomly pick samples to construct neighbours from
+        seed(random_state)
+        samples = randint(low=0, high=len(nn_num.flatten()), size=n_samples)
+
+        # Loop over the NN matrix and create new samples
+        for i, n in enumerate(samples):
+            # NN lines relate to original sample, columns to its nearest neighbours
+            row, col = divmod(n, len(nn_num.T))
+
+            # Take a step of random size (0,1) in the direction of the n nearest
+            # neighbours
+            seed(seeds[i])
+            step = step_size * uniform()
+
+            # Construct synthetic sample
+            new[i] = x[row] - step * (x[row] - nn_data[nn_num[row, col]])
+
+        # The returned target vector is simply a repetition of the minority label
+        y_new = ones(len(new)) * y_type
+
+        return new, y_new
+
+    @staticmethod
+    def in_danger(sample, y, m, class_type, nn_obj):
+        """
+        Function to determine whether a given minority samples is in Danger as
+        defined by Chawla, N.V et al., in: SMOTE: synthetic minority over-sampling
+        technique.
+
+        A minority sample is in danger if more than half of its nearest neighbours
+        belong to the majority class. The exception being a minority sample for
+        which all its nearest neighbours are from the majority class, in which case
+        it is considered noise.
+
+        :param sample:
+            Sample for which danger level is to be found.
+
+        :param y:
+            Full target vector to check to which class the neighbours of sample
+            belong to.
+
+        :param m:
+            The number of nearest neighbours to consider.
+
+        :param class_type:
+            The value of the target variable for the minority class.
+
+        :param nn_obj:
+            A scikit-learn NearestNeighbour object already fitted.
+
+        :return:
+            True or False depending whether a sample is in danger or not.
+        """
+
+        # Find NN for current sample
+        x = nn_obj.kneighbors(sample.reshape((1, len(sample))),
+                              return_distance=False)[:, 1:]
+
+        # Count how many NN belong to the minority class
+        minority = 0
+        for nn in x[0]:
+            if y[nn] != class_type:
+                continue
+            else:
+                minority += 1
+
+        # Return True of False for in danger and not in danger or noise samples.
+        if minority <= m/2 or minority == m:
+            # for minority == k the sample is considered to be noise and won't be
+            # used, similarly to safe samples
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def is_noise(sample, y, class_type, nn_obj):
+        """
+        Function to determine whether a given minority sample is noise as defined
+        in [1].
+
+        A minority sample is noise if all its nearest neighbours belong to
+        the majority class.
+
+        :param sample:
+            Sample for which danger level is to be found.
+
+        :param y:
+            Full target vector to check to which class the neighbours of sample
+            belong to.
+
+        :param class_type:
+            The value of the target variable for the monority class.
+
+        :param nn_obj:
+            A scikit-learn NearestNeighbour object already fitted.
+
+        :return:
+            True or False depending whether a sample is in danger or not.
+        """
+
+        # Find NN for current sample
+        x = nn_obj.kneighbors(sample.reshape((1, len(sample))),
+                              return_distance=False)[:, 1:]
+
+        # Check if any neighbour belong to the minority class.
+        for nn in x[0]:
+            if y[nn] != class_type:
+                continue
+            else:
+                return False
+
+        # If the loop completed, it is noise.
+        return True
+
 
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
@@ -536,7 +532,7 @@ class TomekLinks(UnbalancedDataset):
 
         # Send the information to is_tomek function to get boolean vector back
         print("Looking for majority Tomek links...", end="")
-        links = is_tomek(self.y, nns, self.minc)
+        links = self.is_tomek(self.y, nns, self.minc)
 
         # Return data set without majority Tomek links.
         return self.x[logical_not(links)], self.y[logical_not(links)]
@@ -747,9 +743,9 @@ class SMOTE(UnbalancedDataset):
         # Creating synthetic samples
         print("Creating synthetic samples...", end="")
 
-        sx, sy = make_samples(minx, minx, self.minc, nns,
-                              int(self.ratio * len(miny)),
-                              random_state=self.rs)
+        sx, sy = self.make_samples(minx, minx, self.minc, nns,
+                                   int(self.ratio * len(miny)),
+                                   random_state=self.rs)
         print("done!")
 
         # Concatenate the newly generated samples to the original data set
@@ -816,7 +812,7 @@ class bSMOTE1(UnbalancedDataset):
         print("done!")
 
         # Boolean array with True for minority samples in danger
-        index = [in_danger(x, self.y, self.m, miny[0], nn) for x in minx]
+        index = [self.in_danger(x, self.y, self.m, miny[0], nn) for x in minx]
         index = asarray(index)
 
         # If all minority samples are safe, return the original data set.
@@ -831,9 +827,9 @@ class bSMOTE1(UnbalancedDataset):
         nns = nn.kneighbors(minx[index], return_distance=False)[:, 1:]
 
         # Create synthetic samples for borderline points.
-        sx, sy = make_samples(minx[index], minx, miny[0], nns,
-                              int(self.ratio * len(miny)),
-                              random_state=self.rs)
+        sx, sy = self.make_samples(minx[index], minx, miny[0], nns,
+                                   int(self.ratio * len(miny)),
+                                   random_state=self.rs)
 
         # Concatenate the newly generated samples to the original data set
         ret_x = concatenate((self.x, sx), axis=0)
@@ -901,7 +897,7 @@ class bSMOTE2(UnbalancedDataset):
         print("done!")
 
         # Boolean array with True for minority samples in danger
-        index = [in_danger(x, self.y, self.m, self.minc, nn) for x in minx]
+        index = [self.in_danger(x, self.y, self.m, self.minc, nn) for x in minx]
         index = asarray(index)
 
         # If all minority samples are safe, return the original data set.
@@ -922,17 +918,17 @@ class bSMOTE2(UnbalancedDataset):
         fractions = min(max(gauss(0.5, 0.1), 0), 1)
 
         # Only minority
-        sx1, sy1 = make_samples(minx[index], minx, self.minc, nns,
-                                fractions * (int(self.ratio * len(miny)) + 1),
-                                step_size=1,
-                                random_state=self.rs)
+        sx1, sy1 = self.make_samples(minx[index], minx, self.minc, nns,
+                                     fractions * (int(self.ratio * len(miny)) + 1),
+                                     step_size=1,
+                                     random_state=self.rs)
 
         # Only majority with smaller step size
-        sx2, sy2 = make_samples(minx[index], self.x[self.y != self.minc],
-                                self.minc, nns,
-                                (1 - fractions) * int(self.ratio * len(miny)),
-                                step_size=0.5,
-                                random_state=self.rs)
+        sx2, sy2 = self.make_samples(minx[index], self.x[self.y != self.minc],
+                                     self.minc, nns,
+                                     (1 - fractions) * int(self.ratio * len(miny)),
+                                     step_size=0.5,
+                                     random_state=self.rs)
 
         # Concatenate the newly generated samples to the original data set
         ret_x = concatenate((self.x, sx1, sx2), axis=0)
@@ -998,9 +994,11 @@ class SVM_SMOTE(UnbalancedDataset):
         self.svm = SVC(**kwargs)
 
     def resample(self):
+        """
+        ...
+        """
 
         from sklearn.neighbors import NearestNeighbors
-
 
         # Fit SVM and find the support vectors
         self.svm.fit(self.x, self.y)
@@ -1020,8 +1018,9 @@ class SVM_SMOTE(UnbalancedDataset):
         # Now, get rid of noisy support vectors
 
         # Boolean array with True for noisy support vectors
-        noise_bool = [is_noise(x, self.y, self.minc, nn)
-                      for x in support_vector]
+        noise_bool = []
+        for x in support_vector:
+            noise_bool.append(self.is_noise(x, self.y, self.minc, nn))
 
         # Turn into array#
         noise_bool = asarray(noise_bool)
@@ -1031,7 +1030,7 @@ class SVM_SMOTE(UnbalancedDataset):
 
         # Find support_vectors there are in danger (interpolation) or not
         # (extrapolation)
-        danger_bool = [in_danger(x, self.y, self.m, self.minc, nn)
+        danger_bool = [self.in_danger(x, self.y, self.m, self.minc, nn)
                        for x in support_vector]
 
         # Turn into array#
@@ -1066,21 +1065,21 @@ class SVM_SMOTE(UnbalancedDataset):
         nns = nn.kneighbors(support_vector[danger_bool],
                             return_distance=False)[:, 1:]
 
-        sx1, sy1 = make_samples(support_vector[danger_bool], minx,
-                                self.minc, nns,
-                                fractions * (int(self.ratio * len(minx)) + 1),
-                                step_size=1,
-                                random_state=self.rs)
+        sx1, sy1 = self.make_samples(support_vector[danger_bool], minx,
+                                     self.minc, nns,
+                                     fractions * (int(self.ratio * len(minx)) + 1),
+                                     step_size=1,
+                                     random_state=self.rs)
 
         # Extrapolate safe samples
         nns = nn.kneighbors(support_vector[safety_bool],
                             return_distance=False)[:, 1:]
 
-        sx2, sy2 = make_samples(support_vector[safety_bool], minx,
-                                self.minc, nns,
-                                (1 - fractions) * int(self.ratio * len(minx)),
-                                step_size=-self.out_step,
-                                random_state=self.rs)
+        sx2, sy2 = self.make_samples(support_vector[safety_bool], minx,
+                                     self.minc, nns,
+                                     (1 - fractions) * int(self.ratio * len(minx)),
+                                     step_size=-self.out_step,
+                                     random_state=self.rs)
 
         print("done!")
 
