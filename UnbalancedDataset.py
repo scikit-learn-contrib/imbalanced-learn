@@ -992,18 +992,19 @@ class SVM_SMOTE(UnbalancedDataset):
         self.k = k
         self.m = m
         self.out_step = out_step
-        self.svm_args = kwargs
+
+        ##
+        from sklearn.svm import SVC
+        self.svm = SVC(**kwargs)
 
     def resample(self):
-        from sklearn.svm import SVC
+
         from sklearn.neighbors import NearestNeighbors
 
-        svc = SVC(**self.svm_args)
-        #svc.set_params(**self.svm_args)
 
         # Fit SVM and find the support vectors
-        svc.fit(self.x, self.y)
-        support_index = svc.support_[self.y[svc.support_] == self.minc]
+        self.svm.fit(self.x, self.y)
+        support_index = self.svm.support_[self.y[self.svm.support_] == self.minc]
         support_vector = self.x[support_index]
 
         # Start with the minority class
