@@ -24,6 +24,9 @@ Bellow is a list of the methods currently implemented in this module.
     3. bSMOTE(1&2) - Borderline SMOTE of types 1 and 2
     4. SVM_SMOTE - Support Vectors SMOTE
 
+Example:
+![SMOTE comparison](http://i.imgur.com/s8JHWPp.png)
+
 This is a work in progress. Any comments, suggestions or corrections are welcome.
 
 Dependenceies:
