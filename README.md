@@ -1,3 +1,5 @@
+[![Code Health](https://landscape.io/github/fmfn/UnbalancedDataset/master/landscape.svg?style=flat)](https://landscape.io/github/fmfn/UnbalancedDataset/master)
+
 UnbalancedDataset
 =================
 
