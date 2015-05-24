@@ -5,7 +5,7 @@ __author__ = 'fnogueira'
 
 s = {
   "lines.linewidth": 2.0,
-  "examples.download": True,
+  #"examples.download": True,
   "patch.linewidth": 0.5,
   "legend.fancybox": True,
   "axes.color_cycle": [
@@ -72,7 +72,8 @@ def vizualization():
     bsmote2 = bSMOTE2(random_state=1)
     bsx2, bsy2 = bsmote2.fit_transform(x, y)
 
-    svmsmote = SVM_SMOTE(random_state=1, svm_args={'class_weight' : 'auto'})
+    svm_args={'class_weight' : 'auto'}
+    svmsmote = SVM_SMOTE(random_state=1, **svm_args)
     svmx, svmy = svmsmote.fit_transform(x, y)
 
 
