@@ -617,11 +617,26 @@ class ClusterCentroids(UnbalancedDataset):
 
 class NearMiss(UnbalancedDataset):
     """
+    An implementation of NearMiss.
+
+    See the original paper: NearMiss - "kNN Approach to Unbalanced Data Distributions: A Case Study involving Information Extraction" by Zhang et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None,
-                 version=1, size_ngh=3):
+    def __init__(self, ratio=1., random_state=None, version=1, size_ngh=3, ver3_samp_ngh=3):
         """
+        :param version:
+            Version of the NearMiss to use. Possible values 
+            are 1, 2 or 3. See the original paper for details 
+            about these different versions.
+
+        :param size_ngh:
+            Size of the neighbourhood to consider to compute the 
+            average distance to the minority point samples.
+
+        :param ver3_samp_ngh:
+            NearMiss-3 algorithm start by a phase of resampling. This
+            parameter correspond to the number of neighbours selected
+            create the sub_set in which the selection will be performed.
         """
 
         # Passes the relevant parameters back to the parent class.
@@ -629,18 +644,13 @@ class NearMiss(UnbalancedDataset):
 
         # Assign the parameter of the element of this class
         ### Check that the version asked is implemented
-        if not (version == 1 or 
-                version == 2 or 
-                version ==3):
-
+        if not (version == 1 or version == 2 or version == 3):
             raise ValueError('UnbalancedData.NearMiss: there is only 3 versions available with parameter version=1/2/3')
 
-        else:
-
-            self.version = version
-
+        self.version = version
         self.size_ngh = size_ngh
-
+        self.ver3_samp_ngh = ver3_samp_ngh
+            
     def resample(self):
         """
         """
@@ -648,6 +658,16 @@ class NearMiss(UnbalancedDataset):
         # Start with the minority class
         underx = self.x[self.y == self.minc]
         undery = self.y[self.y == self.minc]
+
+        # For each element of the current class, find the set of NN 
+        # of the minority class
+        from sklearn.neighbors import NearestNeighbors
+
+        # Call the constructor of the NN
+        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
+
+        # Fit the minority class since that we want to know the distance to these point
+        nn_obj.fit(underx)
 
         # Loop over the other classes under picking at random
         for key in self.ucd.keys():
@@ -666,71 +686,59 @@ class NearMiss(UnbalancedDataset):
             sub_samples_x = self.x[self.y == key]
             sub_samples_y = self.y[self.y == key]
 
-            ##### NEARMISS-1 #####
-            # # For each element of the current class, find the set of NN 
-            # # of the minority class
-            # from sklearn.neighbors import NearestNeighbors
+            if self.version == 1:
+                # Find the NN
+                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x, n_neighbors=self.size_ngh)
+                # Select the right samples
+                sel_x, sel_y = self.__SelectionDistBased__(dist_vec, num_samples, key, sel_strategy='nearest')
+            elif self.version == 2:
+                # Find the NN
+                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x, n_neighbors=undery.size)
+                # Select the right samples
+                sel_x, sel_y = self.__SelectionDistBased__(dist_vec, num_samples, key, sel_strategy='nearest')
+            elif self.version == 3:
+                # We need a new NN object to fit the current class
+                nn_obj_cc = NearestNeighbors(n_neighbors=self.ver3_samp_ngh)
+                nn_obj_cc.fit(sub_samples_x)
 
-            # # Call the constructor of the NN
-            # nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
+                # Find the set of NN to the minority class
+                dist_vec, idx_vec = nn_obj_cc.kneighbors(underx)
 
-            # # To parallelize probably
-            # dist_avg_vec = []
-            # for s in sub_samples_x:
-            #     # Create a set with only the minority class with the single sample
-            #     # of the majority class
-            #     samples_for_nn = concatenate((np.atleast_2d(s), underx), axis=0)
+                # Create the subset containing the samples found during the NN search
+                ### Linearize the indexes and remove the double values
+                idx_vec = np.unique(idx_vec.reshape(-1))
+                ### Create the subset
+                sub_samples_x = sub_samples_x[idx_vec, :]
+                sub_samples_y = sub_samples_y[idx_vec]
 
-            #     # Fit the object ot the constructed data
-            #     nn_obj.fit(samples_for_nn)
+                # Compute the NN considering the current class
+                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x, n_neighbors=self.size_ngh)
+                sel_x, sel_y = self.__SelectionDistBased__(dist_vec, num_samples, key, sel_strategy='farthest')
 
-            #     # Compute the distance of the NN of the current sample
-            #     dist, ind = nn_obj.kneighbors(np.atleast_2d(s))
-            #     dist = np.ravel(dist)
-            #     dist_avg_vec.append(np.sum(dist))
-
-            # # Sort the list of distance and get the index
-            # sorted_idx = sorted(range(len(dist_avg_vec)), key=dist_avg_vec.__getitem__, reverse=False)
-
-            # # Select the desired number of samples
-            # sel_idx = sorted_idx[:num_samples]
-
-            # underx = concatenate((underx, self.x[self.y == key][sel_idx]), axis=0)
-            # undery = concatenate((undery, self.y[self.y == key][sel_idx]), axis=0)
-
-            # # For each element of the current class, find the set of NN 
-            # # of the minority class
-            # from sklearn.neighbors import NearestNeighbors
-
-            # # Call the constructor of the NN
-            # nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
-
-            # # To parallelize probably
-            # dist_avg_vec = []
-            # for s in sub_samples_x:
-            #     # Create a set with only the minority class with the single sample
-            #     # of the majority class
-            #     samples_for_nn = concatenate((np.atleast_2d(s), underx), axis=0)
-
-            #     # Fit the object ot the constructed data
-            #     nn_obj.fit(samples_for_nn)
-
-            #     # Compute the distance of the NN of the current sample
-            #     dist, ind = nn_obj.kneighbors(np.atleast_2d(s), n_neighbors=undery.size)
-            #     dist = np.ravel(dist)
-            #     dist_avg_vec.append(np.sum(dist[-3:]))
-
-            # # Sort the list of distance and get the index
-            # sorted_idx = sorted(range(len(dist_avg_vec)), key=dist_avg_vec.__getitem__, reverse=False)
-
-            # # Select the desired number of samples
-            # sel_idx = sorted_idx[:num_samples]
-
-            # underx = concatenate((underx, self.x[self.y == key][sel_idx]), axis=0)
-            # undery = concatenate((undery, self.y[self.y == key][sel_idx]), axis=0)
-
+            underx = concatenate((underx, sel_x), axis=0)
+            undery = concatenate((undery, sel_y), axis=0)
 
         return (underx, undery)
+
+    def __SelectionDistBased__(self, dist_vec, num_samples, key, sel_strategy='nearest'):
+            
+        # Compute the distance considering the farthest neighbour
+        dist_avg_vec = np.sum(dist_vec[:, -self.size_ngh:], axis=1)
+            
+        # Sort the list of distance and get the index
+        if sel_strategy == 'nearest':
+            sort_way = False
+        elif sel_strategy == 'farthest':
+            sort_way = True
+        else:
+            raise ValueError('Unbalanced.NearMiss: the sorting can be done only with nearest or farthest data points.')
+
+        sorted_idx = sorted(range(len(dist_avg_vec)), key=dist_avg_vec.__getitem__, reverse=sort_way)
+
+        # Select the desired number of samples
+        sel_idx = sorted_idx[:num_samples]
+
+        return (self.x[self.y == key][sel_idx], self.y[self.y == key][sel_idx])
 
 
 # ----------------------------------- // ----------------------------------- #
