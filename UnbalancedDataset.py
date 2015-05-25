@@ -25,6 +25,8 @@ Bellow is a list of the methods currently implemented in this module.
     1. Random majority under-sampling with replacement
     2. Extraction of majority-minority Tomek links
     3. Under-sampling with Cluster Centroids
+    4. NearMiss-(1 & 2 & 3)
+    5. Condensend Nearest Neighbour
 
 * Over-sampling
     1. Random minority over-sampling with replacement
@@ -46,6 +48,9 @@ Imbalanced Data Sets Learning, Hui Han, Wen-Yuan Wang, Bing-Huan Mao"
 [3] SVM_SMOTE - "Borderline Over-sampling for Imbalanced Data Classification,
 Nguyen, Cooper, Kamei"
 
+[4] NearMiss - "kNN approach to unbalanced data distributions: A case study involving information extraction" by Zhang et al.
+
+[5] CNN - "Addressing the Curse of Imbalanced Training Sets: One-Sided Selection" by Kubat et al.
 
 TO DO LIST:
 ===========
