@@ -57,7 +57,7 @@ TO DO LIST:
 from __future__ import division
 from __future__ import print_function
 
-__author__ = 'fnogueira'
+__author__ = 'fnogueira, glemaitre'
 
 from random import gauss
 from random import seed as pyseed
@@ -65,6 +65,7 @@ from numpy.random import seed, randint, uniform
 from numpy import zeros, ones, concatenate, logical_not, asarray
 from numpy import sum as nsum
 
+import numpy as np
 
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
@@ -613,6 +614,123 @@ class ClusterCentroids(UnbalancedDataset):
         print("done!")
 
         return underx, undery
+
+class NearMiss(UnbalancedDataset):
+    """
+    """
+
+    def __init__(self, ratio=1., random_state=None,
+                 version=1, size_ngh=3):
+        """
+        """
+
+        # Passes the relevant parameters back to the parent class.
+        UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+
+        # Assign the parameter of the element of this class
+        ### Check that the version asked is implemented
+        if not (version == 1 or 
+                version == 2 or 
+                version ==3):
+
+            raise ValueError('UnbalancedData.NearMiss: there is only 3 versions available with parameter version=1/2/3')
+
+        else:
+
+            self.version = version
+
+        self.size_ngh = size_ngh
+
+    def resample(self):
+        """
+        """
+
+        # Start with the minority class
+        underx = self.x[self.y == self.minc]
+        undery = self.y[self.y == self.minc]
+
+        # Loop over the other classes under picking at random
+        for key in self.ucd.keys():
+
+            # If the minority class is up, skip it
+            if key == self.minc:
+                continue
+
+            # Set the ratio to be no more than the number of samples available
+            if self.ratio * self.ucd[self.minc] > self.ucd[key]:
+                num_samples = self.ucd[key]
+            else:
+                num_samples = int(self.ratio * self.ucd[self.minc])
+
+            # Get the samples corresponding to the current class
+            sub_samples_x = self.x[self.y == key]
+            sub_samples_y = self.y[self.y == key]
+
+            ##### NEARMISS-1 #####
+            # # For each element of the current class, find the set of NN 
+            # # of the minority class
+            # from sklearn.neighbors import NearestNeighbors
+
+            # # Call the constructor of the NN
+            # nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
+
+            # # To parallelize probably
+            # dist_avg_vec = []
+            # for s in sub_samples_x:
+            #     # Create a set with only the minority class with the single sample
+            #     # of the majority class
+            #     samples_for_nn = concatenate((np.atleast_2d(s), underx), axis=0)
+
+            #     # Fit the object ot the constructed data
+            #     nn_obj.fit(samples_for_nn)
+
+            #     # Compute the distance of the NN of the current sample
+            #     dist, ind = nn_obj.kneighbors(np.atleast_2d(s))
+            #     dist = np.ravel(dist)
+            #     dist_avg_vec.append(np.sum(dist))
+
+            # # Sort the list of distance and get the index
+            # sorted_idx = sorted(range(len(dist_avg_vec)), key=dist_avg_vec.__getitem__, reverse=False)
+
+            # # Select the desired number of samples
+            # sel_idx = sorted_idx[:num_samples]
+
+            # underx = concatenate((underx, self.x[self.y == key][sel_idx]), axis=0)
+            # undery = concatenate((undery, self.y[self.y == key][sel_idx]), axis=0)
+
+            # # For each element of the current class, find the set of NN 
+            # # of the minority class
+            # from sklearn.neighbors import NearestNeighbors
+
+            # # Call the constructor of the NN
+            # nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
+
+            # # To parallelize probably
+            # dist_avg_vec = []
+            # for s in sub_samples_x:
+            #     # Create a set with only the minority class with the single sample
+            #     # of the majority class
+            #     samples_for_nn = concatenate((np.atleast_2d(s), underx), axis=0)
+
+            #     # Fit the object ot the constructed data
+            #     nn_obj.fit(samples_for_nn)
+
+            #     # Compute the distance of the NN of the current sample
+            #     dist, ind = nn_obj.kneighbors(np.atleast_2d(s), n_neighbors=undery.size)
+            #     dist = np.ravel(dist)
+            #     dist_avg_vec.append(np.sum(dist[-3:]))
+
+            # # Sort the list of distance and get the index
+            # sorted_idx = sorted(range(len(dist_avg_vec)), key=dist_avg_vec.__getitem__, reverse=False)
+
+            # # Select the desired number of samples
+            # sel_idx = sorted_idx[:num_samples]
+
+            # underx = concatenate((underx, self.x[self.y == key][sel_idx]), axis=0)
+            # undery = concatenate((undery, self.y[self.y == key][sel_idx]), axis=0)
+
+
+        return (underx, undery)
 
 
 # ----------------------------------- // ----------------------------------- #

@@ -1,7 +1,7 @@
 from __future__ import division
 from __future__ import print_function
 
-__author__ = 'fnogueira'
+__author__ = 'fnogueira, glemaitre'
 
 s = {
   "lines.linewidth": 2.0,
@@ -51,8 +51,6 @@ def vizualization():
                                n_features=20, n_clusters_per_class=1,\
                                n_samples=5000, random_state=10)
 
-
-
     from UnbalancedDataset import OverSampler, SMOTE, bSMOTE1, bSMOTE2, SVM_SMOTE
 
     ratio = 1
@@ -60,6 +58,7 @@ def vizualization():
 
     # -------------------------------- // -------------------------------- #
     # Datasets
+
     OS = OverSampler(random_state=1)
     ox, oy = OS.fit_transform(x, y)
 
