@@ -622,7 +622,7 @@ class NearMiss(UnbalancedDataset):
     See the original paper: NearMiss - "kNN Approach to Unbalanced Data Distributions: A Case Study involving Information Extraction" by Zhang et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None, version=1, size_ngh=3, ver3_samp_ngh=3):
+    def __init__(self, ratio=1., random_state=None, version=1, size_ngh=3, ver3_samp_ngh=3, **kwargs):
         """
         :param version:
             Version of the NearMiss to use. Possible values 
@@ -637,6 +637,9 @@ class NearMiss(UnbalancedDataset):
             NearMiss-3 algorithm start by a phase of resampling. This
             parameter correspond to the number of neighbours selected
             create the sub_set in which the selection will be performed.
+
+        :param **kwargs:
+            Parameter to use for the Neareast Neighbours.
         """
 
         # Passes the relevant parameters back to the parent class.
@@ -650,6 +653,7 @@ class NearMiss(UnbalancedDataset):
         self.version = version
         self.size_ngh = size_ngh
         self.ver3_samp_ngh = ver3_samp_ngh
+        self.kwargs = kwargs
             
     def resample(self):
         """
@@ -664,10 +668,10 @@ class NearMiss(UnbalancedDataset):
         from sklearn.neighbors import NearestNeighbors
 
         # Call the constructor of the NN
-        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
+        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh, **self.kwargs)
 
         # Fit the minority class since that we want to know the distance to these point
-        nn_obj.fit(underx)
+        nn_obj.fit(self.x[self.y == self.minc])
 
         # Loop over the other classes under picking at random
         for key in self.ucd.keys():
@@ -693,16 +697,16 @@ class NearMiss(UnbalancedDataset):
                 sel_x, sel_y = self.__SelectionDistBased__(dist_vec, num_samples, key, sel_strategy='nearest')
             elif self.version == 2:
                 # Find the NN
-                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x, n_neighbors=undery.size)
+                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x, n_neighbors=self.y[self.y == self.minc].size)
                 # Select the right samples
                 sel_x, sel_y = self.__SelectionDistBased__(dist_vec, num_samples, key, sel_strategy='nearest')
             elif self.version == 3:
                 # We need a new NN object to fit the current class
-                nn_obj_cc = NearestNeighbors(n_neighbors=self.ver3_samp_ngh)
+                nn_obj_cc = NearestNeighbors(n_neighbors=self.ver3_samp_ngh, **self.kwargs)
                 nn_obj_cc.fit(sub_samples_x)
 
                 # Find the set of NN to the minority class
-                dist_vec, idx_vec = nn_obj_cc.kneighbors(underx)
+                dist_vec, idx_vec = nn_obj_cc.kneighbors(self.x[self.y == self.minc])
 
                 # Create the subset containing the samples found during the NN search
                 ### Linearize the indexes and remove the double values
@@ -740,6 +744,82 @@ class NearMiss(UnbalancedDataset):
 
         return (self.x[self.y == key][sel_idx], self.y[self.y == key][sel_idx])
 
+class CondensedNearestNeighbour(UnbalancedDataset):
+    """
+    An implementation of Condensend Neareat Neighbour.
+
+    See the original paper: CNN - "Addressing the Curse of Imbalanced Training Set: One-Sided Selection" by Khubat et al. for more details.
+    """
+
+    def __init__(self, ratio=1., random_state=None, size_ngh=1, n_seeds_S=1, **kwargs):
+        """
+
+        :param size_ngh
+            Size of the neighbourhood to consider to compute the 
+            average distance to the minority point samples.
+        
+        :param n_seeds_S
+            Number of samples to extract in order to build the set S.
+
+        :param **kwargs
+            Parameter to use for the Neareast Neighbours.
+        """
+
+        # Passes the relevant parameters back to the parent class.
+        UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+
+        # Assign the parameter of the element of this class
+        self.size_ngh = size_ngh
+        self.n_seeds_S = n_seeds_S
+        self.kwargs = kwargs
+            
+    def resample(self):
+        """
+        """
+
+        # Start with the minority class
+        underx = self.x[self.y == self.minc]
+        undery = self.y[self.y == self.minc]
+
+        # Import the K-NN classifier
+        from sklearn.neighbors import KNeighborsClassifier
+
+        # Loop over the other classes under picking at random
+        for key in self.ucd.keys():
+
+            # If the minority class is up, skip it
+            if key == self.minc:
+                continue
+
+            # Randomly get one sample from the majority class
+            from random import sample
+            maj_sample = sample(self.x[self.y == key], self.n_seeds_S)
+            
+            # Create the set C
+            C_x = np.append(self.x[self.y == self.minc], maj_sample, axis=0)
+            C_y = np.append(self.y[self.y == self.minc], [key] * self.n_seeds_S)
+
+            # Create the set S
+            S_x = self.x[self.y == key]
+            S_y = self.y[self.y == key]
+            
+            # Create a k-NN classifier
+            knn = KNeighborsClassifier(n_neighbors=self.size_ngh, **self.kwargs)
+            
+            # Fit C into the knn
+            knn.fit(C_x, C_y)
+
+            # Classify on S
+            pred_S_y = knn.predict(S_x)
+
+            # Find the misclassified S_y
+            sel_x = np.squeeze(S_x[np.nonzero(pred_S_y != S_y), :])
+            sel_y = S_y[np.nonzero(pred_S_y != S_y)]
+
+            underx = concatenate((underx, sel_x), axis=0)
+            undery = concatenate((undery, sel_y), axis=0)
+
+        return (underx, undery)
 
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
