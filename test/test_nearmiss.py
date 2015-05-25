@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from UnbalancedDataset import NearMiss, CondensedNearestNeighbour
+from UnbalancedDataset import NearMiss, CondensedNearestNeighbour, OneSidedSelection
 from sklearn.datasets import make_classification
 
 # Generate some data
@@ -23,6 +23,10 @@ x, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],\
 # CNN = CondensedNearestNeighbour(random_state=1, n_seeds_S=20)
 # cnnx, cnny = CNN.fit_transform(x, y)
 
+# Try OSS
+OSS = OneSidedSelection(random_state=1, n_seeds_S=20)
+ossx, ossy = OSS.fit_transform(x, y)
+
 from sklearn.decomposition import PCA
 pca = PCA(n_components = 2)
 x = pca.fit_transform(x)
@@ -30,6 +34,7 @@ x = pca.fit_transform(x)
 # nm2x = pca.transform(nm2x)
 # nm3x = pca.transform(nm3x)
 # cnnx = pca.transform(cnnx)
+ossx = pca.transform(ossx)
 
 # plt.figure()
 # plt.scatter(nm1x[nm1y==0, 0], nm1x[nm1y==0, 1])
@@ -50,3 +55,8 @@ x = pca.fit_transform(x)
 # plt.scatter(cnnx[cnny==0, 0], cnnx[cnny==0, 1])
 # plt.scatter(cnnx[cnny==1, 0], cnnx[cnny==1, 1], color='r')
 # plt.show()
+
+plt.figure()
+plt.scatter(ossx[ossy==0, 0], ossx[ossy==0, 1])
+plt.scatter(ossx[ossy==1, 0], ossx[ossy==1, 1], color='r')
+plt.show()

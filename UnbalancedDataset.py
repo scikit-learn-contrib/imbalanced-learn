@@ -543,7 +543,6 @@ class TomekLinks(UnbalancedDataset):
         # Return data set without majority Tomek links.
         return self.x[logical_not(links)], self.y[logical_not(links)]
 
-
 class ClusterCentroids(UnbalancedDataset):
     """
     Experimental method that under samples the majority class by replacing a
@@ -825,6 +824,99 @@ class CondensedNearestNeighbour(UnbalancedDataset):
             undery = concatenate((undery, sel_y), axis=0)
 
         return (underx, undery)
+
+class OneSidedSelection(UnbalancedDataset):
+    """
+    An implementation of One-Sided Selection.
+
+    See the original paper: OSS - "Addressing the Curse of Imbalanced Training Set: One-Sided Selection" by Khubat et al. for more details.
+    """
+
+    def __init__(self, ratio=1., random_state=None, size_ngh=1, n_seeds_S=1, **kwargs):
+        """
+
+        :param size_ngh
+            Size of the neighbourhood to consider to compute the 
+            average distance to the minority point samples.
+        
+        :param n_seeds_S
+            Number of samples to extract in order to build the set S.
+
+        :param **kwargs
+            Parameter to use for the Neareast Neighbours.
+        """
+
+        # Passes the relevant parameters back to the parent class.
+        UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+
+        # Assign the parameter of the element of this class
+        self.size_ngh = size_ngh
+        self.n_seeds_S = n_seeds_S
+        self.kwargs = kwargs
+    
+
+    def resample(self):
+        """
+        """
+
+        # Start with the minority class
+        underx = self.x[self.y == self.minc]
+        undery = self.y[self.y == self.minc]
+
+        # Import the K-NN classifier
+        from sklearn.neighbors import KNeighborsClassifier
+
+        # Loop over the other classes under picking at random
+        for key in self.ucd.keys():
+
+            # If the minority class is up, skip it
+            if key == self.minc:
+                continue
+
+            # Randomly get one sample from the majority class
+            from random import sample
+            maj_sample = sample(self.x[self.y == key], self.n_seeds_S)
+            
+            # Create the set C
+            C_x = np.append(self.x[self.y == self.minc], maj_sample, axis=0)
+            C_y = np.append(self.y[self.y == self.minc], [key] * self.n_seeds_S)
+
+            # Create the set S
+            S_x = self.x[self.y == key]
+            S_y = self.y[self.y == key]
+            
+            # Create a k-NN classifier
+            knn = KNeighborsClassifier(n_neighbors=self.size_ngh, **self.kwargs)
+            
+            # Fit C into the knn
+            knn.fit(C_x, C_y)
+
+            # Classify on S
+            pred_S_y = knn.predict(S_x)
+
+            # Find the misclassified S_y
+            sel_x = np.squeeze(S_x[np.nonzero(pred_S_y != S_y), :])
+            sel_y = S_y[np.nonzero(pred_S_y != S_y)]
+
+            underx = concatenate((underx, sel_x), axis=0)
+            undery = concatenate((undery, sel_y), axis=0)
+
+        from sklearn.neighbors import NearestNeighbors
+
+        # Find the nearest neighbour of every point
+        print("Finding nearest neighbour...", end="")
+        nn = NearestNeighbors(n_neighbors=2)
+        nn.fit(underx)
+        print(underx.shape)
+        nns = nn.kneighbors(underx, return_distance=False)[:, 1]
+        print("done!")
+
+        # Send the information to is_tomek function to get boolean vector back
+        print("Looking for majority Tomek links...", end="")
+        links = self.is_tomek(undery, nns, self.minc)
+
+        # Return data set without majority Tomek links.
+        return underx[logical_not(links)], undery[logical_not(links)]
 
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
