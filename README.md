@@ -19,6 +19,7 @@ Bellow is a list of the methods currently implemented in this module.
     1. Random majority under-sampling with replacement
     2. Extraction of majority-minority Tomek links
     3. Under-sampling with Cluster Centroids
+    4. NearMiss-1 & NearMiss-2 & NearMiss-3
 
 * Over-sampling
     1. Random minority over-sampling with replacement
@@ -31,11 +32,13 @@ Example:
 
 This is a work in progress. Any comments, suggestions or corrections are welcome.
 
-Dependenceies:
+Dependencies:
 * Numpy
 * Scikit-Learn
 
 References:
+
+* NearMiss - "kNN approach to unbalanced data distributions: A case study involving information extraction" by Zhang et al.
 
 * SMOTE - "SMOTE: synthetic minority over-sampling technique" by Chawla, N.V et al.
 
