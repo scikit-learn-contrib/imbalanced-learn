@@ -30,6 +30,10 @@ Bellow is a list of the methods currently implemented in this module.
     3. bSMOTE(1&2) - Borderline SMOTE of types 1 and 2
     4. SVM_SMOTE - Support Vectors SMOTE
 
+* Over-sampling follow by under-sampling
+    1. SMOTE + Tomek links
+    2. SMOTE + ENN
+
 Example:
 ![SMOTE comparison](http://i.imgur.com/s8JHWPp.png)
 
@@ -54,3 +58,7 @@ References:
 * Borderline SMOTE -  "Borderline-SMOTE: A New Over-Sampling Method in Imbalanced Data Sets Learning, Hui Han, Wen-Yuan Wang, Bing-Huan Mao"
 
 * SVM_SMOTE - "Borderline Over-sampling for Imbalanced Data Classification, Nguyen, Cooper, Kamei"
+
+* SMOTE + Tomek - "Balancing training data for automated annotation of keywords: a case study", Batista et al.
+
+* SMOTE + ENN - "A study of the behavior of several methods for balancing machine learning training data", Batista et al.

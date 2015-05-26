@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 
-from UnbalancedDataset import NearMiss, CondensedNearestNeighbour, OneSidedSelection, NeighboorhoodCleaningRule
+import numpy as np
+
+from UnbalancedDataset import NearMiss, CondensedNearestNeighbour, OneSidedSelection, NeighboorhoodCleaningRule, SMOTE, SMOTETomek, SMOTEENN
 from sklearn.datasets import make_classification
 
 # Generate some data
@@ -8,6 +10,8 @@ x, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],\
                            n_informative=3, n_redundant=1, flip_y=0,\
                            n_features=20, n_clusters_per_class=1,\
                            n_samples=5000, random_state=10)
+
+r = float(np.count_nonzero(y == 1)) / float(np.count_nonzero(y == 0))
 
 # # Try NearMiss algorithm
 # NM1 = NearMiss(random_state=1, version=1, metric='l1')
@@ -28,8 +32,20 @@ x, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],\
 # ossx, ossy = OSS.fit_transform(x, y)
 
 # Try NCR
-NCR = NeighboorhoodCleaningRule(random_state=1, size_ngh=51)
-ncrx, ncry = NCR.fit_transform(x, y) 
+# NCR = NeighboorhoodCleaningRule(random_state=1, size_ngh=51)
+# ncrx, ncry = NCR.fit_transform(x, y) 
+
+# Try SMOTE
+# smote = SMOTE(random_state=1)
+# sx, sy = smote.fit_transform(x, y)
+
+# Try SMOTE Tomek
+# STK = SMOTETomek(random_state=1)
+# stkx, stky = STK.fit_transform(x, y)
+
+# Try SMOTE ENN
+# SENN = SMOTEENN(random_state=1, ratio=r, size_ngh=51)
+# sennx, senny = SENN.fit_transform(x, y)
 
 from sklearn.decomposition import PCA
 pca = PCA(n_components = 2)
@@ -39,7 +55,10 @@ x = pca.fit_transform(x)
 # nm3x = pca.transform(nm3x)
 # cnnx = pca.transform(cnnx)
 # ossx = pca.transform(ossx)
-ncrx = pca.transform(ncrx)
+# ncrx = pca.transform(ncrx)
+# sx = pca.transform(sx)
+# stkx = pca.transform(stkx)
+# sennx = pca.transform(sennx)
 
 # plt.figure()
 # plt.scatter(nm1x[nm1y==0, 0], nm1x[nm1y==0, 1])
@@ -66,7 +85,22 @@ ncrx = pca.transform(ncrx)
 # plt.scatter(ossx[ossy==1, 0], ossx[ossy==1, 1], color='r')
 # plt.show()
 
-plt.figure()
-plt.scatter(ncrx[ncry==0, 0], ncrx[ncry==0, 1])
-plt.scatter(ncrx[ncry==1, 0], ncrx[ncry==1, 1], color='r')
-plt.show()
+# plt.figure()
+# plt.scatter(ncrx[ncry==0, 0], ncrx[ncry==0, 1])
+# plt.scatter(ncrx[ncry==1, 0], ncrx[ncry==1, 1], color='r')
+# plt.show()
+
+# plt.figure()
+# plt.scatter(sx[sy==0, 0], sx[sy==0, 1])
+# plt.scatter(sx[sy==1, 0], sx[sy==1, 1], color='r')
+# plt.show()
+
+# plt.figure()
+# plt.scatter(stkx[stky==0, 0], stkx[stky==0, 1])
+# plt.scatter(stkx[stky==1, 0], stkx[stky==1, 1], color='r')
+# plt.show()
+
+# plt.figure()
+# plt.scatter(sennx[senny==0, 0], sennx[senny==0, 1])
+# plt.scatter(sennx[senny==1, 0], sennx[senny==1, 1], color='r')
+# plt.show()
