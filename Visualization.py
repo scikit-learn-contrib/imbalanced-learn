@@ -4,7 +4,7 @@ from __future__ import print_function
 __author__ = 'fnogueira, glemaitre'
 
 s = {
-  "lines.linewidth": 2.0,
+  #"lines.linewidth": 2.0,
   #"examples.download": True,
   "patch.linewidth": 0.5,
   "legend.fancybox": True,

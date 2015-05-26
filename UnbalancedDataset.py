@@ -822,7 +822,6 @@ class CondensedNearestNeighbour(UnbalancedDataset):
                 continue
 
             # Randomly get one sample from the majority class
-            from random import sample
             maj_sample = sample(self.x[self.y == key], self.n_seeds_S)
             
             # Create the set C
@@ -900,7 +899,6 @@ class OneSidedSelection(UnbalancedDataset):
                 continue
 
             # Randomly get one sample from the majority class
-            from random import sample
             maj_sample = sample(self.x[self.y == key], self.n_seeds_S)
             
             # Create the set C
@@ -991,7 +989,6 @@ class NeighboorhoodCleaningRule(UnbalancedDataset):
 
             # Get the sample of the current class
             sub_samples_x = self.x[self.y == key]
-            sub_samples_y = self.y[self.y == key]
 
             # Get the samples associated
             idx_sub_sample = np.nonzero(self.y == key)[0]
