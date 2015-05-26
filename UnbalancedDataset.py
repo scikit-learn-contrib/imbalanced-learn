@@ -40,6 +40,8 @@ Bellow is a list of the methods currently implemented in this module.
     1. SMOTE + Tomek links
     2. SMOTE + ENN
 
+* Bootstrapping
+
 This is a work in progress. Any comments, suggestions or corrections are
 welcome.
 
@@ -78,7 +80,7 @@ from __future__ import print_function
 
 __author__ = 'fnogueira, glemaitre'
 
-from random import gauss
+from random import gauss, sample
 from random import seed as pyseed
 from numpy.random import seed, randint, uniform
 from numpy import zeros, ones, concatenate, logical_not, asarray
@@ -466,10 +468,10 @@ class UnbalancedDataset(object):
 class UnderSampler(UnbalancedDataset):
     """
     Object to under sample the majority class(es) by randomly picking samples
-    with replacement.
+    with or without replacement.
     """
 
-    def __init__(self, ratio=1., random_state=None):
+    def __init__(self, ratio=1., random_state=None, replacement=True):
         """
         :param ratio:
             The ratio of majority elements to sample with respect to the number
@@ -485,6 +487,8 @@ class UnderSampler(UnbalancedDataset):
 
         # Passes the relevant parameters back to the parent class.
         UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+
+        self.replacement = replacement
 
     def resample(self):
         """
@@ -509,8 +513,11 @@ class UnderSampler(UnbalancedDataset):
 
             # Pick some elements at random
             seed(self.rs)
-            indx = randint(low=0, high=self.ucd[key], size=num_samples)
-
+            if (self.replacement == True):
+                indx = randint(low=0, high=self.ucd[key], size=num_samples)
+            else:
+                indx = sample(range(np.count_nonzero(self.y == key)), num_samples)
+            
             # Concatenate to the minority class
             underx = concatenate((underx, self.x[self.y == key][indx]), axis=0)
             undery = concatenate((undery, self.y[self.y == key][indx]), axis=0)
@@ -1673,7 +1680,63 @@ class SVM_SMOTE(UnbalancedDataset):
         ret_y = concatenate((self.y, sy1, sy2), axis=0)
 
         return ret_x, ret_y
-    
+
+# ----------------------------------- // ----------------------------------- #
+# ----------------------------------- // ----------------------------------- #
+# ----------------------------------- // ----------------------------------- #
+#                      Ensemble Set by Under-Sampling!
+# ----------------------------------- // ----------------------------------- #
+# ----------------------------------- // ----------------------------------- #
+# ----------------------------------- // ----------------------------------- #
+
+class EasyEnsemble(UnderSampler):
+    """
+    Object to perform classification on balanced ensembled selected from 
+    random sampling.
+
+    It is based on the idea presented in the paper "Exploratory Undersampling
+    Class-Imbalance Learning" by Liu et al.
+    """
+
+    def __init__(self, ratio=1., random_state=None, replacement=False, n_subsets=10):
+        """
+        :param ratio:
+            The ratio of majority elements to sample with respect to the number
+            of minority cases.
+
+        :param random_state:
+            Seed.
+
+        :param replacement:
+            Either or not to sample randomly with replacement or not.
+
+        :param n_subsets:
+            Number of subsets to generate.
+        """
+
+        # Passes the relevant parameters back to the parent class.
+        UnderSampler.__init__(self, ratio=ratio, random_state=random_state, replacement=replacement)
+
+        self.n_subsets = n_subsets
+
+    def resample(self):
+        """
+        :return subsets_x:
+            Python list contatining the different data arrays generated and balanced.
+
+        :return subsets_y:
+            Python list contraining the different label arrays generated and balanced.
+        """
+
+        subsets_x = []
+        subsets_y = []
+
+        for s in range(self.n_subsets):
+            tmp_subset_x, tmp_subset_y = UnderSampler.resample(self)
+            subsets_x.append(tmp_subset_x)
+            subsets_y.append(tmp_subset_y)
+
+        return subsets_x, subsets_y
 
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #

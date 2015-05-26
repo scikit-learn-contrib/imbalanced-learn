@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
-from UnbalancedDataset import NearMiss, CondensedNearestNeighbour, OneSidedSelection, NeighboorhoodCleaningRule, SMOTE, SMOTETomek, SMOTEENN
+from UnbalancedDataset import NearMiss, CondensedNearestNeighbour, OneSidedSelection, NeighboorhoodCleaningRule, SMOTE, SMOTETomek, SMOTEENN, UnderSampler, EasyEnsemble
 from sklearn.datasets import make_classification
 
 # Generate some data
@@ -46,6 +46,14 @@ r = float(np.count_nonzero(y == 1)) / float(np.count_nonzero(y == 0))
 # Try SMOTE ENN
 # SENN = SMOTEENN(random_state=1, ratio=r, size_ngh=51)
 # sennx, senny = SENN.fit_transform(x, y)
+
+# Try Undersampling
+# USS = UnderSampler(random_state=1, replacement=False)
+# ussx, ussy = USS.fit_transform(x, y)
+
+# Try EasyEnsemble
+EE = EasyEnsemble(random_state=1)
+eex, eey = EE.fit_transform(x, y)
 
 from sklearn.decomposition import PCA
 pca = PCA(n_components = 2)
