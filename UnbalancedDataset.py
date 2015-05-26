@@ -28,6 +28,7 @@ Bellow is a list of the methods currently implemented in this module.
     4. NearMiss-(1 & 2 & 3)
     5. Condensend Nearest Neighbour
     6. One-Sided Selection
+    7. Neighboorhood Cleaning Rule
 
 * Over-sampling
     1. Random minority over-sampling with replacement
@@ -54,6 +55,8 @@ Nguyen, Cooper, Kamei"
 [5] CNN - "Addressing the Curse of Imbalanced Training Sets: One-Sided Selection" by Kubat et al.
 
 [6] One-Sided Selection - "Addressing the Curse of Imbalanced Training Sets: One-Sided Selection" by Kubat et al.
+
+[7] NCL - "Improving identification of difficult small classes by balancing class distribution" by Laurikkala et al.
 
 TO DO LIST:
 ===========
@@ -920,6 +923,90 @@ class OneSidedSelection(UnbalancedDataset):
 
         # Return data set without majority Tomek links.
         return underx[logical_not(links)], undery[logical_not(links)]
+
+class NeighboorhoodCleaningRule(UnbalancedDataset):
+    """
+    An implementation of Neighboorhood Cleaning Rule.
+
+    See the original paper: NCL - "Improving identification of difficult small classes by balancing class distribution" by Laurikkala et al. for more details.
+    """
+
+    def __init__(self, ratio=1., random_state=None, size_ngh=3, **kwargs):
+        """
+
+        :param size_ngh
+            Size of the neighbourhood to consider in order to make
+            the comparison between each samples and their NN.
+        
+        :param **kwargs
+            Parameter to use for the Neareast Neighbours.
+        """
+
+        # Passes the relevant parameters back to the parent class.
+        UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+
+        # Assign the parameter of the element of this class
+        self.size_ngh = size_ngh
+        self.kwargs = kwargs
+            
+    def resample(self):
+        """
+        """
+
+        # Start with the minority class
+        underx = self.x[self.y == self.minc]
+        undery = self.y[self.y == self.minc]
+
+        # Import the k-NN classifier
+        from sklearn.neighbors import NearestNeighbors
+
+        # Create a k-NN to fit the whole data
+        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
+
+        # Fit the whole dataset
+        nn_obj.fit(self.x)
+
+        idx_to_exclude = []
+        # Loop over the other classes under picking at random
+        for key in self.ucd.keys():
+
+            # Get the sample of the current class
+            sub_samples_x = self.x[self.y == key]
+            sub_samples_y = self.y[self.y == key]
+
+            # Get the samples associated
+            idx_sub_sample = np.nonzero(self.y == key)[0]
+
+            # Find the NN for the current class
+            nnhood_idx = nn_obj.kneighbors(sub_samples_x, return_distance=False)
+                                
+            # Get the label of the corresponding to the index
+            nnhood_label = self.y[nnhood_idx] == key
+                
+            # Check which one are the same label than the current class
+            # Make an AND operation through the three neighbours
+            nnhood_bool = np.logical_not(np.all(nnhood_label, axis=1))
+    
+            # If the minority class remove the majority samples (as in politic!!!! ;))
+            if key == self.minc:
+                # Get the index to exclude
+                idx_to_exclude = idx_to_exclude + nnhood_idx[np.nonzero(nnhood_label[np.nonzero(nnhood_bool)])].tolist()
+            else:
+                # Get the index to exclude
+                idx_to_exclude = idx_to_exclude +idx_sub_sample[np.nonzero(nnhood_bool)].tolist()
+
+        # Create a vector with the sample to select
+        sel_idx = np.ones(self.y.shape)
+        sel_idx[idx_to_exclude] = 0
+
+        # Get the samples from the majority classes
+        sel_x = np.squeeze(self.x[np.nonzero(sel_idx), :])
+        sel_y = self.y[np.nonzero(sel_idx)]
+        
+        underx = concatenate((underx, sel_x), axis=0)
+        undery = concatenate((undery, sel_y), axis=0)
+
+        return (underx, undery)
 
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #

@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from UnbalancedDataset import NearMiss, CondensedNearestNeighbour, OneSidedSelection
+from UnbalancedDataset import NearMiss, CondensedNearestNeighbour, OneSidedSelection, NeighboorhoodCleaningRule
 from sklearn.datasets import make_classification
 
 # Generate some data
@@ -24,8 +24,12 @@ x, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],\
 # cnnx, cnny = CNN.fit_transform(x, y)
 
 # Try OSS
-OSS = OneSidedSelection(random_state=1, n_seeds_S=20)
-ossx, ossy = OSS.fit_transform(x, y)
+# OSS = OneSidedSelection(random_state=1, n_seeds_S=20)
+# ossx, ossy = OSS.fit_transform(x, y)
+
+# Try NCR
+NCR = NeighboorhoodCleaningRule(random_state=1, size_ngh=51)
+ncrx, ncry = NCR.fit_transform(x, y) 
 
 from sklearn.decomposition import PCA
 pca = PCA(n_components = 2)
@@ -34,7 +38,8 @@ x = pca.fit_transform(x)
 # nm2x = pca.transform(nm2x)
 # nm3x = pca.transform(nm3x)
 # cnnx = pca.transform(cnnx)
-ossx = pca.transform(ossx)
+# ossx = pca.transform(ossx)
+ncrx = pca.transform(ncrx)
 
 # plt.figure()
 # plt.scatter(nm1x[nm1y==0, 0], nm1x[nm1y==0, 1])
@@ -56,7 +61,12 @@ ossx = pca.transform(ossx)
 # plt.scatter(cnnx[cnny==1, 0], cnnx[cnny==1, 1], color='r')
 # plt.show()
 
+# plt.figure()
+# plt.scatter(ossx[ossy==0, 0], ossx[ossy==0, 1])
+# plt.scatter(ossx[ossy==1, 0], ossx[ossy==1, 1], color='r')
+# plt.show()
+
 plt.figure()
-plt.scatter(ossx[ossy==0, 0], ossx[ossy==0, 1])
-plt.scatter(ossx[ossy==1, 0], ossx[ossy==1, 1], color='r')
+plt.scatter(ncrx[ncry==0, 0], ncrx[ncry==0, 1])
+plt.scatter(ncrx[ncry==1, 0], ncrx[ncry==1, 1], color='r')
 plt.show()

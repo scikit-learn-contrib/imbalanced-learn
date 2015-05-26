@@ -22,6 +22,7 @@ Bellow is a list of the methods currently implemented in this module.
     4. NearMiss-(1 & 2 & 3)
     5. Condensend Nearest Neighbour
     6. One-Sided Selection
+    7. Neighboorhood Cleaning Rule
 
 * Over-sampling
     1. Random minority over-sampling with replacement
@@ -45,6 +46,8 @@ References:
 * CNN - "Addressing the Curse of Imbalanced Training Sets: One-Sided Selection" by Kubat et al.
 
 * One-Sided Selection - "Addressing the Curse of Imbalanced Training Sets: One-Sided Selection" by Kubat et al.
+
+* NCL - "Improving identification of difficult small classes by balancing class distribution" by Laurikkala et al.
 
 * SMOTE - "SMOTE: synthetic minority over-sampling technique" by Chawla, N.V et al.
 
