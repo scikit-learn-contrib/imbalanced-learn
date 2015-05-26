@@ -34,6 +34,10 @@ Bellow is a list of the methods currently implemented in this module.
     1. SMOTE + Tomek links
     2. SMOTE + ENN
 
+* Ensemble sampling
+    1. EasyEnsemble
+    2. BalanceCascade
+
 Example:
 ![SMOTE comparison](http://i.imgur.com/s8JHWPp.png)
 
@@ -62,3 +66,5 @@ References:
 * SMOTE + Tomek - "Balancing training data for automated annotation of keywords: a case study", Batista et al.
 
 * SMOTE + ENN - "A study of the behavior of several methods for balancing machine learning training data", Batista et al.
+
+* EasyEnsemble & BalanceCascade - "Exploratory Understanding for Class-Imbalance Learning" by Liu et al.

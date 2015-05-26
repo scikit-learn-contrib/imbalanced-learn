@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
-from UnbalancedDataset import NearMiss, CondensedNearestNeighbour, OneSidedSelection, NeighboorhoodCleaningRule, SMOTE, SMOTETomek, SMOTEENN, UnderSampler, EasyEnsemble
+from UnbalancedDataset import NearMiss, CondensedNearestNeighbour, OneSidedSelection, NeighboorhoodCleaningRule, SMOTE, SMOTETomek, SMOTEENN, UnderSampler, EasyEnsemble, BalanceCascade
 from sklearn.datasets import make_classification
 
 # Generate some data
@@ -13,47 +13,52 @@ x, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],\
 
 r = float(np.count_nonzero(y == 1)) / float(np.count_nonzero(y == 0))
 
-# # Try NearMiss algorithm
-# NM1 = NearMiss(random_state=1, version=1, metric='l1')
-# nm1x, nm1y = NM1.fit_transform(x, y)
+# Try NearMiss algorithm
+NM1 = NearMiss(random_state=1, version=1, metric='l1')
+nm1x, nm1y = NM1.fit_transform(x, y)
 
-# NM2 = NearMiss(random_state=1, version=2)
-# nm2x, nm2y = NM2.fit_transform(x, y)
+NM2 = NearMiss(random_state=1, version=2)
+nm2x, nm2y = NM2.fit_transform(x, y)
 
-# NM3 = NearMiss(random_state=1, version=3)
-# nm3x, nm3y = NM3.fit_transform(x, y)
+NM3 = NearMiss(random_state=1, version=3)
+nm3x, nm3y = NM3.fit_transform(x, y)
 
 # Try CNN
-# CNN = CondensedNearestNeighbour(random_state=1, n_seeds_S=20)
-# cnnx, cnny = CNN.fit_transform(x, y)
+CNN = CondensedNearestNeighbour(random_state=1, n_seeds_S=20)
+cnnx, cnny = CNN.fit_transform(x, y)
 
 # Try OSS
-# OSS = OneSidedSelection(random_state=1, n_seeds_S=20)
-# ossx, ossy = OSS.fit_transform(x, y)
+OSS = OneSidedSelection(random_state=1, n_seeds_S=20)
+ossx, ossy = OSS.fit_transform(x, y)
 
 # Try NCR
-# NCR = NeighboorhoodCleaningRule(random_state=1, size_ngh=51)
-# ncrx, ncry = NCR.fit_transform(x, y) 
+NCR = NeighboorhoodCleaningRule(random_state=1, size_ngh=51)
+ncrx, ncry = NCR.fit_transform(x, y) 
 
 # Try SMOTE
-# smote = SMOTE(random_state=1)
-# sx, sy = smote.fit_transform(x, y)
+smote = SMOTE(random_state=1)
+sx, sy = smote.fit_transform(x, y)
 
 # Try SMOTE Tomek
-# STK = SMOTETomek(random_state=1)
-# stkx, stky = STK.fit_transform(x, y)
+STK = SMOTETomek(random_state=1)
+stkx, stky = STK.fit_transform(x, y)
 
 # Try SMOTE ENN
-# SENN = SMOTEENN(random_state=1, ratio=r, size_ngh=51)
-# sennx, senny = SENN.fit_transform(x, y)
+SENN = SMOTEENN(random_state=1, ratio=r, size_ngh=51)
+sennx, senny = SENN.fit_transform(x, y)
 
 # Try Undersampling
-# USS = UnderSampler(random_state=1, replacement=False)
-# ussx, ussy = USS.fit_transform(x, y)
+USS = UnderSampler(random_state=1, replacement=False)
+ussx, ussy = USS.fit_transform(x, y)
 
 # Try EasyEnsemble
 EE = EasyEnsemble(random_state=1)
 eex, eey = EE.fit_transform(x, y)
+
+# Try BalanceCascade
+classifier_opts = {'n_jobs': 4}
+BS = BalanceCascade(random_state=1, classifier='adaboost', bootstrap=True)
+bsx, bsy = BS.fit_transform(x, y)
 
 from sklearn.decomposition import PCA
 pca = PCA(n_components = 2)
