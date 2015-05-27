@@ -391,7 +391,7 @@ class UnbalancedDataset(object):
         return new, y_new
 
     @staticmethod
-    def in_danger(sample, y, m, class_type, nn_obj, verbose=True):
+    def in_danger(sample, y, m, class_type, nn_obj):
         """
         Function to determine whether a given minority samples is in Danger as
         defined by Chawla, N.V et al., in: SMOTE: synthetic minority over-sampling
@@ -443,7 +443,7 @@ class UnbalancedDataset(object):
             return True
 
     @staticmethod
-    def is_noise(sample, y, class_type, nn_obj, verbose=True):
+    def is_noise(sample, y, class_type, nn_obj):
         """
         Function to determine whether a given minority sample is noise as defined
         in [1].
@@ -676,7 +676,8 @@ class NearMiss(UnbalancedDataset):
     """
     An implementation of NearMiss.
 
-    See the original paper: NearMiss - "kNN Approach to Unbalanced Data Distributions: A Case Study involving Information Extraction" by Zhang et al. for more details.
+    See the original paper: NearMiss - "kNN Approach to Unbalanced Data Distributions: 
+    A Case Study involving Information Extraction" by Zhang et al. for more details.
     """
 
     def __init__(self, ratio=1., random_state=None, 
@@ -1452,7 +1453,7 @@ class bSMOTE1(UnbalancedDataset):
         nn.fit(self.x)
 
         # Boolean array with True for minority samples in danger
-        index = [self.in_danger(x, self.y, self.m, miny[0], nn, self.verbose) for x in minx]
+        index = [self.in_danger(x, self.y, self.m, miny[0], nn) for x in minx]
         index = asarray(index)
 
         # If all minority samples are safe, return the original data set.
@@ -1540,7 +1541,7 @@ class bSMOTE2(UnbalancedDataset):
         nn.fit(self.x)
 
         # Boolean array with True for minority samples in danger
-        index = [self.in_danger(x, self.y, self.m, self.minc, nn, self.verbose) for x in minx]
+        index = [self.in_danger(x, self.y, self.m, self.minc, nn) for x in minx]
         index = asarray(index)
 
         # If all minority samples are safe, return the original data set.
@@ -1669,7 +1670,7 @@ class SVM_SMOTE(UnbalancedDataset):
         # Boolean array with True for noisy support vectors
         noise_bool = []
         for x in support_vector:
-            noise_bool.append(self.is_noise(x, self.y, self.minc, nn, self.verbose))
+            noise_bool.append(self.is_noise(x, self.y, self.minc, nn))
 
         # Turn into array#
         noise_bool = asarray(noise_bool)
@@ -1679,7 +1680,7 @@ class SVM_SMOTE(UnbalancedDataset):
 
         # Find support_vectors there are in danger (interpolation) or not
         # (extrapolation)
-        danger_bool = [self.in_danger(x, self.y, self.m, self.minc, nn, self.verbose)
+        danger_bool = [self.in_danger(x, self.y, self.m, self.minc, nn)
                        for x in support_vector]
 
         # Turn into array#
