@@ -74,10 +74,8 @@ Nguyen, Cooper, Kamei"
 
 TO DO LIST:
 ===========
-    1. Add control for level of verbosity.
-    2. Turn global functions into static methods
-    3. Add more comments
-    4. Add more tests or proper tests
+    1. Turn global functions into static methods
+    2. Add more comments
 """
 
 from __future__ import division
@@ -90,6 +88,7 @@ from random import seed as pyseed
 from numpy.random import seed, randint, uniform
 from numpy import zeros, ones, concatenate, logical_not, asarray
 from numpy import sum as nsum
+from collections import Counter
 
 import numpy as np
 
@@ -105,7 +104,7 @@ class UnbalancedDataset(object):
     Parent class with the main methods: fit, transform and fit_transform
     """
 
-    def __init__(self, ratio=1., random_state=None):
+    def __init__(self, ratio=1., random_state=None, verbose=True):
         """
         Initialize this object and its instance variables.
 
@@ -117,6 +116,9 @@ class UnbalancedDataset(object):
 
         :param random_state:
             Seed for random number generation.
+
+        :param verbose:
+            Boolean to either or not print information about the processing
 
         :return:
             Nothing.
@@ -147,6 +149,9 @@ class UnbalancedDataset(object):
             Dictionary to hold the label of all the class and the number of
             elements in each.
             {'label A' : #a, 'label B' : #b, ...}
+
+        :self.verbose:
+            Boolean allowing some verbosing during the processing.
         """
 
         ##
@@ -169,6 +174,9 @@ class UnbalancedDataset(object):
         #
         self.num = None
 
+        #
+        self.verbose = verbose
+
     def resample(self):
         pass
 
@@ -189,7 +197,8 @@ class UnbalancedDataset(object):
         self.x = x
         self.y = y
 
-        print("Determining class statistics...", end="")
+        if self.verbose==True:
+            print("Determining classes statistics... ", end="")
 
         # Get all the unique elements in the target array
         uniques = set(self.y)
@@ -224,7 +233,10 @@ class UnbalancedDataset(object):
                 self.maxc = key
                 curre_max = self.ucd[key]
 
-        print("done!")
+        if self.verbose==True:
+            print(str(len(uniques)) + 
+                  " classes detected: " + 
+                  str(self.ucd), end="\n")
 
     def transform(self):
         """
@@ -233,7 +245,10 @@ class UnbalancedDataset(object):
         :return:
             The re-sampled data set.
         """
-
+        
+        if self.verbose==True:
+            print("Start resampling ...")
+        
         self.out_x, self.out_y = self.resample()
 
         return self.out_x, self.out_y
@@ -261,7 +276,7 @@ class UnbalancedDataset(object):
     #                                Static Methods
     # ----------------------------------- // ----------------------------------- #
     @staticmethod
-    def is_tomek(y, nn_index, class_type):
+    def is_tomek(y, nn_index, class_type, verbose=True):
         """
         is_tomek uses the target vector and the first neighbour of every sample
         point and looks for Tomek pairs. Returning a boolean vector with True for
@@ -303,13 +318,15 @@ class UnbalancedDataset(object):
                 if nn_index[nn_index[ind]] == ind:
                     links[ind] = True
                     count += 1
-
-        print("%i Tomek links found." % count)
+                    
+        if verbose==True:
+            print("%i Tomek links found." % count)
 
         return links
 
     @staticmethod
-    def make_samples(x, nn_data, y_type, nn_num, n_samples, step_size=1., random_state=None):
+    def make_samples(x, nn_data, y_type, nn_num, n_samples, 
+                     step_size=1., random_state=None, verbose=True):
         """
         A support function that returns artificial samples constructed along the
         line connecting nearest neighbours.
@@ -368,10 +385,13 @@ class UnbalancedDataset(object):
         # The returned target vector is simply a repetition of the minority label
         y_new = ones(len(new)) * y_type
 
+        if verbose==True:
+            print("Generated %i new samples ..." % len(new))
+
         return new, y_new
 
     @staticmethod
-    def in_danger(sample, y, m, class_type, nn_obj):
+    def in_danger(sample, y, m, class_type, nn_obj, verbose=True):
         """
         Function to determine whether a given minority samples is in Danger as
         defined by Chawla, N.V et al., in: SMOTE: synthetic minority over-sampling
@@ -423,7 +443,7 @@ class UnbalancedDataset(object):
             return True
 
     @staticmethod
-    def is_noise(sample, y, class_type, nn_obj):
+    def is_noise(sample, y, class_type, nn_obj, verbose=True):
         """
         Function to determine whether a given minority sample is noise as defined
         in [1].
@@ -476,7 +496,7 @@ class UnderSampler(UnbalancedDataset):
     with or without replacement.
     """
 
-    def __init__(self, ratio=1., random_state=None, replacement=True):
+    def __init__(self, ratio=1., random_state=None, replacement=True, verbose=True):
         """
         :param ratio:
             The ratio of majority elements to sample with respect to the number
@@ -491,7 +511,9 @@ class UnderSampler(UnbalancedDataset):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+        UnbalancedDataset.__init__(self, ratio=ratio, 
+                                   random_state=random_state, 
+                                   verbose=verbose)
 
         self.replacement = replacement
 
@@ -527,6 +549,9 @@ class UnderSampler(UnbalancedDataset):
             underx = concatenate((underx, self.x[self.y == key][indx]), axis=0)
             undery = concatenate((undery, self.y[self.y == key][indx]), axis=0)
 
+        if self.verbose==True:
+            print("Under-sampling performed: " + str(Counter(undery)))
+
         return underx, undery
 
 
@@ -536,7 +561,7 @@ class TomekLinks(UnbalancedDataset):
     minority samples.
     """
 
-    def __init__(self):
+    def __init__(self, verbose=True):
         """
         No parameters.
 
@@ -544,7 +569,7 @@ class TomekLinks(UnbalancedDataset):
             Nothing.
         """
 
-        UnbalancedDataset.__init__(self)
+        UnbalancedDataset.__init__(self, verbose=verbose)
 
     def resample(self):
         """
@@ -556,15 +581,17 @@ class TomekLinks(UnbalancedDataset):
         from sklearn.neighbors import NearestNeighbors
 
         # Find the nearest neighbour of every point
-        print("Finding nearest neighbour...", end="")
         nn = NearestNeighbors(n_neighbors=2)
         nn.fit(self.x)
         nns = nn.kneighbors(self.x, return_distance=False)[:, 1]
-        print("done!")
 
         # Send the information to is_tomek function to get boolean vector back
-        print("Looking for majority Tomek links...", end="")
-        links = self.is_tomek(self.y, nns, self.minc)
+        if self.verbose==True:
+            print("Looking for majority Tomek links...")
+        links = self.is_tomek(self.y, nns, self.minc, self.verbose)
+
+        if self.verbose==True:
+            print("Under-sampling performed: " + str(Counter(self.y[logical_not(links)])))
 
         # Return data set without majority Tomek links.
         return self.x[logical_not(links)], self.y[logical_not(links)]
@@ -579,7 +606,7 @@ class ClusterCentroids(UnbalancedDataset):
     cluster centroids as the new majority samples.
     """
 
-    def __init__(self, ratio=1, random_state=None, **kwargs):
+    def __init__(self, ratio=1, random_state=None, verbose=True, **kwargs):
         """
         :param kwargs:
             Arguments the user might want to pass to the KMeans object from
@@ -597,7 +624,8 @@ class ClusterCentroids(UnbalancedDataset):
             Under sampled data set.
         """
         UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state)
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         self.kwargs = kwargs
 
@@ -618,7 +646,6 @@ class ClusterCentroids(UnbalancedDataset):
         undery = self.y[self.y == self.minc]
 
         # Loop over the other classes under picking at random
-        print('Finding cluster centroids...', end="")
         for key in self.ucd.keys():
             # If the minority class is up, skip it.
             if key == self.minc:
@@ -639,9 +666,9 @@ class ClusterCentroids(UnbalancedDataset):
             # Concatenate to the minority class
             underx = concatenate((underx, centroids), axis=0)
             undery = concatenate((undery, ones(n_clusters) * key), axis=0)
-            print(".", end="")
-
-        print("done!")
+        
+        if self.verbose==True:
+            print("Under-sampling performed: " + str(Counter(undery)))
 
         return underx, undery
 
@@ -652,7 +679,9 @@ class NearMiss(UnbalancedDataset):
     See the original paper: NearMiss - "kNN Approach to Unbalanced Data Distributions: A Case Study involving Information Extraction" by Zhang et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None, version=1, size_ngh=3, ver3_samp_ngh=3, **kwargs):
+    def __init__(self, ratio=1., random_state=None, 
+                 version=1, size_ngh=3, ver3_samp_ngh=3, 
+                 verbose=True, **kwargs):
         """
         :param version:
             Version of the NearMiss to use. Possible values 
@@ -673,7 +702,9 @@ class NearMiss(UnbalancedDataset):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+        UnbalancedDataset.__init__(self, ratio=ratio, 
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         # Assign the parameter of the element of this class
         ### Check that the version asked is implemented
@@ -752,6 +783,9 @@ class NearMiss(UnbalancedDataset):
             underx = concatenate((underx, sel_x), axis=0)
             undery = concatenate((undery, sel_y), axis=0)
 
+        if self.verbose==True:
+            print("Under-sampling performed: " + str(Counter(undery)))
+
         return (underx, undery)
 
     def __SelectionDistBased__(self, dist_vec, num_samples, key, sel_strategy='nearest'):
@@ -781,7 +815,9 @@ class CondensedNearestNeighbour(UnbalancedDataset):
     See the original paper: CNN - "Addressing the Curse of Imbalanced Training Set: One-Sided Selection" by Khubat et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None, size_ngh=1, n_seeds_S=1, **kwargs):
+    def __init__(self, ratio=1., random_state=None, 
+                 size_ngh=1, n_seeds_S=1, verbose=True,
+                 **kwargs):
         """
 
         :param size_ngh
@@ -796,7 +832,9 @@ class CondensedNearestNeighbour(UnbalancedDataset):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+        UnbalancedDataset.__init__(self, ratio=ratio, 
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         # Assign the parameter of the element of this class
         self.size_ngh = size_ngh
@@ -848,6 +886,9 @@ class CondensedNearestNeighbour(UnbalancedDataset):
             underx = concatenate((underx, sel_x), axis=0)
             undery = concatenate((undery, sel_y), axis=0)
 
+        if self.verbose==True:
+            print("Under-sampling performed: " + str(Counter(undery)))
+
         return (underx, undery)
 
 class OneSidedSelection(UnbalancedDataset):
@@ -857,7 +898,9 @@ class OneSidedSelection(UnbalancedDataset):
     See the original paper: OSS - "Addressing the Curse of Imbalanced Training Set: One-Sided Selection" by Khubat et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None, size_ngh=1, n_seeds_S=1, **kwargs):
+    def __init__(self, ratio=1., random_state=None, 
+                 size_ngh=1, n_seeds_S=1, verbose=True,
+                 **kwargs):
         """
 
         :param size_ngh
@@ -872,7 +915,9 @@ class OneSidedSelection(UnbalancedDataset):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+        UnbalancedDataset.__init__(self, ratio=ratio, 
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         # Assign the parameter of the element of this class
         self.size_ngh = size_ngh
@@ -928,16 +973,17 @@ class OneSidedSelection(UnbalancedDataset):
         from sklearn.neighbors import NearestNeighbors
 
         # Find the nearest neighbour of every point
-        print("Finding nearest neighbour...", end="")
         nn = NearestNeighbors(n_neighbors=2)
         nn.fit(underx)
-        print(underx.shape)
         nns = nn.kneighbors(underx, return_distance=False)[:, 1]
-        print("done!")
-
+        
         # Send the information to is_tomek function to get boolean vector back
-        print("Looking for majority Tomek links...", end="")
-        links = self.is_tomek(undery, nns, self.minc)
+        if self.verbose==True:
+            print("Looking for majority Tomek links...")
+        links = self.is_tomek(undery, nns, self.minc, self.verbose)
+
+        if self.verbose==True:
+            print("Under-sampling performed: " + str(Counter(undery[logical_not(links)])))
 
         # Return data set without majority Tomek links.
         return underx[logical_not(links)], undery[logical_not(links)]
@@ -949,7 +995,8 @@ class NeighboorhoodCleaningRule(UnbalancedDataset):
     See the original paper: NCL - "Improving identification of difficult small classes by balancing class distribution" by Laurikkala et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None, size_ngh=3, **kwargs):
+    def __init__(self, ratio=1., random_state=None, 
+                 size_ngh=3, verbose=True, **kwargs):
         """
         :param size_ngh
             Size of the neighbourhood to consider in order to make
@@ -960,7 +1007,9 @@ class NeighboorhoodCleaningRule(UnbalancedDataset):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+        UnbalancedDataset.__init__(self, ratio=ratio, 
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         # Assign the parameter of the element of this class
         self.size_ngh = size_ngh
@@ -1022,6 +1071,9 @@ class NeighboorhoodCleaningRule(UnbalancedDataset):
         underx = concatenate((underx, sel_x), axis=0)
         undery = concatenate((undery, sel_y), axis=0)
 
+        if self.verbose==True:
+            print("Under-sampling performed: " + str(Counter(undery)))
+
         return (underx, undery)
 
 # ----------------------------------- // ----------------------------------- #
@@ -1039,7 +1091,7 @@ class OverSampler(UnbalancedDataset):
     *Supports multiple classes.
     """
 
-    def __init__(self, ratio=1., random_state=None):
+    def __init__(self, ratio=1., random_state=None, verbose=True):
         """
         :param ratio:
             Number of samples to draw with respect to the number of samples in
@@ -1053,7 +1105,8 @@ class OverSampler(UnbalancedDataset):
             Nothing.
         """
         UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state)
+                                   random_state=random_state,
+                                   verbose=verbose)
 
     def resample(self):
         """
@@ -1094,6 +1147,9 @@ class OverSampler(UnbalancedDataset):
                                  self.y[self.y == key],
                                  self.y[self.y == key][indx]), axis=0)
 
+        if self.verbose==True:
+            print("Over-sampling performed: " + str(Counter(overy)))
+
         # Return over sampled dataset
         return overx, overy
 
@@ -1109,7 +1165,7 @@ class SMOTE(UnbalancedDataset):
     multiple times
     """
 
-    def __init__(self, k=5, ratio=1., random_state=None):
+    def __init__(self, k=5, ratio=1., random_state=None, verbose=True):
         """
         :param k:
             Number of nearest neighbours to use when constructing the synthetic
@@ -1128,7 +1184,8 @@ class SMOTE(UnbalancedDataset):
         """
 
         UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state)
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         # Instance variable to store the number of neighbours to use.
         self.k = k
@@ -1141,25 +1198,22 @@ class SMOTE(UnbalancedDataset):
         # Finding nns
         from sklearn.neighbors import NearestNeighbors
 
-        print("Finding the %i nearest neighbours..." % self.k, end="")
-
         nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1)
         nearest_neighbour.fit(minx)
         nns = nearest_neighbour.kneighbors(minx, return_distance=False)[:, 1:]
 
-        print("done!")
-
         # Creating synthetic samples
-        print("Creating synthetic samples...", end="")
-
         sx, sy = self.make_samples(minx, minx, self.minc, nns,
                                    int(self.ratio * len(miny)),
-                                   random_state=self.rs)
-        print("done!")
-
+                                   random_state=self.rs, 
+                                   verbose=self.verbose)
+        
         # Concatenate the newly generated samples to the original data set
         ret_x = concatenate((self.x, sx), axis=0)
         ret_y = concatenate((self.y, sy), axis=0)
+        
+        if self.verbose==True:
+            print("Over-sampling performed: " + str(Counter(ret_y)))
 
         return ret_x, ret_y
 
@@ -1171,7 +1225,7 @@ class SMOTETomek(UnbalancedDataset):
     a case study", Batista et al. for more details.
     """
 
-    def __init__(self, k=5, ratio=1., random_state=None):
+    def __init__(self, k=5, ratio=1., random_state=None, verbose=True):
         """
         :param k:
             Number of nearest neighbours to use when constructing the synthetic
@@ -1190,7 +1244,8 @@ class SMOTETomek(UnbalancedDataset):
         """
 
         UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state)
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         # Instance variable to store the number of neighbours to use.
         self.k = k
@@ -1203,21 +1258,15 @@ class SMOTETomek(UnbalancedDataset):
         # Finding nns
         from sklearn.neighbors import NearestNeighbors
 
-        print("Finding the %i nearest neighbours..." % self.k, end="")
-
         nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1)
         nearest_neighbour.fit(minx)
         nns = nearest_neighbour.kneighbors(minx, return_distance=False)[:, 1:]
 
-        print("done!")
-
         # Creating synthetic samples
-        print("Creating synthetic samples...", end="")
-
         sx, sy = self.make_samples(minx, minx, self.minc, nns,
                                    int(self.ratio * len(miny)),
-                                   random_state=self.rs)
-        print("done!")
+                                   random_state=self.rs, 
+                                   verbose=self.verbose)
 
         # Concatenate the newly generated samples to the original data set
         ret_x = concatenate((self.x, sx), axis=0)
@@ -1226,15 +1275,15 @@ class SMOTETomek(UnbalancedDataset):
         from sklearn.neighbors import NearestNeighbors
 
         # Find the nearest neighbour of every point
-        print("Finding nearest neighbour...", end="")
         nn = NearestNeighbors(n_neighbors=2)
         nn.fit(ret_x)
         nns = nn.kneighbors(ret_x, return_distance=False)[:, 1]
-        print("done!")
 
         # Send the information to is_tomek function to get boolean vector back
-        print("Looking for majority Tomek links...", end="")
-        links = self.is_tomek(ret_y, nns, self.minc)
+        links = self.is_tomek(ret_y, nns, self.minc, self.verbose)
+
+        if self.verbose==True:
+            print("Over-sampling performed: " + str(Counter(ret_y[logical_not(links)])))
 
         # Return data set without majority Tomek links.
         return ret_x[logical_not(links)], ret_y[logical_not(links)]
@@ -1248,7 +1297,8 @@ class SMOTEENN(UnbalancedDataset):
 
     """
 
-    def __init__(self, k=5, ratio=1., random_state=None, size_ngh=3, **kwargs):
+    def __init__(self, k=5, ratio=1., random_state=None, 
+                 size_ngh=3, verbose=True, **kwargs):
         """
         :param size_ngh
             Size of the neighbourhood to consider in order to make
@@ -1274,7 +1324,8 @@ class SMOTEENN(UnbalancedDataset):
         """
 
         UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state)
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         # Instance variable to store the number of neighbours to use.
         self.k = k
@@ -1290,21 +1341,15 @@ class SMOTEENN(UnbalancedDataset):
         # Finding nns
         from sklearn.neighbors import NearestNeighbors
 
-        print("Finding the %i nearest neighbours..." % self.k, end="")
-
         nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1)
         nearest_neighbour.fit(minx)
         nns = nearest_neighbour.kneighbors(minx, return_distance=False)[:, 1:]
 
-        print("done!")
-
         # Creating synthetic samples
-        print("Creating synthetic samples...", end="")
-
         sx, sy = self.make_samples(minx, minx, self.minc, nns,
                                    int(self.ratio * len(miny)),
-                                   random_state=self.rs)
-        print("done!")
+                                   random_state=self.rs, 
+                                   verbose=self.verbose)
 
         # Concatenate the newly generated samples to the original data set
         ret_x = concatenate((self.x, sx), axis=0)
@@ -1347,6 +1392,9 @@ class SMOTEENN(UnbalancedDataset):
                 underx = concatenate((underx, sel_x), axis=0)
                 undery = concatenate((undery, sel_y), axis=0)
 
+        if self.verbose==True:
+            print("Over-sampling performed: " + str(Counter(undery)))
+
         return (underx, undery)
 
 class bSMOTE1(UnbalancedDataset):
@@ -1362,7 +1410,7 @@ class bSMOTE1(UnbalancedDataset):
     multiple times
     """
 
-    def __init__(self, k=5, m=10, ratio=1, random_state=None):
+    def __init__(self, k=5, m=10, ratio=1, random_state=None, verbose=True):
         """
         :param k:
             The number of nearest neighbours to use to construct the synthetic
@@ -1384,7 +1432,8 @@ class bSMOTE1(UnbalancedDataset):
             end.
         """
         UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state)
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         # NN for synthetic samples
         self.k = k
@@ -1399,20 +1448,18 @@ class bSMOTE1(UnbalancedDataset):
         miny = self.y[self.y == self.minc]
 
         # Find the NNs for all samples in the data set.
-        print("Finding the %i nearest neighbours..." % self.m, end="")
         nn = NearestNeighbors(n_neighbors=self.m + 1)
         nn.fit(self.x)
 
-        print("done!")
-
         # Boolean array with True for minority samples in danger
-        index = [self.in_danger(x, self.y, self.m, miny[0], nn) for x in minx]
+        index = [self.in_danger(x, self.y, self.m, miny[0], nn, self.verbose) for x in minx]
         index = asarray(index)
 
         # If all minority samples are safe, return the original data set.
         if not any(index):
-            print('There are no samples in danger. No borderline synthetic '
-                  'samples created.')
+            if self.verbose==True:
+                print('There are no samples in danger. No borderline synthetic '
+                      'samples created.')
             return self.x, self.y
 
         # Find the NNs among the minority class
@@ -1423,11 +1470,15 @@ class bSMOTE1(UnbalancedDataset):
         # Create synthetic samples for borderline points.
         sx, sy = self.make_samples(minx[index], minx, miny[0], nns,
                                    int(self.ratio * len(miny)),
-                                   random_state=self.rs)
+                                   random_state=self.rs,
+                                   verbose=self.verbose)
 
         # Concatenate the newly generated samples to the original data set
         ret_x = concatenate((self.x, sx), axis=0)
         ret_y = concatenate((self.y, sy), axis=0)
+
+        if self.verbose==True:
+            print("Over-sampling performed: " + str(Counter(ret_y)))
 
         return ret_x, ret_y
 
@@ -1445,7 +1496,7 @@ class bSMOTE2(UnbalancedDataset):
     multiple times
     """
 
-    def __init__(self, k=5, m=10, ratio=1, random_state=None):
+    def __init__(self, k=5, m=10, ratio=1, random_state=None, verbose=True):
         """
         :param k:
             The number of nearest neighbours to use to construct the synthetic
@@ -1468,7 +1519,8 @@ class bSMOTE2(UnbalancedDataset):
         """
 
         UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state)
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         # NN for synthetic samples
         self.k = k
@@ -1484,20 +1536,18 @@ class bSMOTE2(UnbalancedDataset):
         miny = self.y[self.y == self.minc]
 
         # Find the NNs for all samples in the data set.
-        print("Finding the %i nearest neighbours..." % self.m, end="")
         nn = NearestNeighbors(n_neighbors=self.m + 1)
         nn.fit(self.x)
 
-        print("done!")
-
         # Boolean array with True for minority samples in danger
-        index = [self.in_danger(x, self.y, self.m, self.minc, nn) for x in minx]
+        index = [self.in_danger(x, self.y, self.m, self.minc, nn, self.verbose) for x in minx]
         index = asarray(index)
 
         # If all minority samples are safe, return the original data set.
         if not any(index):
-            print('There are no samples in danger. No borderline synthetic '
-                  'samples created.')
+            if self.verbose==True:
+                print('There are no samples in danger. No borderline synthetic '
+                      'samples created.')
             return self.x, self.y
 
         # Find the NNs among the minority class
@@ -1515,18 +1565,23 @@ class bSMOTE2(UnbalancedDataset):
         sx1, sy1 = self.make_samples(minx[index], minx, self.minc, nns,
                                      fractions * (int(self.ratio * len(miny)) + 1),
                                      step_size=1,
-                                     random_state=self.rs)
+                                     random_state=self.rs,
+                                     verbose=self.verbose)
 
         # Only majority with smaller step size
         sx2, sy2 = self.make_samples(minx[index], self.x[self.y != self.minc],
                                      self.minc, nns,
                                      (1 - fractions) * int(self.ratio * len(miny)),
                                      step_size=0.5,
-                                     random_state=self.rs)
+                                     random_state=self.rs,
+                                     verbose=self.verbose)
 
         # Concatenate the newly generated samples to the original data set
         ret_x = concatenate((self.x, sx1, sx2), axis=0)
         ret_y = concatenate((self.y, sy1, sy2), axis=0)
+        
+        if self.verbose==True:
+            print("Over-sampling performed: " + str(Counter(ret_y)))
 
         return ret_x, ret_y
 
@@ -1546,8 +1601,9 @@ class SVM_SMOTE(UnbalancedDataset):
     times (I believe).
     """
 
-    def __init__(self, k=5, m=10, out_step=0.5, ratio=1, random_state=None,
-                 **kwargs):
+    def __init__(self, k=5, m=10, out_step=0.5, 
+                 ratio=1, random_state=None,
+                 verbose=True, **kwargs):
         """
 
         :param k:
@@ -1577,7 +1633,8 @@ class SVM_SMOTE(UnbalancedDataset):
         """
 
         UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state)
+                                   random_state=random_state,
+                                   verbose=verbose)
 
         self.k = k
         self.m = m
@@ -1604,17 +1661,15 @@ class SVM_SMOTE(UnbalancedDataset):
 
         # First, find the nn of all the samples to identify samples in danger
         # and noisy ones
-        print("Finding the %i nearest neighbours..." % self.m, end="")
         nn = NearestNeighbors(n_neighbors=self.m + 1)
         nn.fit(self.x)
-        print("done!")
 
         # Now, get rid of noisy support vectors
 
         # Boolean array with True for noisy support vectors
         noise_bool = []
         for x in support_vector:
-            noise_bool.append(self.is_noise(x, self.y, self.minc, nn))
+            noise_bool.append(self.is_noise(x, self.y, self.minc, nn, self.verbose))
 
         # Turn into array#
         noise_bool = asarray(noise_bool)
@@ -1624,7 +1679,7 @@ class SVM_SMOTE(UnbalancedDataset):
 
         # Find support_vectors there are in danger (interpolation) or not
         # (extrapolation)
-        danger_bool = [self.in_danger(x, self.y, self.m, self.minc, nn)
+        danger_bool = [self.in_danger(x, self.y, self.m, self.minc, nn, self.verbose)
                        for x in support_vector]
 
         # Turn into array#
@@ -1639,16 +1694,13 @@ class SVM_SMOTE(UnbalancedDataset):
                        nsum(danger_bool),
                        nsum(safety_bool))
 
-        print("Out of %i support vectors, %i are noisy, %i are in danger "
-              "and %i are safe." % print_stats)
+        if self.verbose==True:
+            print("Out of %i support vectors, %i are noisy, %i are in danger "
+                  "and %i are safe." % print_stats)
 
         # Proceed to find support vectors NNs among the minority class
-        print("Finding the %i nearest neighbours..." % self.k, end="")
         nn.set_params(**{'n_neighbors': self.k + 1})
         nn.fit(minx)
-        print("done!")
-
-        print("Creating synthetic samples...", end="")
 
         # Split the number of synthetic samples between interpolation and
         # extrapolation
@@ -1663,7 +1715,8 @@ class SVM_SMOTE(UnbalancedDataset):
                                      self.minc, nns,
                                      fractions * (int(self.ratio * len(minx)) + 1),
                                      step_size=1,
-                                     random_state=self.rs)
+                                     random_state=self.rs,
+                                     verbose=self.verbose)
 
         # Extrapolate safe samples
         nns = nn.kneighbors(support_vector[safety_bool],
@@ -1673,13 +1726,15 @@ class SVM_SMOTE(UnbalancedDataset):
                                      self.minc, nns,
                                      (1 - fractions) * int(self.ratio * len(minx)),
                                      step_size=-self.out_step,
-                                     random_state=self.rs)
-
-        print("done!")
+                                     random_state=self.rs,
+                                     verbose=self.verbose)
 
         # Concatenate the newly generated samples to the original data set
         ret_x = concatenate((self.x, sx1, sx2), axis=0)
         ret_y = concatenate((self.y, sy1, sy2), axis=0)
+        
+        if self.verbose==True:
+            print("Over-sampling performed: " + str(Counter(ret_y)))
 
         return ret_x, ret_y
 
@@ -1700,7 +1755,8 @@ class EasyEnsemble(UnderSampler):
     Class-Imbalance Learning" by Liu et al.
     """
 
-    def __init__(self, ratio=1., random_state=None, replacement=False, n_subsets=10):
+    def __init__(self, ratio=1., random_state=None, replacement=False, 
+                 n_subsets=10, verbose=True):
         """
         :param ratio:
             The ratio of majority elements to sample with respect to the number
@@ -1717,7 +1773,10 @@ class EasyEnsemble(UnderSampler):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnderSampler.__init__(self, ratio=ratio, random_state=random_state, replacement=replacement)
+        UnderSampler.__init__(self, ratio=ratio, 
+                              random_state=random_state, 
+                              replacement=replacement,
+                              verbose=verbose)
 
         self.n_subsets = n_subsets
 
@@ -1734,6 +1793,8 @@ class EasyEnsemble(UnderSampler):
         subsets_y = []
 
         for s in range(self.n_subsets):
+            if self.verbose==True:
+                print("Creation of the set #%i" % s)
             tmp_subset_x, tmp_subset_y = UnderSampler.resample(self)
             subsets_x.append(tmp_subset_x)
             subsets_y.append(tmp_subset_y)
@@ -1749,7 +1810,8 @@ class BalanceCascade(UnbalancedDataset):
     Class-Imbalance Learning" by Liu et al.
     """
 
-    def __init__(self, ratio=1., random_state=None, n_max_subset=None, classifier='knn', bootstrap=True, **kwargs):
+    def __init__(self, ratio=1., random_state=None, n_max_subset=None, 
+                 classifier='knn', bootstrap=True, verbose=True, **kwargs):
         """
         :param ratio:
             The ratio of majority elements to sample with respect to the number
@@ -1772,7 +1834,9 @@ class BalanceCascade(UnbalancedDataset):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio, random_state=random_state)
+        UnbalancedDataset.__init__(self, ratio=ratio, 
+                                   random_state=random_state, 
+                                   verbose=verbose)
 
         # Define the classifier to use
         if (classifier == 'knn'):
@@ -1873,10 +1937,12 @@ class BalanceCascade(UnbalancedDataset):
 
             # Find the misclassified index to keep them for the next round
             idx_mis_class = idx_sel_from_maj[np.nonzero(pred_label != N_y[idx_sel_from_maj])]
-            print(idx_mis_class)
             # Count how many random element will be selected
             n_elt_maj = self.ucd[self.minc] - idx_mis_class.size
             
+            if self.verbose==True:
+                print("Creation of the subset #" + str(n_subsets))
+
             # We found a new subset, increase the counter
             n_subsets = n_subsets + 1
                         
@@ -1884,13 +1950,31 @@ class BalanceCascade(UnbalancedDataset):
             if (self.n_max_subset != None):
                 if (self.n_max_subset >= n_subsets):
                     b_subset_search = False
-                    print('The number of subset achieved their maximum')
+                    if self.verbose==True:
+                        print('The number of subset achieved their maximum')
 
             # Also check that we will have enough sample to extract at the 
             # next round
             if (n_elt_maj > np.count_nonzero(b_sel_N)):
                 b_subset_search = False
-                print('Not enough samples to continue creating subsets')
+                # Select the remaining data
+                idx_sel_from_maj = np.nonzero(b_sel_N)[0]
+                idx_sel_from_maj = np.concatenate((idx_mis_class, idx_sel_from_maj), axis=0).astype(int)
+                # Select the final batch
+                x_data = concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
+                y_data = concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
+                # Push these data into a new subset
+                subsets_x.append(x_data)
+                subsets_y.append(y_data)
+                if self.verbose==True:
+                    print("Creation of the subset #" + str(n_subsets))
+
+                # We found a new subset, increase the counter
+                n_subsets = n_subsets + 1
+
+                if self.verbose==True:
+                    print('Not enough samples to continue creating subsets')
+
        
         # Return the different subsets
         return subsets_x, subsets_y
