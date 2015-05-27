@@ -69,6 +69,7 @@ bsx2, bsy2 = bsmote2.fit_transform(x, y)
 print 'SMOTE SVM'
 svm_args={'class_weight' : 'auto'}
 svmsmote = SVM_SMOTE(random_state=1, verbose=verbose, **svm_args)
+svx, svy = svmsmote.fit_transform(x, y)
 
 print 'SMOTE Tomek links'
 STK = SMOTETomek(verbose=verbose)
