@@ -4,8 +4,6 @@ tackling the problem of inbalanced datasets.
 """
 
 
-from .unbalanced_dataset import UnbalancedDataset
-
 from .over_sampling import OverSampler
 from .over_sampling import SMOTE
 
@@ -22,7 +20,6 @@ from .ensemble_sampling import BalanceCascade
 
 from .pipeline import SMOTEENN
 from .pipeline import SMOTETomek
-from .pipeline import Pipeline
 
 
 __all__ = ["UnderSampler", "NearMiss",

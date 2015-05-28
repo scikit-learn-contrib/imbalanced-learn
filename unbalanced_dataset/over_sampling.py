@@ -1,7 +1,12 @@
 from __future__ import print_function
 from __future__ import division
-from .unbalanced_dataset import *
 
+import numpy as np
+from numpy.random import seed, randint
+from numpy import concatenate, asarray
+from random import sample, betavariate
+from collections import Counter
+from .unbalanced_dataset import UnbalancedDataset
 
 class OverSampler(UnbalancedDataset):
     """

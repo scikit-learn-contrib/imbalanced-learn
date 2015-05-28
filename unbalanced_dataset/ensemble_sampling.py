@@ -1,6 +1,8 @@
 from __future__ import print_function
 from __future__ import division
-from .unbalanced_dataset import *
+from random import sample
+import numpy as np
+from .unbalanced_dataset import UnbalancedDataset
 from .under_sampling import UnderSampler
 
 
@@ -173,8 +175,8 @@ class BalanceCascade(UnbalancedDataset):
             # For now, we will train and classify on the same data
             # Let see if we should find another solution. Anyway,
             # random stuff are still random stuff
-            x_data = concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
-            y_data = concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
+            x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
+            y_data = np.concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
 
             # Push these data into a new subset
             subsets_x.append(x_data)
@@ -230,8 +232,8 @@ class BalanceCascade(UnbalancedDataset):
                                                    idx_sel_from_maj),
                                                   axis=0).astype(int)
                 # Select the final batch
-                x_data = concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
-                y_data = concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
+                x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
+                y_data = np.concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
                 # Push these data into a new subset
                 subsets_x.append(x_data)
                 subsets_y.append(y_data)

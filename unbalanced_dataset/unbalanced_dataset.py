@@ -85,14 +85,10 @@ TO DO LIST:
 
 from __future__ import division
 from __future__ import print_function
+from numpy.random import seed, randint, uniform
+from numpy import zeros, ones
 
 __author__ = 'fnogueira, glemaitre'
-
-from random import sample, betavariate
-import numpy as np
-from numpy.random import seed, randint, uniform
-from numpy import zeros, ones, concatenate, logical_not, asarray
-from collections import Counter
 
 
 class UnbalancedDataset(object):
@@ -389,7 +385,7 @@ class UnbalancedDataset(object):
         return new, y_new
 
     @staticmethod
-    def in_danger(sample, y, m, class_type, nn_obj):
+    def in_danger(entry, y, m, class_type, nn_obj):
         """
         Function to determine whether a given minority samples is in Danger as
         defined by Chawla, N.V et al., in: SMOTE: synthetic minority
@@ -400,7 +396,7 @@ class UnbalancedDataset(object):
         minority sample for which all its nearest neighbours are from the
         majority class, in which case it is considered noise.
 
-        :param sample:
+        :param entry:
             Sample for which danger level is to be found.
 
         :param y:
@@ -421,7 +417,7 @@ class UnbalancedDataset(object):
         """
 
         # Find NN for current sample
-        x = nn_obj.kneighbors(sample.reshape((1, len(sample))),
+        x = nn_obj.kneighbors(entry.reshape((1, len(entry))),
                               return_distance=False)[:, 1:]
 
         # Count how many NN belong to the minority class
@@ -442,7 +438,7 @@ class UnbalancedDataset(object):
             return True
 
     @staticmethod
-    def is_noise(sample, y, class_type, nn_obj):
+    def is_noise(entry, y, class_type, nn_obj):
         """
         Function to determine whether a given minority sample is noise as
         defined in [1].
@@ -450,7 +446,7 @@ class UnbalancedDataset(object):
         A minority sample is noise if all its nearest neighbours belong to
         the majority class.
 
-        :param sample:
+        :param entry:
             Sample for which danger level is to be found.
 
         :param y:
@@ -468,7 +464,7 @@ class UnbalancedDataset(object):
         """
 
         # Find NN for current sample
-        x = nn_obj.kneighbors(sample.reshape((1, len(sample))),
+        x = nn_obj.kneighbors(entry.reshape((1, len(entry))),
                               return_distance=False)[:, 1:]
 
         # Check if any neighbour belong to the minority class.

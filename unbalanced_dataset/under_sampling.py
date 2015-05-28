@@ -1,6 +1,12 @@
 from __future__ import print_function
 from __future__ import division
-from .unbalanced_dataset import *
+import numpy as np
+from numpy import logical_not, ones
+from numpy.random import seed, randint
+from numpy import concatenate
+from random import sample
+from collections import Counter
+from .unbalanced_dataset import UnbalancedDataset
 
 
 class UnderSampler(UnbalancedDataset):
@@ -28,7 +34,8 @@ class UnderSampler(UnbalancedDataset):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio,
+        UnbalancedDataset.__init__(self,
+                                   ratio=ratio,
                                    random_state=random_state,
                                    verbose=verbose)
 
