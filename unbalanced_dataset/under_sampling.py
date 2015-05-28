@@ -1,6 +1,6 @@
 from __future__ import print_function
 from __future__ import division
-from unbalanced_dataset.unbalanced_dataset import *
+from .unbalanced_dataset import *
 
 
 class UnderSampler(UnbalancedDataset):

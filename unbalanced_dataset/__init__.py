@@ -3,6 +3,7 @@ The :mod:`UnbalancedDataset` module includes methods for
 tackling the problem of inbalanced datasets.
 """
 
+
 from .unbalanced_dataset import UnbalancedDataset
 
 from .over_sampling import OverSampler
@@ -19,13 +20,15 @@ from .under_sampling import NeighbourhoodCleaningRule
 from .ensemble_sampling import EasyEnsemble
 from .ensemble_sampling import BalanceCascade
 
-from pipeline import SMOTEENN
-from pipeline import SMOTETomek
-from pipeline import Pipeline
+from .pipeline import SMOTEENN
+from .pipeline import SMOTETomek
+from .pipeline import Pipeline
+
 
 __all__ = ["UnderSampler", "NearMiss",
            "CondensedNearestNeighbour", "OneSidedSelection",
            "NeighbourhoodCleaningRule", "TomekLinks",
            "ClusterCentroids", "OverSampler", "SMOTE", "SMOTETomek",
            "SMOTEENN", "EasyEnsemble", "BalanceCascade"]
+
 
