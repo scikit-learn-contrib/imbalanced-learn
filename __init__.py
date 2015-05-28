@@ -7,7 +7,7 @@ from .UnbalancedDataset import UnderSampler
 from .UnbalancedDataset import NearMiss 
 from .UnbalancedDataset import CondensedNearestNeighbour 
 from .UnbalancedDataset import OneSidedSelection 
-from .UnbalancedDataset import NeighboorhoodCleaningRule 
+from .UnbalancedDataset import NeighbourhoodCleaningRule
 from .UnbalancedDataset import TomekLinks 
 from .UnbalancedDataset import ClusterCentroids 
 from .UnbalancedDataset import OverSampler 
@@ -21,8 +21,8 @@ from .UnbalancedDataset import EasyEnsemble
 from .UnbalancedDataset import BalanceCascade
 
 __all__ = ["UnderSampler", "NearMiss", 
-           "CondensedNearestNeighbour", "OneSidedSelection", 
-           "NeighboorhoodCleaningRule", "TomekLinks", 
+           "CondensedNearestNeighbour", "OneSidedSelection",
+           "NeighbourhoodCleaningRule", "TomekLinks",
            "ClusterCentroids", "OverSampler", "SMOTE", 
            "bSMOTE1", "bSMOTE2", "SVM_SMOTE", "SMOTETomek", 
            "SMOTEENN", "EasyEnsemble", "BalanceCascade" ]
