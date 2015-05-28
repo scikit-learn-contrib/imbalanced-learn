@@ -83,14 +83,14 @@ from __future__ import print_function
 
 __author__ = 'fnogueira, glemaitre'
 
-from random import gauss, sample
+from random import gauss, sample, betavariate
 from random import seed as pyseed
+import numpy as np
 from numpy.random import seed, randint, uniform
 from numpy import zeros, ones, concatenate, logical_not, asarray
 from numpy import sum as nsum
 from collections import Counter
 
-import numpy as np
 
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
@@ -925,7 +925,6 @@ class OneSidedSelection(UnbalancedDataset):
         self.n_seeds_S = n_seeds_S
         self.kwargs = kwargs
     
-
     def resample(self):
         """
         """
@@ -988,6 +987,7 @@ class OneSidedSelection(UnbalancedDataset):
 
         # Return data set without majority Tomek links.
         return underx[logical_not(links)], undery[logical_not(links)]
+
 
 class NeighboorhoodCleaningRule(UnbalancedDataset):
     """
@@ -1157,66 +1157,351 @@ class OverSampler(UnbalancedDataset):
 
 class SMOTE(UnbalancedDataset):
     """
-    An implementation of SMOTE - Synthetic Minority Over-sampling Technique.
+    This object is an implementation of SMOTE - Synthetic Minority
+    Over-sampling Technique, and the variations Borderline SMOTE 1, 2 and
+    SVM-SMOTE.
 
-    See the original paper: SMOTE - "SMOTE: synthetic minority over-sampling
-    technique" by Chawla, N.V et al. for more details.
+    See the original papers: [1], [2], [3] for more details.
 
-    * Does not support multiple classes automatically, but can be called
+    * It does not support multiple classes automatically, but can be called
     multiple times
     """
 
-    def __init__(self, k=5, ratio=1., random_state=None, verbose=True):
+    def __init__(self, k=5, m=10, out_step=0.5, ratio=1, random_state=None,
+                 kind='regular', verbose=0,
+                 **kwargs):
         """
-        :param k:
-            Number of nearest neighbours to use when constructing the synthetic
-            samples.
+        SMOTE over sampling algorithm and variations. Choose one of the
+        following options: 'regular', 'borderline1', 'borderline2', 'svm'
 
-        :param ratio:
-            Fraction of the number of minority samples to synthetically
-            generate.
+        :param k: Number of nearest neighbours to used to construct synthetic
+                  samples.
 
-        :param random_state:
-            Seed.
+        :param m: The number of nearest neighbours to use to determine if a
+                  minority sample is in danger.
 
-        :return:
-            The resampled data set with synthetic samples concatenated at the
-            end.
+        :param out_step: Step size when extrapolating
+
+        :param ratio: Fraction of the number of minority samples to
+                      synthetically generate.
+
+        :param random_state: Seed for random number generation
+
+        :param kind: The type of smote algorithm to use one of the following
+                     options: 'regular', 'borderline1', 'borderline2', 'svm'
+
+        :param verbose: Whether or not to print status information
+
+        :param kwargs: Additional arguments passed to sklearn SVC object
         """
 
-        UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state,
-                                   verbose=verbose)
+        # Parent class methods
+        UnbalancedDataset.__init__(self,
+                                   ratio=ratio,
+                                   random_state=random_state)
 
-        # Instance variable to store the number of neighbours to use.
+        # --- The type of smote
+        # This object can perform regular smote over-sampling, borderline 1,
+        # borderline 2 and svm smote. Since the algorithms are fairly simple
+        # they share most methods.#
+        self.kind = kind
+
+        # --- Verbose
+        # Control whether or not status and progress information should be#
+        self.verbose = verbose
+
+        # --- Nearest Neighbours for synthetic samples
+        # The smote algorithm uses the k-th nearest neighbours of a minority
+        # sample to generate new synthetic samples.#
         self.k = k
 
+        # --- NN object
+        # Import the NN object from scikit-learn library. Since in the smote
+        # variations we must first find samples that are in danger, we
+        # initialize the NN object differently depending on the method chosen#
+        from sklearn.neighbors import NearestNeighbors
+
+        if kind == 'regular':
+            # Regular smote does not look for samples in danger, instead it
+            # creates synthetic samples directly from the k-th nearest
+            # neighbours with not filtering#
+            self.nearest_neighbour_ = NearestNeighbors(n_neighbors=k + 1)
+        else:
+            # Borderline1, 2 and SVM variations of smote must first look for
+            # samples that could be considered noise and samples that live
+            # near the boundary between the classes. Therefore, before
+            # creating synthetic samples from the k-th nns, it first look
+            # for m nearest neighbors to decide whether or not a sample is
+            # noise or near the boundary.#
+            self.nearest_neighbour_ = NearestNeighbors(n_neighbors=m + 1)
+
+            # --- Nearest Neighbours for noise and boundary (in danger)
+            # Before creating synthetic samples we must first decide if
+            # a given entry is noise or in danger. We use m nns in this step#
+            self.m = m
+
+        # --- SVM smote
+        # Unlike the borderline variations, the SVM variation uses the support
+        # vectors to decide which samples are in danger (near the boundary).
+        # Additionally it also introduces extrapolation for samples that are
+        # considered safe (far from boundary) and interpolation for samples
+        # in danger (near the boundary). The level of extrapolation is
+        # controled by the out_step.#
+        if kind == 'svm':
+            # As usual, use scikit-learn object#
+            from sklearn.svm import SVC
+
+            # Store extrapolation size#
+            self.out_step = out_step
+
+            # Store SVM object with any parameters#
+            self.svm_ = SVC(**kwargs)
+
     def resample(self):
-        # Start with the minority class
+        """
+        Main method of all children classes.
+
+        :return: Over-sampled data set.
+        """
+
+        # Start by separating minority class features and target values.
         minx = self.x[self.y == self.minc]
         miny = self.y[self.y == self.minc]
 
-        # Finding nns
-        from sklearn.neighbors import NearestNeighbors
+        # If regular SMOTE is to be performed#
+        if self.kind == 'regular':
+            # Print if verbose is true#
+            if self.verbose:
+                print("Finding the %i nearest neighbours..." % self.k, end="")
 
-        nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1)
-        nearest_neighbour.fit(minx)
-        nns = nearest_neighbour.kneighbors(minx, return_distance=False)[:, 1:]
+            # Look for k-th nearest neighbours, excluding, of course, the
+            # point itself.#
+            self.nearest_neighbour_.fit(minx)
 
-        # Creating synthetic samples
-        sx, sy = self.make_samples(minx, minx, self.minc, nns,
-                                   int(self.ratio * len(miny)),
-                                   random_state=self.rs, 
-                                   verbose=self.verbose)
-        
-        # Concatenate the newly generated samples to the original data set
-        ret_x = concatenate((self.x, sx), axis=0)
-        ret_y = concatenate((self.y, sy), axis=0)
-        
-        if self.verbose==True:
-            print("Over-sampling performed: " + str(Counter(ret_y)))
+            # Matrix with k-th nearest neighbours indexes for each minority
+            # element.#
+            nns = self.nearest_neighbour_.kneighbors(minx,
+                                                     return_distance=False)[:, 1:]
 
-        return ret_x, ret_y
+            # Print status if verbose is true#
+            if self.verbose:
+                ##
+                print("done!")
+
+                # Creating synthetic samples #
+                print("Creating synthetic samples...", end="")
+
+            # --- Generating synthetic samples
+            # Use static method make_samples to generate minority samples
+            # FIX THIS SHIT!!!#
+            sx, sy = self.make_samples(x=minx,
+                                       nn_data=minx,
+                                       y_type=self.minc,
+                                       nn_num=nns,
+                                       n_samples=int(self.ratio * len(miny)),
+                                       step_size=1.0,
+                                       random_state=self.rs)
+
+            if self.verbose:
+                print("done!")
+
+            # Concatenate the newly generated samples to the original data set
+            ret_x = concatenate((self.x, sx), axis=0)
+            ret_y = concatenate((self.y, sy), axis=0)
+
+            return ret_x, ret_y
+
+        if (self.kind == 'borderline1') or (self.kind == 'borderline2'):
+
+            if self.verbose:
+                print("Finding the %i nearest neighbours..." % self.m, end="")
+
+            # Find the NNs for all samples in the data set.
+            self.nearest_neighbour_.fit(self.x)
+
+            if self.verbose:
+                print("done!")
+
+            # Boolean array with True for minority samples in danger
+            danger_index = [self.in_danger(x, self.y, self.m, miny[0],
+                            self.nearest_neighbour_) for x in minx]
+
+            # Turn into numpy array#
+            danger_index = asarray(danger_index)
+
+            # If all minority samples are safe, return the original data set.
+            if not any(danger_index):
+                ##
+                if self.verbose:
+                    print('There are no samples in danger. No borderline '
+                          'synthetic samples created.')
+
+                # All are safe, nothing to be done here.#
+                return self.x, self.y
+
+            # If we got here is because some samples are in danger, we need to
+            # find the NNs among the minority class to create the new synthetic
+            # samples.
+            #
+            # We start by changing the number of NNs to consider from m + 1
+            # to k + 1
+            self.nearest_neighbour_.set_params(**{'n_neighbors': self.k + 1})
+            self.nearest_neighbour_.fit(minx)
+
+            # nns...#
+            nns = self.nearest_neighbour_.kneighbors(minx[danger_index],
+                                                     return_distance=False)[:, 1:]
+
+            # B1 and B2 types diverge here!!!
+            if self.kind == 'borderline1':
+                # Create synthetic samples for borderline points.
+                sx, sy = self.make_samples(minx[danger_index], minx, miny[0], nns,
+                                           int(self.ratio * len(miny)),
+                                           random_state=self.rs)
+
+                # Concatenate the newly generated samples to the original data set
+                ret_x = concatenate((self.x, sx), axis=0)
+                ret_y = concatenate((self.y, sy), axis=0)
+
+                return ret_x, ret_y
+
+            else:
+                # Split the number of synthetic samples between only minority
+                # (type 1), or minority and majority (with reduced step size)
+                # (type 2).
+                np.random.seed(self.rs)
+
+                # The fraction is sampled from a beta distribution centered
+                # around 0.5 with variance ~0.01#
+                fractions = betavariate(alpha=10, beta=10)
+
+                # Only minority
+                sx1, sy1 = self.make_samples(minx[danger_index], minx, self.minc, nns,
+                                             fractions * (int(self.ratio * len(miny)) + 1),
+                                             step_size=1,
+                                             random_state=self.rs)
+
+                # Only majority with smaller step size
+                sx2, sy2 = self.make_samples(minx[danger_index], self.x[self.y != self.minc],
+                                             self.minc, nns,
+                                             (1 - fractions) * int(self.ratio * len(miny)),
+                                             step_size=0.5,
+                                             random_state=self.rs)
+
+                # Concatenate the newly generated samples to the original data set
+                ret_x = np.concatenate((self.x, sx1, sx2), axis=0)
+                ret_y = np.concatenate((self.y, sy1, sy2), axis=0)
+
+                return ret_x, ret_y
+
+        if self.kind == 'svm':
+            # The SVM smote model fits a support vector machine
+            # classifier to the data and uses the support vector to
+            # provide a notion of boundary. Unlike regular smote, where
+            # such notion relies on proportion of nearest neighbours
+            # belonging to each class.#
+
+            # Fit SVM to the full data#
+            self.svm_.fit(self.x, self.y)
+
+            # Find the support vectors and their corresponding indexes
+            support_index = self.svm_.support_[self.y[self.svm_.support_] == self.minc]
+            support_vector = self.x[support_index]
+
+            # First, find the nn of all the samples to identify samples in danger
+            # and noisy ones
+            if self.verbose:
+                print("Finding the %i nearest neighbours..." % self.m, end="")
+
+            # As usual, fit a nearest neighbour model to the data
+            self.nearest_neighbour_.fit(self.x)
+
+            if self.verbose:
+                print("done!")
+
+            # Now, get rid of noisy support vectors
+
+            # Boolean array with True for noisy support vectors
+            noise_bool = []
+            for x in support_vector:
+                noise_bool.append(self.is_noise(x, self.y, self.minc,
+                                                self.nearest_neighbour_))
+
+            # Turn into array#
+            noise_bool = asarray(noise_bool)
+
+            # Remove noisy support vectors
+            support_vector = support_vector[np.logical_not(noise_bool)]
+
+            # Find support_vectors there are in danger (interpolation) or not
+            # (extrapolation)
+            danger_bool = [self.in_danger(x, self.y, self.m, self.minc,
+                                          self.nearest_neighbour_)
+                           for x in support_vector]
+
+            # Turn into array#
+            danger_bool = asarray(danger_bool)
+
+            #Something ...#
+            safety_bool = np.logical_not(danger_bool)
+
+            #things to print#
+            print_stats = (len(support_vector),
+                           noise_bool.sum(),
+                           danger_bool.sum(),
+                           safety_bool.sum())
+
+            if self.verbose:
+                print("Out of %i support vectors, %i are noisy, %i are in danger "
+                      "and %i are safe." % print_stats)
+
+                # Proceed to find support vectors NNs among the minority class
+                print("Finding the %i nearest neighbours..." % self.k, end="")
+
+            self.nearest_neighbour_.set_params(**{'n_neighbors': self.k + 1})
+            self.nearest_neighbour_.fit(minx)
+
+            if self.verbose:
+                print("done!")
+                print("Creating synthetic samples...", end="")
+
+            # Split the number of synthetic samples between interpolation and
+            # extrapolation
+
+            # The fraction are sampled from a beta distribution with mean
+            # 0.5 and variance 0.01#
+            np.random.seed(self.rs)
+            fractions = betavariate(alpha=10, beta=10)
+
+            # Interpolate samples in danger
+            nns = self.nearest_neighbour_.kneighbors(support_vector[danger_bool],
+                                                     return_distance=False)[:, 1:]
+
+            sx1, sy1 = self.make_samples(support_vector[danger_bool], minx,
+                                         self.minc, nns,
+                                         fractions * (int(self.ratio * len(minx)) + 1),
+                                         step_size=1,
+                                         random_state=self.rs)
+
+            # Extrapolate safe samples
+            nns = self.nearest_neighbour_.kneighbors(support_vector[safety_bool],
+                                                     return_distance=False)[:, 1:]
+
+            sx2, sy2 = self.make_samples(support_vector[safety_bool], minx,
+                                         self.minc, nns,
+                                         (1 - fractions) * int(self.ratio * len(minx)),
+                                         step_size=-self.out_step,
+                                         random_state=self.rs)
+
+            if self.verbose:
+                print("done!")
+
+            # Concatenate the newly generated samples to the original data set
+            ret_x = concatenate((self.x, sx1, sx2), axis=0)
+            ret_y = concatenate((self.y, sy1, sy2), axis=0)
+
+            return ret_x, ret_y
+
 
 class SMOTETomek(UnbalancedDataset):
     """
@@ -1333,7 +1618,6 @@ class SMOTEENN(UnbalancedDataset):
         self.size_ngh = size_ngh
         self.kwargs = kwargs
 
-
     def resample(self):
         # Start with the minority class
         minx = self.x[self.y == self.minc]
@@ -1397,347 +1681,6 @@ class SMOTEENN(UnbalancedDataset):
             print("Over-sampling performed: " + str(Counter(undery)))
 
         return (underx, undery)
-
-class bSMOTE1(UnbalancedDataset):
-    """
-    An implementation of bSMOTE type 1 - Borderline Synthetic Minority
-    Over-sampling Technique - type 1.
-
-    See the original paper: "Borderline-SMOTE: A New Over-Sampling Method in
-    Imbalanced Data Sets Learning,
-    by Hui Han, Wen-Yuan Wang, Bing-Huan Mao" for more details.
-
-    * Does not support multiple classes automatically, but can be called
-    multiple times
-    """
-
-    def __init__(self, k=5, m=10, ratio=1, random_state=None, verbose=True):
-        """
-        :param k:
-            The number of nearest neighbours to use to construct the synthetic
-            samples.
-
-        :param m:
-            The number of nearest neighbours to use to determine if a minority
-            sample is in danger.
-
-        :param ratio:
-            Fraction of the number of minority samples to synthetically
-            generate.
-
-        :param random_state:
-            Seed.
-
-        :return:
-            The resampled data set with synthetic samples concatenated at the
-            end.
-        """
-        UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state,
-                                   verbose=verbose)
-
-        # NN for synthetic samples
-        self.k = k
-        # NN for in_danger?
-        self.m = m
-
-    def resample(self):
-        from sklearn.neighbors import NearestNeighbors
-
-        # Start with the minority class
-        minx = self.x[self.y == self.minc]
-        miny = self.y[self.y == self.minc]
-
-        # Find the NNs for all samples in the data set.
-        nn = NearestNeighbors(n_neighbors=self.m + 1)
-        nn.fit(self.x)
-
-        # Boolean array with True for minority samples in danger
-        index = [self.in_danger(x, self.y, self.m, miny[0], nn) for x in minx]
-        index = asarray(index)
-
-        # If all minority samples are safe, return the original data set.
-        if not any(index):
-            if self.verbose==True:
-                print('There are no samples in danger. No borderline synthetic '
-                      'samples created.')
-            return self.x, self.y
-
-        # Find the NNs among the minority class
-        nn.set_params(**{'n_neighbors': self.k + 1})
-        nn.fit(minx)
-        nns = nn.kneighbors(minx[index], return_distance=False)[:, 1:]
-
-        # Create synthetic samples for borderline points.
-        sx, sy = self.make_samples(minx[index], minx, miny[0], nns,
-                                   int(self.ratio * len(miny)),
-                                   random_state=self.rs,
-                                   verbose=self.verbose)
-
-        # Concatenate the newly generated samples to the original data set
-        ret_x = concatenate((self.x, sx), axis=0)
-        ret_y = concatenate((self.y, sy), axis=0)
-
-        if self.verbose==True:
-            print("Over-sampling performed: " + str(Counter(ret_y)))
-
-        return ret_x, ret_y
-
-
-class bSMOTE2(UnbalancedDataset):
-    """
-    An implementation of bSMOTE type 2 - Borderline Synthetic Minority
-    Over-sampling Technique - type 2.
-
-    See the original paper: "Borderline-SMOTE: A New Over-Sampling Method in
-    Imbalanced Data Sets Learning,
-    by Hui Han, Wen-Yuan Wang, Bing-Huan Mao" for more details.
-
-    * Does not support multiple classes automatically, but can be called
-    multiple times
-    """
-
-    def __init__(self, k=5, m=10, ratio=1, random_state=None, verbose=True):
-        """
-        :param k:
-            The number of nearest neighbours to use to construct the synthetic
-            samples.
-
-        :param m:
-            The number of nearest neighbours to use to determine if a minority
-            sample is in danger.
-
-        :param ratio:
-            Fraction of the number of minority samples to synthetically
-            generate.
-
-        :param random_state:
-            Seed.
-
-        :return:
-            The resampled data set with synthetic samples concatenated at the
-            end.
-        """
-
-        UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state,
-                                   verbose=verbose)
-
-        # NN for synthetic samples
-        self.k = k
-
-        # NN for in_danger?
-        self.m = m
-
-    def resample(self):
-        from sklearn.neighbors import NearestNeighbors
-
-        # Start with the minority class
-        minx = self.x[self.y == self.minc]
-        miny = self.y[self.y == self.minc]
-
-        # Find the NNs for all samples in the data set.
-        nn = NearestNeighbors(n_neighbors=self.m + 1)
-        nn.fit(self.x)
-
-        # Boolean array with True for minority samples in danger
-        index = [self.in_danger(x, self.y, self.m, self.minc, nn) for x in minx]
-        index = asarray(index)
-
-        # If all minority samples are safe, return the original data set.
-        if not any(index):
-            if self.verbose==True:
-                print('There are no samples in danger. No borderline synthetic '
-                      'samples created.')
-            return self.x, self.y
-
-        # Find the NNs among the minority class
-        nn.set_params(**{'n_neighbors': self.k + 1})
-        nn.fit(minx)
-        nns = nn.kneighbors(minx[index], return_distance=False)[:, 1:]
-
-        # Split the number of synthetic samples between only minority
-        # (type 1), or minority and majority (with reduced step size)
-        # (type 2).
-        pyseed(self.rs)
-        fractions = min(max(gauss(0.5, 0.1), 0), 1)
-
-        # Only minority
-        sx1, sy1 = self.make_samples(minx[index], minx, self.minc, nns,
-                                     fractions * (int(self.ratio * len(miny)) + 1),
-                                     step_size=1,
-                                     random_state=self.rs,
-                                     verbose=self.verbose)
-
-        # Only majority with smaller step size
-        sx2, sy2 = self.make_samples(minx[index], self.x[self.y != self.minc],
-                                     self.minc, nns,
-                                     (1 - fractions) * int(self.ratio * len(miny)),
-                                     step_size=0.5,
-                                     random_state=self.rs,
-                                     verbose=self.verbose)
-
-        # Concatenate the newly generated samples to the original data set
-        ret_x = concatenate((self.x, sx1, sx2), axis=0)
-        ret_y = concatenate((self.y, sy1, sy2), axis=0)
-        
-        if self.verbose==True:
-            print("Over-sampling performed: " + str(Counter(ret_y)))
-
-        return ret_x, ret_y
-
-
-class SVM_SMOTE(UnbalancedDataset):
-    """
-    Implementation of support vector borderline SMOTE.
-
-    Similar to borderline SMOTE it only created synthetic samples for
-    borderline samples, however it looks for borderline samples by fitting and
-    SVM classifier and identifying the support vectors.
-
-    See the paper: "Borderline Over-sampling for Imbalanced Data
-    Classification, by Nguyen, Cooper, Kamei"
-
-    * Does not support multiple classes, however it can be called multiple
-    times (I believe).
-    """
-
-    def __init__(self, k=5, m=10, out_step=0.5, 
-                 ratio=1, random_state=None,
-                 verbose=True, **kwargs):
-        """
-
-        :param k:
-            Number of nearest neighbours to used to construct synthetic
-            samples.
-
-        :param m:
-            The number of nearest neighbours to use to determine if a minority
-            sample is in danger.
-
-        :param ratio:
-            Fraction of the number of minority samples to synthetically
-            generate.
-
-        :param out_step:
-            Step size when extrapolating
-
-
-        :param svm_args:
-            Arguments to pass to the scikit-learn SVC object.
-
-        :param random_state:
-            Seed
-
-        :return:
-            Nothing.
-        """
-
-        UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state,
-                                   verbose=verbose)
-
-        self.k = k
-        self.m = m
-        self.out_step = out_step
-
-        ##
-        from sklearn.svm import SVC
-        self.svm = SVC(**kwargs)
-
-    def resample(self):
-        """
-        ...
-        """
-
-        from sklearn.neighbors import NearestNeighbors
-
-        # Fit SVM and find the support vectors
-        self.svm.fit(self.x, self.y)
-        support_index = self.svm.support_[self.y[self.svm.support_] == self.minc]
-        support_vector = self.x[support_index]
-
-        # Start with the minority class
-        minx = self.x[self.y == self.minc]
-
-        # First, find the nn of all the samples to identify samples in danger
-        # and noisy ones
-        nn = NearestNeighbors(n_neighbors=self.m + 1)
-        nn.fit(self.x)
-
-        # Now, get rid of noisy support vectors
-
-        # Boolean array with True for noisy support vectors
-        noise_bool = []
-        for x in support_vector:
-            noise_bool.append(self.is_noise(x, self.y, self.minc, nn))
-
-        # Turn into array#
-        noise_bool = asarray(noise_bool)
-
-        # Remove noisy support vectors
-        support_vector = support_vector[logical_not(noise_bool)]
-
-        # Find support_vectors there are in danger (interpolation) or not
-        # (extrapolation)
-        danger_bool = [self.in_danger(x, self.y, self.m, self.minc, nn)
-                       for x in support_vector]
-
-        # Turn into array#
-        danger_bool = asarray(danger_bool)
-
-        #Something ...#
-        safety_bool = logical_not(danger_bool)
-
-        #things to print#
-        print_stats = (len(support_vector),
-                       nsum(noise_bool),
-                       nsum(danger_bool),
-                       nsum(safety_bool))
-
-        if self.verbose==True:
-            print("Out of %i support vectors, %i are noisy, %i are in danger "
-                  "and %i are safe." % print_stats)
-
-        # Proceed to find support vectors NNs among the minority class
-        nn.set_params(**{'n_neighbors': self.k + 1})
-        nn.fit(minx)
-
-        # Split the number of synthetic samples between interpolation and
-        # extrapolation
-        pyseed(self.rs)
-        fractions = min(max(gauss(0.5, 0.1), 0), 1)
-
-        # Interpolate samples in danger
-        nns = nn.kneighbors(support_vector[danger_bool],
-                            return_distance=False)[:, 1:]
-
-        sx1, sy1 = self.make_samples(support_vector[danger_bool], minx,
-                                     self.minc, nns,
-                                     fractions * (int(self.ratio * len(minx)) + 1),
-                                     step_size=1,
-                                     random_state=self.rs,
-                                     verbose=self.verbose)
-
-        # Extrapolate safe samples
-        nns = nn.kneighbors(support_vector[safety_bool],
-                            return_distance=False)[:, 1:]
-
-        sx2, sy2 = self.make_samples(support_vector[safety_bool], minx,
-                                     self.minc, nns,
-                                     (1 - fractions) * int(self.ratio * len(minx)),
-                                     step_size=-self.out_step,
-                                     random_state=self.rs,
-                                     verbose=self.verbose)
-
-        # Concatenate the newly generated samples to the original data set
-        ret_x = concatenate((self.x, sx1, sx2), axis=0)
-        ret_y = concatenate((self.y, sy1, sy2), axis=0)
-        
-        if self.verbose==True:
-            print("Over-sampling performed: " + str(Counter(ret_y)))
-
-        return ret_x, ret_y
 
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
