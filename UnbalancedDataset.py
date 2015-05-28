@@ -61,8 +61,8 @@ Nguyen, Cooper, Kamei"
 [4] NearMiss - "kNN approach to unbalanced data distributions: A case study
 involving information extraction" by Zhang et al.
 
-[5] CNN - "Addressing the Curse of Imbalanced Training Sets: One-Sided Selection"
-by Kubat et al.
+[5] CNN - "Addressing the Curse of Imbalanced Training Sets: One-Sided
+Selection" by Kubat et al.
 
 [6] One-Sided Selection - "Addressing the Curse of Imbalanced Training Sets:
 One-Sided Selection" by Kubat et al.
@@ -88,22 +88,13 @@ from __future__ import print_function
 
 __author__ = 'fnogueira, glemaitre'
 
-from random import gauss, sample, betavariate
-from random import seed as pyseed
+from random import sample, betavariate
 import numpy as np
 from numpy.random import seed, randint, uniform
 from numpy import zeros, ones, concatenate, logical_not, asarray
-from numpy import sum as nsum
 from collections import Counter
 
 
-# ----------------------------------- // ----------------------------------- #
-# ----------------------------------- // ----------------------------------- #
-# ----------------------------------- // ----------------------------------- #
-#                                Parent Class!
-# ----------------------------------- // ----------------------------------- #
-# ----------------------------------- // ----------------------------------- #
-# ----------------------------------- // ----------------------------------- #
 class UnbalancedDataset(object):
     """
     Parent class with the main methods: fit, transform and fit_transform
@@ -202,7 +193,7 @@ class UnbalancedDataset(object):
         self.x = x
         self.y = y
 
-        if self.verbose==True:
+        if self.verbose:
             print("Determining classes statistics... ", end="")
 
         # Get all the unique elements in the target array
@@ -222,7 +213,6 @@ class UnbalancedDataset(object):
         for elem in self.y:
             self.ucd[elem] += 1
 
-        ## ----- ##
         # Find the minority and majority classes
         curre_min = len(y)
         curre_max = 0
@@ -238,7 +228,7 @@ class UnbalancedDataset(object):
                 self.maxc = key
                 curre_max = self.ucd[key]
 
-        if self.verbose==True:
+        if self.verbose:
             print(str(len(uniques)) + 
                   " classes detected: " + 
                   str(self.ucd), end="\n")
@@ -251,7 +241,7 @@ class UnbalancedDataset(object):
             The re-sampled data set.
         """
         
-        if self.verbose==True:
+        if self.verbose:
             print("Start resampling ...")
         
         self.out_x, self.out_y = self.resample()
@@ -277,15 +267,12 @@ class UnbalancedDataset(object):
 
         return self.out_x, self.out_y
 
-    # ----------------------------------- // ----------------------------------- #
-    #                                Static Methods
-    # ----------------------------------- // ----------------------------------- #
     @staticmethod
     def is_tomek(y, nn_index, class_type, verbose=True):
         """
         is_tomek uses the target vector and the first neighbour of every sample
-        point and looks for Tomek pairs. Returning a boolean vector with True for
-        majority Tomek links.
+        point and looks for Tomek pairs. Returning a boolean vector with True
+        for majority Tomek links.
 
         :param y:
             Target vector of the data set, necessary to keep track of whether a
@@ -298,8 +285,8 @@ class UnbalancedDataset(object):
             The label of the minority class.
 
         :return:
-            Boolean vector on len( # samples ), with True for majority samples that
-            are Tomek links.
+            Boolean vector on len( # samples ), with True for majority samples
+            that are Tomek links.
         """
 
         # Initialize the boolean result as false, and also a counter
@@ -308,9 +295,9 @@ class UnbalancedDataset(object):
 
         # Loop through each sample and looks whether it belongs to the minority
         # class. If it does, we don't consider it since we want to keep all
-        # minority samples. If, however, it belongs to the majority sample we look
-        # at its first neighbour. If its closest neighbour also has the current
-        # sample as its closest neighbour, the two form a Tomek link.
+        # minority samples. If, however, it belongs to the majority sample we
+        # look at its first neighbour. If its closest neighbour also has the
+        # current sample as its closest neighbour, the two form a Tomek link.
         for ind, ele in enumerate(y):
 
             if ele == class_type:
@@ -318,13 +305,13 @@ class UnbalancedDataset(object):
 
             if y[nn_index[ind]] == class_type:
 
-                # If they form a tomek link, put a True marker on this sample, and
-                # increase counter by one.
+                # If they form a tomek link, put a True marker on this
+                # sample, and increase counter by one.
                 if nn_index[nn_index[ind]] == ind:
                     links[ind] = True
                     count += 1
                     
-        if verbose==True:
+        if verbose:
             print("%i Tomek links found." % count)
 
         return links
@@ -368,26 +355,32 @@ class UnbalancedDataset(object):
 
         # Set seeds
         seed(random_state)
-        seeds = randint(low=0, high=100*len(nn_num.flatten()), size=n_samples)
+        seeds = randint(low=0,
+                        high=100*len(nn_num.flatten()),
+                        size=n_samples)
 
         # Randomly pick samples to construct neighbours from
         seed(random_state)
-        samples = randint(low=0, high=len(nn_num.flatten()), size=n_samples)
+        samples = randint(low=0,
+                          high=len(nn_num.flatten()),
+                          size=n_samples)
 
         # Loop over the NN matrix and create new samples
         for i, n in enumerate(samples):
-            # NN lines relate to original sample, columns to its nearest neighbours
+            # NN lines relate to original sample, columns to its
+            # nearest neighbours
             row, col = divmod(n, len(nn_num.T))
 
-            # Take a step of random size (0,1) in the direction of the n nearest
-            # neighbours
+            # Take a step of random size (0,1) in the direction of the
+            # n nearest neighbours
             seed(seeds[i])
             step = step_size * uniform()
 
             # Construct synthetic sample
             new[i] = x[row] - step * (x[row] - nn_data[nn_num[row, col]])
 
-        # The returned target vector is simply a repetition of the minority label
+        # The returned target vector is simply a repetition of the
+        # minority label
         y_new = ones(len(new)) * y_type
 
         if verbose:
@@ -399,13 +392,13 @@ class UnbalancedDataset(object):
     def in_danger(sample, y, m, class_type, nn_obj):
         """
         Function to determine whether a given minority samples is in Danger as
-        defined by Chawla, N.V et al., in: SMOTE: synthetic minority over-sampling
-        technique.
+        defined by Chawla, N.V et al., in: SMOTE: synthetic minority
+        over-sampling technique.
 
-        A minority sample is in danger if more than half of its nearest neighbours
-        belong to the majority class. The exception being a minority sample for
-        which all its nearest neighbours are from the majority class, in which case
-        it is considered noise.
+        A minority sample is in danger if more than half of its nearest
+        neighbours belong to the majority class. The exception being a
+        minority sample for which all its nearest neighbours are from the
+        majority class, in which case it is considered noise.
 
         :param sample:
             Sample for which danger level is to be found.
@@ -439,10 +432,11 @@ class UnbalancedDataset(object):
             else:
                 minority += 1
 
-        # Return True of False for in danger and not in danger or noise samples.
+        # Return True of False for in danger and not in danger or
+        # noise samples.
         if minority <= m/2 or minority == m:
-            # for minority == k the sample is considered to be noise and won't be
-            # used, similarly to safe samples
+            # for minority == k the sample is considered to be noise and
+            # won't be used, similarly to safe samples
             return False
         else:
             return True
@@ -450,8 +444,8 @@ class UnbalancedDataset(object):
     @staticmethod
     def is_noise(sample, y, class_type, nn_obj):
         """
-        Function to determine whether a given minority sample is noise as defined
-        in [1].
+        Function to determine whether a given minority sample is noise as
+        defined in [1].
 
         A minority sample is noise if all its nearest neighbours belong to
         the majority class.
@@ -501,7 +495,11 @@ class UnderSampler(UnbalancedDataset):
     with or without replacement.
     """
 
-    def __init__(self, ratio=1., random_state=None, replacement=True, verbose=True):
+    def __init__(self,
+                 ratio=1.,
+                 random_state=None,
+                 replacement=True,
+                 verbose=True):
         """
         :param ratio:
             The ratio of majority elements to sample with respect to the number
@@ -545,16 +543,16 @@ class UnderSampler(UnbalancedDataset):
 
             # Pick some elements at random
             seed(self.rs)
-            if (self.replacement == True):
+            if self.replacement:
                 indx = randint(low=0, high=self.ucd[key], size=num_samples)
             else:
-                indx = sample(range(np.count_nonzero(self.y == key)), num_samples)
+                indx = sample(range((self.y == key).sum()), num_samples)
             
             # Concatenate to the minority class
             underx = concatenate((underx, self.x[self.y == key][indx]), axis=0)
             undery = concatenate((undery, self.y[self.y == key][indx]), axis=0)
 
-        if self.verbose==True:
+        if self.verbose:
             print("Under-sampling performed: " + str(Counter(undery)))
 
         return underx, undery
@@ -591,12 +589,13 @@ class TomekLinks(UnbalancedDataset):
         nns = nn.kneighbors(self.x, return_distance=False)[:, 1]
 
         # Send the information to is_tomek function to get boolean vector back
-        if self.verbose==True:
+        if self.verbose:
             print("Looking for majority Tomek links...")
         links = self.is_tomek(self.y, nns, self.minc, self.verbose)
 
-        if self.verbose==True:
-            print("Under-sampling performed: " + str(Counter(self.y[logical_not(links)])))
+        if self.verbose:
+            print("Under-sampling "
+                  "performed: " + str(Counter(self.y[logical_not(links)])))
 
         # Return data set without majority Tomek links.
         return self.x[logical_not(links)], self.y[logical_not(links)]
@@ -673,7 +672,7 @@ class ClusterCentroids(UnbalancedDataset):
             underx = concatenate((underx, centroids), axis=0)
             undery = concatenate((undery, ones(n_clusters) * key), axis=0)
         
-        if self.verbose==True:
+        if self.verbose:
             print("Under-sampling performed: " + str(Counter(undery)))
 
         return underx, undery
@@ -683,8 +682,9 @@ class NearMiss(UnbalancedDataset):
     """
     An implementation of NearMiss.
 
-    See the original paper: NearMiss - "kNN Approach to Unbalanced Data Distributions: 
-    A Case Study involving Information Extraction" by Zhang et al. for more details.
+    See the original paper: NearMiss - "kNN Approach to Unbalanced Data
+    Distributions: A Case Study involving Information Extraction" by Zhang
+    et al. for more details.
     """
 
     def __init__(self, ratio=1., random_state=None, 
@@ -701,12 +701,12 @@ class NearMiss(UnbalancedDataset):
             average distance to the minority point samples.
 
         :param ver3_samp_ngh:
-            NearMiss-3 algorithm start by a phase of resampling. This
+            NearMiss-3 algorithm start by a phase of re-sampling. This
             parameter correspond to the number of neighbours selected
             create the sub_set in which the selection will be performed.
 
         :param **kwargs:
-            Parameter to use for the Neareast Neighbours.
+            Parameter to use for the Nearest Neighbours.
         """
 
         # Passes the relevant parameters back to the parent class.
@@ -715,9 +715,10 @@ class NearMiss(UnbalancedDataset):
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
-        ### Check that the version asked is implemented
+        # Check that the version asked is implemented
         if not (version == 1 or version == 2 or version == 3):
-            raise ValueError('UnbalancedData.NearMiss: there is only 3 versions available with parameter version=1/2/3')
+            raise ValueError('UnbalancedData.NearMiss: there is only 3 '
+                             'versions available with parameter version=1/2/3')
 
         self.version = version
         self.size_ngh = size_ngh
@@ -739,7 +740,8 @@ class NearMiss(UnbalancedDataset):
         # Call the constructor of the NN
         nn_obj = NearestNeighbors(n_neighbors=self.size_ngh, **self.kwargs)
 
-        # Fit the minority class since that we want to know the distance to these point
+        # Fit the minority class since that we want to know the distance
+        # to these point
         nn_obj.fit(self.x[self.y == self.minc])
 
         # Loop over the other classes under picking at random
@@ -761,42 +763,63 @@ class NearMiss(UnbalancedDataset):
 
             if self.version == 1:
                 # Find the NN
-                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x, n_neighbors=self.size_ngh)
+                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x,
+                                                      n_neighbors=self.size_ngh)
+
                 # Select the right samples
-                sel_x, sel_y = self.__SelectionDistBased__(dist_vec, num_samples, key, sel_strategy='nearest')
+                sel_x, sel_y = self.__SelectionDistBased__(dist_vec,
+                                                           num_samples,
+                                                           key,
+                                                           sel_strategy='nearest')
             elif self.version == 2:
                 # Find the NN
-                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x, n_neighbors=self.y[self.y == self.minc].size)
+                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x,
+                                                      n_neighbors=self.y[self.y == self.minc].size)
+
                 # Select the right samples
-                sel_x, sel_y = self.__SelectionDistBased__(dist_vec, num_samples, key, sel_strategy='nearest')
+                sel_x, sel_y = self.__SelectionDistBased__(dist_vec,
+                                                           num_samples,
+                                                           key,
+                                                           sel_strategy='nearest')
             elif self.version == 3:
                 # We need a new NN object to fit the current class
-                nn_obj_cc = NearestNeighbors(n_neighbors=self.ver3_samp_ngh, **self.kwargs)
+                nn_obj_cc = NearestNeighbors(n_neighbors=self.ver3_samp_ngh,
+                                             **self.kwargs)
                 nn_obj_cc.fit(sub_samples_x)
 
                 # Find the set of NN to the minority class
                 dist_vec, idx_vec = nn_obj_cc.kneighbors(self.x[self.y == self.minc])
 
-                # Create the subset containing the samples found during the NN search
-                ### Linearize the indexes and remove the double values
+                # Create the subset containing the samples found during the NN
+                # search. Linearize the indexes and remove the double values
                 idx_vec = np.unique(idx_vec.reshape(-1))
-                ### Create the subset
+
+                # Create the subset
                 sub_samples_x = sub_samples_x[idx_vec, :]
                 sub_samples_y = sub_samples_y[idx_vec]
 
                 # Compute the NN considering the current class
-                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x, n_neighbors=self.size_ngh)
-                sel_x, sel_y = self.__SelectionDistBased__(dist_vec, num_samples, key, sel_strategy='farthest')
+                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x,
+                                                      n_neighbors=self.size_ngh)
+
+                sel_x, sel_y = self.__SelectionDistBased__(dist_vec,
+                                                           num_samples,
+                                                           key,
+                                                           sel_strategy='farthest')
 
             underx = concatenate((underx, sel_x), axis=0)
             undery = concatenate((undery, sel_y), axis=0)
 
-        if self.verbose==True:
+        if self.verbose:
             print("Under-sampling performed: " + str(Counter(undery)))
 
-        return (underx, undery)
+        return underx, undery
 
-    def __SelectionDistBased__(self, dist_vec, num_samples, key, sel_strategy='nearest'):
+    def __SelectionDistBased__(self,
+                               dist_vec,
+                               num_samples,
+                               key,
+                               sel_strategy='nearest'):
             
         # Compute the distance considering the farthest neighbour
         dist_avg_vec = np.sum(dist_vec[:, -self.size_ngh:], axis=1)
@@ -807,14 +830,17 @@ class NearMiss(UnbalancedDataset):
         elif sel_strategy == 'farthest':
             sort_way = True
         else:
-            raise ValueError('Unbalanced.NearMiss: the sorting can be done only with nearest or farthest data points.')
+            raise ValueError('Unbalanced.NearMiss: the sorting can be done '
+                             'only with nearest or farthest data points.')
 
-        sorted_idx = sorted(range(len(dist_avg_vec)), key=dist_avg_vec.__getitem__, reverse=sort_way)
+        sorted_idx = sorted(range(len(dist_avg_vec)),
+                            key=dist_avg_vec.__getitem__,
+                            reverse=sort_way)
 
         # Select the desired number of samples
         sel_idx = sorted_idx[:num_samples]
 
-        return (self.x[self.y == key][sel_idx], self.y[self.y == key][sel_idx])
+        return self.x[self.y == key][sel_idx], self.y[self.y == key][sel_idx]
 
 
 class CondensedNearestNeighbour(UnbalancedDataset):
@@ -869,18 +895,23 @@ class CondensedNearestNeighbour(UnbalancedDataset):
                 continue
 
             # Randomly get one sample from the majority class
-            maj_sample = sample(self.x[self.y == key], self.n_seeds_S)
+            maj_sample = sample(self.x[self.y == key],
+                                self.n_seeds_S)
             
             # Create the set C
-            C_x = np.append(self.x[self.y == self.minc], maj_sample, axis=0)
-            C_y = np.append(self.y[self.y == self.minc], [key] * self.n_seeds_S)
+            C_x = np.append(self.x[self.y == self.minc],
+                            maj_sample,
+                            axis=0)
+            C_y = np.append(self.y[self.y == self.minc],
+                            [key] * self.n_seeds_S)
 
             # Create the set S
             S_x = self.x[self.y == key]
             S_y = self.y[self.y == key]
             
             # Create a k-NN classifier
-            knn = KNeighborsClassifier(n_neighbors=self.size_ngh, **self.kwargs)
+            knn = KNeighborsClassifier(n_neighbors=self.size_ngh,
+                                       **self.kwargs)
             
             # Fit C into the knn
             knn.fit(C_x, C_y)
@@ -895,7 +926,7 @@ class CondensedNearestNeighbour(UnbalancedDataset):
             underx = concatenate((underx, sel_x), axis=0)
             undery = concatenate((undery, sel_y), axis=0)
 
-        if self.verbose==True:
+        if self.verbose:
             print("Under-sampling performed: " + str(Counter(undery)))
 
         return underx, undery
@@ -905,7 +936,8 @@ class OneSidedSelection(UnbalancedDataset):
     """
     An implementation of One-Sided Selection.
 
-    See the original paper: OSS - "Addressing the Curse of Imbalanced Training Set: One-Sided Selection" by Khubat et al. for more details.
+    See the original paper: OSS - "Addressing the Curse of Imbalanced Training
+    Set: One-Sided Selection" by Khubat et al. for more details.
     """
 
     def __init__(self, ratio=1., random_state=None, 
@@ -953,18 +985,23 @@ class OneSidedSelection(UnbalancedDataset):
                 continue
 
             # Randomly get one sample from the majority class
-            maj_sample = sample(self.x[self.y == key], self.n_seeds_S)
+            maj_sample = sample(self.x[self.y == key],
+                                self.n_seeds_S)
             
             # Create the set C
-            C_x = np.append(self.x[self.y == self.minc], maj_sample, axis=0)
-            C_y = np.append(self.y[self.y == self.minc], [key] * self.n_seeds_S)
+            C_x = np.append(self.x[self.y == self.minc],
+                            maj_sample,
+                            axis=0)
+            C_y = np.append(self.y[self.y == self.minc],
+                            [key] * self.n_seeds_S)
 
             # Create the set S
             S_x = self.x[self.y == key]
             S_y = self.y[self.y == key]
             
             # Create a k-NN classifier
-            knn = KNeighborsClassifier(n_neighbors=self.size_ngh, **self.kwargs)
+            knn = KNeighborsClassifier(n_neighbors=self.size_ngh,
+                                       **self.kwargs)
             
             # Fit C into the knn
             knn.fit(C_x, C_y)
@@ -992,7 +1029,8 @@ class OneSidedSelection(UnbalancedDataset):
         links = self.is_tomek(undery, nns, self.minc, self.verbose)
 
         if self.verbose:
-            print("Under-sampling performed: " + str(Counter(undery[logical_not(links)])))
+            print("Under-sampling "
+                  "performed: " + str(Counter(undery[logical_not(links)])))
 
         # Return data set without majority Tomek links.
         return underx[logical_not(links)], undery[logical_not(links)]
@@ -1002,7 +1040,8 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
     """
     An implementation of Neighboorhood Cleaning Rule.
 
-    See the original paper: NCL - "Improving identification of difficult small classes by balancing class distribution" by Laurikkala et al. for more details.
+    See the original paper: NCL - "Improving identification of difficult small
+    classes by balancing class distribution" by Laurikkala et al. for more details.
     """
 
     def __init__(self, ratio=1., random_state=None, 
@@ -1063,12 +1102,12 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
             nnhood_bool = np.logical_not(np.all(nnhood_label, axis=1))
     
             # If the minority class remove the majority samples (as in politic!!!! ;))
-            if (key == self.minc):
+            if key == self.minc:
                 # Get the index to exclude
-                idx_to_exclude = idx_to_exclude + nnhood_idx[np.nonzero(nnhood_label[np.nonzero(nnhood_bool)])].tolist()
+                idx_to_exclude += nnhood_idx[np.nonzero(nnhood_label[np.nonzero(nnhood_bool)])].tolist()
             else:
                 # Get the index to exclude
-                idx_to_exclude = idx_to_exclude +idx_sub_sample[np.nonzero(nnhood_bool)].tolist()
+                idx_to_exclude += idx_sub_sample[np.nonzero(nnhood_bool)].tolist()
 
         # Create a vector with the sample to select
         sel_idx = np.ones(self.y.shape)
@@ -1114,7 +1153,8 @@ class OverSampler(UnbalancedDataset):
         :return:
             Nothing.
         """
-        UnbalancedDataset.__init__(self, ratio=ratio,
+        UnbalancedDataset.__init__(self,
+                                   ratio=ratio,
                                    random_state=random_state,
                                    verbose=verbose)
 
@@ -1157,7 +1197,7 @@ class OverSampler(UnbalancedDataset):
                                  self.y[self.y == key],
                                  self.y[self.y == key][indx]), axis=0)
 
-        if self.verbose==True:
+        if self.verbose:
             print("Over-sampling performed: " + str(Counter(overy)))
 
         # Return over sampled dataset
@@ -1176,8 +1216,14 @@ class SMOTE(UnbalancedDataset):
     multiple times
     """
 
-    def __init__(self, k=5, m=10, out_step=0.5, ratio=1, random_state=None,
-                 kind='regular', verbose=False,
+    def __init__(self,
+                 k=5,
+                 m=10,
+                 out_step=0.5,
+                 ratio=1,
+                 random_state=None,
+                 kind='regular',
+                 verbose=False,
                  **kwargs):
         """
         SMOTE over sampling algorithm and variations. Choose one of the
@@ -1455,7 +1501,10 @@ class SMOTE(UnbalancedDataset):
 
             # Find support_vectors there are in danger (interpolation) or not
             # (extrapolation)
-            danger_bool = [self.in_danger(x, self.y, self.m, self.minc,
+            danger_bool = [self.in_danger(x,
+                                          self.y,
+                                          self.m,
+                                          self.minc,
                                           self.nearest_neighbour_)
                            for x in support_vector]
 
@@ -1465,15 +1514,15 @@ class SMOTE(UnbalancedDataset):
             #Something ...#
             safety_bool = np.logical_not(danger_bool)
 
-            #things to print#
-            print_stats = (len(support_vector),
-                           noise_bool.sum(),
-                           danger_bool.sum(),
-                           safety_bool.sum())
-
             if self.verbose:
-                print("Out of %i support vectors, %i are noisy, %i are in danger "
-                      "and %i are safe." % print_stats)
+                print("Out of {0} support vectors, {1} are noisy, "
+                      "{2} are in danger "
+                      "and {3} are safe.".format(support_vector.shape[0],
+                                                 noise_bool.sum().astype(int),
+                                                 danger_bool.sum().astype(int),
+                                                 safety_bool.sum().astype(int)
+                                                 )
+                      )
 
                 # Proceed to find support vectors NNs among the minority class
                 print("Finding the %i nearest neighbours..." % self.k, end="")
@@ -1573,7 +1622,10 @@ class SMOTETomek(UnbalancedDataset):
         nns = nearest_neighbour.kneighbors(minx, return_distance=False)[:, 1:]
 
         # Creating synthetic samples
-        sx, sy = self.make_samples(minx, minx, self.minc, nns,
+        sx, sy = self.make_samples(minx,
+                                   minx,
+                                   self.minc,
+                                   nns,
                                    int(self.ratio * len(miny)),
                                    random_state=self.rs, 
                                    verbose=self.verbose)
@@ -1697,7 +1749,7 @@ class SMOTEENN(UnbalancedDataset):
             sel_x = np.squeeze(sub_samples_x[np.nonzero(nnhood_bool), :])
             sel_y = sub_samples_y[np.nonzero(nnhood_bool)]
         
-            if (key_idx == 0):
+            if key_idx == 0:
                 underx = sel_x[:, :]
                 undery = sel_y[:]
             else:
@@ -1709,6 +1761,7 @@ class SMOTEENN(UnbalancedDataset):
 
         return underx, undery
 
+
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
@@ -1716,7 +1769,6 @@ class SMOTEENN(UnbalancedDataset):
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
-
 class EasyEnsemble(UnderSampler):
     """
     Object to perform classification on balanced ensembled selected from 
@@ -1766,8 +1818,9 @@ class EasyEnsemble(UnderSampler):
         subsets_y = []
 
         for s in range(self.n_subsets):
-            if self.verbose==True:
+            if self.verbose:
                 print("Creation of the set #%i" % s)
+
             tmp_subset_x, tmp_subset_y = UnderSampler.resample(self)
             subsets_x.append(tmp_subset_x)
             subsets_y.append(tmp_subset_y)
@@ -1812,22 +1865,22 @@ class BalanceCascade(UnbalancedDataset):
                                    verbose=verbose)
 
         # Define the classifier to use
-        if (classifier == 'knn'):
+        if classifier == 'knn':
             from sklearn.neighbors import KNeighborsClassifier
             self.classifier = KNeighborsClassifier(**kwargs)
-        elif (classifier == 'decision-tree'):
+        elif classifier == 'decision-tree':
             from sklearn.tree import DecisionTreeClassifier
             self.classifier = DecisionTreeClassifier(**kwargs)
-        elif (classifier == 'random-forest'):
+        elif classifier == 'random-forest':
             from sklearn.ensemble import RandomForestClassifier
             self.classifier = RandomForestClassifier(**kwargs)
-        elif (classifier == 'adaboost'):
+        elif classifier == 'adaboost':
             from sklearn.ensemble import AdaBoostClassifier
             self.classifier = AdaBoostClassifier(**kwargs)
-        elif (classifier == 'gradient-boosting'):
+        elif classifier == 'gradient-boosting':
             from sklearn.ensemble import GradientBoostingClassifier
             self.classifier = GradientBoostingClassifier(**kwargs)
-        elif (classifier == 'linear-svm'):
+        elif classifier == 'linear-svm':
             from sklearn.svm import LinearSVC
             self.classifier = LinearSVC(**kwargs)
         else:
@@ -1919,22 +1972,22 @@ class BalanceCascade(UnbalancedDataset):
             # Count how many random element will be selected
             n_elt_maj = self.ucd[self.minc] - idx_mis_class.size
             
-            if self.verbose==True:
+            if self.verbose:
                 print("Creation of the subset #" + str(n_subsets))
 
             # We found a new subset, increase the counter
             n_subsets += n_subsets
                         
             # Check if we have to make an early stopping
-            if (self.n_max_subset != None):
-                if (self.n_max_subset >= n_subsets):
+            if self.n_max_subset != None:
+                if self.n_max_subset >= n_subsets:
                     b_subset_search = False
                     if self.verbose:
                         print('The number of subset achieved their maximum')
 
             # Also check that we will have enough sample to extract at the 
             # next round
-            if (n_elt_maj > np.count_nonzero(b_sel_N)):
+            if n_elt_maj > np.count_nonzero(b_sel_N):
                 b_subset_search = False
                 # Select the remaining data
                 idx_sel_from_maj = np.nonzero(b_sel_N)[0]
@@ -1947,13 +2000,13 @@ class BalanceCascade(UnbalancedDataset):
                 # Push these data into a new subset
                 subsets_x.append(x_data)
                 subsets_y.append(y_data)
-                if self.verbose==True:
+                if self.verbose:
                     print("Creation of the subset #" + str(n_subsets))
 
                 # We found a new subset, increase the counter
-                n_subsets = n_subsets + 1
+                n_subsets += 1
 
-                if self.verbose==True:
+                if self.verbose:
                     print('Not enough samples to continue creating subsets')
 
         # Return the different subsets
@@ -1967,7 +2020,7 @@ class BalanceCascade(UnbalancedDataset):
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
 # ----------------------------------- // ----------------------------------- #
-class Pipeline:
+class Pipeline(object):
     """
     A helper object to concatenate a number of re sampling objects and
     streamline the re-sampling process.

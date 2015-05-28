@@ -14,7 +14,7 @@ X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_features=20, n_clusters_per_class=1,
                            n_samples=5000, random_state=10)
 
-verbose = False
+verbose = True
 
 def test_smote(x, y):
     print('SMOTE')
