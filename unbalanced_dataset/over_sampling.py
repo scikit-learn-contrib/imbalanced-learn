@@ -1,12 +1,12 @@
 from __future__ import print_function
 from __future__ import division
-
 import numpy as np
 from numpy.random import seed, randint
 from numpy import concatenate, asarray
 from random import betavariate
 from collections import Counter
 from .unbalanced_dataset import UnbalancedDataset
+
 
 class OverSampler(UnbalancedDataset):
     """
@@ -387,7 +387,7 @@ class SMOTE(UnbalancedDataset):
             # Turn into array#
             danger_bool = asarray(danger_bool)
 
-            #Something ...#
+            # Something ...#
             safety_bool = np.logical_not(danger_bool)
 
             if self.verbose:

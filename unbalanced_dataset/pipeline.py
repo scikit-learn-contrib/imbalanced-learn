@@ -5,6 +5,7 @@ from numpy import concatenate, logical_not
 from collections import Counter
 from .unbalanced_dataset import UnbalancedDataset
 
+
 class SMOTETomek(UnbalancedDataset):
     """
     An implementation of SMOTE + Tomek.
@@ -79,6 +80,7 @@ class SMOTETomek(UnbalancedDataset):
 
         # Return data set without majority Tomek links.
         return ret_x[logical_not(links)], ret_y[logical_not(links)]
+
 
 class SMOTEENN(UnbalancedDataset):
     """

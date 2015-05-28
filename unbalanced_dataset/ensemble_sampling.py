@@ -64,6 +64,7 @@ class EasyEnsemble(UnderSampler):
 
         return subsets_x, subsets_y
 
+
 class BalanceCascade(UnbalancedDataset):
     """
     Object to perform classification on balanced ensembled selected from
