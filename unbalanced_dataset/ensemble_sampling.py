@@ -216,7 +216,7 @@ class BalanceCascade(UnbalancedDataset):
             n_subsets += n_subsets
 
             # Check if we have to make an early stopping
-            if self.n_max_subset != None:
+            if self.n_max_subset is not None:
                 if self.n_max_subset >= n_subsets:
                     b_subset_search = False
                     if self.verbose:

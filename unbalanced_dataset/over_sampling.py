@@ -4,7 +4,7 @@ from __future__ import division
 import numpy as np
 from numpy.random import seed, randint
 from numpy import concatenate, asarray
-from random import sample, betavariate
+from random import betavariate
 from collections import Counter
 from .unbalanced_dataset import UnbalancedDataset
 
