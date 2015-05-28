@@ -58,24 +58,29 @@ Imbalanced Data Sets Learning, Hui Han, Wen-Yuan Wang, Bing-Huan Mao"
 [3] SVM_SMOTE - "Borderline Over-sampling for Imbalanced Data Classification,
 Nguyen, Cooper, Kamei"
 
-[4] NearMiss - "kNN approach to unbalanced data distributions: A case study involving information extraction" by Zhang et al.
+[4] NearMiss - "kNN approach to unbalanced data distributions: A case study
+involving information extraction" by Zhang et al.
 
-[5] CNN - "Addressing the Curse of Imbalanced Training Sets: One-Sided Selection" by Kubat et al.
+[5] CNN - "Addressing the Curse of Imbalanced Training Sets: One-Sided Selection"
+by Kubat et al.
 
-[6] One-Sided Selection - "Addressing the Curse of Imbalanced Training Sets: One-Sided Selection" by Kubat et al.
+[6] One-Sided Selection - "Addressing the Curse of Imbalanced Training Sets:
+One-Sided Selection" by Kubat et al.
 
-[7] NCL - "Improving identification of difficult small classes by balancing class distribution" by Laurikkala et al.
+[7] NCL - "Improving identification of difficult small classes by balancing
+class distribution" by Laurikkala et al.
 
-[8] SMOTE + Tomek - "Balancing training data for automated annotation of keywords: a case study" by Batista et al.
+[8] SMOTE + Tomek - "Balancing training data for automated annotation of
+keywords: a case study" by Batista et al.
 
-[9] SMOTE + ENN - "A study of the behavior of several methods for balancing machine learning training data" by Batista et al.
+[9] SMOTE + ENN - "A study of the behavior of several methods for balancing
+machine learning training data" by Batista et al.
 
-[10] EasyEnsemble & BalanceCascade - "Exploratory Understanding for Class-Imbalance Learning" by Liu et al.
+[10] EasyEnsemble & BalanceCascade - "Exploratory Understanding for
+Class-Imbalance Learning" by Liu et al.
 
 TO DO LIST:
 ===========
-    1. Turn global functions into static methods
-    2. Add more comments
 """
 
 from __future__ import division

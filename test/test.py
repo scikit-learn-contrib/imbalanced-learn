@@ -31,7 +31,7 @@ def test_smote(x, y):
 
     print('SMOTE SVM')
     svm_args={'class_weight': 'auto'}
-    sm = SMOTE(kind='svm', verbose=verbose)
+    sm = SMOTE(kind='svm', verbose=verbose, **svm_args)
     svmx, svmy = sm.fit_transform(x, y)
 
 
