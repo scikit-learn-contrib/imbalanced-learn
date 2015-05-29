@@ -99,5 +99,5 @@ def test_CNN(x, y):
 if __name__ == '__main__':
 
     test_smote(X, Y)
-
     test_rest(X, Y)
+    test_CNN(X, Y)
