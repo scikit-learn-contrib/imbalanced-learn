@@ -3,13 +3,13 @@
 UnbalancedDataset
 =================
 
-UnbalancedDataset is a python module offering a number of resampling techniques commonly used in datasets showing strong between-class imbalance.
+UnbalancedDataset is a python module offering a number of re-sampling techniques commonly used in datasets showing strong between-class imbalance.
 
-Most classification algorithms will only perform optimally when the number of samples of each class is roughly the same. Highly skewed datasets, where the minority heavily outnumbered by one or more classes, haven proven to be a challenge while at the same time becoming more and more common.
+Most classification algorithms will only perform optimally when the number of samples of each class is roughly the same. Highly skewed datasets, where the minority is heavily outnumbered by one or more classes, have proven to be a challenge while at the same time becoming more and more common.
 
-One way of addresing this issue is by resampling the dataset as to offset this imbalance with the hope of arriving and a more robust and fair decision boundary than you would otherwise.
+One way of addresing this issue is by re-sampling the dataset as to offset this imbalance with the hope of arriving at a more robust and fair decision boundary than you would otherwise.
 
-Resampling techniques are divided in two categories:
+Re-sampling techniques are divided in two categories:
     1. Under-sampling the majority class(es).
     2. Over-sampling the minority class.
     
