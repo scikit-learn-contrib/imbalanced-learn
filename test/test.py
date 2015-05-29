@@ -3,7 +3,6 @@ __author__ = 'fnogueira, glemaitre'
 
 from sklearn.datasets import make_classification
 
-from unbalanced_dataset import UnbalancedDataset
 from unbalanced_dataset import UnderSampler, NearMiss, CondensedNearestNeighbour, OneSidedSelection
 from unbalanced_dataset import TomekLinks, ClusterCentroids, OverSampler, SMOTE, SMOTETomek
 from unbalanced_dataset import EasyEnsemble, BalanceCascade, NeighbourhoodCleaningRule, SMOTEENN
@@ -99,7 +98,6 @@ def test_CNN(x, y):
 
 if __name__ == '__main__':
 
-    uds = UnbalancedDataset()
-
     test_smote(X, Y)
     test_rest(X, Y)
+    test_CNN(X, Y)
