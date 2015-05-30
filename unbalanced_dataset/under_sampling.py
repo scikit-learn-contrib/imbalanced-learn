@@ -372,7 +372,7 @@ class CondensedNearestNeighbour(UnbalancedDataset):
     Set: One-Sided Selection" by Khubat et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None,
+    def __init__(self, random_state=None,
                  size_ngh=1, n_seeds_S=1, verbose=True,
                  **kwargs):
         """
@@ -389,8 +389,7 @@ class CondensedNearestNeighbour(UnbalancedDataset):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state,
+        UnbalancedDataset.__init__(self, random_state=random_state,
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
@@ -462,7 +461,7 @@ class OneSidedSelection(UnbalancedDataset):
     Set: One-Sided Selection" by Khubat et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None,
+    def __init__(self, random_state=None,
                  size_ngh=1, n_seeds_S=1, verbose=True,
                  **kwargs):
         """
@@ -479,8 +478,7 @@ class OneSidedSelection(UnbalancedDataset):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state,
+        UnbalancedDataset.__init__(self, random_state=random_state,
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
@@ -566,7 +564,7 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
     classes by balancing class distribution" by Laurikkala et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None,
+    def __init__(self, random_state=None,
                  size_ngh=3, verbose=True, **kwargs):
         """
         :param size_ngh
@@ -578,8 +576,7 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
         """
 
         # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state,
+        UnbalancedDataset.__init__(self, random_state=random_state,
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
