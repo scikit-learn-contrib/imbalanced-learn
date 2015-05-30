@@ -214,7 +214,7 @@ class BalanceCascade(UnbalancedDataset):
                 print("Creation of the subset #" + str(n_subsets))
 
             # We found a new subset, increase the counter
-            n_subsets += n_subsets
+            n_subsets += 1
 
             # Check if we have to make an early stopping
             if self.n_max_subset is not None:
