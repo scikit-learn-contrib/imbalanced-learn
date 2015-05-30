@@ -207,6 +207,8 @@ class BalanceCascade(UnbalancedDataset):
 
             # Find the misclassified index to keep them for the next round
             idx_mis_class = idx_sel_from_maj[np.nonzero(pred_label != N_y[idx_sel_from_maj])]
+            if self.verbose:
+                print("Elements misclassified: ", idx_mis_class)
             # Count how many random element will be selected
             n_elt_maj = self.ucd[self.minc] - idx_mis_class.size
 
