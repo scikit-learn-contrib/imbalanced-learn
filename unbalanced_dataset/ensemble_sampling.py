@@ -220,8 +220,24 @@ class BalanceCascade(UnbalancedDataset):
 
             # Check if we have to make an early stopping
             if self.n_max_subset is not None:
-                if self.n_max_subset >= n_subsets:
+                if n_subsets == (self.n_max_subset - 1):
                     b_subset_search = False
+                    # Select the remaining data
+                    idx_sel_from_maj = np.nonzero(b_sel_N)[0]
+                    idx_sel_from_maj = np.concatenate((idx_mis_class,
+                                                   idx_sel_from_maj),
+                                                  axis=0).astype(int)
+                    # Select the final batch
+                    x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
+                    y_data = np.concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
+                    # Push these data into a new subset
+                    subsets_x.append(x_data)
+                    subsets_y.append(y_data)
+                    if self.verbose:
+                        print("Creation of the subset #" + str(n_subsets))
+
+                        # We found a new subset, increase the counter
+                        n_subsets += 1
                     if self.verbose:
                         print('The number of subset achieved their maximum')
 
