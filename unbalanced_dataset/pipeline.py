@@ -45,6 +45,7 @@ class SMOTETomek(UnbalancedDataset):
         miny = self.y[self.y == self.minc]
 
         # Finding nns
+        # Import the k-NN classifier
         from sklearn.neighbors import NearestNeighbors
 
         nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1)
@@ -63,8 +64,6 @@ class SMOTETomek(UnbalancedDataset):
         # Concatenate the newly generated samples to the original data set
         ret_x = concatenate((self.x, sx), axis=0)
         ret_y = concatenate((self.y, sy), axis=0)
-
-        from sklearn.neighbors import NearestNeighbors
 
         # Find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2)
@@ -133,6 +132,7 @@ class SMOTEENN(UnbalancedDataset):
         miny = self.y[self.y == self.minc]
 
         # Finding nns
+        # Import the k-NN classifier
         from sklearn.neighbors import NearestNeighbors
 
         nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1)
@@ -148,9 +148,6 @@ class SMOTEENN(UnbalancedDataset):
         # Concatenate the newly generated samples to the original data set
         ret_x = concatenate((self.x, sx), axis=0)
         ret_y = concatenate((self.y, sy), axis=0)
-
-        # Import the k-NN classifier
-        from sklearn.neighbors import NearestNeighbors
 
         # Create a k-NN to fit the whole data
         nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
