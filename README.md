@@ -1,9 +1,19 @@
+UnbalancedDataset is a python package offering a number of re-sampling techniques commonly used in datasets showing strong between-class imbalance.
+
 [![Code Health](https://landscape.io/github/fmfn/UnbalancedDataset/master/landscape.svg?style=flat)](https://landscape.io/github/fmfn/UnbalancedDataset/master)
+
+Installation
+============
+
+UnbalancedDataset is not currently available on PyPi. To install the package, you will need to clone it and run the
+setup.py. Use the following commands to get a copy from Github and install all dependencies::
+
+    git clone https://github.com/fmfn/UnbalancedDataset.git
+    cd UnbalancedDataset
+    python setup.py install
 
 UnbalancedDataset
 =================
-
-UnbalancedDataset is a python module offering a number of re-sampling techniques commonly used in datasets showing strong between-class imbalance.
 
 Most classification algorithms will only perform optimally when the number of samples of each class is roughly the same. Highly skewed datasets, where the minority is heavily outnumbered by one or more classes, have proven to be a challenge while at the same time becoming more and more common.
 
