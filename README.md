@@ -6,7 +6,7 @@ Installation
 ============
 
 UnbalancedDataset is not currently available on PyPi. To install the package, you will need to clone it and run the
-setup.py. Use the following commands to get a copy from Github and install all dependencies::
+setup.py file. Use the following commands to get a copy from Github and install all dependencies:
 
     git clone https://github.com/fmfn/UnbalancedDataset.git
     cd UnbalancedDataset
@@ -40,7 +40,7 @@ Bellow is a list of the methods currently implemented in this module.
     3. bSMOTE(1&2) - Borderline SMOTE of types 1 and 2
     4. SVM_SMOTE - Support Vectors SMOTE
 
-* Over-sampling follow by under-sampling
+* Over-sampling followed by under-sampling
     1. SMOTE + Tomek links
     2. SMOTE + ENN
 
@@ -54,8 +54,8 @@ Example:
 This is a work in progress. Any comments, suggestions or corrections are welcome.
 
 Dependencies:
-* Numpy
-* Scikit-Learn
+* numpy
+* scikit-learn
 
 References:
 
