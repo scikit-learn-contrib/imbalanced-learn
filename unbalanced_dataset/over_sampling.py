@@ -419,34 +419,46 @@ class SMOTE(UnbalancedDataset):
             fractions = betavariate(alpha=10, beta=10)
 
             # Interpolate samples in danger
-            nns = self.nearest_neighbour_.kneighbors(support_vector[danger_bool],
-                                                     return_distance=False)[:, 1:]
+            if (np.count_nonzero(danger_bool) > 0):
+                nns = self.nearest_neighbour_.kneighbors(support_vector[danger_bool],
+                                                         return_distance=False)[:, 1:]
 
-            sx1, sy1 = self.make_samples(support_vector[danger_bool],
-                                         minx,
-                                         self.minc, nns,
-                                         fractions * (int(self.ratio * len(minx)) + 1),
-                                         step_size=1,
-                                         random_state=self.rs,
-                                         verbose=self.verbose)
+                sx1, sy1 = self.make_samples(support_vector[danger_bool],
+                                             minx,
+                                             self.minc, nns,
+                                             fractions * (int(self.ratio * len(minx)) + 1),
+                                             step_size=1,
+                                             random_state=self.rs,
+                                             verbose=self.verbose)
 
             # Extrapolate safe samples
-            nns = self.nearest_neighbour_.kneighbors(support_vector[safety_bool],
-                                                     return_distance=False)[:, 1:]
-
-            sx2, sy2 = self.make_samples(support_vector[safety_bool],
-                                         minx,
-                                         self.minc, nns,
-                                         (1 - fractions) * int(self.ratio * len(minx)),
-                                         step_size=-self.out_step,
-                                         random_state=self.rs,
-                                         verbose=self.verbose)
+            if (np.count_nonzero(safety_bool) > 0):
+                nns = self.nearest_neighbour_.kneighbors(support_vector[safety_bool],
+                                                         return_distance=False)[:, 1:]
+                
+                sx2, sy2 = self.make_samples(support_vector[safety_bool],
+                                             minx,
+                                             self.minc, nns,
+                                             (1 - fractions) * int(self.ratio * len(minx)),
+                                             step_size=-self.out_step,
+                                             random_state=self.rs,
+                                             verbose=self.verbose)
 
             if self.verbose:
                 print("done!")
 
             # Concatenate the newly generated samples to the original data set
-            ret_x = concatenate((self.x, sx1, sx2), axis=0)
-            ret_y = concatenate((self.y, sy1, sy2), axis=0)
+            if (  (np.count_nonzero(danger_bool) > 0) and
+                  (np.count_nonzero(safety_bool) > 0)     ):
+                ret_x = concatenate((self.x, sx1, sx2), axis=0)
+                ret_y = concatenate((self.y, sy1, sy2), axis=0)
+            # not any support vectors in danger
+            elif np.count_nonzero(danger_bool) == 0:
+                ret_x = concatenate((self.x, sx2), axis=0)
+                ret_y = concatenate((self.y, sy2), axis=0)
+            # All the support vector in danger
+            elif np.count_nonzero(safety_bool) == 0:
+                ret_x = concatenate((self.x, sx1), axis=0)
+                ret_y = concatenate((self.y, sy1), axis=0)
 
             return ret_x, ret_y
