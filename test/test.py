@@ -3,9 +3,24 @@ __author__ = 'fnogueira, glemaitre'
 
 from sklearn.datasets import make_classification
 
-from unbalanced_dataset import UnderSampler, NearMiss, CondensedNearestNeighbour, OneSidedSelection
-from unbalanced_dataset import TomekLinks, ClusterCentroids, OverSampler, SMOTE, SMOTETomek
-from unbalanced_dataset import EasyEnsemble, BalanceCascade, NeighbourhoodCleaningRule, SMOTEENN
+from unbalanced_dataset.unbalanced_dataset import UnbalancedDataset
+
+from unbalanced_dataset.over_sampling import OverSampler
+from unbalanced_dataset.over_sampling import SMOTE
+
+from unbalanced_dataset.under_sampling import UnderSampler
+from unbalanced_dataset.under_sampling import TomekLinks
+from unbalanced_dataset.under_sampling import ClusterCentroids
+from unbalanced_dataset.under_sampling import NearMiss
+from unbalanced_dataset.under_sampling import CondensedNearestNeighbour
+from unbalanced_dataset.under_sampling import OneSidedSelection
+from unbalanced_dataset.under_sampling import NeighbourhoodCleaningRule
+
+from unbalanced_dataset.ensemble_sampling import EasyEnsemble
+from unbalanced_dataset.ensemble_sampling import BalanceCascade
+
+from unbalanced_dataset.pipeline import SMOTEENN
+from unbalanced_dataset.pipeline import SMOTETomek
 
 # Generate some data
 print('Generate samples using scikit-learn')
