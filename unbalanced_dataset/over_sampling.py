@@ -16,7 +16,7 @@ class OverSampler(UnbalancedDataset):
     *Supports multiple classes.
     """
 
-    def __init__(self, ratio=1., random_state=None, verbose=True):
+    def __init__(self, ratio=1., method='replacement', random_state=None, verbose=True, **kwargs):
         """
         :param ratio:
             Number of samples to draw with respect to the number of samples in
@@ -33,6 +33,11 @@ class OverSampler(UnbalancedDataset):
                                    ratio=ratio,
                                    random_state=random_state,
                                    verbose=verbose)
+
+        self.method = method
+        if (self.method == 'gaussian-perturbation'):
+            self.mean_gaussian = kwargs.pop('mean_gaussian', 0.0)
+            self.std_gaussian = kwargs.pop('std_gaussian', 1.0)
 
     def resample(self):
         """
@@ -60,18 +65,42 @@ class OverSampler(UnbalancedDataset):
             else:
                 num_samples = int(self.ratio * self.ucd[key])
 
-            # Pick some elements at random
-            seed(self.rs)
-            indx = randint(low=0, high=self.ucd[key], size=num_samples)
+            if (self.method == 'replacement'):
+                # Pick some elements at random
+                seed(self.rs)
+                indx = randint(low=0, high=self.ucd[key], size=num_samples)
 
-            # Concatenate to the majority class
-            overx = concatenate((overx,
-                                 self.x[self.y == key],
-                                 self.x[self.y == key][indx]), axis=0)
+                # Concatenate to the majority class
+                overx = concatenate((overx,
+                                     self.x[self.y == key],
+                                     self.x[self.y == key][indx]), axis=0)
 
-            overy = concatenate((overy,
-                                 self.y[self.y == key],
-                                 self.y[self.y == key][indx]), axis=0)
+                overy = concatenate((overy,
+                                     self.y[self.y == key],
+                                     self.y[self.y == key][indx]), axis=0)
+
+            elif (self.method == 'gaussian-perturbation'):
+                # Pick the index of the samples which will be modified
+                seed(self.rs)
+                indx = randint(low=0, high=self.ucd[key], size=num_samples)
+
+                # Generate the new samples
+                sam_pert = []
+                for i in indx:
+                    pert = np.random.normal(self.mean_gaussian, self.std_gaussian, self.x[self.y == key][i])
+                    sam_pert.append(self.x[self.y == key][i] + pert)
+
+                # Convert the list to numpy array
+                sam_pert = np.array(sam_pert)
+
+                # Concatenate to the majority class
+                overx = concatenate((overx,
+                                     self.x[self.y == key],
+                                     sam_pert), axis=0)
+
+                overy = concatenate((overy,
+                                     self.y[self.y == key],
+                                     self.y[self.y == key][indx]), axis=0)
 
         if self.verbose:
             print("Over-sampling performed: " + str(Counter(overy)))
