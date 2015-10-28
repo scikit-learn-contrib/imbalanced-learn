@@ -68,7 +68,7 @@ References:
 1. CNN - ["Addressing the Curse of Imbalanced Training Sets: One-Sided Selection"](http://sci2s.ugr.es/keel/pdf/algorithm/congreso/kubat97addressing.pdf), by Kubat et al., 1997.
 1. One-Sided Selection - ["Addressing the Curse of Imbalanced Training Sets: One-Sided Selection"](http://sci2s.ugr.es/keel/pdf/algorithm/congreso/kubat97addressing.pdf), by Kubat et al., 1997.
 1. NCL - ["Improving identification of difficult small classes by balancing class distribution"](http://sci2s.ugr.es/keel/pdf/algorithm/congreso/2001-Laurikkala-LNCS.pdf), by Laurikkala et al., 2001.
-1. SMOTE - ["SMOTE: synthetic minority over-sampling technique"](https://www.jair.org/media/953/live-953-2037-jair.pdf), by Chawla et al., 2020.
+1. SMOTE - ["SMOTE: synthetic minority over-sampling technique"](https://www.jair.org/media/953/live-953-2037-jair.pdf), by Chawla et al., 2002.
 1. Borderline SMOTE -  ["Borderline-SMOTE: A New Over-Sampling Method in Imbalanced Data Sets Learning"](http://sci2s.ugr.es/keel/keel-dataset/pdfs/2005-Han-LNCS.pdf), by Han et al., 2005
 1. SVM_SMOTE - ["Borderline Over-sampling for Imbalanced Data Classification"](https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=0CDAQFjABahUKEwjH7qqamr_HAhWLthoKHUr0BIo&url=http%3A%2F%2Fousar.lib.okayama-u.ac.jp%2Ffile%2F19617%2FIWCIA2009_A1005.pdf&ei=a7zZVYeNDIvtasrok9AI&usg=AFQjCNHoQ6oC_dH1M1IncBP0ZAaKj8a8Cw&sig2=lh32CHGjs5WBqxa_l0ylbg), Nguyen et al., 2011.
 1. SMOTE + Tomek - ["Balancing training data for automated annotation of keywords: a case study"](http://www.icmc.usp.br/~gbatista/files/wob2003.pdf), Batista et al., 2003.
