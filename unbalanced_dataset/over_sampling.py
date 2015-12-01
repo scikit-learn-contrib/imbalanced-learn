@@ -19,8 +19,9 @@ class OverSampler(UnbalancedDataset):
     def __init__(self, ratio=1., method='replacement', random_state=None, verbose=True, **kwargs):
         """
         :param ratio:
-            Number of samples to draw with respect to the number of samples in
-            the original minority class.
+            Fraction of samples to draw with respect to the number of samples in
+            the original minority class, e.g., if ratio=0.5 the new total size of
+            minority class would be 1.5 times the original.
                 N_new =
 
         :param random_state:
