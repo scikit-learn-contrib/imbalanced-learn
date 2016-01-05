@@ -96,7 +96,7 @@ class UnbalancedDataset(object):
     Parent class with the main methods: fit, transform and fit_transform
     """
 
-    def __init__(self, ratio=1., random_state=None, verbose=True):
+    def __init__(self, ratio=1., random_state=None, indices_support=False, verbose=True):
         """
         Initialize this object and its instance variables.
 
@@ -162,9 +162,13 @@ class UnbalancedDataset(object):
         ##
         self.out_x = None
         self.out_y = None
+        self.out_idx = None
 
         #
         self.num = None
+
+        # 
+        self.indices_support = indices_support
 
         #
         self.verbose = verbose
@@ -240,9 +244,14 @@ class UnbalancedDataset(object):
         if self.verbose:
             print("Start resampling ...")
 
-        self.out_x, self.out_y = self.resample()
+        if self.indices_support:
+            self.out_x, self.out_y, self.out_idx = self.resample()
 
-        return self.out_x, self.out_y
+            return self.out_x, self.out_y, self.out_idx
+        else:
+            self.out_x, self.out_y = self.resample()
+
+            return self.out_x, self.out_y
 
     def fit_transform(self, x, y):
         """
@@ -259,9 +268,14 @@ class UnbalancedDataset(object):
         """
 
         self.fit(x, y)
-        self.out_x, self.out_y = self.resample()
+        if self.indices_support:
+            self.out_x, self.out_y, self.out_idx = self.resample()
 
-        return self.out_x, self.out_y
+            return self.out_x, self.out_y, self.out_idx
+        else:
+            self.out_x, self.out_y = self.resample()
+
+            return self.out_x, self.out_y
 
     @staticmethod
     def is_tomek(y, nn_index, class_type, verbose=True):
