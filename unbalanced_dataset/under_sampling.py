@@ -38,10 +38,10 @@ class UnderSampler(UnbalancedDataset):
         UnbalancedDataset.__init__(self,
                                    ratio=ratio,
                                    random_state=random_state,
+                                   indices_support=indices_support,
                                    verbose=verbose)
 
         self.replacement = replacement
-        self.indices_support = indices_support
 
     def resample(self):
         """
@@ -109,10 +109,8 @@ class TomekLinks(UnbalancedDataset):
             Nothing.
         """
 
-        UnbalancedDataset.__init__(self, verbose=verbose)
+        UnbalancedDataset.__init__(self, indices_support, verbose=verbose)
         
-        self.indices_support = indices_support
-
     def resample(self):
         """
         :return:
@@ -177,6 +175,10 @@ class ClusterCentroids(UnbalancedDataset):
                                    verbose=verbose)
 
         self.kwargs = kwargs
+
+        # Do not expect any support regarding the selection with this method
+        if (self.kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
 
     def resample(self):
         """
@@ -256,6 +258,7 @@ class NearMiss(UnbalancedDataset):
         # Passes the relevant parameters back to the parent class.
         UnbalancedDataset.__init__(self, ratio=ratio,
                                    random_state=random_state,
+                                   indices_support=indices_support,
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
@@ -267,7 +270,6 @@ class NearMiss(UnbalancedDataset):
         self.version = version
         self.size_ngh = size_ngh
         self.ver3_samp_ngh = ver3_samp_ngh
-        self.indices_support = indices_support
         self.kwargs = kwargs
 
     def resample(self):
@@ -428,12 +430,11 @@ class CondensedNearestNeighbour(UnbalancedDataset):
 
         # Passes the relevant parameters back to the parent class.
         UnbalancedDataset.__init__(self, random_state=random_state,
-                                   verbose=verbose)
+                                   indices_support=indices_support, verbose=verbose)
 
         # Assign the parameter of the element of this class
         self.size_ngh = size_ngh
         self.n_seeds_S = n_seeds_S
-        self.indices_support = indices_support
         self.kwargs = kwargs
 
     def resample(self):
@@ -532,12 +533,12 @@ class OneSidedSelection(UnbalancedDataset):
 
         # Passes the relevant parameters back to the parent class.
         UnbalancedDataset.__init__(self, random_state=random_state,
+                                   indices_support=indices_support, 
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
         self.size_ngh = size_ngh
         self.n_seeds_S = n_seeds_S
-        self.indices_support = indices_support
         self.kwargs = kwargs
 
     def resample(self):
@@ -645,11 +646,11 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
 
         # Passes the relevant parameters back to the parent class.
         UnbalancedDataset.__init__(self, random_state=random_state,
+                                   indices_support=indices_support,
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
         self.size_ngh = size_ngh        
-        self.indices_support = indices_support
         self.kwargs = kwargs
 
     def resample(self):

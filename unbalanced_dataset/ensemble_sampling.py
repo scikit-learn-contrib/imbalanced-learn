@@ -75,7 +75,8 @@ class BalanceCascade(UnbalancedDataset):
     """
 
     def __init__(self, ratio=1., random_state=None, n_max_subset=None,
-                 classifier='knn', bootstrap=True, verbose=True, **kwargs):
+                 classifier='knn', bootstrap=True,
+                 verbose=True, **kwargs):
         """
         :param ratio:
             The ratio of majority elements to sample with respect to the number
@@ -101,6 +102,10 @@ class BalanceCascade(UnbalancedDataset):
         UnbalancedDataset.__init__(self, ratio=ratio,
                                    random_state=random_state,
                                    verbose=verbose)
+
+        # Do not expect any support regarding the selection with this method
+        if (kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
 
         # Define the classifier to use
         if classifier == 'knn':
@@ -178,7 +183,7 @@ class BalanceCascade(UnbalancedDataset):
             # random stuff are still random stuff
             x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
             y_data = np.concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
-
+            
             # Push these data into a new subset
             subsets_x.append(x_data)
             subsets_y.append(y_data)

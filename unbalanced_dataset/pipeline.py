@@ -14,7 +14,7 @@ class SMOTETomek(UnbalancedDataset):
     of keywords: a case study", Batista et al. for more details.
     """
 
-    def __init__(self, k=5, ratio=1., random_state=None, verbose=True):
+    def __init__(self, k=5, ratio=1., random_state=None, verbose=True, **kwargs):
         """
         :param k:
             Number of nearest neighbours to use when constructing the
@@ -35,6 +35,10 @@ class SMOTETomek(UnbalancedDataset):
         UnbalancedDataset.__init__(self, ratio=ratio,
                                    random_state=random_state,
                                    verbose=verbose)
+
+        # Do not expect any support regarding the selection with this method
+        if (kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
 
         # Instance variable to store the number of neighbours to use.
         self.k = k
@@ -120,6 +124,10 @@ class SMOTEENN(UnbalancedDataset):
         UnbalancedDataset.__init__(self, ratio=ratio,
                                    random_state=random_state,
                                    verbose=verbose)
+
+        # Do not expect any support regarding the selection with this method
+        if (kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
 
         # Instance variable to store the number of neighbours to use.
         self.k = k

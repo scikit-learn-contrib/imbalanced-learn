@@ -35,6 +35,10 @@ class OverSampler(UnbalancedDataset):
                                    random_state=random_state,
                                    verbose=verbose)
 
+        # Do not expect any support regarding the selection with this method
+        if (kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
+
         self.method = method
         if (self.method == 'gaussian-perturbation'):
             self.mean_gaussian = kwargs.pop('mean_gaussian', 0.0)
@@ -160,6 +164,10 @@ class SMOTE(UnbalancedDataset):
         UnbalancedDataset.__init__(self,
                                    ratio=ratio,
                                    random_state=random_state)
+
+        # Do not expect any support regarding the selection with this method
+        if (kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
 
         # --- The type of smote
         # This object can perform regular smote over-sampling, borderline 1,
