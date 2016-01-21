@@ -87,6 +87,8 @@ from __future__ import division
 from __future__ import print_function
 from numpy.random import seed, randint, uniform
 from numpy import zeros, ones
+import numpy as np
+import scipy.sparse as sp
 
 __author__ = 'fnogueira, glemaitre'
 
@@ -347,25 +349,26 @@ class UnbalancedDataset(object):
         """
 
         # A matrix to store the synthetic samples
-        new = zeros((n_samples, len(x.T)))
+        # n_samples maybe float when "SMOTE bordeline 2"
+        new = sp.csr_matrix((int(n_samples), x.shape[1]))
 
         # Set seeds
         seed(random_state)
         seeds = randint(low=0,
-                        high=100*len(nn_num.flatten()),
+                        high=100*nn_num.flatten().shape[0],
                         size=n_samples)
 
         # Randomly pick samples to construct neighbours from
         seed(random_state)
         samples = randint(low=0,
-                          high=len(nn_num.flatten()),
+                          high=nn_num.flatten().shape[0],
                           size=n_samples)
 
         # Loop over the NN matrix and create new samples
         for i, n in enumerate(samples):
             # NN lines relate to original sample, columns to its
             # nearest neighbours
-            row, col = divmod(n, len(nn_num.T))
+            row, col = divmod(n, nn_num.shape[1])
 
             # Take a step of random size (0,1) in the direction of the
             # n nearest neighbours
@@ -377,10 +380,10 @@ class UnbalancedDataset(object):
 
         # The returned target vector is simply a repetition of the
         # minority label
-        y_new = ones(len(new)) * y_type
+        y_new = ones(new.shape[0]) * y_type
 
         if verbose:
-            print("Generated %i new samples ..." % len(new))
+            print("Generated %i new samples ..." % new.shape[0])
 
         return new, y_new
 
@@ -417,8 +420,9 @@ class UnbalancedDataset(object):
         """
 
         # Find NN for current sample
-        x = nn_obj.kneighbors(entry.reshape((1, len(entry))),
-                              return_distance=False)[:, 1:]
+        if isinstance(entry, np.ndarray):
+            entry = entry.reshape((1, len(entry)))
+        x = nn_obj.kneighbors(entry, return_distance=False)[:, 1:]
 
         # Count how many NN belong to the minority class
         minority = 0
@@ -462,10 +466,10 @@ class UnbalancedDataset(object):
         :return:
             True or False depending whether a sample is in danger or not.
         """
-
+        if isinstance(entry, np.ndarray):
+            entry = entry.reshape((1, len(entry)))
         # Find NN for current sample
-        x = nn_obj.kneighbors(entry.reshape((1, len(entry))),
-                              return_distance=False)[:, 1:]
+        x = nn_obj.kneighbors(entry, return_distance=False)[:, 1:]
 
         # Check if any neighbour belong to the minority class.
         for nn in x[0]:

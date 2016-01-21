@@ -2,9 +2,10 @@ from __future__ import print_function
 from __future__ import division
 import numpy as np
 from numpy.random import seed, randint
-from numpy import concatenate, asarray
+from numpy import asarray
 from random import betavariate
 from collections import Counter
+from .utils import concatenate
 from .unbalanced_dataset import UnbalancedDataset
 
 
@@ -259,7 +260,7 @@ class SMOTE(UnbalancedDataset):
                                        nn_data=minx,
                                        y_type=self.minc,
                                        nn_num=nns,
-                                       n_samples=int(self.ratio * len(miny)),
+                                       n_samples=int(self.ratio * miny.shape[0]),
                                        step_size=1.0,
                                        random_state=self.rs,
                                        verbose=self.verbose)
@@ -361,8 +362,8 @@ class SMOTE(UnbalancedDataset):
                                              verbose=self.verbose)
 
                 # Concatenate the newly generated samples to the original data set
-                ret_x = np.concatenate((self.x, sx1, sx2), axis=0)
-                ret_y = np.concatenate((self.y, sy1, sy2), axis=0)
+                ret_x = concatenate((self.x, sx1, sx2), axis=0)
+                ret_y = concatenate((self.y, sy1, sy2), axis=0)
 
                 return ret_x, ret_y
 
@@ -456,7 +457,7 @@ class SMOTE(UnbalancedDataset):
                 sx1, sy1 = self.make_samples(support_vector[danger_bool],
                                              minx,
                                              self.minc, nns,
-                                             fractions * (int(self.ratio * len(minx)) + 1),
+                                             fractions * (int(self.ratio * minx.shape[0]) + 1),
                                              step_size=1,
                                              random_state=self.rs,
                                              verbose=self.verbose)
@@ -465,11 +466,11 @@ class SMOTE(UnbalancedDataset):
             if (np.count_nonzero(safety_bool) > 0):
                 nns = self.nearest_neighbour_.kneighbors(support_vector[safety_bool],
                                                          return_distance=False)[:, 1:]
-                
+
                 sx2, sy2 = self.make_samples(support_vector[safety_bool],
                                              minx,
                                              self.minc, nns,
-                                             (1 - fractions) * int(self.ratio * len(minx)),
+                                             (1 - fractions) * int(self.ratio * minx.shape[0]),
                                              step_size=-self.out_step,
                                              random_state=self.rs,
                                              verbose=self.verbose)

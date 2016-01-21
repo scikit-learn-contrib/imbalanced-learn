@@ -1,9 +1,10 @@
 from __future__ import print_function
 from __future__ import division
 import numpy as np
-from numpy import concatenate, logical_not
+from numpy import logical_not
 from collections import Counter
 from .unbalanced_dataset import UnbalancedDataset
+from .utils import concatenate
 
 
 class SMOTETomek(UnbalancedDataset):

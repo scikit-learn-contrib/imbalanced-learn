@@ -3,10 +3,10 @@ from __future__ import division
 import numpy as np
 from numpy import logical_not, ones
 from numpy.random import seed, randint
-from numpy import concatenate
 from random import sample
 from collections import Counter
 from .unbalanced_dataset import UnbalancedDataset
+from .utils import concatenate
 
 
 class UnderSampler(UnbalancedDataset):

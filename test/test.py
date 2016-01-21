@@ -2,6 +2,7 @@ from __future__ import print_function
 __author__ = 'fnogueira, glemaitre'
 
 from sklearn.datasets import make_classification
+import scipy.sparse as sp
 
 from unbalanced_dataset.unbalanced_dataset import UnbalancedDataset
 
@@ -28,6 +29,8 @@ X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
                            n_samples=5000, random_state=10)
+
+SX = sp.csr_matrix(X)
 
 verbose = True
 
@@ -116,3 +119,9 @@ if __name__ == '__main__':
     test_smote(X, Y)
     test_rest(X, Y)
     test_CNN(X, Y)
+
+    # test sparse matrix
+    test_smote(SX, Y)
+    # current error when Neighboorhood Cleaning Rule
+    test_rest(SX, Y)
+    test_CNN(SX, Y)
