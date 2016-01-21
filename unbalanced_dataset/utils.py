@@ -27,13 +27,13 @@ def concatenate(l, axis=0):
         return np.concatenate(l, axis)
     else:
         for x in l:
-            if not isinstance(x, sp.csr.csr_matrix):
-                x = sp.csr_matrix(x)
+            if not sp.issparse(x):
+                x = sp.lil_matrix(x)
 
         if axis:
-            return sp.hstack(l)
+            return sp.hstack(l).todense()
         else:
-            return sp.vstack(l)
+            return sp.vstack(l).todense()
 
 
     # raise Exception('You input is unable to concatenate. The input objects must all be numpy.ndarray or scipy.sparse.csr.csr_matrix, check detail:%s' % e)

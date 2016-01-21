@@ -120,8 +120,7 @@ if __name__ == '__main__':
     test_rest(X, Y)
     test_CNN(X, Y)
 
-    # test sparse matrix
+    print('#############   Test sparse matrix    ###########\n')
     test_smote(SX, Y)
-    # current error when Neighboorhood Cleaning Rule
     test_rest(SX, Y)
     test_CNN(SX, Y)

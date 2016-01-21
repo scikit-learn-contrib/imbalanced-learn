@@ -350,7 +350,7 @@ class UnbalancedDataset(object):
 
         # A matrix to store the synthetic samples
         # n_samples maybe float when "SMOTE bordeline 2"
-        new = sp.csr_matrix((int(n_samples), x.shape[1]))
+        new = sp.lil_matrix((int(n_samples), x.shape[1]))
 
         # Set seeds
         seed(random_state)
