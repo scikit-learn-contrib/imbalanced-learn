@@ -36,4 +36,3 @@ def concatenate(l, axis=0):
             return sp.vstack(l).todense()
 
 
-    # raise Exception('You input is unable to concatenate. The input objects must all be numpy.ndarray or scipy.sparse.csr.csr_matrix, check detail:%s' % e)

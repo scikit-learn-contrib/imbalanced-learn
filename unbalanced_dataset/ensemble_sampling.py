@@ -2,8 +2,10 @@ from __future__ import print_function
 from __future__ import division
 from random import sample
 import numpy as np
+import scipy.sparse as sp
 from .unbalanced_dataset import UnbalancedDataset
 from .under_sampling import UnderSampler
+from utils import concatenate
 
 
 class EasyEnsemble(UnderSampler):
@@ -166,7 +168,7 @@ class BalanceCascade(UnbalancedDataset):
             # rate of the previous iteration
             idx_sel_from_maj = np.array(sample(np.nonzero(b_sel_N)[0],
                                                n_elt_maj))
-            idx_sel_from_maj = np.concatenate((idx_mis_class,
+            idx_sel_from_maj = concatenate((idx_mis_class,
                                                idx_sel_from_maj),
                                               axis=0).astype(int)
 
@@ -176,8 +178,8 @@ class BalanceCascade(UnbalancedDataset):
             # For now, we will train and classify on the same data
             # Let see if we should find another solution. Anyway,
             # random stuff are still random stuff
-            x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
-            y_data = np.concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
+            x_data = concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
+            y_data = concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
 
             # Push these data into a new subset
             subsets_x.append(x_data)
@@ -200,7 +202,10 @@ class BalanceCascade(UnbalancedDataset):
                 self.classifier.fit(x_data, y_data)
 
             # Predict using only the majority class
-            pred_label = self.classifier.predict(N_x[idx_sel_from_maj, :])
+            maj_data = N_x[idx_sel_from_maj, :]
+            if sp.issparse(maj_data):
+                maj_data = maj_data.todense()
+            pred_label = self.classifier.predict(maj_data)
 
             # Basically let's find which sample have to be retained for the
             # next round
@@ -224,12 +229,12 @@ class BalanceCascade(UnbalancedDataset):
                     b_subset_search = False
                     # Select the remaining data
                     idx_sel_from_maj = np.nonzero(b_sel_N)[0]
-                    idx_sel_from_maj = np.concatenate((idx_mis_class,
+                    idx_sel_from_maj = concatenate((idx_mis_class,
                                                    idx_sel_from_maj),
                                                   axis=0).astype(int)
                     # Select the final batch
-                    x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
-                    y_data = np.concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
+                    x_data = concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
+                    y_data = concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
                     # Push these data into a new subset
                     subsets_x.append(x_data)
                     subsets_y.append(y_data)
@@ -247,12 +252,12 @@ class BalanceCascade(UnbalancedDataset):
                 b_subset_search = False
                 # Select the remaining data
                 idx_sel_from_maj = np.nonzero(b_sel_N)[0]
-                idx_sel_from_maj = np.concatenate((idx_mis_class,
+                idx_sel_from_maj = concatenate((idx_mis_class,
                                                    idx_sel_from_maj),
                                                   axis=0).astype(int)
                 # Select the final batch
-                x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
-                y_data = np.concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
+                x_data = concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
+                y_data = concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
                 # Push these data into a new subset
                 subsets_x.append(x_data)
                 subsets_y.append(y_data)

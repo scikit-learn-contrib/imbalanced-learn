@@ -1,6 +1,7 @@
 from __future__ import print_function
 from __future__ import division
 import numpy as np
+import scipy.sparse as sp
 from numpy import logical_not, ones
 from numpy.random import seed, randint
 from random import sample
@@ -505,15 +506,16 @@ class OneSidedSelection(UnbalancedDataset):
                 continue
 
             # Randomly get one sample from the majority class
-            maj_sample = sample(self.x[self.y == key],
-                                self.n_seeds_S)
+            base_sample = self.x[self.y == key]
+            if sp.issparse(base_sample):
+                maj_sample = base_sample[sample(xrange(base_sample.shape[0]),
+                                                self.n_seeds_S), :]
+            else:
+                maj_sample = sample(base_sample, self.n_seeds_S)
 
             # Create the set C
-            C_x = np.append(self.x[self.y == self.minc],
-                            maj_sample,
-                            axis=0)
-            C_y = np.append(self.y[self.y == self.minc],
-                            [key] * self.n_seeds_S)
+            C_x = concatenate((self.x[self.y == self.minc], maj_sample))
+            C_y = concatenate((self.y[self.y == self.minc], np.array([key] * self.n_seeds_S)))
 
             # Create the set S
             S_x = self.x[self.y == key]
@@ -527,6 +529,8 @@ class OneSidedSelection(UnbalancedDataset):
             knn.fit(C_x, C_y)
 
             # Classify on S
+            if sp.issparse(S_x):
+                S_x = S_x.todense()
             pred_S_y = knn.predict(S_x)
 
             # Find the misclassified S_y
