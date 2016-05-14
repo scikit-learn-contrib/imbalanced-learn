@@ -1,10 +1,17 @@
 from __future__ import print_function
 from __future__ import division
+
+import multiprocessing
+
 import numpy as np
+
 from numpy.random import seed, randint
 from numpy import concatenate, asarray
+
 from random import betavariate
+
 from collections import Counter
+
 from .unbalanced_dataset import UnbalancedDataset
 
 
@@ -133,6 +140,7 @@ class SMOTE(UnbalancedDataset):
                  ratio=1,
                  random_state=None,
                  kind='regular',
+                 nn_method='exact',
                  verbose=False,
                  **kwargs):
         """
@@ -155,6 +163,11 @@ class SMOTE(UnbalancedDataset):
         :param kind: The type of smote algorithm to use one of the following
                      options: 'regular', 'borderline1', 'borderline2', 'svm'
 
+        :param nn_method: The nearest neighbors method to use which can be
+                          either: 'approximate' or 'exact'. 'approximate'
+                          will use LSH Forest while 'exact' will be an
+                          exact search.
+
         :param verbose: Whether or not to print status information
 
         :param kwargs: Additional arguments passed to sklearn SVC object
@@ -168,6 +181,10 @@ class SMOTE(UnbalancedDataset):
         # Do not expect any support regarding the selection with this method
         if (kwargs.pop('indices_support', False)):
             raise ValueError('No indices support with this method.')
+
+        # Get the number of processor that the user wants to use
+        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
+
 
         # --- The type of smote
         # This object can perform regular smote over-sampling, borderline 1,
@@ -188,13 +205,22 @@ class SMOTE(UnbalancedDataset):
         # Import the NN object from scikit-learn library. Since in the smote
         # variations we must first find samples that are in danger, we
         # initialize the NN object differently depending on the method chosen#
-        from sklearn.neighbors import NearestNeighbors
+        if nn_method == 'exact':
+            from sklearn.neighbors import NearestNeighbors
+        elif nn_method == 'approximate':
+            from sklearn.neighbors import LSHForest
 
         if kind == 'regular':
             # Regular smote does not look for samples in danger, instead it
             # creates synthetic samples directly from the k-th nearest
             # neighbours with not filtering#
-            self.nearest_neighbour_ = NearestNeighbors(n_neighbors=k + 1)
+            if nn_method == 'exact':
+                self.nearest_neighbour_ = NearestNeighbors(n_neighbors=k + 1,
+                                                           n_jobs=self.n_jobs)
+            elif nn_method == 'approximate':
+                self.nearest_neighbour_ = LSHForest(n_estimators=50,
+                                                    n_candidates=500,
+                                                    n_neighbors=k+1)
         else:
             # Borderline1, 2 and SVM variations of smote must first look for
             # samples that could be considered noise and samples that live
@@ -202,7 +228,14 @@ class SMOTE(UnbalancedDataset):
             # creating synthetic samples from the k-th nns, it first look
             # for m nearest neighbors to decide whether or not a sample is
             # noise or near the boundary.#
-            self.nearest_neighbour_ = NearestNeighbors(n_neighbors=m + 1)
+            if nn_method == 'exact':
+                self.nearest_neighbour_ = NearestNeighbors(n_neighbors=m + 1,
+                                                           n_jobs=self.n_jobs)
+            elif nn_method == 'approximate':
+                self.nearest_neighbour_ = LSHForest(n_estimators=50,
+                                                    n_candidates=500,
+                                                    n_neighbors=m+1)
+
 
             # --- Nearest Neighbours for noise and boundary (in danger)
             # Before creating synthetic samples we must first decide if

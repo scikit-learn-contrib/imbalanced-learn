@@ -1,5 +1,6 @@
 from __future__ import print_function
 from __future__ import division
+import multiprocessing
 import numpy as np
 from numpy import logical_not, ones
 from numpy.random import seed, randint
@@ -101,7 +102,7 @@ class TomekLinks(UnbalancedDataset):
     minority samples.
     """
 
-    def __init__(self, indices_support=False, verbose=True):
+    def __init__(self, indices_support=False, verbose=True, **kwargs):
         """
         No parameters.
 
@@ -110,6 +111,8 @@ class TomekLinks(UnbalancedDataset):
         """
 
         UnbalancedDataset.__init__(self, indices_support, verbose=verbose)
+
+        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
         
     def resample(self):
         """
@@ -121,7 +124,7 @@ class TomekLinks(UnbalancedDataset):
         from sklearn.neighbors import NearestNeighbors
 
         # Find the nearest neighbour of every point
-        nn = NearestNeighbors(n_neighbors=2)
+        nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
         nn.fit(self.x)
         nns = nn.kneighbors(self.x, return_distance=False)[:, 1]
 
@@ -270,6 +273,7 @@ class NearMiss(UnbalancedDataset):
         self.version = version
         self.size_ngh = size_ngh
         self.ver3_samp_ngh = ver3_samp_ngh
+        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
         self.kwargs = kwargs
 
     def resample(self):
@@ -289,7 +293,9 @@ class NearMiss(UnbalancedDataset):
         from sklearn.neighbors import NearestNeighbors
 
         # Call the constructor of the NN
-        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh, **self.kwargs)
+        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh,
+                                  n_jobs=self.n_jobs,
+                                  **self.kwargs)
 
         # Fit the minority class since that we want to know the distance
         # to these point
@@ -335,6 +341,7 @@ class NearMiss(UnbalancedDataset):
             elif self.version == 3:
                 # We need a new NN object to fit the current class
                 nn_obj_cc = NearestNeighbors(n_neighbors=self.ver3_samp_ngh,
+                                             n_jobs=self.n_jobs,
                                              **self.kwargs)
                 nn_obj_cc.fit(sub_samples_x)
 
@@ -539,6 +546,7 @@ class OneSidedSelection(UnbalancedDataset):
         # Assign the parameter of the element of this class
         self.size_ngh = size_ngh
         self.n_seeds_S = n_seeds_S
+        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
         self.kwargs = kwargs
 
     def resample(self):
@@ -603,7 +611,7 @@ class OneSidedSelection(UnbalancedDataset):
         from sklearn.neighbors import NearestNeighbors
 
         # Find the nearest neighbour of every point
-        nn = NearestNeighbors(n_neighbors=2)
+        nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
         nn.fit(underx)
         nns = nn.kneighbors(underx, return_distance=False)[:, 1]
 
@@ -650,7 +658,8 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
-        self.size_ngh = size_ngh        
+        self.size_ngh = size_ngh
+        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
         self.kwargs = kwargs
 
     def resample(self):
@@ -670,7 +679,8 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
         from sklearn.neighbors import NearestNeighbors
 
         # Create a k-NN to fit the whole data
-        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
+        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh,
+                                  n_jobs=self.n_jobs)
 
         # Fit the whole dataset
         nn_obj.fit(self.x)
