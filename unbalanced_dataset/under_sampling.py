@@ -1,5 +1,6 @@
 from __future__ import print_function
 from __future__ import division
+import multiprocessing
 import numpy as np
 from numpy import logical_not, ones
 from numpy.random import seed, randint
@@ -16,14 +17,17 @@ class UnderSampler(UnbalancedDataset):
     """
 
     def __init__(self,
-                 ratio=1.,
+                 ratio='auto',
                  random_state=None,
                  replacement=True,
+                 indices_support=False,
                  verbose=True):
         """
         :param ratio:
-            The ratio of majority elements to sample with respect to the number
-            of minority cases.
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this ratio.
 
         :param random_state:
             Seed.
@@ -37,6 +41,7 @@ class UnderSampler(UnbalancedDataset):
         UnbalancedDataset.__init__(self,
                                    ratio=ratio,
                                    random_state=random_state,
+                                   indices_support=indices_support,
                                    verbose=verbose)
 
         self.replacement = replacement
@@ -46,9 +51,17 @@ class UnderSampler(UnbalancedDataset):
         ...
         """
 
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = 1.
+
         # Start with the minority class
         underx = self.x[self.y == self.minc]
         undery = self.y[self.y == self.minc]
+
+        # If we need to offer support for the indices
+        if self.indices_support:
+            idx_under = np.nonzero(self.y == self.minc)[0]
 
         # Loop over the other classes under picking at random
         for key in self.ucd.keys():
@@ -69,6 +82,11 @@ class UnderSampler(UnbalancedDataset):
             else:
                 indx = sample(range((self.y == key).sum()), num_samples)
 
+            # If we need to offer support for the indices selected
+            if self.indices_support:
+                idx_tmp = np.nonzero(self.y == key)[0][indx]
+                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
+
             # Concatenate to the minority class
             underx = concatenate((underx, self.x[self.y == key][indx]), axis=0)
             undery = concatenate((undery, self.y[self.y == key][indx]), axis=0)
@@ -76,7 +94,12 @@ class UnderSampler(UnbalancedDataset):
         if self.verbose:
             print("Under-sampling performed: " + str(Counter(undery)))
 
-        return underx, undery
+        # Check if the indices of the samples selected should be returned too
+        if self.indices_support:
+            # Return the indices of interest
+            return underx, undery, idx_under
+        else:
+            return underx, undery
 
 
 class TomekLinks(UnbalancedDataset):
@@ -85,7 +108,7 @@ class TomekLinks(UnbalancedDataset):
     minority samples.
     """
 
-    def __init__(self, verbose=True):
+    def __init__(self, indices_support=False, verbose=True, **kwargs):
         """
         No parameters.
 
@@ -93,8 +116,10 @@ class TomekLinks(UnbalancedDataset):
             Nothing.
         """
 
-        UnbalancedDataset.__init__(self, verbose=verbose)
+        UnbalancedDataset.__init__(self, indices_support, verbose=verbose)
 
+        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
+        
     def resample(self):
         """
         :return:
@@ -105,7 +130,7 @@ class TomekLinks(UnbalancedDataset):
         from sklearn.neighbors import NearestNeighbors
 
         # Find the nearest neighbour of every point
-        nn = NearestNeighbors(n_neighbors=2)
+        nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
         nn.fit(self.x)
         nns = nn.kneighbors(self.x, return_distance=False)[:, 1]
 
@@ -118,8 +143,13 @@ class TomekLinks(UnbalancedDataset):
             print("Under-sampling "
                   "performed: " + str(Counter(self.y[logical_not(links)])))
 
-        # Return data set without majority Tomek links.
-        return self.x[logical_not(links)], self.y[logical_not(links)]
+        # Check if the indices of the samples selected should be returned too
+        if self.indices_support:
+            # Return the indices of interest
+            return self.x[logical_not(links)], self.y[logical_not(links)], np.nonzero(logical_not(links))[0]
+        else:
+            # Return data set without majority Tomek links.
+            return self.x[logical_not(links)], self.y[logical_not(links)]
 
 
 class ClusterCentroids(UnbalancedDataset):
@@ -132,7 +162,7 @@ class ClusterCentroids(UnbalancedDataset):
     cluster centroids as the new majority samples.
     """
 
-    def __init__(self, ratio=1, random_state=None, verbose=True, **kwargs):
+    def __init__(self, ratio='auto', random_state=None, verbose=True, **kwargs):
         """
         :param kwargs:
             Arguments the user might want to pass to the KMeans object from
@@ -155,12 +185,20 @@ class ClusterCentroids(UnbalancedDataset):
 
         self.kwargs = kwargs
 
+        # Do not expect any support regarding the selection with this method
+        if (self.kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
+
     def resample(self):
         """
         ???
 
         :return:
         """
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = 1.
 
         # Create the clustering object
         from sklearn.cluster import KMeans
@@ -208,9 +246,9 @@ class NearMiss(UnbalancedDataset):
     et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None,
+    def __init__(self, ratio='auto', random_state=None,
                  version=1, size_ngh=3, ver3_samp_ngh=3,
-                 verbose=True, **kwargs):
+                 indices_support=False, verbose=True, **kwargs):
         """
         :param version:
             Version of the NearMiss to use. Possible values
@@ -233,6 +271,7 @@ class NearMiss(UnbalancedDataset):
         # Passes the relevant parameters back to the parent class.
         UnbalancedDataset.__init__(self, ratio=ratio,
                                    random_state=random_state,
+                                   indices_support=indices_support,
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
@@ -244,22 +283,33 @@ class NearMiss(UnbalancedDataset):
         self.version = version
         self.size_ngh = size_ngh
         self.ver3_samp_ngh = ver3_samp_ngh
+        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
         self.kwargs = kwargs
 
     def resample(self):
         """
         """
 
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = 1.
+
         # Start with the minority class
         underx = self.x[self.y == self.minc]
         undery = self.y[self.y == self.minc]
+
+        # If we need to offer support for the indices
+        if self.indices_support:
+            idx_under = np.nonzero(self.y == self.minc)[0]
 
         # For each element of the current class, find the set of NN
         # of the minority class
         from sklearn.neighbors import NearestNeighbors
 
         # Call the constructor of the NN
-        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh, **self.kwargs)
+        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh,
+                                  n_jobs=self.n_jobs,
+                                  **self.kwargs)
 
         # Fit the minority class since that we want to know the distance
         # to these point
@@ -288,23 +338,24 @@ class NearMiss(UnbalancedDataset):
                                                       n_neighbors=self.size_ngh)
 
                 # Select the right samples
-                sel_x, sel_y = self.__SelectionDistBased__(dist_vec,
-                                                           num_samples,
-                                                           key,
-                                                           sel_strategy='nearest')
+                sel_x, sel_y, idx_tmp = self.__SelectionDistBased__(dist_vec,
+                                                                    num_samples,
+                                                                    key,
+                                                                    sel_strategy='nearest')
             elif self.version == 2:
                 # Find the NN
                 dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x,
                                                       n_neighbors=self.y[self.y == self.minc].size)
 
                 # Select the right samples
-                sel_x, sel_y = self.__SelectionDistBased__(dist_vec,
-                                                           num_samples,
-                                                           key,
-                                                           sel_strategy='nearest')
+                sel_x, sel_y, idx_tmp = self.__SelectionDistBased__(dist_vec,
+                                                                    num_samples,
+                                                                    key,
+                                                                    sel_strategy='nearest')
             elif self.version == 3:
                 # We need a new NN object to fit the current class
                 nn_obj_cc = NearestNeighbors(n_neighbors=self.ver3_samp_ngh,
+                                             n_jobs=self.n_jobs,
                                              **self.kwargs)
                 nn_obj_cc.fit(sub_samples_x)
 
@@ -323,10 +374,14 @@ class NearMiss(UnbalancedDataset):
                 dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x,
                                                       n_neighbors=self.size_ngh)
 
-                sel_x, sel_y = self.__SelectionDistBased__(dist_vec,
-                                                           num_samples,
-                                                           key,
-                                                           sel_strategy='farthest')
+                sel_x, sel_y, idx_tmp = self.__SelectionDistBased__(dist_vec,
+                                                                    num_samples,
+                                                                    key,
+                                                                    sel_strategy='farthest')
+
+            # If we need to offer support for the indices selected
+            if self.indices_support:
+                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
 
             underx = concatenate((underx, sel_x), axis=0)
             undery = concatenate((undery, sel_y), axis=0)
@@ -334,7 +389,13 @@ class NearMiss(UnbalancedDataset):
         if self.verbose:
             print("Under-sampling performed: " + str(Counter(undery)))
 
-        return underx, undery
+        # Check if the indices of the samples selected should be returned too
+        if self.indices_support:
+            # Return the indices of interest
+            return underx, undery, idx_under
+        else:
+            return underx, undery
+
 
     def __SelectionDistBased__(self,
                                dist_vec,
@@ -361,7 +422,7 @@ class NearMiss(UnbalancedDataset):
         # Select the desired number of samples
         sel_idx = sorted_idx[:num_samples]
 
-        return self.x[self.y == key][sel_idx], self.y[self.y == key][sel_idx]
+        return self.x[self.y == key][sel_idx], self.y[self.y == key][sel_idx], np.nonzero(self.y == key)[0][sel_idx]
 
 
 class CondensedNearestNeighbour(UnbalancedDataset):
@@ -372,7 +433,7 @@ class CondensedNearestNeighbour(UnbalancedDataset):
     Set: One-Sided Selection" by Khubat et al. for more details.
     """
 
-    def __init__(self, random_state=None,
+    def __init__(self, random_state=None, indices_support=False,
                  size_ngh=1, n_seeds_S=1, verbose=True,
                  **kwargs):
         """
@@ -390,7 +451,7 @@ class CondensedNearestNeighbour(UnbalancedDataset):
 
         # Passes the relevant parameters back to the parent class.
         UnbalancedDataset.__init__(self, random_state=random_state,
-                                   verbose=verbose)
+                                   indices_support=indices_support, verbose=verbose)
 
         # Assign the parameter of the element of this class
         self.size_ngh = size_ngh
@@ -404,6 +465,10 @@ class CondensedNearestNeighbour(UnbalancedDataset):
         # Start with the minority class
         underx = self.x[self.y == self.minc]
         undery = self.y[self.y == self.minc]
+
+        # If we need to offer support for the indices
+        if self.indices_support:
+            idx_under = np.nonzero(self.y == self.minc)[0]
 
         # Import the K-NN classifier
         from sklearn.neighbors import KNeighborsClassifier
@@ -444,13 +509,23 @@ class CondensedNearestNeighbour(UnbalancedDataset):
             sel_x = np.squeeze(S_x[np.nonzero(pred_S_y != S_y), :])
             sel_y = S_y[np.nonzero(pred_S_y != S_y)]
 
+            # If we need to offer support for the indices selected
+            if self.indices_support:
+                idx_tmp = np.nonzero(self.y == key)[0][np.nonzero(pred_S_y != S_y)]
+                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
+
             underx = concatenate((underx, sel_x), axis=0)
             undery = concatenate((undery, sel_y), axis=0)
 
         if self.verbose:
             print("Under-sampling performed: " + str(Counter(undery)))
 
-        return underx, undery
+        # Check if the indices of the samples selected should be returned too
+        if self.indices_support:
+            # Return the indices of interest
+            return underx, undery, idx_under
+        else:
+            return underx, undery
 
 
 class OneSidedSelection(UnbalancedDataset):
@@ -461,7 +536,7 @@ class OneSidedSelection(UnbalancedDataset):
     Set: One-Sided Selection" by Khubat et al. for more details.
     """
 
-    def __init__(self, random_state=None,
+    def __init__(self, random_state=None, indices_support=False,
                  size_ngh=1, n_seeds_S=1, verbose=True,
                  **kwargs):
         """
@@ -479,11 +554,13 @@ class OneSidedSelection(UnbalancedDataset):
 
         # Passes the relevant parameters back to the parent class.
         UnbalancedDataset.__init__(self, random_state=random_state,
+                                   indices_support=indices_support, 
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
         self.size_ngh = size_ngh
         self.n_seeds_S = n_seeds_S
+        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
         self.kwargs = kwargs
 
     def resample(self):
@@ -493,6 +570,10 @@ class OneSidedSelection(UnbalancedDataset):
         # Start with the minority class
         underx = self.x[self.y == self.minc]
         undery = self.y[self.y == self.minc]
+
+        # If we need to offer support for the indices
+        if self.indices_support:
+            idx_under = np.nonzero(self.y == self.minc)[0]
 
         # Import the K-NN classifier
         from sklearn.neighbors import KNeighborsClassifier
@@ -533,13 +614,18 @@ class OneSidedSelection(UnbalancedDataset):
             sel_x = np.squeeze(S_x[np.nonzero(pred_S_y != S_y), :])
             sel_y = S_y[np.nonzero(pred_S_y != S_y)]
 
+            # If we need to offer support for the indices selected
+            if self.indices_support:
+                idx_tmp = np.nonzero(self.y == key)[0][np.nonzero(pred_S_y != S_y)]
+                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
+
             underx = concatenate((underx, sel_x), axis=0)
             undery = concatenate((undery, sel_y), axis=0)
 
         from sklearn.neighbors import NearestNeighbors
 
         # Find the nearest neighbour of every point
-        nn = NearestNeighbors(n_neighbors=2)
+        nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
         nn.fit(underx)
         nns = nn.kneighbors(underx, return_distance=False)[:, 1]
 
@@ -552,8 +638,13 @@ class OneSidedSelection(UnbalancedDataset):
             print("Under-sampling "
                   "performed: " + str(Counter(undery[logical_not(links)])))
 
-        # Return data set without majority Tomek links.
-        return underx[logical_not(links)], undery[logical_not(links)]
+            # Check if the indices of the samples selected should be returned too
+        if self.indices_support:
+            # Return the indices of interest
+            return underx[logical_not(links)], undery[logical_not(links)], idx_under[logical_not(links)]
+        else:
+            # Return data set without majority Tomek links.
+            return underx[logical_not(links)], undery[logical_not(links)]
 
 
 class NeighbourhoodCleaningRule(UnbalancedDataset):
@@ -564,7 +655,7 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
     classes by balancing class distribution" by Laurikkala et al. for more details.
     """
 
-    def __init__(self, random_state=None,
+    def __init__(self, random_state=None, indices_support=False,
                  size_ngh=3, verbose=True, **kwargs):
         """
         :param size_ngh
@@ -577,10 +668,12 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
 
         # Passes the relevant parameters back to the parent class.
         UnbalancedDataset.__init__(self, random_state=random_state,
+                                   indices_support=indices_support,
                                    verbose=verbose)
 
         # Assign the parameter of the element of this class
         self.size_ngh = size_ngh
+        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
         self.kwargs = kwargs
 
     def resample(self):
@@ -591,11 +684,17 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
         underx = self.x[self.y == self.minc]
         undery = self.y[self.y == self.minc]
 
+        # If we need to offer support for the indices
+        if self.indices_support:
+            idx_under = np.nonzero(self.y == self.minc)[0]
+
+
         # Import the k-NN classifier
         from sklearn.neighbors import NearestNeighbors
 
         # Create a k-NN to fit the whole data
-        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
+        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh,
+                                  n_jobs=self.n_jobs)
 
         # Fit the whole dataset
         nn_obj.fit(self.x)
@@ -628,13 +727,23 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
                 # Get the index to exclude
                 idx_to_exclude += idx_sub_sample[np.nonzero(nnhood_bool)].tolist()
 
+        idx_to_exclude = np.unique(idx_to_exclude)
+
         # Create a vector with the sample to select
         sel_idx = np.ones(self.y.shape)
         sel_idx[idx_to_exclude] = 0
+        # Exclude as well the minority sample since that they will be
+        # concatenated later
+        sel_idx[self.y == self.minc] = 0
 
         # Get the samples from the majority classes
         sel_x = np.squeeze(self.x[np.nonzero(sel_idx), :])
         sel_y = self.y[np.nonzero(sel_idx)]
+
+        # If we need to offer support for the indices selected
+        if self.indices_support:
+            idx_tmp = np.nonzero(sel_idx)[0]
+            idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
 
         underx = concatenate((underx, sel_x), axis=0)
         undery = concatenate((undery, sel_y), axis=0)
@@ -642,4 +751,9 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
         if self.verbose:
             print("Under-sampling performed: " + str(Counter(undery)))
 
-        return underx, undery
+        # Check if the indices of the samples selected should be returned too
+        if self.indices_support:
+            # Return the indices of interest
+            return underx, undery, idx_under
+        else:
+            return underx, undery

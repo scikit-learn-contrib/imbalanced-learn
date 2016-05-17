@@ -14,15 +14,17 @@ class SMOTETomek(UnbalancedDataset):
     of keywords: a case study", Batista et al. for more details.
     """
 
-    def __init__(self, k=5, ratio=1., random_state=None, verbose=True):
+    def __init__(self, k=5, ratio='auto', random_state=None, verbose=True, **kwargs):
         """
         :param k:
             Number of nearest neighbours to use when constructing the
             synthetic samples.
 
         :param ratio:
-            Fraction of the number of minority samples to synthetically
-            generate.
+             If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this ratio.
 
         :param random_state:
             Seed.
@@ -36,10 +38,20 @@ class SMOTETomek(UnbalancedDataset):
                                    random_state=random_state,
                                    verbose=verbose)
 
+        # Do not expect any support regarding the selection with this method
+        if (kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
+
         # Instance variable to store the number of neighbours to use.
         self.k = k
 
     def resample(self):
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
+                          float(self.ucd[self.minc]))
+
         # Start with the minority class
         minx = self.x[self.y == self.minc]
         miny = self.y[self.y == self.minc]
@@ -91,7 +103,7 @@ class SMOTEENN(UnbalancedDataset):
 
     """
 
-    def __init__(self, k=5, ratio=1., random_state=None,
+    def __init__(self, k=5, ratio='auto', random_state=None,
                  size_ngh=3, verbose=True, **kwargs):
         """
         :param size_ngh
@@ -106,8 +118,10 @@ class SMOTEENN(UnbalancedDataset):
             samples.
 
         :param ratio:
-            Fraction of the number of minority samples to synthetically
-            generate.
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this ratio.
 
         :param random_state:
             Seed.
@@ -121,12 +135,22 @@ class SMOTEENN(UnbalancedDataset):
                                    random_state=random_state,
                                    verbose=verbose)
 
+        # Do not expect any support regarding the selection with this method
+        if (kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
+
         # Instance variable to store the number of neighbours to use.
         self.k = k
         self.size_ngh = size_ngh
         self.kwargs = kwargs
 
     def resample(self):
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
+                          float(self.ucd[self.minc]))
+
         # Start with the minority class
         minx = self.x[self.y == self.minc]
         miny = self.y[self.y == self.minc]

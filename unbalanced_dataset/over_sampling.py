@@ -1,10 +1,17 @@
 from __future__ import print_function
 from __future__ import division
+
+import multiprocessing
+
 import numpy as np
+
 from numpy.random import seed, randint
 from numpy import concatenate, asarray
+
 from random import betavariate
+
 from collections import Counter
+
 from .unbalanced_dataset import UnbalancedDataset
 
 
@@ -16,13 +23,13 @@ class OverSampler(UnbalancedDataset):
     *Supports multiple classes.
     """
 
-    def __init__(self, ratio=1., method='replacement', random_state=None, verbose=True, **kwargs):
+    def __init__(self, ratio='auto', method='replacement', random_state=None, verbose=True, **kwargs):
         """
         :param ratio:
-            Fraction of samples to draw with respect to the number of samples in
-            the original minority class, e.g., if ratio=0.5 the new total size of
-            minority class would be 1.5 times the original.
-                N_new =
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this ratio.
 
         :param random_state:
             Seed.
@@ -34,6 +41,10 @@ class OverSampler(UnbalancedDataset):
                                    ratio=ratio,
                                    random_state=random_state,
                                    verbose=verbose)
+
+        # Do not expect any support regarding the selection with this method
+        if (kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
 
         self.method = method
         if (self.method == 'gaussian-perturbation'):
@@ -49,6 +60,11 @@ class OverSampler(UnbalancedDataset):
             overx, overy: The features and target values of the over-sampled
             data set.
         """
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
+                          float(self.ucd[self.minc]))
 
         # Start with the majority class
         overx = self.x[self.y == self.maxc]
@@ -126,9 +142,10 @@ class SMOTE(UnbalancedDataset):
                  k=5,
                  m=10,
                  out_step=0.5,
-                 ratio=1,
+                 ratio='auto',
                  random_state=None,
                  kind='regular',
+                 nn_method='exact',
                  verbose=False,
                  **kwargs):
         """
@@ -143,13 +160,21 @@ class SMOTE(UnbalancedDataset):
 
         :param out_step: Step size when extrapolating
 
-        :param ratio: Fraction of the number of minority samples to
-                      synthetically generate.
+        :param ratio:
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this ratio.
 
         :param random_state: Seed for random number generation
 
         :param kind: The type of smote algorithm to use one of the following
                      options: 'regular', 'borderline1', 'borderline2', 'svm'
+
+        :param nn_method: The nearest neighbors method to use which can be
+                          either: 'approximate' or 'exact'. 'approximate'
+                          will use LSH Forest while 'exact' will be an
+                          exact search.
 
         :param verbose: Whether or not to print status information
 
@@ -160,6 +185,14 @@ class SMOTE(UnbalancedDataset):
         UnbalancedDataset.__init__(self,
                                    ratio=ratio,
                                    random_state=random_state)
+
+        # Do not expect any support regarding the selection with this method
+        if (kwargs.pop('indices_support', False)):
+            raise ValueError('No indices support with this method.')
+
+        # Get the number of processor that the user wants to use
+        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
+
 
         # --- The type of smote
         # This object can perform regular smote over-sampling, borderline 1,
@@ -180,13 +213,22 @@ class SMOTE(UnbalancedDataset):
         # Import the NN object from scikit-learn library. Since in the smote
         # variations we must first find samples that are in danger, we
         # initialize the NN object differently depending on the method chosen#
-        from sklearn.neighbors import NearestNeighbors
+        if nn_method == 'exact':
+            from sklearn.neighbors import NearestNeighbors
+        elif nn_method == 'approximate':
+            from sklearn.neighbors import LSHForest
 
         if kind == 'regular':
             # Regular smote does not look for samples in danger, instead it
             # creates synthetic samples directly from the k-th nearest
             # neighbours with not filtering#
-            self.nearest_neighbour_ = NearestNeighbors(n_neighbors=k + 1)
+            if nn_method == 'exact':
+                self.nearest_neighbour_ = NearestNeighbors(n_neighbors=k + 1,
+                                                           n_jobs=self.n_jobs)
+            elif nn_method == 'approximate':
+                self.nearest_neighbour_ = LSHForest(n_estimators=50,
+                                                    n_candidates=500,
+                                                    n_neighbors=k+1)
         else:
             # Borderline1, 2 and SVM variations of smote must first look for
             # samples that could be considered noise and samples that live
@@ -194,7 +236,14 @@ class SMOTE(UnbalancedDataset):
             # creating synthetic samples from the k-th nns, it first look
             # for m nearest neighbors to decide whether or not a sample is
             # noise or near the boundary.#
-            self.nearest_neighbour_ = NearestNeighbors(n_neighbors=m + 1)
+            if nn_method == 'exact':
+                self.nearest_neighbour_ = NearestNeighbors(n_neighbors=m + 1,
+                                                           n_jobs=self.n_jobs)
+            elif nn_method == 'approximate':
+                self.nearest_neighbour_ = LSHForest(n_estimators=50,
+                                                    n_candidates=500,
+                                                    n_neighbors=m+1)
+
 
             # --- Nearest Neighbours for noise and boundary (in danger)
             # Before creating synthetic samples we must first decide if
@@ -218,12 +267,58 @@ class SMOTE(UnbalancedDataset):
             # Store SVM object with any parameters#
             self.svm_ = SVC(**kwargs)
 
+    def in_danger_noise(self, samples, kind='danger'):
+        """Estimate if a set of sample are in danger or not.
+
+        Parameters
+        ----------
+        samples : ndarray, shape (n_samples, n_features)
+            The samples to check if either they are in danger or not.
+
+        kind : str, optional (default='danger')
+            The type of classification to use. Can be either:
+
+            - If 'danger', check if samples are in danger,
+            - If 'noise', check if samples are noise.
+
+        Returns
+        -------
+        output : ndarray, shape (n_samples, )
+            A boolean array where True refer to samples in danger or noise.
+
+        """
+
+        # Find the NN for each samples
+        # Exclude the sample itself
+        x = self.nearest_neighbour_.kneighbors(samples,
+                                               return_distance=False)[:, 1:]
+
+        # Count how many NN belong to the minority class
+        # Find the class corresponding to the label in x
+        nn_label = (self.y[x] != self.minc).astype(int)
+        # Compute the number of majority samples in the NN
+        n_maj = np.sum(nn_label, axis=1)
+
+        if kind == 'danger':
+            # Samples are in danger for m/2 <= m' < m
+            return np.bitwise_and(n_maj >= float(self.m) / 2.,
+                                    n_maj < self.m)
+        elif kind == 'noise':
+            # Samples are noise for m = m'
+            return n_maj == self.m
+
     def resample(self):
         """
         Main method of all children classes.
 
         :return: Over-sampled data set.
         """
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
+                          float(self.ucd[self.minc]))
+
 
         # Start by separating minority class features and target values.
         minx = self.x[self.y == self.minc]
@@ -285,11 +380,7 @@ class SMOTE(UnbalancedDataset):
                 print("done!")
 
             # Boolean array with True for minority samples in danger
-            danger_index = [self.in_danger(x, self.y, self.m, miny[0],
-                            self.nearest_neighbour_) for x in minx]
-
-            # Turn into numpy array#
-            danger_index = asarray(danger_index)
+            danger_index = self.in_danger_noise(minx, kind='danger')
 
             # If all minority samples are safe, return the original data set.
             if not any(danger_index):
@@ -393,29 +484,14 @@ class SMOTE(UnbalancedDataset):
 
             # Now, get rid of noisy support vectors
 
-            # Boolean array with True for noisy support vectors
-            noise_bool = []
-            for x in support_vector:
-                noise_bool.append(self.is_noise(x, self.y, self.minc,
-                                                self.nearest_neighbour_))
-
-            # Turn into array#
-            noise_bool = asarray(noise_bool)
+            noise_bool = self.in_danger_noise(support_vector,
+                                                     kind='noise')
 
             # Remove noisy support vectors
             support_vector = support_vector[np.logical_not(noise_bool)]
 
-            # Find support_vectors there are in danger (interpolation) or not
-            # (extrapolation)
-            danger_bool = [self.in_danger(x,
-                                          self.y,
-                                          self.m,
-                                          self.minc,
-                                          self.nearest_neighbour_)
-                           for x in support_vector]
-
-            # Turn into array#
-            danger_bool = asarray(danger_bool)
+            danger_bool = self.in_danger_noise(support_vector,
+                                                     kind='danger')
 
             # Something ...#
             safety_bool = np.logical_not(danger_bool)

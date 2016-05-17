@@ -96,15 +96,15 @@ class UnbalancedDataset(object):
     Parent class with the main methods: fit, transform and fit_transform
     """
 
-    def __init__(self, ratio=1., random_state=None, verbose=True):
+    def __init__(self, ratio='auto', random_state=None, indices_support=False, verbose=True):
         """
         Initialize this object and its instance variables.
 
         :param ratio:
-            ratio will be used in different ways for different children object.
-            But in general it quantifies the amount of under sampling or over
-            sampling to be perfomed with respect to the number of samples
-            present in the minority class.
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this raio.
 
         :param random_state:
             Seed for random number generation.
@@ -162,9 +162,13 @@ class UnbalancedDataset(object):
         ##
         self.out_x = None
         self.out_y = None
+        self.out_idx = None
 
         #
         self.num = None
+
+        # 
+        self.indices_support = indices_support
 
         #
         self.verbose = verbose
@@ -240,9 +244,14 @@ class UnbalancedDataset(object):
         if self.verbose:
             print("Start resampling ...")
 
-        self.out_x, self.out_y = self.resample()
+        if self.indices_support:
+            self.out_x, self.out_y, self.out_idx = self.resample()
 
-        return self.out_x, self.out_y
+            return self.out_x, self.out_y, self.out_idx
+        else:
+            self.out_x, self.out_y = self.resample()
+
+            return self.out_x, self.out_y
 
     def fit_transform(self, x, y):
         """
@@ -259,9 +268,14 @@ class UnbalancedDataset(object):
         """
 
         self.fit(x, y)
-        self.out_x, self.out_y = self.resample()
+        if self.indices_support:
+            self.out_x, self.out_y, self.out_idx = self.resample()
 
-        return self.out_x, self.out_y
+            return self.out_x, self.out_y, self.out_idx
+        else:
+            self.out_x, self.out_y = self.resample()
+
+            return self.out_x, self.out_y
 
     @staticmethod
     def is_tomek(y, nn_index, class_type, verbose=True):
@@ -383,96 +397,3 @@ class UnbalancedDataset(object):
             print("Generated %i new samples ..." % len(new))
 
         return new, y_new
-
-    @staticmethod
-    def in_danger(entry, y, m, class_type, nn_obj):
-        """
-        Function to determine whether a given minority samples is in Danger as
-        defined by Chawla, N.V et al., in: SMOTE: synthetic minority
-        over-sampling technique.
-
-        A minority sample is in danger if more than half of its nearest
-        neighbours belong to the majority class. The exception being a
-        minority sample for which all its nearest neighbours are from the
-        majority class, in which case it is considered noise.
-
-        :param entry:
-            Sample for which danger level is to be found.
-
-        :param y:
-            Full target vector to check to which class the neighbours of sample
-            belong to.
-
-        :param m:
-            The number of nearest neighbours to consider.
-
-        :param class_type:
-            The value of the target variable for the minority class.
-
-        :param nn_obj:
-            A scikit-learn NearestNeighbour object already fitted.
-
-        :return:
-            True or False depending whether a sample is in danger or not.
-        """
-
-        # Find NN for current sample
-        x = nn_obj.kneighbors(entry.reshape((1, len(entry))),
-                              return_distance=False)[:, 1:]
-
-        # Count how many NN belong to the minority class
-        minority = 0
-        for nn in x[0]:
-            if y[nn] != class_type:
-                continue
-            else:
-                minority += 1
-
-        # Return True of False for in danger and not in danger or
-        # noise samples.
-        if minority <= m/2 or minority == m:
-            # for minority == k the sample is considered to be noise and
-            # won't be used, similarly to safe samples
-            return False
-        else:
-            return True
-
-    @staticmethod
-    def is_noise(entry, y, class_type, nn_obj):
-        """
-        Function to determine whether a given minority sample is noise as
-        defined in [1].
-
-        A minority sample is noise if all its nearest neighbours belong to
-        the majority class.
-
-        :param entry:
-            Sample for which danger level is to be found.
-
-        :param y:
-            Full target vector to check to which class the neighbours of sample
-            belong to.
-
-        :param class_type:
-            The value of the target variable for the monority class.
-
-        :param nn_obj:
-            A scikit-learn NearestNeighbour object already fitted.
-
-        :return:
-            True or False depending whether a sample is in danger or not.
-        """
-
-        # Find NN for current sample
-        x = nn_obj.kneighbors(entry.reshape((1, len(entry))),
-                              return_distance=False)[:, 1:]
-
-        # Check if any neighbour belong to the minority class.
-        for nn in x[0]:
-            if y[nn] != class_type:
-                continue
-            else:
-                return False
-
-        # If the loop completed, it is noise.
-        return True
