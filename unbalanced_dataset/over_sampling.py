@@ -259,6 +259,46 @@ class SMOTE(UnbalancedDataset):
             # Store SVM object with any parameters#
             self.svm_ = SVC(**kwargs)
 
+    def in_danger_noise(self, samples, kind='danger'):
+        """Estimate if a set of sample are in danger or not.
+
+        Parameters
+        ----------
+        samples : ndarray, shape (n_samples, n_features)
+            The samples to check if either they are in danger or not.
+
+        kind : str, optional (default='danger')
+            The type of classification to use. Can be either:
+
+            - If 'danger', check if samples are in danger,
+            - If 'noise', check if samples are noise.
+
+        Returns
+        -------
+        output : ndarray, shape (n_samples, )
+            A boolean array where True refer to samples in danger or noise.
+
+        """
+
+        # Find the NN for each samples
+        # Exclude the sample itself
+        x = self.nearest_neighbour_.kneighbors(samples,
+                                               return_distance=False)[:, 1:]
+
+        # Count how many NN belong to the minority class
+        # Find the class corresponding to the label in x
+        nn_label = (self.y[x] != self.minc).astype(int)
+        # Compute the number of majority samples in the NN
+        n_maj = np.sum(nn_label, axis=1)
+
+        if kind == 'danger':
+            # Samples are in danger for m/2 <= m' < m
+            return np.bitwise_and(n_maj >= float(self.m) / 2.,
+                                    n_maj < self.m)
+        elif kind == 'noise':
+            # Samples are noise for m = m'
+            return n_maj == self.m
+
     def resample(self):
         """
         Main method of all children classes.
@@ -326,11 +366,7 @@ class SMOTE(UnbalancedDataset):
                 print("done!")
 
             # Boolean array with True for minority samples in danger
-            danger_index = [self.in_danger(x, self.y, self.m, miny[0],
-                            self.nearest_neighbour_) for x in minx]
-
-            # Turn into numpy array#
-            danger_index = asarray(danger_index)
+            danger_index = self.in_danger_noise(minx, kind='danger')
 
             # If all minority samples are safe, return the original data set.
             if not any(danger_index):
@@ -434,29 +470,14 @@ class SMOTE(UnbalancedDataset):
 
             # Now, get rid of noisy support vectors
 
-            # Boolean array with True for noisy support vectors
-            noise_bool = []
-            for x in support_vector:
-                noise_bool.append(self.is_noise(x, self.y, self.minc,
-                                                self.nearest_neighbour_))
-
-            # Turn into array#
-            noise_bool = asarray(noise_bool)
+            noise_bool = self.in_danger_noise(support_vector,
+                                                     kind='noise')
 
             # Remove noisy support vectors
             support_vector = support_vector[np.logical_not(noise_bool)]
 
-            # Find support_vectors there are in danger (interpolation) or not
-            # (extrapolation)
-            danger_bool = [self.in_danger(x,
-                                          self.y,
-                                          self.m,
-                                          self.minc,
-                                          self.nearest_neighbour_)
-                           for x in support_vector]
-
-            # Turn into array#
-            danger_bool = asarray(danger_bool)
+            danger_bool = self.in_danger_noise(support_vector,
+                                                     kind='danger')
 
             # Something ...#
             safety_bool = np.logical_not(danger_bool)
