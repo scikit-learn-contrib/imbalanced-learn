@@ -15,12 +15,14 @@ class EasyEnsemble(UnderSampler):
     Class-Imbalance Learning" by Liu et al.
     """
 
-    def __init__(self, ratio=1., random_state=None, replacement=False,
+    def __init__(self, ratio='auto', random_state=None, replacement=False,
                  n_subsets=10, verbose=True):
         """
         :param ratio:
-            The ratio of majority elements to sample with respect to the number
-            of minority cases.
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this raio.
 
         :param random_state:
             Seed.
@@ -74,13 +76,15 @@ class BalanceCascade(UnbalancedDataset):
     Class-Imbalance Learning" by Liu et al.
     """
 
-    def __init__(self, ratio=1., random_state=None, n_max_subset=None,
+    def __init__(self, ratio='auto', random_state=None, n_max_subset=None,
                  classifier='knn', bootstrap=True,
                  verbose=True, **kwargs):
         """
         :param ratio:
-            The ratio of majority elements to sample with respect to the number
-            of minority cases.
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this ratio.
 
         :param random_state:
             Seed.

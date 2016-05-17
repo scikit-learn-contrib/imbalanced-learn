@@ -17,15 +17,17 @@ class UnderSampler(UnbalancedDataset):
     """
 
     def __init__(self,
-                 ratio=1.,
+                 ratio='auto',
                  random_state=None,
                  replacement=True,
                  indices_support=False,
                  verbose=True):
         """
         :param ratio:
-            The ratio of majority elements to sample with respect to the number
-            of minority cases.
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this ratio.
 
         :param random_state:
             Seed.
@@ -48,6 +50,10 @@ class UnderSampler(UnbalancedDataset):
         """
         ...
         """
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = 1.
 
         # Start with the minority class
         underx = self.x[self.y == self.minc]
@@ -156,7 +162,7 @@ class ClusterCentroids(UnbalancedDataset):
     cluster centroids as the new majority samples.
     """
 
-    def __init__(self, ratio=1, random_state=None, verbose=True, **kwargs):
+    def __init__(self, ratio='auto', random_state=None, verbose=True, **kwargs):
         """
         :param kwargs:
             Arguments the user might want to pass to the KMeans object from
@@ -189,6 +195,10 @@ class ClusterCentroids(UnbalancedDataset):
 
         :return:
         """
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = 1.
 
         # Create the clustering object
         from sklearn.cluster import KMeans
@@ -236,7 +246,7 @@ class NearMiss(UnbalancedDataset):
     et al. for more details.
     """
 
-    def __init__(self, ratio=1., random_state=None,
+    def __init__(self, ratio='auto', random_state=None,
                  version=1, size_ngh=3, ver3_samp_ngh=3,
                  indices_support=False, verbose=True, **kwargs):
         """
@@ -279,6 +289,10 @@ class NearMiss(UnbalancedDataset):
     def resample(self):
         """
         """
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = 1.
 
         # Start with the minority class
         underx = self.x[self.y == self.minc]

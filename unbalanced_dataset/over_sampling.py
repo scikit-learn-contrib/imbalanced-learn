@@ -23,13 +23,13 @@ class OverSampler(UnbalancedDataset):
     *Supports multiple classes.
     """
 
-    def __init__(self, ratio=1., method='replacement', random_state=None, verbose=True, **kwargs):
+    def __init__(self, ratio='auto', method='replacement', random_state=None, verbose=True, **kwargs):
         """
         :param ratio:
-            Fraction of samples to draw with respect to the number of samples in
-            the original minority class, e.g., if ratio=0.5 the new total size of
-            minority class would be 1.5 times the original.
-                N_new =
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this ratio.
 
         :param random_state:
             Seed.
@@ -60,6 +60,11 @@ class OverSampler(UnbalancedDataset):
             overx, overy: The features and target values of the over-sampled
             data set.
         """
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
+                          float(self.ucd[self.minc]))
 
         # Start with the majority class
         overx = self.x[self.y == self.maxc]
@@ -137,7 +142,7 @@ class SMOTE(UnbalancedDataset):
                  k=5,
                  m=10,
                  out_step=0.5,
-                 ratio=1,
+                 ratio='auto',
                  random_state=None,
                  kind='regular',
                  nn_method='exact',
@@ -155,8 +160,11 @@ class SMOTE(UnbalancedDataset):
 
         :param out_step: Step size when extrapolating
 
-        :param ratio: Fraction of the number of minority samples to
-                      synthetically generate.
+        :param ratio:
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this ratio.
 
         :param random_state: Seed for random number generation
 
@@ -305,6 +313,12 @@ class SMOTE(UnbalancedDataset):
 
         :return: Over-sampled data set.
         """
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
+                          float(self.ucd[self.minc]))
+
 
         # Start by separating minority class features and target values.
         minx = self.x[self.y == self.minc]

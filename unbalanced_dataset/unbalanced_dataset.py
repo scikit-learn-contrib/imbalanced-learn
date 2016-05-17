@@ -96,15 +96,15 @@ class UnbalancedDataset(object):
     Parent class with the main methods: fit, transform and fit_transform
     """
 
-    def __init__(self, ratio=1., random_state=None, indices_support=False, verbose=True):
+    def __init__(self, ratio='auto', random_state=None, indices_support=False, verbose=True):
         """
         Initialize this object and its instance variables.
 
         :param ratio:
-            ratio will be used in different ways for different children object.
-            But in general it quantifies the amount of under sampling or over
-            sampling to be perfomed with respect to the number of samples
-            present in the minority class.
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. If an integer is given, the number of samples
+            generated is equal to the number of samples in the minority class
+            mulitply by this raio.
 
         :param random_state:
             Seed for random number generation.
