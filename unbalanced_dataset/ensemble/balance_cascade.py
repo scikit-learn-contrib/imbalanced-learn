@@ -1,81 +1,38 @@
+"""Class to perform under-sampling using balace cascade."""
 from __future__ import print_function
-from __future__ import division
-from random import sample
+
 import numpy as np
-from .unbalanced_dataset import UnbalancedDataset
-from .under_sampling import UnderSampler
 
+from random import sample
 
-class EasyEnsemble(UnderSampler):
-    """
-    Object to perform classification on balanced ensembled selected from
-    random sampling.
-
-    It is based on the idea presented in the paper "Exploratory Undersampling
-    Class-Imbalance Learning" by Liu et al.
-    """
-
-    def __init__(self, ratio='auto', random_state=None, replacement=False,
-                 n_subsets=10, verbose=True):
-        """
-        :param ratio:
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. If an integer is given, the number of samples
-            generated is equal to the number of samples in the minority class
-            mulitply by this raio.
-
-        :param random_state:
-            Seed.
-
-        :param replacement:
-            Either or not to sample randomly with replacement or not.
-
-        :param n_subsets:
-            Number of subsets to generate.
-        """
-
-        # Passes the relevant parameters back to the parent class.
-        UnderSampler.__init__(self, ratio=ratio,
-                              random_state=random_state,
-                              replacement=replacement,
-                              verbose=verbose)
-
-        self.n_subsets = n_subsets
-
-    def resample(self):
-        """
-        :return subsets_x:
-            Python list containing the different data arrays generated and
-            balanced.
-
-        :return subsets_y:
-            Python list containing the different label arrays generated and
-            balanced.
-        """
-
-        subsets_x = []
-        subsets_y = []
-
-        for s in range(self.n_subsets):
-            if self.verbose:
-                print("Creation of the set #%i" % s)
-
-            tmp_subset_x, tmp_subset_y = UnderSampler.resample(self)
-            subsets_x.append(tmp_subset_x)
-            subsets_y.append(tmp_subset_y)
-
-        return np.array(subsets_x), np.array(subsets_y)
+from ..unbalanced_dataset import UnbalancedDataset
 
 
 class BalanceCascade(UnbalancedDataset):
-    """
-    Object to perform classification on balanced ensembled selected from
-    random sampling and selected using classifier.
+    """Perform under-sampling using an ensemble of subset selected using
+    some classifiers.
 
-    It is based on the idea presented in the paper "Exploratory Undersampling
-    Class-Imbalance Learning" by Liu et al.
-    """
+    This method iteratively select subset and make an ensemble of the
+    different sets. The selection is performed using classifier.
 
+    Parameters
+    ----------
+
+    Attributes
+    ----------
+
+    Notes
+    -----
+    The method is described in [1]_.
+
+    References
+    ----------
+    .. [1] X. Y. Liu, J. Wu and Z. H. Zhou, "Exploratory Undersampling for
+       Class-Imbalance Learning," in IEEE Transactions on Systems, Man, and
+       Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550,
+       April 2009.
+
+    """
     def __init__(self, ratio='auto', random_state=None, n_max_subset=None,
                  classifier='knn', bootstrap=True,
                  verbose=True, **kwargs):
