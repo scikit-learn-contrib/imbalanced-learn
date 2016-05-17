@@ -46,6 +46,12 @@ class SMOTETomek(UnbalancedDataset):
         self.k = k
 
     def resample(self):
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
+                          float(self.ucd[self.minc]))
+
         # Start with the minority class
         minx = self.x[self.y == self.minc]
         miny = self.y[self.y == self.minc]
@@ -139,6 +145,12 @@ class SMOTEENN(UnbalancedDataset):
         self.kwargs = kwargs
 
     def resample(self):
+
+        # Compute the ratio if it is auto
+        if self.ratio == 'auto':
+            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
+                          float(self.ucd[self.minc]))
+
         # Start with the minority class
         minx = self.x[self.y == self.minc]
         miny = self.y[self.y == self.minc]

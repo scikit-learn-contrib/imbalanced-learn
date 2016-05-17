@@ -727,9 +727,14 @@ class NeighbourhoodCleaningRule(UnbalancedDataset):
                 # Get the index to exclude
                 idx_to_exclude += idx_sub_sample[np.nonzero(nnhood_bool)].tolist()
 
+        idx_to_exclude = np.unique(idx_to_exclude)
+
         # Create a vector with the sample to select
         sel_idx = np.ones(self.y.shape)
         sel_idx[idx_to_exclude] = 0
+        # Exclude as well the minority sample since that they will be
+        # concatenated later
+        sel_idx[self.y == self.minc] = 0
 
         # Get the samples from the majority classes
         sel_x = np.squeeze(self.x[np.nonzero(sel_idx), :])
