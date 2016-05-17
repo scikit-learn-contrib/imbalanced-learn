@@ -62,7 +62,7 @@ class EasyEnsemble(UnderSampler):
             subsets_x.append(tmp_subset_x)
             subsets_y.append(tmp_subset_y)
 
-        return subsets_x, subsets_y
+        return np.array(subsets_x), np.array(subsets_y)
 
 
 class BalanceCascade(UnbalancedDataset):
@@ -188,9 +188,9 @@ class BalanceCascade(UnbalancedDataset):
             subsets_x.append(x_data)
             subsets_y.append(y_data)
 
-            if (not ( (self.classifier_name == 'knn'       ) or
-                      (self.classifier_name == 'linear-svm')   )
-                and self.bootstrap):
+            if (not ((self.classifier_name == 'knn') or
+                     (self.classifier_name == 'linear-svm')) and
+                self.bootstrap):
                 # Apply a bootstrap on x_data
                 curr_sample_weight = np.ones((y_data.size,), dtype=np.float64)
                 indices = np.random.randint(0, y_data.size, y_data.size)
@@ -211,7 +211,8 @@ class BalanceCascade(UnbalancedDataset):
             # next round
 
             # Find the misclassified index to keep them for the next round
-            idx_mis_class = idx_sel_from_maj[np.nonzero(pred_label != N_y[idx_sel_from_maj])]
+            idx_mis_class = idx_sel_from_maj[np.nonzero(pred_label !=
+                                                        N_y[idx_sel_from_maj])]
             if self.verbose:
                 print("Elements misclassified: ", idx_mis_class)
             # Count how many random element will be selected
@@ -233,8 +234,10 @@ class BalanceCascade(UnbalancedDataset):
                                                    idx_sel_from_maj),
                                                   axis=0).astype(int)
                     # Select the final batch
-                    x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
-                    y_data = np.concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
+                    x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]),
+                                            axis=0)
+                    y_data = np.concatenate((min_y, N_y[idx_sel_from_maj]),
+                                            axis=0)
                     # Push these data into a new subset
                     subsets_x.append(x_data)
                     subsets_y.append(y_data)
@@ -256,7 +259,8 @@ class BalanceCascade(UnbalancedDataset):
                                                    idx_sel_from_maj),
                                                   axis=0).astype(int)
                 # Select the final batch
-                x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]), axis=0)
+                x_data = np.concatenate((min_x, N_x[idx_sel_from_maj, :]),
+                                        axis=0)
                 y_data = np.concatenate((min_y, N_y[idx_sel_from_maj]), axis=0)
                 # Push these data into a new subset
                 subsets_x.append(x_data)
@@ -271,4 +275,4 @@ class BalanceCascade(UnbalancedDataset):
                     print('Not enough samples to continue creating subsets')
 
         # Return the different subsets
-        return subsets_x, subsets_y
+        return np.array(subsets_x), np.array(subsets_y)
