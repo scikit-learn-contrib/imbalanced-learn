@@ -2,6 +2,7 @@ from __future__ import print_function
 __author__ = 'fnogueira, glemaitre'
 
 from sklearn.datasets import make_classification
+from sklearn.utils.estimator_checks import check_estimator
 
 from unbalanced_dataset.unbalanced_dataset import UnbalancedDataset
 
@@ -126,8 +127,12 @@ def test_CNN(x, y):
     bsx, bsy = BS.fit_transform(x, y)
 
 
-if __name__ == '__main__':
+def test_sklearn_conform():
+    check_estimator(UnderSampler)
 
+if __name__ == '__main__':
+    
+    test_sklearn_conform()
     test_smote(X, Y)
     test_rest(X, Y)
     test_CNN(X, Y)

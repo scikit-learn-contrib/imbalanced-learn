@@ -87,11 +87,13 @@ from __future__ import division
 from __future__ import print_function
 from numpy.random import seed, randint, uniform
 from numpy import zeros, ones
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.utils import check_X_y
 
 __author__ = 'fnogueira, glemaitre'
 
 
-class UnbalancedDataset(object):
+class UnbalancedDataset(BaseEstimator,TransformerMixin):
     """
     Parent class with the main methods: fit, transform and fit_transform
     """
@@ -190,6 +192,8 @@ class UnbalancedDataset(object):
             Nothing
         """
 
+        x,y = check_X_y(x,y)
+
         self.x = x
         self.y = y
 
@@ -232,14 +236,17 @@ class UnbalancedDataset(object):
             print(str(len(uniques)) +
                   " classes detected: " +
                   str(self.ucd), end="\n")
+        return self
 
-    def transform(self):
+    def transform(self,X):
         """
         Class method to re-sample the dataset with a particular technique.
 
         :return:
             The re-sampled data set.
         """
+
+        self.x = X
 
         if self.verbose:
             print("Start resampling ...")
