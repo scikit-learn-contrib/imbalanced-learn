@@ -1,117 +1,102 @@
-"""Class to perform random under-sampling."""
+"""Base class for under-sampling."""
 from __future__ import print_function
 from __future__ import division
 
 import numpy as np
 
-from numpy.random import seed
-from numpy.random import randint
-
-from random import sample
-
 from collections import Counter
 
-from ..unbalanced_dataset import UnbalancedDataset
+from abc import ABCMeta, abstractmethod
+
+from sklearn.utils import check_array
+
+from ..base_sampler import BaseSampler
 
 
-class UnderSampler(UnbalancedDataset):
-    """Class to perform random under-sampling.
+class UnderSampler(BaseSampler):
+    """Base class for under-sampling.
 
-    Object to under sample the majority class(es) by randomly picking samples
-    with or without replacement.
-
-    Parameters
-    ----------
-
-    Attributes
-    ----------
-
-    Notes
-    -----
+    Warning: This class should not be used directly. Use the derive classes
+    instead.
 
     """
 
-    def __init__(self,
-                 ratio='auto',
-                 random_state=None,
-                 replacement=True,
-                 indices_support=False,
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def __init__(self, ratio='auto', return_indices=True, random_state=None,
                  verbose=True):
-        """
-        :param ratio:
+        """Initialize this object and its instance variables.
+
+        Parameters
+        ----------
+        ratio : str or float, optional (default='auto')
             If 'auto', the ratio will be defined automatically to balanced
-            the dataset. If an integer is given, the number of samples
-            generated is equal to the number of samples in the minority class
-            mulitply by this ratio.
+            the dataset. Otherwise, the ratio will corresponds to the number
+            of samples in the minority class over the the number of samples
+            in the majority class.
 
-        :param random_state:
-            Seed.
+        return_indices : bool, optional (default=True)
+            Either to return or not the indices which will be selected from
+            the majority class.
 
-        :return:
-            underx, undery: The features and target values of the under-sampled
-            data set.
+        random_state : int or None, optional (default=None)
+            Seed for random number generation.
+
+        verbose : bool, optional (default=True)
+            Boolean to either or not print information about the processing
+
+        Returns
+        -------
+        None
+
         """
 
-        # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self,
-                                   ratio=ratio,
-                                   random_state=random_state,
-                                   indices_support=indices_support,
-                                   verbose=verbose)
+        super(UnderSampler, self).__init__(ratio=ratio,
+                                          random_state=random_state,
+                                          verbose=verbose)
 
-        self.replacement = replacement
+        self.return_indices = return_indices
 
-    def resample(self):
+    @abstractmethod
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
         """
-        ...
+        super(UnderSampler, self).fit(X, y)
+
+    @abstractmethod
+    def transform(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
+
         """
-
-        # Compute the ratio if it is auto
-        if self.ratio == 'auto':
-            self.ratio = 1.
-
-        # Start with the minority class
-        underx = self.x[self.y == self.minc]
-        undery = self.y[self.y == self.minc]
-
-        # If we need to offer support for the indices
-        if self.indices_support:
-            idx_under = np.nonzero(self.y == self.minc)[0]
-
-        # Loop over the other classes under picking at random
-        for key in self.ucd.keys():
-            # If the minority class is up, skip it
-            if key == self.minc:
-                continue
-
-            # Set the ratio to be no more than the number of samples available
-            if self.ratio * self.ucd[self.minc] > self.ucd[key]:
-                num_samples = self.ucd[key]
-            else:
-                num_samples = int(self.ratio * self.ucd[self.minc])
-
-            # Pick some elements at random
-            seed(self.rs)
-            if self.replacement:
-                indx = randint(low=0, high=self.ucd[key], size=num_samples)
-            else:
-                indx = sample(range((self.y == key).sum()), num_samples)
-
-            # If we need to offer support for the indices selected
-            if self.indices_support:
-                idx_tmp = np.nonzero(self.y == key)[0][indx]
-                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
-
-            # Concatenate to the minority class
-            underx = concatenate((underx, self.x[self.y == key][indx]), axis=0)
-            undery = concatenate((undery, self.y[self.y == key][indx]), axis=0)
-
-        if self.verbose:
-            print("Under-sampling performed: " + str(Counter(undery)))
-
-        # Check if the indices of the samples selected should be returned too
-        if self.indices_support:
-            # Return the indices of interest
-            return underx, undery, idx_under
-        else:
-            return underx, undery
+        super(UnderSampler, self).transform(X, y)

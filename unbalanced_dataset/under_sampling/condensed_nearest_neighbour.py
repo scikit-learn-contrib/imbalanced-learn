@@ -15,10 +15,13 @@ from random import sample
 
 from collections import Counter
 
-from ..unbalanced_dataset import UnbalancedDataset
+from sklearn.utils import check_X_y
+from sklearn.neighbors import KNeighborsClassifier
+
+from .under_sampler import UnderSampler
 
 
-class CondensedNearestNeighbour(UnbalancedDataset):
+class CondensedNearestNeighbour(UnderSampler):
     """Class to perform under-sampling based on the condensed nearest neighbour
     method.
 
@@ -39,72 +42,132 @@ class CondensedNearestNeighbour(UnbalancedDataset):
 
     """
 
-    def __init__(self, random_state=None, indices_support=False,
-                 size_ngh=1, n_seeds_S=1, verbose=True,
-                 **kwargs):
-        """
+    def __init__(self, return_indices=False, random_state=None, verbose=True,
+                 size_ngh=1, n_seeds_S=1, n_jobs=-1, **kwargs):
+        """Initialisation of CNN object.
 
-        :param size_ngh
-            Size of the neighbourhood to consider to compute the
-            average distance to the minority point samples.
+        Parameters
+        ----------
+        return_indices : bool, optional (default=True)
+            Either to return or not the indices which will be selected from
+            the majority class.
 
-        :param n_seeds_S
+        random_state : int or None, optional (default=None)
+            Seed for random number generation.
+
+        verbose : bool, optional (default=True)
+            Boolean to either or not print information about the processing
+
+        size_ngh : int, optional (default=1)
+            Size of the neighbourhood to consider to compute the average
+            distance to the minority point samples.
+
+        n_seeds_S : int, optional (default=1)
             Number of samples to extract in order to build the set S.
 
-        :param **kwargs
-            Parameter to use for the Neareast Neighbours.
+        n_jobs : int, optional (default=1)
+            The number of thread to open when it is possible.
+
+        **kwargs : keywords
+            Parameter to use for the Neareast Neighbours object.
+
         """
+        super(CondensedNearestNeighbour, self).__init__(
+            return_indices=return_indices,
+            random_state=random_state,
+            verbose=verbose)
 
-        # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, random_state=random_state,
-                                   indices_support=indices_support, verbose=verbose)
-
-        # Assign the parameter of the element of this class
         self.size_ngh = size_ngh
         self.n_seeds_S = n_seeds_S
+        self.n_jobs = n_jobs
         self.kwargs = kwargs
 
-    def resample(self):
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
         """
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
+
+        super(CondensedNearestNeighbour, self).fit(X, y)
+
+        return self
+
+    def transform(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
+
+        idx_under : ndarray, shape (n_samples, )
+            If `return_indices` is `True`, a boolean array will be returned
+            containing the which samples have been selected.
+
         """
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
 
         # Start with the minority class
-        underx = self.x[self.y == self.minc]
-        undery = self.y[self.y == self.minc]
+        X_min = X[y == self.min_c_]
+        y_min = y[y == self.min_c_]
+
+        # All the minority class samples will be preserved
+        X_resampled = X_min.copy()
+        y_resampled = y_min.copy()
 
         # If we need to offer support for the indices
-        if self.indices_support:
-            idx_under = np.nonzero(self.y == self.minc)[0]
-
-        # Import the K-NN classifier
-        from sklearn.neighbors import KNeighborsClassifier
+        if self.return_indices:
+            idx_under = np.nonzero(y == self.min_c_)[0]
 
         # Loop over the other classes under picking at random
-        for key in self.ucd.keys():
+        for key in self.stats_c_.keys():
 
             # If the minority class is up, skip it
-            if key == self.minc:
+            if key == self.min_c_:
                 continue
 
             # Randomly get one sample from the majority class
-            maj_sample = sample(self.x[self.y == key],
-                                self.n_seeds_S)
+            np.random.seed(self.rs_)
+            maj_sample = np.random.choice(X[y == key], self.n_seeds_S)
 
-            # Create the set C
-            C_x = np.append(self.x[self.y == self.minc],
-                            maj_sample,
-                            axis=0)
-            C_y = np.append(self.y[self.y == self.minc],
-                            [key] * self.n_seeds_S)
+            # Create the set C - One majority samples and all minority
+            C_x = np.append(X_min, maj_sample, axis=0)
+            C_y = np.append(y_min, np.array([key] * self.n_seeds_S))
 
-            # Create the set S
-            S_x = self.x[self.y == key]
-            S_y = self.y[self.y == key]
+            # Create the set S - all majority samples
+            S_x = X[y == key]
+            S_y = y[y == key]
 
             # Create a k-NN classifier
             knn = KNeighborsClassifier(n_neighbors=self.size_ngh,
+                                       n_jobs=self.n_jobs,
                                        **self.kwargs)
-
             # Fit C into the knn
             knn.fit(C_x, C_y)
 
@@ -116,19 +179,19 @@ class CondensedNearestNeighbour(UnbalancedDataset):
             sel_y = S_y[np.nonzero(pred_S_y != S_y)]
 
             # If we need to offer support for the indices selected
-            if self.indices_support:
-                idx_tmp = np.nonzero(self.y == key)[0][np.nonzero(pred_S_y != S_y)]
+            if self.return_indices:
+                idx_tmp = np.nonzero(y == key)[0][np.nonzero(pred_S_y != S_y)]
                 idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
 
-            underx = concatenate((underx, sel_x), axis=0)
-            undery = concatenate((undery, sel_y), axis=0)
+            X_resampled = concatenate((X_resampled, sel_x), axis=0)
+            y_resampled = concatenate((y_resampled, sel_y), axis=0)
 
         if self.verbose:
-            print("Under-sampling performed: " + str(Counter(undery)))
+            print("Under-sampling performed: " + str(Counter(y_resampled)))
 
         # Check if the indices of the samples selected should be returned too
-        if self.indices_support:
+        if self.return_indices:
             # Return the indices of interest
-            return underx, undery, idx_under
+            return X_resampled, y_resampled, idx_under
         else:
-            return underx, undery
+            return X_resampled, y_resampled

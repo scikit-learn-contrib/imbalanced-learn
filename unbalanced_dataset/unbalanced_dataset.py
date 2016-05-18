@@ -85,15 +85,20 @@ TO DO LIST:
 
 from __future__ import division
 from __future__ import print_function
-from numpy.random import seed, randint, uniform
-from numpy import zeros, ones
 
-__author__ = 'fnogueira, glemaitre'
+from numpy import zeros
+from numpy import ones
+
+from numpy.random import seed
+from numpy.random import randint
+from numpy.random import uniform
 
 
 class UnbalancedDataset(object):
-    """
-    Parent class with the main methods: fit, transform and fit_transform
+    """Basic class with abstact method.
+
+    Warning: This class should not be used directly. Use the derive classes
+    instead.
     """
 
     def __init__(self, ratio='auto', random_state=None, indices_support=False, verbose=True):
