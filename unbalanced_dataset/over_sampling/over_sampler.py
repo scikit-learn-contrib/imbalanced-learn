@@ -1,133 +1,95 @@
-"""Class to perform random over-sampling."""
+"""Base class for over-sampling."""
 from __future__ import print_function
 from __future__ import division
 
 import numpy as np
-from numpy.random import seed
-from numpy.random import randint
-from numpy import concatenate
-from numpy import asarray
 
 from collections import Counter
 
-from ..unbalanced_dataset import UnbalancedDataset
+from abc import ABCMeta, abstractmethod
+
+from sklearn.utils import check_array
+
+from ..base_sampler import BaseSampler
 
 
-class OverSampler(UnbalancedDataset):
-    """Class to perform random over-sampling.
+class OverSampler(BaseSampler):
+    """Base class for over-sampling.
 
-    Object to over-sample the minority class(es) by picking samples at random
-    with replacement.
+    Warning: This class should not be used directly. Use the derive classes
+    instead.
 
-    Parameters
-    ----------
-
-    Attributes
-    ----------
-
-    Notes
-    -----
-    Supports multiple classes.
     """
 
-    def __init__(self, ratio='auto', method='replacement', random_state=None, verbose=True, **kwargs):
-        """
-        :param ratio:
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def __init__(self, ratio='auto', random_state=None, verbose=True):
+        """Initialize this object and its instance variables.
+
+        Parameters
+        ----------
+        ratio : str or float, optional (default='auto')
             If 'auto', the ratio will be defined automatically to balanced
-            the dataset. If an integer is given, the number of samples
-            generated is equal to the number of samples in the minority class
-            mulitply by this ratio.
+            the dataset. Otherwise, the ratio will corresponds to the number
+            of samples in the minority class over the the number of samples
+            in the majority class.
 
-        :param random_state:
-            Seed.
+        random_state : int or None, optional (default=None)
+            Seed for random number generation.
 
-        :return:
-            Nothing.
-        """
-        UnbalancedDataset.__init__(self,
-                                   ratio=ratio,
-                                   random_state=random_state,
-                                   verbose=verbose)
+        verbose : bool, optional (default=True)
+            Boolean to either or not print information about the processing
 
-        # Do not expect any support regarding the selection with this method
-        if (kwargs.pop('indices_support', False)):
-            raise ValueError('No indices support with this method.')
+        Returns
+        -------
+        None
 
-        self.method = method
-        if (self.method == 'gaussian-perturbation'):
-            self.mean_gaussian = kwargs.pop('mean_gaussian', 0.0)
-            self.std_gaussian = kwargs.pop('std_gaussian', 1.0)
-
-    def resample(self):
-        """
-        Over samples the minority class by randomly picking samples with
-        replacement.
-
-        :return:
-            overx, overy: The features and target values of the over-sampled
-            data set.
         """
 
-        # Compute the ratio if it is auto
-        if self.ratio == 'auto':
-            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
-                          float(self.ucd[self.minc]))
+        super(OverSampler, self).__init__(ratio=ratio,
+                                          random_state=random_state,
+                                          verbose=verbose)
 
-        # Start with the majority class
-        overx = self.x[self.y == self.maxc]
-        overy = self.y[self.y == self.maxc]
+    @abstractmethod
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
 
-        # Loop over the other classes over picking at random
-        for key in self.ucd.keys():
-            if key == self.maxc:
-                continue
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
 
-            # If the ratio given is too large such that the minority becomes a
-            # majority, clip it.
-            if self.ratio * self.ucd[key] > self.ucd[self.maxc]:
-                num_samples = self.ucd[self.maxc] - self.ucd[key]
-            else:
-                num_samples = int(self.ratio * self.ucd[key])
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
 
-            if (self.method == 'replacement'):
-                # Pick some elements at random
-                seed(self.rs)
-                indx = randint(low=0, high=self.ucd[key], size=num_samples)
+        Returns
+        -------
+        self : object,
+            Return self.
 
-                # Concatenate to the majority class
-                overx = concatenate((overx,
-                                     self.x[self.y == key],
-                                     self.x[self.y == key][indx]), axis=0)
+        """
+        super(OverSampler, self).fit(X, y)
 
-                overy = concatenate((overy,
-                                     self.y[self.y == key],
-                                     self.y[self.y == key][indx]), axis=0)
+    @abstractmethod
+    def transform(self, X, y):
+        """Resample the dataset.
 
-            elif (self.method == 'gaussian-perturbation'):
-                # Pick the index of the samples which will be modified
-                seed(self.rs)
-                indx = randint(low=0, high=self.ucd[key], size=num_samples)
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
 
-                # Generate the new samples
-                sam_pert = []
-                for i in indx:
-                    pert = np.random.normal(self.mean_gaussian, self.std_gaussian, self.x[self.y == key][i])
-                    sam_pert.append(self.x[self.y == key][i] + pert)
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
 
-                # Convert the list to numpy array
-                sam_pert = np.array(sam_pert)
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
 
-                # Concatenate to the majority class
-                overx = concatenate((overx,
-                                     self.x[self.y == key],
-                                     sam_pert), axis=0)
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
 
-                overy = concatenate((overy,
-                                     self.y[self.y == key],
-                                     self.y[self.y == key][indx]), axis=0)
-
-        if self.verbose:
-            print("Over-sampling performed: " + str(Counter(overy)))
-
-        # Return over sampled dataset
-        return overx, overy
+        """
+        super(OverSampler, self).transform(X, y)
