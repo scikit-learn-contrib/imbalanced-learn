@@ -2,10 +2,8 @@
 streamline the re-sampling process."""
 from __future__ import print_function
 from __future__ import division
-import numpy as np
-from numpy import concatenate, logical_not
-from collections import Counter
-from .unbalanced_dataset import UnbalancedDataset
+
+from ..unbalanced_dataset import UnbalancedDataset
 
 
 class Pipeline(object):
