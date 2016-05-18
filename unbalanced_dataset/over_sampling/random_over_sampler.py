@@ -28,8 +28,7 @@ class RandomOverSampler(OverSampler):
     Supports multiple classes.
     """
 
-    def __init__(self, ratio='auto', method='replacement', random_state=None,
-                 verbose=True, **kwargs):
+    def __init__(self, ratio='auto', random_state=None, verbose=True):
         """Initialize this object and its instance variables.
 
         Parameters
@@ -131,8 +130,8 @@ class RandomOverSampler(OverSampler):
 
             # Concatenate to the majority class
             X_resampled = np.concatenate((X_resampled,
-                                          X[Y == key],
-                                          X[Y == key][indx]),
+                                          X[y == key],
+                                          X[y == key][indx]),
                                          axis=0)
 
             y_resampled = np.concatenate((y_resampled,

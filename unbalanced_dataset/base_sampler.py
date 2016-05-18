@@ -47,11 +47,18 @@ class BaseSampler(object):
         # The ratio correspond to the number of samples in the minority class
         # over the number of samples in the majority class. Thus, the ratio
         # cannot be greater than 1.0
-        if ratio > 1.0:
-            raise ValueError('Ratio cannot be greater than one. Otherwise the'
-                             ' majority class become minority.')
-        else:
-            self.ratio_ = ratio
+        if isinstance(ratio, float):
+            if ratio > 1.0 or ratio < 0.:
+                raise ValueError('Ratio cannot be greater than one or negative'
+                                 '. Otherwise the majority class become'
+                                 ' minority.')
+            else:
+                self.ratio_ = ratio
+        elif isinstance(ratio, basestring):
+            if ratio == 'auto':
+                self.ratio_ = ratio
+            else:
+                raise ValueError('Unknown string for the parameter ratio.')
 
         self.rs_ = random_state
         self.verbose = verbose
