@@ -3,15 +3,7 @@ method."""
 from __future__ import print_function
 from __future__ import division
 
-import multiprocessing
-
 import numpy as np
-
-from numpy import logical_not, ones
-from numpy.random import seed, randint
-from numpy import concatenate
-
-from random import sample
 
 from collections import Counter
 
@@ -27,13 +19,56 @@ class CondensedNearestNeighbour(UnderSampler):
 
     Parameters
     ----------
+    return_indices : bool, optional (default=True)
+        Either to return or not the indices which will be selected from
+        the majority class.
+
+    random_state : int or None, optional (default=None)
+        Seed for random number generation.
+
+    verbose : bool, optional (default=True)
+        Boolean to either or not print information about the processing
+
+    size_ngh : int, optional (default=1)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+    n_seeds_S : int, optional (default=1)
+        Number of samples to extract in order to build the set S.
+
+    n_jobs : int, optional (default=1)
+        The number of thread to open when it is possible.
+
+    **kwargs : keywords
+        Parameter to use for the Neareast Neighbours object.
+
 
     Attributes
     ----------
+    ratio_ : str or float, optional (default='auto')
+        If 'auto', the ratio will be defined automatically to balanced
+        the dataset. Otherwise, the ratio will corresponds to the number
+        of samples in the minority class over the the number of samples
+        in the majority class.
+
+    rs_ : int or None, optional (default=None)
+        Seed for random number generation.
+
+    min_c_ : str or int
+        The identifier of the minority class.
+
+    max_c_ : str or int
+        The identifier of the majority class.
+
+    stats_c_ : dict of str/int : int
+        A dictionary in which the number of occurences of each class is
+        reported.
 
     Notes
     -----
     The method is based on [1]_.
+
+    This class supports multi-class.
 
     References
     ----------
@@ -70,6 +105,10 @@ class CondensedNearestNeighbour(UnderSampler):
 
         **kwargs : keywords
             Parameter to use for the Neareast Neighbours object.
+
+        Returns
+        -------
+        None
 
         """
         super(CondensedNearestNeighbour, self).__init__(
@@ -154,7 +193,10 @@ class CondensedNearestNeighbour(UnderSampler):
 
             # Randomly get one sample from the majority class
             np.random.seed(self.rs_)
-            maj_sample = np.random.choice(X[y == key], self.n_seeds_S)
+            # Generate the index to select
+            idx_maj_sample = np.random.randint(low=0, high=self.stats_c_[key],
+                                               size=self.n_seeds_S)
+            maj_sample = X[y == key][idx_maj_sample]
 
             # Create the set C - One majority samples and all minority
             C_x = np.append(X_min, maj_sample, axis=0)
@@ -183,11 +225,11 @@ class CondensedNearestNeighbour(UnderSampler):
                 idx_tmp = np.nonzero(y == key)[0][np.nonzero(pred_S_y != S_y)]
                 idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
 
-            X_resampled = concatenate((X_resampled, sel_x), axis=0)
-            y_resampled = concatenate((y_resampled, sel_y), axis=0)
+            X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
+            y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
         if self.verbose:
-            print("Under-sampling performed: " + str(Counter(y_resampled)))
+            print("Under-sampling performed: {}".format(Counter(y_resampled)))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

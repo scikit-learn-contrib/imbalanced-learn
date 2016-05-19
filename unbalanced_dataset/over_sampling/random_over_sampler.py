@@ -168,6 +168,6 @@ class RandomOverSampler(OverSampler):
                                           y[y == key][indx]), axis=0)
 
         if self.verbose:
-            print("Over-sampling performed: " + str(Counter(y_resampled)))
+            print("Over-sampling performed: {}".format(Counter(y_resampled)))
 
         return X_resampled, y_resampled

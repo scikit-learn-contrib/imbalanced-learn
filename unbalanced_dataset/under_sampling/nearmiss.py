@@ -6,25 +6,80 @@ import multiprocessing
 
 import numpy as np
 
-from numpy import concatenate
-
 from collections import Counter
 
-from ..unbalanced_dataset import UnbalancedDataset
+from sklearn.utils import check_X_y
+from sklearn.neighbors import NearestNeighbors
+
+from .under_sampler import UnderSampler
 
 
-class NearMiss(UnbalancedDataset):
+class NearMiss(UnderSampler):
     """Class to perform under-sampling based on NearMiss methods.
 
     Parameters
     ----------
+    ratio : str or float, optional (default='auto')
+            If 'auto', the ratio will be defined automatically to balanced
+        the dataset. Otherwise, the ratio will corresponds to the number
+        of samples in the minority class over the the number of samples
+        in the majority class.
+
+    return_indices : bool, optional (default=True)
+        Either to return or not the indices which will be selected from
+        the majority class.
+
+    random_state : int or None, optional (default=None)
+        Seed for random number generation.
+
+    verbose : bool, optional (default=True)
+        Boolean to either or not print information about the processing
+
+    version : int, optional (default=1)
+        Version of the NearMiss to use. Possible values
+        are 1, 2 or 3.
+
+    size_ngh : int, optional (default=3)
+        Size of the neighbourhood to consider to compute the
+        average distance to the minority point samples.
+
+    ver3_samp_ngh : int, optional (default=3)
+        NearMiss-3 algorithm start by a phase of re-sampling. This
+        parameter correspond to the number of neighbours selected
+        create the sub_set in which the selection will be performed.
+
+    n_jobs : int, optional (default=1)
+        The number of thread to open when it is possible.
+
+    **kwargs : keywords
+        Parameter to use for the Nearest Neighbours object.
 
     Attributes
     ----------
+    ratio_ : str or float, optional (default='auto')
+        If 'auto', the ratio will be defined automatically to balanced
+        the dataset. Otherwise, the ratio will corresponds to the number
+        of samples in the minority class over the the number of samples
+        in the majority class.
+
+    rs_ : int or None, optional (default=None)
+        Seed for random number generation.
+
+    min_c_ : str or int
+        The identifier of the minority class.
+
+    max_c_ : str or int
+        The identifier of the majority class.
+
+    stats_c_ : dict of str/int : int
+        A dictionary in which the number of occurences of each class is
+        reported.
 
     Notes
     -----
     The methods are based on [1]_.
+
+    The class support multi-classes.
 
     References
     ----------
@@ -34,33 +89,57 @@ class NearMiss(UnbalancedDataset):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None,
-                 version=1, size_ngh=3, ver3_samp_ngh=3,
-                 indices_support=False, verbose=True, **kwargs):
-        """
-        :param version:
-            Version of the NearMiss to use. Possible values
-            are 1, 2 or 3. See the original paper for details
-            about these different versions.
+    def __init__(self, ratio='auto', return_indices=True, random_state=None,
+                 verbose=True, version=1, size_ngh=3, ver3_samp_ngh=3,
+                 n_jobs=-1, **kwargs):
+        """Initialisation of clustering centroids object.
 
-        :param size_ngh:
+        Parameters
+        ----------
+        ratio : str or float, optional (default='auto')
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. Otherwise, the ratio will corresponds to the number
+            of samples in the minority class over the the number of samples
+            in the majority class.
+
+        return_indices : bool, optional (default=True)
+            Either to return or not the indices which will be selected from
+            the majority class.
+
+        random_state : int or None, optional (default=None)
+            Seed for random number generation.
+
+        verbose : bool, optional (default=True)
+            Boolean to either or not print information about the processing
+
+        version : int, optional (default=1)
+            Version of the NearMiss to use. Possible values
+            are 1, 2 or 3.
+
+        size_ngh : int, optional (default=3)
             Size of the neighbourhood to consider to compute the
             average distance to the minority point samples.
 
-        :param ver3_samp_ngh:
+        ver3_samp_ngh : int, optional (default=3)
             NearMiss-3 algorithm start by a phase of re-sampling. This
             parameter correspond to the number of neighbours selected
             create the sub_set in which the selection will be performed.
 
-        :param **kwargs:
-            Parameter to use for the Nearest Neighbours.
-        """
+        n_jobs : int, optional (default=1)
+            The number of thread to open when it is possible.
 
-        # Passes the relevant parameters back to the parent class.
-        UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state,
-                                   indices_support=indices_support,
-                                   verbose=verbose)
+        **kwargs : keywords
+            Parameter to use for the Nearest Neighbours object.
+
+        Returns
+        -------
+        None
+
+        """
+        super(NearMiss, self).__init__(ratio=ratio,
+                                       return_indices=return_indices,
+                                       random_state=random_state,
+                                       verbose=verbose)
 
         # Assign the parameter of the element of this class
         # Check that the version asked is implemented
@@ -71,125 +150,69 @@ class NearMiss(UnbalancedDataset):
         self.version = version
         self.size_ngh = size_ngh
         self.ver3_samp_ngh = ver3_samp_ngh
-        self.n_jobs = kwargs.pop('n_jobs', multiprocessing.cpu_count())
+        self.n_jobs = n_jobs
         self.kwargs = kwargs
 
-    def resample(self):
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
         """
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
+
+        super(NearMiss, self).fit(X, y)
+
+        return self
+
+    def _selection_dist_based(self, X, y, dist_vec, num_samples, key,
+                              sel_strategy='nearest'):
+        """Select the appropriate samples depending of the strategy selected.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Original samples.
+
+        y : ndarray, shape (n_samples, )
+            Associated label to X.
+
+        dist_vec : ndarray, shape (n_samples, )
+            The distance matrix to the nearest neigbour.
+
+        num_samples: int
+            The desired number of samples to select.
+
+        key : str or int,
+            The target class.
+
+        sel_strategy : str, optional (default='nearest')
+            Strategy to select the samples. Either 'nearest' or 'farthest'
+
+        Returns
+        -------
+        X_sel : ndarray, shape (num_samples, n_features)
+            Selected samples.
+
+        y_sel : ndarray, shape (num_samples, )
+            The associated label.
+
+        idx_sel : ndarray, shape (num_samples, )
+            The list of the indices of the selected samples.
+
         """
-
-        # Compute the ratio if it is auto
-        if self.ratio == 'auto':
-            self.ratio = 1.
-
-        # Start with the minority class
-        underx = self.x[self.y == self.minc]
-        undery = self.y[self.y == self.minc]
-
-        # If we need to offer support for the indices
-        if self.indices_support:
-            idx_under = np.nonzero(self.y == self.minc)[0]
-
-        # For each element of the current class, find the set of NN
-        # of the minority class
-        from sklearn.neighbors import NearestNeighbors
-
-        # Call the constructor of the NN
-        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh,
-                                  n_jobs=self.n_jobs,
-                                  **self.kwargs)
-
-        # Fit the minority class since that we want to know the distance
-        # to these point
-        nn_obj.fit(self.x[self.y == self.minc])
-
-        # Loop over the other classes under picking at random
-        for key in self.ucd.keys():
-
-            # If the minority class is up, skip it
-            if key == self.minc:
-                continue
-
-            # Set the ratio to be no more than the number of samples available
-            if self.ratio * self.ucd[self.minc] > self.ucd[key]:
-                num_samples = self.ucd[key]
-            else:
-                num_samples = int(self.ratio * self.ucd[self.minc])
-
-            # Get the samples corresponding to the current class
-            sub_samples_x = self.x[self.y == key]
-            sub_samples_y = self.y[self.y == key]
-
-            if self.version == 1:
-                # Find the NN
-                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x,
-                                                      n_neighbors=self.size_ngh)
-
-                # Select the right samples
-                sel_x, sel_y, idx_tmp = self.__SelectionDistBased__(dist_vec,
-                                                                    num_samples,
-                                                                    key,
-                                                                    sel_strategy='nearest')
-            elif self.version == 2:
-                # Find the NN
-                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x,
-                                                      n_neighbors=self.y[self.y == self.minc].size)
-
-                # Select the right samples
-                sel_x, sel_y, idx_tmp = self.__SelectionDistBased__(dist_vec,
-                                                                    num_samples,
-                                                                    key,
-                                                                    sel_strategy='nearest')
-            elif self.version == 3:
-                # We need a new NN object to fit the current class
-                nn_obj_cc = NearestNeighbors(n_neighbors=self.ver3_samp_ngh,
-                                             n_jobs=self.n_jobs,
-                                             **self.kwargs)
-                nn_obj_cc.fit(sub_samples_x)
-
-                # Find the set of NN to the minority class
-                dist_vec, idx_vec = nn_obj_cc.kneighbors(self.x[self.y == self.minc])
-
-                # Create the subset containing the samples found during the NN
-                # search. Linearize the indexes and remove the double values
-                idx_vec = np.unique(idx_vec.reshape(-1))
-
-                # Create the subset
-                sub_samples_x = sub_samples_x[idx_vec, :]
-                sub_samples_y = sub_samples_y[idx_vec]
-
-                # Compute the NN considering the current class
-                dist_vec, idx_vec = nn_obj.kneighbors(sub_samples_x,
-                                                      n_neighbors=self.size_ngh)
-
-                sel_x, sel_y, idx_tmp = self.__SelectionDistBased__(dist_vec,
-                                                                    num_samples,
-                                                                    key,
-                                                                    sel_strategy='farthest')
-
-            # If we need to offer support for the indices selected
-            if self.indices_support:
-                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
-
-            underx = concatenate((underx, sel_x), axis=0)
-            undery = concatenate((undery, sel_y), axis=0)
-
-        if self.verbose:
-            print("Under-sampling performed: " + str(Counter(undery)))
-
-        # Check if the indices of the samples selected should be returned too
-        if self.indices_support:
-            # Return the indices of interest
-            return underx, undery, idx_under
-        else:
-            return underx, undery
-
-
-    def __SelectionDistBased__(self,
-                               dist_vec,
-                               num_samples,
-                               key,
-                               sel_strategy='nearest'):
 
         # Compute the distance considering the farthest neighbour
         dist_avg_vec = np.sum(dist_vec[:, -self.size_ngh:], axis=1)
@@ -210,4 +233,151 @@ class NearMiss(UnbalancedDataset):
         # Select the desired number of samples
         sel_idx = sorted_idx[:num_samples]
 
-        return self.x[self.y == key][sel_idx], self.y[self.y == key][sel_idx], np.nonzero(self.y == key)[0][sel_idx]
+        return (X[y == key][sel_idx], y[y == key][sel_idx],
+                np.nonzero(y == key)[0][sel_idx])
+
+
+    def transform(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
+
+        idx_under : ndarray, shape (n_samples, )
+            If `return_indices` is `True`, a boolean array will be returned
+            containing the which samples have been selected.
+
+        """
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
+
+        # Start with the minority class
+        X_min = X[y == self.min_c_]
+        y_min = y[y == self.min_c_]
+
+        # All the minority class samples will be preserved
+        X_resampled = X_min.copy()
+        y_resampled = y_min.copy()
+
+        # Compute the number of cluster needed
+        if self.ratio_ == 'auto':
+            num_samples = self.stats_c_[self.min_c_]
+        else:
+            num_samples = int(self.stats_c_[self.min_c_] / self.ratio_)
+
+        # If we need to offer support for the indices
+        if self.return_indices:
+            idx_under = np.nonzero(y == self.min_c_)[0]
+
+        # For each element of the current class, find the set of NN
+        # of the minority class
+        # Call the constructor of the NN
+        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh,
+                                  n_jobs=self.n_jobs,
+                                  **self.kwargs)
+
+        # Fit the minority class since that we want to know the distance
+        # to these point
+        nn_obj.fit(X[y == self.min_c_])
+
+        # Loop over the other classes under picking at random
+        for key in self.stats_c_.keys():
+
+            # If the minority class is up, skip it
+            if key == self.min_c_:
+                continue
+
+            # Get the samples corresponding to the current class
+            sub_samples_x = X[y == key]
+            sub_samples_y = y[y == key]
+
+            if self.version == 1:
+                # Find the NN
+                dist_vec, idx_vec = nn_obj.kneighbors(
+                    sub_samples_x,
+                    n_neighbors=self.size_ngh)
+
+                # Select the right samples
+                sel_x, sel_y, idx_tmp = self._selection_dist_based(
+                    X,
+                    y,
+                    dist_vec,
+                    num_samples,
+                    key,
+                    sel_strategy='nearest')
+
+            elif self.version == 2:
+                # Find the NN
+                dist_vec, idx_vec = nn_obj.kneighbors(
+                    sub_samples_x,
+                    n_neighbors=self.stats_c_[self.min_c_])
+
+                # Select the right samples
+                sel_x, sel_y, idx_tmp = self._selection_dist_based(
+                    X,
+                    y,
+                    dist_vec,
+                    num_samples,
+                    key,
+                    sel_strategy='nearest')
+
+            elif self.version == 3:
+                # We need a new NN object to fit the current class
+                nn_obj_cc = NearestNeighbors(n_neighbors=self.ver3_samp_ngh,
+                                             n_jobs=self.n_jobs,
+                                             **self.kwargs)
+                nn_obj_cc.fit(sub_samples_x)
+
+                # Find the set of NN to the minority class
+                dist_vec, idx_vec = nn_obj_cc.kneighbors(X_min)
+
+                # Create the subset containing the samples found during the NN
+                # search. Linearize the indexes and remove the double values
+                idx_vec = np.unique(idx_vec.reshape(-1))
+
+                # Create the subset
+                sub_samples_x = sub_samples_x[idx_vec, :]
+                sub_samples_y = sub_samples_y[idx_vec]
+
+                # Compute the NN considering the current class
+                dist_vec, idx_vec = nn_obj.kneighbors(
+                    sub_samples_x,
+                    n_neighbors=self.size_ngh)
+
+                sel_x, sel_y, idx_tmp = self._selection_dist_based(
+                    X,
+                    y,
+                    dist_vec,
+                    num_samples,
+                    key,
+                    sel_strategy='farthest')
+
+            # If we need to offer support for the indices selected
+            if self.return_indices:
+                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
+
+            X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
+            y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
+
+        if self.verbose:
+            print("Under-sampling performed: {}".format(Counter(y_resampled)))
+
+        # Check if the indices of the samples selected should be returned too
+        if self.return_indices:
+            # Return the indices of interest
+            return X_resampled, y_resampled, idx_under
+        else:
+            return X_resampled, y_resampled
