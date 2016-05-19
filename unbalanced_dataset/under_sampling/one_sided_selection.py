@@ -10,11 +10,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_X_y
 
-from .condensed_nearest_neighbour import CondensedNearestNeighbour
+from .under_sampler import UnderSampler
 from .tomek_links import TomekLinks
 
 
-class OneSidedSelection(CondensedNearestNeighbour):
+class OneSidedSelection(UnderSampler):
     """Class to perform under-sampling based on one-sided selection method.
 
     Parameters
@@ -108,13 +108,16 @@ class OneSidedSelection(CondensedNearestNeighbour):
         None
 
         """
-        super(OneSidedSelection, self).__init__(return_indices=return_indices,
-                                                random_state=random_state,
-                                                verbose=verbose,
-                                                size_ngh=size_ngh,
-                                                n_seeds_S=n_seeds_S,
-                                                n_jobs=n_jobs,
-                                                **kwargs)
+        super(OneSidedSelection, self).__init__(
+            return_indices=return_indices,
+            random_state=random_state,
+            verbose=verbose)
+
+        self.size_ngh = size_ngh
+        self.n_seeds_S = n_seeds_S
+        self.n_jobs = n_jobs
+        self.kwargs = kwargs
+
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -167,12 +170,65 @@ class OneSidedSelection(CondensedNearestNeighbour):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
+        # Start with the minority class
+        X_min = X[y == self.min_c_]
+        y_min = y[y == self.min_c_]
+
+        # All the minority class samples will be preserved
+        X_resampled = X_min.copy()
+        y_resampled = y_min.copy()
+
+        # If we need to offer support for the indices
         if self.return_indices:
-            X_resampled, y_resampled, idx_under = super(OneSidedSelection,
-                                                        self).transform(X, y)
-        else:
-            X_resampled, y_resampled = super(OneSidedSelection,
-                                             self).transform(X, y)
+            idx_under = np.nonzero(y == self.min_c_)[0]
+
+        # Loop over the other classes under picking at random
+        for key in self.stats_c_.keys():
+
+            # If the minority class is up, skip it
+            if key == self.min_c_:
+                continue
+
+            # Randomly get one sample from the majority class
+            np.random.seed(self.rs_)
+            # Generate the index to select
+            idx_maj_sample = np.random.randint(low=0, high=self.stats_c_[key],
+                                               size=self.n_seeds_S)
+            maj_sample = X[y == key][idx_maj_sample]
+
+            # Create the set C
+            C_x = np.append(X_min,
+                            maj_sample,
+                            axis=0)
+            C_y = np.append(y_min,
+                            [key] * self.n_seeds_S)
+
+            # Create the set S
+            S_x = X[y == key]
+            S_y = y[y == key]
+
+            # Create a k-NN classifier
+            knn = KNeighborsClassifier(n_neighbors=self.size_ngh,
+                                       n_jobs=self.n_jobs,
+                                       **self.kwargs)
+
+            # Fit C into the knn
+            knn.fit(C_x, C_y)
+
+            # Classify on S
+            pred_S_y = knn.predict(S_x)
+
+            # Find the misclassified S_y
+            sel_x = np.squeeze(S_x[np.nonzero(pred_S_y != S_y), :])
+            sel_y = S_y[np.nonzero(pred_S_y != S_y)]
+
+            # If we need to offer support for the indices selected
+            if self.return_indices:
+                idx_tmp = np.nonzero(y == key)[0][np.nonzero(pred_S_y != S_y)]
+                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
+
+            X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
+            y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
         # Find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
