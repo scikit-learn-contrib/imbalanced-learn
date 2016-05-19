@@ -100,7 +100,7 @@ class CondensedNearestNeighbour(UnderSampler):
         n_seeds_S : int, optional (default=1)
             Number of samples to extract in order to build the set S.
 
-        n_jobs : int, optional (default=1)
+        n_jobs : int, optional (default=-1)
             The number of thread to open when it is possible.
 
         **kwargs : keywords
@@ -210,20 +210,50 @@ class CondensedNearestNeighbour(UnderSampler):
             knn = KNeighborsClassifier(n_neighbors=self.size_ngh,
                                        n_jobs=self.n_jobs,
                                        **self.kwargs)
+
             # Fit C into the knn
             knn.fit(C_x, C_y)
 
-            # Classify on S
-            pred_S_y = knn.predict(S_x)
+            good_classif_label = idx_maj_sample.copy()
+            # Check each sample in S if we keep it or drop it
+            for idx_sam, (x_sam, y_sam) in enumerate(zip(S_x, S_y)):
+
+                # Do not select sample which are already well classified
+                if idx_sam in good_classif_label:
+                    continue
+
+                # Classify on S
+                pred_y = knn.predict(x_sam.reshape(1, -1))
+
+                # If the prediction do not agree with the true label
+                # append it in C_x
+                if y_sam != pred_y:
+                    # Keep the index for later
+                    idx_maj_sample = np.append(idx_maj_sample, idx_sam)
+
+                    # Update C
+                    C_x = np.append(X_min, X[y == key][idx_maj_sample], axis=0)
+                    C_y = np.append(y_min, np.array([key] *
+                                                    idx_maj_sample.size))
+
+                    # Fit C into the knn
+                    knn.fit(C_x, C_y)
+
+                    # This experimental to speed up the search
+                    # Classify all the element in S and avoid to test the
+                    # well classified elements
+                    pred_S_y = knn.predict(S_x)
+                    good_classif_label = np.unique(
+                        np.append(idx_maj_sample,
+                                  np.nonzero(pred_S_y == S_y)[0]))
 
             # Find the misclassified S_y
-            sel_x = np.squeeze(S_x[np.nonzero(pred_S_y != S_y), :])
-            sel_y = S_y[np.nonzero(pred_S_y != S_y)]
+            sel_x = np.squeeze(S_x[idx_maj_sample, :])
+            sel_y = S_y[idx_maj_sample]
 
             # If we need to offer support for the indices selected
             if self.return_indices:
-                idx_tmp = np.nonzero(y == key)[0][np.nonzero(pred_S_y != S_y)]
-                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
+                idx_under = np.concatenate((idx_under, idx_maj_sample), axis=0)
 
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)

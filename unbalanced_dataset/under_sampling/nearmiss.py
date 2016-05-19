@@ -48,7 +48,7 @@ class NearMiss(UnderSampler):
         parameter correspond to the number of neighbours selected
         create the sub_set in which the selection will be performed.
 
-    n_jobs : int, optional (default=1)
+    n_jobs : int, optional (default=-1)
         The number of thread to open when it is possible.
 
     **kwargs : keywords

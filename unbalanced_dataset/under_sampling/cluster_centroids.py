@@ -37,7 +37,7 @@ class ClusterCentroids(UnderSampler):
     verbose : bool, optional (default=True)
         Boolean to either or not print information about the processing
 
-    n_jobs : int, optional (default=1)
+    n_jobs : int, optional (default=-1)
         The number of thread to open when it is possible.
 
     **kwargs : keywords
