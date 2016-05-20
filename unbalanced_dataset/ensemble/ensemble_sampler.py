@@ -2,8 +2,6 @@
 from __future__ import print_function
 from __future__ import division
 
-from collections import Counter
-
 from abc import ABCMeta, abstractmethod
 
 from ..base_sampler import BaseSampler

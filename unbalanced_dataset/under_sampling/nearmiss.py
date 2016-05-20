@@ -2,8 +2,6 @@
 from __future__ import print_function
 from __future__ import division
 
-import multiprocessing
-
 import numpy as np
 
 from collections import Counter

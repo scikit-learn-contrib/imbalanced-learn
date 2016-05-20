@@ -205,8 +205,8 @@ class TomekLinks(UnderSampler):
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:
             # Return the indices of interest
-            return X[np.logical_not(links)], y[np.logical_not(links)],
-            np.nonzero(np.logical_not(links))[0]
+            return (X[np.logical_not(links)], y[np.logical_not(links)],
+                    np.nonzero(np.logical_not(links))[0])
         else:
             # Return data set without majority Tomek links.
             return X[np.logical_not(links)], y[np.logical_not(links)]

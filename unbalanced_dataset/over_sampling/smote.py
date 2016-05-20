@@ -406,7 +406,6 @@ class SMOTE(OverSampler):
 
         # Start by separating minority class features and target values.
         X_min = X[y == self.min_c_]
-        y_min = y[y == self.min_c_]
 
         # If regular SMOTE is to be performed
         if self.kind == 'regular':
@@ -448,8 +447,7 @@ class SMOTE(OverSampler):
 
             return X_resampled, y_resampled
 
-        if (self.kind == 'borderline1' or
-            self.kind == 'borderline2'):
+        if self.kind == 'borderline1' or self.kind == 'borderline2':
 
             if self.verbose:
                 print("Finding the {} nearest neighbours...".format(self.m))
@@ -638,7 +636,7 @@ class SMOTE(OverSampler):
 
             # Concatenate the newly generated samples to the original data set
             if (np.count_nonzero(danger_bool) > 0 and
-                np.count_nonzero(safety_bool) > 0):
+                    np.count_nonzero(safety_bool) > 0):
                 X_resampled = np.concatenate((X, X_new_1, X_new_2), axis=0)
                 y_resampled = np.concatenate((y, y_new_1, y_new_2), axis=0)
             # not any support vectors in danger

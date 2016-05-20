@@ -266,9 +266,9 @@ class BalanceCascade(EnsembleSampler):
                 idx_under.append(np.concatenate((idx_min, idx_sel_from_maj),
                                                 axis=0))
 
-            if (not ((self.classifier_name == 'knn') or
-                     (self.classifier_name == 'linear-svm')) and
-                self.bootstrap):
+            if (not (self.classifier_name == 'knn' or
+                     self.classifier_name == 'linear-svm') and
+                    self.bootstrap):
                 # Apply a bootstrap on x_data
                 curr_sample_weight = np.ones((y_data.size,), dtype=np.float64)
                 indices = np.random.randint(0, y_data.size, y_data.size)
