@@ -165,6 +165,8 @@ class EasyEnsemble(EnsembleSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
+        super(EasyEnsemble, self).transform(X, y)
+
         X_resampled = []
         y_resampled = []
         if self.return_indices:
@@ -191,7 +193,7 @@ class EasyEnsemble(EnsembleSampler):
                 idx_under.append(sel_idx)
 
         if self.return_indices:
-            return np.array(X_resampled), np.array(y_resampled),
-            np.array(idx_under)
+            return (np.array(X_resampled), np.array(y_resampled),
+                    np.array(idx_under))
         else:
             return np.array(X_resampled), np.array(y_resampled)
