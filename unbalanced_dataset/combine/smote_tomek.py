@@ -1,30 +1,94 @@
-"""Class to perform over-sampling using SMOTE and cleaning by removing
-Tomek's links."""
+"""Class to perform over-sampling using SMOTE and cleaning using ENN."""
 from __future__ import print_function
 from __future__ import division
 
-import numpy as np
+from sklearn.utils import check_X_y
 
-from numpy import concatenate, logical_not
-
-from collections import Counter
-
-from ..unbalanced_dataset import UnbalancedDataset
+from ..over_sampling import SMOTE
+from ..under_sampling import TomekLinks
+from ..base_sampler import BaseSampler
 
 
-class SMOTETomek(UnbalancedDataset):
-    """Class to perform over-sampling using SMOTE and cleaning by removing
-    Tomek's links.
+class SMOTETomek(BaseSampler):
+    """Class to perform over-sampling using SMOTE and cleaning using
+    Tomek links.
 
     Parameters
     ----------
+    ratio : str or float, optional (default='auto')
+            If 'auto', the ratio will be defined automatically to balanced
+        the dataset. Otherwise, the ratio will corresponds to the
+        number of samples in the minority class over the the number of
+        samples in the majority class.
+
+    random_state : int or None, optional (default=None)
+        Seed for random number generation.
+
+    verbose : bool, optional (default=True)
+        Boolean to either or not print information about the
+        processing.
+
+    k : int, optional (default=5)
+        Number of nearest neighbours to used to construct synthetic
+        samples.
+
+    m : int, optional (default=10)
+        Number of nearest neighbours to use to determine if a minority
+        sample is in danger.
+
+    out_step : float, optional (default=0.5)
+        Step size when extrapolating.
+
+    kind_smote : str, optional (default='regular')
+        The type of SMOTE algorithm to use one of the following
+        options: 'regular', 'borderline1', 'borderline2', 'svm'
+
+    nn_method : str, optional (default='exact')
+        The nearest neighbors method to use which can be either:
+        'approximate' or 'exact'. 'approximate' will use LSH Forest while
+        'exact' will be an exact search.
+
+    size_ngh : int, optional (default=3)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+    kind_sel : str, optional (default='all')
+        Strategy to use in order to exclude samples.
+
+        - If 'all', all neighbours will have to agree with the samples of
+        interest to not be excluded.
+        - If 'mode', the majority vote of the neighbours will be used in
+        order to exclude a sample.
+
+    n_jobs : int, optional (default=-1)
+        Number of threads to run the algorithm when it is possible.
 
     Attributes
     ----------
+    ratio_ : str or float, optional (default='auto')
+        If 'auto', the ratio will be defined automatically to balanced
+        the dataset. Otherwise, the ratio will corresponds to the number
+        of samples in the minority class over the the number of samples
+        in the majority class.
+
+    rs_ : int or None, optional (default=None)
+        Seed for random number generation.
+
+    min_c_ : str or int
+        The identifier of the minority class.
+
+    max_c_ : str or int
+        The identifier of the majority class.
+
+    stats_c_ : dict of str/int : int
+        A dictionary in which the number of occurences of each class is
+        reported.
 
     Notes
     -----
-    The method is based on [1]_.
+    The methos is presented in [1]_.
+
+    This class does not support mutli-class.
 
     References
     ----------
@@ -33,80 +97,121 @@ class SMOTETomek(UnbalancedDataset):
 
     """
 
-    def __init__(self, k=5, ratio='auto', random_state=None, verbose=True, **kwargs):
+    def __init__(self, ratio='auto', random_state=None, verbose=True,
+                 k=5, m=10, out_step=0.5, kind_smote='regular',
+                 nn_method='exact', n_jobs=-1, **kwargs):
+
+        """Initialise the SMOTE Tomek links object.
+
+        Parameters
+        ----------
+        ratio : str or float, optional (default='auto')
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. Otherwise, the ratio will corresponds to the
+            number of samples in the minority class over the the number of
+            samples in the majority class.
+
+        random_state : int or None, optional (default=None)
+            Seed for random number generation.
+
+        verbose : bool, optional (default=True)
+            Boolean to either or not print information about the
+            processing.
+
+        k : int, optional (default=5)
+            Number of nearest neighbours to used to construct synthetic
+            samples.
+
+        m : int, optional (default=10)
+            Number of nearest neighbours to use to determine if a minority
+            sample is in danger.
+
+        out_step : float, optional (default=0.5)
+            Step size when extrapolating.
+
+        kind_smote : str, optional (default='regular')
+            The type of SMOTE algorithm to use one of the following
+            options: 'regular', 'borderline1', 'borderline2', 'svm'
+
+        nn_method : str, optional (default='exact')
+            The nearest neighbors method to use which can be either:
+            'approximate' or 'exact'. 'approximate' will use LSH Forest while
+            'exact' will be an exact search.
+
+        n_jobs : int, optional (default=-1)
+            Number of threads to run the algorithm when it is possible.
+
+        Returns
+        -------
+        None
+
         """
-        :param k:
-            Number of nearest neighbours to use when constructing the
-            synthetic samples.
+        super(SMOTETomek, self).__init__(ratio=ratio,
+                                         random_state=random_state,
+                                         verbose=verbose)
 
-        :param ratio:
-             If 'auto', the ratio will be defined automatically to balanced
-            the dataset. If an integer is given, the number of samples
-            generated is equal to the number of samples in the minority class
-            mulitply by this ratio.
+        self.sm = SMOTE(ratio=ratio, random_state=random_state,
+                        verbose=verbose, k=k, m=m, out_step=out_step,
+                        kind=kind_smote, nn_method=nn_method, n_jobs=n_jobs,
+                        **kwargs)
 
-        :param random_state:
-            Seed.
+        self.tomek = TomekLinks(random_state=random_state,
+                                verbose=verbose)
 
-        :return:
-            The resampled data set with synthetic samples concatenated at the
-            end.
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
         """
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
 
-        UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state,
-                                   verbose=verbose)
+        super(SMOTETomek, self).fit(X, y)
 
-        # Do not expect any support regarding the selection with this method
-        if (kwargs.pop('indices_support', False)):
-            raise ValueError('No indices support with this method.')
+        # Fit using SMOTE
+        self.sm.fit(X, y)
 
-        # Instance variable to store the number of neighbours to use.
-        self.k = k
+        return self
 
-    def resample(self):
+    def transform(self, X, y):
+        """Resample the dataset.
 
-        # Compute the ratio if it is auto
-        if self.ratio == 'auto':
-            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
-                          float(self.ucd[self.minc]))
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
 
-        # Start with the minority class
-        minx = self.x[self.y == self.minc]
-        miny = self.y[self.y == self.minc]
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
 
-        # Finding nns
-        # Import the k-NN classifier
-        from sklearn.neighbors import NearestNeighbors
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
 
-        nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1)
-        nearest_neighbour.fit(minx)
-        nns = nearest_neighbour.kneighbors(minx, return_distance=False)[:, 1:]
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
 
-        # Creating synthetic samples
-        sx, sy = self.make_samples(minx,
-                                   minx,
-                                   self.minc,
-                                   nns,
-                                   int(self.ratio * len(miny)),
-                                   random_state=self.rs,
-                                   verbose=self.verbose)
+        """
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
 
-        # Concatenate the newly generated samples to the original data set
-        ret_x = concatenate((self.x, sx), axis=0)
-        ret_y = concatenate((self.y, sy), axis=0)
+        super(SMOTETomek, self).transform(X, y)
 
-        # Find the nearest neighbour of every point
-        nn = NearestNeighbors(n_neighbors=2)
-        nn.fit(ret_x)
-        nns = nn.kneighbors(ret_x, return_distance=False)[:, 1]
+        # Transform using SMOTE
+        X, y = self.sm.transform(X, y)
 
-        # Send the information to is_tomek function to get boolean vector back
-        links = self.is_tomek(ret_y, nns, self.minc, self.verbose)
-
-        if self.verbose:
-            print("Over-sampling performed:"
-                  " " + str(Counter(ret_y[logical_not(links)])))
-
-        # Return data set without majority Tomek links.
-        return ret_x[logical_not(links)], ret_y[logical_not(links)]
+        # Fit and transform using ENN
+        return self.tomek.fit_transform(X, y)

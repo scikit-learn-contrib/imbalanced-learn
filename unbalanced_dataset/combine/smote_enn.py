@@ -2,10 +2,6 @@
 from __future__ import print_function
 from __future__ import division
 
-import numpy as np
-
-from collections import Counter
-
 from sklearn.utils import check_X_y
 
 from ..over_sampling import SMOTE
@@ -89,6 +85,8 @@ class SMOTEENN(BaseSampler):
 
     Notes
     -----
+    The method is presented in [1]_.
+
     This class does not support mutli-class.
 
     References
