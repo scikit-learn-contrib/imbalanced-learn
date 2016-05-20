@@ -199,7 +199,6 @@ class SMOTE(OverSampler):
                                                     n_candidates=500,
                                                     n_neighbors=m+1)
 
-
             # --- Nearest Neighbours for noise and boundary (in danger)
             # Before creating synthetic samples we must first decide if
             # a given entry is noise or in danger. We use m nns in this step
@@ -243,7 +242,6 @@ class SMOTE(OverSampler):
         super(SMOTE, self).fit(X, y)
 
         return self
-
 
     def in_danger_noise(self, samples, y, kind='danger'):
         """Estimate if a set of sample are in danger or not.
@@ -432,11 +430,11 @@ class SMOTE(OverSampler):
             # --- Generating synthetic samples
             # Use static method make_samples to generate minority samples
             X_new, y_new = self.make_samples(X_min,
-                                       self.min_c_,
-                                       X_min,
-                                       nns,
-                                       num_samples,
-                                       1.0)
+                                             self.min_c_,
+                                             X_min,
+                                             nns,
+                                             num_samples,
+                                             1.0)
 
             if self.verbose:
                 print("done!")
@@ -573,7 +571,8 @@ class SMOTE(OverSampler):
 
             # Remove noisy support vectors
             support_vector = support_vector[np.logical_not(noise_bool)]
-            danger_bool = self.in_danger_noise(support_vector, y, kind='danger')
+            danger_bool = self.in_danger_noise(support_vector, y,
+                                               kind='danger')
             safety_bool = np.logical_not(danger_bool)
 
             if self.verbose:

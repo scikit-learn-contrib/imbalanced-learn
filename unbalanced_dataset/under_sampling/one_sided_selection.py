@@ -118,7 +118,6 @@ class OneSidedSelection(UnderSampler):
         self.n_jobs = n_jobs
         self.kwargs = kwargs
 
-
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
 

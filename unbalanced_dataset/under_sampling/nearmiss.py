@@ -234,7 +234,6 @@ class NearMiss(UnderSampler):
         return (X[y == key][sel_idx], y[y == key][sel_idx],
                 np.nonzero(y == key)[0][sel_idx])
 
-
     def transform(self, X, y):
         """Resample the dataset.
 

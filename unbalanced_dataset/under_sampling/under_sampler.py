@@ -47,8 +47,8 @@ class UnderSampler(BaseSampler):
         """
 
         super(UnderSampler, self).__init__(ratio=ratio,
-                                          random_state=random_state,
-                                          verbose=verbose)
+                                           random_state=random_state,
+                                           verbose=verbose)
 
         self.return_indices = return_indices
 

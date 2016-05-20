@@ -245,7 +245,8 @@ class BalanceCascade(EnsembleSampler):
             # rate of the previous iteration
             np.random.seed(self.rs_)
             idx_sel_from_maj = np.random.choice(np.nonzero(b_sel_N)[0],
-                                         size=num_samples, replace=False)
+                                                size=num_samples,
+                                                replace=False)
             idx_sel_from_maj = np.concatenate((idx_mis_class,
                                                idx_sel_from_maj),
                                               axis=0).astype(int)
@@ -313,8 +314,8 @@ class BalanceCascade(EnsembleSampler):
                     # Select the remaining data
                     idx_sel_from_maj = np.nonzero(b_sel_N)[0]
                     idx_sel_from_maj = np.concatenate((idx_mis_class,
-                                                   idx_sel_from_maj),
-                                                  axis=0).astype(int)
+                                                       idx_sel_from_maj),
+                                                      axis=0).astype(int)
                     # Select the final batch
                     x_data = np.concatenate((X_min, N_x[idx_sel_from_maj, :]),
                                             axis=0)

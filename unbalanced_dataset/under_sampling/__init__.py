@@ -22,4 +22,3 @@ __all__ = ['UnderSampler',
            'OneSidedSelection',
            'NeighbourhoodCleaningRule',
            'EditedNearestNeighbours']
-
