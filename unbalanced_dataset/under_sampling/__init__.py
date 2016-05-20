@@ -11,6 +11,7 @@ from .nearmiss import NearMiss
 from .condensed_nearest_neighbour import CondensedNearestNeighbour
 from .one_sided_selection import OneSidedSelection
 from .neighbourhood_cleaning_rule import NeighbourhoodCleaningRule
+from .edited_nearest_neighbours import EditedNearestNeighbours
 
 __all__ = ['UnderSampler',
            'RandomUnderSampler',
@@ -19,5 +20,6 @@ __all__ = ['UnderSampler',
            'NearMiss',
            'CondensedNearestNeighbour',
            'OneSidedSelection',
-           'NeighbourhoodCleaningRule']
+           'NeighbourhoodCleaningRule',
+           'EditedNearestNeighbours']
 

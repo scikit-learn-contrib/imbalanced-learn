@@ -1,4 +1,5 @@
-"""Class to perform under-sampling based on one-sided selection method."""
+"""Class to perform under-sampling based on the edited nearest neighbour
+method."""
 from __future__ import print_function
 from __future__ import division
 
@@ -6,16 +7,17 @@ import numpy as np
 
 from collections import Counter
 
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neighbors import NearestNeighbors
+from scipy.stats import mode
+
 from sklearn.utils import check_X_y
+from sklearn.neighbors import NearestNeighbors
 
 from .under_sampler import UnderSampler
-from .tomek_links import TomekLinks
 
 
-class OneSidedSelection(UnderSampler):
-    """Class to perform under-sampling based on one-sided selection method.
+class EditedNearestNeighbours(UnderSampler):
+    """Class to perform under-sampling based on the condensed nearest neighbour
+    method.
 
     Parameters
     ----------
@@ -29,18 +31,20 @@ class OneSidedSelection(UnderSampler):
     verbose : bool, optional (default=True)
         Boolean to either or not print information about the processing
 
-    size_ngh : int, optional (default=1)
+    size_ngh : int, optional (default=3)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-    n_seeds_S : int, optional (default=1)
-        Number of samples to extract in order to build the set S.
+    kind_sel : str, optional (default='all')
+        Strategy to use in order to exclude samples.
 
-    n_jobs : int, optional (default=-1)
+        - If 'all', all neighbours will have to agree with the samples of
+        interest to not be excluded.
+        - If 'mode', the majority vote of the neighbours will be used in
+        order to exclude a sample.
+
+    n_jobs : int, optional (default=1)
         The number of thread to open when it is possible.
-
-    **kwargs : keywords
-        Parameter to use for the Neareast Neighbours object.
 
     Attributes
     ----------
@@ -67,16 +71,19 @@ class OneSidedSelection(UnderSampler):
     -----
     The method is based on [1]_.
 
+    This class supports multi-class.
+
     References
     ----------
-    .. [1] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training
-       sets: one-sided selection," In ICML, vol. 97, pp. 179-186, 1997.
+    .. [1] D. Wilson, "Asymptotic Properties of Nearest Neighbor Rules Using
+       Edited Data," In IEEE Transactions on Systems, Man, and Cybernetrics,
+       vol. 2 (3), pp. 408-421, 1972.
 
     """
 
     def __init__(self, return_indices=False, random_state=None, verbose=True,
-                 size_ngh=1, n_seeds_S=1, n_jobs=-1, **kwargs):
-        """Initialisation of OSS object.
+                 size_ngh=3, kind_sel='all', n_jobs=-1):
+        """Initialisation of ENN object.
 
         Parameters
         ----------
@@ -90,34 +97,38 @@ class OneSidedSelection(UnderSampler):
         verbose : bool, optional (default=True)
             Boolean to either or not print information about the processing
 
-        size_ngh : int, optional (default=1)
+        size_ngh : int, optional (default=3)
             Size of the neighbourhood to consider to compute the average
             distance to the minority point samples.
 
-        n_seeds_S : int, optional (default=1)
-            Number of samples to extract in order to build the set S.
+        kind_sel : str, optional (default='all')
+            Strategy to use in order to exclude samples.
 
-        n_jobs : int, optional (default=-1)
+            - If 'all', all neighbours will have to agree with the samples of
+            interest to not be excluded.
+            - If 'mode', the majority vote of the neighbours will be used in
+            order to exclude a sample.
+
+        n_jobs : int, optional (default=1)
             The number of thread to open when it is possible.
-
-        **kwargs : keywords
-            Parameter to use for the Neareast Neighbours object.
 
         Returns
         -------
         None
 
         """
-        super(OneSidedSelection, self).__init__(
+        super(EditedNearestNeighbours, self).__init__(
             return_indices=return_indices,
             random_state=random_state,
             verbose=verbose)
 
         self.size_ngh = size_ngh
-        self.n_seeds_S = n_seeds_S
+        possible_kind_sel = ('all', 'mode')
+        if kind_sel not in possible_kind_sel:
+            raise ValueError('Unknown kind_sel parameters.')
+        else:
+            self.kind_sel = kind_sel
         self.n_jobs = n_jobs
-        self.kwargs = kwargs
-
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -139,7 +150,7 @@ class OneSidedSelection(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(OneSidedSelection, self).fit(X, y)
+        super(EditedNearestNeighbours, self).fit(X, y)
 
         return self
 
@@ -170,7 +181,7 @@ class OneSidedSelection(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(OneSidedSelection, self).transform(X, y)
+        super(EditedNearestNeighbours, self).transform(X, y)
 
         # Start with the minority class
         X_min = X[y == self.min_c_]
@@ -184,6 +195,12 @@ class OneSidedSelection(UnderSampler):
         if self.return_indices:
             idx_under = np.nonzero(y == self.min_c_)[0]
 
+        # Create a k-NN to fit the whole data
+        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh + 1,
+                                  n_jobs=self.n_jobs)
+        # Fit the data
+        nn_obj.fit(X)
+
         # Loop over the other classes under picking at random
         for key in self.stats_c_.keys():
 
@@ -191,69 +208,44 @@ class OneSidedSelection(UnderSampler):
             if key == self.min_c_:
                 continue
 
-            # Randomly get one sample from the majority class
-            np.random.seed(self.rs_)
-            # Generate the index to select
-            idx_maj_sample = np.random.randint(low=0, high=self.stats_c_[key],
-                                               size=self.n_seeds_S)
-            maj_sample = X[y == key][idx_maj_sample]
+            # Get the sample of the current class
+            sub_samples_x = X[y == key]
+            sub_samples_y = y[y == key]
 
-            # Create the set C
-            C_x = np.append(X_min,
-                            maj_sample,
-                            axis=0)
-            C_y = np.append(y_min,
-                            [key] * self.n_seeds_S)
+            # Find the NN for the current class
+            nnhood_idx = nn_obj.kneighbors(sub_samples_x,
+                                           return_distance=False)[:, 1:]
 
-            # Create the set S
-            S_x = X[y == key]
-            S_y = y[y == key]
+            # Get the label of the corresponding to the index
+            nnhood_label = y[nnhood_idx]
 
-            # Create a k-NN classifier
-            knn = KNeighborsClassifier(n_neighbors=self.size_ngh,
-                                       n_jobs=self.n_jobs,
-                                       **self.kwargs)
+            # Check which one are the same label than the current class
+            # Make the majority vote
+            if self.kind_sel == 'mode':
+                nnhood_label, _ = mode(nnhood_label, axis=1)
+                nnhood_bool = (np.ravel(nnhood_label) == sub_samples_y)
+            elif self.kind_sel == 'all':
+                nnhood_label = (nnhood_label == key)
+                nnhood_bool = np.all(nnhood_label, axis=1)
 
-            # Fit C into the knn
-            knn.fit(C_x, C_y)
-
-            # Classify on S
-            pred_S_y = knn.predict(S_x)
-
-            # Find the misclassified S_y
-            sel_x = np.squeeze(S_x[np.nonzero(pred_S_y != S_y), :])
-            sel_y = S_y[np.nonzero(pred_S_y != S_y)]
+            # Get the samples which agree all together
+            sel_x = np.squeeze(sub_samples_x[np.nonzero(nnhood_bool), :])
+            sel_y = sub_samples_y[np.nonzero(nnhood_bool)]
 
             # If we need to offer support for the indices selected
             if self.return_indices:
-                idx_tmp = np.nonzero(y == key)[0][np.nonzero(pred_S_y != S_y)]
+                idx_tmp = np.nonzero(y == key)[0][np.nonzero(nnhood_bool)]
                 idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
 
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        # Find the nearest neighbour of every point
-        nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
-        nn.fit(X_resampled)
-        nns = nn.kneighbors(X_resampled, return_distance=False)[:, 1]
-
-        # Send the information to is_tomek function to get boolean vector back
         if self.verbose:
-            print("Looking for majority Tomek links...")
-        links = TomekLinks.is_tomek(y_resampled, nns, self.min_c_,
-                                    self.verbose)
-
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(
-                y_resampled[np.logical_not(links)])))
+            print("Under-sampling performed: {}".format(Counter(y_resampled)))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:
             # Return the indices of interest
-            return (X_resampled[np.logical_not(links)],
-                    y_resampled[np.logical_not(links)],
-                    idx_under[np.logical_not(links)])
+            return X_resampled, y_resampled, idx_under
         else:
-            # Return data set without majority Tomek links.
-            return (X_resampled[np.logical_not(links)],
-                    y_resampled[np.logical_not(links)])
+            return X_resampled, y_resampled

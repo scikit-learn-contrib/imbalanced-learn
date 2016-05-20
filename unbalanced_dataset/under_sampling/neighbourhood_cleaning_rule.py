@@ -160,6 +160,8 @@ class NeighbourhoodCleaningRule(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
+        super(NeighbourhoodCleaningRule, self).transform(X, y)
+
         # Start with the minority class
         X_min = X[y == self.min_c_]
         y_min = y[y == self.min_c_]

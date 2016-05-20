@@ -153,6 +153,8 @@ class RandomUnderSampler(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
+        super(RandomUnderSampler, self).transform(X, y)
+
         # Compute the number of cluster needed
         if self.ratio_ == 'auto':
             num_samples = self.stats_c_[self.min_c_]

@@ -4,138 +4,230 @@ from __future__ import division
 
 import numpy as np
 
-from numpy import concatenate
-
 from collections import Counter
 
-from ..unbalanced_dataset import UnbalancedDataset
+from sklearn.utils import check_X_y
 
-class SMOTEENN(UnbalancedDataset):
+from ..over_sampling import SMOTE
+from ..under_sampling import EditedNearestNeighbours
+from ..base_sampler import BaseSampler
+
+
+class SMOTEENN(BaseSampler):
     """Class to perform over-sampling using SMOTE and cleaning using ENN.
 
     Parameters
     ----------
+    ratio : str or float, optional (default='auto')
+            If 'auto', the ratio will be defined automatically to balanced
+        the dataset. Otherwise, the ratio will corresponds to the
+        number of samples in the minority class over the the number of
+        samples in the majority class.
+
+    random_state : int or None, optional (default=None)
+        Seed for random number generation.
+
+    verbose : bool, optional (default=True)
+        Boolean to either or not print information about the
+        processing.
+
+    k : int, optional (default=5)
+        Number of nearest neighbours to used to construct synthetic
+        samples.
+
+    m : int, optional (default=10)
+        Number of nearest neighbours to use to determine if a minority
+        sample is in danger.
+
+    out_step : float, optional (default=0.5)
+        Step size when extrapolating.
+
+    kind_smote : str, optional (default='regular')
+        The type of SMOTE algorithm to use one of the following
+        options: 'regular', 'borderline1', 'borderline2', 'svm'
+
+    nn_method : str, optional (default='exact')
+        The nearest neighbors method to use which can be either:
+        'approximate' or 'exact'. 'approximate' will use LSH Forest while
+        'exact' will be an exact search.
+
+    size_ngh : int, optional (default=3)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+    kind_sel : str, optional (default='all')
+        Strategy to use in order to exclude samples.
+
+        - If 'all', all neighbours will have to agree with the samples of
+        interest to not be excluded.
+        - If 'mode', the majority vote of the neighbours will be used in
+        order to exclude a sample.
+
+    n_jobs : int, optional (default=-1)
+        Number of threads to run the algorithm when it is possible.
 
     Attributes
     ----------
+    ratio_ : str or float, optional (default='auto')
+        If 'auto', the ratio will be defined automatically to balanced
+        the dataset. Otherwise, the ratio will corresponds to the number
+        of samples in the minority class over the the number of samples
+        in the majority class.
+
+    rs_ : int or None, optional (default=None)
+        Seed for random number generation.
+
+    min_c_ : str or int
+        The identifier of the minority class.
+
+    max_c_ : str or int
+        The identifier of the majority class.
+
+    stats_c_ : dict of str/int : int
+        A dictionary in which the number of occurences of each class is
+        reported.
 
     Notes
     -----
+    This class does not support mutli-class.
 
     References
     ----------
     .. [1] G. Batista, R. C. Prati, M. C. Monard. "A study of the behavior of
-    several methods for balancing machine learning training data," ACM
-    Sigkdd Explorations Newsletter 6 (1), 20-29, 2004.
+       several methods for balancing machine learning training data," ACM
+       Sigkdd Explorations Newsletter 6 (1), 20-29, 2004.
 
     """
 
-    def __init__(self, k=5, ratio='auto', random_state=None,
-                 size_ngh=3, verbose=True, **kwargs):
-        """
-        :param size_ngh
-            Size of the neighbourhood to consider in order to make
-            the comparison between each samples and their NN.
+    def __init__(self, ratio='auto', random_state=None, verbose=True,
+                 k=5, m=10, out_step=0.5, kind_smote='regular',
+                 nn_method='exact', size_ngh=3, kind_enn='all', n_jobs=-1,
+                 **kwargs):
 
-        :param **kwargs
-            Parameter to use for the Neareast Neighbours.
+        """Initialise the SMOTE ENN object.
 
-        :param k:
-            Number of nearest neighbours to use when constructing the synthetic
+        Parameters
+        ----------
+        ratio : str or float, optional (default='auto')
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. Otherwise, the ratio will corresponds to the
+            number of samples in the minority class over the the number of
+            samples in the majority class.
+
+        random_state : int or None, optional (default=None)
+            Seed for random number generation.
+
+        verbose : bool, optional (default=True)
+            Boolean to either or not print information about the
+            processing.
+
+        k : int, optional (default=5)
+            Number of nearest neighbours to used to construct synthetic
             samples.
 
-        :param ratio:
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. If an integer is given, the number of samples
-            generated is equal to the number of samples in the minority class
-            mulitply by this ratio.
+        m : int, optional (default=10)
+            Number of nearest neighbours to use to determine if a minority
+            sample is in danger.
 
-        :param random_state:
-            Seed.
+        out_step : float, optional (default=0.5)
+            Step size when extrapolating.
 
-        :return:
-            The resampled data set with synthetic samples concatenated at the
-            end.
+        kind_smote : str, optional (default='regular')
+            The type of SMOTE algorithm to use one of the following
+            options: 'regular', 'borderline1', 'borderline2', 'svm'
+
+        nn_method : str, optional (default='exact')
+            The nearest neighbors method to use which can be either:
+            'approximate' or 'exact'. 'approximate' will use LSH Forest while
+            'exact' will be an exact search.
+
+        size_ngh : int, optional (default=3)
+            Size of the neighbourhood to consider to compute the average
+            distance to the minority point samples.
+
+        kind_sel : str, optional (default='all')
+            Strategy to use in order to exclude samples.
+
+            - If 'all', all neighbours will have to agree with the samples of
+            interest to not be excluded.
+            - If 'mode', the majority vote of the neighbours will be used in
+            order to exclude a sample.
+
+        n_jobs : int, optional (default=-1)
+            Number of threads to run the algorithm when it is possible.
+
+        Returns
+        -------
+        None
+
         """
+        super(SMOTEENN, self).__init__(ratio=ratio, random_state=random_state,
+                                       verbose=verbose)
 
-        UnbalancedDataset.__init__(self, ratio=ratio,
-                                   random_state=random_state,
-                                   verbose=verbose)
+        self.sm = SMOTE(ratio=ratio, random_state=random_state,
+                        verbose=verbose, k=k, m=m, out_step=out_step,
+                        kind=kind_smote, nn_method=nn_method, n_jobs=n_jobs,
+                        **kwargs)
 
-        # Do not expect any support regarding the selection with this method
-        if (kwargs.pop('indices_support', False)):
-            raise ValueError('No indices support with this method.')
+        self.enn = EditedNearestNeighbours(random_state=random_state,
+                                           verbose=verbose,
+                                           size_ngh=size_ngh,
+                                           kind_sel=kind_enn, n_jobs=n_jobs)
 
-        # Instance variable to store the number of neighbours to use.
-        self.k = k
-        self.size_ngh = size_ngh
-        self.kwargs = kwargs
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
 
-    def resample(self):
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
 
-        # Compute the ratio if it is auto
-        if self.ratio == 'auto':
-            self.ratio = (float(self.ucd[self.maxc] - self.ucd[self.minc]) /
-                          float(self.ucd[self.minc]))
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
 
-        # Start with the minority class
-        minx = self.x[self.y == self.minc]
-        miny = self.y[self.y == self.minc]
+        Returns
+        -------
+        self : object,
+            Return self.
 
-        # Finding nns
-        # Import the k-NN classifier
-        from sklearn.neighbors import NearestNeighbors
+        """
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
 
-        nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1)
-        nearest_neighbour.fit(minx)
-        nns = nearest_neighbour.kneighbors(minx, return_distance=False)[:, 1:]
+        super(SMOTEENN, self).fit(X, y)
 
-        # Creating synthetic samples
-        sx, sy = self.make_samples(minx, minx, self.minc, nns,
-                                   int(self.ratio * len(miny)),
-                                   random_state=self.rs,
-                                   verbose=self.verbose)
+        # Fit using SMOTE
+        self.sm.fit(X, y)
 
-        # Concatenate the newly generated samples to the original data set
-        ret_x = concatenate((self.x, sx), axis=0)
-        ret_y = concatenate((self.y, sy), axis=0)
+        return self
 
-        # Create a k-NN to fit the whole data
-        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh)
+    def transform(self, X, y):
+        """Resample the dataset.
 
-        # Fit the whole dataset
-        nn_obj.fit(ret_x)
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
 
-        # Loop over the other classes under picking at random
-        for key_idx, key in enumerate(self.ucd.keys()):
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
 
-            # Get the sample of the current class
-            sub_samples_x = ret_x[ret_y == key]
-            sub_samples_y = ret_y[ret_y == key]
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
 
-            # Find the NN for the current class
-            nnhood_idx = nn_obj.kneighbors(sub_samples_x,
-                                           return_distance=False)
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
 
-            # Get the label of the corresponding to the index
-            nnhood_label = (ret_y[nnhood_idx] == key)
+        """
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
 
-            # Check which one are the same label than the current class
-            # Make an AND operation through the k neighbours
-            nnhood_bool = np.all(nnhood_label, axis=1)
+        super(SMOTEENN, self).transform(X, y)
 
-            # Get the samples which agree all together
-            sel_x = np.squeeze(sub_samples_x[np.nonzero(nnhood_bool), :])
-            sel_y = sub_samples_y[np.nonzero(nnhood_bool)]
+        # Transform using SMOTE
+        X, y = self.sm.transform(X, y)
 
-            if key_idx == 0:
-                underx = sel_x[:, :]
-                undery = sel_y[:]
-            else:
-                underx = concatenate((underx, sel_x), axis=0)
-                undery = concatenate((undery, sel_y), axis=0)
-
-        if self.verbose:
-            print("Over-sampling performed: " + str(Counter(undery)))
-
-        return underx, undery
+        # Fit and transform using ENN
+        return self.enn.fit_transform(X, y)
