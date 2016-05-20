@@ -30,7 +30,7 @@ X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_samples=5000, random_state=10)
 
 # Instanciate a PCA object for the sake of easy visualisation
-pca = PCA(n_components = 2)
+pca = PCA(n_components=2)
 # Fit and transform x to visualise inside a 2D feature space
 X_vis = pca.fit_transform(X)
 
