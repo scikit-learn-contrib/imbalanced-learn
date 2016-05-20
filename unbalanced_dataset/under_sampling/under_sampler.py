@@ -2,13 +2,7 @@
 from __future__ import print_function
 from __future__ import division
 
-import numpy as np
-
-from collections import Counter
-
 from abc import ABCMeta, abstractmethod
-
-from sklearn.utils import check_array
 
 from ..base_sampler import BaseSampler
 
