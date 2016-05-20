@@ -3,8 +3,6 @@ streamline the re-sampling process."""
 from __future__ import print_function
 from __future__ import division
 
-from ..unbalanced_dataset import UnbalancedDataset
-
 
 class Pipeline(object):
     """A helper object to concatenate a number of re sampling objects and
