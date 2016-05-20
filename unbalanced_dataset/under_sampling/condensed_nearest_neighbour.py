@@ -19,7 +19,7 @@ class CondensedNearestNeighbour(UnderSampler):
 
     Parameters
     ----------
-    return_indices : bool, optional (default=True)
+    return_indices : bool, optional (default=False)
         Either to return or not the indices which will be selected from
         the majority class.
 
@@ -36,7 +36,7 @@ class CondensedNearestNeighbour(UnderSampler):
     n_seeds_S : int, optional (default=1)
         Number of samples to extract in order to build the set S.
 
-    n_jobs : int, optional (default=1)
+    n_jobs : int, optional (default=-1)
         The number of thread to open when it is possible.
 
     **kwargs : keywords
@@ -83,7 +83,7 @@ class CondensedNearestNeighbour(UnderSampler):
 
         Parameters
         ----------
-        return_indices : bool, optional (default=True)
+        return_indices : bool, optional (default=False)
             Either to return or not the indices which will be selected from
             the majority class.
 

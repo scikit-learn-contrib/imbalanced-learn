@@ -23,7 +23,7 @@ class NearMiss(UnderSampler):
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    return_indices : bool, optional (default=True)
+    return_indices : bool, optional (default=False)
         Either to return or not the indices which will be selected from
         the majority class.
 
@@ -87,7 +87,7 @@ class NearMiss(UnderSampler):
 
     """
 
-    def __init__(self, ratio='auto', return_indices=True, random_state=None,
+    def __init__(self, ratio='auto', return_indices=False, random_state=None,
                  verbose=True, version=1, size_ngh=3, ver3_samp_ngh=3,
                  n_jobs=-1, **kwargs):
         """Initialisation of clustering centroids object.
@@ -100,7 +100,7 @@ class NearMiss(UnderSampler):
             of samples in the minority class over the the number of samples
             in the majority class.
 
-        return_indices : bool, optional (default=True)
+        return_indices : bool, optional (default=False)
             Either to return or not the indices which will be selected from
             the majority class.
 
@@ -123,7 +123,7 @@ class NearMiss(UnderSampler):
             parameter correspond to the number of neighbours selected
             create the sub_set in which the selection will be performed.
 
-        n_jobs : int, optional (default=1)
+        n_jobs : int, optional (default=-1)
             The number of thread to open when it is possible.
 
         **kwargs : keywords

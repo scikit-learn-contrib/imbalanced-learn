@@ -21,7 +21,7 @@ class EditedNearestNeighbours(UnderSampler):
 
     Parameters
     ----------
-    return_indices : bool, optional (default=True)
+    return_indices : bool, optional (default=False)
         Either to return or not the indices which will be selected from
         the majority class.
 
@@ -43,7 +43,7 @@ class EditedNearestNeighbours(UnderSampler):
         - If 'mode', the majority vote of the neighbours will be used in
         order to exclude a sample.
 
-    n_jobs : int, optional (default=1)
+    n_jobs : int, optional (default=-1)
         The number of thread to open when it is possible.
 
     Attributes
@@ -87,7 +87,7 @@ class EditedNearestNeighbours(UnderSampler):
 
         Parameters
         ----------
-        return_indices : bool, optional (default=True)
+        return_indices : bool, optional (default=False)
             Either to return or not the indices which will be selected from
             the majority class.
 
@@ -109,7 +109,7 @@ class EditedNearestNeighbours(UnderSampler):
             - If 'mode', the majority vote of the neighbours will be used in
             order to exclude a sample.
 
-        n_jobs : int, optional (default=1)
+        n_jobs : int, optional (default=-1)
             The number of thread to open when it is possible.
 
         Returns

@@ -18,7 +18,7 @@ class UnderSampler(BaseSampler):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def __init__(self, ratio='auto', return_indices=True, random_state=None,
+    def __init__(self, ratio='auto', return_indices=False, random_state=None,
                  verbose=True):
         """Initialize this object and its instance variables.
 
@@ -30,7 +30,7 @@ class UnderSampler(BaseSampler):
             of samples in the minority class over the the number of samples
             in the majority class.
 
-        return_indices : bool, optional (default=True)
+        return_indices : bool, optional (default=False)
             Either to return or not the indices which will be selected from
             the majority class.
 

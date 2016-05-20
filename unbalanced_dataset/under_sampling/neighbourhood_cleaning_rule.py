@@ -18,7 +18,7 @@ class NeighbourhoodCleaningRule(UnderSampler):
 
     Parameters
     ----------
-    return_indices : bool, optional (default=True)
+    return_indices : bool, optional (default=False)
         Either to return or not the indices which will be selected from
         the majority class.
 
@@ -76,7 +76,7 @@ class NeighbourhoodCleaningRule(UnderSampler):
 
         Parameters
         ----------
-        return_indices : bool, optional (default=True)
+        return_indices : bool, optional (default=False)
             Either to return or not the indices which will be selected from
             the majority class.
 

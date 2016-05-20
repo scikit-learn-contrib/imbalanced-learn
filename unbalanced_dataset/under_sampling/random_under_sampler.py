@@ -25,7 +25,7 @@ class RandomUnderSampler(UnderSampler):
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    return_indices : bool, optional (default=True)
+    return_indices : bool, optional (default=False)
         Either to return or not the indices which will be selected from
         the majority class.
 
@@ -35,7 +35,7 @@ class RandomUnderSampler(UnderSampler):
     verbose : bool, optional (default=True)
         Boolean to either or not print information about the processing
 
-    n_jobs : int, optional (default=1)
+    n_jobs : int, optional (default=-1)
         The number of thread to open when it is possible.
 
     Attributes
@@ -77,7 +77,7 @@ class RandomUnderSampler(UnderSampler):
             of samples in the minority class over the the number of samples
             in the majority class.
 
-        return_indices : bool, optional (default=True)
+        return_indices : bool, optional (default=False)
             Either to return or not the indices which will be selected from
             the majority class.
 
@@ -87,7 +87,7 @@ class RandomUnderSampler(UnderSampler):
         verbose : bool, optional (default=True)
             Boolean to either or not print information about the processing
 
-        n_jobs : int, optional (default=1)
+        n_jobs : int, optional (default=-1)
             The number of thread to open when it is possible.
 
         Returns
