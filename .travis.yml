@@ -1,0 +1,36 @@
+# make it explicit that we favor the new container-based travis workers
+sudo: false
+
+language: python
+python:
+  - 2.7
+# Pre-install packages for the ubuntu distribution
+cache:
+  apt: true
+  # We use three different cache directory
+  # to work around a Travis bug with multi-platform cache
+  directories:
+  - $HOME/.cache/pip
+  - $HOME/download
+addons:
+  apt:
+    packages:
+      - libatlas3gf-base
+      - libatlas-dev
+      - gfortran
+      - libgfortran3
+env:
+  global:
+    # Directory where tests are run from
+    - TEST_DIR=/tmp/test_dir
+    - MODULE=unbalanced_dataset
+    - OMP_NUM_THREADS=4
+    - OPENBLAS_NUM_THREADS=4
+  matrix:
+    # This environment tests the using anaconda
+    - DISTRIB="conda" PYTHON_VERSION="2.7" COVERAGE="true"
+      NUMPY_VERSION="1.9.3" SCIPY_VERSION="0.16.0"
+
+install: source build_tools/travis/install.sh
+script: bash build_tools/travis/test_script.sh
+after_success: source build_tools/travis/after_success.sh

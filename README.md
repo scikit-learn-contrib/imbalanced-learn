@@ -3,7 +3,9 @@ UnbalancedDataset
 
 UnbalancedDataset is a python package offering a number of re-sampling techniques commonly used in datasets showing strong between-class imbalance.
 
-[![Code Health](https://landscape.io/github/fmfn/UnbalancedDataset/master/landscape.svg?style=flat)](https://landscape.io/github/fmfn/UnbalancedDataset/master)
+[![Code Health](https://landscape.io/github/glemaitre/UnbalancedDataset/master/landscape.svg?style=flat)](https://landscape.io/github/glemaitre/UnbalancedDataset/master)
+[![Build Status](https://travis-ci.org/glemaitre/UnbalancedDataset.svg?branch=master)](https://travis-ci.org/glemaitre/UnbalancedDataset)
+[![Coverage Status](https://coveralls.io/repos/github/glemaitre/UnbalancedDataset/badge.svg?branch=master)](https://coveralls.io/github/glemaitre/UnbalancedDataset?branch=master)
 
 Installation
 ============
