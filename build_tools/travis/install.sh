@@ -33,7 +33,7 @@ source activate testenv
 pip install nose-timer
 
 # Install libgfortran with conda
-conda install --yes libgfortran scikit-learn
+conda install --yes libgfortran scikit-learn six
 
 if [[ "$COVERAGE" == "true" ]]; then
     pip install coverage coveralls
