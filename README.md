@@ -1,6 +1,8 @@
 UnbalancedDataset
 =================
 
+[![Join the chat at https://gitter.im/glemaitre/UnbalancedDataset](https://badges.gitter.im/glemaitre/UnbalancedDataset.svg)](https://gitter.im/glemaitre/UnbalancedDataset?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 UnbalancedDataset is a python package offering a number of re-sampling techniques commonly used in datasets showing strong between-class imbalance.
 
 [![Code Health](https://landscape.io/github/glemaitre/UnbalancedDataset/master/landscape.svg?style=flat)](https://landscape.io/github/glemaitre/UnbalancedDataset/master)
