@@ -117,7 +117,7 @@ if __name__ == "__main__":
                      'Operating System :: Unix',
                      'Operating System :: MacOS',
                      'Programming Language :: Python :: 2'
-                     'Programming Language :: Python :: 2.7'],
+                     'Programming Language :: Python :: 3'],
         install_requires=INSTALL_REQUIRES,
         requires=REQUIRES,
         packages=setuptools.find_packages(exclude=['doc']),
