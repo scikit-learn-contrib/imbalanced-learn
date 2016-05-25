@@ -9,6 +9,8 @@ from collections import Counter
 
 from sklearn.utils import check_X_y
 
+from six import string_types
+
 
 class BaseSampler(object):
     """Basic class with abstact method.
@@ -52,7 +54,7 @@ class BaseSampler(object):
                                  ' minority.')
             else:
                 self.ratio_ = ratio
-        elif isinstance(ratio, basestring):
+        elif isinstance(ratio, string_types):
             if ratio == 'auto':
                 self.ratio_ = ratio
             else:
