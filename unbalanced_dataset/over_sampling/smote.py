@@ -243,7 +243,7 @@ class SMOTE(OverSampler):
 
         return self
 
-    def in_danger_noise(self, samples, y, kind='danger'):
+    def _in_danger_noise(self, samples, y, kind='danger'):
         """Estimate if a set of sample are in danger or not.
 
         Parameters
@@ -288,7 +288,7 @@ class SMOTE(OverSampler):
         else:
             raise ValueError('Unknown string for parameter kind.')
 
-    def make_samples(self, X, y_type, nn_data, nn_num, n_samples,
+    def _make_samples(self, X, y_type, nn_data, nn_num, n_samples,
                      step_size=1.):
         """A support function that returns artificial samples constructed along
         the line connecting nearest neighbours.
@@ -303,11 +303,11 @@ class SMOTE(OverSampler):
             target values for the synthetic variables with correct length in
             a clear format.
 
-        nn_data : ndarray, shape(n_samples_all, n_features)
+        nn_data : ndarray, shape (n_samples_all, n_features)
             Data set carrying all the neighbours to be used
 
-        nn_num : int
-            The number of nearest neighbours to be used.
+        nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)
+            The nearest neighbours of each sample in nn_data.
 
         n_samples : int
             The number of samples to generate.
@@ -429,7 +429,7 @@ class SMOTE(OverSampler):
 
             # --- Generating synthetic samples
             # Use static method make_samples to generate minority samples
-            X_new, y_new = self.make_samples(X_min,
+            X_new, y_new = self._make_samples(X_min,
                                              self.min_c_,
                                              X_min,
                                              nns,
@@ -457,7 +457,7 @@ class SMOTE(OverSampler):
                 print("done!")
 
             # Boolean array with True for minority samples in danger
-            danger_index = self.in_danger_noise(X_min, y, kind='danger')
+            danger_index = self._in_danger_noise(X_min, y, kind='danger')
 
             # If all minority samples are safe, return the original data set.
             if not any(danger_index):
@@ -485,7 +485,7 @@ class SMOTE(OverSampler):
             # B1 and B2 types diverge here!!!
             if self.kind == 'borderline1':
                 # Create synthetic samples for borderline points.
-                X_new, y_new = self.make_samples(X_min[danger_index],
+                X_new, y_new = self._make_samples(X_min[danger_index],
                                                  self.min_c_,
                                                  X_min,
                                                  nns,
@@ -512,7 +512,7 @@ class SMOTE(OverSampler):
                 fractions = betavariate(alpha=10, beta=10)
 
                 # Only minority
-                X_new_1, y_new_1 = self.make_samples(X_min[danger_index],
+                X_new_1, y_new_1 = self._make_samples(X_min[danger_index],
                                                      self.min_c_,
                                                      X_min,
                                                      nns,
@@ -521,7 +521,7 @@ class SMOTE(OverSampler):
                                                      step_size=1.)
 
                 # Only majority with smaller step size
-                X_new_2, y_new_2 = self.make_samples(X_min[danger_index],
+                X_new_2, y_new_2 = self._make_samples(X_min[danger_index],
                                                      self.min_c_,
                                                      X[y != self.min_c_],
                                                      nns,
@@ -567,11 +567,11 @@ class SMOTE(OverSampler):
 
             # Now, get rid of noisy support vectors
 
-            noise_bool = self.in_danger_noise(support_vector, y, kind='noise')
+            noise_bool = self._in_danger_noise(support_vector, y, kind='noise')
 
             # Remove noisy support vectors
             support_vector = support_vector[np.logical_not(noise_bool)]
-            danger_bool = self.in_danger_noise(support_vector, y,
+            danger_bool = self._in_danger_noise(support_vector, y,
                                                kind='danger')
             safety_bool = np.logical_not(danger_bool)
 
@@ -608,7 +608,7 @@ class SMOTE(OverSampler):
                     support_vector[danger_bool],
                     return_distance=False)[:, 1:]
 
-                X_new_1, y_new_1 = self.make_samples(
+                X_new_1, y_new_1 = self._make_samples(
                     support_vector[danger_bool],
                     self.min_c_,
                     X_min,
@@ -622,7 +622,7 @@ class SMOTE(OverSampler):
                     support_vector[safety_bool],
                     return_distance=False)[:, 1:]
 
-                X_new_2, y_new_2 = self.make_samples(
+                X_new_2, y_new_2 = self._make_samples(
                     support_vector[safety_bool],
                     self.min_c_,
                     X_min,
