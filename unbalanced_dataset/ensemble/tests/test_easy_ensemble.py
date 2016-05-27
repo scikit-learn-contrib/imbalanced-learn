@@ -101,3 +101,44 @@ def test_transform_wt_fit():
     # Create the object
     ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
     assert_raises(RuntimeError, ee.transform, X, Y)
+
+
+def test_fit_transform_auto():
+    """Test the fit and transform routine with auto ratio."""
+
+    # Define the ratio parameter
+    ratio = 'auto'
+
+    # Create the sampling object
+    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED,
+                      return_indices=True)
+
+    # Get the different subset
+    X_resampled, y_resampled, idx_under = ee.fit_transform(X, Y)
+
+    currdir = os.path.dirname(os.path.abspath(__file__))
+    X_gt = np.load(os.path.join(currdir, 'data', 'ee_x.npy'))
+    y_gt = np.load(os.path.join(currdir, 'data', 'ee_y.npy'))
+    idx_gt = np.load(os.path.join(currdir, 'data', 'ee_idx.npy'))
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+    assert_array_equal(idx_under, idx_gt)
+
+
+def test_fit_transform_half():
+    """Test the fit and transform routine with 0.5 ratio."""
+
+    # Define the ratio parameter
+    ratio = 0.5
+
+    # Create the sampling object
+    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
+
+    # Get the different subset
+    X_resampled, y_resampled = ee.fit_transform(X, Y)
+
+    currdir = os.path.dirname(os.path.abspath(__file__))
+    X_gt = np.load(os.path.join(currdir, 'data', 'ee_x_05.npy'))
+    y_gt = np.load(os.path.join(currdir, 'data', 'ee_y_05.npy'))
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
