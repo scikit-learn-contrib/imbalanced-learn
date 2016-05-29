@@ -130,7 +130,7 @@ class InstanceHardnessThreshold(UnderSampler):
         self.estimator = estimator
         self.threshold = threshold
 
-        possible_modes = ('all', 'mode')
+        possible_modes = ('maj', 'all')
         if mode  not in possible_modes:
             raise ValueError('Unknown mode parameter.')
         else:
@@ -206,18 +206,18 @@ class InstanceHardnessThreshold(UnderSampler):
 
             self.estimator.fit(X_train, y_train)
 
-            probs = self.estimator.predict_proba(X_test, y_test)
+            probs = self.estimator.predict_proba(X_test)
             probabilities[test_index] = [\
                     probs[l,np.where(self.estimator.classes_ == c)[0][0]] \
-                    for l, c in enumerate(yval)]
+                    for l, c in enumerate(y_test)]
 
         if self.mode == 'all':
             mask = probabilities >= self.threshold
         elif self.mode == 'maj':
             mask = np.logical_or(probabilities >= self.threshold, y == self.min_c_)
 
-        X = X[mask].copy()
-        y = y[mask].copy()
+        X_resampled = X[mask].copy()
+        y_resampled = y[mask].copy()
 
         # If we need to offer support for the indices
         if self.return_indices:
