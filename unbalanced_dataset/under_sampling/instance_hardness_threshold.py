@@ -78,9 +78,9 @@ class InstanceHardnessThreshold(UnderSampler):
 
     References
     ----------
-    .. [1] D. Wilson, "Asymptotic Properties of Nearest Neighbor Rules Using
-       Edited Data," In IEEE Transactions on Systems, Man, and Cybernetrics,
-       vol. 2 (3), pp. 408-421, 1972.
+    .. [1] D. Smith, Michael R., Tony Martinez, and Christophe Giraud-Carrier. 
+       "An instance level analysis of data complexity." Machine learning 
+       95.2 (2014): 225-256.
 
     """
 
