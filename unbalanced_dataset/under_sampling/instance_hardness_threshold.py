@@ -70,6 +70,19 @@ class InstanceHardnessThreshold(UnderSampler):
         A dictionary in which the number of occurences of each class is
         reported.
 
+    estimator : sklearn classifier
+        Classifier  used in to estimate instance hardness of the samples.
+
+    threshold : float, optional (default=0.3)
+        Threshold to be used for selecting samples (0.01 to 0.99).
+
+    mode: str, optional (default='maj')
+        - If 'maj', only samples of the majority class are excluded.
+        - If 'all', samples of all classes are excluded.
+
+    cv : int, optional (default=5)
+        Number of folds used when estimating samples' instance hardness.
+
     Notes
     -----
     The method is based on [1]_.
