@@ -16,7 +16,7 @@ from .under_sampler import UnderSampler
 
 
 class EditedNearestNeighbours(UnderSampler):
-    """Class to perform under-sampling based on the condensed nearest neighbour
+    """Class to perform under-sampling based on the edited nearest neighbour
     method.
 
     Parameters
