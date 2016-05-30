@@ -50,9 +50,9 @@ class BaseSampler(object):
         # over the number of samples in the majority class. Thus, the ratio
         # cannot be greater than 1.0
         if isinstance(ratio, float):
-            if ratio > 1.0:
+            if ratio > 1:
                 raise ValueError('Ration cannot be greater than one.')
-            elif ratio < 0.:
+            elif ratio <= 0:
                 raise ValueError('Ratio cannot be negative.')
             else:
                 self.ratio_ = ratio
