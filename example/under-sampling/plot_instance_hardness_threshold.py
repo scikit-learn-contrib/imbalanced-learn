@@ -34,16 +34,11 @@ pca = PCA(n_components=2)
 # Fit and transform x to visualise inside a 2D feature space
 X_vis = pca.fit_transform(X)
 
-# Apply the random under-sampling
-
-
-
 # Two subplots, unpack the axes array immediately
 f, axs = plt.subplots(2, 2)
 
 axs = [a for ax in axs for a in ax]
 for ax, threshold in zip(axs, [0.0,0.25,0.5,0.75]):
-    #import ipdb; ipdb.set_trace()
     if threshold == 0.0:
         ax.scatter(X_vis[y == 0, 0], X_vis[y == 0, 1], label="Class #0", alpha=0.5,
                     edgecolor=almost_black, facecolor=palette[0], linewidth=0.15)
