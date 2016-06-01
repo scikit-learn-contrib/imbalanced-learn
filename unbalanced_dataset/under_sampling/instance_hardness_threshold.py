@@ -28,7 +28,7 @@ class InstanceHardnessThreshold(UnderSampler):
     threshold : float, optional (default=0.3)
         Threshold to be used when excluding samples (0.01 to 0.99).
 
-    mode: str, optional (default='maj')
+    kind_sel : str, optional (default='maj')
         - If 'maj', only samples of the majority class are excluded.
         - If 'all', samples of all classes are excluded.
 
@@ -47,7 +47,6 @@ class InstanceHardnessThreshold(UnderSampler):
 
     n_jobs : int, optional (default=-1)
         The number of thread to open when it is possible.
-
 
     Attributes
     ----------
@@ -76,7 +75,7 @@ class InstanceHardnessThreshold(UnderSampler):
     threshold : float, optional (default=0.3)
         Threshold to be used for selecting samples (0.01 to 0.99).
 
-    mode: str, optional (default='maj')
+    kind_sel : str, optional (default='maj')
         - If 'maj', only samples of the majority class are excluded.
         - If 'all', samples of all classes are excluded.
 
@@ -97,7 +96,7 @@ class InstanceHardnessThreshold(UnderSampler):
 
     """
 
-    def __init__(self, estimator, threshold=0.3, mode='maj', cv=5, 
+    def __init__(self, estimator, threshold=0.3, kind_sel='maj', cv=5, 
             return_indices=False, random_state=None, verbose=True, n_jobs=-1):
 
         """Initialisation of Instance Hardness Threshold object.
@@ -110,7 +109,7 @@ class InstanceHardnessThreshold(UnderSampler):
         threshold : float, optional (default=0.3)
             Threshold to be used when excluding samples (0.01 to 0.99).
 
-        mode: str, optional (default='maj')
+        kind_sel : str, optional (default='maj')
             - If 'maj', only samples of the majority class are excluded.
             - If 'all', samples of all classes are excluded.
 
@@ -140,17 +139,20 @@ class InstanceHardnessThreshold(UnderSampler):
             random_state=random_state,
             verbose=verbose)
 
-        self.estimator = estimator
+        if not hasattr(estimator, 'predict_proba'):
+            raise ValueError('Estimator does not have predict_proba method.')
+        else:
+            self.estimator = estimator
+
         self.threshold = threshold
 
-        possible_modes = ('maj', 'all')
-        if mode  not in possible_modes:
-            raise ValueError('Unknown mode parameter.')
+        possible_kind_sel = ('maj', 'all')
+        if kind_sel not in possible_kind_sel:
+            raise ValueError('Unknown kind_sel parameter.')
         else:
-            self.mode = mode
+            self.kind_sel = kind_sel
 
         self.cv = cv
-
         self.n_jobs = n_jobs
 
     def fit(self, X, y):
@@ -199,17 +201,15 @@ class InstanceHardnessThreshold(UnderSampler):
         idx_under : ndarray, shape (n_samples, )
             If `return_indices` is `True`, a boolean array will be returned
             containing the which samples have been selected.
-
+        
         """
         # Check the consistency of X and y
 	X, y = check_X_y(X, y)
 
         super(InstanceHardnessThreshold, self).transform(X, y)
 
-
         skf = StratifiedKFold(y, n_folds=self.cv, shuffle=False, 
                 random_state=self.rs_)
-
 
         probabilities = np.zeros(y.shape[0], dtype=float)
 
@@ -220,17 +220,18 @@ class InstanceHardnessThreshold(UnderSampler):
             self.estimator.fit(X_train, y_train)
 
             probs = self.estimator.predict_proba(X_test)
-            probabilities[test_index] = [\
-                    probs[l,np.where(self.estimator.classes_ == c)[0][0]] \
+            classes = self.estimator.classes_
+            probabilities[test_index] = [
+                    probs[l,np.where(classes == c)[0][0]]
                     for l, c in enumerate(y_test)]
 
-        if self.mode == 'all':
+        if self.kind_sel == 'all':
             mask = probabilities >= self.threshold
-        elif self.mode == 'maj':
+        elif self.kind_sel == 'maj':
             mask = np.logical_or(probabilities >= self.threshold, y == self.min_c_)
 
-        X_resampled = X[mask].copy()
-        y_resampled = y[mask].copy()
+        X_resampled = X[mask]
+        y_resampled = y[mask]
 
         # If we need to offer support for the indices
         if self.return_indices:
