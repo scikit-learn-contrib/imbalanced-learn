@@ -1,0 +1,500 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>unbalanced_dataset package &mdash; UnbalancedDataset 0.1.dev0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="UnbalancedDataset 0.1.dev0 documentation" href="../index.html"/>
+        <link rel="up" title="unbalanced_dataset" href="modules.html"/>
+        <link rel="next" title="unbalanced_dataset.combine package" href="unbalanced_dataset.combine.html"/>
+        <link rel="prev" title="unbalanced_dataset" href="modules.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> UnbalancedDataset
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">unbalanced_dataset</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">unbalanced_dataset package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.combine.html">unbalanced_dataset.combine package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.ensemble.html">unbalanced_dataset.ensemble package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.over_sampling.html">unbalanced_dataset.over_sampling package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html">unbalanced_dataset.under_sampling package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.utils.html">unbalanced_dataset.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-unbalanced_dataset.base_sampler">unbalanced_dataset.base_sampler module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-unbalanced_dataset.setup">unbalanced_dataset.setup module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-contents">Module contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Subpackages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">UnbalancedDataset</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="modules.html">unbalanced_dataset</a> &raquo;</li>
+      
+    <li>unbalanced_dataset package</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/modules/unbalanced_dataset.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="unbalanced-dataset-package">
+<h1>unbalanced_dataset package<a class="headerlink" href="#unbalanced-dataset-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="unbalanced_dataset.combine.html">unbalanced_dataset.combine package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.combine.html#subpackages">Subpackages</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.combine.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.combine.html#module-unbalanced_dataset.combine.smote_enn">unbalanced_dataset.combine.smote_enn module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.combine.html#module-unbalanced_dataset.combine.smote_tomek">unbalanced_dataset.combine.smote_tomek module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.combine.html#module-unbalanced_dataset.combine">Module contents</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="unbalanced_dataset.ensemble.html">unbalanced_dataset.ensemble package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.ensemble.html#subpackages">Subpackages</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.ensemble.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.ensemble.html#module-unbalanced_dataset.ensemble.balance_cascade">unbalanced_dataset.ensemble.balance_cascade module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.ensemble.html#module-unbalanced_dataset.ensemble.easy_ensemble">unbalanced_dataset.ensemble.easy_ensemble module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.ensemble.html#module-unbalanced_dataset.ensemble.ensemble_sampler">unbalanced_dataset.ensemble.ensemble_sampler module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.ensemble.html#module-unbalanced_dataset.ensemble">Module contents</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="unbalanced_dataset.over_sampling.html">unbalanced_dataset.over_sampling package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#subpackages">Subpackages</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#module-unbalanced_dataset.over_sampling.over_sampler">unbalanced_dataset.over_sampling.over_sampler module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#module-unbalanced_dataset.over_sampling.random_over_sampler">unbalanced_dataset.over_sampling.random_over_sampler module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#module-unbalanced_dataset.over_sampling.smote">unbalanced_dataset.over_sampling.smote module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#module-unbalanced_dataset.over_sampling">Module contents</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="unbalanced_dataset.under_sampling.html">unbalanced_dataset.under_sampling package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#subpackages">Subpackages</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.cluster_centroids">unbalanced_dataset.under_sampling.cluster_centroids module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.condensed_nearest_neighbour">unbalanced_dataset.under_sampling.condensed_nearest_neighbour module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.edited_nearest_neighbours">unbalanced_dataset.under_sampling.edited_nearest_neighbours module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.nearmiss">unbalanced_dataset.under_sampling.nearmiss module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.neighbourhood_cleaning_rule">unbalanced_dataset.under_sampling.neighbourhood_cleaning_rule module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.one_sided_selection">unbalanced_dataset.under_sampling.one_sided_selection module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.random_under_sampler">unbalanced_dataset.under_sampling.random_under_sampler module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.tomek_links">unbalanced_dataset.under_sampling.tomek_links module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.under_sampler">unbalanced_dataset.under_sampling.under_sampler module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling">Module contents</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="unbalanced_dataset.utils.html">unbalanced_dataset.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.utils.html#subpackages">Subpackages</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.utils.html#module-unbalanced_dataset.utils.pipeline">unbalanced_dataset.utils.pipeline module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.utils.html#module-unbalanced_dataset.utils">Module contents</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-unbalanced_dataset.base_sampler">
+<span id="unbalanced-dataset-base-sampler-module"></span><h2>unbalanced_dataset.base_sampler module<a class="headerlink" href="#module-unbalanced_dataset.base_sampler" title="Permalink to this headline">¶</a></h2>
+<p>Base class for sampling</p>
+<dl class="class">
+<dt id="unbalanced_dataset.base_sampler.BaseSampler">
+<em class="property">class </em><code class="descclassname">unbalanced_dataset.base_sampler.</code><code class="descname">BaseSampler</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/base_sampler.html#BaseSampler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.base_sampler.BaseSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Basic class with abstact method.</p>
+<p>Warning: This class should not be used directly. Use the derive classes
+instead.</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.base_sampler.BaseSampler.fit" title="unbalanced_dataset.base_sampler.BaseSampler.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
+<td>Find the classes statistics before to perform sampling.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.base_sampler.BaseSampler.fit_transform" title="unbalanced_dataset.base_sampler.BaseSampler.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
+<td>Fit the statistics and resample the data directly.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.base_sampler.BaseSampler.transform" title="unbalanced_dataset.base_sampler.BaseSampler.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
+<td>Resample the dataset.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="unbalanced_dataset.base_sampler.BaseSampler.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/base_sampler.html#BaseSampler.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.base_sampler.BaseSampler.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the classes statistics before to perform sampling.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : ndarray, shape (n_samples, n_features)</p>
+<blockquote>
+<div><p>Matrix containing the data which have to be sampled.</p>
+</div></blockquote>
+<p><strong>y</strong> : ndarray, shape (n_samples, )</p>
+<blockquote>
+<div><p>Corresponding label for each sample in X.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>self</strong> : object,</p>
+<blockquote class="last">
+<div><p>Return self.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="unbalanced_dataset.base_sampler.BaseSampler.fit_transform">
+<code class="descname">fit_transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/base_sampler.html#BaseSampler.fit_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.base_sampler.BaseSampler.fit_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the statistics and resample the data directly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : ndarray, shape (n_samples, n_features)</p>
+<blockquote>
+<div><p>Matrix containing the data which have to be sampled.</p>
+</div></blockquote>
+<p><strong>y</strong> : ndarray, shape (n_samples, )</p>
+<blockquote>
+<div><p>Corresponding label for each sample in X.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X_resampled</strong> : ndarray, shape (n_samples_new, n_features)</p>
+<blockquote>
+<div><p>The array containing the resampled data.</p>
+</div></blockquote>
+<p><strong>y_resampled</strong> : ndarray, shape (n_samples_new)</p>
+<blockquote class="last">
+<div><p>The corresponding label of <cite>X_resampled</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="unbalanced_dataset.base_sampler.BaseSampler.transform">
+<code class="descname">transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/base_sampler.html#BaseSampler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.base_sampler.BaseSampler.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resample the dataset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : ndarray, shape (n_samples, n_features)</p>
+<blockquote>
+<div><p>Matrix containing the data which have to be sampled.</p>
+</div></blockquote>
+<p><strong>y</strong> : ndarray, shape (n_samples, )</p>
+<blockquote>
+<div><p>Corresponding label for each sample in X.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X_resampled</strong> : ndarray, shape (n_samples_new, n_features)</p>
+<blockquote>
+<div><p>The array containing the resampled data.</p>
+</div></blockquote>
+<p><strong>y_resampled</strong> : ndarray, shape (n_samples_new)</p>
+<blockquote class="last">
+<div><p>The corresponding label of <cite>X_resampled</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-unbalanced_dataset.setup">
+<span id="unbalanced-dataset-setup-module"></span><h2>unbalanced_dataset.setup module<a class="headerlink" href="#module-unbalanced_dataset.setup" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="unbalanced_dataset.setup.configuration">
+<code class="descclassname">unbalanced_dataset.setup.</code><code class="descname">configuration</code><span class="sig-paren">(</span><em>parent_package=''</em>, <em>top_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/setup.html#configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.setup.configuration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-unbalanced_dataset"></span><p>Toolbox for unbalanced dataset in machine learning.</p>
+<p><code class="docutils literal"><span class="pre">UnbalancedDataset</span></code> is a set of python methods to deal with unbalanced
+datset in machine learning and pattern recognition.</p>
+<div class="section" id="id1">
+<h3>Subpackages<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>combine</dt>
+<dd>Module which provides methods based on over-sampling and under-sampling.</dd>
+<dt>ensemble</dt>
+<dd>Module which provides methods generating an ensemble of
+under-sampled subsets.</dd>
+<dt>over_sampling</dt>
+<dd>Module which provides methods to under-sample a dataset.</dd>
+<dt>under-sampling</dt>
+<dd>Module which provides methods to over-sample a dataset.</dd>
+<dt>utils</dt>
+<dd>Module which provides helper methods.</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="unbalanced_dataset.combine.html" class="btn btn-neutral float-right" title="unbalanced_dataset.combine package" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modules.html" class="btn btn-neutral" title="unbalanced_dataset" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, F. Nogueira, G. Lemaitre.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.dev0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
