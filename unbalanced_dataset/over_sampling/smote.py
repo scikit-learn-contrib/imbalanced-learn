@@ -4,7 +4,7 @@ from __future__ import division
 
 import numpy as np
 
-from random import betavariate
+from numpy.random import beta
 
 from sklearn.utils import check_X_y
 from sklearn.utils import check_array
@@ -49,11 +49,6 @@ class SMOTE(OverSampler):
     kind : str, optional (default='regular')
         The type of SMOTE algorithm to use one of the following options:
         'regular', 'borderline1', 'borderline2', 'svm'
-
-    nn_method : str, optional (default='exact')
-        The nearest neighbors method to use which can be either: 'approximate'
-        or 'exact'. 'approximate' will use LSH Forest while 'exact' will be an
-        exact search.
 
     Attributes
     ----------
@@ -100,8 +95,7 @@ class SMOTE(OverSampler):
     """
 
     def __init__(self, ratio='auto', random_state=None, verbose=True,
-                 k=5, m=10, out_step=0.5, kind='regular', nn_method='exact',
-                 n_jobs=-1, **kwargs):
+                 k=5, m=10, out_step=0.5, kind='regular', n_jobs=-1, **kwargs):
         """Initialisation of SMOTE object.
 
         Parameters
@@ -133,11 +127,6 @@ class SMOTE(OverSampler):
         kind : str, optional (default='regular')
             The type of SMOTE algorithm to use one of the following
             options: 'regular', 'borderline1', 'borderline2', 'svm'
-
-        nn_method : str, optional (default='exact')
-            The nearest neighbors method to use which can be either:
-            'approximate' or 'exact'. 'approximate' will use LSH Forest while
-            'exact' will be an exact search.
 
         n_jobs : int, optional (default=-1)
             Number of threads to run the algorithm when it is possible.
@@ -177,13 +166,8 @@ class SMOTE(OverSampler):
             # Regular smote does not look for samples in danger, instead it
             # creates synthetic samples directly from the k-th nearest
             # neighbours with not filtering
-            if nn_method == 'exact':
-                self.nearest_neighbour_ = NearestNeighbors(n_neighbors=k + 1,
+            self.nearest_neighbour_ = NearestNeighbors(n_neighbors=k + 1,
                                                            n_jobs=self.n_jobs)
-            elif nn_method == 'approximate':
-                self.nearest_neighbour_ = LSHForest(n_estimators=50,
-                                                    n_candidates=500,
-                                                    n_neighbors=k+1)
         else:
             # Borderline1, 2 and SVM variations of smote must first look for
             # samples that could be considered noise and samples that live
@@ -191,13 +175,8 @@ class SMOTE(OverSampler):
             # creating synthetic samples from the k-th nns, it first look
             # for m nearest neighbors to decide whether or not a sample is
             # noise or near the boundary.
-            if nn_method == 'exact':
-                self.nearest_neighbour_ = NearestNeighbors(n_neighbors=m + 1,
+            self.nearest_neighbour_ = NearestNeighbors(n_neighbors=m + 1,
                                                            n_jobs=self.n_jobs)
-            elif nn_method == 'approximate':
-                self.nearest_neighbour_ = LSHForest(n_estimators=50,
-                                                    n_candidates=500,
-                                                    n_neighbors=m+1)
 
             # --- Nearest Neighbours for noise and boundary (in danger)
             # Before creating synthetic samples we must first decide if
@@ -216,7 +195,7 @@ class SMOTE(OverSampler):
             self.out_step = out_step
 
             # Store SVM object with any parameters
-            self.svm_ = SVC(**kwargs)
+            self.svm_ = SVC(random_state=self.rs_, **kwargs)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -286,7 +265,7 @@ class SMOTE(OverSampler):
             # Samples are noise for m = m'
             return n_maj == self.m
         else:
-            raise ValueError('Unknown string for parameter kind.')
+            raise NotImplementedError
 
     def _make_samples(self, X, y_type, nn_data, nn_num, n_samples,
                      step_size=1.):
@@ -351,7 +330,10 @@ class SMOTE(OverSampler):
 
             # Take a step of random size (0,1) in the direction of the
             # n nearest neighbours
-            np.random.seed(seeds[i])
+            if self.rs_ is None:
+                np.random.seed(seeds[i])
+            else:
+                np.random.seed(self.rs_)
             step = step_size * np.random.uniform()
 
             # Construct synthetic sample
@@ -506,10 +488,9 @@ class SMOTE(OverSampler):
                 # (type 1), or minority and majority (with reduced step size)
                 # (type 2).
                 np.random.seed(self.rs_)
-
                 # The fraction is sampled from a beta distribution centered
                 # around 0.5 with variance ~0.01
-                fractions = betavariate(alpha=10, beta=10)
+                fractions = beta(10, 10)
 
                 # Only minority
                 X_new_1, y_new_1 = self._make_samples(X_min[danger_index],
@@ -600,7 +581,7 @@ class SMOTE(OverSampler):
             # The fraction are sampled from a beta distribution with mean
             # 0.5 and variance 0.01#
             np.random.seed(self.rs_)
-            fractions = betavariate(alpha=10, beta=10)
+            fractions = beta(10, 10)
 
             # Interpolate samples in danger
             if np.count_nonzero(danger_bool) > 0:
