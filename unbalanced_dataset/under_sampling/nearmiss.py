@@ -221,8 +221,7 @@ class NearMiss(UnderSampler):
         elif sel_strategy == 'farthest':
             sort_way = True
         else:
-            raise ValueError('Unbalanced.NearMiss: the sorting can be done '
-                             'only with nearest or farthest data points.')
+            raise NotImplementedError
 
         sorted_idx = sorted(range(len(dist_avg_vec)),
                             key=dist_avg_vec.__getitem__,
@@ -363,6 +362,8 @@ class NearMiss(UnderSampler):
                     num_samples,
                     key,
                     sel_strategy='farthest')
+            else:
+                raise NotImplementedError
 
             # If we need to offer support for the indices selected
             if self.return_indices:
