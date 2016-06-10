@@ -111,7 +111,7 @@ def test_nm2_transform_wt_fit():
 
     # Create the object
     nm2 = NearMiss(ratio=ratio, random_state=RND_SEED,
-                          version=VERSION_NEARMISS)
+                   version=VERSION_NEARMISS)
     assert_raises(RuntimeError, nm2.transform, X, Y)
 
 

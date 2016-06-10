@@ -48,7 +48,7 @@ def test_ros_init():
     verbose = True
     ratio = 'auto'
     ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED,
-                             verbose=verbose)
+                            verbose=verbose)
 
     assert_equal(ros.rs_, RND_SEED)
     assert_equal(ros.verbose, verbose)
