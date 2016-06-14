@@ -3,7 +3,6 @@
 datset in machine learning and pattern recognition.
 """
 # Based on NiLearn package
-# Author: Loïc Estève, Ben Cipollini
 # License: simplified BSD
 
 # PEP0440 compatible formatted version, see:
