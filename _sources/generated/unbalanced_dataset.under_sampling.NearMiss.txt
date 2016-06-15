@@ -1,0 +1,25 @@
+unbalanced_dataset.under_sampling.NearMiss
+==========================================
+
+.. currentmodule:: unbalanced_dataset.under_sampling
+
+.. autoclass:: NearMiss
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~NearMiss.__init__
+      ~NearMiss.fit
+      ~NearMiss.fit_transform
+      ~NearMiss.transform
+   
+   
+
+   
+   
+   

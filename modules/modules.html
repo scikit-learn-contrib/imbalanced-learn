@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>unbalanced_dataset &mdash; UnbalancedDataset 0.1.dev0 documentation</title>
+  <title>API Reference &mdash; UnbalancedDataset 0.1.dev0 documentation</title>
   
 
   
@@ -31,7 +31,6 @@
 
   
     <link rel="top" title="UnbalancedDataset 0.1.dev0 documentation" href="../index.html"/>
-        <link rel="next" title="unbalanced_dataset package" href="unbalanced_dataset.html"/>
         <link rel="prev" title="Support" href="../support.html"/> 
 
   
@@ -88,8 +87,17 @@
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">unbalanced_dataset</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.html">unbalanced_dataset package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-unbalanced_dataset.under_sampling"><code class="docutils literal"><span class="pre">unbalanced_dataset.under_sampling</span></code>: Methods performing under-sampling</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-unbalanced_dataset.over_sampling"><code class="docutils literal"><span class="pre">unbalanced_dataset.over_sampling</span></code>: Methods performing over-sampling</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id2"><code class="docutils literal"><span class="pre">unbalanced_dataset.under_sampling</span></code>: Methods performing under-sampling</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-unbalanced_dataset.combine"><code class="docutils literal"><span class="pre">unbalanced_dataset.combine</span></code>: Methods combining over- and under-sampling</a><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -122,7 +130,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li>unbalanced_dataset</li>
+    <li>API Reference</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -136,75 +144,106 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="unbalanced-dataset">
-<h1>unbalanced_dataset<a class="headerlink" href="#unbalanced-dataset" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="unbalanced_dataset.html">unbalanced_dataset package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="unbalanced_dataset.combine.html">unbalanced_dataset.combine package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.combine.html#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.combine.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.combine.html#module-unbalanced_dataset.combine.smote_enn">unbalanced_dataset.combine.smote_enn module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.combine.html#module-unbalanced_dataset.combine.smote_tomek">unbalanced_dataset.combine.smote_tomek module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.combine.html#module-unbalanced_dataset.combine">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="unbalanced_dataset.ensemble.html">unbalanced_dataset.ensemble package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.ensemble.html#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.ensemble.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.ensemble.html#module-unbalanced_dataset.ensemble.balance_cascade">unbalanced_dataset.ensemble.balance_cascade module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.ensemble.html#module-unbalanced_dataset.ensemble.easy_ensemble">unbalanced_dataset.ensemble.easy_ensemble module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.ensemble.html#module-unbalanced_dataset.ensemble.ensemble_sampler">unbalanced_dataset.ensemble.ensemble_sampler module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.ensemble.html#module-unbalanced_dataset.ensemble">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="unbalanced_dataset.over_sampling.html">unbalanced_dataset.over_sampling package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#module-unbalanced_dataset.over_sampling.over_sampler">unbalanced_dataset.over_sampling.over_sampler module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#module-unbalanced_dataset.over_sampling.random_over_sampler">unbalanced_dataset.over_sampling.random_over_sampler module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#module-unbalanced_dataset.over_sampling.smote">unbalanced_dataset.over_sampling.smote module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.over_sampling.html#module-unbalanced_dataset.over_sampling">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="unbalanced_dataset.under_sampling.html">unbalanced_dataset.under_sampling package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.cluster_centroids">unbalanced_dataset.under_sampling.cluster_centroids module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.condensed_nearest_neighbour">unbalanced_dataset.under_sampling.condensed_nearest_neighbour module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.edited_nearest_neighbours">unbalanced_dataset.under_sampling.edited_nearest_neighbours module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.nearmiss">unbalanced_dataset.under_sampling.nearmiss module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.neighbourhood_cleaning_rule">unbalanced_dataset.under_sampling.neighbourhood_cleaning_rule module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.one_sided_selection">unbalanced_dataset.under_sampling.one_sided_selection module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.random_under_sampler">unbalanced_dataset.under_sampling.random_under_sampler module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.tomek_links">unbalanced_dataset.under_sampling.tomek_links module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling.under_sampler">unbalanced_dataset.under_sampling.under_sampler module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.html#module-unbalanced_dataset.under_sampling">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="unbalanced_dataset.utils.html">unbalanced_dataset.utils package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.utils.html#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.utils.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.utils.html#module-unbalanced_dataset.utils.pipeline">unbalanced_dataset.utils.pipeline module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.utils.html#module-unbalanced_dataset.utils">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.html#module-unbalanced_dataset.base_sampler">unbalanced_dataset.base_sampler module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.html#module-unbalanced_dataset.setup">unbalanced_dataset.setup module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unbalanced_dataset.html#module-contents">Module contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="unbalanced_dataset.html#id1">Subpackages</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+  <div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
 </div>
+<div class="section" id="module-unbalanced_dataset.under_sampling">
+<span id="unbalanced-dataset-under-sampling-methods-performing-under-sampling"></span><span id="under-sampling-ref"></span><h1><code class="xref py py-mod docutils literal"><span class="pre">unbalanced_dataset.under_sampling</span></code>: Methods performing under-sampling<a class="headerlink" href="#module-unbalanced_dataset.under_sampling" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">unbalanced_dataset.under_sampling</span></code> provides methods to under-sample
+a dataset.</p>
+<p><strong>Classes</strong>:</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">ClusterCentroids</span></code>([ratio,&nbsp;random_state,&nbsp;...])</td>
+<td>Class to perform under-sampling by generating centroids base on clustering.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">CondensedNearestNeighbour</span></code>([return_indices,&nbsp;...])</td>
+<td>Class to perform under-sampling based on the condensed nearest neighbour method.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">EditedNearestNeighbours</span></code>([return_indices,&nbsp;...])</td>
+<td>Class to perform under-sampling based on the condensed nearest neighbour method.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">NearMiss</span></code>([ratio,&nbsp;return_indices,&nbsp;...])</td>
+<td>Class to perform under-sampling based on NearMiss methods.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">NeighbourhoodCleaningRule</span></code>([return_indices,&nbsp;...])</td>
+<td>Class performing under-sampling based on the neighbourhood cleaning rule.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">OneSidedSelection</span></code>([return_indices,&nbsp;...])</td>
+<td>Class to perform under-sampling based on one-sided selection method.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">RandomUnderSampler</span></code>([ratio,&nbsp;return_indices,&nbsp;...])</td>
+<td>Class to perform random under-sampling.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">TomekLinks</span></code>([return_indices,&nbsp;random_state,&nbsp;...])</td>
+<td>Class to perform under-sampling by removing Tomek&#8217;s links.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-unbalanced_dataset.over_sampling">
+<span id="unbalanced-dataset-over-sampling-methods-performing-over-sampling"></span><span id="id1"></span><h1><code class="xref py py-mod docutils literal"><span class="pre">unbalanced_dataset.over_sampling</span></code>: Methods performing over-sampling<a class="headerlink" href="#module-unbalanced_dataset.over_sampling" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">unbalanced_dataset.over_sampling</span></code> provides a set of method to
+perform over-sampling.</p>
+<p><strong>Classes</strong>:</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">RandomOverSampler</span></code>([ratio,&nbsp;random_state,&nbsp;verbose])</td>
+<td>Class to perform random over-sampling.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">SMOTE</span></code>([ratio,&nbsp;random_state,&nbsp;verbose,&nbsp;k,&nbsp;m,&nbsp;...])</td>
+<td>Class to perform over-sampling using SMOTE.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id2">
+<span id="id3"></span><h1><code class="xref py py-mod docutils literal"><span class="pre">unbalanced_dataset.under_sampling</span></code>: Methods performing under-sampling<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-unbalanced_dataset.ensemble"></span><p>The <code class="xref py py-mod docutils literal"><span class="pre">unbalanced_dataset.ensemble</span></code> module include methods generating
+under-sampled subsets combined inside an ensemble.</p>
+<p><strong>Classes</strong>:</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">BalanceCascade</span></code>([ratio,&nbsp;return_indices,&nbsp;...])</td>
+<td>Perform under-sampling using an ensemble of subset selected using some classifiers.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">EasyEnsemble</span></code>([ratio,&nbsp;return_indices,&nbsp;...])</td>
+<td>Perform under-sampling using an ensemble of random selection.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-unbalanced_dataset.combine">
+<span id="unbalanced-dataset-combine-methods-combining-over-and-under-sampling"></span><span id="combine-ref"></span><h1><code class="xref py py-mod docutils literal"><span class="pre">unbalanced_dataset.combine</span></code>: Methods combining over- and under-sampling<a class="headerlink" href="#module-unbalanced_dataset.combine" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">unbalanced_dataset.combine</span></code> provides methods which combine
+over-sampling and under-sampling.</p>
+<p><strong>Classes</strong>:</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">SMOTEENN</span></code>([ratio,&nbsp;random_state,&nbsp;verbose,&nbsp;k,&nbsp;...])</td>
+<td>Class to perform over-sampling using SMOTE and cleaning using ENN.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">SMOTETomek</span></code>([ratio,&nbsp;random_state,&nbsp;verbose,&nbsp;...])</td>
+<td>Class to perform over-sampling using SMOTE and cleaning using Tomek links.</td>
+</tr>
+</tbody>
+</table>
 </div>
 
 
@@ -213,8 +252,6 @@
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="unbalanced_dataset.html" class="btn btn-neutral float-right" title="unbalanced_dataset package" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../support.html" class="btn btn-neutral" title="Support" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

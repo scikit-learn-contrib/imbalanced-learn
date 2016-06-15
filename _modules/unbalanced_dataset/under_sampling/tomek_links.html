@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>unbalanced_dataset.under_sampling.tomek_links &mdash; UnbalancedDataset 0.1.dev0 documentation</title>
+  <title>unbalanced_dataset.under_sampling.tomek_links &mdash; unbalanced_dataset 0.1.dev0 documentation</title>
   
 
   
@@ -28,9 +28,11 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  
 
   
-    <link rel="top" title="UnbalancedDataset 0.1.dev0 documentation" href="../../../index.html"/>
+    <link rel="top" title="unbalanced_dataset 0.1.dev0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> UnbalancedDataset
+            <a href="../../../index.html" class="icon icon-home"> unbalanced_dataset
           
 
           
@@ -87,7 +89,11 @@
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules/modules.html">unbalanced_dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">General examples</a></li>
 </ul>
 
             
@@ -101,7 +107,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">UnbalancedDataset</a>
+        <a href="../../../index.html">unbalanced_dataset</a>
       </nav>
 
 
@@ -147,7 +153,7 @@
 <span class="kn">from</span> <span class="nn">.under_sampler</span> <span class="kn">import</span> <span class="n">UnderSampler</span>
 
 
-<div class="viewcode-block" id="TomekLinks"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.under_sampling.html#unbalanced_dataset.under_sampling.tomek_links.TomekLinks">[docs]</a><span class="k">class</span> <span class="nc">TomekLinks</span><span class="p">(</span><span class="n">UnderSampler</span><span class="p">):</span>
+<div class="viewcode-block" id="TomekLinks"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.TomekLinks.html#unbalanced_dataset.under_sampling.TomekLinks">[docs]</a><span class="k">class</span> <span class="nc">TomekLinks</span><span class="p">(</span><span class="n">UnderSampler</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to perform under-sampling by removing Tomek&#39;s links.</span>
 
 <span class="sd">    Parameters</span>
@@ -188,7 +194,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+<div class="viewcode-block" id="TomekLinks.__init__"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.TomekLinks.html#unbalanced_dataset.under_sampling.TomekLinks.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                  <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialisation of Tomek&#39;s links object.</span>
 
@@ -215,9 +221,9 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">TomekLinks</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span><span class="p">,</span>
                                          <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
                                          <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span></div>
 
-<div class="viewcode-block" id="TomekLinks.fit"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.under_sampling.html#unbalanced_dataset.under_sampling.tomek_links.TomekLinks.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="TomekLinks.fit"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.TomekLinks.html#unbalanced_dataset.under_sampling.TomekLinks.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the classes statistics before to perform sampling.</span>
 
 <span class="sd">        Parameters</span>
@@ -242,7 +248,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="TomekLinks.is_tomek"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.under_sampling.html#unbalanced_dataset.under_sampling.tomek_links.TomekLinks.is_tomek">[docs]</a>    <span class="k">def</span> <span class="nf">is_tomek</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">nn_index</span><span class="p">,</span> <span class="n">class_type</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="TomekLinks.is_tomek"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.TomekLinks.html#unbalanced_dataset.under_sampling.TomekLinks.is_tomek">[docs]</a>    <span class="k">def</span> <span class="nf">is_tomek</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">nn_index</span><span class="p">,</span> <span class="n">class_type</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;is_tomek uses the target vector and the first neighbour of every</span>
 <span class="sd">        sample point and looks for Tomek pairs. Returning a boolean vector with</span>
 <span class="sd">        True for majority Tomek links.</span>
@@ -294,7 +300,7 @@
 
         <span class="k">return</span> <span class="n">links</span></div>
 
-<div class="viewcode-block" id="TomekLinks.transform"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.under_sampling.html#unbalanced_dataset.under_sampling.tomek_links.TomekLinks.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="TomekLinks.transform"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.TomekLinks.html#unbalanced_dataset.under_sampling.TomekLinks.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -356,7 +362,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, F. Nogueira, G. Lemaitre.
+        &copy; Copyright 2016, Guillaume Lemaitre, Fernando Nogueira.
 
     </p>
   </div>

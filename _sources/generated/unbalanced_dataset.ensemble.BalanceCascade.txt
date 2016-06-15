@@ -1,0 +1,25 @@
+unbalanced_dataset.ensemble.BalanceCascade
+==========================================
+
+.. currentmodule:: unbalanced_dataset.ensemble
+
+.. autoclass:: BalanceCascade
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BalanceCascade.__init__
+      ~BalanceCascade.fit
+      ~BalanceCascade.fit_transform
+      ~BalanceCascade.transform
+   
+   
+
+   
+   
+   

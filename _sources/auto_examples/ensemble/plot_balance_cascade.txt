@@ -1,0 +1,122 @@
+
+
+.. _sphx_glr_auto_examples_ensemble_plot_balance_cascade.py:
+
+
+===============
+Balance cascade
+===============
+
+An illustration of the balance cascade method.
+
+
+
+
+.. image:: /auto_examples/ensemble/images/sphx_glr_plot_balance_cascade_001.png
+    :align: center
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out::
+
+      Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
+    Elements misclassified: [1591 1032 3389]
+    Creation of the subset #0
+    Elements misclassified: [1032 3389 2763 1472  727 2815  192 1967 2930  745]
+    Creation of the subset #1
+    Elements misclassified: [1032 3389 2763 2815  192  124 2745 2402 1259 1138 3296  416]
+    Creation of the subset #2
+    Elements misclassified: [1032 3389 2815  192  124 2402 1138 3296  416  657  111 3379   53  354 3014
+     4255 1158]
+    Creation of the subset #3
+    Elements misclassified: [1032 3389 2815  124 2402   53 4255 4138 3020 3820]
+    Creation of the subset #4
+    Elements misclassified: [1032  124 2402   53 3020  898  917 3681 2603 3646]
+    Creation of the subset #5
+    Elements misclassified: [1032  124 2402   53 3020  898  917 3681 2683 2175 1069 1670 4190 3818 3273
+     2751]
+    Creation of the subset #6
+    Elements misclassified: [ 124 2402   53  917 2683 2175 1069 4190 3818 3273 1773 2627  382 3716    6
+     4254 3207 3982]
+    Creation of the subset #7
+    Elements misclassified: [ 917 2175 1069 3273 1773 2627  382 3716 4254 1166 2317 3512]
+    Creation of the subset #8
+    Creation of the subset #9
+    Not enough samples to continue creating subsets
+
+
+
+
+|
+
+
+.. code-block:: python
+
+
+    print(__doc__)
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    sns.set()
+
+    # Define some color for the plotting
+    almost_black = '#262626'
+    palette = sns.color_palette()
+
+    from sklearn.datasets import make_classification
+    from sklearn.decomposition import PCA
+
+    from unbalanced_dataset.ensemble import BalanceCascade
+
+    # Generate the dataset
+    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
+                               n_informative=3, n_redundant=1, flip_y=0,
+                               n_features=20, n_clusters_per_class=1,
+                               n_samples=5000, random_state=10)
+
+    # Instanciate a PCA object for the sake of easy visualisation
+    pca = PCA(n_components=2)
+    # Fit and transform x to visualise inside a 2D feature space
+    X_vis = pca.fit_transform(X)
+
+    # Apply the random under-sampling
+    bc = BalanceCascade()
+    X_resampled, y_resampled = bc.fit_transform(X, y)
+    X_res_vis = []
+    for X_res in X_resampled:
+        X_res_vis.append(pca.transform(X_res))
+
+    # Two subplots, unpack the axes array immediately
+    f, (ax1, ax2) = plt.subplots(1, 2)
+
+    ax1.scatter(X_vis[y == 0, 0], X_vis[y == 0, 1], label="Class #0", alpha=0.5,
+                edgecolor=almost_black, facecolor=palette[0], linewidth=0.15)
+    ax1.scatter(X_vis[y == 1, 0], X_vis[y == 1, 1], label="Class #1", alpha=0.5,
+                edgecolor=almost_black, facecolor=palette[2], linewidth=0.15)
+    ax1.set_title('Original set')
+
+    ax2.scatter(X_vis[y == 0, 0], X_vis[y == 0, 1], label="Class #0", alpha=0.5,
+                edgecolor=almost_black, facecolor=palette[0], linewidth=0.15)
+    for iy, e in enumerate(X_res_vis):
+        ax2.scatter(e[y_resampled[iy] == 1, 0], e[y_resampled[iy] == 1, 1],
+                    label="Class #1", alpha=0.5, edgecolor=almost_black,
+                    facecolor=np.random.rand(3,), linewidth=0.15)
+    ax2.set_title('Balance cascade')
+
+    plt.show()
+
+**Total running time of the script:**
+(0 minutes 0.402 seconds)
+
+
+
+.. container:: sphx-glr-download
+
+    **Download Python source code:** :download:`plot_balance_cascade.py <plot_balance_cascade.py>`
+
+
+.. container:: sphx-glr-download
+
+    **Download IPython notebook:** :download:`plot_balance_cascade.ipynb <plot_balance_cascade.ipynb>`

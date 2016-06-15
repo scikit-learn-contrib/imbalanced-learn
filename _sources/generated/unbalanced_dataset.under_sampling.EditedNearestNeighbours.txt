@@ -1,0 +1,25 @@
+unbalanced_dataset.under_sampling.EditedNearestNeighbours
+=========================================================
+
+.. currentmodule:: unbalanced_dataset.under_sampling
+
+.. autoclass:: EditedNearestNeighbours
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~EditedNearestNeighbours.__init__
+      ~EditedNearestNeighbours.fit
+      ~EditedNearestNeighbours.fit_transform
+      ~EditedNearestNeighbours.transform
+   
+   
+
+   
+   
+   

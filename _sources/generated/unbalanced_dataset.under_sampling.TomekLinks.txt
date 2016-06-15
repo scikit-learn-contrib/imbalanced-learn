@@ -1,0 +1,26 @@
+unbalanced_dataset.under_sampling.TomekLinks
+============================================
+
+.. currentmodule:: unbalanced_dataset.under_sampling
+
+.. autoclass:: TomekLinks
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TomekLinks.__init__
+      ~TomekLinks.fit
+      ~TomekLinks.fit_transform
+      ~TomekLinks.is_tomek
+      ~TomekLinks.transform
+   
+   
+
+   
+   
+   

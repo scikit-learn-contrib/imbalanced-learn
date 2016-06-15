@@ -87,7 +87,11 @@
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules/modules.html">unbalanced_dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/modules.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/modules.html#module-unbalanced_dataset.under_sampling"><code class="docutils literal"><span class="pre">unbalanced_dataset.under_sampling</span></code>: Methods performing under-sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/modules.html#module-unbalanced_dataset.over_sampling"><code class="docutils literal"><span class="pre">unbalanced_dataset.over_sampling</span></code>: Methods performing over-sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/modules.html#id2"><code class="docutils literal"><span class="pre">unbalanced_dataset.under_sampling</span></code>: Methods performing under-sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/modules.html#module-unbalanced_dataset.combine"><code class="docutils literal"><span class="pre">unbalanced_dataset.combine</span></code>: Methods combining over- and under-sampling</a></li>
 </ul>
 
             
@@ -216,7 +220,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RandomOverSampler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="n">ratio</span><span class="p">,</span>
                                                 <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-                                                <span class="n">verbose</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
+                                                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RandomOverSampler.fit"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.over_sampling.html#unbalanced_dataset.over_sampling.random_over_sampler.RandomOverSampler.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the classes statistics before to perform sampling.</span>

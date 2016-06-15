@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>General examples &mdash; unbalanced_dataset 0.1.dev0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="unbalanced_dataset 0.1.dev0 documentation" href="../index.html"/>
+        <link rel="next" title="SMOTE + ENN" href="combine/plot_smote_enn.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> unbalanced_dataset
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">General examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example-using-combine-class-methods">Example using combine class methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="combine/plot_smote_enn.html">SMOTE + ENN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="combine/plot_smote_tomek.html">SMOTE + Tomek</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-using-ensemble-class-methods">Example using ensemble class methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ensemble/plot_easy_ensemble.html">Easy ensemble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ensemble/plot_balance_cascade.html">Balance cascade</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-using-over-sampling-class-methods">Example using over-sampling class methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="over-sampling/plot_smote_svm.html">SMOTE SVM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over-sampling/plot_smote.html">SMOTE regular</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over-sampling/plot_smote_bordeline_1.html">SMOTE borderline 1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over-sampling/plot_smote_bordeline_2.html">SMOTE borderline 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over-sampling/plot_random_over_sampling.html">Random over-sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-using-under-sampling-class-methods">Example using under-sampling class methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_tomek_links.html">Tomek links</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_nearmiss_1.html">Nearmiss 1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_nearmiss_2.html">Nearmiss 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_nearmiss_3.html">Nearmiss 3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_cluster_centroids.html">Cluster centroids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_one_sided_selection.html">One-sided selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_random_under_sampler.html">Random under-sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_edited_nearest_neighbours.html">Edited nearest-neighbours</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_condensed_nearest_neighbour.html">Condensed nearest-neighbour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_neighbourhood_cleaning_rule.html">Neighbourhood Cleaning Rule</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">unbalanced_dataset</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>General examples</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/auto_examples/index.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="general-examples">
+<span id="id1"></span><h1>General examples<a class="headerlink" href="#general-examples" title="Permalink to this headline">¶</a></h1>
+<p>General-purpose and introductory examples for the unbalanced_dataset.
+.. raw:: html</p>
+<blockquote>
+<div>&lt;div style=&#8217;clear:both&#8217;&gt;&lt;/div&gt;</div></blockquote>
+<div class="section" id="example-using-combine-class-methods">
+<span id="combine-examples"></span><h2>Example using combine class methods<a class="headerlink" href="#example-using-combine-class-methods" title="Permalink to this headline">¶</a></h2>
+<p>Combine examples.</p>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE + ENN method."><div class="figure" id="id2">
+<img alt="../_images/sphx_glr_plot_smote_enn_thumb.png" src="../_images/sphx_glr_plot_smote_enn_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="combine/plot_smote_enn.html#sphx-glr-auto-examples-combine-plot-smote-enn-py"><span class="std std-ref">SMOTE + ENN</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE + Tomek method."><div class="figure" id="id3">
+<img alt="../_images/sphx_glr_plot_smote_tomek_thumb.png" src="../_images/sphx_glr_plot_smote_tomek_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="combine/plot_smote_tomek.html#sphx-glr-auto-examples-combine-plot-smote-tomek-py"><span class="std std-ref">SMOTE + Tomek</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div style='clear:both'></div></div>
+<div class="section" id="example-using-ensemble-class-methods">
+<span id="ensemble-examples"></span><h2>Example using ensemble class methods<a class="headerlink" href="#example-using-ensemble-class-methods" title="Permalink to this headline">¶</a></h2>
+<p>Ensemble examples.</p>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the easy ensemble method."><div class="figure" id="id4">
+<img alt="../_images/sphx_glr_plot_easy_ensemble_thumb.png" src="../_images/sphx_glr_plot_easy_ensemble_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="ensemble/plot_easy_ensemble.html#sphx-glr-auto-examples-ensemble-plot-easy-ensemble-py"><span class="std std-ref">Easy ensemble</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the balance cascade method."><div class="figure" id="id5">
+<img alt="../_images/sphx_glr_plot_balance_cascade_thumb.png" src="../_images/sphx_glr_plot_balance_cascade_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="ensemble/plot_balance_cascade.html#sphx-glr-auto-examples-ensemble-plot-balance-cascade-py"><span class="std std-ref">Balance cascade</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div style='clear:both'></div></div>
+<div class="section" id="example-using-over-sampling-class-methods">
+<span id="over-sampling-examples"></span><h2>Example using over-sampling class methods<a class="headerlink" href="#example-using-over-sampling-class-methods" title="Permalink to this headline">¶</a></h2>
+<p>Over-sampling examples.</p>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE SVM method."><div class="figure" id="id6">
+<img alt="../_images/sphx_glr_plot_smote_svm_thumb.png" src="../_images/sphx_glr_plot_smote_svm_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_smote_svm.html#sphx-glr-auto-examples-over-sampling-plot-smote-svm-py"><span class="std std-ref">SMOTE SVM</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE regular method."><div class="figure" id="id7">
+<img alt="../_images/sphx_glr_plot_smote_thumb.png" src="../_images/sphx_glr_plot_smote_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_smote.html#sphx-glr-auto-examples-over-sampling-plot-smote-py"><span class="std std-ref">SMOTE regular</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE borderline 1 method."><div class="figure" id="id8">
+<img alt="../_images/sphx_glr_plot_smote_bordeline_1_thumb.png" src="../_images/sphx_glr_plot_smote_bordeline_1_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_smote_bordeline_1.html#sphx-glr-auto-examples-over-sampling-plot-smote-bordeline-1-py"><span class="std std-ref">SMOTE borderline 1</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE borderline 2 method."><div class="figure" id="id9">
+<img alt="../_images/sphx_glr_plot_smote_bordeline_2_thumb.png" src="../_images/sphx_glr_plot_smote_bordeline_2_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_smote_bordeline_2.html#sphx-glr-auto-examples-over-sampling-plot-smote-bordeline-2-py"><span class="std std-ref">SMOTE borderline 2</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random over-sampling method."><div class="figure" id="id10">
+<img alt="../_images/sphx_glr_plot_random_over_sampling_thumb.png" src="../_images/sphx_glr_plot_random_over_sampling_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_random_over_sampling.html#sphx-glr-auto-examples-over-sampling-plot-random-over-sampling-py"><span class="std std-ref">Random over-sampling</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div style='clear:both'></div></div>
+<div class="section" id="example-using-under-sampling-class-methods">
+<span id="under-sampling-examples"></span><h2>Example using under-sampling class methods<a class="headerlink" href="#example-using-under-sampling-class-methods" title="Permalink to this headline">¶</a></h2>
+<p>Under-sampling examples.</p>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the Tomek links method."><div class="figure" id="id11">
+<img alt="../_images/sphx_glr_plot_tomek_links_thumb.png" src="../_images/sphx_glr_plot_tomek_links_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_tomek_links.html#sphx-glr-auto-examples-under-sampling-plot-tomek-links-py"><span class="std std-ref">Tomek links</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id12">
+<img alt="../_images/sphx_glr_plot_nearmiss_1_thumb.png" src="../_images/sphx_glr_plot_nearmiss_1_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_nearmiss_1.html#sphx-glr-auto-examples-under-sampling-plot-nearmiss-1-py"><span class="std std-ref">Nearmiss 1</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id13">
+<img alt="../_images/sphx_glr_plot_nearmiss_2_thumb.png" src="../_images/sphx_glr_plot_nearmiss_2_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_nearmiss_2.html#sphx-glr-auto-examples-under-sampling-plot-nearmiss-2-py"><span class="std std-ref">Nearmiss 2</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id14">
+<img alt="../_images/sphx_glr_plot_nearmiss_3_thumb.png" src="../_images/sphx_glr_plot_nearmiss_3_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_nearmiss_3.html#sphx-glr-auto-examples-under-sampling-plot-nearmiss-3-py"><span class="std std-ref">Nearmiss 3</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the cluster centroids method."><div class="figure" id="id15">
+<img alt="../_images/sphx_glr_plot_cluster_centroids_thumb.png" src="../_images/sphx_glr_plot_cluster_centroids_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_cluster_centroids.html#sphx-glr-auto-examples-under-sampling-plot-cluster-centroids-py"><span class="std std-ref">Cluster centroids</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the one-sided selection method."><div class="figure" id="id16">
+<img alt="../_images/sphx_glr_plot_one_sided_selection_thumb.png" src="../_images/sphx_glr_plot_one_sided_selection_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_one_sided_selection.html#sphx-glr-auto-examples-under-sampling-plot-one-sided-selection-py"><span class="std std-ref">One-sided selection</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random under-sampling method."><div class="figure" id="id17">
+<img alt="../_images/sphx_glr_plot_random_under_sampler_thumb.png" src="../_images/sphx_glr_plot_random_under_sampler_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_random_under_sampler.html#sphx-glr-auto-examples-under-sampling-plot-random-under-sampler-py"><span class="std std-ref">Random under-sampling</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the edited nearest-neighbours method."><div class="figure" id="id18">
+<img alt="../_images/sphx_glr_plot_edited_nearest_neighbours_thumb.png" src="../_images/sphx_glr_plot_edited_nearest_neighbours_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_edited_nearest_neighbours.html#sphx-glr-auto-examples-under-sampling-plot-edited-nearest-neighbours-py"><span class="std std-ref">Edited nearest-neighbours</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the condensed nearest-neighbour method."><div class="figure" id="id19">
+<img alt="../_images/sphx_glr_plot_condensed_nearest_neighbour_thumb.png" src="../_images/sphx_glr_plot_condensed_nearest_neighbour_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_condensed_nearest_neighbour.html#sphx-glr-auto-examples-under-sampling-plot-condensed-nearest-neighbour-py"><span class="std std-ref">Condensed nearest-neighbour</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the neighbourhood cleaning rule method."><div class="figure" id="id20">
+<img alt="../_images/sphx_glr_plot_neighbourhood_cleaning_rule_thumb.png" src="../_images/sphx_glr_plot_neighbourhood_cleaning_rule_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_neighbourhood_cleaning_rule.html#sphx-glr-auto-examples-under-sampling-plot-neighbourhood-cleaning-rule-py"><span class="std std-ref">Neighbourhood Cleaning Rule</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div style='clear:both'></div></div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="combine/plot_smote_enn.html" class="btn btn-neutral float-right" title="SMOTE + ENN" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Guillaume Lemaitre, Fernando Nogueira.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.dev0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

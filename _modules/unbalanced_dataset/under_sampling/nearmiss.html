@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>unbalanced_dataset.under_sampling.nearmiss &mdash; UnbalancedDataset 0.1.dev0 documentation</title>
+  <title>unbalanced_dataset.under_sampling.nearmiss &mdash; unbalanced_dataset 0.1.dev0 documentation</title>
   
 
   
@@ -28,9 +28,11 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  
 
   
-    <link rel="top" title="UnbalancedDataset 0.1.dev0 documentation" href="../../../index.html"/>
+    <link rel="top" title="unbalanced_dataset 0.1.dev0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> UnbalancedDataset
+            <a href="../../../index.html" class="icon icon-home"> unbalanced_dataset
           
 
           
@@ -87,7 +89,11 @@
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules/modules.html">unbalanced_dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">General examples</a></li>
 </ul>
 
             
@@ -101,7 +107,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">UnbalancedDataset</a>
+        <a href="../../../index.html">unbalanced_dataset</a>
       </nav>
 
 
@@ -147,7 +153,7 @@
 <span class="kn">from</span> <span class="nn">.under_sampler</span> <span class="kn">import</span> <span class="n">UnderSampler</span>
 
 
-<div class="viewcode-block" id="NearMiss"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.under_sampling.html#unbalanced_dataset.under_sampling.nearmiss.NearMiss">[docs]</a><span class="k">class</span> <span class="nc">NearMiss</span><span class="p">(</span><span class="n">UnderSampler</span><span class="p">):</span>
+<div class="viewcode-block" id="NearMiss"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.NearMiss.html#unbalanced_dataset.under_sampling.NearMiss">[docs]</a><span class="k">class</span> <span class="nc">NearMiss</span><span class="p">(</span><span class="n">UnderSampler</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to perform under-sampling based on NearMiss methods.</span>
 
 <span class="sd">    Parameters</span>
@@ -222,7 +228,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+<div class="viewcode-block" id="NearMiss.__init__"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.NearMiss.html#unbalanced_dataset.under_sampling.NearMiss.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size_ngh</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ver3_samp_ngh</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
                  <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialisation of clustering centroids object.</span>
@@ -284,9 +290,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">size_ngh</span> <span class="o">=</span> <span class="n">size_ngh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ver3_samp_ngh</span> <span class="o">=</span> <span class="n">ver3_samp_ngh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></div>
 
-<div class="viewcode-block" id="NearMiss.fit"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.under_sampling.html#unbalanced_dataset.under_sampling.nearmiss.NearMiss.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="NearMiss.fit"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.NearMiss.html#unbalanced_dataset.under_sampling.NearMiss.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the classes statistics before to perform sampling.</span>
 
 <span class="sd">        Parameters</span>
@@ -356,8 +362,7 @@
         <span class="k">elif</span> <span class="n">sel_strategy</span> <span class="o">==</span> <span class="s1">&#39;farthest&#39;</span><span class="p">:</span>
             <span class="n">sort_way</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unbalanced.NearMiss: the sorting can be done &#39;</span>
-                             <span class="s1">&#39;only with nearest or farthest data points.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
         <span class="n">sorted_idx</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dist_avg_vec</span><span class="p">)),</span>
                             <span class="n">key</span><span class="o">=</span><span class="n">dist_avg_vec</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">,</span>
@@ -369,7 +374,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="n">key</span><span class="p">][</span><span class="n">sel_idx</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="n">key</span><span class="p">][</span><span class="n">sel_idx</span><span class="p">],</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="n">sel_idx</span><span class="p">])</span>
 
-<div class="viewcode-block" id="NearMiss.transform"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.under_sampling.html#unbalanced_dataset.under_sampling.nearmiss.NearMiss.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="NearMiss.transform"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.NearMiss.html#unbalanced_dataset.under_sampling.NearMiss.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -498,6 +503,8 @@
                     <span class="n">num_samples</span><span class="p">,</span>
                     <span class="n">key</span><span class="p">,</span>
                     <span class="n">sel_strategy</span><span class="o">=</span><span class="s1">&#39;farthest&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
             <span class="c1"># If we need to offer support for the indices selected</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
@@ -526,7 +533,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, F. Nogueira, G. Lemaitre.
+        &copy; Copyright 2016, Guillaume Lemaitre, Fernando Nogueira.
 
     </p>
   </div>

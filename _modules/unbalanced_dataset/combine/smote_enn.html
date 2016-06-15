@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>unbalanced_dataset.combine.smote_enn &mdash; UnbalancedDataset 0.1.dev0 documentation</title>
+  <title>unbalanced_dataset.combine.smote_enn &mdash; unbalanced_dataset 0.1.dev0 documentation</title>
   
 
   
@@ -28,9 +28,11 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  
 
   
-    <link rel="top" title="UnbalancedDataset 0.1.dev0 documentation" href="../../../index.html"/>
+    <link rel="top" title="unbalanced_dataset 0.1.dev0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> UnbalancedDataset
+            <a href="../../../index.html" class="icon icon-home"> unbalanced_dataset
           
 
           
@@ -87,7 +89,11 @@
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules/modules.html">unbalanced_dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">General examples</a></li>
 </ul>
 
             
@@ -101,7 +107,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">UnbalancedDataset</a>
+        <a href="../../../index.html">unbalanced_dataset</a>
       </nav>
 
 
@@ -144,7 +150,7 @@
 <span class="kn">from</span> <span class="nn">..base_sampler</span> <span class="kn">import</span> <span class="n">BaseSampler</span>
 
 
-<div class="viewcode-block" id="SMOTEENN"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.combine.html#unbalanced_dataset.combine.smote_enn.SMOTEENN">[docs]</a><span class="k">class</span> <span class="nc">SMOTEENN</span><span class="p">(</span><span class="n">BaseSampler</span><span class="p">):</span>
+<div class="viewcode-block" id="SMOTEENN"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.combine.SMOTEENN.html#unbalanced_dataset.combine.SMOTEENN">[docs]</a><span class="k">class</span> <span class="nc">SMOTEENN</span><span class="p">(</span><span class="n">BaseSampler</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to perform over-sampling using SMOTE and cleaning using ENN.</span>
 
 <span class="sd">    Parameters</span>
@@ -232,7 +238,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+<div class="viewcode-block" id="SMOTEENN.__init__"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.combine.SMOTEENN.html#unbalanced_dataset.combine.SMOTEENN.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                  <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">out_step</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">kind_smote</span><span class="o">=</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span>
                  <span class="n">nn_method</span><span class="o">=</span><span class="s1">&#39;exact&#39;</span><span class="p">,</span> <span class="n">size_ngh</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">kind_enn</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -305,9 +311,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">enn</span> <span class="o">=</span> <span class="n">EditedNearestNeighbours</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
                                            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
                                            <span class="n">size_ngh</span><span class="o">=</span><span class="n">size_ngh</span><span class="p">,</span>
-                                           <span class="n">kind_sel</span><span class="o">=</span><span class="n">kind_enn</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
+                                           <span class="n">kind_sel</span><span class="o">=</span><span class="n">kind_enn</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SMOTEENN.fit"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.combine.html#unbalanced_dataset.combine.smote_enn.SMOTEENN.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="SMOTEENN.fit"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.combine.SMOTEENN.html#unbalanced_dataset.combine.SMOTEENN.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the classes statistics before to perform sampling.</span>
 
 <span class="sd">        Parameters</span>
@@ -334,7 +340,7 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="SMOTEENN.transform"><a class="viewcode-back" href="../../../modules/unbalanced_dataset.combine.html#unbalanced_dataset.combine.smote_enn.SMOTEENN.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="SMOTEENN.transform"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.combine.SMOTEENN.html#unbalanced_dataset.combine.SMOTEENN.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -375,7 +381,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, F. Nogueira, G. Lemaitre.
+        &copy; Copyright 2016, Guillaume Lemaitre, Fernando Nogueira.
 
     </p>
   </div>

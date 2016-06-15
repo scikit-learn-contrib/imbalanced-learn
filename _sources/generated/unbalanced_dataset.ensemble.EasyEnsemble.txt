@@ -1,0 +1,25 @@
+unbalanced_dataset.ensemble.EasyEnsemble
+========================================
+
+.. currentmodule:: unbalanced_dataset.ensemble
+
+.. autoclass:: EasyEnsemble
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~EasyEnsemble.__init__
+      ~EasyEnsemble.fit
+      ~EasyEnsemble.fit_transform
+      ~EasyEnsemble.transform
+   
+   
+
+   
+   
+   

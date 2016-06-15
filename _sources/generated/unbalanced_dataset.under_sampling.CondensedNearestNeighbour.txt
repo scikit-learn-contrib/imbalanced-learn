@@ -1,0 +1,25 @@
+unbalanced_dataset.under_sampling.CondensedNearestNeighbour
+===========================================================
+
+.. currentmodule:: unbalanced_dataset.under_sampling
+
+.. autoclass:: CondensedNearestNeighbour
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~CondensedNearestNeighbour.__init__
+      ~CondensedNearestNeighbour.fit
+      ~CondensedNearestNeighbour.fit_transform
+      ~CondensedNearestNeighbour.transform
+   
+   
+
+   
+   
+   
