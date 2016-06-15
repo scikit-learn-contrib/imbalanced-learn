@@ -1,8 +1,9 @@
+###############
 Getting Started
-===============
+###############
 
 Install
--------
+=======
 
 The install of ``UnbalancedDataset`` is almost straightforward. You need to clone it from GitHub_::
 
@@ -10,7 +11,7 @@ The install of ``UnbalancedDataset`` is almost straightforward. You need to clon
   $ python setup.py install
 
 Test and coverage
------------------
+=================
 
 You want to test the code before to install::
 
@@ -21,7 +22,7 @@ You wish to test the coverage of your version::
   $ make coverage
 
 Contribute
-----------
+==========
 
 You can contribute to this code through Pull Request on GitHub_. Please, make sure that your code is coming with unit tests to ensure full coverage and continuous integration in the API.
 
