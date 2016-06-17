@@ -81,7 +81,7 @@ class RandomOverSampler(OverSampler):
         """
         super(RandomOverSampler, self).__init__(ratio=ratio,
                                                 random_state=random_state,
-                                                verbose=random_state)
+                                                verbose=verbose)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

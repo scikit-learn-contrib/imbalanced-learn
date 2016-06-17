@@ -66,7 +66,7 @@ Bellow is a list of the methods currently implemented in this module.
     1. EasyEnsemble
     2. BalanceCascade
 
-The different algorithms are presented in the [following notebook](https://github.com/glemaitre/UnbalancedDataset/blob/master/notebook/Notebook_UnbalancedDataset.ipynb).
+The different algorithms are presented in the [following notebook](https://github.com/fmfn/UnbalancedDataset/blob/master/examples/plot_unbalanced_dataset.ipynb).
 
 This is a work in progress. Any comments, suggestions or corrections are welcome.
 
