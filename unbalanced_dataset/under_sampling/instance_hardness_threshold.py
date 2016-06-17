@@ -233,17 +233,15 @@ class InstanceHardnessThreshold(UnderSampler):
                     for l, c in enumerate(y_test)]
 
         if self.kind_sel == 'all':
-            mask = probabilities >= self.threshold
+            mask = probabilities >= self.ratio_
         elif self.kind_sel == 'maj':
-            ratios = np.zeros(100, )
-            probs = np.linspace(0., 1., 100)
+            min_count = np.sum(y == self.min_c_)
+            max_count = len(y) - min_count
+            rem_count = max_count - (min_count / self.ratio_)
 
-            for i, p in enumerate(probs):
-                ratios[i] = self.stats_c_[self.min_c_] / np.count_nonzero(np.logical_or(probabilities >= p, y == self.min_c_))
-                ratios = np.abs(ratios - self.ratio)
-
-            threshold = probs[ratios.argmin()]
-            mask = np.logical_or(probabilities >= self.threshold, y == self.min_c_)
+            threshold = np.percentile(probabilities[y != self.min_c_], 
+                    100*(rem_count/max_count))
+            mask = np.logical_or(probabilities >= threshold, y == self.min_c_)
 
         X_resampled = X[mask]
         y_resampled = y[mask]
