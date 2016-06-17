@@ -99,9 +99,8 @@ class InstanceHardnessThreshold(UnderSampler):
 
     """
 
-    def __init__(self, estimator, ratio='auto', kind_sel='maj', cv=5, 
-            return_indices=False, random_state=None, verbose=True, n_jobs=-1):
-
+    def __init__(self, estimator, ratio='auto', kind_sel='maj', cv=5,
+                 return_indices=False, random_state=None, verbose=True, n_jobs=-1):
         """Initialisation of Instance Hardness Threshold object.
 
         Parameters
@@ -208,15 +207,15 @@ class InstanceHardnessThreshold(UnderSampler):
         idx_under : ndarray, shape (n_samples, )
             If `return_indices` is `True`, a boolean array will be returned
             containing the which samples have been selected.
-        
+
         """
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
         super(InstanceHardnessThreshold, self).transform(X, y)
 
-        skf = StratifiedKFold(y, n_folds=self.cv, shuffle=False, 
-                random_state=self.rs_)
+        skf = StratifiedKFold(y, n_folds=self.cv, shuffle=False,
+                              random_state=self.rs_)
 
         probabilities = np.zeros(y.shape[0], dtype=float)
 
@@ -229,8 +228,8 @@ class InstanceHardnessThreshold(UnderSampler):
             probs = self.estimator.predict_proba(X_test)
             classes = self.estimator.classes_
             probabilities[test_index] = [
-                    probs[l,np.where(classes == c)[0][0]]
-                    for l, c in enumerate(y_test)]
+                probs[l, np.where(classes == c)[0][0]]
+                for l, c in enumerate(y_test)]
 
         if self.kind_sel == 'all':
             mask = probabilities >= self.ratio_
@@ -239,8 +238,8 @@ class InstanceHardnessThreshold(UnderSampler):
             max_count = len(y) - min_count
             rem_count = max_count - (min_count / self.ratio_)
 
-            threshold = np.percentile(probabilities[y != self.min_c_], 
-                    100*(rem_count/max_count))
+            threshold = np.percentile(probabilities[y != self.min_c_],
+                                      100 * (rem_count / max_count))
             mask = np.logical_or(probabilities >= threshold, y == self.min_c_)
 
         X_resampled = X[mask]
