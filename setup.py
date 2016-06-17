@@ -1,20 +1,37 @@
 #! /usr/bin/env python
 """Toolbox for unbalanced dataset in machine learning."""
 
-from setuptools import setup, find_packages
-import os
 import sys
+import os
 
-import setuptools
-from distutils.command.build_py import build_py
+from setuptools import setup, find_packages
 
-if sys.version_info[0] < 3:
-    import __builtin__ as builtins
-else:
-    import builtins
+
+def load_version():
+    """Executes unbalanced_dataset/version.py in a globals dictionary and
+    return it.
+    """
+    # load all vars into globals, otherwise
+    #   the later function call using global vars doesn't work.
+    globals_dict = {}
+    with open(os.path.join('unbalanced_dataset', 'version.py')) as fp:
+        exec(fp.read(), globals_dict)
+
+    return globals_dict
+
+
+def is_installing():
+    # Allow command-lines such as "python setup.py build install"
+    install_commands = set(['install', 'develop'])
+    return install_commands.intersection(set(sys.argv))
+
+
+# Make sources available using relative paths from this file's directory.
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 descr = """Toolbox for unbalanced dataset in machine learning."""
 
+_VERSION_GLOBALS = load_version()
 DISTNAME = 'unbalanced_dataset'
 DESCRIPTION = 'Toolbox for unbalanced dataset in machine learning.'
 LONG_DESCRIPTION = descr
@@ -23,111 +40,46 @@ MAINTAINER_EMAIL = 'fmfnogueira@gmail.com, g.lemaitre58@gmail.com'
 URL = 'https://github.com/fmfn/UnbalancedDataset'
 LICENSE = 'new BSD'
 DOWNLOAD_URL = 'https://github.com/fmfn/UnbalancedDataset'
+VERSION = _VERSION_GLOBALS['__version__']
 
-# This is a bit (!) hackish: we are setting a global variable so that the main
-# skimage __init__ can detect if it is being loaded by the setup routine, to
-# avoid attempting to load components that aren't built yet:
-# the numpy distutils extensions that are used by UnbalancedDataset to 
-# recursively build the compiled extensions in sub-packages is based on
-# the Python import machinery.
-builtins.__UNBALANCED_DATASET_SETUP__ = True
-
-with open('unbalanced_dataset/__init__.py') as fid:
-    for line in fid:
-        if line.startswith('__version__'):
-            VERSION = line.strip().split()[-1][1:-1]
-            break
-
-with open('requirements.txt') as fid:
-    INSTALL_REQUIRES = [l.strip() for l in fid.readlines() if l]
-
-# requirements for those browsing PyPI
-REQUIRES = [r.replace('>=', ' (>= ') + ')' for r in INSTALL_REQUIRES]
-REQUIRES = [r.replace('==', ' (== ') for r in REQUIRES]
-REQUIRES = [r.replace('[array]', '') for r in REQUIRES]
-
-
-def configuration(parent_package='', top_path=None):
-    if os.path.exists('MANIFEST'):
-        os.remove('MANIFEST')
-
-    from numpy.distutils.misc_util import Configuration
-    config = Configuration(None, parent_package, top_path)
-
-    config.set_options(
-        ignore_setup_xxx_py=True,
-        assume_default_configuration=True,
-        delegate_options_to_subpackages=True,
-        quiet=True)
-
-    config.add_subpackage('unbalanced_dataset')
-
-    return config
 
 if __name__ == "__main__":
-    try:
-        from numpy.distutils.core import setup
-        extra = {'configuration': configuration}
-        # Do not try and upgrade larger dependencies
-        for lib in ['scipy', 'numpy', 'matplotlib']:
-            try:
-                __import__(lib)
-                INSTALL_REQUIRES = [i for i in INSTALL_REQUIRES
-                                    if lib not in i]
-            except ImportError:
-                pass
-    except ImportError:
-        if len(sys.argv) >= 2 and ('--help' in sys.argv[1:] or
-                                   sys.argv[1] in ('--help-commands',
-                                                   '--version',
-                                                   'clean')):
-            # For these actions, NumPy is not required.
-            #
-            # They are required to succeed without Numpy for example when
-            # pip is used to install UnbalancedDataset when Numpy is not yet
-            # present in the system.
-            from setuptools import setup
-            extra = {}
-        else:
-            print('To install UnbalancedDataset from source, you need numpy.' +
-                  'Install numpy with pip:\n' +
-                  'pip install numpy\n'
-                  'Or use your operating system package manager.')
-            sys.exit(1)
+    if is_installing():
+        module_check_fn = _VERSION_GLOBALS['_check_module_dependencies']
+        module_check_fn(is_unbalanced_dataset_installing=True)
 
-    setup(
-        name=DISTNAME,
-        description=DESCRIPTION,
-        long_description=LONG_DESCRIPTION,
-        maintainer=MAINTAINER,
-        maintainer_email=MAINTAINER_EMAIL,
-        url=URL,
-        license=LICENSE,
-        download_url=DOWNLOAD_URL,
-        version=VERSION,
+    install_requires = \
+        ['%s>=%s' % (mod, meta['min_version'])
+            for mod, meta in _VERSION_GLOBALS['REQUIRED_MODULE_METADATA']
+            if not meta['required_at_installation']]
 
-        classifiers=['Intended Audience :: Science/Research',
-                     'Intended Audience :: Developers',
-                     'License :: OSI Approved',
-                     'Programming Language :: Python',
-                     'Topic :: Software Development',
-                     'Topic :: Scientific/Engineering',
-                     'Operating System :: Microsoft :: Windows',
-                     'Operating System :: POSIX',
-                     'Operating System :: Unix',
-                     'Operating System :: MacOS',
-                     'Programming Language :: Python :: 2',
-                     'Programming Language :: Python :: 2.6',
-                     'Programming Language :: Python :: 2.7',
-                     'Programming Language :: Python :: 3',
-                     'Programming Language :: Python :: 3.3',
-                     'Programming Language :: Python :: 3.4',
-                 ],
-        install_requires=INSTALL_REQUIRES,
-        requires=REQUIRES,
-        packages=setuptools.find_packages(exclude=['doc']),
-        include_package_data=True,
-        zip_safe=False,  # the package can run out of an .egg file
-        cmdclass={'build_py': build_py},
-        **extra
-    )
+    setup(name=DISTNAME,
+          maintainer=MAINTAINER,
+          maintainer_email=MAINTAINER_EMAIL,
+          description=DESCRIPTION,
+          license=LICENSE,
+          url=URL,
+          version=VERSION,
+          download_url=DOWNLOAD_URL,
+          long_description=LONG_DESCRIPTION,
+          zip_safe=False,  # the package can run out of an .egg file
+          classifiers=[
+              'Intended Audience :: Science/Research',
+              'Intended Audience :: Developers',
+              'License :: OSI Approved',
+              'Programming Language :: C',
+              'Programming Language :: Python',
+              'Topic :: Software Development',
+              'Topic :: Scientific/Engineering',
+              'Operating System :: Microsoft :: Windows',
+              'Operating System :: POSIX',
+              'Operating System :: Unix',
+              'Operating System :: MacOS',
+              'Programming Language :: Python :: 2',
+              'Programming Language :: Python :: 2.6',
+              'Programming Language :: Python :: 2.7',
+              'Programming Language :: Python :: 3.3',
+              'Programming Language :: Python :: 3.4',
+          ],
+          packages=find_packages(),
+          install_requires=install_requires,)

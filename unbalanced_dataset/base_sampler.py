@@ -3,6 +3,8 @@
 from __future__ import division
 from __future__ import print_function
 
+import numpy as np
+
 from abc import ABCMeta, abstractmethod
 
 from collections import Counter
@@ -48,10 +50,10 @@ class BaseSampler(object):
         # over the number of samples in the majority class. Thus, the ratio
         # cannot be greater than 1.0
         if isinstance(ratio, float):
-            if ratio > 1.0 or ratio < 0.:
-                raise ValueError('Ratio cannot be greater than one or negative'
-                                 '. Otherwise the majority class become'
-                                 ' minority.')
+            if ratio > 1:
+                raise ValueError('Ration cannot be greater than one.')
+            elif ratio <= 0:
+                raise ValueError('Ratio cannot be negative.')
             else:
                 self.ratio_ = ratio
         elif isinstance(ratio, string_types):
@@ -59,6 +61,8 @@ class BaseSampler(object):
                 self.ratio_ = ratio
             else:
                 raise ValueError('Unknown string for the parameter ratio.')
+        else:
+            raise ValueError('Unknown parameter type for ratio.')
 
         self.rs_ = random_state
         self.verbose = verbose
@@ -94,10 +98,10 @@ class BaseSampler(object):
             print("Determining classes statistics... ", end="")
 
         # Get all the unique elements in the target array
-        uniques = set(y)
+        uniques = np.unique(y)
 
         # Raise an error if there is only one class
-        if len(uniques) == 1:
+        if uniques.size == 1:
             raise RuntimeError("Only one class detected, aborting...")
 
         # Create a dictionary containing the class statistics
@@ -108,9 +112,8 @@ class BaseSampler(object):
         self.maj_c_ = max(self.stats_c_, key=self.stats_c_.get)
 
         if self.verbose:
-            print(str(len(uniques)) +
-                  " classes detected: " +
-                  str(self.stats_c_), end="\n")
+            print('{} classes detected: {}'.format(uniques.size,
+                                                   self.stats_c_))
 
         return self
 

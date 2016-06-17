@@ -125,7 +125,7 @@ class EditedNearestNeighbours(UnderSampler):
         self.size_ngh = size_ngh
         possible_kind_sel = ('all', 'mode')
         if kind_sel not in possible_kind_sel:
-            raise ValueError('Unknown kind_sel parameters.')
+            raise NotImplementedError
         else:
             self.kind_sel = kind_sel
         self.n_jobs = n_jobs
@@ -227,6 +227,8 @@ class EditedNearestNeighbours(UnderSampler):
             elif self.kind_sel == 'all':
                 nnhood_label = (nnhood_label == key)
                 nnhood_bool = np.all(nnhood_label, axis=1)
+            else:
+                raise NotImplementedError
 
             # Get the samples which agree all together
             sel_x = np.squeeze(sub_samples_x[np.nonzero(nnhood_bool), :])
