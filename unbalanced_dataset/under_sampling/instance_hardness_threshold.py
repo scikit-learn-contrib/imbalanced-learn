@@ -25,8 +25,11 @@ class InstanceHardnessThreshold(UnderSampler):
     estimator : sklearn classifier
         Classifier to be used in to estimate instance hardness of the samples.
 
-    threshold : float, optional (default=0.3)
-        Threshold to be used when excluding samples (0.01 to 0.99).
+    ratio : str or float, optional (default='auto')
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. Otherwise, the ratio will corresponds to the number
+            of samples in the minority class over the the number of samples
+            in the majority class.
 
     kind_sel : str, optional (default='maj')
         - If 'maj', only samples of the majority class are excluded.
@@ -96,7 +99,7 @@ class InstanceHardnessThreshold(UnderSampler):
 
     """
 
-    def __init__(self, estimator, threshold=0.3, kind_sel='maj', cv=5, 
+    def __init__(self, estimator, ratio='auto', kind_sel='maj', cv=5, 
             return_indices=False, random_state=None, verbose=True, n_jobs=-1):
 
         """Initialisation of Instance Hardness Threshold object.
@@ -106,8 +109,11 @@ class InstanceHardnessThreshold(UnderSampler):
         estimator : sklearn classifier
             Classifier to be used in to estimate instance hardness of the samples.
 
-        threshold : float, optional (default=0.3)
-            Threshold to be used when excluding samples (0.01 to 0.99).
+        ratio : str or float, optional (default='auto')
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. Otherwise, the ratio will corresponds to the number
+            of samples in the minority class over the the number of samples
+            in the majority class.
 
         kind_sel : str, optional (default='maj')
             - If 'maj', only samples of the majority class are excluded.
@@ -135,6 +141,7 @@ class InstanceHardnessThreshold(UnderSampler):
 
         """
         super(InstanceHardnessThreshold, self).__init__(
+            ratio=ratio,
             return_indices=return_indices,
             random_state=random_state,
             verbose=verbose)
@@ -144,7 +151,7 @@ class InstanceHardnessThreshold(UnderSampler):
         else:
             self.estimator = estimator
 
-        self.threshold = threshold
+        #self.threshold = threshold
 
         possible_kind_sel = ('maj', 'all')
         if kind_sel not in possible_kind_sel:
@@ -204,7 +211,7 @@ class InstanceHardnessThreshold(UnderSampler):
         
         """
         # Check the consistency of X and y
-	X, y = check_X_y(X, y)
+        X, y = check_X_y(X, y)
 
         super(InstanceHardnessThreshold, self).transform(X, y)
 
@@ -228,6 +235,14 @@ class InstanceHardnessThreshold(UnderSampler):
         if self.kind_sel == 'all':
             mask = probabilities >= self.threshold
         elif self.kind_sel == 'maj':
+            ratios = np.zeros(100, )
+            probs = np.linspace(0., 1., 100)
+
+            for i, p in enumerate(probs):
+                ratios[i] = self.stats_c_[self.min_c_] / np.count_nonzero(np.logical_or(probabilities >= p, y == self.min_c_))
+                ratios = np.abs(ratios - self.ratio)
+
+            threshold = probs[ratios.argmin()]
             mask = np.logical_or(probabilities >= self.threshold, y == self.min_c_)
 
         X_resampled = X[mask]
