@@ -17,7 +17,7 @@ from .under_sampler import UnderSampler
 
 
 class InstanceHardnessThreshold(UnderSampler):
-    """Class to perform under-sampling based on the instance hardness 
+    """Class to perform under-sampling based on the instance hardness
     threshold.
 
     Parameters
@@ -93,20 +93,22 @@ class InstanceHardnessThreshold(UnderSampler):
 
     References
     ----------
-    .. [1] D. Smith, Michael R., Tony Martinez, and Christophe Giraud-Carrier. 
-       "An instance level analysis of data complexity." Machine learning 
+    .. [1] D. Smith, Michael R., Tony Martinez, and Christophe Giraud-Carrier.
+       "An instance level analysis of data complexity." Machine learning
        95.2 (2014): 225-256.
 
     """
 
     def __init__(self, estimator, ratio='auto', kind_sel='maj', cv=5,
-                 return_indices=False, random_state=None, verbose=True, n_jobs=-1):
+                 return_indices=False, random_state=None, verbose=True,
+                 n_jobs=-1):
         """Initialisation of Instance Hardness Threshold object.
 
         Parameters
         ----------
         estimator : sklearn classifier
-            Classifier to be used in to estimate instance hardness of the samples.
+            Classifier to be used in to estimate instance hardness of the
+            samples.
 
         ratio : str or float, optional (default='auto')
             If 'auto', the ratio will be defined automatically to balanced
@@ -119,7 +121,8 @@ class InstanceHardnessThreshold(UnderSampler):
             - If 'all', samples of all classes are excluded.
 
         cv : int, optional (default=5)
-            Number of folds to be used when estimating samples' instance hardness.
+            Number of folds to be used when estimating samples' instance
+            hardness.
 
         return_indices : bool, optional (default=False)
             Either to return or not the indices which will be selected from
