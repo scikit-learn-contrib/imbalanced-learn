@@ -18,7 +18,7 @@ Installation
 
 ### Dependencies
 
-* scipy(>+0.17.1)
+* scipy(>=0.17.1)
 * numpy(>=1.10.4)
 * scikit-learn(>=0.17.0)
 * six(>=1.10.0)
