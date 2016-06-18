@@ -33,7 +33,10 @@ conda create -n testenv --yes python=$PYTHON_VERSION pip nose \
 pip install nose-timer
 
 # Install libgfortran with conda
-conda install --yes libgfortran scikit-learn six
+conda install --yes libgfortran \
+    numpy=1.10.4 scipy=0.17.1 \
+    scikit-learn=0.17.1 \
+    six=1.10.0 
 
 if [[ "$COVERAGE" == "true" ]]; then
     pip install coverage coveralls

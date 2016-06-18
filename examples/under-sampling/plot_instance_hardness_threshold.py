@@ -40,9 +40,11 @@ axs = [a for ax in axs for a in ax]
 for ax, ratio in zip(axs, [0.0, 0.1, 0.3, 0.5]):
     if ratio == 0.0:
         ax.scatter(X[y == 0, 0], X[y == 0, 1], label="Class #0", alpha=0.5,
-                   edgecolor=almost_black, facecolor=palette[0], linewidth=0.15)
+                   edgecolor=almost_black, facecolor=palette[0],
+                   linewidth=0.15)
         ax.scatter(X[y == 1, 0], X[y == 1, 1], label="Class #1", alpha=0.5,
-                   edgecolor=almost_black, facecolor=palette[2], linewidth=0.15)
+                   edgecolor=almost_black, facecolor=palette[2],
+                   linewidth=0.15)
         ax.set_title('Original set')
     else:
         estimator = SVC(probability=True)
