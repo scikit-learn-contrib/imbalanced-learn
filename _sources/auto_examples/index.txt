@@ -424,6 +424,26 @@ Under-sampling examples.
    :hidden:
 
    /auto_examples/under-sampling/plot_neighbourhood_cleaning_rule
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the instance hardness threshold method.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/under-sampling/images/thumb/sphx_glr_plot_instance_hardness_threshold_thumb.png
+
+        :ref:`sphx_glr_auto_examples_under-sampling_plot_instance_hardness_threshold.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/under-sampling/plot_instance_hardness_threshold
 .. raw:: html
 
     <div style='clear:both'></div>

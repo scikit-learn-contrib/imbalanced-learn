@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>unbalanced_dataset.under_sampling.RandomUnderSampler &mdash; unbalanced_dataset 0.1.dev0 documentation</title>
+  <title>unbalanced_dataset.under_sampling.InstanceHardnessThreshold &mdash; unbalanced_dataset 0.1.dev0 documentation</title>
   
 
   
@@ -95,11 +95,11 @@
 <li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.ClusterCentroids.html">unbalanced_dataset.under_sampling.ClusterCentroids</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.CondensedNearestNeighbour.html">unbalanced_dataset.under_sampling.CondensedNearestNeighbour</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.EditedNearestNeighbours.html">unbalanced_dataset.under_sampling.EditedNearestNeighbours</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.html">unbalanced_dataset.under_sampling.InstanceHardnessThreshold</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">unbalanced_dataset.under_sampling.InstanceHardnessThreshold</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.NearMiss.html">unbalanced_dataset.under_sampling.NearMiss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.NeighbourhoodCleaningRule.html">unbalanced_dataset.under_sampling.NeighbourhoodCleaningRule</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.OneSidedSelection.html">unbalanced_dataset.under_sampling.OneSidedSelection</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">unbalanced_dataset.under_sampling.RandomUnderSampler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.RandomUnderSampler.html">unbalanced_dataset.under_sampling.RandomUnderSampler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unbalanced_dataset.under_sampling.TomekLinks.html">unbalanced_dataset.under_sampling.TomekLinks</a></li>
 </ul>
 </li>
@@ -146,11 +146,11 @@
       
           <li><a href="../api.html">API Documentation</a> &raquo;</li>
       
-    <li>unbalanced_dataset.under_sampling.RandomUnderSampler</li>
+    <li>unbalanced_dataset.under_sampling.InstanceHardnessThreshold</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/generated/unbalanced_dataset.under_sampling.RandomUnderSampler.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/unbalanced_dataset.under_sampling.InstanceHardnessThreshold.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -160,24 +160,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="unbalanced-dataset-under-sampling-randomundersampler">
-<h1>unbalanced_dataset.under_sampling.RandomUnderSampler<a class="headerlink" href="#unbalanced-dataset-under-sampling-randomundersampler" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="unbalanced-dataset-under-sampling-instancehardnessthreshold">
+<h1>unbalanced_dataset.under_sampling.InstanceHardnessThreshold<a class="headerlink" href="#unbalanced-dataset-under-sampling-instancehardnessthreshold" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler">
-<em class="property">class </em><code class="descclassname">unbalanced_dataset.under_sampling.</code><code class="descname">RandomUnderSampler</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>replacement=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/random_under_sampler.html#RandomUnderSampler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to perform random under-sampling.</p>
-<p>Object to under sample the majority class(es) by randomly picking samples
-with or without replacement.</p>
+<dt id="unbalanced_dataset.under_sampling.InstanceHardnessThreshold">
+<em class="property">class </em><code class="descclassname">unbalanced_dataset.under_sampling.</code><code class="descname">InstanceHardnessThreshold</code><span class="sig-paren">(</span><em>estimator</em>, <em>ratio='auto'</em>, <em>return_indices=False</em>, <em>cv=5</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/instance_hardness_threshold.html#InstanceHardnessThreshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to perform under-sampling based on the instance hardness
+threshold.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>estimator</strong> : sklearn classifier</p>
+<blockquote>
+<div><p>Classifier to be used in to estimate instance hardness of the samples.</p>
+</div></blockquote>
+<p><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
 <blockquote>
 <div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balanced
 the dataset. Otherwise, the ratio will corresponds to the number
 of samples in the minority class over the the number of samples
 in the majority class.</p>
+</div></blockquote>
+<p><strong>cv</strong> : int, optional (default=5)</p>
+<blockquote>
+<div><p>Number of folds to be used when estimating samples&#8217; instance hardness.</p>
 </div></blockquote>
 <p><strong>return_indices</strong> : bool, optional (default=False)</p>
 <blockquote>
@@ -201,28 +208,44 @@ the majority class.</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>This class supports multi-class.</p>
+<p>The method is based on <a class="reference internal" href="#r17" id="id1">[R17]</a>.</p>
+<p>This class does not support multi-class.</p>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r17" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[R17]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> D. Smith, Michael R., Tony Martinez, and Christophe Giraud-Carrier.
+&#8220;An instance level analysis of data complexity.&#8221; Machine learning
+95.2 (2014): 225-256.</td></tr>
+</tbody>
+</table>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="3%" />
-<col width="97%" />
+<col width="4%" />
+<col width="96%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a href="#id1"><span class="problematic" id="id2">ratio_</span></a></td>
+<tr class="row-odd"><td><a href="#id3"><span class="problematic" id="id4">ratio_</span></a></td>
 <td>(str or float, optional (default=&#8217;auto&#8217;)) If &#8216;auto&#8217;, the ratio will be defined automatically to balanced the dataset. Otherwise, the ratio will corresponds to the number of samples in the minority class over the the number of samples in the majority class.</td>
 </tr>
-<tr class="row-even"><td><a href="#id3"><span class="problematic" id="id4">rs_</span></a></td>
+<tr class="row-even"><td><a href="#id5"><span class="problematic" id="id6">rs_</span></a></td>
 <td>(int or None, optional (default=None)) Seed for random number generation.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id5"><span class="problematic" id="id6">min_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id7"><span class="problematic" id="id8">min_c_</span></a></td>
 <td>(str or int) The identifier of the minority class.</td>
 </tr>
-<tr class="row-even"><td><a href="#id7"><span class="problematic" id="id8">max_c_</span></a></td>
+<tr class="row-even"><td><a href="#id9"><span class="problematic" id="id10">max_c_</span></a></td>
 <td>(str or int) The identifier of the majority class.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id9"><span class="problematic" id="id10">stats_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id11"><span class="problematic" id="id12">stats_c_</span></a></td>
 <td>(dict of str/int) A dictionary in which the number of occurences of each class is reported.</td>
+</tr>
+<tr class="row-even"><td><a href="#id13"><span class="problematic" id="id14">estimator_</span></a></td>
+<td>(sklearn classifier) Classifier  used in to estimate instance hardness of the samples.</td>
+</tr>
+<tr class="row-odd"><td>cv</td>
+<td>(int, optional (default=5)) Number of folds used when estimating samples&#8217; instance hardness.</td>
 </tr>
 </tbody>
 </table>
@@ -233,31 +256,41 @@ the majority class.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit" title="unbalanced_dataset.under_sampling.RandomUnderSampler.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit" title="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform" title="unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit_transform" title="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
 <td>Fit the statistics and resample the data directly.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.transform" title="unbalanced_dataset.under_sampling.RandomUnderSampler.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.transform" title="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
 <td>Resample the dataset.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>replacement=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/random_under_sampler.html#RandomUnderSampler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialse the random under sampler object.</p>
+<dt id="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>estimator</em>, <em>ratio='auto'</em>, <em>return_indices=False</em>, <em>cv=5</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/instance_hardness_threshold.html#InstanceHardnessThreshold.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialisation of Instance Hardness Threshold object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>estimator</strong> : sklearn classifier</p>
+<blockquote>
+<div><p>Classifier to be used in to estimate instance hardness of the
+samples.</p>
+</div></blockquote>
+<p><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
 <blockquote>
 <div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balanced
 the dataset. Otherwise, the ratio will corresponds to the number
 of samples in the minority class over the the number of samples
 in the majority class.</p>
+</div></blockquote>
+<p><strong>cv</strong> : int, optional (default=5)</p>
+<blockquote>
+<div><p>Number of folds to be used when estimating samples&#8217; instance
+hardness.</p>
 </div></blockquote>
 <p><strong>return_indices</strong> : bool, optional (default=False)</p>
 <blockquote>
@@ -292,23 +325,23 @@ the majority class.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.__init__" title="unbalanced_dataset.under_sampling.RandomUnderSampler.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;return_indices,&nbsp;...])</td>
-<td>Initialse the random under sampler object.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.__init__" title="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>(estimator[,&nbsp;ratio,&nbsp;return_indices,&nbsp;...])</td>
+<td>Initialisation of Instance Hardness Threshold object.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit" title="unbalanced_dataset.under_sampling.RandomUnderSampler.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit" title="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform" title="unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit_transform" title="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
 <td>Fit the statistics and resample the data directly.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.transform" title="unbalanced_dataset.under_sampling.RandomUnderSampler.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.transform" title="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
 <td>Resample the dataset.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/random_under_sampler.html#RandomUnderSampler.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit" title="Permalink to this definition">¶</a></dt>
+<dt id="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/instance_hardness_threshold.html#InstanceHardnessThreshold.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the classes statistics before to perform sampling.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -335,8 +368,8 @@ the majority class.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform">
-<code class="descname">fit_transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform" title="Permalink to this definition">¶</a></dt>
+<dt id="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit_transform">
+<code class="descname">fit_transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.fit_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit the statistics and resample the data directly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -367,8 +400,8 @@ the majority class.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.transform">
-<code class="descname">transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/random_under_sampler.html#RandomUnderSampler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.transform" title="Permalink to this definition">¶</a></dt>
+<dt id="unbalanced_dataset.under_sampling.InstanceHardnessThreshold.transform">
+<code class="descname">transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/instance_hardness_threshold.html#InstanceHardnessThreshold.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

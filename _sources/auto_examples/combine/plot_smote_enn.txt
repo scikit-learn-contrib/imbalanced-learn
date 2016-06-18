@@ -27,7 +27,7 @@ An illustration of the random SMOTE + ENN method.
     Creating synthetic samples...Generated 4000 new samples ...
     done!
     Determining classes statistics... 2 classes detected: Counter({0: 4500, 1: 4500})
-    Under-sampling performed: Counter({0: 4500, 1: 4175})
+    Under-sampling performed: Counter({0: 4500, 1: 4184})
 
 
 
@@ -89,7 +89,7 @@ An illustration of the random SMOTE + ENN method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.597 seconds)
+(0 minutes 1.779 seconds)
 
 
 
