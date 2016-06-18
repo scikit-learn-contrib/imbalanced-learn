@@ -31,7 +31,7 @@ _UNBALANCED_DATASET_INSTALL_MSG = 'See %s for installation information.' % (
 #   collections.OrderedDict to preserve Python 2.6 compatibility.
 REQUIRED_MODULE_METADATA = (
     ('numpy', {
-        'min_version': '1.11.0',
+        'min_version': '1.10.4',
         'required_at_installation': True,
         'install_info': _UNBALANCED_DATASET_INSTALL_MSG}),
     ('scipy', {
@@ -60,7 +60,8 @@ def _import_module_with_version_check(
     except ImportError as exc:
         user_friendly_info = ('Module "{0}" could not be found. {1}').format(
             module_name,
-            install_info or 'Please install it properly to use unbalanced_dataset.')
+            install_info or 'Please install it properly to use'
+            ' unbalanced_dataset.')
         exc.args += (user_friendly_info,)
         raise
 
@@ -73,8 +74,8 @@ def _import_module_with_version_check(
     if version_too_old:
         message = (
             'A {module_name} version of at least {minimum_version} '
-            'is required to use unbalanced_dataset. {module_version} was found. '
-            'Please upgrade {module_name}').format(
+            'is required to use unbalanced_dataset. {module_version} was '
+            'found. Please upgrade {module_name}').format(
                 module_name=module_name,
                 minimum_version=minimum_version,
                 module_version=module_version)
