@@ -1,4 +1,4 @@
-"""Test the module under sampler."""
+"""Test the module random under sampler."""
 from __future__ import print_function
 
 import os
