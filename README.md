@@ -8,6 +8,11 @@ UnbalancedDataset is a python package offering a number of re-sampling technique
 [![Coverage Status](https://coveralls.io/repos/github/glemaitre/UnbalancedDataset/badge.svg?branch=master)](https://coveralls.io/github/glemaitre/UnbalancedDataset?branch=master)
 [![Join the chat at https://gitter.im/glemaitre/UnbalancedDataset](https://badges.gitter.im/glemaitre/UnbalancedDataset.svg)](https://gitter.im/glemaitre/UnbalancedDataset?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+Documentation
+=============
+
+Installation documentation, API documentation, and examples can be found on the [documentation](http://fmfn.github.io/UnbalancedDataset/)
+
 Installation
 ============
 
