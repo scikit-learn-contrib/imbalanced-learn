@@ -14,35 +14,35 @@ from .under_sampler import UnderSampler
 class RandomUnderSampler(UnderSampler):
     """Class to perform random under-sampling.
 
-    Object to under sample the majority class(es) by randomly picking samples
+    Under-sample the majority class(es) by randomly picking samples
     with or without replacement.
 
     Parameters
     ----------
     ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
     return_indices : bool, optional (default=False)
-        Either to return or not the indices which will be selected from
-        the majority class.
+        Whether or not to return the indices of the samples randomly selected
+        from the majority class.
 
     random_state : int or None, optional (default=None)
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing
+        Whether or not to print information about the processing.
 
     n_jobs : int, optional (default=-1)
-        The number of thread to open when it is possible.
+        The number of threads to open if possible.
 
     Attributes
     ----------
     ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
@@ -56,8 +56,7 @@ class RandomUnderSampler(UnderSampler):
         The identifier of the majority class.
 
     stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
+        A dictionary containing the number of occurences of each class.
 
     Notes
     -----
@@ -67,28 +66,28 @@ class RandomUnderSampler(UnderSampler):
 
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
                  verbose=True, replacement=True):
-        """Initialse the random under sampler object.
+        """Initialse the random under-sampler object.
 
         Parameters
         ----------
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
             of samples in the minority class over the the number of samples
             in the majority class.
 
         return_indices : bool, optional (default=False)
-            Either to return or not the indices which will be selected from
-            the majority class.
+            Whether or not to return the indices of the samples randomly selected
+            from the majority class.
 
         random_state : int or None, optional (default=None)
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing
 
         n_jobs : int, optional (default=-1)
-            The number of thread to open when it is possible.
+            The number of threads to open if possible.
 
         Returns
         -------
@@ -103,12 +102,12 @@ class RandomUnderSampler(UnderSampler):
         self.replacement = replacement
 
     def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
+        """Find the class statistics before performing sampling.
 
         Parameters
         ----------
         X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
+            Matrix containing the data to be sampled.
 
         y : ndarray, shape (n_samples, )
             Corresponding label for each sample in X.
@@ -132,7 +131,7 @@ class RandomUnderSampler(UnderSampler):
         Parameters
         ----------
         X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
+            Matrix containing the data to be sampled.
 
         y : ndarray, shape (n_samples, )
             Corresponding label for each sample in X.
@@ -146,8 +145,9 @@ class RandomUnderSampler(UnderSampler):
             The corresponding label of `X_resampled`
 
         idx_under : ndarray, shape (n_samples, )
-            If `return_indices` is `True`, a boolean array will be returned
-            containing the which samples have been selected.
+            If `return_indices` is `True`, an array will be returned
+            containing a boolean for each sample to represent whether
+            that sample was selected or not.
 
         """
         # Check the consistency of X and y
@@ -155,7 +155,7 @@ class RandomUnderSampler(UnderSampler):
 
         super(RandomUnderSampler, self).transform(X, y)
 
-        # Compute the number of cluster needed
+        # Compute the number of clusters needed
         if self.ratio_ == 'auto':
             num_samples = self.stats_c_[self.min_c_]
         else:
@@ -169,7 +169,7 @@ class RandomUnderSampler(UnderSampler):
         if self.return_indices:
             idx_under = np.nonzero(y == self.min_c_)[0]
 
-        # Loop over the other classes under picking at random
+        # Loop over the other classes under-picking at random
         for key in self.stats_c_.keys():
 
             # If the minority class is up, skip it
@@ -196,7 +196,7 @@ class RandomUnderSampler(UnderSampler):
         if self.verbose:
             print("Under-sampling performed: {}".format(Counter(y_resampled)))
 
-        # Check if the indices of the samples selected should be returned too
+        # Check if the indices of the samples selected should be returned as well
         if self.return_indices:
             # Return the indices of interest
             return X_resampled, y_resampled, idx_under
