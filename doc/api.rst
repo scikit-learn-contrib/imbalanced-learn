@@ -45,8 +45,8 @@ Classes
 .. autosummary::
    :toctree: generated/
    
-   unbalanced_dataset.under_sampling.RandomOverSampler
-   unbalanced_dataset.under_sampling.SMOTE
+   unbalanced_dataset.over_sampling.RandomOverSampler
+   unbalanced_dataset.over_sampling.SMOTE
 
 
 .. _combine_ref:
