@@ -308,19 +308,19 @@ class SMOTE(OverSampler):
         X = check_array(X)
 
         # A matrix to store the synthetic samples
-        X_new = np.zeros((n_samples, X.shape[1]))
+        X_new = np.zeros((int(n_samples), X.shape[1]))
 
         # Set seeds
         np.random.seed(self.rs_)
         seeds = np.random.randint(low=0,
                                   high=100*len(nn_num.flatten()),
-                                  size=n_samples)
+                                  size=int(n_samples))
 
         # Randomly pick samples to construct neighbours from
         np.random.seed(self.rs_)
         samples = np.random.randint(low=0,
                                     high=len(nn_num.flatten()),
-                                    size=n_samples)
+                                    size=int(n_samples))
 
         # Loop over the NN matrix and create new samples
         for i, n in enumerate(samples):
@@ -383,6 +383,10 @@ class SMOTE(OverSampler):
         else:
             num_samples = ((self.ratio_ * self.stats_c_[self.maj_c_]) -
                            self.stats_c_[self.min_c_])
+        
+        if num_samples <= 0:
+            print("Warning: with current ratio %f downsampling would be needed! Returning original X, y."%self.ratio_)
+            return X, y
 
         # Start by separating minority class features and target values.
         X_min = X[y == self.min_c_]
