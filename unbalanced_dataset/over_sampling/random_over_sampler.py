@@ -147,10 +147,11 @@ class RandomOverSampler(OverSampler):
 
             # Define the number of sample to create
             if self.ratio_ == 'auto':
-                num_samples = self.stats_c_[self.maj_c_] - self.stats_c_[key]
+                num_samples = int(self.stats_c_[self.maj_c_] -
+                                  self.stats_c_[key])
             else:
-                num_samples = ((self.ratio_ * self.stats_c_[self.maj_c_]) -
-                               self.stats_c_[key])
+                num_samples = int((self.ratio_ * self.stats_c_[self.maj_c_]) -
+                                  self.stats_c_[key])            
 
             # Pick some elements at random
             np.random.seed(self.rs_)

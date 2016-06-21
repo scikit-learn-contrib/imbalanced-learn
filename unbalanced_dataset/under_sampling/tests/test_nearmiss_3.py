@@ -83,6 +83,17 @@ def test_nearmiss_fit_single_class():
     assert_raises(RuntimeError, nm3.fit, X, y_single_class)
 
 
+def test_nm_fit_invalid_ratio():
+    """Test either if an error is raised when the balancing ratio to fit is
+    smaller than the one of the data"""
+
+    # Create the object
+    ratio = 1. / 10000.
+    nm = NearMiss(ratio=ratio, random_state=RND_SEED)
+    # Fit the data
+    assert_raises(RuntimeError, nm.fit, X, Y)
+
+
 def test_nm3_fit():
     """Test the fitting method"""
 

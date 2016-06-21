@@ -115,6 +115,14 @@ class BaseSampler(object):
             print('{} classes detected: {}'.format(uniques.size,
                                                    self.stats_c_))
 
+        # Check if the ratio provided at initialisation make sense
+        if isinstance(self.ratio_, float):
+            if self.ratio_ < (self.stats_c_[self.min_c_] /
+                              self.stats_c_[self.maj_c_]):
+                raise RuntimeError('The ratio requested at initialisation'
+                                   ' should be greater or equal than the'
+                                   ' balancing ratio of the current data.')
+
         return self
 
     @abstractmethod
