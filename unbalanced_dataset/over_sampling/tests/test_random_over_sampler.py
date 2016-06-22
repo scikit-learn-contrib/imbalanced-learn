@@ -7,8 +7,10 @@ import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_warns
 
 from sklearn.datasets import make_classification
+from sklearn.utils.estimator_checks import check_estimator
 
 from unbalanced_dataset.over_sampling import RandomOverSampler
 
@@ -18,6 +20,11 @@ X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
                            n_samples=5000, random_state=RND_SEED)
+
+
+def test_ros_sk_estimator():
+    """Test the sklearn estimator compatibility"""
+    check_estimator(RandomOverSampler)
 
 
 def test_ros_bad_ratio():
@@ -50,7 +57,7 @@ def test_ros_init():
     ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED,
                             verbose=verbose)
 
-    assert_equal(ros.rs_, RND_SEED)
+    assert_equal(ros.random_state, RND_SEED)
     assert_equal(ros.verbose, verbose)
     assert_equal(ros.min_c_, None)
     assert_equal(ros.maj_c_, None)
@@ -65,7 +72,7 @@ def test_ros_fit_single_class():
     # Resample the data
     # Create a wrong y
     y_single_class = np.zeros((X.shape[0], ))
-    assert_raises(RuntimeError, ros.fit, X, y_single_class)
+    assert_warns(RuntimeWarning, ros.fit, X, y_single_class)
 
 
 def test_ros_fit_invalid_ratio():
@@ -94,21 +101,21 @@ def test_ros_fit():
     assert_equal(ros.stats_c_[1], 4500)
 
 
-def test_ros_transform_wt_fit():
-    """Test either if an error is raised when transform is called before
+def test_ros_sample_wt_fit():
+    """Test either if an error is raised when sample is called before
     fitting"""
 
     # Create the object
     ros = RandomOverSampler(random_state=RND_SEED)
-    assert_raises(RuntimeError, ros.transform, X, Y)
+    assert_raises(RuntimeError, ros.sample, X, Y)
 
 
-def test_ros_fit_transform():
-    """Test the fit transform routine"""
+def test_ros_fit_sample():
+    """Test the fit sample routine"""
 
     # Resample the data
     ros = RandomOverSampler(random_state=RND_SEED)
-    X_resampled, y_resampled = ros.fit_transform(X, Y)
+    X_resampled, y_resampled = ros.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'ros_x.npy'))
@@ -117,13 +124,13 @@ def test_ros_fit_transform():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_ros_fit_transform_half():
-    """Test the fit transform routine with a 0.5 ratio"""
+def test_ros_fit_sample_half():
+    """Test the fit sample routine with a 0.5 ratio"""
 
     # Resample the data
     ratio = 0.5
     ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
-    X_resampled, y_resampled = ros.fit_transform(X, Y)
+    X_resampled, y_resampled = ros.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'ros_x_05.npy'))

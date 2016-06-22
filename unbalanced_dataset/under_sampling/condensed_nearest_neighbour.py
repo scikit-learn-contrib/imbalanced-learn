@@ -145,7 +145,7 @@ class CondensedNearestNeighbour(UnderSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -172,7 +172,7 @@ class CondensedNearestNeighbour(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(CondensedNearestNeighbour, self).transform(X, y)
+        super(CondensedNearestNeighbour, self).sample(X, y)
 
         # Start with the minority class
         X_min = X[y == self.min_c_]
@@ -194,7 +194,7 @@ class CondensedNearestNeighbour(UnderSampler):
                 continue
 
             # Randomly get one sample from the majority class
-            np.random.seed(self.rs_)
+            np.random.seed(self.random_state)
             # Generate the index to select
             idx_maj_sample = np.random.randint(low=0, high=self.stats_c_[key],
                                                size=self.n_seeds_S)

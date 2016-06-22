@@ -166,7 +166,7 @@ class SMOTE(OverSampler):
             # Regular smote does not look for samples in danger, instead it
             # creates synthetic samples directly from the k-th nearest
             # neighbours with not filtering
-            self.nearest_neighbour_ = NearestNeighbors(n_neighbors=k + 1,
+            self.nearest_neighbour = NearestNeighbors(n_neighbors=k + 1,
                                                            n_jobs=self.n_jobs)
         else:
             # Borderline1, 2 and SVM variations of smote must first look for
@@ -175,7 +175,7 @@ class SMOTE(OverSampler):
             # creating synthetic samples from the k-th nns, it first look
             # for m nearest neighbors to decide whether or not a sample is
             # noise or near the boundary.
-            self.nearest_neighbour_ = NearestNeighbors(n_neighbors=m + 1,
+            self.nearest_neighbour = NearestNeighbors(n_neighbors=m + 1,
                                                            n_jobs=self.n_jobs)
 
             # --- Nearest Neighbours for noise and boundary (in danger)
@@ -195,7 +195,7 @@ class SMOTE(OverSampler):
             self.out_step = out_step
 
             # Store SVM object with any parameters
-            self.svm_ = SVC(random_state=self.rs_, **kwargs)
+            self.svm = SVC(random_state=self.random_state, **kwargs)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -248,8 +248,8 @@ class SMOTE(OverSampler):
 
         # Find the NN for each samples
         # Exclude the sample itself
-        x = self.nearest_neighbour_.kneighbors(samples,
-                                               return_distance=False)[:, 1:]
+        x = self.nearest_neighbour.kneighbors(samples,
+                                              return_distance=False)[:, 1:]
 
         # Count how many NN belong to the minority class
         # Find the class corresponding to the label in x
@@ -311,13 +311,13 @@ class SMOTE(OverSampler):
         X_new = np.zeros((n_samples, X.shape[1]))
 
         # Set seeds
-        np.random.seed(self.rs_)
+        np.random.seed(self.random_state)
         seeds = np.random.randint(low=0,
                                   high=100*len(nn_num.flatten()),
                                   size=n_samples)
 
         # Randomly pick samples to construct neighbours from
-        np.random.seed(self.rs_)
+        np.random.seed(self.random_state)
         samples = np.random.randint(low=0,
                                     high=len(nn_num.flatten()),
                                     size=n_samples)
@@ -330,10 +330,10 @@ class SMOTE(OverSampler):
 
             # Take a step of random size (0,1) in the direction of the
             # n nearest neighbours
-            if self.rs_ is None:
+            if self.random_state is None:
                 np.random.seed(seeds[i])
             else:
-                np.random.seed(self.rs_)
+                np.random.seed(self.random_state)
             step = step_size * np.random.uniform()
 
             # Construct synthetic sample
@@ -349,7 +349,7 @@ class SMOTE(OverSampler):
 
         return X_new, y_new
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -373,16 +373,16 @@ class SMOTE(OverSampler):
         X, y = check_X_y(X, y)
 
         # Call the parent function
-        super(SMOTE, self).transform(X, y)
+        super(SMOTE, self).sample(X, y)
 
         # Define the number of sample to create
         # We handle only two classes problem for the moment.
-        if self.ratio_ == 'auto':
+        if self.ratio == 'auto':
             num_samples = (self.stats_c_[self.maj_c_] -
                            self.stats_c_[self.min_c_])
         else:
-            num_samples = ((self.ratio_ * self.stats_c_[self.maj_c_]) -
-                           self.stats_c_[self.min_c_])
+            num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
+                              self.stats_c_[self.min_c_])
 
         # Start by separating minority class features and target values.
         X_min = X[y == self.min_c_]
@@ -396,11 +396,11 @@ class SMOTE(OverSampler):
 
             # Look for k-th nearest neighbours, excluding, of course, the
             # point itself.
-            self.nearest_neighbour_.fit(X_min)
+            self.nearest_neighbour.fit(X_min)
 
             # Matrix with k-th nearest neighbours indexes for each minority
             # element.
-            nns = self.nearest_neighbour_.kneighbors(
+            nns = self.nearest_neighbour.kneighbors(
                 X_min,
                 return_distance=False)[:, 1:]
 
@@ -433,7 +433,7 @@ class SMOTE(OverSampler):
                 print("Finding the {} nearest neighbours...".format(self.m))
 
             # Find the NNs for all samples in the data set.
-            self.nearest_neighbour_.fit(X)
+            self.nearest_neighbour.fit(X)
 
             if self.verbose:
                 print("done!")
@@ -456,11 +456,11 @@ class SMOTE(OverSampler):
             #
             # We start by changing the number of NNs to consider from m + 1
             # to k + 1
-            self.nearest_neighbour_.set_params(**{'n_neighbors': self.k + 1})
-            self.nearest_neighbour_.fit(X_min)
+            self.nearest_neighbour.set_params(**{'n_neighbors': self.k + 1})
+            self.nearest_neighbour.fit(X_min)
 
             # nns...#
-            nns = self.nearest_neighbour_.kneighbors(
+            nns = self.nearest_neighbour.kneighbors(
                 X_min[danger_index],
                 return_distance=False)[:, 1:]
 
@@ -479,7 +479,7 @@ class SMOTE(OverSampler):
                 y_resampled = np.concatenate((y, y_new), axis=0)
 
                 # Reset the k-neighbours to m+1 neighbours
-                self.nearest_neighbour_.set_params(**{'n_neighbors': self.m+1})
+                self.nearest_neighbour.set_params(**{'n_neighbors': self.m+1})
 
                 return X_resampled, y_resampled
 
@@ -487,7 +487,7 @@ class SMOTE(OverSampler):
                 # Split the number of synthetic samples between only minority
                 # (type 1), or minority and majority (with reduced step size)
                 # (type 2).
-                np.random.seed(self.rs_)
+                np.random.seed(self.random_state)
                 # The fraction is sampled from a beta distribution centered
                 # around 0.5 with variance ~0.01
                 fractions = beta(10, 10)
@@ -516,7 +516,7 @@ class SMOTE(OverSampler):
                 y_resampled = np.concatenate((y, y_new_1, y_new_2), axis=0)
 
                 # Reset the k-neighbours to m+1 neighbours
-                self.nearest_neighbour_.set_params(**{'n_neighbors': self.m+1})
+                self.nearest_neighbour.set_params(**{'n_neighbors': self.m+1})
 
                 return X_resampled, y_resampled
 
@@ -528,10 +528,10 @@ class SMOTE(OverSampler):
             # belonging to each class.
 
             # Fit SVM to the full data#
-            self.svm_.fit(X, y)
+            self.svm.fit(X, y)
 
             # Find the support vectors and their corresponding indexes
-            support_index = self.svm_.support_[y[self.svm_.support_] ==
+            support_index = self.svm.support_[y[self.svm.support_] ==
                                                self.min_c_]
             support_vector = X[support_index]
 
@@ -541,7 +541,7 @@ class SMOTE(OverSampler):
                 print("Finding the {} nearest neighbours...".format(self.m))
 
             # As usual, fit a nearest neighbour model to the data
-            self.nearest_neighbour_.fit(X)
+            self.nearest_neighbour.fit(X)
 
             if self.verbose:
                 print("done!")
@@ -568,8 +568,8 @@ class SMOTE(OverSampler):
                 # Proceed to find support vectors NNs among the minority class
                 print("Finding the {} nearest neighbours...".format(self.k))
 
-            self.nearest_neighbour_.set_params(**{'n_neighbors': self.k + 1})
-            self.nearest_neighbour_.fit(X_min)
+            self.nearest_neighbour.set_params(**{'n_neighbors': self.k + 1})
+            self.nearest_neighbour.fit(X_min)
 
             if self.verbose:
                 print("done!")
@@ -580,12 +580,12 @@ class SMOTE(OverSampler):
 
             # The fraction are sampled from a beta distribution with mean
             # 0.5 and variance 0.01#
-            np.random.seed(self.rs_)
+            np.random.seed(self.random_state)
             fractions = beta(10, 10)
 
             # Interpolate samples in danger
             if np.count_nonzero(danger_bool) > 0:
-                nns = self.nearest_neighbour_.kneighbors(
+                nns = self.nearest_neighbour.kneighbors(
                     support_vector[danger_bool],
                     return_distance=False)[:, 1:]
 
@@ -599,7 +599,7 @@ class SMOTE(OverSampler):
 
             # Extrapolate safe samples
             if np.count_nonzero(safety_bool) > 0:
-                nns = self.nearest_neighbour_.kneighbors(
+                nns = self.nearest_neighbour.kneighbors(
                     support_vector[safety_bool],
                     return_distance=False)[:, 1:]
 
@@ -629,6 +629,6 @@ class SMOTE(OverSampler):
                 y_resampled = np.concatenate((y, y_new_1), axis=0)
 
             # Reset the k-neighbours to m+1 neighbours
-            self.nearest_neighbour_.set_params(**{'n_neighbors': self.m+1})
+            self.nearest_neighbour.set_params(**{'n_neighbors': self.m+1})
 
             return X_resampled, y_resampled

@@ -154,7 +154,7 @@ class EditedNearestNeighbours(UnderSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -181,7 +181,7 @@ class EditedNearestNeighbours(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(EditedNearestNeighbours, self).transform(X, y)
+        super(EditedNearestNeighbours, self).sample(X, y)
 
         # Start with the minority class
         X_min = X[y == self.min_c_]

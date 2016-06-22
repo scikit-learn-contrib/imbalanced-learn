@@ -7,8 +7,10 @@ import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_warns
 
 from sklearn.datasets import make_classification
+from sklearn.utils.estimator_checks import check_estimator
 
 from unbalanced_dataset.under_sampling import OneSidedSelection
 
@@ -18,6 +20,11 @@ X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
                            n_samples=5000, random_state=RND_SEED)
+
+
+def test_oss_sk_estimator():
+    """Test the sklearn estimator compatibility"""
+    check_estimator(OneSidedSelection)
 
 
 def test_oss_init():
@@ -30,7 +37,7 @@ def test_oss_init():
     assert_equal(oss.size_ngh, 1)
     assert_equal(oss.n_seeds_S, 1)
     assert_equal(oss.n_jobs, -1)
-    assert_equal(oss.rs_, RND_SEED)
+    assert_equal(oss.random_state, RND_SEED)
     assert_equal(oss.verbose, verbose)
     assert_equal(oss.min_c_, None)
     assert_equal(oss.maj_c_, None)
@@ -45,7 +52,7 @@ def test_oss_fit_single_class():
     # Resample the data
     # Create a wrong y
     y_single_class = np.zeros((X.shape[0], ))
-    assert_raises(RuntimeError, oss.fit, X, y_single_class)
+    assert_warns(RuntimeWarning, oss.fit, X, y_single_class)
 
 
 def test_oss_fit():
@@ -63,21 +70,21 @@ def test_oss_fit():
     assert_equal(oss.stats_c_[1], 4500)
 
 
-def test_oss_transform_wt_fit():
-    """Test either if an error is raised when transform is called before
+def test_oss_sample_wt_fit():
+    """Test either if an error is raised when sample is called before
     fitting"""
 
     # Create the object
     oss = OneSidedSelection(random_state=RND_SEED)
-    assert_raises(RuntimeError, oss.transform, X, Y)
+    assert_raises(RuntimeError, oss.sample, X, Y)
 
 
-def test_oss_fit_transform():
-    """Test the fit transform routine"""
+def test_oss_fit_sample():
+    """Test the fit sample routine"""
 
     # Resample the data
     oss = OneSidedSelection(random_state=RND_SEED)
-    X_resampled, y_resampled = oss.fit_transform(X, Y)
+    X_resampled, y_resampled = oss.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'oss_x.npy'))
@@ -86,12 +93,12 @@ def test_oss_fit_transform():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_oss_fit_transform_with_indices():
-    """Test the fit transform routine with indices support"""
+def test_oss_fit_sample_with_indices():
+    """Test the fit sample routine with indices support"""
 
     # Resample the data
     oss = OneSidedSelection(return_indices=True, random_state=RND_SEED)
-    X_resampled, y_resampled, idx_under = oss.fit_transform(X, Y)
+    X_resampled, y_resampled, idx_under = oss.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'oss_x.npy'))

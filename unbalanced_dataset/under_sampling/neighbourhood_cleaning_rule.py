@@ -133,7 +133,7 @@ class NeighbourhoodCleaningRule(UnderSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -160,7 +160,7 @@ class NeighbourhoodCleaningRule(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(NeighbourhoodCleaningRule, self).transform(X, y)
+        super(NeighbourhoodCleaningRule, self).sample(X, y)
 
         # Start with the minority class
         X_min = X[y == self.min_c_]

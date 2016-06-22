@@ -7,8 +7,10 @@ import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_warns
 
 from sklearn.datasets import make_classification
+from sklearn.utils.estimator_checks import check_estimator
 
 from unbalanced_dataset.ensemble import BalanceCascade
 
@@ -18,6 +20,11 @@ X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
                            n_samples=5000, random_state=RND_SEED)
+
+
+def test_bc_sk_estimator():
+    """Test the sklearn estimator compatibility"""
+    check_estimator(BalanceCascade)
 
 
 def test_bc_bad_ratio():
@@ -49,10 +56,10 @@ def test_bc_init():
     verbose = True
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED, verbose=verbose)
 
-    assert_equal(bc.ratio_, ratio)
+    assert_equal(bc.ratio, ratio)
     assert_equal(bc.bootstrap, True)
     assert_equal(bc.n_max_subset, None)
-    assert_equal(bc.rs_, RND_SEED)
+    assert_equal(bc.random_state, RND_SEED)
     assert_equal(bc.verbose, verbose)
     assert_equal(bc.min_c_, None)
     assert_equal(bc.maj_c_, None)
@@ -70,7 +77,7 @@ def test_bc_fit_single_class():
     # Resample the data
     # Create a wrong y
     y_single_class = np.zeros((X.shape[0], ))
-    assert_raises(RuntimeError, bc.fit, X, y_single_class)
+    assert_warns(RuntimeWarning, bc.fit, X, y_single_class)
 
 
 def test_bc_fit_invalid_ratio():
@@ -81,7 +88,7 @@ def test_bc_fit_invalid_ratio():
     ratio = 1. / 10000.
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
     # Fit the data
-    assert_raises(RuntimeError, bc.fit, X, Y)
+    assert_raises(RuntimeError, bc.fit_sample, X, Y)
 
 
 def test_bc_fit():
@@ -102,8 +109,8 @@ def test_bc_fit():
     assert_equal(bc.stats_c_[1], 4500)
 
 
-def test_transform_wt_fit():
-    """Test either if an error is raised when transform is called before
+def test_sample_wt_fit():
+    """Test either if an error is raised when sample is called before
     fitting"""
 
     # Define the parameter for the under-sampling
@@ -111,11 +118,11 @@ def test_transform_wt_fit():
 
     # Create the object
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
-    assert_raises(RuntimeError, bc.transform, X, Y)
+    assert_raises(RuntimeError, bc.sample, X, Y)
 
 
-def test_fit_transform_auto():
-    """Test the fit and transform routine with auto ratio."""
+def test_fit_sample_auto():
+    """Test the fit and sample routine with auto ratio."""
 
     # Define the ratio parameter
     ratio = 'auto'
@@ -125,7 +132,7 @@ def test_fit_transform_auto():
                         return_indices=True)
 
     # Get the different subset
-    X_resampled, y_resampled, idx_under = bc.fit_transform(X, Y)
+    X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'bc_x.npy'))
@@ -138,8 +145,8 @@ def test_fit_transform_auto():
         assert_array_equal(idx_under[idx], idx_gt[idx])
 
 
-def test_fit_transform_half():
-    """Test the fit and transform routine with 0.5 ratio."""
+def test_fit_sample_half():
+    """Test the fit and sample routine with 0.5 ratio."""
 
     # Define the ratio parameter
     ratio = 0.5
@@ -148,7 +155,7 @@ def test_fit_transform_half():
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
 
     # Get the different subset
-    X_resampled, y_resampled = bc.fit_transform(X, Y)
+    X_resampled, y_resampled = bc.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'bc_x_05.npy'))
@@ -159,8 +166,8 @@ def test_fit_transform_half():
         assert_array_equal(y_resampled[idx], y_gt[idx])
 
 
-def test_fit_transform_auto_decision_tree():
-    """Test the fit and transform routine with auto ratio with a decision
+def test_fit_sample_auto_decision_tree():
+    """Test the fit and sample routine with auto ratio with a decision
     tree."""
 
     # Define the ratio parameter
@@ -172,7 +179,7 @@ def test_fit_transform_auto_decision_tree():
                         return_indices=True, classifier=classifier)
 
     # Get the different subset
-    X_resampled, y_resampled, idx_under = bc.fit_transform(X, Y)
+    X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'bc_x_dt.npy'))
@@ -185,8 +192,8 @@ def test_fit_transform_auto_decision_tree():
         assert_array_equal(idx_under[idx], idx_gt[idx])
 
 
-def test_fit_transform_auto_random_forest():
-    """Test the fit and transform routine with auto ratio with a random
+def test_fit_sample_auto_random_forest():
+    """Test the fit and sample routine with auto ratio with a random
     forest."""
 
     # Define the ratio parameter
@@ -198,7 +205,7 @@ def test_fit_transform_auto_random_forest():
                         return_indices=True, classifier=classifier)
 
     # Get the different subset
-    X_resampled, y_resampled, idx_under = bc.fit_transform(X, Y)
+    X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'bc_x_rf.npy'))
@@ -211,8 +218,8 @@ def test_fit_transform_auto_random_forest():
         assert_array_equal(idx_under[idx], idx_gt[idx])
 
 
-def test_fit_transform_auto_adaboost():
-    """Test the fit and transform routine with auto ratio with a adaboost."""
+def test_fit_sample_auto_adaboost():
+    """Test the fit and sample routine with auto ratio with a adaboost."""
 
     # Define the ratio parameter
     ratio = 'auto'
@@ -223,7 +230,7 @@ def test_fit_transform_auto_adaboost():
                         return_indices=True, classifier=classifier)
 
     # Get the different subset
-    X_resampled, y_resampled, idx_under = bc.fit_transform(X, Y)
+    X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'bc_x_adb.npy'))
@@ -236,8 +243,8 @@ def test_fit_transform_auto_adaboost():
         assert_array_equal(idx_under[idx], idx_gt[idx])
 
 
-def test_fit_transform_auto_gradient_boosting():
-    """Test the fit and transform routine with auto ratio with a gradient
+def test_fit_sample_auto_gradient_boosting():
+    """Test the fit and sample routine with auto ratio with a gradient
     boosting."""
 
     # Define the ratio parameter
@@ -249,7 +256,7 @@ def test_fit_transform_auto_gradient_boosting():
                         return_indices=True, classifier=classifier)
 
     # Get the different subset
-    X_resampled, y_resampled, idx_under = bc.fit_transform(X, Y)
+    X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'bc_x_gb.npy'))
@@ -262,8 +269,8 @@ def test_fit_transform_auto_gradient_boosting():
         assert_array_equal(idx_under[idx], idx_gt[idx])
 
 
-def test_fit_transform_auto_linear_svm():
-    """Test the fit and transform routine with auto ratio with a linear
+def test_fit_sample_auto_linear_svm():
+    """Test the fit and sample routine with auto ratio with a linear
     svm."""
 
     # Define the ratio parameter
@@ -275,7 +282,7 @@ def test_fit_transform_auto_linear_svm():
                         return_indices=True, classifier=classifier)
 
     # Get the different subset
-    X_resampled, y_resampled, idx_under = bc.fit_transform(X, Y)
+    X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'bc_x_svm.npy'))
@@ -295,14 +302,15 @@ def test_init_wrong_classifier():
     ratio = 'auto'
     classifier = 'rnd'
 
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=True, classifier=classifier)
+
     # Create the sampling object
-    assert_raises(ValueError, BalanceCascade, ratio=ratio,
-                  random_state=RND_SEED, return_indices=True,
-                  classifier=classifier)
+    assert_raises(RuntimeError, bc.fit_sample, X, Y)
 
 
-def test_fit_transform_auto_early_stop():
-    """Test the fit and transform routine with auto ratio with a static number
+def test_fit_sample_auto_early_stop():
+    """Test the fit and sample routine with auto ratio with a static number
     of subsets."""
 
     # Define the ratio parameter
@@ -314,7 +322,7 @@ def test_fit_transform_auto_early_stop():
                         return_indices=True, n_max_subset=n_subset)
 
     # Get the different subset
-    X_resampled, y_resampled, idx_under = bc.fit_transform(X, Y)
+    X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'bc_x_n_sub.npy'))

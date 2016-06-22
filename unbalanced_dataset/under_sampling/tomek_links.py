@@ -159,7 +159,7 @@ class TomekLinks(UnderSampler):
 
         return links
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -186,7 +186,7 @@ class TomekLinks(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(TomekLinks, self).transform(X, y)
+        super(TomekLinks, self).sample(X, y)
 
         # Find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)

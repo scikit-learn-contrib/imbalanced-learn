@@ -162,15 +162,28 @@ class SMOTEENN(BaseSampler):
         super(SMOTEENN, self).__init__(ratio=ratio, random_state=random_state,
                                        verbose=verbose)
 
-        self.sm = SMOTE(ratio=ratio, random_state=random_state,
-                        verbose=verbose, k=k, m=m, out_step=out_step,
-                        kind=kind_smote, nn_method=nn_method, n_jobs=n_jobs,
-                        **kwargs)
+        self.k = k
+        self.m = m
+        self.out_step = out_step
+        self.kind_smote = kind_smote
+        self.nn_method = nn_method
+        self.n_jobs = n_jobs
+        self.kwargs = kwargs
 
-        self.enn = EditedNearestNeighbours(random_state=random_state,
-                                           verbose=verbose,
-                                           size_ngh=size_ngh,
-                                           kind_sel=kind_enn, n_jobs=n_jobs)
+        self.sm = SMOTE(ratio=self.ratio, random_state=self.random_state,
+                        verbose=self.verbose, k=self.k, m=self.m,
+                        out_step=self.out_step, kind=self.kind_smote,
+                        nn_method=self.nn_method, n_jobs=self.n_jobs,
+                        **self.kwargs)
+
+        self.size_ngh = size_ngh
+        self.kind_enn = kind_enn
+
+        self.enn = EditedNearestNeighbours(random_state=self.random_state,
+                                           verbose=self.verbose,
+                                           size_ngh=self.size_ngh,
+                                           kind_sel=self.kind_enn,
+                                           n_jobs=self.n_jobs)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -199,7 +212,7 @@ class SMOTEENN(BaseSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -222,10 +235,10 @@ class SMOTEENN(BaseSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(SMOTEENN, self).transform(X, y)
+        super(SMOTEENN, self).sample(X, y)
 
         # Transform using SMOTE
-        X, y = self.sm.transform(X, y)
+        X, y = self.sm.sample(X, y)
 
         # Fit and transform using ENN
-        return self.enn.fit_transform(X, y)
+        return self.enn.fit_sample(X, y)

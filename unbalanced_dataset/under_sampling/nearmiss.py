@@ -233,7 +233,7 @@ class NearMiss(UnderSampler):
         return (X[y == key][sel_idx], y[y == key][sel_idx],
                 np.nonzero(y == key)[0][sel_idx])
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -260,7 +260,7 @@ class NearMiss(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(NearMiss, self).transform(X, y)
+        super(NearMiss, self).sample(X, y)
 
         # Start with the minority class
         X_min = X[y == self.min_c_]
@@ -271,10 +271,10 @@ class NearMiss(UnderSampler):
         y_resampled = y_min.copy()
 
         # Compute the number of cluster needed
-        if self.ratio_ == 'auto':
+        if self.ratio == 'auto':
             num_samples = self.stats_c_[self.min_c_]
         else:
-            num_samples = int(self.stats_c_[self.min_c_] / self.ratio_)
+            num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
 
         # If we need to offer support for the indices
         if self.return_indices:
