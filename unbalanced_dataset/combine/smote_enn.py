@@ -12,11 +12,13 @@ from ..base_sampler import BaseSampler
 class SMOTEENN(BaseSampler):
     """Class to perform over-sampling using SMOTE and cleaning using ENN.
 
+    Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.
+
     Parameters
     ----------
     ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the
         number of samples in the minority class over the the number of
         samples in the majority class.
 
@@ -24,8 +26,7 @@ class SMOTEENN(BaseSampler):
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the
-        processing.
+        Whether or not to print information about the processing.
 
     k : int, optional (default=5)
         Number of nearest neighbours to used to construct synthetic
@@ -40,12 +41,7 @@ class SMOTEENN(BaseSampler):
 
     kind_smote : str, optional (default='regular')
         The type of SMOTE algorithm to use one of the following
-        options: 'regular', 'borderline1', 'borderline2', 'svm'
-
-    nn_method : str, optional (default='exact')
-        The nearest neighbors method to use which can be either:
-        'approximate' or 'exact'. 'approximate' will use LSH Forest while
-        'exact' will be an exact search.
+        options: 'regular', 'borderline1', 'borderline2', 'svm'.
 
     size_ngh : int, optional (default=3)
         Size of the neighbourhood to consider to compute the average
@@ -60,17 +56,17 @@ class SMOTEENN(BaseSampler):
         order to exclude a sample.
 
     n_jobs : int, optional (default=-1)
-        Number of threads to run the algorithm when it is possible.
+        The number of threads to open if possible.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
+    ratio : str or float
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the
+        number of samples in the minority class over the the number of
+        samples in the majority class.
 
-    rs_ : int or None, optional (default=None)
+    random_state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -99,16 +95,15 @@ class SMOTEENN(BaseSampler):
 
     def __init__(self, ratio='auto', random_state=None, verbose=True,
                  k=5, m=10, out_step=0.5, kind_smote='regular',
-                 nn_method='exact', size_ngh=3, kind_enn='all', n_jobs=-1,
-                 **kwargs):
+                 size_ngh=3, kind_enn='all', n_jobs=-1, **kwargs):
 
         """Initialise the SMOTE ENN object.
 
         Parameters
         ----------
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the
             number of samples in the minority class over the the number of
             samples in the majority class.
 
@@ -116,8 +111,7 @@ class SMOTEENN(BaseSampler):
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the
-            processing.
+            Whether or not to print information about the processing.
 
         k : int, optional (default=5)
             Number of nearest neighbours to used to construct synthetic
@@ -132,12 +126,7 @@ class SMOTEENN(BaseSampler):
 
         kind_smote : str, optional (default='regular')
             The type of SMOTE algorithm to use one of the following
-            options: 'regular', 'borderline1', 'borderline2', 'svm'
-
-        nn_method : str, optional (default='exact')
-            The nearest neighbors method to use which can be either:
-            'approximate' or 'exact'. 'approximate' will use LSH Forest while
-            'exact' will be an exact search.
+            options: 'regular', 'borderline1', 'borderline2', 'svm'.
 
         size_ngh : int, optional (default=3)
             Size of the neighbourhood to consider to compute the average
@@ -152,7 +141,7 @@ class SMOTEENN(BaseSampler):
             order to exclude a sample.
 
         n_jobs : int, optional (default=-1)
-            Number of threads to run the algorithm when it is possible.
+            The number of threads to open if possible.
 
         Returns
         -------
@@ -166,15 +155,13 @@ class SMOTEENN(BaseSampler):
         self.m = m
         self.out_step = out_step
         self.kind_smote = kind_smote
-        self.nn_method = nn_method
         self.n_jobs = n_jobs
         self.kwargs = kwargs
 
         self.sm = SMOTE(ratio=self.ratio, random_state=self.random_state,
                         verbose=self.verbose, k=self.k, m=self.m,
                         out_step=self.out_step, kind=self.kind_smote,
-                        nn_method=self.nn_method, n_jobs=self.n_jobs,
-                        **self.kwargs)
+                        n_jobs=self.n_jobs, **self.kwargs)
 
         self.size_ngh = size_ngh
         self.kind_enn = kind_enn

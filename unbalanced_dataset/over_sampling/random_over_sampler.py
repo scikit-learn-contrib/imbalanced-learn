@@ -20,8 +20,8 @@ class RandomOverSampler(OverSampler):
     Parameters
     ----------
     ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
@@ -29,17 +29,17 @@ class RandomOverSampler(OverSampler):
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing.
+        Whether or not to print information about the processing.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+    ratio : str or float
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    rs_ : int or None, optional (default=None)
+    random_state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -63,8 +63,8 @@ class RandomOverSampler(OverSampler):
         Parameters
         ----------
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
             of samples in the minority class over the the number of samples
             in the majority class.
 
@@ -72,7 +72,7 @@ class RandomOverSampler(OverSampler):
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
 
         Returns
         -------

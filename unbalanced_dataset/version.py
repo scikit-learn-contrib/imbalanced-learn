@@ -41,16 +41,11 @@ REQUIRED_MODULE_METADATA = (
     ('sklearn', {
         'min_version': '0.17.1',
         'required_at_installation': True,
-        'install_info': _UNBALANCED_DATASET_INSTALL_MSG}),
-    ('six', {
-        'min_version': '1.10.0',
-        'required_at_installation': False}))
+        'install_info': _UNBALANCED_DATASET_INSTALL_MSG}))
 
 
-def _import_module_with_version_check(
-        module_name,
-        minimum_version,
-        install_info=None):
+def _import_module_with_version_check(module_name, minimum_version,
+                                      install_info=None):
     """Check that module is installed with a recent enough version
     """
     from distutils.version import LooseVersion
@@ -105,4 +100,4 @@ def _check_module_dependencies(is_unbalanced_dataset_installing=False):
             _import_module_with_version_check(
                 module_name=module_name,
                 minimum_version=module_metadata['min_version'],
-install_info=module_metadata.get('install_info'))
+                install_info=module_metadata.get('install_info'))

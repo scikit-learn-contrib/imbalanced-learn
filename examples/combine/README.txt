@@ -1,6 +1,6 @@
 .. _combine_examples:
 
-Example using combine class methods
-===================================
+Examples using combine class methods
+====================================
 
-Combine examples.
+Combine methods mixed over- and under-sampling methods. Generally SMOTE is used for over-sampling while some cleaning methods (i.e., ENN and Tomek links) are used to under-sample.

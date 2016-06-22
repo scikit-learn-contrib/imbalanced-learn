@@ -15,20 +15,21 @@ Under-sampling methods
 
 Classes
 -------
+.. currentmodule:: unbalanced_dataset
 
 .. autosummary::
    :toctree: generated/
    
-   unbalanced_dataset.under_sampling.ClusterCentroids
-   unbalanced_dataset.under_sampling.CondensedNearestNeighbour
-   unbalanced_dataset.under_sampling.EditedNearestNeighbours
-   unbalanced_dataset.under_sampling.RepeatedEditedNearestNeighbours
-   unbalanced_dataset.under_sampling.InstanceHardnessThreshold
-   unbalanced_dataset.under_sampling.NearMiss
-   unbalanced_dataset.under_sampling.NeighbourhoodCleaningRule
-   unbalanced_dataset.under_sampling.OneSidedSelection
-   unbalanced_dataset.under_sampling.RandomUnderSampler
-   unbalanced_dataset.under_sampling.TomekLinks
+   under_sampling.ClusterCentroids
+   under_sampling.CondensedNearestNeighbour
+   under_sampling.EditedNearestNeighbours
+   under_sampling.RepeatedEditedNearestNeighbours
+   under_sampling.InstanceHardnessThreshold
+   under_sampling.NearMiss
+   under_sampling.NeighbourhoodCleaningRule
+   under_sampling.OneSidedSelection
+   under_sampling.RandomUnderSampler
+   under_sampling.TomekLinks
 
 
 .. _over_sampling_ref:
@@ -42,12 +43,13 @@ Over-sampling methods
 
 Classes
 -------
+.. currentmodule:: unbalanced_dataset
 
 .. autosummary::
    :toctree: generated/
    
-   unbalanced_dataset.over_sampling.RandomOverSampler
-   unbalanced_dataset.over_sampling.SMOTE
+   over_sampling.RandomOverSampler
+   over_sampling.SMOTE
 
 
 .. _combine_ref:
@@ -61,12 +63,13 @@ Combination of over- and under-sampling methods
 
 Classes
 -------
+.. currentmodule:: unbalanced_dataset
 
 .. autosummary::
    :toctree: generated/
    
-   unbalanced_dataset.combine.SMOTEENN
-   unbalanced_dataset.combine.SMOTETomek
+   combine.SMOTEENN
+   combine.SMOTETomek
 
 .. _ensemble_ref:
 
@@ -79,9 +82,10 @@ Ensemble methods
 
 Classes
 -------
+.. currentmodule:: unbalanced_dataset
 
 .. autosummary::
    :toctree: generated/
    
-   unbalanced_dataset.ensemble.BalanceCascade
-   unbalanced_dataset.ensemble.EasyEnsemble
+   ensemble.BalanceCascade
+   ensemble.EasyEnsemble

@@ -18,27 +18,21 @@ class TomekLinks(UnderSampler):
     Parameters
     ----------
     return_indices : bool, optional (default=False)
-        Either to return or not the indices which will be selected from
-        the majority class.
+        Whether or not to return the indices of the samples randomly
+        selected from the majority class.
 
     random_state : int or None, optional (default=None)
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing
+        The number of threads to open if possible.
 
     n_jobs : int, optional (default=-1)
-        The number of thread to open when it is possible.
+        The number of threads to open if possible.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
-
-    rs_ : int or None, optional (default=None)
+    random state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -51,6 +45,17 @@ class TomekLinks(UnderSampler):
         A dictionary in which the number of occurences of each class is
         reported.
 
+    Notes
+    -----
+    This method is based on [1]_.
+
+    It does not support multi-class sampling.
+
+    References
+    ----------
+    .. [1] I. Tomek, "Two modifications of CNN," In Systems, Man, and
+       Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 2010.
+
     """
 
     def __init__(self, return_indices=False, random_state=None, verbose=True,
@@ -60,17 +65,17 @@ class TomekLinks(UnderSampler):
         Parameters
         ----------
         return_indices : bool, optional (default=False)
-            Either to return or not the indices which will be selected from
-            the majority class.
+            Whether or not to return the indices of the samples randomly
+            selected from the majority class.
 
         random_state : int or None, optional (default=None)
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
 
         n_jobs : int, optional (default=-1)
-            The number of thread to open when it is possible.
+            The number of threads to open if possible.
 
         Returns
         -------

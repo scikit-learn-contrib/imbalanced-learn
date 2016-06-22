@@ -9,29 +9,29 @@ from .ensemble_sampler import EnsembleSampler
 
 
 class BalanceCascade(EnsembleSampler):
-    """Perform under-sampling using an ensemble of subset selected using
-    some classifiers.
+    """Create an ensemble of balanced sets by iteratively under-sampling the
+    imbalanced dataset using an estimator.
 
     This method iteratively select subset and make an ensemble of the
-    different sets. The selection is performed using classifier.
+    different sets. The selection is performed using a specific classifier.
 
     Parameters
     ----------
     ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
     return_indices : bool, optional (default=True)
-        Either to return or not the indices which will be selected from
-        the majority class.
+        Whether or not to return the indices of the samples randomly
+        selected from the majority class.
 
     random_state : int or None, optional (default=None)
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing
+        Whether or not to print information about the processing.
 
     n_max_subset : int or None, optional (default=None)
         Maximum number of subsets to generate. By default, all data from
@@ -44,18 +44,21 @@ class BalanceCascade(EnsembleSampler):
         'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
         and 'linear-svm'.
 
+    bootstrap : bool, optional (default=True)
+        Whether to bootstrap the data before each iteration.
+
     **kwargs : keywords
         The parameters associated with the classifier provided.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+    ratio : str or float
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    rs_ : int or None, optional (default=None)
+    random_state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -90,20 +93,20 @@ class BalanceCascade(EnsembleSampler):
         Parameters
         ----------
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
             of samples in the minority class over the the number of samples
             in the majority class.
 
         return_indices : bool, optional (default=True)
-            Either to return or not the indices which will be selected from
-            the majority class.
+            Whether or not to return the indices of the samples randomly
+            selected from the majority class.
 
         random_state : int or None, optional (default=None)
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
 
         n_max_subset : int or None, optional (default=None)
             Maximum number of subsets to generate. By default, all data from
@@ -115,6 +118,9 @@ class BalanceCascade(EnsembleSampler):
             with the real labels. The choices are the following: 'knn',
             'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
             and 'linear-svm'.
+
+        bootstrap : bool, optional (default=True)
+            Whether to bootstrap the data before each iteration.
 
         **kwargs : keywords
             The parameters associated with the classifier provided.
@@ -130,10 +136,9 @@ class BalanceCascade(EnsembleSampler):
                                              random_state=random_state)
         # Define the classifier to use
         self.classifier = classifier
-        self.kwargs = kwargs
-
         self.n_max_subset = n_max_subset
         self.bootstrap = bootstrap
+        self.kwargs = kwargs
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -189,7 +194,7 @@ class BalanceCascade(EnsembleSampler):
 
         super(BalanceCascade, self).sample(X, y)
 
-                # Define the classifier to use
+        # Define the classifier to use
         if self.classifier == 'knn':
             from sklearn.neighbors import KNeighborsClassifier
             classifier = KNeighborsClassifier(

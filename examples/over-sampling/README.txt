@@ -3,4 +3,4 @@
 Example using over-sampling class methods
 =========================================
 
-Over-sampling examples.
+Data balancing can be performed by over-sampling such that new samples are generated in the minority class to reach a given balancing ratio.
