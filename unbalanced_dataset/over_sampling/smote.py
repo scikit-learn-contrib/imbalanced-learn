@@ -149,14 +149,11 @@ class SMOTE(OverSampler):
         else:
             raise ValueError('Unknown kind for SMOTE algorithm.')
 
-        # --- Verbose
-        # Control whether or not status and progress information should be
-        self.verbose = verbose
-
-        # --- Nearest Neighbours for synthetic samples
-        # The smote algorithm uses the k-th nearest neighbours of a minority
-        # sample to generate new synthetic samples.
         self.k = k
+        self.m = m
+        self.out_step = out_step
+        self.verbose = verbose
+        self.kwargs = kwargs
 
         # --- NN object
         # Import the NN object from scikit-learn library. Since in the smote
@@ -166,8 +163,8 @@ class SMOTE(OverSampler):
             # Regular smote does not look for samples in danger, instead it
             # creates synthetic samples directly from the k-th nearest
             # neighbours with not filtering
-            self.nearest_neighbour = NearestNeighbors(n_neighbors=k + 1,
-                                                           n_jobs=self.n_jobs)
+            self.nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1,
+                                                      n_jobs=self.n_jobs)
         else:
             # Borderline1, 2 and SVM variations of smote must first look for
             # samples that could be considered noise and samples that live
@@ -175,13 +172,9 @@ class SMOTE(OverSampler):
             # creating synthetic samples from the k-th nns, it first look
             # for m nearest neighbors to decide whether or not a sample is
             # noise or near the boundary.
-            self.nearest_neighbour = NearestNeighbors(n_neighbors=m + 1,
-                                                           n_jobs=self.n_jobs)
+            self.nearest_neighbour = NearestNeighbors(n_neighbors=self.m + 1,
+                                                      n_jobs=self.n_jobs)
 
-            # --- Nearest Neighbours for noise and boundary (in danger)
-            # Before creating synthetic samples we must first decide if
-            # a given entry is noise or in danger. We use m nns in this step
-            self.m = m
 
         # --- SVM smote
         # Unlike the borderline variations, the SVM variation uses the support
@@ -191,11 +184,8 @@ class SMOTE(OverSampler):
         # in danger (near the boundary). The level of extrapolation is
         # controled by the out_step.
         if kind == 'svm':
-            # Store extrapolation size
-            self.out_step = out_step
-
             # Store SVM object with any parameters
-            self.svm = SVC(random_state=self.random_state, **kwargs)
+            self.svm = SVC(random_state=self.random_state, **self.kwargs)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
