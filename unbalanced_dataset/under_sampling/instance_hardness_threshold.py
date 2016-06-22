@@ -85,8 +85,9 @@ class InstanceHardnessThreshold(UnderSampler):
 
     """
 
-    def __init__(self, estimator, ratio='auto', return_indices=False, cv=5,
-                 random_state=None, verbose=True, n_jobs=-1):
+    def __init__(self, estimator='linear-svm', ratio='auto',
+                 return_indices=False, cv=5, random_state=None, verbose=True,
+                 n_jobs=-1, **kwargs):
         """Initialisation of Instance Hardness Threshold object.
 
         Parameters
@@ -129,10 +130,14 @@ class InstanceHardnessThreshold(UnderSampler):
             random_state=random_state,
             verbose=verbose)
 
-        if not hasattr(estimator, 'predict_proba'):
-            raise ValueError('Estimator does not have predict_proba method.')
-        else:
-            self.estimator_ = estimator
+        # if not hasattr(estimator, 'predict_proba'):
+        #     raise ValueError('Estimator does not have predict_proba method.')
+        # else:
+        #     self.estimator = estimator
+
+        # Define the estimator to use
+        self.estimator = estimator
+        self.kwargs = kwargs
 
         self.cv = cv
         self.n_jobs = n_jobs
@@ -161,7 +166,7 @@ class InstanceHardnessThreshold(UnderSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -188,10 +193,45 @@ class InstanceHardnessThreshold(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(InstanceHardnessThreshold, self).transform(X, y)
+        super(InstanceHardnessThreshold, self).sample(X, y)
 
+        # Select the appropriate classifier
+        if self.estimator == 'knn':
+            from sklearn.neighbors import KNeighborsClassifier
+            estimator = KNeighborsClassifier(
+                random_state=self.random_state,
+                **self.kwargs)
+        elif self.estimator == 'decision-tree':
+            from sklearn.tree import DecisionTreeClassifier
+            estimator = DecisionTreeClassifier(
+                random_state=self.random_state,
+                **self.kwargs)
+        elif self.estimator == 'random-forest':
+            from sklearn.ensemble import RandomForestClassifier
+            estimator = RandomForestClassifier(
+                random_state=self.random_state,
+                **self.kwargs)
+        elif self.estimator == 'adaboost':
+            from sklearn.ensemble import AdaBoostClassifier
+            estimator = AdaBoostClassifier(
+                random_state=self.random_state,
+                **self.kwargs)
+        elif self.estimator == 'gradient-boosting':
+            from sklearn.ensemble import GradientBoostingClassifier
+            estimator = GradientBoostingClassifier(
+                random_state=self.random_state,
+                **self.kwargs)
+        elif self.estimator == 'linear-svm':
+            from sklearn.svm import SVC
+            estimator = SVC(probability=True,
+                            random_state=self.random_state, **self.kwargs)
+        else:
+            raise ValueError('UnbalancedData.BalanceCascade: classifier '
+                             'not yet supported.')
+
+        # Create the different folds
         skf = StratifiedKFold(y, n_folds=self.cv, shuffle=False,
-                              random_state=self.rs_)
+                              random_state=self.random_state)
 
         probabilities = np.zeros(y.shape[0], dtype=float)
 
@@ -199,19 +239,19 @@ class InstanceHardnessThreshold(UnderSampler):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
-            self.estimator_.fit(X_train, y_train)
+            estimator.fit(X_train, y_train)
 
-            probs = self.estimator_.predict_proba(X_test)
-            classes = self.estimator_.classes_
+            probs = estimator.predict_proba(X_test)
+            classes = estimator.classes_
             probabilities[test_index] = [
                 probs[l, np.where(classes == c)[0][0]]
                 for l, c in enumerate(y_test)]
 
         # Compute the number of cluster needed
-        if self.ratio_ == 'auto':
+        if self.ratio == 'auto':
             num_samples = self.stats_c_[self.min_c_]
         else:
-            num_samples = int(self.stats_c_[self.min_c_] / self.ratio_)
+            num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
 
         # Find the percentile corresponding to the top num_samples
         threshold = np.percentile(

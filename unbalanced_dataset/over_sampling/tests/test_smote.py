@@ -7,8 +7,10 @@ import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_warns
 
 from sklearn.datasets import make_classification
+from sklearn.utils.estimator_checks import check_estimator
 
 from unbalanced_dataset.over_sampling import SMOTE
 
@@ -18,6 +20,11 @@ X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
                            n_samples=5000, random_state=RND_SEED)
+
+
+def test_smote_sk_estimator():
+    """Test the sklearn estimator compatibility"""
+    check_estimator(SMOTE)
 
 
 def test_smote_bad_ratio():
@@ -57,7 +64,7 @@ def test_smote_fit_single_class():
     # Resample the data
     # Create a wrong y
     y_single_class = np.zeros((X.shape[0], ))
-    assert_raises(RuntimeError, smote.fit, X, y_single_class)
+    assert_warns(RuntimeWarning, smote.fit, X, y_single_class)
 
 
 def test_smote_fit():
@@ -75,17 +82,17 @@ def test_smote_fit():
     assert_equal(smote.stats_c_[1], 4500)
 
 
-def test_smote_transform_wt_fit():
-    """Test either if an error is raised when transform is called before
+def test_smote_sample_wt_fit():
+    """Test either if an error is raised when sample is called before
     fitting"""
 
     # Create the object
     smote = SMOTE(random_state=RND_SEED)
-    assert_raises(RuntimeError, smote.transform, X, Y)
+    assert_raises(RuntimeError, smote.sample, X, Y)
 
 
-def test_transform_regular():
-    """Test transform function with regular SMOTE."""
+def test_sample_regular():
+    """Test sample function with regular SMOTE."""
 
     # Create the object
     kind = 'regular'
@@ -93,7 +100,7 @@ def test_transform_regular():
     # Fit the data
     smote.fit(X, Y)
 
-    X_resampled, y_resampled = smote.fit_transform(X, Y)
+    X_resampled, y_resampled = smote.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'smote_reg_x.npy'))
@@ -102,8 +109,8 @@ def test_transform_regular():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_transform_regular_half():
-    """Test transform function with regular SMOTE and a ratio of 0.5."""
+def test_sample_regular_half():
+    """Test sample function with regular SMOTE and a ratio of 0.5."""
 
     # Create the object
     ratio = 0.5
@@ -112,7 +119,7 @@ def test_transform_regular_half():
     # Fit the data
     smote.fit(X, Y)
 
-    X_resampled, y_resampled = smote.fit_transform(X, Y)
+    X_resampled, y_resampled = smote.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'smote_reg_x_05.npy'))
@@ -121,8 +128,8 @@ def test_transform_regular_half():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_transform_borderline1():
-    """Test transform function with borderline 1 SMOTE."""
+def test_sample_borderline1():
+    """Test sample function with borderline 1 SMOTE."""
 
     # Create the object
     kind = 'borderline1'
@@ -130,7 +137,7 @@ def test_transform_borderline1():
     # Fit the data
     smote.fit(X, Y)
 
-    X_resampled, y_resampled = smote.fit_transform(X, Y)
+    X_resampled, y_resampled = smote.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'smote_bor_1_x.npy'))
@@ -139,8 +146,8 @@ def test_transform_borderline1():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_transform_borderline2():
-    """Test transform function with borderline 2 SMOTE."""
+def test_sample_borderline2():
+    """Test sample function with borderline 2 SMOTE."""
 
     # Create the object
     kind = 'borderline2'
@@ -148,7 +155,7 @@ def test_transform_borderline2():
     # Fit the data
     smote.fit(X, Y)
 
-    X_resampled, y_resampled = smote.fit_transform(X, Y)
+    X_resampled, y_resampled = smote.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'smote_bor_2_x.npy'))
@@ -157,8 +164,8 @@ def test_transform_borderline2():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_transform_svm():
-    """Test transform function with SVM SMOTE."""
+def test_sample_svm():
+    """Test sample function with SVM SMOTE."""
 
     # Create the object
     kind = 'svm'
@@ -166,7 +173,7 @@ def test_transform_svm():
     # Fit the data
     smote.fit(X, Y)
 
-    X_resampled, y_resampled = smote.fit_transform(X, Y)
+    X_resampled, y_resampled = smote.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'smote_svm_x.npy'))

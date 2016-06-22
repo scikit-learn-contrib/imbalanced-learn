@@ -4,18 +4,18 @@ from __future__ import division
 
 from abc import ABCMeta, abstractmethod
 
+from sklearn.externals import six
+
 from ..base_sampler import BaseSampler
 
 
-class OverSampler(BaseSampler):
+class OverSampler(six.with_metaclass(ABCMeta, BaseSampler)):
     """Base class for over-sampling.
 
     Warning: This class should not be used directly. Use the derive classes
     instead.
 
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __init__(self, ratio='auto', random_state=None, verbose=True):
@@ -66,7 +66,7 @@ class OverSampler(BaseSampler):
         super(OverSampler, self).fit(X, y)
 
     @abstractmethod
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -86,4 +86,4 @@ class OverSampler(BaseSampler):
             The corresponding label of `X_resampled`
 
         """
-        super(OverSampler, self).transform(X, y)
+        super(OverSampler, self).sample(X, y)

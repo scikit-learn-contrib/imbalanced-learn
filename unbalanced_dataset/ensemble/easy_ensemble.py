@@ -138,7 +138,7 @@ class EasyEnsemble(EnsembleSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -165,7 +165,7 @@ class EasyEnsemble(EnsembleSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(EasyEnsemble, self).transform(X, y)
+        super(EasyEnsemble, self).sample(X, y)
 
         X_resampled = []
         y_resampled = []
@@ -177,15 +177,15 @@ class EasyEnsemble(EnsembleSampler):
                 print("Creation of the set #{}".format(s))
 
             # Create the object for random under-sampling
-            rus = RandomUnderSampler(ratio=self.ratio_,
+            rus = RandomUnderSampler(ratio=self.ratio,
                                      return_indices=self.return_indices,
-                                     random_state=self.rs_,
+                                     random_state=self.random_state,
                                      verbose=self.verbose,
                                      replacement=self.replacement)
             if self.return_indices:
-                sel_x, sel_y, sel_idx = rus.fit_transform(X, y)
+                sel_x, sel_y, sel_idx = rus.fit_sample(X, y)
             else:
-                sel_x, sel_y = rus.fit_transform(X, y)
+                sel_x, sel_y = rus.fit_sample(X, y)
 
             X_resampled.append(sel_x)
             y_resampled.append(sel_y)

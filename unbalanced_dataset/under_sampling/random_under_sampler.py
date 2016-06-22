@@ -77,8 +77,8 @@ class RandomUnderSampler(UnderSampler):
             in the majority class.
 
         return_indices : bool, optional (default=False)
-            Whether or not to return the indices of the samples randomly selected
-            from the majority class.
+            Whether or not to return the indices of the samples randomly
+            selected from the majority class.
 
         random_state : int or None, optional (default=None)
             Seed for random number generation.
@@ -125,7 +125,7 @@ class RandomUnderSampler(UnderSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -153,13 +153,13 @@ class RandomUnderSampler(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(RandomUnderSampler, self).transform(X, y)
+        super(RandomUnderSampler, self).sample(X, y)
 
         # Compute the number of clusters needed
-        if self.ratio_ == 'auto':
+        if self.ratio == 'auto':
             num_samples = self.stats_c_[self.min_c_]
         else:
-            num_samples = int(self.stats_c_[self.min_c_] / self.ratio_)
+            num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
 
         # All the minority class samples will be preserved
         X_resampled = X[y == self.min_c_]
@@ -177,7 +177,7 @@ class RandomUnderSampler(UnderSampler):
                 continue
 
             # Pick some elements at random
-            np.random.seed(self.rs_)
+            np.random.seed(self.random_state)
             indx = range(np.count_nonzero(y == key))
             indx = np.random.choice(indx, size=num_samples,
                                     replace=self.replacement)
@@ -196,7 +196,8 @@ class RandomUnderSampler(UnderSampler):
         if self.verbose:
             print("Under-sampling performed: {}".format(Counter(y_resampled)))
 
-        # Check if the indices of the samples selected should be returned as well
+        # Check if the indices of the samples selected should be returned as
+        # well
         if self.return_indices:
             # Return the indices of interest
             return X_resampled, y_resampled, idx_under

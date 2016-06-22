@@ -150,13 +150,22 @@ class SMOTETomek(BaseSampler):
                                          random_state=random_state,
                                          verbose=verbose)
 
-        self.sm = SMOTE(ratio=ratio, random_state=random_state,
-                        verbose=verbose, k=k, m=m, out_step=out_step,
-                        kind=kind_smote, nn_method=nn_method, n_jobs=n_jobs,
-                        **kwargs)
+        self.k = k
+        self.m = m
+        self.out_step = out_step
+        self.kind_smote = kind_smote
+        self.nn_method = nn_method
+        self.n_jobs = n_jobs
+        self.kwargs = kwargs
 
-        self.tomek = TomekLinks(random_state=random_state,
-                                verbose=verbose)
+        self.sm = SMOTE(ratio=self.ratio, random_state=self.random_state,
+                        verbose=self.verbose, k=self.k, m=self.m,
+                        out_step=self.out_step, kind=self.kind_smote,
+                        nn_method=self.nn_method, n_jobs=self.n_jobs,
+                        **self.kwargs)
+
+        self.tomek = TomekLinks(random_state=self.random_state,
+                                verbose=self.verbose)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -185,7 +194,7 @@ class SMOTETomek(BaseSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -208,10 +217,10 @@ class SMOTETomek(BaseSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(SMOTETomek, self).transform(X, y)
+        super(SMOTETomek, self).sample(X, y)
 
         # Transform using SMOTE
-        X, y = self.sm.transform(X, y)
+        X, y = self.sm.sample(X, y)
 
         # Fit and transform using ENN
-        return self.tomek.fit_transform(X, y)
+        return self.tomek.fit_sample(X, y)

@@ -71,7 +71,7 @@ class EnsembleSampler(BaseSampler):
         super(EnsembleSampler, self).fit(X, y)
 
     @abstractmethod
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -95,4 +95,4 @@ class EnsembleSampler(BaseSampler):
             containing the which samples have been selected.
 
         """
-        super(EnsembleSampler, self).transform(X, y)
+        super(EnsembleSampler, self).sample(X, y)

@@ -4,18 +4,18 @@ from __future__ import division
 
 from abc import ABCMeta, abstractmethod
 
+from sklearn.externals import six
+
 from ..base_sampler import BaseSampler
 
 
-class UnderSampler(BaseSampler):
+class UnderSampler(six.with_metaclass(ABCMeta, BaseSampler)):
     """Base class for under-sampling.
 
     Warning: This class should not be used directly. Use the derive classes
     instead.
 
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
@@ -73,7 +73,7 @@ class UnderSampler(BaseSampler):
         super(UnderSampler, self).fit(X, y)
 
     @abstractmethod
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -93,4 +93,4 @@ class UnderSampler(BaseSampler):
             The corresponding label of `X_resampled`
 
         """
-        super(UnderSampler, self).transform(X, y)
+        super(UnderSampler, self).sample(X, y)

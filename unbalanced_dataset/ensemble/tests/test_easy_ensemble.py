@@ -7,8 +7,10 @@ import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_warns
 
 from sklearn.datasets import make_classification
+from sklearn.utils.estimator_checks import check_estimator
 
 from unbalanced_dataset.ensemble import EasyEnsemble
 
@@ -18,6 +20,11 @@ X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
                            n_samples=5000, random_state=RND_SEED)
+
+
+def test_ee_sk_estimator():
+    """Test the sklearn estimator compatibility"""
+    check_estimator(EasyEnsemble)
 
 
 def test_ee_bad_ratio():
@@ -49,10 +56,10 @@ def test_ee_init():
     verbose = True
     ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED, verbose=verbose)
 
-    assert_equal(ee.ratio_, ratio)
+    assert_equal(ee.ratio, ratio)
     assert_equal(ee.replacement, False)
     assert_equal(ee.n_subsets, 10)
-    assert_equal(ee.rs_, RND_SEED)
+    assert_equal(ee.random_state, RND_SEED)
     assert_equal(ee.verbose, verbose)
     assert_equal(ee.min_c_, None)
     assert_equal(ee.maj_c_, None)
@@ -70,7 +77,7 @@ def test_ee_fit_single_class():
     # Resample the data
     # Create a wrong y
     y_single_class = np.zeros((X.shape[0], ))
-    assert_raises(RuntimeError, ee.fit, X, y_single_class)
+    assert_warns(RuntimeWarning, ee.fit, X, y_single_class)
 
 
 def test_ee_fit_invalid_ratio():
@@ -102,8 +109,8 @@ def test_ee_fit():
     assert_equal(ee.stats_c_[1], 4500)
 
 
-def test_transform_wt_fit():
-    """Test either if an error is raised when transform is called before
+def test_sample_wt_fit():
+    """Test either if an error is raised when sample is called before
     fitting"""
 
     # Define the parameter for the under-sampling
@@ -111,11 +118,11 @@ def test_transform_wt_fit():
 
     # Create the object
     ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
-    assert_raises(RuntimeError, ee.transform, X, Y)
+    assert_raises(RuntimeError, ee.sample, X, Y)
 
 
-def test_fit_transform_auto():
-    """Test the fit and transform routine with auto ratio."""
+def test_fit_sample_auto():
+    """Test the fit and sample routine with auto ratio."""
 
     # Define the ratio parameter
     ratio = 'auto'
@@ -125,7 +132,7 @@ def test_fit_transform_auto():
                       return_indices=True)
 
     # Get the different subset
-    X_resampled, y_resampled, idx_under = ee.fit_transform(X, Y)
+    X_resampled, y_resampled, idx_under = ee.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'ee_x.npy'))
@@ -136,8 +143,8 @@ def test_fit_transform_auto():
     assert_array_equal(idx_under, idx_gt)
 
 
-def test_fit_transform_half():
-    """Test the fit and transform routine with 0.5 ratio."""
+def test_fit_sample_half():
+    """Test the fit and sample routine with 0.5 ratio."""
 
     # Define the ratio parameter
     ratio = 0.5
@@ -146,7 +153,7 @@ def test_fit_transform_half():
     ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
 
     # Get the different subset
-    X_resampled, y_resampled = ee.fit_transform(X, Y)
+    X_resampled, y_resampled = ee.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'ee_x_05.npy'))

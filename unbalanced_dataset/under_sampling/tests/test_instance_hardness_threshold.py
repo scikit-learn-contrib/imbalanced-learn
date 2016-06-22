@@ -7,10 +7,10 @@ import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_warns
 
 from sklearn.datasets import make_classification
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.svm import SVC
+from sklearn.utils.estimator_checks import check_estimator
 
 from unbalanced_dataset.under_sampling import InstanceHardnessThreshold
 
@@ -21,7 +21,12 @@ X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
                            n_samples=5000, random_state=RND_SEED)
-ESTIMATOR = GradientBoostingClassifier()
+ESTIMATOR = 'gradient-boosting'
+
+
+def test_iht_sk_estimator():
+    """Test the sklearn estimator compatibility"""
+    check_estimator(InstanceHardnessThreshold)
 
 
 def test_iht_bad_ratio():
@@ -49,15 +54,15 @@ def test_iht_bad_ratio():
                   ratio=ratio)
 
 
-def test_iht_estimator_no_proba():
-    """Test either if an error is raised when the estimator does not have
-    predict_proba function"""
+# def test_iht_estimator_no_proba():
+#     """Test either if an error is raised when the estimator does not have
+#     predict_proba function"""
 
-    # Resample the data
-    ratio = 0.5
-    est = SVC()
-    assert_raises(ValueError, InstanceHardnessThreshold, est, ratio=ratio,
-                  random_state=RND_SEED)
+#     # Resample the data
+#     ratio = 0.5
+#     est = 'linear-svm'
+#     assert_raises(ValueError, InstanceHardnessThreshold, est, ratio=ratio,
+#                   random_state=RND_SEED)
 
 def test_iht_init():
     """Test the initialisation of the object"""
@@ -69,7 +74,8 @@ def test_iht_init():
                                     random_state=RND_SEED,
                                     verbose=verbose)
 
-    assert_equal(iht.rs_, RND_SEED)
+    assert_equal(iht.ratio, ratio)
+    assert_equal(iht.random_state, RND_SEED)
     assert_equal(iht.verbose, verbose)
     assert_equal(iht.min_c_, None)
     assert_equal(iht.maj_c_, None)
@@ -84,7 +90,7 @@ def test_iht_fit_single_class():
     # Resample the data
     # Create a wrong y
     y_single_class = np.zeros((X.shape[0], ))
-    assert_raises(RuntimeError, iht.fit, X, y_single_class)
+    assert_warns(RuntimeWarning, iht.fit, X, y_single_class)
 
 
 def test_iht_fit_invalid_ratio():
@@ -114,21 +120,21 @@ def test_iht_fit():
     assert_equal(iht.stats_c_[1], 4500)
 
 
-def test_iht_transform_wt_fit():
-    """Test either if an error is raised when transform is called before
+def test_iht_sample_wt_fit():
+    """Test either if an error is raised when sample is called before
     fitting"""
 
     # Create the object
     iht = InstanceHardnessThreshold(ESTIMATOR, random_state=RND_SEED)
-    assert_raises(RuntimeError, iht.transform, X, Y)
+    assert_raises(RuntimeError, iht.sample, X, Y)
 
 
-def test_iht_fit_transform():
-    """Test the fit transform routine"""
+def test_iht_fit_sample():
+    """Test the fit sample routine"""
 
     # Resample the data
     iht = InstanceHardnessThreshold(ESTIMATOR, random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_transform(X, Y)
+    X_resampled, y_resampled = iht.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'iht_x.npy'))
@@ -137,13 +143,13 @@ def test_iht_fit_transform():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_iht_fit_transform_with_indices():
-    """Test the fit transform routine with indices support"""
+def test_iht_fit_sample_with_indices():
+    """Test the fit sample routine with indices support"""
 
     # Resample the data
     iht = InstanceHardnessThreshold(ESTIMATOR, return_indices=True,
                                     random_state=RND_SEED)
-    X_resampled, y_resampled, idx_under = iht.fit_transform(X, Y)
+    X_resampled, y_resampled, idx_under = iht.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'iht_x.npy'))
@@ -154,14 +160,14 @@ def test_iht_fit_transform_with_indices():
     assert_array_equal(idx_under, idx_gt)
 
 
-def test_iht_fit_transform_half():
-    """Test the fit transform routine with a 0.5 ratio"""
+def test_iht_fit_sample_half():
+    """Test the fit sample routine with a 0.5 ratio"""
 
     # Resample the data
     ratio = 0.5
     iht = InstanceHardnessThreshold(ESTIMATOR, ratio=ratio,
                                     random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_transform(X, Y)
+    X_resampled, y_resampled = iht.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'iht_x_05.npy'))

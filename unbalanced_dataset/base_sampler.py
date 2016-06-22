@@ -3,25 +3,27 @@
 from __future__ import division
 from __future__ import print_function
 
+import warnings
+
 import numpy as np
 
 from abc import ABCMeta, abstractmethod
 
 from collections import Counter
 
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils import check_X_y
+from sklearn.externals import six
 
 from six import string_types
 
 
-class BaseSampler(object):
+class BaseSampler(six.with_metaclass(ABCMeta, BaseEstimator)):
     """Basic class with abstact method.
 
     Warning: This class should not be used directly. Use the derive classes
     instead.
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __init__(self, ratio='auto', random_state=None, verbose=True):
@@ -55,16 +57,16 @@ class BaseSampler(object):
             elif ratio <= 0:
                 raise ValueError('Ratio cannot be negative.')
             else:
-                self.ratio_ = ratio
+                self.ratio = ratio
         elif isinstance(ratio, string_types):
             if ratio == 'auto':
-                self.ratio_ = ratio
+                self.ratio = ratio
             else:
                 raise ValueError('Unknown string for the parameter ratio.')
         else:
             raise ValueError('Unknown parameter type for ratio.')
 
-        self.rs_ = random_state
+        self.random_state = random_state
         self.verbose = verbose
 
         # Create the member variables regarding the classes statistics
@@ -100,9 +102,13 @@ class BaseSampler(object):
         # Get all the unique elements in the target array
         uniques = np.unique(y)
 
-        # Raise an error if there is only one class
+        # # Raise an error if there is only one class
+        # if uniques.size == 1:
+        #     raise RuntimeError("Only one class detected, aborting...")
+        # Raise a warning for the moment to be compatible with BaseEstimator
         if uniques.size == 1:
-            raise RuntimeError("Only one class detected, aborting...")
+            warnings.warn('Only one class detected, something will get wrong',
+                          RuntimeWarning)
 
         # Create a dictionary containing the class statistics
         self.stats_c_ = Counter(y)
@@ -116,9 +122,9 @@ class BaseSampler(object):
                                                    self.stats_c_))
 
         # Check if the ratio provided at initialisation make sense
-        if isinstance(self.ratio_, float):
-            if self.ratio_ < (self.stats_c_[self.min_c_] /
-                              self.stats_c_[self.maj_c_]):
+        if isinstance(self.ratio, float):
+            if self.ratio < (self.stats_c_[self.min_c_] /
+                             self.stats_c_[self.maj_c_]):
                 raise RuntimeError('The ratio requested at initialisation'
                                    ' should be greater or equal than the'
                                    ' balancing ratio of the current data.')
@@ -126,7 +132,7 @@ class BaseSampler(object):
         return self
 
     @abstractmethod
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -153,7 +159,7 @@ class BaseSampler(object):
 
         return self
 
-    def fit_transform(self, X, y):
+    def fit_sample(self, X, y):
         """Fit the statistics and resample the data directly.
 
         Parameters
@@ -174,4 +180,4 @@ class BaseSampler(object):
 
         """
 
-        return self.fit(X, y).transform(X, y)
+        return self.fit(X, y).sample(X, y)

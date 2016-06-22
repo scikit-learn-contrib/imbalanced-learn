@@ -108,7 +108,7 @@ class RandomOverSampler(OverSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -132,7 +132,7 @@ class RandomOverSampler(OverSampler):
         X, y = check_X_y(X, y)
 
         # Call the parent function
-        super(RandomOverSampler, self).transform(X, y)
+        super(RandomOverSampler, self).sample(X, y)
 
         # Keep the samples from the majority class
         X_resampled = X[y == self.maj_c_]
@@ -146,15 +146,15 @@ class RandomOverSampler(OverSampler):
                 continue
 
             # Define the number of sample to create
-            if self.ratio_ == 'auto':
+            if self.ratio == 'auto':
                 num_samples = int(self.stats_c_[self.maj_c_] -
                                   self.stats_c_[key])
             else:
-                num_samples = int((self.ratio_ * self.stats_c_[self.maj_c_]) -
-                                  self.stats_c_[key])            
+                num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
+                                  self.stats_c_[key])
 
             # Pick some elements at random
-            np.random.seed(self.rs_)
+            np.random.seed(self.random_state)
             indx = np.random.randint(low=0, high=self.stats_c_[key],
                                      size=num_samples)
 
