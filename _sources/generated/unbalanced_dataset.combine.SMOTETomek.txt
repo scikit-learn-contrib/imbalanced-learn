@@ -15,8 +15,10 @@ unbalanced_dataset.combine.SMOTETomek
    
       ~SMOTETomek.__init__
       ~SMOTETomek.fit
-      ~SMOTETomek.fit_transform
-      ~SMOTETomek.transform
+      ~SMOTETomek.fit_sample
+      ~SMOTETomek.get_params
+      ~SMOTETomek.sample
+      ~SMOTETomek.set_params
    
    
 

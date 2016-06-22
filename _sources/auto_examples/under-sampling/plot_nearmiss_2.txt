@@ -58,9 +58,9 @@ An illustration of the nearmiss 1 method.
     # Fit and transform x to visualise inside a 2D feature space
     X_vis = pca.fit_transform(X)
 
-    # Apply the random under-sampling
+    # Apply Nearmiss 2
     nm2 = NearMiss(version=2)
-    X_resampled, y_resampled = nm2.fit_transform(X, y)
+    X_resampled, y_resampled = nm2.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     # Two subplots, unpack the axes array immediately
@@ -83,7 +83,7 @@ An illustration of the nearmiss 1 method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.434 seconds)
+(0 minutes 0.543 seconds)
 
 
 

@@ -161,8 +161,8 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ratio : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">        the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">        the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">        of samples in the minority class over the the number of samples</span>
 <span class="sd">        in the majority class.</span>
 
@@ -170,17 +170,17 @@
 <span class="sd">        Seed for random number generation.</span>
 
 <span class="sd">    verbose : bool, optional (default=True)</span>
-<span class="sd">        Boolean to either or not print information about the processing.</span>
+<span class="sd">        Whether or not to print information about the processing.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio_ : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">        the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">    ratio : str or float</span>
+<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">        the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">        of samples in the minority class over the the number of samples</span>
 <span class="sd">        in the majority class.</span>
 
-<span class="sd">    rs_ : int or None, optional (default=None)</span>
+<span class="sd">    random_state : int or None</span>
 <span class="sd">        Seed for random number generation.</span>
 
 <span class="sd">    min_c_ : str or int</span>
@@ -204,8 +204,8 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        ratio : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">            the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">            the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">            of samples in the minority class over the the number of samples</span>
 <span class="sd">            in the majority class.</span>
 
@@ -213,7 +213,7 @@
 <span class="sd">            Seed for random number generation.</span>
 
 <span class="sd">        verbose : bool, optional (default=True)</span>
-<span class="sd">            Boolean to either or not print information about the processing</span>
+<span class="sd">            Whether or not to print information about the processing.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -249,7 +249,7 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="RandomOverSampler.transform"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.over_sampling.RandomOverSampler.html#unbalanced_dataset.over_sampling.RandomOverSampler.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomOverSampler.sample"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.over_sampling.RandomOverSampler.html#unbalanced_dataset.over_sampling.RandomOverSampler.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -273,7 +273,7 @@
         <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
         <span class="c1"># Call the parent function</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">RandomOverSampler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RandomOverSampler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
         <span class="c1"># Keep the samples from the majority class</span>
         <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">]</span>
@@ -287,14 +287,15 @@
                 <span class="k">continue</span>
 
             <span class="c1"># Define the number of sample to create</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio_</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
-                <span class="n">num_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+                <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">]</span> <span class="o">-</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">num_samples</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">ratio_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">])</span> <span class="o">-</span>
-                               <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">])</span> <span class="o">-</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
             <span class="c1"># Pick some elements at random</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rs_</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
             <span class="n">indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
                                      <span class="n">size</span><span class="o">=</span><span class="n">num_samples</span><span class="p">)</span>
 

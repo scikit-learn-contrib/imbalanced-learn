@@ -15,9 +15,11 @@ unbalanced_dataset.under_sampling.TomekLinks
    
       ~TomekLinks.__init__
       ~TomekLinks.fit
-      ~TomekLinks.fit_transform
+      ~TomekLinks.fit_sample
+      ~TomekLinks.get_params
       ~TomekLinks.is_tomek
-      ~TomekLinks.transform
+      ~TomekLinks.sample
+      ~TomekLinks.set_params
    
    
 

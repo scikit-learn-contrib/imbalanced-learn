@@ -33,9 +33,9 @@ pca = PCA(n_components=2)
 # Fit and transform x to visualise inside a 2D feature space
 X_vis = pca.fit_transform(X)
 
-# Apply the random under-sampling
+# Apply Nearmiss 1
 nm1 = NearMiss(version=1)
-X_resampled, y_resampled = nm1.fit_transform(X, y)
+X_resampled, y_resampled = nm1.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
 # Two subplots, unpack the axes array immediately

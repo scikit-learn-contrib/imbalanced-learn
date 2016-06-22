@@ -163,14 +163,14 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    return_indices : bool, optional (default=False)</span>
-<span class="sd">        Either to return or not the indices which will be selected from</span>
-<span class="sd">        the majority class.</span>
+<span class="sd">        Whether or not to return the indices of the samples randomly</span>
+<span class="sd">        selected from the majority class.</span>
 
 <span class="sd">    random_state : int or None, optional (default=None)</span>
 <span class="sd">        Seed for random number generation.</span>
 
 <span class="sd">    verbose : bool, optional (default=True)</span>
-<span class="sd">        Boolean to either or not print information about the processing</span>
+<span class="sd">        Whether or not to print information about the processing.</span>
 
 <span class="sd">    size_ngh : int, optional (default=3)</span>
 <span class="sd">        Size of the neighbourhood to consider to compute the average</span>
@@ -185,17 +185,11 @@
 <span class="sd">        order to exclude a sample.</span>
 
 <span class="sd">    n_jobs : int, optional (default=-1)</span>
-<span class="sd">        The number of thread to open when it is possible.</span>
+<span class="sd">        The number of threads to open if possible.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio_ : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">        the dataset. Otherwise, the ratio will corresponds to the number</span>
-<span class="sd">        of samples in the minority class over the the number of samples</span>
-<span class="sd">        in the majority class.</span>
-
-<span class="sd">    rs_ : int or None, optional (default=None)</span>
+<span class="sd">    random state : int or None</span>
 <span class="sd">        Seed for random number generation.</span>
 
 <span class="sd">    min_c_ : str or int</span>
@@ -229,14 +223,14 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        return_indices : bool, optional (default=False)</span>
-<span class="sd">            Either to return or not the indices which will be selected from</span>
-<span class="sd">            the majority class.</span>
+<span class="sd">            Whether or not to return the indices of the samples randomly</span>
+<span class="sd">            selected from the majority class.</span>
 
 <span class="sd">        random_state : int or None, optional (default=None)</span>
 <span class="sd">            Seed for random number generation.</span>
 
 <span class="sd">        verbose : bool, optional (default=True)</span>
-<span class="sd">            Boolean to either or not print information about the processing</span>
+<span class="sd">            Whether or not to print information about the processing.</span>
 
 <span class="sd">        size_ngh : int, optional (default=3)</span>
 <span class="sd">            Size of the neighbourhood to consider to compute the average</span>
@@ -251,7 +245,7 @@
 <span class="sd">            order to exclude a sample.</span>
 
 <span class="sd">        n_jobs : int, optional (default=-1)</span>
-<span class="sd">            The number of thread to open when it is possible.</span>
+<span class="sd">            The number of threads to open if possible.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -295,7 +289,7 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="EditedNearestNeighbours.transform"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.EditedNearestNeighbours.html#unbalanced_dataset.under_sampling.EditedNearestNeighbours.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="EditedNearestNeighbours.sample"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.EditedNearestNeighbours.html#unbalanced_dataset.under_sampling.EditedNearestNeighbours.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -322,7 +316,7 @@
         <span class="c1"># Check the consistency of X and y</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">EditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
         <span class="c1"># Start with the minority class</span>
         <span class="n">X_min</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">]</span>

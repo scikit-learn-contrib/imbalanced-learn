@@ -158,8 +158,8 @@
 <dl class="class">
 <dt id="unbalanced_dataset.ensemble.EasyEnsemble">
 <em class="property">class </em><code class="descclassname">unbalanced_dataset.ensemble.</code><code class="descname">EasyEnsemble</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>verbose=True</em>, <em>random_state=None</em>, <em>replacement=False</em>, <em>n_subsets=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/ensemble/easy_ensemble.html#EasyEnsemble"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.ensemble.EasyEnsemble" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform under-sampling using an ensemble of random selection.</p>
-<p>This method iteratively select subset and make an ensemble of the
+<dd><p>Create an ensemble sets by iteratively applying random under-sampling.</p>
+<p>This method iteratively select a random subset and make an ensemble of the
 different sets.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -167,15 +167,15 @@ different sets.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
 <blockquote>
-<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balanced
-the dataset. Otherwise, the ratio will corresponds to the number
+<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balance
+the dataset. Otherwise, the ratio is defined as the number
 of samples in the minority class over the the number of samples
 in the majority class.</p>
 </div></blockquote>
 <p><strong>return_indices</strong> : bool, optional (default=True)</p>
 <blockquote>
-<div><p>Either to return or not the indices which will be selected from
-the majority class.</p>
+<div><p>Whether or not to return the indices of the samples randomly
+selected from the majority class.</p>
 </div></blockquote>
 <p><strong>random_state</strong> : int or None, optional (default=None)</p>
 <blockquote>
@@ -183,11 +183,11 @@ the majority class.</p>
 </div></blockquote>
 <p><strong>verbose</strong> : bool, optional (default=True)</p>
 <blockquote>
-<div><p>Boolean to either or not print information about the processing</p>
+<div><p>Whether or not to print information about the processing.</p>
 </div></blockquote>
 <p><strong>replacement</strong> : bool, optional (default=False)</p>
 <blockquote>
-<div><p>Either or not to sample randomly with replacement or not.</p>
+<div><p>Whether or not to sample randomly with replacement or not.</p>
 </div></blockquote>
 <p><strong>n_subsets</strong> : int, optional (default=10)</p>
 <blockquote class="last">
@@ -198,12 +198,12 @@ the majority class.</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>The method is described in <a class="reference internal" href="#r14" id="id1">[R14]</a>.</p>
+<p>The method is described in <a class="reference internal" href="#r18" id="id1">[R18]</a>.</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r14" rules="none">
+<table class="docutils citation" frame="void" id="r18" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R14]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> X. Y. Liu, J. Wu and Z. H. Zhou, &#8220;Exploratory Undersampling for
+<tr><td class="label">[R18]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> X. Y. Liu, J. Wu and Z. H. Zhou, &#8220;Exploratory Undersampling for
 Class-Imbalance Learning,&#8221; in IEEE Transactions on Systems, Man, and
 Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550,
 April 2009.</td></tr>
@@ -212,23 +212,23 @@ April 2009.</td></tr>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="3%" />
-<col width="97%" />
+<col width="5%" />
+<col width="95%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a href="#id3"><span class="problematic" id="id4">ratio_</span></a></td>
-<td>(str or float, optional (default=&#8217;auto&#8217;)) If &#8216;auto&#8217;, the ratio will be defined automatically to balanced the dataset. Otherwise, the ratio will corresponds to the number of samples in the minority class over the the number of samples in the majority class.</td>
+<tr class="row-odd"><td>ratio</td>
+<td>(str or float) If &#8216;auto&#8217;, the ratio will be defined automatically to balance the dataset. Otherwise, the ratio is defined as the number of samples in the minority class over the the number of samples in the majority class.</td>
 </tr>
-<tr class="row-even"><td><a href="#id5"><span class="problematic" id="id6">rs_</span></a></td>
-<td>(int or None, optional (default=None)) Seed for random number generation.</td>
+<tr class="row-even"><td>random_state</td>
+<td>(int or None) Seed for random number generation.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id7"><span class="problematic" id="id8">min_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id3"><span class="problematic" id="id4">min_c_</span></a></td>
 <td>(str or int) The identifier of the minority class.</td>
 </tr>
-<tr class="row-even"><td><a href="#id9"><span class="problematic" id="id10">max_c_</span></a></td>
+<tr class="row-even"><td><a href="#id5"><span class="problematic" id="id6">max_c_</span></a></td>
 <td>(str or int) The identifier of the majority class.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id11"><span class="problematic" id="id12">stats_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id7"><span class="problematic" id="id8">stats_c_</span></a></td>
 <td>(dict of str/int) A dictionary in which the number of occurences of each class is reported.</td>
 </tr>
 </tbody>
@@ -243,11 +243,17 @@ April 2009.</td></tr>
 <tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.fit" title="unbalanced_dataset.ensemble.EasyEnsemble.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.fit_transform" title="unbalanced_dataset.ensemble.EasyEnsemble.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.fit_sample" title="unbalanced_dataset.ensemble.EasyEnsemble.fit_sample"><code class="xref py py-obj docutils literal"><span class="pre">fit_sample</span></code></a>(X,&nbsp;y)</td>
 <td>Fit the statistics and resample the data directly.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.transform" title="unbalanced_dataset.ensemble.EasyEnsemble.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.get_params" title="unbalanced_dataset.ensemble.EasyEnsemble.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
+<td>Get parameters for this estimator.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.sample" title="unbalanced_dataset.ensemble.EasyEnsemble.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(X,&nbsp;y)</td>
 <td>Resample the dataset.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.set_params" title="unbalanced_dataset.ensemble.EasyEnsemble.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
+<td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
@@ -261,15 +267,15 @@ April 2009.</td></tr>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
 <blockquote>
-<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balanced
-the dataset. Otherwise, the ratio will corresponds to the number
+<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balance
+the dataset. Otherwise, the ratio is defined as the number
 of samples in the minority class over the the number of samples
 in the majority class.</p>
 </div></blockquote>
 <p><strong>return_indices</strong> : bool, optional (default=True)</p>
 <blockquote>
-<div><p>Either to return or not the indices which will be selected from
-the majority class.</p>
+<div><p>Whether or not to return the indices of the samples randomly
+selected from the majority class.</p>
 </div></blockquote>
 <p><strong>random_state</strong> : int or None, optional (default=None)</p>
 <blockquote>
@@ -277,11 +283,11 @@ the majority class.</p>
 </div></blockquote>
 <p><strong>verbose</strong> : bool, optional (default=True)</p>
 <blockquote>
-<div><p>Boolean to either or not print information about the processing</p>
+<div><p>Whether or not to print information about the processing.</p>
 </div></blockquote>
 <p><strong>replacement</strong> : bool, optional (default=False)</p>
 <blockquote>
-<div><p>Either or not to sample randomly with replacement or not.</p>
+<div><p>Whether or not to sample randomly with replacement or not.</p>
 </div></blockquote>
 <p><strong>n_subsets</strong> : int, optional (default=10)</p>
 <blockquote>
@@ -309,11 +315,17 @@ the majority class.</p>
 <tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.fit" title="unbalanced_dataset.ensemble.EasyEnsemble.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.fit_transform" title="unbalanced_dataset.ensemble.EasyEnsemble.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.fit_sample" title="unbalanced_dataset.ensemble.EasyEnsemble.fit_sample"><code class="xref py py-obj docutils literal"><span class="pre">fit_sample</span></code></a>(X,&nbsp;y)</td>
 <td>Fit the statistics and resample the data directly.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.transform" title="unbalanced_dataset.ensemble.EasyEnsemble.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.get_params" title="unbalanced_dataset.ensemble.EasyEnsemble.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
+<td>Get parameters for this estimator.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.sample" title="unbalanced_dataset.ensemble.EasyEnsemble.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(X,&nbsp;y)</td>
 <td>Resample the dataset.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.ensemble.EasyEnsemble.set_params" title="unbalanced_dataset.ensemble.EasyEnsemble.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
+<td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
@@ -346,8 +358,8 @@ the majority class.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="unbalanced_dataset.ensemble.EasyEnsemble.fit_transform">
-<code class="descname">fit_transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.ensemble.EasyEnsemble.fit_transform" title="Permalink to this definition">¶</a></dt>
+<dt id="unbalanced_dataset.ensemble.EasyEnsemble.fit_sample">
+<code class="descname">fit_sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.ensemble.EasyEnsemble.fit_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit the statistics and resample the data directly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -378,8 +390,33 @@ the majority class.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="unbalanced_dataset.ensemble.EasyEnsemble.transform">
-<code class="descname">transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/ensemble/easy_ensemble.html#EasyEnsemble.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.ensemble.EasyEnsemble.transform" title="Permalink to this definition">¶</a></dt>
+<dt id="unbalanced_dataset.ensemble.EasyEnsemble.get_params">
+<code class="descname">get_params</code><span class="sig-paren">(</span><em>deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.ensemble.EasyEnsemble.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>deep: boolean, optional</strong></p>
+<blockquote>
+<div><p>If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>params</strong> : mapping of string to any</p>
+<blockquote class="last">
+<div><p>Parameter names mapped to their values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="unbalanced_dataset.ensemble.EasyEnsemble.sample">
+<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/ensemble/easy_ensemble.html#EasyEnsemble.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.ensemble.EasyEnsemble.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -409,6 +446,24 @@ the majority class.</p>
 containing the which samples have been selected.</p>
 </div></blockquote>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="unbalanced_dataset.ensemble.EasyEnsemble.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.ensemble.EasyEnsemble.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as pipelines). The former have parameters of the form
+<code class="docutils literal"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it&#8217;s possible to update each
+component of a nested object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">self</td>
 </tr>
 </tbody>
 </table>

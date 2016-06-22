@@ -3,7 +3,7 @@
 SMOTE + ENN
 ===========
 
-An illustration of the random SMOTE + ENN method.
+An illustration of the SMOTE + ENN method.
 
 """
 
@@ -33,9 +33,9 @@ pca = PCA(n_components=2)
 # Fit and transform x to visualise inside a 2D feature space
 X_vis = pca.fit_transform(X)
 
-# Apply the random under-sampling
+# Apply SMOTE + ENN
 sm = SMOTEENN()
-X_resampled, y_resampled = sm.fit_transform(X, y)
+X_resampled, y_resampled = sm.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
 # Two subplots, unpack the axes array immediately

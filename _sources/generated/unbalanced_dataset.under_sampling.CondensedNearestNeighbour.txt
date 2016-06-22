@@ -15,8 +15,10 @@ unbalanced_dataset.under_sampling.CondensedNearestNeighbour
    
       ~CondensedNearestNeighbour.__init__
       ~CondensedNearestNeighbour.fit
-      ~CondensedNearestNeighbour.fit_transform
-      ~CondensedNearestNeighbour.transform
+      ~CondensedNearestNeighbour.fit_sample
+      ~CondensedNearestNeighbour.get_params
+      ~CondensedNearestNeighbour.sample
+      ~CondensedNearestNeighbour.set_params
    
    
 

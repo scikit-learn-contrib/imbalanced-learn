@@ -34,9 +34,9 @@ pca = PCA(n_components=2)
 # Fit and transform x to visualise inside a 2D feature space
 X_vis = pca.fit_transform(X)
 
-# Apply the random under-sampling
+# Apply Easy Ensemble
 ee = EasyEnsemble()
-X_resampled, y_resampled = ee.fit_transform(X, y)
+X_resampled, y_resampled = ee.fit_sample(X, y)
 X_res_vis = []
 for X_res in X_resampled:
     X_res_vis.append(pca.transform(X_res))

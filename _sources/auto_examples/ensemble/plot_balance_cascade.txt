@@ -7,7 +7,7 @@
 Balance cascade
 ===============
 
-An illustration of the balance cascade method.
+An illustration of the balance cascade ensemble method.
 
 
 
@@ -21,24 +21,24 @@ An illustration of the balance cascade method.
  Out::
 
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
-    Elements misclassified: [4254 2061 3296  124 4144 1464 2627]
+    Elements misclassified: [1773  917 2485 4254 2815 4255 4096 3415]
     Creation of the subset #0
-    Elements misclassified: [4254  124 1464 2627  371 2237 2751  100 1858]
+    Elements misclassified: [4254 2815 4096  382  371   33  861 2683  416 3296  364]
     Creation of the subset #1
-    Elements misclassified: [4254  124 2627 2175 4007 2815 2317]
+    Elements misclassified: [4254  861 2683  416 1003 4144  745]
     Creation of the subset #2
-    Elements misclassified: [4254  124 2627 2175 2815 2317 2149 2763 1562 1138  657 3020  192]
+    Elements misclassified: [4254  861 2683  416 1003  745 3716 2105 3843]
     Creation of the subset #3
-    Elements misclassified: [4254  124 2627 2175 2815 2317 1138 3020  192 4065 3014  367 3273 3716]
+    Elements misclassified: [4254  861 2683  416 3716 1069 3820 2699 2194 2745 2149  182 3662]
     Creation of the subset #4
-    Elements misclassified: [4254  124 2627 2175 3020  192 3014   53 2683  382 1032  182  727]
+    Elements misclassified: [4254  861  416 3716 4160 2627 2661  111 2237  192  601]
     Creation of the subset #5
-    Elements misclassified: [4254  124 2627 2175  192  382 1032  182  727  861  200  917 2259 3787 3133
-     1670]
+    Elements misclassified: [4254  416 2627 2661 2237  192  601 1032 4300 1866 4243   53 4424 2150]
     Creation of the subset #6
-    Elements misclassified: [4254  124 2627 2175 1032  727  200  917 3787 2930 3818]
+    Elements misclassified: [4254  416 2627 2237  192 1032   53 2150 1425 2175 3818 2402]
     Creation of the subset #7
-    Elements misclassified: [4254  124 2627 1032  917 3818 1769 3389 2745 1979  898 4255 3216 2402 2083]
+    Elements misclassified: [4254  416 2627 2237  192 1032 2175 3818 2402 3389 2509 1138  200 2361 3273
+     2763]
     Creation of the subset #8
     Creation of the subset #9
     Not enough samples to continue creating subsets
@@ -79,9 +79,9 @@ An illustration of the balance cascade method.
     # Fit and transform x to visualise inside a 2D feature space
     X_vis = pca.fit_transform(X)
 
-    # Apply the random under-sampling
+    # Apply Balance Cascade method
     bc = BalanceCascade()
-    X_resampled, y_resampled = bc.fit_transform(X, y)
+    X_resampled, y_resampled = bc.fit_sample(X, y)
     X_res_vis = []
     for X_res in X_resampled:
         X_res_vis.append(pca.transform(X_res))
@@ -106,7 +106,7 @@ An illustration of the balance cascade method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.363 seconds)
+(0 minutes 0.373 seconds)
 
 
 

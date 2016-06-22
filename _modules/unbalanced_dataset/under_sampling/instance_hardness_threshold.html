@@ -160,40 +160,43 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    estimator : sklearn classifier</span>
+<span class="sd">    estimator : str, optional (default=&#39;linear-svm&#39;)</span>
 <span class="sd">        Classifier to be used in to estimate instance hardness of the samples.</span>
+<span class="sd">        The choices are the following: &#39;knn&#39;,</span>
+<span class="sd">        &#39;decision-tree&#39;, &#39;random-forest&#39;, &#39;adaboost&#39;, &#39;gradient-boosting&#39;</span>
+<span class="sd">        and &#39;linear-svm&#39;.</span>
 
 <span class="sd">    ratio : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">            the dataset. Otherwise, the ratio will corresponds to the number</span>
-<span class="sd">            of samples in the minority class over the the number of samples</span>
-<span class="sd">            in the majority class.</span>
-
-<span class="sd">    cv : int, optional (default=5)</span>
-<span class="sd">        Number of folds to be used when estimating samples&#39; instance hardness.</span>
+<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">        the dataset. Otherwise, the ratio is defined as the number</span>
+<span class="sd">        of samples in the minority class over the the number of samples</span>
+<span class="sd">        in the majority class.</span>
 
 <span class="sd">    return_indices : bool, optional (default=False)</span>
-<span class="sd">        Either to return or not the indices which will be selected from</span>
-<span class="sd">        the majority class.</span>
+<span class="sd">        Whether or not to return the indices of the samples randomly</span>
+<span class="sd">        selected from the majority class.</span>
 
 <span class="sd">    random_state : int or None, optional (default=None)</span>
 <span class="sd">        Seed for random number generation.</span>
 
 <span class="sd">    verbose : bool, optional (default=True)</span>
-<span class="sd">        Boolean to either or not print information about the processing</span>
+<span class="sd">        Whether or not to print information about the processing.</span>
+
+<span class="sd">    cv : int, optional (default=5)</span>
+<span class="sd">        Number of folds to be used when estimating samples&#39; instance hardness.</span>
 
 <span class="sd">    n_jobs : int, optional (default=-1)</span>
-<span class="sd">        The number of thread to open when it is possible.</span>
+<span class="sd">        The number of threads to open if possible.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio_ : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">        the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">    ratio : str or float</span>
+<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">        the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">        of samples in the minority class over the the number of samples</span>
 <span class="sd">        in the majority class.</span>
 
-<span class="sd">    rs_ : int or None, optional (default=None)</span>
+<span class="sd">    random state : int or None</span>
 <span class="sd">        Seed for random number generation.</span>
 
 <span class="sd">    min_c_ : str or int</span>
@@ -205,9 +208,6 @@
 <span class="sd">    stats_c_ : dict of str/int : int</span>
 <span class="sd">        A dictionary in which the number of occurences of each class is</span>
 <span class="sd">        reported.</span>
-
-<span class="sd">    estimator_ : sklearn classifier</span>
-<span class="sd">        Classifier  used in to estimate instance hardness of the samples.</span>
 
 <span class="sd">    cv : int, optional (default=5)</span>
 <span class="sd">        Number of folds used when estimating samples&#39; instance hardness.</span>
@@ -226,38 +226,41 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="InstanceHardnessThreshold.__init__"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.InstanceHardnessThreshold.html#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                 <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="InstanceHardnessThreshold.__init__"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.InstanceHardnessThreshold.html#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="s1">&#39;linear-svm&#39;</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                 <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialisation of Instance Hardness Threshold object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        estimator : sklearn classifier</span>
-<span class="sd">            Classifier to be used in to estimate instance hardness of the</span>
-<span class="sd">            samples.</span>
+<span class="sd">        estimator : str, optional (default=&#39;linear-svm&#39;)</span>
+<span class="sd">            Classifier to be used in to estimate instance hardness of</span>
+<span class="sd">            the samples. The choices are the following: &#39;knn&#39;,</span>
+<span class="sd">            &#39;decision-tree&#39;, &#39;random-forest&#39;, &#39;adaboost&#39;, &#39;gradient-boosting&#39;</span>
+<span class="sd">            and &#39;linear-svm&#39;.</span>
 
 <span class="sd">        ratio : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">            the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">            the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">            of samples in the minority class over the the number of samples</span>
 <span class="sd">            in the majority class.</span>
 
-<span class="sd">        cv : int, optional (default=5)</span>
-<span class="sd">            Number of folds to be used when estimating samples&#39; instance</span>
-<span class="sd">            hardness.</span>
-
 <span class="sd">        return_indices : bool, optional (default=False)</span>
-<span class="sd">            Either to return or not the indices which will be selected from</span>
-<span class="sd">            the majority class.</span>
+<span class="sd">            Whether or not to return the indices of the samples randomly</span>
+<span class="sd">            selected from the majority class.</span>
 
 <span class="sd">        random_state : int or None, optional (default=None)</span>
 <span class="sd">            Seed for random number generation.</span>
 
 <span class="sd">        verbose : bool, optional (default=True)</span>
-<span class="sd">            Boolean to either or not print information about the processing</span>
+<span class="sd">            Whether or not to print information about the processing.</span>
+
+<span class="sd">        cv : int, optional (default=5)</span>
+<span class="sd">            Number of folds to be used when estimating samples&#39; instance</span>
+<span class="sd">            hardness.</span>
 
 <span class="sd">        n_jobs : int, optional (default=-1)</span>
-<span class="sd">            The number of thread to open when it is possible.</span>
+<span class="sd">            The number of threads to open if possible.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -270,11 +273,14 @@
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="s1">&#39;predict_proba&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Estimator does not have predict_proba method.&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">estimator_</span> <span class="o">=</span> <span class="n">estimator</span>
+        <span class="c1"># if not hasattr(estimator, &#39;predict_proba&#39;):</span>
+        <span class="c1">#     raise ValueError(&#39;Estimator does not have predict_proba method.&#39;)</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     self.estimator = estimator</span>
 
+        <span class="c1"># Define the estimator to use</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">=</span> <span class="n">estimator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">cv</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span></div>
 
@@ -302,7 +308,7 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="InstanceHardnessThreshold.transform"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.InstanceHardnessThreshold.html#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="InstanceHardnessThreshold.sample"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.InstanceHardnessThreshold.html#unbalanced_dataset.under_sampling.InstanceHardnessThreshold.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -329,10 +335,45 @@
         <span class="c1"># Check the consistency of X and y</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">InstanceHardnessThreshold</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">InstanceHardnessThreshold</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
+        <span class="c1"># Select the appropriate classifier</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">==</span> <span class="s1">&#39;knn&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
+            <span class="n">estimator</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span>
+                <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">==</span> <span class="s1">&#39;decision-tree&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+            <span class="n">estimator</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span>
+                <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">==</span> <span class="s1">&#39;random-forest&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+            <span class="n">estimator</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span>
+                <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">==</span> <span class="s1">&#39;adaboost&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">AdaBoostClassifier</span>
+            <span class="n">estimator</span> <span class="o">=</span> <span class="n">AdaBoostClassifier</span><span class="p">(</span>
+                <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">==</span> <span class="s1">&#39;gradient-boosting&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingClassifier</span>
+            <span class="n">estimator</span> <span class="o">=</span> <span class="n">GradientBoostingClassifier</span><span class="p">(</span>
+                <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">==</span> <span class="s1">&#39;linear-svm&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
+            <span class="n">estimator</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">probability</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                            <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;UnbalancedData.BalanceCascade: classifier &#39;</span>
+                             <span class="s1">&#39;not yet supported.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Create the different folds</span>
         <span class="n">skf</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                              <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rs_</span><span class="p">)</span>
+                              <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
 
         <span class="n">probabilities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
@@ -340,27 +381,24 @@
             <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">train_index</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">test_index</span><span class="p">]</span>
             <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">train_index</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">test_index</span><span class="p">]</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">estimator_</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+            <span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 
-            <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator_</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-            <span class="n">classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator_</span><span class="o">.</span><span class="n">classes_</span>
+            <span class="n">probs</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+            <span class="n">classes</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">classes_</span>
             <span class="n">probabilities</span><span class="p">[</span><span class="n">test_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">probs</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">classes</span> <span class="o">==</span> <span class="n">c</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
                 <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y_test</span><span class="p">)]</span>
 
-
         <span class="c1"># Compute the number of cluster needed</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio_</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
             <span class="n">num_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio_</span><span class="p">)</span>
+            <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">)</span>
 
         <span class="c1"># Find the percentile corresponding to the top num_samples</span>
-        <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">probabilities</span><span class="p">[</span><span class="n">y</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">],</span>
-                                  <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="p">(</span><span class="n">num_samples</span> <span class="o">/</span>
-                                         <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">]))</span>
-                                  <span class="o">*</span> <span class="mf">100.</span><span class="p">)</span>
-
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span>
+            <span class="n">probabilities</span><span class="p">[</span><span class="n">y</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">],</span>
+            <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="p">(</span><span class="n">num_samples</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">]))</span> <span class="o">*</span> <span class="mf">100.</span><span class="p">)</span>
 
         <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">probabilities</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">)</span>
 

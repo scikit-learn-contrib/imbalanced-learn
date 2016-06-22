@@ -15,8 +15,10 @@ unbalanced_dataset.under_sampling.ClusterCentroids
    
       ~ClusterCentroids.__init__
       ~ClusterCentroids.fit
-      ~ClusterCentroids.fit_transform
-      ~ClusterCentroids.transform
+      ~ClusterCentroids.fit_sample
+      ~ClusterCentroids.get_params
+      ~ClusterCentroids.sample
+      ~ClusterCentroids.set_params
    
    
 

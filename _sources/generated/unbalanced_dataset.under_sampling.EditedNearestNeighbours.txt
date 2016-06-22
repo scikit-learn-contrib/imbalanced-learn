@@ -15,8 +15,10 @@ unbalanced_dataset.under_sampling.EditedNearestNeighbours
    
       ~EditedNearestNeighbours.__init__
       ~EditedNearestNeighbours.fit
-      ~EditedNearestNeighbours.fit_transform
-      ~EditedNearestNeighbours.transform
+      ~EditedNearestNeighbours.fit_sample
+      ~EditedNearestNeighbours.get_params
+      ~EditedNearestNeighbours.sample
+      ~EditedNearestNeighbours.set_params
    
    
 

@@ -15,8 +15,10 @@ unbalanced_dataset.under_sampling.NeighbourhoodCleaningRule
    
       ~NeighbourhoodCleaningRule.__init__
       ~NeighbourhoodCleaningRule.fit
-      ~NeighbourhoodCleaningRule.fit_transform
-      ~NeighbourhoodCleaningRule.transform
+      ~NeighbourhoodCleaningRule.fit_sample
+      ~NeighbourhoodCleaningRule.get_params
+      ~NeighbourhoodCleaningRule.sample
+      ~NeighbourhoodCleaningRule.set_params
    
    
 

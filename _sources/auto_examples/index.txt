@@ -10,14 +10,14 @@ General-purpose and introductory examples for the unbalanced_dataset.
 
 .. _combine_examples:
 
-Example using combine class methods
-===================================
+Examples using combine class methods
+====================================
 
-Combine examples.
+Combine methods mixed over- and under-sampling methods. Generally SMOTE is used for over-sampling while some cleaning methods (i.e., ENN and Tomek links) are used to under-sample.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE + ENN method.">
+    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the SMOTE + ENN method.">
 
 .. only:: html
 
@@ -37,7 +37,7 @@ Combine examples.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE + Tomek method.">
+    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the SMOTE + Tomek method.">
 
 .. only:: html
 
@@ -61,9 +61,11 @@ Combine examples.
 .. _ensemble_examples:
 
 Example using ensemble class methods
-===================================
+====================================
 
-Ensemble examples.
+Under-sampling methods implies that samples of the majority class are lost during the balancing procedure.
+Ensemble methods offer an alternative to use most of the samples.
+In fact, an ensemble of balanced sets is created and used to later train any classifier.
 
 .. raw:: html
 
@@ -87,7 +89,7 @@ Ensemble examples.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the balance cascade method.">
+    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the balance cascade ensemble method.">
 
 .. only:: html
 
@@ -113,7 +115,7 @@ Ensemble examples.
 Example using over-sampling class methods
 =========================================
 
-Over-sampling examples.
+Data balancing can be performed by over-sampling such that new samples are generated in the minority class to reach a given balancing ratio.
 
 .. raw:: html
 
@@ -223,27 +225,8 @@ Over-sampling examples.
 Example using under-sampling class methods
 ==========================================
 
-Under-sampling examples.
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the Tomek links method.">
-
-.. only:: html
-
-    .. figure:: /auto_examples/under-sampling/images/thumb/sphx_glr_plot_tomek_links_thumb.png
-
-        :ref:`sphx_glr_auto_examples_under-sampling_plot_tomek_links.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/under-sampling/plot_tomek_links
+Under-sampling refers to the process of reducing the number of samples in the majority classes.
+The implemented methods can be categorized into 2 groups: (i) fixed under-sampling and (ii) cleaning under-sampling.
 
 .. raw:: html
 
@@ -304,6 +287,26 @@ Under-sampling examples.
    :hidden:
 
    /auto_examples/under-sampling/plot_nearmiss_3
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the Tomek links method.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/under-sampling/images/thumb/sphx_glr_plot_tomek_links_thumb.png
+
+        :ref:`sphx_glr_auto_examples_under-sampling_plot_tomek_links.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/under-sampling/plot_tomek_links
 
 .. raw:: html
 
@@ -387,26 +390,6 @@ Under-sampling examples.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the condensed nearest-neighbour method.">
-
-.. only:: html
-
-    .. figure:: /auto_examples/under-sampling/images/thumb/sphx_glr_plot_condensed_nearest_neighbour_thumb.png
-
-        :ref:`sphx_glr_auto_examples_under-sampling_plot_condensed_nearest_neighbour.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/under-sampling/plot_condensed_nearest_neighbour
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the neighbourhood cleaning rule method.">
 
 .. only:: html
@@ -424,6 +407,26 @@ Under-sampling examples.
    :hidden:
 
    /auto_examples/under-sampling/plot_neighbourhood_cleaning_rule
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the condensed nearest-neighbour method.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/under-sampling/images/thumb/sphx_glr_plot_condensed_nearest_neighbour_thumb.png
+
+        :ref:`sphx_glr_auto_examples_under-sampling_plot_condensed_nearest_neighbour.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/under-sampling/plot_condensed_nearest_neighbour
 
 .. raw:: html
 

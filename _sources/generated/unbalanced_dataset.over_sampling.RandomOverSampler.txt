@@ -15,8 +15,10 @@ unbalanced_dataset.over_sampling.RandomOverSampler
    
       ~RandomOverSampler.__init__
       ~RandomOverSampler.fit
-      ~RandomOverSampler.fit_transform
-      ~RandomOverSampler.transform
+      ~RandomOverSampler.fit_sample
+      ~RandomOverSampler.get_params
+      ~RandomOverSampler.sample
+      ~RandomOverSampler.set_params
    
    
 

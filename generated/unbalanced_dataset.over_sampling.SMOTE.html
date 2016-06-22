@@ -160,7 +160,7 @@
 <em class="property">class </em><code class="descclassname">unbalanced_dataset.over_sampling.</code><code class="descname">SMOTE</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>k=5</em>, <em>m=10</em>, <em>out_step=0.5</em>, <em>kind='regular'</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/over_sampling/smote.html#SMOTE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.over_sampling.SMOTE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to perform over-sampling using SMOTE.</p>
 <p>This object is an implementation of SMOTE - Synthetic Minority
-Over-sampling Technique, and the variations Borderline SMOTE 1, 2 and
+Over-sampling Technique, and the variants Borderline SMOTE 1, 2 and
 SVM-SMOTE.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -168,8 +168,8 @@ SVM-SMOTE.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
 <blockquote>
-<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balanced
-the dataset. Otherwise, the ratio will corresponds to the number
+<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balance
+the dataset. Otherwise, the ratio is defined as the number
 of samples in the minority class over the the number of samples
 in the majority class.</p>
 </div></blockquote>
@@ -179,7 +179,7 @@ in the majority class.</p>
 </div></blockquote>
 <p><strong>verbose</strong> : bool, optional (default=True)</p>
 <blockquote>
-<div><p>Boolean to either or not print information about the processing.</p>
+<div><p>Whether or not to print information about the processing.</p>
 </div></blockquote>
 <p><strong>k</strong> : int, optional (default=5)</p>
 <blockquote>
@@ -197,37 +197,37 @@ is in danger.</p>
 <p><strong>kind</strong> : str, optional (default=&#8217;regular&#8217;)</p>
 <blockquote class="last">
 <div><p>The type of SMOTE algorithm to use one of the following options:
-&#8216;regular&#8217;, &#8216;borderline1&#8217;, &#8216;borderline2&#8217;, &#8216;svm&#8217;</p>
+&#8216;regular&#8217;, &#8216;borderline1&#8217;, &#8216;borderline2&#8217;, &#8216;svm&#8217;.</p>
 </div></blockquote>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>See the original papers: <a class="reference internal" href="#r14" id="id1">[R14]</a>, <a class="reference internal" href="#r15" id="id2">[R15]</a>, <a class="reference internal" href="#r16" id="id3">[R16]</a> for more details.</p>
+<p>See the original papers: <a class="reference internal" href="#r19" id="id1">[R19]</a>, <a class="reference internal" href="#r20" id="id2">[R20]</a>, <a class="reference internal" href="#r21" id="id3">[R21]</a> for more details.</p>
 <p>It does not support multiple classes automatically, but can be called
 multiple times.</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r14" rules="none">
+<table class="docutils citation" frame="void" id="r19" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R14]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, &#8220;SMOTE:
+<tr><td class="label">[R19]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, &#8220;SMOTE:
 synthetic minority over-sampling technique,&#8221; Journal of artificial
 intelligence research, 321-357, 2002.</td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="r15" rules="none">
+<table class="docutils citation" frame="void" id="r20" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R15]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id5">2</a>)</em> H. Han, W. Wen-Yuan, M. Bing-Huan, &#8220;Borderline-SMOTE: a new
+<tr><td class="label">[R20]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id5">2</a>)</em> H. Han, W. Wen-Yuan, M. Bing-Huan, &#8220;Borderline-SMOTE: a new
 over-sampling method in imbalanced data sets learning,&#8221; Advances in
 intelligent computing, 878-887, 2005.</td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="r16" rules="none">
+<table class="docutils citation" frame="void" id="r21" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R16]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id6">2</a>)</em> H. M. Nguyen, E. W. Cooper, K. Kamei, &#8220;Borderline over-sampling for
+<tr><td class="label">[R21]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id6">2</a>)</em> H. M. Nguyen, E. W. Cooper, K. Kamei, &#8220;Borderline over-sampling for
 imbalanced data classification,&#8221; International Journal of Knowledge
 Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.</td></tr>
 </tbody>
@@ -235,23 +235,23 @@ Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.</td></tr>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="3%" />
-<col width="97%" />
+<col width="5%" />
+<col width="95%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a href="#id7"><span class="problematic" id="id8">ratio_</span></a></td>
-<td>(str or float, optional (default=&#8217;auto&#8217;)) If &#8216;auto&#8217;, the ratio will be defined automatically to balanced the dataset. Otherwise, the ratio will corresponds to the number of samples in the minority class over the the number of samples in the majority class.</td>
+<tr class="row-odd"><td>ratio</td>
+<td>(str or float) If &#8216;auto&#8217;, the ratio will be defined automatically to balance the dataset. Otherwise, the ratio is defined as the number of samples in the minority class over the the number of samples in the majority class.</td>
 </tr>
-<tr class="row-even"><td><a href="#id9"><span class="problematic" id="id10">rs_</span></a></td>
-<td>(int or None, optional (default=None)) Seed for random number generation.</td>
+<tr class="row-even"><td>random_state</td>
+<td>(int or None) Seed for random number generation.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id11"><span class="problematic" id="id12">min_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id7"><span class="problematic" id="id8">min_c_</span></a></td>
 <td>(str or int) The identifier of the minority class.</td>
 </tr>
-<tr class="row-even"><td><a href="#id13"><span class="problematic" id="id14">max_c_</span></a></td>
+<tr class="row-even"><td><a href="#id9"><span class="problematic" id="id10">max_c_</span></a></td>
 <td>(str or int) The identifier of the majority class.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id15"><span class="problematic" id="id16">stats_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id11"><span class="problematic" id="id12">stats_c_</span></a></td>
 <td>(dict of str/int) A dictionary in which the number of occurences of each class is reported.</td>
 </tr>
 </tbody>
@@ -266,11 +266,17 @@ Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.</td></tr>
 <tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.fit" title="unbalanced_dataset.over_sampling.SMOTE.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.fit_transform" title="unbalanced_dataset.over_sampling.SMOTE.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.fit_sample" title="unbalanced_dataset.over_sampling.SMOTE.fit_sample"><code class="xref py py-obj docutils literal"><span class="pre">fit_sample</span></code></a>(X,&nbsp;y)</td>
 <td>Fit the statistics and resample the data directly.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.transform" title="unbalanced_dataset.over_sampling.SMOTE.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.get_params" title="unbalanced_dataset.over_sampling.SMOTE.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
+<td>Get parameters for this estimator.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.sample" title="unbalanced_dataset.over_sampling.SMOTE.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(X,&nbsp;y)</td>
 <td>Resample the dataset.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.set_params" title="unbalanced_dataset.over_sampling.SMOTE.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
+<td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
@@ -284,10 +290,10 @@ Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.</td></tr>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
 <blockquote>
-<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balanced
-the dataset. Otherwise, the ratio will corresponds to the
-number of samples in the minority class over the the number of
-samples in the majority class.</p>
+<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balance
+the dataset. Otherwise, the ratio is defined as the number
+of samples in the minority class over the the number of samples
+in the majority class.</p>
 </div></blockquote>
 <p><strong>random_state</strong> : int or None, optional (default=None)</p>
 <blockquote>
@@ -295,8 +301,7 @@ samples in the majority class.</p>
 </div></blockquote>
 <p><strong>verbose</strong> : bool, optional (default=True)</p>
 <blockquote>
-<div><p>Boolean to either or not print information about the
-processing.</p>
+<div><p>Whether or not to print information about the processing.</p>
 </div></blockquote>
 <p><strong>k</strong> : int, optional (default=5)</p>
 <blockquote>
@@ -315,7 +320,7 @@ sample is in danger.</p>
 <p><strong>kind</strong> : str, optional (default=&#8217;regular&#8217;)</p>
 <blockquote>
 <div><p>The type of SMOTE algorithm to use one of the following
-options: &#8216;regular&#8217;, &#8216;borderline1&#8217;, &#8216;borderline2&#8217;, &#8216;svm&#8217;</p>
+options: &#8216;regular&#8217;, &#8216;borderline1&#8217;, &#8216;borderline2&#8217;, &#8216;svm&#8217;.</p>
 </div></blockquote>
 <p><strong>n_jobs</strong> : int, optional (default=-1)</p>
 <blockquote class="last">
@@ -340,11 +345,17 @@ options: &#8216;regular&#8217;, &#8216;borderline1&#8217;, &#8216;borderline2&#8
 <tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.fit" title="unbalanced_dataset.over_sampling.SMOTE.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.fit_transform" title="unbalanced_dataset.over_sampling.SMOTE.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.fit_sample" title="unbalanced_dataset.over_sampling.SMOTE.fit_sample"><code class="xref py py-obj docutils literal"><span class="pre">fit_sample</span></code></a>(X,&nbsp;y)</td>
 <td>Fit the statistics and resample the data directly.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.transform" title="unbalanced_dataset.over_sampling.SMOTE.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.get_params" title="unbalanced_dataset.over_sampling.SMOTE.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
+<td>Get parameters for this estimator.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.sample" title="unbalanced_dataset.over_sampling.SMOTE.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(X,&nbsp;y)</td>
 <td>Resample the dataset.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.over_sampling.SMOTE.set_params" title="unbalanced_dataset.over_sampling.SMOTE.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
+<td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
@@ -377,8 +388,8 @@ options: &#8216;regular&#8217;, &#8216;borderline1&#8217;, &#8216;borderline2&#8
 </dd></dl>
 
 <dl class="method">
-<dt id="unbalanced_dataset.over_sampling.SMOTE.fit_transform">
-<code class="descname">fit_transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.over_sampling.SMOTE.fit_transform" title="Permalink to this definition">¶</a></dt>
+<dt id="unbalanced_dataset.over_sampling.SMOTE.fit_sample">
+<code class="descname">fit_sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.over_sampling.SMOTE.fit_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit the statistics and resample the data directly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -409,8 +420,33 @@ options: &#8216;regular&#8217;, &#8216;borderline1&#8217;, &#8216;borderline2&#8
 </dd></dl>
 
 <dl class="method">
-<dt id="unbalanced_dataset.over_sampling.SMOTE.transform">
-<code class="descname">transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/over_sampling/smote.html#SMOTE.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.over_sampling.SMOTE.transform" title="Permalink to this definition">¶</a></dt>
+<dt id="unbalanced_dataset.over_sampling.SMOTE.get_params">
+<code class="descname">get_params</code><span class="sig-paren">(</span><em>deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.over_sampling.SMOTE.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>deep: boolean, optional</strong></p>
+<blockquote>
+<div><p>If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>params</strong> : mapping of string to any</p>
+<blockquote class="last">
+<div><p>Parameter names mapped to their values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="unbalanced_dataset.over_sampling.SMOTE.sample">
+<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/over_sampling/smote.html#SMOTE.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.over_sampling.SMOTE.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -435,6 +471,24 @@ options: &#8216;regular&#8217;, &#8216;borderline1&#8217;, &#8216;borderline2&#8
 <div><p>The corresponding label of <cite>X_resampled</cite></p>
 </div></blockquote>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="unbalanced_dataset.over_sampling.SMOTE.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.over_sampling.SMOTE.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as pipelines). The former have parameters of the form
+<code class="docutils literal"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it&#8217;s possible to update each
+component of a nested object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">self</td>
 </tr>
 </tbody>
 </table>

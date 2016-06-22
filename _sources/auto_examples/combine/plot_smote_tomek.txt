@@ -7,7 +7,7 @@
 SMOTE + Tomek
 =============
 
-An illustration of the random SMOTE + Tomek method.
+An illustration of the SMOTE + Tomek method.
 
 
 
@@ -66,9 +66,9 @@ An illustration of the random SMOTE + Tomek method.
     # Fit and transform x to visualise inside a 2D feature space
     X_vis = pca.fit_transform(X)
 
-    # Apply the random under-sampling
+    # Apply SMOTE + Tomek links
     sm = SMOTETomek()
-    X_resampled, y_resampled = sm.fit_transform(X, y)
+    X_resampled, y_resampled = sm.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     # Two subplots, unpack the axes array immediately
@@ -91,7 +91,7 @@ An illustration of the random SMOTE + Tomek method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.417 seconds)
+(0 minutes 1.452 seconds)
 
 
 

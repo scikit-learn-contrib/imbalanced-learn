@@ -15,8 +15,10 @@ unbalanced_dataset.under_sampling.OneSidedSelection
    
       ~OneSidedSelection.__init__
       ~OneSidedSelection.fit
-      ~OneSidedSelection.fit_transform
-      ~OneSidedSelection.transform
+      ~OneSidedSelection.fit_sample
+      ~OneSidedSelection.get_params
+      ~OneSidedSelection.sample
+      ~OneSidedSelection.set_params
    
    
 

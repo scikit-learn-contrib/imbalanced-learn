@@ -23,7 +23,7 @@ An illustration of the one-sided selection method.
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
     Looking for majority Tomek links...
     16 Tomek links found.
-    Under-sampling performed: Counter({1: 4339, 0: 500})
+    Under-sampling performed: Counter({1: 4052, 0: 500})
 
 
 
@@ -60,9 +60,9 @@ An illustration of the one-sided selection method.
     # Fit and transform x to visualise inside a 2D feature space
     X_vis = pca.fit_transform(X)
 
-    # Apply the random under-sampling
+    # Apply One-Sided Selection
     oss = OneSidedSelection()
-    X_resampled, y_resampled = oss.fit_transform(X, y)
+    X_resampled, y_resampled = oss.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     # Two subplots, unpack the axes array immediately
@@ -85,7 +85,7 @@ An illustration of the one-sided selection method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.985 seconds)
+(0 minutes 1.058 seconds)
 
 
 

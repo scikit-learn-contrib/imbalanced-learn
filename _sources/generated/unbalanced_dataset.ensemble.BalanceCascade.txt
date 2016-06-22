@@ -15,8 +15,10 @@ unbalanced_dataset.ensemble.BalanceCascade
    
       ~BalanceCascade.__init__
       ~BalanceCascade.fit
-      ~BalanceCascade.fit_transform
-      ~BalanceCascade.transform
+      ~BalanceCascade.fit_sample
+      ~BalanceCascade.get_params
+      ~BalanceCascade.sample
+      ~BalanceCascade.set_params
    
    
 

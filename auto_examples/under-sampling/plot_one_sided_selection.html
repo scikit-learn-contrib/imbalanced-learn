@@ -96,20 +96,20 @@
 <p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">General examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-combine-class-methods">Example using combine class methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#examples-using-combine-class-methods">Examples using combine class methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-ensemble-class-methods">Example using ensemble class methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-over-sampling-class-methods">Example using over-sampling class methods</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#example-using-under-sampling-class-methods">Example using under-sampling class methods</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="plot_tomek_links.html">Tomek links</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_1.html">Nearmiss 1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_2.html">Nearmiss 2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_3.html">Nearmiss 3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_tomek_links.html">Tomek links</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_cluster_centroids.html">Cluster centroids</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">One-sided selection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_random_under_sampler.html">Random under-sampling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_edited_nearest_neighbours.html">Edited nearest-neighbours</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_condensed_nearest_neighbour.html">Condensed nearest-neighbour</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_neighbourhood_cleaning_rule.html">Neighbourhood Cleaning Rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_condensed_nearest_neighbour.html">Condensed nearest-neighbour</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_instance_hardness_threshold.html">Instance Hardness Threshold</a></li>
 </ul>
 </li>
@@ -169,7 +169,7 @@
 <div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span>  <span class="n">Determining</span> <span class="n">classes</span> <span class="n">statistics</span><span class="o">...</span> <span class="mi">2</span> <span class="n">classes</span> <span class="n">detected</span><span class="p">:</span> <span class="n">Counter</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">4500</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span> <span class="mi">500</span><span class="p">})</span>
 <span class="n">Looking</span> <span class="k">for</span> <span class="n">majority</span> <span class="n">Tomek</span> <span class="n">links</span><span class="o">...</span>
 <span class="mi">16</span> <span class="n">Tomek</span> <span class="n">links</span> <span class="n">found</span><span class="o">.</span>
-<span class="n">Under</span><span class="o">-</span><span class="n">sampling</span> <span class="n">performed</span><span class="p">:</span> <span class="n">Counter</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">4339</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span> <span class="mi">500</span><span class="p">})</span>
+<span class="n">Under</span><span class="o">-</span><span class="n">sampling</span> <span class="n">performed</span><span class="p">:</span> <span class="n">Counter</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">4052</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span> <span class="mi">500</span><span class="p">})</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -201,9 +201,9 @@
 <span class="c1"># Fit and transform x to visualise inside a 2D feature space</span>
 <span class="n">X_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-<span class="c1"># Apply the random under-sampling</span>
+<span class="c1"># Apply One-Sided Selection</span>
 <span class="n">oss</span> <span class="o">=</span> <span class="n">OneSidedSelection</span><span class="p">()</span>
-<span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">oss</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">oss</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_res_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_resampled</span><span class="p">)</span>
 
 <span class="c1"># Two subplots, unpack the axes array immediately</span>
@@ -227,7 +227,7 @@
 </pre></div>
 </div>
 <p><strong>Total running time of the script:</strong>
-(0 minutes 0.985 seconds)</p>
+(0 minutes 1.058 seconds)</p>
 <div class="sphx-glr-download container">
 <strong>Download Python source code:</strong> <a class="reference download internal" href="../../_downloads/plot_one_sided_selection.py" download=""><code class="xref download docutils literal"><span class="pre">plot_one_sided_selection.py</span></code></a></div>
 <div class="sphx-glr-download container">

@@ -23,8 +23,8 @@ An illustration of the random SMOTE borderline 2 method.
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
     Finding the 10 nearest neighbours...
     done!
-    Generated 2052 new samples ...
-    Generated 1948 new samples ...
+    Generated 2086 new samples ...
+    Generated 1913 new samples ...
 
 
 
@@ -61,9 +61,9 @@ An illustration of the random SMOTE borderline 2 method.
     # Fit and transform x to visualise inside a 2D feature space
     X_vis = pca.fit_transform(X)
 
-    # Apply the random under-sampling
+    # Apply Borderline SMOTE 2
     sm = SMOTE(kind='borderline2')
-    X_resampled, y_resampled = sm.fit_transform(X, y)
+    X_resampled, y_resampled = sm.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     # Two subplots, unpack the axes array immediately
@@ -86,7 +86,7 @@ An illustration of the random SMOTE borderline 2 method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.490 seconds)
+(0 minutes 0.479 seconds)
 
 
 

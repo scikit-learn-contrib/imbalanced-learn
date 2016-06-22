@@ -15,8 +15,10 @@ unbalanced_dataset.under_sampling.RandomUnderSampler
    
       ~RandomUnderSampler.__init__
       ~RandomUnderSampler.fit
-      ~RandomUnderSampler.fit_transform
-      ~RandomUnderSampler.transform
+      ~RandomUnderSampler.fit_sample
+      ~RandomUnderSampler.get_params
+      ~RandomUnderSampler.sample
+      ~RandomUnderSampler.set_params
    
    
 

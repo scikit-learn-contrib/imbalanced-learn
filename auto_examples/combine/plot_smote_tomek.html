@@ -96,7 +96,7 @@
 <p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">General examples</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#example-using-combine-class-methods">Example using combine class methods</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#examples-using-combine-class-methods">Examples using combine class methods</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="plot_smote_enn.html">SMOTE + ENN</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">SMOTE + Tomek</a></li>
 </ul>
@@ -154,7 +154,7 @@
             
   <div class="section" id="smote-tomek">
 <span id="sphx-glr-auto-examples-combine-plot-smote-tomek-py"></span><h1>SMOTE + Tomek<a class="headerlink" href="#smote-tomek" title="Permalink to this headline">¶</a></h1>
-<p>An illustration of the random SMOTE + Tomek method.</p>
+<p>An illustration of the SMOTE + Tomek method.</p>
 <img alt="../../_images/sphx_glr_plot_smote_tomek_001.png" class="align-center" src="../../_images/sphx_glr_plot_smote_tomek_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span>  Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
@@ -198,9 +198,9 @@ Under-sampling performed: Counter({0: 4500, 1: 4500})
 <span class="c1"># Fit and transform x to visualise inside a 2D feature space</span>
 <span class="n">X_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-<span class="c1"># Apply the random under-sampling</span>
+<span class="c1"># Apply SMOTE + Tomek links</span>
 <span class="n">sm</span> <span class="o">=</span> <span class="n">SMOTETomek</span><span class="p">()</span>
-<span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_res_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_resampled</span><span class="p">)</span>
 
 <span class="c1"># Two subplots, unpack the axes array immediately</span>
@@ -224,7 +224,7 @@ Under-sampling performed: Counter({0: 4500, 1: 4500})
 </pre></div>
 </div>
 <p><strong>Total running time of the script:</strong>
-(0 minutes 1.417 seconds)</p>
+(0 minutes 1.452 seconds)</p>
 <div class="sphx-glr-download container">
 <strong>Download Python source code:</strong> <a class="reference download internal" href="../../_downloads/plot_smote_tomek.py" download=""><code class="xref download docutils literal"><span class="pre">plot_smote_tomek.py</span></code></a></div>
 <div class="sphx-glr-download container">

@@ -94,7 +94,7 @@
 <p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">General examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#example-using-combine-class-methods">Example using combine class methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#examples-using-combine-class-methods">Examples using combine class methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="combine/plot_smote_enn.html">SMOTE + ENN</a></li>
 <li class="toctree-l3"><a class="reference internal" href="combine/plot_smote_tomek.html">SMOTE + Tomek</a></li>
 </ul>
@@ -113,16 +113,16 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#example-using-under-sampling-class-methods">Example using under-sampling class methods</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_tomek_links.html">Tomek links</a></li>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_nearmiss_1.html">Nearmiss 1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_nearmiss_2.html">Nearmiss 2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_nearmiss_3.html">Nearmiss 3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_tomek_links.html">Tomek links</a></li>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_cluster_centroids.html">Cluster centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_one_sided_selection.html">One-sided selection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_random_under_sampler.html">Random under-sampling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_edited_nearest_neighbours.html">Edited nearest-neighbours</a></li>
-<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_condensed_nearest_neighbour.html">Condensed nearest-neighbour</a></li>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_neighbourhood_cleaning_rule.html">Neighbourhood Cleaning Rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_condensed_nearest_neighbour.html">Condensed nearest-neighbour</a></li>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_instance_hardness_threshold.html">Instance Hardness Threshold</a></li>
 </ul>
 </li>
@@ -178,16 +178,16 @@
 .. raw:: html</p>
 <blockquote>
 <div>&lt;div style=&#8217;clear:both&#8217;&gt;&lt;/div&gt;</div></blockquote>
-<div class="section" id="example-using-combine-class-methods">
-<span id="combine-examples"></span><h2>Example using combine class methods<a class="headerlink" href="#example-using-combine-class-methods" title="Permalink to this headline">¶</a></h2>
-<p>Combine examples.</p>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE + ENN method."><div class="figure" id="id2">
+<div class="section" id="examples-using-combine-class-methods">
+<span id="combine-examples"></span><h2>Examples using combine class methods<a class="headerlink" href="#examples-using-combine-class-methods" title="Permalink to this headline">¶</a></h2>
+<p>Combine methods mixed over- and under-sampling methods. Generally SMOTE is used for over-sampling while some cleaning methods (i.e., ENN and Tomek links) are used to under-sample.</p>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the SMOTE + ENN method."><div class="figure" id="id2">
 <img alt="../_images/sphx_glr_plot_smote_enn_thumb.png" src="../_images/sphx_glr_plot_smote_enn_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="combine/plot_smote_enn.html#sphx-glr-auto-examples-combine-plot-smote-enn-py"><span class="std std-ref">SMOTE + ENN</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE + Tomek method."><div class="figure" id="id3">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the SMOTE + Tomek method."><div class="figure" id="id3">
 <img alt="../_images/sphx_glr_plot_smote_tomek_thumb.png" src="../_images/sphx_glr_plot_smote_tomek_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="combine/plot_smote_tomek.html#sphx-glr-auto-examples-combine-plot-smote-tomek-py"><span class="std std-ref">SMOTE + Tomek</span></a></span></p>
 </div>
@@ -196,14 +196,16 @@
 <div style='clear:both'></div></div>
 <div class="section" id="example-using-ensemble-class-methods">
 <span id="ensemble-examples"></span><h2>Example using ensemble class methods<a class="headerlink" href="#example-using-ensemble-class-methods" title="Permalink to this headline">¶</a></h2>
-<p>Ensemble examples.</p>
+<p>Under-sampling methods implies that samples of the majority class are lost during the balancing procedure.
+Ensemble methods offer an alternative to use most of the samples.
+In fact, an ensemble of balanced sets is created and used to later train any classifier.</p>
 <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the easy ensemble method."><div class="figure" id="id4">
 <img alt="../_images/sphx_glr_plot_easy_ensemble_thumb.png" src="../_images/sphx_glr_plot_easy_ensemble_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="ensemble/plot_easy_ensemble.html#sphx-glr-auto-examples-ensemble-plot-easy-ensemble-py"><span class="std std-ref">Easy ensemble</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the balance cascade method."><div class="figure" id="id5">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the balance cascade ensemble method."><div class="figure" id="id5">
 <img alt="../_images/sphx_glr_plot_balance_cascade_thumb.png" src="../_images/sphx_glr_plot_balance_cascade_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="ensemble/plot_balance_cascade.html#sphx-glr-auto-examples-ensemble-plot-balance-cascade-py"><span class="std std-ref">Balance cascade</span></a></span></p>
 </div>
@@ -212,7 +214,7 @@
 <div style='clear:both'></div></div>
 <div class="section" id="example-using-over-sampling-class-methods">
 <span id="over-sampling-examples"></span><h2>Example using over-sampling class methods<a class="headerlink" href="#example-using-over-sampling-class-methods" title="Permalink to this headline">¶</a></h2>
-<p>Over-sampling examples.</p>
+<p>Data balancing can be performed by over-sampling such that new samples are generated in the minority class to reach a given balancing ratio.</p>
 <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE SVM method."><div class="figure" id="id6">
 <img alt="../_images/sphx_glr_plot_smote_svm_thumb.png" src="../_images/sphx_glr_plot_smote_svm_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_smote_svm.html#sphx-glr-auto-examples-over-sampling-plot-smote-svm-py"><span class="std std-ref">SMOTE SVM</span></a></span></p>
@@ -246,28 +248,29 @@
 <div style='clear:both'></div></div>
 <div class="section" id="example-using-under-sampling-class-methods">
 <span id="under-sampling-examples"></span><h2>Example using under-sampling class methods<a class="headerlink" href="#example-using-under-sampling-class-methods" title="Permalink to this headline">¶</a></h2>
-<p>Under-sampling examples.</p>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the Tomek links method."><div class="figure" id="id11">
-<img alt="../_images/sphx_glr_plot_tomek_links_thumb.png" src="../_images/sphx_glr_plot_tomek_links_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_tomek_links.html#sphx-glr-auto-examples-under-sampling-plot-tomek-links-py"><span class="std std-ref">Tomek links</span></a></span></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id12">
+<p>Under-sampling refers to the process of reducing the number of samples in the majority classes.
+The implemented methods can be categorized into 2 groups: (i) fixed under-sampling and (ii) cleaning under-sampling.</p>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id11">
 <img alt="../_images/sphx_glr_plot_nearmiss_1_thumb.png" src="../_images/sphx_glr_plot_nearmiss_1_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_nearmiss_1.html#sphx-glr-auto-examples-under-sampling-plot-nearmiss-1-py"><span class="std std-ref">Nearmiss 1</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id13">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id12">
 <img alt="../_images/sphx_glr_plot_nearmiss_2_thumb.png" src="../_images/sphx_glr_plot_nearmiss_2_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_nearmiss_2.html#sphx-glr-auto-examples-under-sampling-plot-nearmiss-2-py"><span class="std std-ref">Nearmiss 2</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id14">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id13">
 <img alt="../_images/sphx_glr_plot_nearmiss_3_thumb.png" src="../_images/sphx_glr_plot_nearmiss_3_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_nearmiss_3.html#sphx-glr-auto-examples-under-sampling-plot-nearmiss-3-py"><span class="std std-ref">Nearmiss 3</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the Tomek links method."><div class="figure" id="id14">
+<img alt="../_images/sphx_glr_plot_tomek_links_thumb.png" src="../_images/sphx_glr_plot_tomek_links_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_tomek_links.html#sphx-glr-auto-examples-under-sampling-plot-tomek-links-py"><span class="std std-ref">Tomek links</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
@@ -295,15 +298,15 @@
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the condensed nearest-neighbour method."><div class="figure" id="id19">
-<img alt="../_images/sphx_glr_plot_condensed_nearest_neighbour_thumb.png" src="../_images/sphx_glr_plot_condensed_nearest_neighbour_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_condensed_nearest_neighbour.html#sphx-glr-auto-examples-under-sampling-plot-condensed-nearest-neighbour-py"><span class="std std-ref">Condensed nearest-neighbour</span></a></span></p>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the neighbourhood cleaning rule method."><div class="figure" id="id19">
+<img alt="../_images/sphx_glr_plot_neighbourhood_cleaning_rule_thumb.png" src="../_images/sphx_glr_plot_neighbourhood_cleaning_rule_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_neighbourhood_cleaning_rule.html#sphx-glr-auto-examples-under-sampling-plot-neighbourhood-cleaning-rule-py"><span class="std std-ref">Neighbourhood Cleaning Rule</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the neighbourhood cleaning rule method."><div class="figure" id="id20">
-<img alt="../_images/sphx_glr_plot_neighbourhood_cleaning_rule_thumb.png" src="../_images/sphx_glr_plot_neighbourhood_cleaning_rule_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_neighbourhood_cleaning_rule.html#sphx-glr-auto-examples-under-sampling-plot-neighbourhood-cleaning-rule-py"><span class="std std-ref">Neighbourhood Cleaning Rule</span></a></span></p>
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the condensed nearest-neighbour method."><div class="figure" id="id20">
+<img alt="../_images/sphx_glr_plot_condensed_nearest_neighbour_thumb.png" src="../_images/sphx_glr_plot_condensed_nearest_neighbour_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_condensed_nearest_neighbour.html#sphx-glr-auto-examples-under-sampling-plot-condensed-nearest-neighbour-py"><span class="std std-ref">Condensed nearest-neighbour</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>

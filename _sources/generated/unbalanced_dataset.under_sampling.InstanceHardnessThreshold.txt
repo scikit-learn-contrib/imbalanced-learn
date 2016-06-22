@@ -15,8 +15,10 @@ unbalanced_dataset.under_sampling.InstanceHardnessThreshold
    
       ~InstanceHardnessThreshold.__init__
       ~InstanceHardnessThreshold.fit
-      ~InstanceHardnessThreshold.fit_transform
-      ~InstanceHardnessThreshold.transform
+      ~InstanceHardnessThreshold.fit_sample
+      ~InstanceHardnessThreshold.get_params
+      ~InstanceHardnessThreshold.sample
+      ~InstanceHardnessThreshold.set_params
    
    
 

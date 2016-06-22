@@ -60,9 +60,9 @@ An illustration of the Tomek links method.
     # Fit and transform x to visualise inside a 2D feature space
     X_vis = pca.fit_transform(X)
 
-    # Apply the random under-sampling
+    # Apply Tomek Links cleaning
     tl = TomekLinks()
-    X_resampled, y_resampled = tl.fit_transform(X, y)
+    X_resampled, y_resampled = tl.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     # Two subplots, unpack the axes array immediately
@@ -85,7 +85,7 @@ An illustration of the Tomek links method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.858 seconds)
+(0 minutes 0.906 seconds)
 
 
 

@@ -34,7 +34,7 @@
   
     <link rel="top" title="unbalanced_dataset 0.1.dev0 documentation" href="../../index.html"/>
         <link rel="up" title="General examples" href="../index.html"/>
-        <link rel="next" title="Tomek links" href="../under-sampling/plot_tomek_links.html"/>
+        <link rel="next" title="Nearmiss 1" href="../under-sampling/plot_nearmiss_1.html"/>
         <link rel="prev" title="SMOTE borderline 2" href="plot_smote_bordeline_2.html"/> 
 
   
@@ -96,7 +96,7 @@
 <p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">General examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-combine-class-methods">Example using combine class methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#examples-using-combine-class-methods">Examples using combine class methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-ensemble-class-methods">Example using ensemble class methods</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#example-using-over-sampling-class-methods">Example using over-sampling class methods</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="plot_smote_svm.html">SMOTE SVM</a></li>
@@ -193,9 +193,9 @@
 <span class="c1"># Fit and transform x to visualise inside a 2D feature space</span>
 <span class="n">X_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-<span class="c1"># Apply the random under-sampling</span>
+<span class="c1"># Apply the random over-sampling</span>
 <span class="n">ros</span> <span class="o">=</span> <span class="n">RandomOverSampler</span><span class="p">()</span>
-<span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">ros</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">ros</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_res_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_resampled</span><span class="p">)</span>
 
 <span class="c1"># Two subplots, unpack the axes array immediately</span>
@@ -219,7 +219,7 @@
 </pre></div>
 </div>
 <p><strong>Total running time of the script:</strong>
-(0 minutes 0.164 seconds)</p>
+(0 minutes 0.179 seconds)</p>
 <div class="sphx-glr-download container">
 <strong>Download Python source code:</strong> <a class="reference download internal" href="../../_downloads/plot_random_over_sampling.py" download=""><code class="xref download docutils literal"><span class="pre">plot_random_over_sampling.py</span></code></a></div>
 <div class="sphx-glr-download container">
@@ -233,7 +233,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../under-sampling/plot_tomek_links.html" class="btn btn-neutral float-right" title="Tomek links" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../under-sampling/plot_nearmiss_1.html" class="btn btn-neutral float-right" title="Nearmiss 1" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="plot_smote_bordeline_2.html" class="btn btn-neutral" title="SMOTE borderline 2" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

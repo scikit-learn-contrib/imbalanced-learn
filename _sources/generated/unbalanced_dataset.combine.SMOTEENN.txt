@@ -15,8 +15,10 @@ unbalanced_dataset.combine.SMOTEENN
    
       ~SMOTEENN.__init__
       ~SMOTEENN.fit
-      ~SMOTEENN.fit_transform
-      ~SMOTEENN.transform
+      ~SMOTEENN.fit_sample
+      ~SMOTEENN.get_params
+      ~SMOTEENN.sample
+      ~SMOTEENN.set_params
    
    
 

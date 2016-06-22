@@ -34,7 +34,7 @@
   
     <link rel="top" title="unbalanced_dataset 0.1.dev0 documentation" href="../../index.html"/>
         <link rel="up" title="General examples" href="../index.html"/>
-        <link rel="prev" title="Neighbourhood Cleaning Rule" href="plot_neighbourhood_cleaning_rule.html"/> 
+        <link rel="prev" title="Condensed nearest-neighbour" href="plot_condensed_nearest_neighbour.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -95,20 +95,20 @@
 <p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">General examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-combine-class-methods">Example using combine class methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#examples-using-combine-class-methods">Examples using combine class methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-ensemble-class-methods">Example using ensemble class methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-over-sampling-class-methods">Example using over-sampling class methods</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#example-using-under-sampling-class-methods">Example using under-sampling class methods</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="plot_tomek_links.html">Tomek links</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_1.html">Nearmiss 1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_2.html">Nearmiss 2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_3.html">Nearmiss 3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_tomek_links.html">Tomek links</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_cluster_centroids.html">Cluster centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_one_sided_selection.html">One-sided selection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_random_under_sampler.html">Random under-sampling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_edited_nearest_neighbours.html">Edited nearest-neighbours</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_condensed_nearest_neighbour.html">Condensed nearest-neighbour</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_neighbourhood_cleaning_rule.html">Neighbourhood Cleaning Rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_condensed_nearest_neighbour.html">Condensed nearest-neighbour</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Instance Hardness Threshold</a></li>
 </ul>
 </li>
@@ -189,7 +189,6 @@
 
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
 <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
-<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
 
 <span class="kn">from</span> <span class="nn">unbalanced_dataset.under_sampling</span> <span class="kn">import</span> <span class="n">InstanceHardnessThreshold</span>
 
@@ -216,9 +215,8 @@
                    <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original set&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">estimator</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">probability</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-        <span class="n">iht</span> <span class="o">=</span> <span class="n">InstanceHardnessThreshold</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="n">ratio</span><span class="p">)</span>
-        <span class="n">X_res</span><span class="p">,</span> <span class="n">y_res</span> <span class="o">=</span> <span class="n">iht</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">iht</span> <span class="o">=</span> <span class="n">InstanceHardnessThreshold</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="n">ratio</span><span class="p">)</span>
+        <span class="n">X_res</span><span class="p">,</span> <span class="n">y_res</span> <span class="o">=</span> <span class="n">iht</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="n">X_res_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_res</span><span class="p">)</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_res_vis</span><span class="p">[</span><span class="n">y_res</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X_res_vis</span><span class="p">[</span><span class="n">y_res</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
@@ -233,7 +231,7 @@
 </pre></div>
 </div>
 <p><strong>Total running time of the script:</strong>
-(0 minutes 17.071 seconds)</p>
+(0 minutes 19.204 seconds)</p>
 <div class="sphx-glr-download container">
 <strong>Download Python source code:</strong> <a class="reference download internal" href="../../_downloads/plot_instance_hardness_threshold.py" download=""><code class="xref download docutils literal"><span class="pre">plot_instance_hardness_threshold.py</span></code></a></div>
 <div class="sphx-glr-download container">
@@ -248,7 +246,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="plot_neighbourhood_cleaning_rule.html" class="btn btn-neutral" title="Neighbourhood Cleaning Rule" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="plot_condensed_nearest_neighbour.html" class="btn btn-neutral" title="Condensed nearest-neighbour" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

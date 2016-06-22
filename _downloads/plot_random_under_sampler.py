@@ -35,7 +35,7 @@ X_vis = pca.fit_transform(X)
 
 # Apply the random under-sampling
 rus = RandomUnderSampler()
-X_resampled, y_resampled = rus.fit_transform(X, y)
+X_resampled, y_resampled = rus.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
 # Two subplots, unpack the axes array immediately

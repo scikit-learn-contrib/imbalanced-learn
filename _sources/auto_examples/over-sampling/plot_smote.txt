@@ -61,9 +61,9 @@ An illustration of the random SMOTE regular method.
     # Fit and transform x to visualise inside a 2D feature space
     X_vis = pca.fit_transform(X)
 
-    # Apply the random under-sampling
+    # Apply regular SMOTE
     sm = SMOTE(kind='regular')
-    X_resampled, y_resampled = sm.fit_transform(X, y)
+    X_resampled, y_resampled = sm.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     # Two subplots, unpack the axes array immediately
@@ -86,7 +86,7 @@ An illustration of the random SMOTE regular method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.331 seconds)
+(0 minutes 0.339 seconds)
 
 
 

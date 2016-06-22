@@ -151,44 +151,44 @@
 
 
 <div class="viewcode-block" id="EasyEnsemble"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.ensemble.EasyEnsemble.html#unbalanced_dataset.ensemble.EasyEnsemble">[docs]</a><span class="k">class</span> <span class="nc">EasyEnsemble</span><span class="p">(</span><span class="n">EnsembleSampler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Perform under-sampling using an ensemble of random selection.</span>
+    <span class="sd">&quot;&quot;&quot;Create an ensemble sets by iteratively applying random under-sampling.</span>
 
-<span class="sd">    This method iteratively select subset and make an ensemble of the</span>
+<span class="sd">    This method iteratively select a random subset and make an ensemble of the</span>
 <span class="sd">    different sets.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ratio : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">        the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">        the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">        of samples in the minority class over the the number of samples</span>
 <span class="sd">        in the majority class.</span>
 
 <span class="sd">    return_indices : bool, optional (default=True)</span>
-<span class="sd">        Either to return or not the indices which will be selected from</span>
-<span class="sd">        the majority class.</span>
+<span class="sd">        Whether or not to return the indices of the samples randomly</span>
+<span class="sd">        selected from the majority class.</span>
 
 <span class="sd">    random_state : int or None, optional (default=None)</span>
 <span class="sd">        Seed for random number generation.</span>
 
 <span class="sd">    verbose : bool, optional (default=True)</span>
-<span class="sd">        Boolean to either or not print information about the processing</span>
+<span class="sd">        Whether or not to print information about the processing.</span>
 
 <span class="sd">    replacement : bool, optional (default=False)</span>
-<span class="sd">        Either or not to sample randomly with replacement or not.</span>
+<span class="sd">        Whether or not to sample randomly with replacement or not.</span>
 
 <span class="sd">    n_subsets : int, optional (default=10)</span>
 <span class="sd">        Number of subsets to generate.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio_ : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">        the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">    ratio : str or float</span>
+<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">        the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">        of samples in the minority class over the the number of samples</span>
 <span class="sd">        in the majority class.</span>
 
-<span class="sd">    rs_ : int or None, optional (default=None)</span>
+<span class="sd">    random_state : int or None</span>
 <span class="sd">        Seed for random number generation.</span>
 
 <span class="sd">    min_c_ : str or int</span>
@@ -221,23 +221,23 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        ratio : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">            the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">            the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">            of samples in the minority class over the the number of samples</span>
 <span class="sd">            in the majority class.</span>
 
 <span class="sd">        return_indices : bool, optional (default=True)</span>
-<span class="sd">            Either to return or not the indices which will be selected from</span>
-<span class="sd">            the majority class.</span>
+<span class="sd">            Whether or not to return the indices of the samples randomly</span>
+<span class="sd">            selected from the majority class.</span>
 
 <span class="sd">        random_state : int or None, optional (default=None)</span>
 <span class="sd">            Seed for random number generation.</span>
 
 <span class="sd">        verbose : bool, optional (default=True)</span>
-<span class="sd">            Boolean to either or not print information about the processing</span>
+<span class="sd">            Whether or not to print information about the processing.</span>
 
 <span class="sd">        replacement : bool, optional (default=False)</span>
-<span class="sd">            Either or not to sample randomly with replacement or not.</span>
+<span class="sd">            Whether or not to sample randomly with replacement or not.</span>
 
 <span class="sd">        n_subsets : int, optional (default=10)</span>
 <span class="sd">            Number of subsets to generate.</span>
@@ -279,7 +279,7 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="EasyEnsemble.transform"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.ensemble.EasyEnsemble.html#unbalanced_dataset.ensemble.EasyEnsemble.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="EasyEnsemble.sample"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.ensemble.EasyEnsemble.html#unbalanced_dataset.ensemble.EasyEnsemble.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -306,7 +306,7 @@
         <span class="c1"># Check the consistency of X and y</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">EasyEnsemble</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EasyEnsemble</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
         <span class="n">X_resampled</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">y_resampled</span> <span class="o">=</span> <span class="p">[]</span>
@@ -318,15 +318,15 @@
                 <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Creation of the set #{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
 
             <span class="c1"># Create the object for random under-sampling</span>
-            <span class="n">rus</span> <span class="o">=</span> <span class="n">RandomUnderSampler</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ratio_</span><span class="p">,</span>
+            <span class="n">rus</span> <span class="o">=</span> <span class="n">RandomUnderSampler</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">,</span>
                                      <span class="n">return_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">,</span>
-                                     <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rs_</span><span class="p">,</span>
+                                     <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
                                      <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
                                      <span class="n">replacement</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">replacement</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
-                <span class="n">sel_x</span><span class="p">,</span> <span class="n">sel_y</span><span class="p">,</span> <span class="n">sel_idx</span> <span class="o">=</span> <span class="n">rus</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                <span class="n">sel_x</span><span class="p">,</span> <span class="n">sel_y</span><span class="p">,</span> <span class="n">sel_idx</span> <span class="o">=</span> <span class="n">rus</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">sel_x</span><span class="p">,</span> <span class="n">sel_y</span> <span class="o">=</span> <span class="n">rus</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                <span class="n">sel_x</span><span class="p">,</span> <span class="n">sel_y</span> <span class="o">=</span> <span class="n">rus</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
             <span class="n">X_resampled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sel_x</span><span class="p">)</span>
             <span class="n">y_resampled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sel_y</span><span class="p">)</span>

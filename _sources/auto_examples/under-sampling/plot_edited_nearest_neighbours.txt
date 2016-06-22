@@ -58,9 +58,9 @@ An illustration of the edited nearest-neighbours method.
     # Fit and transform x to visualise inside a 2D feature space
     X_vis = pca.fit_transform(X)
 
-    # Apply the random under-sampling
+    # Apply Edited Nearest Neighbours
     enn = EditedNearestNeighbours()
-    X_resampled, y_resampled = enn.fit_transform(X, y)
+    X_resampled, y_resampled = enn.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     # Two subplots, unpack the axes array immediately
@@ -83,7 +83,7 @@ An illustration of the edited nearest-neighbours method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.327 seconds)
+(0 minutes 1.241 seconds)
 
 
 

@@ -26,8 +26,8 @@ An illustration of the random SMOTE SVM method.
     Out of 125 support vectors, 31 are noisy, 82 are in danger and 43 are safe.
     Finding the 5 nearest neighbours...
     done!
-    Creating synthetic samples...Generated 2009 new samples ...
-    Generated 1990 new samples ...
+    Creating synthetic samples...Generated 2262 new samples ...
+    Generated 1737 new samples ...
     done!
 
 
@@ -65,9 +65,9 @@ An illustration of the random SMOTE SVM method.
     # Fit and transform x to visualise inside a 2D feature space
     X_vis = pca.fit_transform(X)
 
-    # Apply the random under-sampling
+    # Apply SMOTE SVM
     sm = SMOTE(kind='svm')
-    X_resampled, y_resampled = sm.fit_transform(X, y)
+    X_resampled, y_resampled = sm.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     # Two subplots, unpack the axes array immediately
@@ -90,7 +90,7 @@ An illustration of the random SMOTE SVM method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.029 seconds)
+(0 minutes 1.069 seconds)
 
 
 

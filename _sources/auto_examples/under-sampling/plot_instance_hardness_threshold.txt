@@ -49,7 +49,6 @@ An illustration of the instance hardness threshold method.
 
     from sklearn.datasets import make_classification
     from sklearn.decomposition import PCA
-    from sklearn.svm import SVC
 
     from unbalanced_dataset.under_sampling import InstanceHardnessThreshold
 
@@ -76,9 +75,8 @@ An illustration of the instance hardness threshold method.
                        linewidth=0.15)
             ax.set_title('Original set')
         else:
-            estimator = SVC(probability=True)
-            iht = InstanceHardnessThreshold(estimator, ratio=ratio)
-            X_res, y_res = iht.fit_transform(X, y)
+            iht = InstanceHardnessThreshold(ratio=ratio)
+            X_res, y_res = iht.fit_sample(X, y)
             X_res_vis = pca.transform(X_res)
 
             ax.scatter(X_res_vis[y_res == 0, 0], X_res_vis[y_res == 0, 1],
@@ -92,7 +90,7 @@ An illustration of the instance hardness threshold method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 17.071 seconds)
+(0 minutes 19.204 seconds)
 
 
 

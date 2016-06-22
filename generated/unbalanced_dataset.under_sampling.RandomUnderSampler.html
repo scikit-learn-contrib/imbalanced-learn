@@ -166,7 +166,7 @@
 <dt id="unbalanced_dataset.under_sampling.RandomUnderSampler">
 <em class="property">class </em><code class="descclassname">unbalanced_dataset.under_sampling.</code><code class="descname">RandomUnderSampler</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>replacement=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/random_under_sampler.html#RandomUnderSampler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to perform random under-sampling.</p>
-<p>Object to under sample the majority class(es) by randomly picking samples
+<p>Under-sample the majority class(es) by randomly picking samples
 with or without replacement.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -174,15 +174,15 @@ with or without replacement.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
 <blockquote>
-<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balanced
-the dataset. Otherwise, the ratio will corresponds to the number
+<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balance
+the dataset. Otherwise, the ratio is defined as the number
 of samples in the minority class over the the number of samples
 in the majority class.</p>
 </div></blockquote>
 <p><strong>return_indices</strong> : bool, optional (default=False)</p>
 <blockquote>
-<div><p>Either to return or not the indices which will be selected from
-the majority class.</p>
+<div><p>Whether or not to return the indices of the samples randomly selected
+from the majority class.</p>
 </div></blockquote>
 <p><strong>random_state</strong> : int or None, optional (default=None)</p>
 <blockquote>
@@ -190,11 +190,11 @@ the majority class.</p>
 </div></blockquote>
 <p><strong>verbose</strong> : bool, optional (default=True)</p>
 <blockquote>
-<div><p>Boolean to either or not print information about the processing</p>
+<div><p>Whether or not to print information about the processing.</p>
 </div></blockquote>
 <p><strong>n_jobs</strong> : int, optional (default=-1)</p>
 <blockquote class="last">
-<div><p>The number of thread to open when it is possible.</p>
+<div><p>The number of threads to open if possible.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -205,24 +205,24 @@ the majority class.</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="3%" />
-<col width="97%" />
+<col width="5%" />
+<col width="95%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a href="#id1"><span class="problematic" id="id2">ratio_</span></a></td>
-<td>(str or float, optional (default=&#8217;auto&#8217;)) If &#8216;auto&#8217;, the ratio will be defined automatically to balanced the dataset. Otherwise, the ratio will corresponds to the number of samples in the minority class over the the number of samples in the majority class.</td>
+<tr class="row-odd"><td>ratio</td>
+<td>(str or float) If &#8216;auto&#8217;, the ratio will be defined automatically to balance the dataset. Otherwise, the ratio is defined as the number of samples in the minority class over the the number of samples in the majority class.</td>
 </tr>
-<tr class="row-even"><td><a href="#id3"><span class="problematic" id="id4">rs_</span></a></td>
+<tr class="row-even"><td>random state</td>
 <td>(int or None, optional (default=None)) Seed for random number generation.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id5"><span class="problematic" id="id6">min_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id1"><span class="problematic" id="id2">min_c_</span></a></td>
 <td>(str or int) The identifier of the minority class.</td>
 </tr>
-<tr class="row-even"><td><a href="#id7"><span class="problematic" id="id8">max_c_</span></a></td>
+<tr class="row-even"><td><a href="#id3"><span class="problematic" id="id4">max_c_</span></a></td>
 <td>(str or int) The identifier of the majority class.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id9"><span class="problematic" id="id10">stats_c_</span></a></td>
-<td>(dict of str/int) A dictionary in which the number of occurences of each class is reported.</td>
+<tr class="row-odd"><td><a href="#id5"><span class="problematic" id="id6">stats_c_</span></a></td>
+<td>(dict of str/int) A dictionary containing the number of occurences of each class.</td>
 </tr>
 </tbody>
 </table>
@@ -234,35 +234,41 @@ the majority class.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit" title="unbalanced_dataset.under_sampling.RandomUnderSampler.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
-<td>Find the classes statistics before to perform sampling.</td>
+<td>Find the class statistics before performing sampling.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform" title="unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit_sample" title="unbalanced_dataset.under_sampling.RandomUnderSampler.fit_sample"><code class="xref py py-obj docutils literal"><span class="pre">fit_sample</span></code></a>(X,&nbsp;y)</td>
 <td>Fit the statistics and resample the data directly.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.transform" title="unbalanced_dataset.under_sampling.RandomUnderSampler.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.get_params" title="unbalanced_dataset.under_sampling.RandomUnderSampler.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
+<td>Get parameters for this estimator.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.sample" title="unbalanced_dataset.under_sampling.RandomUnderSampler.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(X,&nbsp;y)</td>
 <td>Resample the dataset.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.set_params" title="unbalanced_dataset.under_sampling.RandomUnderSampler.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
+<td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>replacement=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/random_under_sampler.html#RandomUnderSampler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialse the random under sampler object.</p>
+<dd><p>Initialse the random under-sampler object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
 <blockquote>
-<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balanced
-the dataset. Otherwise, the ratio will corresponds to the number
+<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balance
+the dataset. Otherwise, the ratio is defined as the number
 of samples in the minority class over the the number of samples
 in the majority class.</p>
 </div></blockquote>
 <p><strong>return_indices</strong> : bool, optional (default=False)</p>
 <blockquote>
-<div><p>Either to return or not the indices which will be selected from
-the majority class.</p>
+<div><p>Whether or not to return the indices of the samples randomly
+selected from the majority class.</p>
 </div></blockquote>
 <p><strong>random_state</strong> : int or None, optional (default=None)</p>
 <blockquote>
@@ -270,11 +276,11 @@ the majority class.</p>
 </div></blockquote>
 <p><strong>verbose</strong> : bool, optional (default=True)</p>
 <blockquote>
-<div><p>Boolean to either or not print information about the processing</p>
+<div><p>Whether or not to print information about the processing</p>
 </div></blockquote>
 <p><strong>n_jobs</strong> : int, optional (default=-1)</p>
 <blockquote>
-<div><p>The number of thread to open when it is possible.</p>
+<div><p>The number of threads to open if possible.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -293,30 +299,36 @@ the majority class.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.__init__" title="unbalanced_dataset.under_sampling.RandomUnderSampler.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;return_indices,&nbsp;...])</td>
-<td>Initialse the random under sampler object.</td>
+<td>Initialse the random under-sampler object.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit" title="unbalanced_dataset.under_sampling.RandomUnderSampler.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
-<td>Find the classes statistics before to perform sampling.</td>
+<td>Find the class statistics before performing sampling.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform" title="unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform"><code class="xref py py-obj docutils literal"><span class="pre">fit_transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit_sample" title="unbalanced_dataset.under_sampling.RandomUnderSampler.fit_sample"><code class="xref py py-obj docutils literal"><span class="pre">fit_sample</span></code></a>(X,&nbsp;y)</td>
 <td>Fit the statistics and resample the data directly.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.transform" title="unbalanced_dataset.under_sampling.RandomUnderSampler.transform"><code class="xref py py-obj docutils literal"><span class="pre">transform</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.get_params" title="unbalanced_dataset.under_sampling.RandomUnderSampler.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
+<td>Get parameters for this estimator.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.sample" title="unbalanced_dataset.under_sampling.RandomUnderSampler.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(X,&nbsp;y)</td>
 <td>Resample the dataset.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.set_params" title="unbalanced_dataset.under_sampling.RandomUnderSampler.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
+<td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.fit">
 <code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/random_under_sampler.html#RandomUnderSampler.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the classes statistics before to perform sampling.</p>
+<dd><p>Find the class statistics before performing sampling.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : ndarray, shape (n_samples, n_features)</p>
 <blockquote>
-<div><p>Matrix containing the data which have to be sampled.</p>
+<div><p>Matrix containing the data to be sampled.</p>
 </div></blockquote>
 <p><strong>y</strong> : ndarray, shape (n_samples, )</p>
 <blockquote>
@@ -335,8 +347,8 @@ the majority class.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform">
-<code class="descname">fit_transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit_transform" title="Permalink to this definition">¶</a></dt>
+<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.fit_sample">
+<code class="descname">fit_sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.fit_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit the statistics and resample the data directly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -367,8 +379,33 @@ the majority class.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.transform">
-<code class="descname">transform</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/random_under_sampler.html#RandomUnderSampler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.transform" title="Permalink to this definition">¶</a></dt>
+<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.get_params">
+<code class="descname">get_params</code><span class="sig-paren">(</span><em>deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>deep: boolean, optional</strong></p>
+<blockquote>
+<div><p>If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>params</strong> : mapping of string to any</p>
+<blockquote class="last">
+<div><p>Parameter names mapped to their values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.sample">
+<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unbalanced_dataset/under_sampling/random_under_sampler.html#RandomUnderSampler.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -376,7 +413,7 @@ the majority class.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : ndarray, shape (n_samples, n_features)</p>
 <blockquote>
-<div><p>Matrix containing the data which have to be sampled.</p>
+<div><p>Matrix containing the data to be sampled.</p>
 </div></blockquote>
 <p><strong>y</strong> : ndarray, shape (n_samples, )</p>
 <blockquote>
@@ -394,10 +431,29 @@ the majority class.</p>
 </div></blockquote>
 <p><strong>idx_under</strong> : ndarray, shape (n_samples, )</p>
 <blockquote class="last">
-<div><p>If <cite>return_indices</cite> is <cite>True</cite>, a boolean array will be returned
-containing the which samples have been selected.</p>
+<div><p>If <cite>return_indices</cite> is <cite>True</cite>, an array will be returned
+containing a boolean for each sample to represent whether
+that sample was selected or not.</p>
 </div></blockquote>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="unbalanced_dataset.under_sampling.RandomUnderSampler.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#unbalanced_dataset.under_sampling.RandomUnderSampler.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as pipelines). The former have parameters of the form
+<code class="docutils literal"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it&#8217;s possible to update each
+component of a nested object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">self</td>
 </tr>
 </tbody>
 </table>

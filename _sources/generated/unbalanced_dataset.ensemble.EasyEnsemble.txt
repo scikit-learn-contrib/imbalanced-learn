@@ -15,8 +15,10 @@ unbalanced_dataset.ensemble.EasyEnsemble
    
       ~EasyEnsemble.__init__
       ~EasyEnsemble.fit
-      ~EasyEnsemble.fit_transform
-      ~EasyEnsemble.transform
+      ~EasyEnsemble.fit_sample
+      ~EasyEnsemble.get_params
+      ~EasyEnsemble.sample
+      ~EasyEnsemble.set_params
    
    
 

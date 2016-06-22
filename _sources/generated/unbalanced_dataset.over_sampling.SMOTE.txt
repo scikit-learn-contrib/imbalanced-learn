@@ -15,8 +15,10 @@ unbalanced_dataset.over_sampling.SMOTE
    
       ~SMOTE.__init__
       ~SMOTE.fit
-      ~SMOTE.fit_transform
-      ~SMOTE.transform
+      ~SMOTE.fit_sample
+      ~SMOTE.get_params
+      ~SMOTE.sample
+      ~SMOTE.set_params
    
    
 

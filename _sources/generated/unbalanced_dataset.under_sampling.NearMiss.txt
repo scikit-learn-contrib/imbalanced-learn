@@ -15,8 +15,10 @@ unbalanced_dataset.under_sampling.NearMiss
    
       ~NearMiss.__init__
       ~NearMiss.fit
-      ~NearMiss.fit_transform
-      ~NearMiss.transform
+      ~NearMiss.fit_sample
+      ~NearMiss.get_params
+      ~NearMiss.sample
+      ~NearMiss.set_params
    
    
 

@@ -155,39 +155,39 @@
 <div class="viewcode-block" id="RandomUnderSampler"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.RandomUnderSampler.html#unbalanced_dataset.under_sampling.RandomUnderSampler">[docs]</a><span class="k">class</span> <span class="nc">RandomUnderSampler</span><span class="p">(</span><span class="n">UnderSampler</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to perform random under-sampling.</span>
 
-<span class="sd">    Object to under sample the majority class(es) by randomly picking samples</span>
+<span class="sd">    Under-sample the majority class(es) by randomly picking samples</span>
 <span class="sd">    with or without replacement.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ratio : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">        the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">        the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">        of samples in the minority class over the the number of samples</span>
 <span class="sd">        in the majority class.</span>
 
 <span class="sd">    return_indices : bool, optional (default=False)</span>
-<span class="sd">        Either to return or not the indices which will be selected from</span>
-<span class="sd">        the majority class.</span>
+<span class="sd">        Whether or not to return the indices of the samples randomly selected</span>
+<span class="sd">        from the majority class.</span>
 
 <span class="sd">    random_state : int or None, optional (default=None)</span>
 <span class="sd">        Seed for random number generation.</span>
 
 <span class="sd">    verbose : bool, optional (default=True)</span>
-<span class="sd">        Boolean to either or not print information about the processing</span>
+<span class="sd">        Whether or not to print information about the processing.</span>
 
 <span class="sd">    n_jobs : int, optional (default=-1)</span>
-<span class="sd">        The number of thread to open when it is possible.</span>
+<span class="sd">        The number of threads to open if possible.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio_ : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">        the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">    ratio : str or float</span>
+<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">        the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">        of samples in the minority class over the the number of samples</span>
 <span class="sd">        in the majority class.</span>
 
-<span class="sd">    rs_ : int or None, optional (default=None)</span>
+<span class="sd">    random state : int or None, optional (default=None)</span>
 <span class="sd">        Seed for random number generation.</span>
 
 <span class="sd">    min_c_ : str or int</span>
@@ -197,8 +197,7 @@
 <span class="sd">        The identifier of the majority class.</span>
 
 <span class="sd">    stats_c_ : dict of str/int : int</span>
-<span class="sd">        A dictionary in which the number of occurences of each class is</span>
-<span class="sd">        reported.</span>
+<span class="sd">        A dictionary containing the number of occurences of each class.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -208,28 +207,28 @@
 
 <div class="viewcode-block" id="RandomUnderSampler.__init__"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.RandomUnderSampler.html#unbalanced_dataset.under_sampling.RandomUnderSampler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialse the random under sampler object.</span>
+        <span class="sd">&quot;&quot;&quot;Initialse the random under-sampler object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        ratio : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">            the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
+<span class="sd">            the dataset. Otherwise, the ratio is defined as the number</span>
 <span class="sd">            of samples in the minority class over the the number of samples</span>
 <span class="sd">            in the majority class.</span>
 
 <span class="sd">        return_indices : bool, optional (default=False)</span>
-<span class="sd">            Either to return or not the indices which will be selected from</span>
-<span class="sd">            the majority class.</span>
+<span class="sd">            Whether or not to return the indices of the samples randomly</span>
+<span class="sd">            selected from the majority class.</span>
 
 <span class="sd">        random_state : int or None, optional (default=None)</span>
 <span class="sd">            Seed for random number generation.</span>
 
 <span class="sd">        verbose : bool, optional (default=True)</span>
-<span class="sd">            Boolean to either or not print information about the processing</span>
+<span class="sd">            Whether or not to print information about the processing</span>
 
 <span class="sd">        n_jobs : int, optional (default=-1)</span>
-<span class="sd">            The number of thread to open when it is possible.</span>
+<span class="sd">            The number of threads to open if possible.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -244,12 +243,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">replacement</span> <span class="o">=</span> <span class="n">replacement</span></div>
 
 <div class="viewcode-block" id="RandomUnderSampler.fit"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.RandomUnderSampler.html#unbalanced_dataset.under_sampling.RandomUnderSampler.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find the classes statistics before to perform sampling.</span>
+        <span class="sd">&quot;&quot;&quot;Find the class statistics before performing sampling.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : ndarray, shape (n_samples, n_features)</span>
-<span class="sd">            Matrix containing the data which have to be sampled.</span>
+<span class="sd">            Matrix containing the data to be sampled.</span>
 
 <span class="sd">        y : ndarray, shape (n_samples, )</span>
 <span class="sd">            Corresponding label for each sample in X.</span>
@@ -267,13 +266,13 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="RandomUnderSampler.transform"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.RandomUnderSampler.html#unbalanced_dataset.under_sampling.RandomUnderSampler.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomUnderSampler.sample"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.RandomUnderSampler.html#unbalanced_dataset.under_sampling.RandomUnderSampler.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : ndarray, shape (n_samples, n_features)</span>
-<span class="sd">            Matrix containing the data which have to be sampled.</span>
+<span class="sd">            Matrix containing the data to be sampled.</span>
 
 <span class="sd">        y : ndarray, shape (n_samples, )</span>
 <span class="sd">            Corresponding label for each sample in X.</span>
@@ -287,20 +286,21 @@
 <span class="sd">            The corresponding label of `X_resampled`</span>
 
 <span class="sd">        idx_under : ndarray, shape (n_samples, )</span>
-<span class="sd">            If `return_indices` is `True`, a boolean array will be returned</span>
-<span class="sd">            containing the which samples have been selected.</span>
+<span class="sd">            If `return_indices` is `True`, an array will be returned</span>
+<span class="sd">            containing a boolean for each sample to represent whether</span>
+<span class="sd">            that sample was selected or not.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check the consistency of X and y</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">RandomUnderSampler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RandomUnderSampler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-        <span class="c1"># Compute the number of cluster needed</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio_</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="c1"># Compute the number of clusters needed</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
             <span class="n">num_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio_</span><span class="p">)</span>
+            <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">)</span>
 
         <span class="c1"># All the minority class samples will be preserved</span>
         <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">]</span>
@@ -310,7 +310,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
             <span class="n">idx_under</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="c1"># Loop over the other classes under picking at random</span>
+        <span class="c1"># Loop over the other classes under-picking at random</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 
             <span class="c1"># If the minority class is up, skip it</span>
@@ -318,7 +318,7 @@
                 <span class="k">continue</span>
 
             <span class="c1"># Pick some elements at random</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rs_</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
             <span class="n">indx</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="n">key</span><span class="p">))</span>
             <span class="n">indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">indx</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_samples</span><span class="p">,</span>
                                     <span class="n">replace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">replacement</span><span class="p">)</span>
@@ -337,7 +337,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Under-sampling performed: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">y_resampled</span><span class="p">)))</span>
 
-        <span class="c1"># Check if the indices of the samples selected should be returned too</span>
+        <span class="c1"># Check if the indices of the samples selected should be returned as</span>
+        <span class="c1"># well</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
             <span class="c1"># Return the indices of interest</span>
             <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span><span class="p">,</span> <span class="n">idx_under</span>

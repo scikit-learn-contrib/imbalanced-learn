@@ -34,8 +34,8 @@
   
     <link rel="top" title="unbalanced_dataset 0.1.dev0 documentation" href="../../index.html"/>
         <link rel="up" title="General examples" href="../index.html"/>
-        <link rel="next" title="Nearmiss 1" href="plot_nearmiss_1.html"/>
-        <link rel="prev" title="Random over-sampling" href="../over-sampling/plot_random_over_sampling.html"/> 
+        <link rel="next" title="Cluster centroids" href="plot_cluster_centroids.html"/>
+        <link rel="prev" title="Nearmiss 3" href="plot_nearmiss_3.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -96,20 +96,20 @@
 <p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">General examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-combine-class-methods">Example using combine class methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#examples-using-combine-class-methods">Examples using combine class methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-ensemble-class-methods">Example using ensemble class methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-over-sampling-class-methods">Example using over-sampling class methods</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#example-using-under-sampling-class-methods">Example using under-sampling class methods</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Tomek links</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_1.html">Nearmiss 1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_2.html">Nearmiss 2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_3.html">Nearmiss 3</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Tomek links</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_cluster_centroids.html">Cluster centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_one_sided_selection.html">One-sided selection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_random_under_sampler.html">Random under-sampling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_edited_nearest_neighbours.html">Edited nearest-neighbours</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_condensed_nearest_neighbour.html">Condensed nearest-neighbour</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_neighbourhood_cleaning_rule.html">Neighbourhood Cleaning Rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_condensed_nearest_neighbour.html">Condensed nearest-neighbour</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_instance_hardness_threshold.html">Instance Hardness Threshold</a></li>
 </ul>
 </li>
@@ -201,9 +201,9 @@
 <span class="c1"># Fit and transform x to visualise inside a 2D feature space</span>
 <span class="n">X_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-<span class="c1"># Apply the random under-sampling</span>
+<span class="c1"># Apply Tomek Links cleaning</span>
 <span class="n">tl</span> <span class="o">=</span> <span class="n">TomekLinks</span><span class="p">()</span>
-<span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_res_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_resampled</span><span class="p">)</span>
 
 <span class="c1"># Two subplots, unpack the axes array immediately</span>
@@ -227,7 +227,7 @@
 </pre></div>
 </div>
 <p><strong>Total running time of the script:</strong>
-(0 minutes 0.858 seconds)</p>
+(0 minutes 0.906 seconds)</p>
 <div class="sphx-glr-download container">
 <strong>Download Python source code:</strong> <a class="reference download internal" href="../../_downloads/plot_tomek_links.py" download=""><code class="xref download docutils literal"><span class="pre">plot_tomek_links.py</span></code></a></div>
 <div class="sphx-glr-download container">
@@ -241,10 +241,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="plot_nearmiss_1.html" class="btn btn-neutral float-right" title="Nearmiss 1" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="plot_cluster_centroids.html" class="btn btn-neutral float-right" title="Cluster centroids" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../over-sampling/plot_random_over_sampling.html" class="btn btn-neutral" title="Random over-sampling" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="plot_nearmiss_3.html" class="btn btn-neutral" title="Nearmiss 3" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
