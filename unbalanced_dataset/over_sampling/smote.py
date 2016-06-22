@@ -19,14 +19,14 @@ class SMOTE(OverSampler):
     """Class to perform over-sampling using SMOTE.
 
     This object is an implementation of SMOTE - Synthetic Minority
-    Over-sampling Technique, and the variations Borderline SMOTE 1, 2 and
+    Over-sampling Technique, and the variants Borderline SMOTE 1, 2 and
     SVM-SMOTE.
 
     Parameters
     ----------
     ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
@@ -34,7 +34,7 @@ class SMOTE(OverSampler):
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing.
+        Whether or not to print information about the processing.
 
     k : int, optional (default=5)
         Number of nearest neighbours to used to construct synthetic samples.
@@ -48,17 +48,17 @@ class SMOTE(OverSampler):
 
     kind : str, optional (default='regular')
         The type of SMOTE algorithm to use one of the following options:
-        'regular', 'borderline1', 'borderline2', 'svm'
+        'regular', 'borderline1', 'borderline2', 'svm'.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+    ratio : str or float
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    rs_ : int or None, optional (default=None)
+    random_state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -101,17 +101,16 @@ class SMOTE(OverSampler):
         Parameters
         ----------
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the
-            number of samples in the minority class over the the number of
-            samples in the majority class.
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
+            of samples in the minority class over the the number of samples
+            in the majority class.
 
         random_state : int or None, optional (default=None)
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the
-            processing.
+            Whether or not to print information about the processing.
 
         k : int, optional (default=5)
             Number of nearest neighbours to used to construct synthetic
@@ -126,7 +125,7 @@ class SMOTE(OverSampler):
 
         kind : str, optional (default='regular')
             The type of SMOTE algorithm to use one of the following
-            options: 'regular', 'borderline1', 'borderline2', 'svm'
+            options: 'regular', 'borderline1', 'borderline2', 'svm'.
 
         n_jobs : int, optional (default=-1)
             Number of threads to run the algorithm when it is possible.
@@ -135,9 +134,6 @@ class SMOTE(OverSampler):
         super(SMOTE, self).__init__(ratio=ratio,
                                     random_state=random_state,
                                     verbose=verbose)
-
-        # Check the number of thread to use
-        self.n_jobs = n_jobs
 
         # --- The type of smote
         # This object can perform regular smote over-sampling, borderline 1,
@@ -154,6 +150,7 @@ class SMOTE(OverSampler):
         self.out_step = out_step
         self.verbose = verbose
         self.kwargs = kwargs
+        self.n_jobs = n_jobs
 
         # --- NN object
         # Import the NN object from scikit-learn library. Since in the smote
@@ -174,7 +171,6 @@ class SMOTE(OverSampler):
             # noise or near the boundary.
             self.nearest_neighbour = NearestNeighbors(n_neighbors=self.m + 1,
                                                       n_jobs=self.n_jobs)
-
 
         # --- SVM smote
         # Unlike the borderline variations, the SVM variation uses the support
@@ -213,7 +209,7 @@ class SMOTE(OverSampler):
         return self
 
     def _in_danger_noise(self, samples, y, kind='danger'):
-        """Estimate if a set of sample are in danger or not.
+        """Estimate if a set of sample are in danger or noise.
 
         Parameters
         ----------
@@ -258,7 +254,7 @@ class SMOTE(OverSampler):
             raise NotImplementedError
 
     def _make_samples(self, X, y_type, nn_data, nn_num, n_samples,
-                     step_size=1.):
+                      step_size=1.):
         """A support function that returns artificial samples constructed along
         the line connecting nearest neighbours.
 
@@ -402,11 +398,11 @@ class SMOTE(OverSampler):
             # --- Generating synthetic samples
             # Use static method make_samples to generate minority samples
             X_new, y_new = self._make_samples(X_min,
-                                             self.min_c_,
-                                             X_min,
-                                             nns,
-                                             num_samples,
-                                             1.0)
+                                              self.min_c_,
+                                              X_min,
+                                              nns,
+                                              num_samples,
+                                              1.0)
 
             if self.verbose:
                 print("done!")
@@ -458,10 +454,10 @@ class SMOTE(OverSampler):
             if self.kind == 'borderline1':
                 # Create synthetic samples for borderline points.
                 X_new, y_new = self._make_samples(X_min[danger_index],
-                                                 self.min_c_,
-                                                 X_min,
-                                                 nns,
-                                                 num_samples)
+                                                  self.min_c_,
+                                                  X_min,
+                                                  nns,
+                                                  num_samples)
 
                 # Concatenate the newly generated samples to the original
                 # dataset
@@ -484,21 +480,21 @@ class SMOTE(OverSampler):
 
                 # Only minority
                 X_new_1, y_new_1 = self._make_samples(X_min[danger_index],
-                                                     self.min_c_,
-                                                     X_min,
-                                                     nns,
-                                                     int(fractions *
-                                                         (num_samples + 1)),
-                                                     step_size=1.)
+                                                      self.min_c_,
+                                                      X_min,
+                                                      nns,
+                                                      int(fractions *
+                                                          (num_samples + 1)),
+                                                      step_size=1.)
 
                 # Only majority with smaller step size
                 X_new_2, y_new_2 = self._make_samples(X_min[danger_index],
-                                                     self.min_c_,
-                                                     X[y != self.min_c_],
-                                                     nns,
-                                                     int((1 - fractions) *
-                                                         num_samples),
-                                                     step_size=0.5)
+                                                      self.min_c_,
+                                                      X[y != self.min_c_],
+                                                      nns,
+                                                      int((1 - fractions) *
+                                                          num_samples),
+                                                      step_size=0.5)
 
                 # Concatenate the newly generated samples to the original
                 # data set
@@ -522,7 +518,7 @@ class SMOTE(OverSampler):
 
             # Find the support vectors and their corresponding indexes
             support_index = self.svm.support_[y[self.svm.support_] ==
-                                               self.min_c_]
+                                              self.min_c_]
             support_vector = X[support_index]
 
             # First, find the nn of all the samples to identify samples
@@ -543,7 +539,7 @@ class SMOTE(OverSampler):
             # Remove noisy support vectors
             support_vector = support_vector[np.logical_not(noise_bool)]
             danger_bool = self._in_danger_noise(support_vector, y,
-                                               kind='danger')
+                                                kind='danger')
             safety_bool = np.logical_not(danger_bool)
 
             if self.verbose:

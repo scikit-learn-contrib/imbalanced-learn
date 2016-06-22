@@ -19,40 +19,43 @@ class InstanceHardnessThreshold(UnderSampler):
 
     Parameters
     ----------
-    estimator : sklearn classifier
+    estimator : str, optional (default='linear-svm')
         Classifier to be used in to estimate instance hardness of the samples.
+        The choices are the following: 'knn',
+        'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
+        and 'linear-svm'.
 
     ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-    cv : int, optional (default=5)
-        Number of folds to be used when estimating samples' instance hardness.
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
+        of samples in the minority class over the the number of samples
+        in the majority class.
 
     return_indices : bool, optional (default=False)
-        Either to return or not the indices which will be selected from
-        the majority class.
+        Whether or not to return the indices of the samples randomly
+        selected from the majority class.
 
     random_state : int or None, optional (default=None)
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing
+        Whether or not to print information about the processing.
+
+    cv : int, optional (default=5)
+        Number of folds to be used when estimating samples' instance hardness.
 
     n_jobs : int, optional (default=-1)
-        The number of thread to open when it is possible.
+        The number of threads to open if possible.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+    ratio : str or float
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    rs_ : int or None, optional (default=None)
+    random state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -64,9 +67,6 @@ class InstanceHardnessThreshold(UnderSampler):
     stats_c_ : dict of str/int : int
         A dictionary in which the number of occurences of each class is
         reported.
-
-    estimator_ : sklearn classifier
-        Classifier  used in to estimate instance hardness of the samples.
 
     cv : int, optional (default=5)
         Number of folds used when estimating samples' instance hardness.
@@ -86,38 +86,40 @@ class InstanceHardnessThreshold(UnderSampler):
     """
 
     def __init__(self, estimator='linear-svm', ratio='auto',
-                 return_indices=False, cv=5, random_state=None, verbose=True,
-                 n_jobs=-1, **kwargs):
+                 return_indices=False, random_state=None, verbose=True,
+                 cv=5, n_jobs=-1, **kwargs):
         """Initialisation of Instance Hardness Threshold object.
 
         Parameters
         ----------
-        estimator : sklearn classifier
-            Classifier to be used in to estimate instance hardness of the
-            samples.
+        estimator : str, optional (default='linear-svm')
+            Classifier to be used in to estimate instance hardness of
+            the samples. The choices are the following: 'knn',
+            'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
+            and 'linear-svm'.
 
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
             of samples in the minority class over the the number of samples
             in the majority class.
 
-        cv : int, optional (default=5)
-            Number of folds to be used when estimating samples' instance
-            hardness.
-
         return_indices : bool, optional (default=False)
-            Either to return or not the indices which will be selected from
-            the majority class.
+            Whether or not to return the indices of the samples randomly
+            selected from the majority class.
 
         random_state : int or None, optional (default=None)
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
+
+        cv : int, optional (default=5)
+            Number of folds to be used when estimating samples' instance
+            hardness.
 
         n_jobs : int, optional (default=-1)
-            The number of thread to open when it is possible.
+            The number of threads to open if possible.
 
         Returns
         -------
@@ -138,7 +140,6 @@ class InstanceHardnessThreshold(UnderSampler):
         # Define the estimator to use
         self.estimator = estimator
         self.kwargs = kwargs
-
         self.cv = cv
         self.n_jobs = n_jobs
 

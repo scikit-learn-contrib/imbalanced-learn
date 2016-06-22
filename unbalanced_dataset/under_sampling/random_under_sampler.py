@@ -40,13 +40,13 @@ class RandomUnderSampler(UnderSampler):
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
+    ratio : str or float
         If 'auto', the ratio will be defined automatically to balance
         the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    rs_ : int or None, optional (default=None)
+    random state : int or None, optional (default=None)
         Seed for random number generation.
 
     min_c_ : str or int

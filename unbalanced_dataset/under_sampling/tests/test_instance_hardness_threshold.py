@@ -174,4 +174,3 @@ def test_iht_fit_sample_half():
     y_gt = np.load(os.path.join(currdir, 'data', 'iht_y_05.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-

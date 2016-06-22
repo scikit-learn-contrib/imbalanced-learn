@@ -26,6 +26,7 @@ def test_senn_sk_estimator():
     """Test the sklearn estimator compatibility"""
     check_estimator(SMOTEENN)
 
+
 def test_senn_bad_ratio():
     """Test either if an error is raised with a wrong decimal value for
     the ratio"""
