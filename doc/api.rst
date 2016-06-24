@@ -22,6 +22,7 @@ Classes
    unbalanced_dataset.under_sampling.ClusterCentroids
    unbalanced_dataset.under_sampling.CondensedNearestNeighbour
    unbalanced_dataset.under_sampling.EditedNearestNeighbours
+   unbalanced_dataset.under_sampling.RepeatedEditedNearestNeighbours
    unbalanced_dataset.under_sampling.InstanceHardnessThreshold
    unbalanced_dataset.under_sampling.NearMiss
    unbalanced_dataset.under_sampling.NeighbourhoodCleaningRule

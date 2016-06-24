@@ -254,7 +254,7 @@ class EditedNearestNeighbours(UnderSampler):
 
 
 class RepeatedEditedNearestNeighbours(UnderSampler):
-    """Class to perform under-sampling based on the repeated edited nearest 
+    """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
 
     Parameters
@@ -317,8 +317,8 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
 
     References
     ----------
-    .. [1] I. Tomek, “An Experiment with the Edited Nearest-Neighbor
-       Rule,” IEEE Trans. Systems, Man, and Cybernetics, vol. 6, no. 6,
+    .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
+       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
        pp. 448-452, June 1976.
 
     """
