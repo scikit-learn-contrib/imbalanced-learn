@@ -11,7 +11,7 @@ from abc import ABCMeta, abstractmethod
 
 from collections import Counter
 
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.base import BaseEstimator
 from sklearn.utils import check_X_y
 from sklearn.externals import six
 
