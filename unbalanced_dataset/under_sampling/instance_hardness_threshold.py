@@ -132,13 +132,13 @@ class InstanceHardnessThreshold(UnderSampler):
             random_state=random_state,
             verbose=verbose)
 
-        # if not hasattr(estimator, 'predict_proba'):
-        #     raise ValueError('Estimator does not have predict_proba method.')
-        # else:
-        #     self.estimator = estimator
-
         # Define the estimator to use
-        self.estimator = estimator
+        list_estimator = ('knn', 'decision-tree', 'random-forest', 'adaboost',
+                          'gradient-boosting', 'linear-svm')
+        if estimator in list_estimator:
+            self.estimator = estimator
+        else:
+            raise NotImplementedError
         self.kwargs = kwargs
         self.cv = cv
         self.n_jobs = n_jobs
@@ -200,7 +200,6 @@ class InstanceHardnessThreshold(UnderSampler):
         if self.estimator == 'knn':
             from sklearn.neighbors import KNeighborsClassifier
             estimator = KNeighborsClassifier(
-                random_state=self.random_state,
                 **self.kwargs)
         elif self.estimator == 'decision-tree':
             from sklearn.tree import DecisionTreeClassifier
@@ -227,8 +226,7 @@ class InstanceHardnessThreshold(UnderSampler):
             estimator = SVC(probability=True,
                             random_state=self.random_state, **self.kwargs)
         else:
-            raise ValueError('UnbalancedData.BalanceCascade: classifier '
-                             'not yet supported.')
+            raise NotImplementedError
 
         # Create the different folds
         skf = StratifiedKFold(y, n_folds=self.cv, shuffle=False,
