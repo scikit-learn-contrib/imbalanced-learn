@@ -1,4 +1,4 @@
-"""Test the module condensed nearest neighbour."""
+"""Test the module edited nearest neighbour."""
 from __future__ import print_function
 
 import os
@@ -110,8 +110,6 @@ def test_enn_fit_transform_mode():
     X_resampled, y_resampled = enn.fit_transform(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
-    np.save(os.path.join(currdir, 'data', 'enn_x_mode.npy'), X_resampled)
-    np.save(os.path.join(currdir, 'data', 'enn_y_mode.npy'), y_resampled)
     X_gt = np.load(os.path.join(currdir, 'data', 'enn_x_mode.npy'))
     y_gt = np.load(os.path.join(currdir, 'data', 'enn_y_mode.npy'))
     assert_array_equal(X_resampled, X_gt)
