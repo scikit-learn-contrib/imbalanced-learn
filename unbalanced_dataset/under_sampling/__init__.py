@@ -12,6 +12,7 @@ from .condensed_nearest_neighbour import CondensedNearestNeighbour
 from .one_sided_selection import OneSidedSelection
 from .neighbourhood_cleaning_rule import NeighbourhoodCleaningRule
 from .edited_nearest_neighbours import EditedNearestNeighbours
+from .edited_nearest_neighbours import RepeatedEditedNearestNeighbours
 from .instance_hardness_threshold import InstanceHardnessThreshold
 
 __all__ = ['UnderSampler',
@@ -23,4 +24,5 @@ __all__ = ['UnderSampler',
            'OneSidedSelection',
            'NeighbourhoodCleaningRule',
            'EditedNearestNeighbours',
+           'RepeatedEditedNearestNeighbours',
            'InstanceHardnessThreshold']

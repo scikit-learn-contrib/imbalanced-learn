@@ -251,3 +251,219 @@ class EditedNearestNeighbours(UnderSampler):
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled
+
+
+class RepeatedEditedNearestNeighbours(UnderSampler):
+    """Class to perform under-sampling based on the repeated edited nearest 
+    neighbour method.
+
+    Parameters
+    ----------
+    return_indices : bool, optional (default=False)
+        Either to return or not the indices which will be selected from
+        the majority class.
+
+    random_state : int or None, optional (default=None)
+        Seed for random number generation.
+
+    verbose : bool, optional (default=True)
+        Boolean to either or not print information about the processing
+
+    size_ngh : int, optional (default=3)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+    kind_sel : str, optional (default='all')
+        Strategy to use in order to exclude samples.
+
+        - If 'all', all neighbours will have to agree with the samples of
+        interest to not be excluded.
+        - If 'mode', the majority vote of the neighbours will be used in
+        order to exclude a sample.
+
+    n_jobs : int, optional (default=-1)
+        The number of thread to open when it is possible.
+
+    Attributes
+    ----------
+    ratio_ : str or float, optional (default='auto')
+        If 'auto', the ratio will be defined automatically to balanced
+        the dataset. Otherwise, the ratio will corresponds to the number
+        of samples in the minority class over the the number of samples
+        in the majority class.
+
+    rs_ : int or None, optional (default=None)
+        Seed for random number generation.
+
+    min_c_ : str or int
+        The identifier of the minority class.
+
+    max_c_ : str or int
+        The identifier of the majority class.
+
+    stats_c_ : dict of str/int : int
+        A dictionary in which the number of occurences of each class is
+        reported.
+
+    max_iter : int, optional (default=100)
+        Maximum number of iterations of the edited nearest neighbours
+        algorithm for a single run.
+
+    Notes
+    -----
+    The method is based on [1]_.
+
+    This class supports multi-class.
+
+    References
+    ----------
+    .. [1] I. Tomek, “An Experiment with the Edited Nearest-Neighbor
+       Rule,” IEEE Trans. Systems, Man, and Cybernetics, vol. 6, no. 6,
+       pp. 448-452, June 1976.
+
+    """
+
+    def __init__(self, return_indices=False, random_state=None, verbose=True,
+                 size_ngh=3, max_iter=100, kind_sel='all', n_jobs=-1):
+        """Initialisation of RENN object.
+
+        Parameters
+        ----------
+        return_indices : bool, optional (default=False)
+            Either to return or not the indices which will be selected from
+            the majority class.
+
+        random_state : int or None, optional (default=None)
+            Seed for random number generation.
+
+        verbose : bool, optional (default=True)
+            Boolean to either or not print information about the processing
+
+        size_ngh : int, optional (default=3)
+            Size of the neighbourhood to consider to compute the average
+            distance to the minority point samples.
+
+        max_iter : int, optional (default=100)
+            Maximum number of iterations of the edited nearest neighbours
+            algorithm for a single run.
+
+        kind_sel : str, optional (default='all')
+            Strategy to use in order to exclude samples.
+
+            - If 'all', all neighbours will have to agree with the samples of
+            interest to not be excluded.
+            - If 'mode', the majority vote of the neighbours will be used in
+            order to exclude a sample.
+
+        n_jobs : int, optional (default=-1)
+            The number of thread to open when it is possible.
+
+        Returns
+        -------
+        None
+
+        """
+        super(RepeatedEditedNearestNeighbours, self).__init__(
+            return_indices=return_indices,
+            random_state=random_state,
+            verbose=verbose)
+
+        self.size_ngh = size_ngh
+        possible_kind_sel = ('all', 'mode')
+        if kind_sel not in possible_kind_sel:
+            raise NotImplementedError
+        else:
+            self.kind_sel = kind_sel
+        self.n_jobs = n_jobs
+
+        if max_iter < 2:
+            raise ValueError('max_iter must be greater than 1.')
+        else:
+            self.max_iter = max_iter
+
+        self.enn_ = EditedNearestNeighbours(
+            return_indices=return_indices,
+            random_state=random_state, verbose=False,
+            size_ngh=size_ngh, kind_sel=kind_sel,
+            n_jobs=n_jobs)
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
+
+        super(RepeatedEditedNearestNeighbours, self).fit(X, y)
+        self.enn_.fit(X, y)
+
+        return self
+
+    def transform(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
+
+        idx_under : ndarray, shape (n_samples, )
+            If `return_indices` is `True`, a boolean array will be returned
+            containing the which samples have been selected.
+
+        """
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
+        X_, y_ = X.copy(), y.copy()
+
+        if self.return_indices:
+            idx_under = np.arange(X.shape[0], dtype=int)
+
+        prev_len = y.shape[0]
+
+        for n_iter in range(self.max_iter):
+            prev_len = y_.shape[0]
+            if self.return_indices:
+                X_, y_, idx_ = self.enn_.transform(X_, y_)
+                idx_under = idx_under[idx_]
+            else:
+                X_, y_ = self.enn_.transform(X_, y_)
+
+            if prev_len == y_.shape[0]:
+                break
+
+        if self.verbose:
+            print("Under-sampling performed: {}".format(Counter(y_)))
+
+        X_resampled, y_resampled = X_, y_
+
+        # Check if the indices of the samples selected should be returned too
+        if self.return_indices:
+            # Return the indices of interest
+            return X_resampled, y_resampled, idx_under
+        else:
+            return X_resampled, y_resampled
