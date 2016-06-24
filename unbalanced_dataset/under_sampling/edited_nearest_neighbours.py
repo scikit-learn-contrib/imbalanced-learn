@@ -376,10 +376,10 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
             self.max_iter = max_iter
 
         self.enn_ = EditedNearestNeighbours(
-            return_indices=return_indices,
-            random_state=random_state, verbose=False,
-            size_ngh=size_ngh, kind_sel=kind_sel,
-            n_jobs=n_jobs)
+            return_indices=self.return_indices,
+            random_state=self.random_state, verbose=False,
+            size_ngh=self.size_ngh, kind_sel=self.kind_sel,
+            n_jobs=self.n_jobs)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -406,7 +406,7 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -442,10 +442,10 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
         for n_iter in range(self.max_iter):
             prev_len = y_.shape[0]
             if self.return_indices:
-                X_, y_, idx_ = self.enn_.transform(X_, y_)
+                X_, y_, idx_ = self.enn_.sample(X_, y_)
                 idx_under = idx_under[idx_]
             else:
-                X_, y_ = self.enn_.transform(X_, y_)
+                X_, y_ = self.enn_.sample(X_, y_)
 
             if prev_len == y_.shape[0]:
                 break
