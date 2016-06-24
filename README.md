@@ -115,6 +115,6 @@ References:
 
 <a name="ref11"></a>[11]: G. Batista, R. C. Prati, M. C. Monard. [“A study of the behavior of several methods for balancing machine learning training data,”](http://www.sigkdd.org/sites/default/files/issues/6-1-2004-06/batista.pdf) ACM Sigkdd Explorations Newsletter 6 (1), 20-29, 2004.
 
-<a name="ref12"></a>[12]: G. Batista, B. Bazzan, M. Monard, [“Balancing Training Data for Automated Annotation of Keywords: a Case Study,”)[(http://www.icmc.usp.br/~gbatista/files/wob2003.pdf)] In WOB, 10-18, 2003.
+<a name="ref12"></a>[12]: G. Batista, B. Bazzan, M. Monard, [“Balancing Training Data for Automated Annotation of Keywords: a Case Study,”](http://www.icmc.usp.br/~gbatista/files/wob2003.pdf) In WOB, 10-18, 2003.
 
 <a name="ref13"></a>[13]: X. Y. Liu, J. Wu and Z. H. Zhou, [“Exploratory Undersampling for Class-Imbalance Learning,”](http://cse.seu.edu.cn/people/xyliu/publication/tsmcb09.pdf) in IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550, April 2009.
