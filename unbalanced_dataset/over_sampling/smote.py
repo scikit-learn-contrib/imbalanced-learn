@@ -8,7 +8,6 @@ from numpy.random import beta
 
 from sklearn.utils import check_X_y
 from sklearn.utils import check_array
-from sklearn.neighbors import LSHForest
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 
