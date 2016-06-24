@@ -376,12 +376,16 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
             self.kind_sel = kind_sel
         self.n_jobs = n_jobs
 
-        self.max_iter = max_iter
+        if max_iter < 2:
+            raise ValueError('max_iter must be greater than 1.')
+        else:
+            self.max_iter = max_iter
+
         self.enn_ = EditedNearestNeighbours(
-                return_indices=return_indices, 
-                random_state=random_state, verbose=False, 
-                size_ngh=size_ngh, kind_sel=kind_sel, 
-                n_jobs=n_jobs)
+            return_indices=return_indices,
+            random_state=random_state, verbose=False,
+            size_ngh=size_ngh, kind_sel=kind_sel,
+            n_jobs=n_jobs)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -405,7 +409,7 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
 
         super(RepeatedEditedNearestNeighbours, self).fit(X, y)
         self.enn_.fit(X, y)
-        
+
         return self
 
     def transform(self, X, y):
@@ -434,11 +438,10 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
         """
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
-
-        X_, y_ = X, y
+        X_, y_ = X.copy(), y.copy()
 
         if self.return_indices:
-            idx_under = np.arange(len(X.shape[0]), dtype=int)
+            idx_under = np.arange(X.shape[0], dtype=int)
 
         prev_len = y.shape[0]
 
@@ -456,7 +459,6 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
         if self.verbose:
             print("Under-sampling performed: {}".format(Counter(y_)))
 
-        #X_resampled, y_resampled = X_.copy(), y_.copy()
         X_resampled, y_resampled = X_, y_
 
         # Check if the indices of the samples selected should be returned too
@@ -465,4 +467,3 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled
-
