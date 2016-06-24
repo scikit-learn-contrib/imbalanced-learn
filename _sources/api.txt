@@ -23,6 +23,7 @@ Classes
    under_sampling.ClusterCentroids
    under_sampling.CondensedNearestNeighbour
    under_sampling.EditedNearestNeighbours
+   under_sampling.RepeatedEditedNearestNeighbours
    under_sampling.InstanceHardnessThreshold
    under_sampling.NearMiss
    under_sampling.NeighbourhoodCleaningRule

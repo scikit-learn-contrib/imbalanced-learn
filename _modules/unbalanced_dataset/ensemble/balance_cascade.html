@@ -276,7 +276,12 @@
                                              <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
                                              <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
         <span class="c1"># Define the classifier to use</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">classifier</span>
+        <span class="n">list_classifier</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;knn&#39;</span><span class="p">,</span> <span class="s1">&#39;decision-tree&#39;</span><span class="p">,</span> <span class="s1">&#39;random-forest&#39;</span><span class="p">,</span> <span class="s1">&#39;adaboost&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;gradient-boosting&#39;</span><span class="p">,</span> <span class="s1">&#39;linear-svm&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">list_classifier</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">classifier</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_max_subset</span> <span class="o">=</span> <span class="n">n_max_subset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap</span> <span class="o">=</span> <span class="n">bootstrap</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></div>
@@ -364,8 +369,7 @@
             <span class="n">classifier</span> <span class="o">=</span> <span class="n">LinearSVC</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
                                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;UnbalancedData.BalanceCascade: classifier &#39;</span>
-                               <span class="s1">&#39;not yet supported.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
         <span class="n">X_resampled</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">y_resampled</span> <span class="o">=</span> <span class="p">[]</span>

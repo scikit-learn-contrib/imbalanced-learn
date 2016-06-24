@@ -447,6 +447,26 @@ The implemented methods can be categorized into 2 groups: (i) fixed under-sampli
    :hidden:
 
    /auto_examples/under-sampling/plot_instance_hardness_threshold
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the repeated edited nearest-neighbours method.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/under-sampling/images/thumb/sphx_glr_plot_repeated_edited_nearest_neighbours_thumb.png
+
+        :ref:`sphx_glr_auto_examples_under-sampling_plot_repeated_edited_nearest_neighbours.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/under-sampling/plot_repeated_edited_nearest_neighbours
 .. raw:: html
 
     <div style='clear:both'></div>

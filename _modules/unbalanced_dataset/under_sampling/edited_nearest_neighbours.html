@@ -386,6 +386,222 @@
             <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span><span class="p">,</span> <span class="n">idx_under</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span></div></div>
+
+
+<div class="viewcode-block" id="RepeatedEditedNearestNeighbours"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.RepeatedEditedNearestNeighbours.html#unbalanced_dataset.under_sampling.RepeatedEditedNearestNeighbours">[docs]</a><span class="k">class</span> <span class="nc">RepeatedEditedNearestNeighbours</span><span class="p">(</span><span class="n">UnderSampler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to perform under-sampling based on the repeated edited nearest</span>
+<span class="sd">    neighbour method.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    return_indices : bool, optional (default=False)</span>
+<span class="sd">        Either to return or not the indices which will be selected from</span>
+<span class="sd">        the majority class.</span>
+
+<span class="sd">    random_state : int or None, optional (default=None)</span>
+<span class="sd">        Seed for random number generation.</span>
+
+<span class="sd">    verbose : bool, optional (default=True)</span>
+<span class="sd">        Boolean to either or not print information about the processing</span>
+
+<span class="sd">    size_ngh : int, optional (default=3)</span>
+<span class="sd">        Size of the neighbourhood to consider to compute the average</span>
+<span class="sd">        distance to the minority point samples.</span>
+
+<span class="sd">    kind_sel : str, optional (default=&#39;all&#39;)</span>
+<span class="sd">        Strategy to use in order to exclude samples.</span>
+
+<span class="sd">        - If &#39;all&#39;, all neighbours will have to agree with the samples of</span>
+<span class="sd">        interest to not be excluded.</span>
+<span class="sd">        - If &#39;mode&#39;, the majority vote of the neighbours will be used in</span>
+<span class="sd">        order to exclude a sample.</span>
+
+<span class="sd">    n_jobs : int, optional (default=-1)</span>
+<span class="sd">        The number of thread to open when it is possible.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ratio_ : str or float, optional (default=&#39;auto&#39;)</span>
+<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
+<span class="sd">        the dataset. Otherwise, the ratio will corresponds to the number</span>
+<span class="sd">        of samples in the minority class over the the number of samples</span>
+<span class="sd">        in the majority class.</span>
+
+<span class="sd">    rs_ : int or None, optional (default=None)</span>
+<span class="sd">        Seed for random number generation.</span>
+
+<span class="sd">    min_c_ : str or int</span>
+<span class="sd">        The identifier of the minority class.</span>
+
+<span class="sd">    max_c_ : str or int</span>
+<span class="sd">        The identifier of the majority class.</span>
+
+<span class="sd">    stats_c_ : dict of str/int : int</span>
+<span class="sd">        A dictionary in which the number of occurences of each class is</span>
+<span class="sd">        reported.</span>
+
+<span class="sd">    max_iter : int, optional (default=100)</span>
+<span class="sd">        Maximum number of iterations of the edited nearest neighbours</span>
+<span class="sd">        algorithm for a single run.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The method is based on [1]_.</span>
+
+<span class="sd">    This class supports multi-class.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] I. Tomek, &quot;An Experiment with the Edited Nearest-Neighbor</span>
+<span class="sd">       Rule,&quot; IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),</span>
+<span class="sd">       pp. 448-452, June 1976.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RepeatedEditedNearestNeighbours.__init__"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.RepeatedEditedNearestNeighbours.html#unbalanced_dataset.under_sampling.RepeatedEditedNearestNeighbours.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">size_ngh</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">kind_sel</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialisation of RENN object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        return_indices : bool, optional (default=False)</span>
+<span class="sd">            Either to return or not the indices which will be selected from</span>
+<span class="sd">            the majority class.</span>
+
+<span class="sd">        random_state : int or None, optional (default=None)</span>
+<span class="sd">            Seed for random number generation.</span>
+
+<span class="sd">        verbose : bool, optional (default=True)</span>
+<span class="sd">            Boolean to either or not print information about the processing</span>
+
+<span class="sd">        size_ngh : int, optional (default=3)</span>
+<span class="sd">            Size of the neighbourhood to consider to compute the average</span>
+<span class="sd">            distance to the minority point samples.</span>
+
+<span class="sd">        max_iter : int, optional (default=100)</span>
+<span class="sd">            Maximum number of iterations of the edited nearest neighbours</span>
+<span class="sd">            algorithm for a single run.</span>
+
+<span class="sd">        kind_sel : str, optional (default=&#39;all&#39;)</span>
+<span class="sd">            Strategy to use in order to exclude samples.</span>
+
+<span class="sd">            - If &#39;all&#39;, all neighbours will have to agree with the samples of</span>
+<span class="sd">            interest to not be excluded.</span>
+<span class="sd">            - If &#39;mode&#39;, the majority vote of the neighbours will be used in</span>
+<span class="sd">            order to exclude a sample.</span>
+
+<span class="sd">        n_jobs : int, optional (default=-1)</span>
+<span class="sd">            The number of thread to open when it is possible.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RepeatedEditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">size_ngh</span> <span class="o">=</span> <span class="n">size_ngh</span>
+        <span class="n">possible_kind_sel</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;mode&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind_sel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">possible_kind_sel</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kind_sel</span> <span class="o">=</span> <span class="n">kind_sel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
+
+        <span class="k">if</span> <span class="n">max_iter</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;max_iter must be greater than 1.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">enn_</span> <span class="o">=</span> <span class="n">EditedNearestNeighbours</span><span class="p">(</span>
+            <span class="n">return_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+            <span class="n">size_ngh</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size_ngh</span><span class="p">,</span> <span class="n">kind_sel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kind_sel</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RepeatedEditedNearestNeighbours.fit"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.RepeatedEditedNearestNeighbours.html#unbalanced_dataset.under_sampling.RepeatedEditedNearestNeighbours.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find the classes statistics before to perform sampling.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : ndarray, shape (n_samples, n_features)</span>
+<span class="sd">            Matrix containing the data which have to be sampled.</span>
+
+<span class="sd">        y : ndarray, shape (n_samples, )</span>
+<span class="sd">            Corresponding label for each sample in X.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : object,</span>
+<span class="sd">            Return self.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check the consistency of X and y</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">RepeatedEditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enn_</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="RepeatedEditedNearestNeighbours.sample"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.under_sampling.RepeatedEditedNearestNeighbours.html#unbalanced_dataset.under_sampling.RepeatedEditedNearestNeighbours.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : ndarray, shape (n_samples, n_features)</span>
+<span class="sd">            Matrix containing the data which have to be sampled.</span>
+
+<span class="sd">        y : ndarray, shape (n_samples, )</span>
+<span class="sd">            Corresponding label for each sample in X.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_resampled : ndarray, shape (n_samples_new, n_features)</span>
+<span class="sd">            The array containing the resampled data.</span>
+
+<span class="sd">        y_resampled : ndarray, shape (n_samples_new)</span>
+<span class="sd">            The corresponding label of `X_resampled`</span>
+
+<span class="sd">        idx_under : ndarray, shape (n_samples, )</span>
+<span class="sd">            If `return_indices` is `True`, a boolean array will be returned</span>
+<span class="sd">            containing the which samples have been selected.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check the consistency of X and y</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
+            <span class="n">idx_under</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="n">prev_len</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">n_iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">):</span>
+            <span class="n">prev_len</span> <span class="o">=</span> <span class="n">y_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
+                <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">,</span> <span class="n">idx_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enn_</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">)</span>
+                <span class="n">idx_under</span> <span class="o">=</span> <span class="n">idx_under</span><span class="p">[</span><span class="n">idx_</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enn_</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">prev_len</span> <span class="o">==</span> <span class="n">y_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Under-sampling performed: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">y_</span><span class="p">)))</span>
+
+        <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span>
+
+        <span class="c1"># Check if the indices of the samples selected should be returned too</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
+            <span class="c1"># Return the indices of interest</span>
+            <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span><span class="p">,</span> <span class="n">idx_under</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span></div></div>
 </pre></div>
 
            </div>
