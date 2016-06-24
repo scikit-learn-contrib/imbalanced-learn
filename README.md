@@ -11,7 +11,7 @@ UnbalancedDataset is a python package offering a number of re-sampling technique
 Documentation
 =============
 
-Installation documentation, API documentation, and examples can be found on the [documentation](http://fmfn.github.io/UnbalancedDataset/)
+Installation documentation, API documentation, and examples can be found on the [documentation](http://glemaitre.github.io/UnbalancedDataset)
 
 Installation
 ============
@@ -20,8 +20,7 @@ Installation
 
 * scipy(>=0.17.1)
 * numpy(>=1.10.4)
-* scikit-learn(>=0.17.0)
-* six(>=1.10.0)
+* scikit-learn(>=0.17.1)
 
 ### Installation
 
