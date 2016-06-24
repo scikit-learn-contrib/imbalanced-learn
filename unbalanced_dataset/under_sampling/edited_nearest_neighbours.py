@@ -324,7 +324,7 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
     """
 
     def __init__(self, return_indices=False, random_state=None, verbose=True,
-                 size_ngh=3, max_iter=None, kind_sel='all', n_jobs=-1):
+                 size_ngh=3, max_iter=100, kind_sel='all', n_jobs=-1):
         """Initialisation of RENN object.
 
         Parameters
@@ -366,7 +366,7 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
         super(RepeatedEditedNearestNeighbours, self).__init__(
             return_indices=return_indices,
             random_state=random_state,
-            verbose=False)
+            verbose=verbose)
 
         self.size_ngh = size_ngh
         possible_kind_sel = ('all', 'mode')
@@ -435,27 +435,29 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        X_resampled, y_resampled = X.copy(), y.copy()
-        len_ = y.shape[0]
-        current_len_ = len_ - 1
+        X_, y_ = X, y
 
         if self.return_indices:
-            idx_under = np.arange(len_, dtype=int)
+            idx_under = np.arange(len(X.shape[0]), dtype=int)
 
-        n_iter = 0
-        while current_len_ < len_ and 
-                (self.max_iter is None or n_iter < self.max_iter):
+        prev_len = y.shape[0]
+
+        for n_iter in range(self.max_iter):
+            prev_len = y_.shape[0]
             if self.return_indices:
-                X_resampled, y_resampled, idx_ = self.enn_.transform(X_resampled, y_resampled)
+                X_, y_, idx_ = self.enn_.transform(X_, y_)
                 idx_under = idx_under[idx_]
             else:
-                X_resampled, y_resampled = self.enn_.transform(X_resampled, y_resampled)
+                X_, y_ = self.enn_.transform(X_, y_)
 
-            n_iter += 1
-            len_, current_len_ = current_len_, y_resampled.shape[0]
+            if prev_len == y_.shape[0]:
+                break
 
         if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(y_resampled)))
+            print("Under-sampling performed: {}".format(Counter(y_)))
+
+        #X_resampled, y_resampled = X_.copy(), y_.copy()
+        X_resampled, y_resampled = X_, y_
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:
