@@ -135,7 +135,12 @@ class BalanceCascade(EnsembleSampler):
                                              verbose=verbose,
                                              random_state=random_state)
         # Define the classifier to use
-        self.classifier = classifier
+        list_classifier = ('knn', 'decision-tree', 'random-forest', 'adaboost',
+                          'gradient-boosting', 'linear-svm')
+        if classifier in list_classifier:
+            self.classifier = classifier
+        else:
+            raise NotImplementedError
         self.n_max_subset = n_max_subset
         self.bootstrap = bootstrap
         self.kwargs = kwargs
@@ -223,8 +228,7 @@ class BalanceCascade(EnsembleSampler):
             classifier = LinearSVC(random_state=self.random_state,
                                    **self.kwargs)
         else:
-            raise RuntimeError('UnbalancedData.BalanceCascade: classifier '
-                               'not yet supported.')
+            raise NotImplementedError
 
         X_resampled = []
         y_resampled = []

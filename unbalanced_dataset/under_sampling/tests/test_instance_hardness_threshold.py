@@ -54,15 +54,14 @@ def test_iht_bad_ratio():
                   ratio=ratio)
 
 
-# def test_iht_estimator_no_proba():
-#     """Test either if an error is raised when the estimator does not have
-#     predict_proba function"""
+def test_iht_wrong_estimator():
+    """Test either if an error is raised when the estimator is unknown"""
 
-#     # Resample the data
-#     ratio = 0.5
-#     est = 'linear-svm'
-#     assert_raises(ValueError, InstanceHardnessThreshold, est, ratio=ratio,
-#                   random_state=RND_SEED)
+    # Resample the data
+    ratio = 0.5
+    est = 'rnd'
+    assert_raises(NotImplementedError, InstanceHardnessThreshold, est,
+                  ratio=ratio, random_state=RND_SEED)
 
 def test_iht_init():
     """Test the initialisation of the object"""
@@ -172,5 +171,96 @@ def test_iht_fit_sample_half():
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'iht_x_05.npy'))
     y_gt = np.load(os.path.join(currdir, 'data', 'iht_y_05.npy'))
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_iht_fit_sample_knn():
+    """Test the fit sample routine with knn"""
+
+    # Resample the data
+    est = 'knn'
+    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
+    X_resampled, y_resampled = iht.fit_sample(X, Y)
+
+    currdir = os.path.dirname(os.path.abspath(__file__))
+    X_gt = np.load(os.path.join(currdir, 'data', 'iht_x_knn.npy'))
+    y_gt = np.load(os.path.join(currdir, 'data', 'iht_y_knn.npy'))
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_iht_fit_sample_decision_tree():
+    """Test the fit sample routine with decision-tree"""
+
+    # Resample the data
+    est = 'decision-tree'
+    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
+    X_resampled, y_resampled = iht.fit_sample(X, Y)
+
+    currdir = os.path.dirname(os.path.abspath(__file__))
+    X_gt = np.load(os.path.join(currdir, 'data', 'iht_x_dt.npy'))
+    y_gt = np.load(os.path.join(currdir, 'data', 'iht_y_dt.npy'))
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_iht_fit_sample_random_forest():
+    """Test the fit sample routine with random forest"""
+
+    # Resample the data
+    est = 'random-forest'
+    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
+    X_resampled, y_resampled = iht.fit_sample(X, Y)
+
+    currdir = os.path.dirname(os.path.abspath(__file__))
+    X_gt = np.load(os.path.join(currdir, 'data', 'iht_x_rf.npy'))
+    y_gt = np.load(os.path.join(currdir, 'data', 'iht_y_rf.npy'))
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_iht_fit_sample_adaboost():
+    """Test the fit sample routine with adaboost"""
+
+    # Resample the data
+    est = 'adaboost'
+    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
+    X_resampled, y_resampled = iht.fit_sample(X, Y)
+
+    currdir = os.path.dirname(os.path.abspath(__file__))
+    X_gt = np.load(os.path.join(currdir, 'data', 'iht_x_adb.npy'))
+    y_gt = np.load(os.path.join(currdir, 'data', 'iht_y_adb.npy'))
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+
+def test_iht_fit_sample_gradient_boosting():
+    """Test the fit sample routine with gradient boosting"""
+
+    # Resample the data
+    est = 'gradient-boosting'
+    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
+    X_resampled, y_resampled = iht.fit_sample(X, Y)
+
+    currdir = os.path.dirname(os.path.abspath(__file__))
+    X_gt = np.load(os.path.join(currdir, 'data', 'iht_x_gb.npy'))
+    y_gt = np.load(os.path.join(currdir, 'data', 'iht_y_gb.npy'))
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_iht_fit_sample_linear_svm():
+    """Test the fit sample routine with linear SVM"""
+
+    # Resample the data
+    est = 'linear-svm'
+    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
+    X_resampled, y_resampled = iht.fit_sample(X, Y)
+
+    currdir = os.path.dirname(os.path.abspath(__file__))
+    X_gt = np.load(os.path.join(currdir, 'data', 'iht_x_svm.npy'))
+    y_gt = np.load(os.path.join(currdir, 'data', 'iht_y_svm.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)

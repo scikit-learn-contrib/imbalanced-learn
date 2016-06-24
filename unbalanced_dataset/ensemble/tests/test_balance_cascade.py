@@ -302,11 +302,9 @@ def test_init_wrong_classifier():
     ratio = 'auto'
     classifier = 'rnd'
 
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
-                        return_indices=True, classifier=classifier)
-
-    # Create the sampling object
-    assert_raises(RuntimeError, bc.fit_sample, X, Y)
+    assert_raises(NotImplementedError, BalanceCascade, ratio=ratio,
+                  random_state=RND_SEED, return_indices=True,
+                  classifier=classifier)
 
 
 def test_fit_sample_auto_early_stop():
