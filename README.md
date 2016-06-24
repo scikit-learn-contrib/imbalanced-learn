@@ -71,6 +71,7 @@ Bellow is a list of the methods currently implemented in this module.
     7. [Neighboorhood Cleaning Rule](#ref5)
 	8. [Edited Nearest Neighbours](#ref6)
 	9. [Instance Hardness Threshold](#ref7)
+	10. [Repeated Edited Nearest Neighbours](#ref14)
 
 * Over-sampling
     1. Random minority over-sampling with replacement
@@ -118,3 +119,5 @@ References:
 <a name="ref12"></a>[12]: G. Batista, B. Bazzan, M. Monard, [“Balancing Training Data for Automated Annotation of Keywords: a Case Study,”](http://www.icmc.usp.br/~gbatista/files/wob2003.pdf) In WOB, 10-18, 2003.
 
 <a name="ref13"></a>[13]: X. Y. Liu, J. Wu and Z. H. Zhou, [“Exploratory Undersampling for Class-Imbalance Learning,”](http://cse.seu.edu.cn/people/xyliu/publication/tsmcb09.pdf) in IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550, April 2009.
+
+<a name="ref14"></a>[14]:I. Tomek, [“An Experiment with the Edited Nearest-Neighbor Rule,”](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=4309523) IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6), pp. 448-452, June 1976.
