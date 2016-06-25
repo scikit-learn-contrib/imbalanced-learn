@@ -6,10 +6,10 @@ from abc import ABCMeta, abstractmethod
 
 from sklearn.externals import six
 
-from ..base_sampler import BaseSampler
+from ..base import SamplerMixin
 
 
-class UnderSampler(six.with_metaclass(ABCMeta, BaseSampler)):
+class UnderSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
     """Base class for under-sampling.
 
     Warning: This class should not be used directly. Use the derive classes

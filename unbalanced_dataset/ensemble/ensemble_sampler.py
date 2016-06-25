@@ -4,18 +4,18 @@ from __future__ import division
 
 from abc import ABCMeta, abstractmethod
 
-from ..base_sampler import BaseSampler
+from sklearn.externals import six
+
+from ..base import SamplerMixin
 
 
-class EnsembleSampler(BaseSampler):
+class EnsembleSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
     """Base class for ensenble sampling.
 
     Warning: This class should not be used directly. Use the derive classes
     instead.
 
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
