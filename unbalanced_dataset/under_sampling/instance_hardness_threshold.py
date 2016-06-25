@@ -19,40 +19,43 @@ class InstanceHardnessThreshold(UnderSampler):
 
     Parameters
     ----------
-    estimator : sklearn classifier
+    estimator : str, optional (default='linear-svm')
         Classifier to be used in to estimate instance hardness of the samples.
+        The choices are the following: 'knn',
+        'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
+        and 'linear-svm'.
 
     ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-    cv : int, optional (default=5)
-        Number of folds to be used when estimating samples' instance hardness.
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
+        of samples in the minority class over the the number of samples
+        in the majority class.
 
     return_indices : bool, optional (default=False)
-        Either to return or not the indices which will be selected from
-        the majority class.
+        Whether or not to return the indices of the samples randomly
+        selected from the majority class.
 
     random_state : int or None, optional (default=None)
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing
+        Whether or not to print information about the processing.
+
+    cv : int, optional (default=5)
+        Number of folds to be used when estimating samples' instance hardness.
 
     n_jobs : int, optional (default=-1)
-        The number of thread to open when it is possible.
+        The number of threads to open if possible.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+    ratio : str or float
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    rs_ : int or None, optional (default=None)
+    random state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -64,9 +67,6 @@ class InstanceHardnessThreshold(UnderSampler):
     stats_c_ : dict of str/int : int
         A dictionary in which the number of occurences of each class is
         reported.
-
-    estimator_ : sklearn classifier
-        Classifier  used in to estimate instance hardness of the samples.
 
     cv : int, optional (default=5)
         Number of folds used when estimating samples' instance hardness.
@@ -85,38 +85,41 @@ class InstanceHardnessThreshold(UnderSampler):
 
     """
 
-    def __init__(self, estimator, ratio='auto', return_indices=False, cv=5,
-                 random_state=None, verbose=True, n_jobs=-1):
+    def __init__(self, estimator='linear-svm', ratio='auto',
+                 return_indices=False, random_state=None, verbose=True,
+                 cv=5, n_jobs=-1, **kwargs):
         """Initialisation of Instance Hardness Threshold object.
 
         Parameters
         ----------
-        estimator : sklearn classifier
-            Classifier to be used in to estimate instance hardness of the
-            samples.
+        estimator : str, optional (default='linear-svm')
+            Classifier to be used in to estimate instance hardness of
+            the samples. The choices are the following: 'knn',
+            'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
+            and 'linear-svm'.
 
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
             of samples in the minority class over the the number of samples
             in the majority class.
 
-        cv : int, optional (default=5)
-            Number of folds to be used when estimating samples' instance
-            hardness.
-
         return_indices : bool, optional (default=False)
-            Either to return or not the indices which will be selected from
-            the majority class.
+            Whether or not to return the indices of the samples randomly
+            selected from the majority class.
 
         random_state : int or None, optional (default=None)
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
+
+        cv : int, optional (default=5)
+            Number of folds to be used when estimating samples' instance
+            hardness.
 
         n_jobs : int, optional (default=-1)
-            The number of thread to open when it is possible.
+            The number of threads to open if possible.
 
         Returns
         -------
@@ -129,11 +132,14 @@ class InstanceHardnessThreshold(UnderSampler):
             random_state=random_state,
             verbose=verbose)
 
-        if not hasattr(estimator, 'predict_proba'):
-            raise ValueError('Estimator does not have predict_proba method.')
+        # Define the estimator to use
+        list_estimator = ('knn', 'decision-tree', 'random-forest', 'adaboost',
+                          'gradient-boosting', 'linear-svm')
+        if estimator in list_estimator:
+            self.estimator = estimator
         else:
-            self.estimator_ = estimator
-
+            raise NotImplementedError
+        self.kwargs = kwargs
         self.cv = cv
         self.n_jobs = n_jobs
 
@@ -161,7 +167,7 @@ class InstanceHardnessThreshold(UnderSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -188,10 +194,43 @@ class InstanceHardnessThreshold(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(InstanceHardnessThreshold, self).transform(X, y)
+        super(InstanceHardnessThreshold, self).sample(X, y)
 
+        # Select the appropriate classifier
+        if self.estimator == 'knn':
+            from sklearn.neighbors import KNeighborsClassifier
+            estimator = KNeighborsClassifier(
+                **self.kwargs)
+        elif self.estimator == 'decision-tree':
+            from sklearn.tree import DecisionTreeClassifier
+            estimator = DecisionTreeClassifier(
+                random_state=self.random_state,
+                **self.kwargs)
+        elif self.estimator == 'random-forest':
+            from sklearn.ensemble import RandomForestClassifier
+            estimator = RandomForestClassifier(
+                random_state=self.random_state,
+                **self.kwargs)
+        elif self.estimator == 'adaboost':
+            from sklearn.ensemble import AdaBoostClassifier
+            estimator = AdaBoostClassifier(
+                random_state=self.random_state,
+                **self.kwargs)
+        elif self.estimator == 'gradient-boosting':
+            from sklearn.ensemble import GradientBoostingClassifier
+            estimator = GradientBoostingClassifier(
+                random_state=self.random_state,
+                **self.kwargs)
+        elif self.estimator == 'linear-svm':
+            from sklearn.svm import SVC
+            estimator = SVC(probability=True,
+                            random_state=self.random_state, **self.kwargs)
+        else:
+            raise NotImplementedError
+
+        # Create the different folds
         skf = StratifiedKFold(y, n_folds=self.cv, shuffle=False,
-                              random_state=self.rs_)
+                              random_state=self.random_state)
 
         probabilities = np.zeros(y.shape[0], dtype=float)
 
@@ -199,19 +238,19 @@ class InstanceHardnessThreshold(UnderSampler):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
-            self.estimator_.fit(X_train, y_train)
+            estimator.fit(X_train, y_train)
 
-            probs = self.estimator_.predict_proba(X_test)
-            classes = self.estimator_.classes_
+            probs = estimator.predict_proba(X_test)
+            classes = estimator.classes_
             probabilities[test_index] = [
                 probs[l, np.where(classes == c)[0][0]]
                 for l, c in enumerate(y_test)]
 
         # Compute the number of cluster needed
-        if self.ratio_ == 'auto':
+        if self.ratio == 'auto':
             num_samples = self.stats_c_[self.min_c_]
         else:
-            num_samples = int(self.stats_c_[self.min_c_] / self.ratio_)
+            num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
 
         # Find the percentile corresponding to the top num_samples
         threshold = np.percentile(

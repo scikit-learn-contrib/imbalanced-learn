@@ -18,7 +18,7 @@ utils
     Module which provides helper methods.
 """
 
-from .version import _check_module_dependencies, __version__
+from .version import _check_module_dependencies
 
 _check_module_dependencies()
 

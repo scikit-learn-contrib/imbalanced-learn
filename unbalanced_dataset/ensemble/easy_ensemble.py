@@ -10,44 +10,44 @@ from ..under_sampling import RandomUnderSampler
 
 
 class EasyEnsemble(EnsembleSampler):
-    """Perform under-sampling using an ensemble of random selection.
+    """Create an ensemble sets by iteratively applying random under-sampling.
 
-    This method iteratively select subset and make an ensemble of the
+    This method iteratively select a random subset and make an ensemble of the
     different sets.
 
     Parameters
     ----------
     ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
     return_indices : bool, optional (default=True)
-        Either to return or not the indices which will be selected from
-        the majority class.
+        Whether or not to return the indices of the samples randomly
+        selected from the majority class.
 
     random_state : int or None, optional (default=None)
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing
+        Whether or not to print information about the processing.
 
     replacement : bool, optional (default=False)
-        Either or not to sample randomly with replacement or not.
+        Whether or not to sample randomly with replacement or not.
 
     n_subsets : int, optional (default=10)
         Number of subsets to generate.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+    ratio : str or float
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    rs_ : int or None, optional (default=None)
+    random_state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -80,23 +80,23 @@ class EasyEnsemble(EnsembleSampler):
         Parameters
         ----------
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
             of samples in the minority class over the the number of samples
             in the majority class.
 
         return_indices : bool, optional (default=True)
-            Either to return or not the indices which will be selected from
-            the majority class.
+            Whether or not to return the indices of the samples randomly
+            selected from the majority class.
 
         random_state : int or None, optional (default=None)
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
 
         replacement : bool, optional (default=False)
-            Either or not to sample randomly with replacement or not.
+            Whether or not to sample randomly with replacement or not.
 
         n_subsets : int, optional (default=10)
             Number of subsets to generate.
@@ -138,7 +138,7 @@ class EasyEnsemble(EnsembleSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -165,7 +165,7 @@ class EasyEnsemble(EnsembleSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(EasyEnsemble, self).transform(X, y)
+        super(EasyEnsemble, self).sample(X, y)
 
         X_resampled = []
         y_resampled = []
@@ -177,15 +177,15 @@ class EasyEnsemble(EnsembleSampler):
                 print("Creation of the set #{}".format(s))
 
             # Create the object for random under-sampling
-            rus = RandomUnderSampler(ratio=self.ratio_,
+            rus = RandomUnderSampler(ratio=self.ratio,
                                      return_indices=self.return_indices,
-                                     random_state=self.rs_,
+                                     random_state=self.random_state,
                                      verbose=self.verbose,
                                      replacement=self.replacement)
             if self.return_indices:
-                sel_x, sel_y, sel_idx = rus.fit_transform(X, y)
+                sel_x, sel_y, sel_idx = rus.fit_sample(X, y)
             else:
-                sel_x, sel_y = rus.fit_transform(X, y)
+                sel_x, sel_y = rus.fit_sample(X, y)
 
             X_resampled.append(sel_x)
             y_resampled.append(sel_y)

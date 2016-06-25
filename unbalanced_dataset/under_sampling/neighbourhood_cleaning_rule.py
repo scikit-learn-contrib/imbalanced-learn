@@ -19,34 +19,28 @@ class NeighbourhoodCleaningRule(UnderSampler):
     Parameters
     ----------
     return_indices : bool, optional (default=False)
-        Either to return or not the indices which will be selected from
-        the majority class.
+        Whether or not to return the indices of the samples randomly
+        selected from the majority class.
 
     random_state : int or None, optional (default=None)
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing
+        Whether or not to print information about the processing.
 
     size_ngh : int, optional (default=3)
         Size of the neighbourhood to consider in order to make
         the comparison between each samples and their NN.
 
     n_jobs : int, optional (default=-1)
-        The number of thread to open when it is possible.
+        The number of threads to open if possible.
 
     **kwargs : keywords
         Parameter to use for the Neareast Neighbours object.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
-
-    rs_ : int or None, optional (default=None)
+    random state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -77,21 +71,21 @@ class NeighbourhoodCleaningRule(UnderSampler):
         Parameters
         ----------
         return_indices : bool, optional (default=False)
-            Either to return or not the indices which will be selected from
-            the majority class.
+            Whether or not to return the indices of the samples randomly
+            selected from the majority class.
 
         random_state : int or None, optional (default=None)
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
 
         size_ngh : int, optional (default=3)
             Size of the neighbourhood to consider in order to make
             the comparison between each samples and their NN.
 
         n_jobs : int, optional (default=-1)
-            The number of thread to open when it is possible.
+            The number of threads to open if possible.
 
         **kwargs : keywords
             Parameter to use for the Neareast Neighbours object.
@@ -133,7 +127,7 @@ class NeighbourhoodCleaningRule(UnderSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -160,7 +154,7 @@ class NeighbourhoodCleaningRule(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(NeighbourhoodCleaningRule, self).transform(X, y)
+        super(NeighbourhoodCleaningRule, self).sample(X, y)
 
         # Start with the minority class
         X_min = X[y == self.min_c_]

@@ -3,7 +3,7 @@
 Balance cascade
 ===============
 
-An illustration of the balance cascade method.
+An illustration of the balance cascade ensemble method.
 
 """
 
@@ -34,9 +34,9 @@ pca = PCA(n_components=2)
 # Fit and transform x to visualise inside a 2D feature space
 X_vis = pca.fit_transform(X)
 
-# Apply the random under-sampling
+# Apply Balance Cascade method
 bc = BalanceCascade()
-X_resampled, y_resampled = bc.fit_transform(X, y)
+X_resampled, y_resampled = bc.fit_sample(X, y)
 X_res_vis = []
 for X_res in X_resampled:
     X_res_vis.append(pca.transform(X_res))

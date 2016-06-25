@@ -4,18 +4,18 @@ from __future__ import division
 
 from abc import ABCMeta, abstractmethod
 
-from ..base_sampler import BaseSampler
+from sklearn.externals import six
+
+from ..base import SamplerMixin
 
 
-class OverSampler(BaseSampler):
+class OverSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
     """Base class for over-sampling.
 
     Warning: This class should not be used directly. Use the derive classes
     instead.
 
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __init__(self, ratio='auto', random_state=None, verbose=True):
@@ -24,8 +24,8 @@ class OverSampler(BaseSampler):
         Parameters
         ----------
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
             of samples in the minority class over the the number of samples
             in the majority class.
 
@@ -33,7 +33,7 @@ class OverSampler(BaseSampler):
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
 
         Returns
         -------
@@ -66,7 +66,7 @@ class OverSampler(BaseSampler):
         super(OverSampler, self).fit(X, y)
 
     @abstractmethod
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -86,4 +86,4 @@ class OverSampler(BaseSampler):
             The corresponding label of `X_resampled`
 
         """
-        super(OverSampler, self).transform(X, y)
+        super(OverSampler, self).sample(X, y)

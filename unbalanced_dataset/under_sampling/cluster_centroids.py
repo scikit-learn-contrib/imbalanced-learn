@@ -14,8 +14,8 @@ from .under_sampler import UnderSampler
 
 
 class ClusterCentroids(UnderSampler):
-    """Class to perform under-sampling by generating centroids base on
-    clustering.
+    """Perform under-sampling by generating centroids based on
+    clustering methods.
 
     Experimental method that under samples the majority class by replacing a
     cluster of majority samples by the cluster centroid of a KMeans algorithm.
@@ -26,8 +26,8 @@ class ClusterCentroids(UnderSampler):
     Parameters
     ----------
     ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
@@ -35,23 +35,23 @@ class ClusterCentroids(UnderSampler):
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing
+        Whether or not to print information about the processing.
 
     n_jobs : int, optional (default=-1)
-        The number of thread to open when it is possible.
+        The number of threads to open if possible.
 
     **kwargs : keywords
         Parameter to use for the KMeans object.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+    ratio : str or float
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    rs_ : int or None, optional (default=None)
+    random_state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -77,8 +77,8 @@ class ClusterCentroids(UnderSampler):
         Parameters
         ----------
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
             of samples in the minority class over the the number of samples
             in the majority class.
 
@@ -86,10 +86,10 @@ class ClusterCentroids(UnderSampler):
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
 
         n_jobs : int, optional (default=-1)
-            The number of thread to open when it is possible.
+            The number of threads to open if possible.
 
         **kwargs : keywords
             Parameter to use for the KMeans object.
@@ -130,7 +130,7 @@ class ClusterCentroids(UnderSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -153,16 +153,16 @@ class ClusterCentroids(UnderSampler):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        super(ClusterCentroids, self).transform(X, y)
+        super(ClusterCentroids, self).sample(X, y)
 
         # Compute the number of cluster needed
-        if self.ratio_ == 'auto':
+        if self.ratio == 'auto':
             num_samples = self.stats_c_[self.min_c_]
         else:
-            num_samples = int(self.stats_c_[self.min_c_] / self.ratio_)
+            num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
 
         # Create the clustering object
-        kmeans = KMeans(n_clusters=num_samples, random_state=self.rs_)
+        kmeans = KMeans(n_clusters=num_samples, random_state=self.random_state)
         kmeans.set_params(**self.kwargs)
 
         # Start with the minority class

@@ -8,7 +8,6 @@ An illustration of the instance hardness threshold method.
 """
 
 print(__doc__)
-import numpy as np
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -20,7 +19,6 @@ palette = sns.color_palette()
 
 from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA
-from sklearn.svm import SVC
 
 from unbalanced_dataset.under_sampling import InstanceHardnessThreshold
 
@@ -47,9 +45,8 @@ for ax, ratio in zip(axs, [0.0, 0.1, 0.3, 0.5]):
                    linewidth=0.15)
         ax.set_title('Original set')
     else:
-        estimator = SVC(probability=True)
-        iht = InstanceHardnessThreshold(estimator, ratio=ratio)
-        X_res, y_res = iht.fit_transform(X, y)
+        iht = InstanceHardnessThreshold(ratio=ratio)
+        X_res, y_res = iht.fit_sample(X, y)
         X_res_vis = pca.transform(X_res)
 
         ax.scatter(X_res_vis[y_res == 0, 0], X_res_vis[y_res == 0, 1],

@@ -20,8 +20,8 @@ class RandomOverSampler(OverSampler):
     Parameters
     ----------
     ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
@@ -29,17 +29,17 @@ class RandomOverSampler(OverSampler):
         Seed for random number generation.
 
     verbose : bool, optional (default=True)
-        Boolean to either or not print information about the processing.
+        Whether or not to print information about the processing.
 
     Attributes
     ----------
-    ratio_ : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balanced
-        the dataset. Otherwise, the ratio will corresponds to the number
+    ratio : str or float
+        If 'auto', the ratio will be defined automatically to balance
+        the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    rs_ : int or None, optional (default=None)
+    random_state : int or None
         Seed for random number generation.
 
     min_c_ : str or int
@@ -63,8 +63,8 @@ class RandomOverSampler(OverSampler):
         Parameters
         ----------
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
             of samples in the minority class over the the number of samples
             in the majority class.
 
@@ -72,7 +72,7 @@ class RandomOverSampler(OverSampler):
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
 
         Returns
         -------
@@ -108,7 +108,7 @@ class RandomOverSampler(OverSampler):
 
         return self
 
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -132,7 +132,7 @@ class RandomOverSampler(OverSampler):
         X, y = check_X_y(X, y)
 
         # Call the parent function
-        super(RandomOverSampler, self).transform(X, y)
+        super(RandomOverSampler, self).sample(X, y)
 
         # Keep the samples from the majority class
         X_resampled = X[y == self.maj_c_]
@@ -146,15 +146,15 @@ class RandomOverSampler(OverSampler):
                 continue
 
             # Define the number of sample to create
-            if self.ratio_ == 'auto':
+            if self.ratio == 'auto':
                 num_samples = int(self.stats_c_[self.maj_c_] -
                                   self.stats_c_[key])
             else:
-                num_samples = int((self.ratio_ * self.stats_c_[self.maj_c_]) -
-                                  self.stats_c_[key])            
+                num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
+                                  self.stats_c_[key])
 
             # Pick some elements at random
-            np.random.seed(self.rs_)
+            np.random.seed(self.random_state)
             indx = np.random.randint(low=0, high=self.stats_c_[key],
                                      size=num_samples)
 

@@ -4,18 +4,18 @@ from __future__ import division
 
 from abc import ABCMeta, abstractmethod
 
-from ..base_sampler import BaseSampler
+from sklearn.externals import six
+
+from ..base import SamplerMixin
 
 
-class EnsembleSampler(BaseSampler):
+class EnsembleSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
     """Base class for ensenble sampling.
 
     Warning: This class should not be used directly. Use the derive classes
     instead.
 
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
@@ -25,20 +25,20 @@ class EnsembleSampler(BaseSampler):
         Parameters
         ----------
         ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
+            If 'auto', the ratio will be defined automatically to balance
+            the dataset. Otherwise, the ratio is defined as the number
             of samples in the minority class over the the number of samples
             in the majority class.
 
         return_indices : bool, optional (default=True)
-            Either to return or not the indices which will be selected from
-            the majority class.
+            Whether or not to return the indices of the samples randomly
+            selected from the majority class.
 
         random_state : int or None, optional (default=None)
             Seed for random number generation.
 
         verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
+            Whether or not to print information about the processing.
 
         Returns
         -------
@@ -71,7 +71,7 @@ class EnsembleSampler(BaseSampler):
         super(EnsembleSampler, self).fit(X, y)
 
     @abstractmethod
-    def transform(self, X, y):
+    def sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -95,4 +95,4 @@ class EnsembleSampler(BaseSampler):
             containing the which samples have been selected.
 
         """
-        super(EnsembleSampler, self).transform(X, y)
+        super(EnsembleSampler, self).sample(X, y)

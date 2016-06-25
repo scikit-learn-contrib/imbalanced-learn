@@ -7,8 +7,10 @@ import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_warns
 
 from sklearn.datasets import make_classification
+from sklearn.utils.estimator_checks import check_estimator
 
 from unbalanced_dataset.under_sampling import ClusterCentroids
 
@@ -18,6 +20,11 @@ X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
                            n_samples=5000, random_state=RND_SEED)
+
+
+def test_cc_sk_estimator():
+    """Test the sklearn estimator compatibility"""
+    check_estimator(ClusterCentroids)
 
 
 def test_cc_bad_ratio():
@@ -49,8 +56,8 @@ def test_init():
     verbose = True
     cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED, verbose=verbose)
 
-    assert_equal(cc.ratio_, ratio)
-    assert_equal(cc.rs_, RND_SEED)
+    assert_equal(cc.ratio, ratio)
+    assert_equal(cc.random_state, RND_SEED)
     assert_equal(cc.verbose, verbose)
     assert_equal(cc.min_c_, None)
     assert_equal(cc.maj_c_, None)
@@ -68,7 +75,7 @@ def test_cc_fit_single_class():
     # Resample the data
     # Create a wrong y
     y_single_class = np.zeros((X.shape[0], ))
-    assert_raises(RuntimeError, cc.fit, X, y_single_class)
+    assert_warns(RuntimeWarning, cc.fit, X, y_single_class)
 
 
 def test_cc_fit_invalid_ratio():
@@ -100,8 +107,8 @@ def test_cc_fit():
     assert_equal(cc.stats_c_[1], 4500)
 
 
-def test_transform_wt_fit():
-    """Test either if an error is raised when transform is called before
+def test_sample_wt_fit():
+    """Test either if an error is raised when sample is called before
     fitting"""
 
     # Define the parameter for the under-sampling
@@ -109,11 +116,11 @@ def test_transform_wt_fit():
 
     # Create the object
     cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
-    assert_raises(RuntimeError, cc.transform, X, Y)
+    assert_raises(RuntimeError, cc.sample, X, Y)
 
 
-def test_fit_transform_auto():
-    """Test fit and transform routines with auto ratio"""
+def test_fit_sample_auto():
+    """Test fit and sample routines with auto ratio"""
 
     # Define the parameter for the under-sampling
     ratio = 'auto'
@@ -121,8 +128,8 @@ def test_fit_transform_auto():
     # Create the object
     cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
 
-    # Fit and transform
-    X_resampled, y_resampled = cc.fit_transform(X, Y)
+    # Fit and sample
+    X_resampled, y_resampled = cc.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'cc_x.npy'))
@@ -131,8 +138,8 @@ def test_fit_transform_auto():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_fit_transform_half():
-    """Test fit and transform routines with ratio of .5"""
+def test_fit_sample_half():
+    """Test fit and sample routines with ratio of .5"""
 
     # Define the parameter for the under-sampling
     ratio = .5
@@ -140,8 +147,8 @@ def test_fit_transform_half():
     # Create the object
     cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
 
-    # Fit and transform
-    X_resampled, y_resampled = cc.fit_transform(X, Y)
+    # Fit and sample
+    X_resampled, y_resampled = cc.fit_sample(X, Y)
 
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'cc_x_05.npy'))
