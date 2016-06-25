@@ -6,10 +6,10 @@ from sklearn.utils import check_X_y
 
 from ..over_sampling import SMOTE
 from ..under_sampling import TomekLinks
-from ..base_sampler import BaseSampler
+from ..base import SamplerMixin
 
 
-class SMOTETomek(BaseSampler):
+class SMOTETomek(SamplerMixin):
     """Class to perform over-sampling using SMOTE and cleaning using
     Tomek links.
 

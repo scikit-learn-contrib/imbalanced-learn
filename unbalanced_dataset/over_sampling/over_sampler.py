@@ -6,10 +6,10 @@ from abc import ABCMeta, abstractmethod
 
 from sklearn.externals import six
 
-from ..base_sampler import BaseSampler
+from ..base import SamplerMixin
 
 
-class OverSampler(six.with_metaclass(ABCMeta, BaseSampler)):
+class OverSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
     """Base class for over-sampling.
 
     Warning: This class should not be used directly. Use the derive classes
