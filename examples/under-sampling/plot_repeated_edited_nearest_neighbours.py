@@ -46,7 +46,7 @@ ax1.set_title('Original set')
 # Apply the ENN
 print('ENN')
 enn = EditedNearestNeighbours()
-X_resampled, y_resampled = enn.fit_transform(X, y)
+X_resampled, y_resampled = enn.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
 ax2.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
@@ -60,7 +60,7 @@ ax2.set_title('Edited nearest neighbours')
 # Apply the RENN
 print('RENN')
 renn = RepeatedEditedNearestNeighbours()
-X_resampled, y_resampled = renn.fit_transform(X, y)
+X_resampled, y_resampled = renn.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
 ax3.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
