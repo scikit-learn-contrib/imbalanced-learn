@@ -58,6 +58,9 @@ Bellow is a list of the methods currently implemented in this module.
     5. Condensend Nearest Neighbour
     6. One-Sided Selection
     7. Neighboorhood Cleaning Rule
+    8. Edited Nearest Neighbour
+    9. Repeated Edited Nearest Neighbour
+    10. Instance Hardness Threshold Undersampling
 
 * Over-sampling
     1. Random minority over-sampling with replacement
