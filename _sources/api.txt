@@ -71,6 +71,7 @@ Classes
    combine.SMOTEENN
    combine.SMOTETomek
 
+
 .. _ensemble_ref:
 
 Ensemble methods
@@ -100,18 +101,12 @@ Pipeline
     :no-members:
     :no-inherited-members:
 
-Classes
--------
 .. currentmodule:: unbalanced_dataset
 
 .. autosummary::
    :toctree: generated/
    
    pipeline.Pipeline
-
-Functions
----------
-.. currentmodule:: unbalanced_dataset
 
 .. autosummary::
    :toctree: generated/

@@ -140,13 +140,9 @@
             
   <h1>Source code for unbalanced_dataset.pipeline</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">The :mod:`unbalanced_dataset.pipeline` module implements utilities to build</span>
-<span class="sd"> a composite estimator, as a chain of transforms, samples and estimators.</span>
+<span class="sd">The :mod:`unbalanced_dataset.pipeline` module implements utilities to build a</span>
+<span class="sd">composite estimator, as a chain of transforms, samples and estimators.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="c1"># Adapted from</span>
-<span class="c1"># https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/pipeline.py</span>
-
 <span class="c1"># Author: Edouard Duchesnay</span>
 <span class="c1">#         Gael Varoquaux</span>
 <span class="c1">#         Virgile Fritsch</span>
@@ -303,7 +299,7 @@
 <div class="viewcode-block" id="Pipeline.sample"><a class="viewcode-back" href="../../generated/unbalanced_dataset.pipeline.Pipeline.html#unbalanced_dataset.pipeline.Pipeline.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Applies transforms to the data, and the sample method of</span>
 <span class="sd">        the final estimator. Valid only if the final estimator</span>
-<span class="sd">        implements predict.</span>
+<span class="sd">        implements sample.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
