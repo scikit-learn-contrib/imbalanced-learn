@@ -18,7 +18,7 @@ utils
     Module which provides helper methods.
 """
 
-from .version import _check_module_dependencies
+from .version import _check_module_dependencies, __version__
 
 _check_module_dependencies()
 
@@ -34,4 +34,5 @@ __all__ = ['combine',
            'ensemble',
            'over_sampling',
            'under_sampling',
-           'pipeline']
+           'pipeline',
+           '__version__']
