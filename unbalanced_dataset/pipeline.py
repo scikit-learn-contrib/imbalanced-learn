@@ -162,7 +162,7 @@ class Pipeline(pipeline.Pipeline):
     def sample(self, X, y):
         """Applies transforms to the data, and the sample method of
         the final estimator. Valid only if the final estimator
-        implements predict.
+        implements sample.
 
         Parameters
         ----------
