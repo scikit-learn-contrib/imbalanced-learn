@@ -14,18 +14,17 @@ estimator, as a chain of transforms, samples and estimators.
 #         chkoar
 # License: BSD
 
-from collections import defaultdict
 from warnings import warn
 
-from .base import BaseEstimator
 from sklearn.externals import six
+from sklearn import pipeline
 from sklearn.utils import tosequence
 from sklearn.utils.metaestimators import if_delegate_has_method
 
-__all__ = ['Pipeline', 'FeatureUnion']
+__all__ = ['Pipeline']
 
 
-class Pipeline(BaseEstimator):
+class Pipeline(pipeline.Pipeline):
 
     """Pipeline of transforms and resamples with a final estimator.
 
@@ -110,30 +109,6 @@ class Pipeline(BaseEstimator):
             raise TypeError("Last step of chain should implement fit "
                             "'%s' (type %s) doesn't)"
                             % (estimator, type(estimator)))
-
-    @property
-    def _estimator_type(self):
-        return self.steps[-1][1]._estimator_type
-
-    def get_params(self, deep=True):
-        if not deep:
-            return super(Pipeline, self).get_params(deep=False)
-        else:
-            out = self.named_steps
-            for name, step in six.iteritems(self.named_steps):
-                for key, value in six.iteritems(step.get_params(deep=True)):
-                    out['%s__%s' % (name, key)] = value
-
-            out.update(super(Pipeline, self).get_params(deep=False))
-            return out
-
-    @property
-    def named_steps(self):
-        return dict(self.steps)
-
-    @property
-    def _final_estimator(self):
-        return self.steps[-1][1]
 
     # Estimator interface
 
@@ -403,36 +378,6 @@ class Pipeline(BaseEstimator):
                 print Xt.shape
         return self.steps[-1][-1].score(Xt, y)
 
-    @property
-    def classes_(self):
-        return self.steps[-1][-1].classes_
-
-    @property
-    def _pairwise(self):
-        # check if first estimator expects pairwise input
-        return getattr(self.steps[0][1], '_pairwise', False)
-
-
-def _name_estimators(estimators):
-    """Generate names for estimators."""
-
-    names = [type(estimator).__name__.lower() for estimator in estimators]
-    namecount = defaultdict(int)
-    for est, name in zip(estimators, names):
-        namecount[name] += 1
-
-    for k, v in list(six.iteritems(namecount)):
-        if v == 1:
-            del namecount[k]
-
-    for i in reversed(range(len(estimators))):
-        name = names[i]
-        if name in namecount:
-            names[i] += "-%d" % namecount[name]
-            namecount[name] -= 1
-
-    return list(zip(names, estimators))
-
 
 def make_pipeline(*steps):
     """Construct a Pipeline from the given estimators.
@@ -454,4 +399,4 @@ def make_pipeline(*steps):
     -------
     p : Pipeline
     """
-    return Pipeline(_name_estimators(steps))
+    return Pipeline(pipeline._name_estimators(steps))
