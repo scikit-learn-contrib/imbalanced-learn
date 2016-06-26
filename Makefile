@@ -11,6 +11,10 @@ clean:
 	rm -rf coverage
 	rm -rf dist
 	rm -rf build
+	rm -rf doc/auto_examples
+	rm -rf doc/generated
+	rm -rf doc/modules
+	rm -rf examples/.ipynb_checkpoints
 
 test:
 	$(NOSETESTS) -s -v unbalanced_dataset
