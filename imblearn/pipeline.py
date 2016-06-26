@@ -1,5 +1,5 @@
 ﻿"""
-The :mod:`unbalanced_dataset.pipeline` module implements utilities to build a
+The :mod:`imblearn.pipeline` module implements utilities to build a
 composite estimator, as a chain of transforms, samples and estimators.
 """
 # Adapted from scikit-learn
