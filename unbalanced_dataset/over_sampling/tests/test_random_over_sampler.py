@@ -137,3 +137,14 @@ def test_ros_fit_sample_half():
     y_gt = np.load(os.path.join(currdir, 'data', 'ros_y_05.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_sample_wrong_X():
+    """Test either if an error is raised when X is different at fitting
+    and sampling"""
+
+    # Create the object
+    ros = RandomOverSampler(random_state=RND_SEED)
+    ros.fit(X, Y)
+    assert_raises(RuntimeError, ros.sample, np.random.random((100, 40)),
+                  np.array([0] * 50 + [1] * 50))

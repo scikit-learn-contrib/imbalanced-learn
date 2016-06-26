@@ -73,6 +73,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.min_c_ = None
         self.maj_c_ = None
         self.stats_c_ = {}
+        self.X_shape_ = None
 
     @abstractmethod
     def fit(self, X, y):
@@ -109,6 +110,10 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         if uniques.size == 1:
             warnings.warn('Only one class detected, something will get wrong',
                           RuntimeWarning)
+
+        # Store the size of X to check at sampling time if we have the
+        # same data
+        self.X_shape_ = X.shape
 
         # Create a dictionary containing the class statistics
         self.stats_c_ = Counter(y)
@@ -156,6 +161,12 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         # Check that the data have been fitted
         if not self.stats_c_:
             raise RuntimeError('You need to fit the data, first!!!')
+
+        # Check if the size of the data is identical than at fitting
+        if X.shape != self.X_shape_:
+            raise RuntimeError('The data that you attempt to resample do not'
+                               ' seem to be the one earlier fitted. Use the'
+                               ' fitted data.')
 
         return self
 

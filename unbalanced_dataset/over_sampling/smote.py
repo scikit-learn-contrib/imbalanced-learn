@@ -70,6 +70,9 @@ class SMOTE(OverSampler):
         A dictionary in which the number of occurences of each class is
         reported.
 
+    X_shape_ : tuple of int
+        Shape of the data `X` during fitting.
+
     Notes
     -----
     See the original papers: [1]_, [2]_, [3]_ for more details.

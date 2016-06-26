@@ -134,3 +134,14 @@ def test_renn_fit_sample_mode():
     y_gt = np.load(os.path.join(currdir, 'data', 'renn_y_mode.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_renn_sample_wrong_X():
+    """Test either if an error is raised when X is different at fitting
+    and sampling"""
+
+    # Create the object
+    renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
+    renn.fit(X, Y)
+    assert_raises(RuntimeError, renn.sample, np.random.random((100, 40)),
+                  np.array([0] * 50 + [1] * 50))

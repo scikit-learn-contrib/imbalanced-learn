@@ -58,6 +58,9 @@ class RandomUnderSampler(UnderSampler):
     stats_c_ : dict of str/int : int
         A dictionary containing the number of occurences of each class.
 
+    X_shape_ : tuple of int
+        Shape of the data `X` during fitting.
+
     Notes
     -----
     This class supports multi-class.

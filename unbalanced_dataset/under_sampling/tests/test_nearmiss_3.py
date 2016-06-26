@@ -193,3 +193,14 @@ def test_nm3_fit_sample_half():
     y_gt = np.load(os.path.join(currdir, 'data', 'nm3_y_05.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_nm3_sample_wrong_X():
+    """Test either if an error is raised when X is different at fitting
+    and sampling"""
+
+    # Create the object
+    nm3 = NearMiss(random_state=RND_SEED, version=VERSION_NEARMISS)
+    nm3.fit(X, Y)
+    assert_raises(RuntimeError, nm3.sample, np.random.random((100, 40)),
+                  np.array([0] * 50 + [1] * 50))

@@ -116,3 +116,14 @@ def test_sample_regular_half():
     y_gt = np.load(os.path.join(currdir, 'data', 'smote_enn_reg_y_05.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_sample_wrong_X():
+    """Test either if an error is raised when X is different at fitting
+    and sampling"""
+
+    # Create the object
+    sm = SMOTEENN(random_state=RND_SEED)
+    sm.fit(X, Y)
+    assert_raises(RuntimeError, sm.sample, np.random.random((100, 40)),
+                  np.array([0] * 50 + [1] * 50))
