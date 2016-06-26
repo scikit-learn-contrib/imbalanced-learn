@@ -1,11 +1,7 @@
 ﻿"""
-The :mod:`unbalanced_dataset.pipeline` module implements utilities to build
- a composite estimator, as a chain of transforms, samples and estimators.
+The :mod:`unbalanced_dataset.pipeline` module implements utilities to build a
+composite estimator, as a chain of transforms, samples and estimators.
 """
-
-# Adapted from
-# https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/pipeline.py
-
 # Author: Edouard Duchesnay
 #         Gael Varoquaux
 #         Virgile Fritsch
