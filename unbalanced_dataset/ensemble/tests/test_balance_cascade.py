@@ -331,3 +331,14 @@ def test_fit_sample_auto_early_stop():
         assert_array_equal(X_resampled[idx], X_gt[idx])
         assert_array_equal(y_resampled[idx], y_gt[idx])
         assert_array_equal(idx_under[idx], idx_gt[idx])
+
+
+def test_sample_wrong_X():
+    """Test either if an error is raised when X is different at fitting
+    and sampling"""
+
+    # Create the object
+    bc = BalanceCascade(random_state=RND_SEED)
+    bc.fit(X, Y)
+    assert_raises(RuntimeError, bc.sample, np.random.random((100, 40)),
+                  np.array([0] * 50 + [1] * 50))

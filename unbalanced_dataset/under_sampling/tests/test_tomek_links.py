@@ -105,3 +105,14 @@ def test_tl_fit_sample_with_indices():
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
+
+
+def test_tl_sample_wrong_X():
+    """Test either if an error is raised when X is different at fitting
+    and sampling"""
+
+    # Create the object
+    tl = TomekLinks(random_state=RND_SEED)
+    tl.fit(X, Y)
+    assert_raises(RuntimeError, tl.sample, np.random.random((100, 40)),
+                  np.array([0] * 50 + [1] * 50))

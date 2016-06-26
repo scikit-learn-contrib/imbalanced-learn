@@ -153,3 +153,14 @@ def test_rus_fit_sample_half():
     y_gt = np.load(os.path.join(currdir, 'data', 'rus_y_05.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_rus_sample_wrong_X():
+    """Test either if an error is raised when X is different at fitting
+    and sampling"""
+
+    # Create the object
+    rus = RandomUnderSampler(random_state=RND_SEED)
+    rus.fit(X, Y)
+    assert_raises(RuntimeError, rus.sample, np.random.random((100, 40)),
+                  np.array([0] * 50 + [1] * 50))

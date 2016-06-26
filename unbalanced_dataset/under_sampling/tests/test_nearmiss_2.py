@@ -193,3 +193,14 @@ def test_nm2_fit_sample_half():
     y_gt = np.load(os.path.join(currdir, 'data', 'nm2_y_05.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_nm2_sample_wrong_X():
+    """Test either if an error is raised when X is different at fitting
+    and sampling"""
+
+    # Create the object
+    nm2 = NearMiss(random_state=RND_SEED, version=VERSION_NEARMISS)
+    nm2.fit(X, Y)
+    assert_raises(RuntimeError, nm2.sample, np.random.random((100, 40)),
+                  np.array([0] * 50 + [1] * 50))

@@ -61,6 +61,9 @@ class EditedNearestNeighbours(UnderSampler):
         A dictionary in which the number of occurences of each class is
         reported.
 
+    X_shape_ : tuple of int
+        Shape of the data `X` during fitting.
+
     Notes
     -----
     The method is based on [1]_.
@@ -303,6 +306,9 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
         Maximum number of iterations of the edited nearest neighbours
         algorithm for a single run.
 
+    X_shape_ : tuple of int
+        Shape of the data `X` during fitting.
+
     Notes
     -----
     The method is based on [1]_.
@@ -434,18 +440,24 @@ class RepeatedEditedNearestNeighbours(UnderSampler):
         X, y = check_X_y(X, y)
         X_, y_ = X.copy(), y.copy()
 
+        super(RepeatedEditedNearestNeighbours, self).sample(X, y)
+
         if self.return_indices:
             idx_under = np.arange(X.shape[0], dtype=int)
 
         prev_len = y.shape[0]
 
         for n_iter in range(self.max_iter):
+
+            if self.verbose:
+                print('Apply ENN iteration #{}'.format(n_iter + 1))
+
             prev_len = y_.shape[0]
             if self.return_indices:
-                X_, y_, idx_ = self.enn_.sample(X_, y_)
+                X_, y_, idx_ = self.enn_.fit_sample(X_, y_)
                 idx_under = idx_under[idx_]
             else:
-                X_, y_ = self.enn_.sample(X_, y_)
+                X_, y_ = self.enn_.fit_sample(X_, y_)
 
             if prev_len == y_.shape[0]:
                 break

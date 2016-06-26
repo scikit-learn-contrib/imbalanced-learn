@@ -107,6 +107,20 @@ def test_cc_fit():
     assert_equal(cc.stats_c_[1], 4500)
 
 
+def test_sample_wrong_X():
+    """Test either if an error is raised when X is different at fitting
+    and sampling"""
+
+    # Define the parameter for the under-sampling
+    ratio = 'auto'
+
+    # Create the object
+    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
+    cc.fit(X, Y)
+    assert_raises(RuntimeError, cc.sample, np.random.random((100, 40)),
+                  np.array([0] * 50 + [1] * 50))
+
+
 def test_sample_wt_fit():
     """Test either if an error is raised when sample is called before
     fitting"""

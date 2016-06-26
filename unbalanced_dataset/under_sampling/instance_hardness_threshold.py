@@ -71,6 +71,9 @@ class InstanceHardnessThreshold(UnderSampler):
     cv : int, optional (default=5)
         Number of folds used when estimating samples' instance hardness.
 
+    X_shape_ : tuple of int
+        Shape of the data `X` during fitting.
+
     Notes
     -----
     The method is based on [1]_.

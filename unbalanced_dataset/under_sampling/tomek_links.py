@@ -45,6 +45,9 @@ class TomekLinks(UnderSampler):
         A dictionary in which the number of occurences of each class is
         reported.
 
+    X_shape_ : tuple of int
+        Shape of the data `X` during fitting.
+
     Notes
     -----
     This method is based on [1]_.
