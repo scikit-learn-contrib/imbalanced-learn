@@ -100,10 +100,20 @@ Pipeline
     :no-members:
     :no-inherited-members:
 
+Classes
+-------
 .. currentmodule:: unbalanced_dataset
 
 .. autosummary::
    :toctree: generated/
    
    pipeline.Pipeline
+
+Functions
+---------
+.. currentmodule:: unbalanced_dataset
+
+.. autosummary::
+   :toctree: generated/
+   
    pipeline.make_pipeline

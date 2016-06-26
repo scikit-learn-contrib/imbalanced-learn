@@ -1,7 +1,7 @@
 """
-=========================
+==================================
 Repeated Edited nearest-neighbours
-=========================
+==================================
 
 An illustration of the repeated edited nearest-neighbours method.
 
