@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SMOTE borderline 2 &mdash; unbalanced_dataset 0.1.dev0 documentation</title>
+  <title>SMOTE borderline 2 &mdash; imbalanced-learn 0.1 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="unbalanced_dataset 0.1.dev0 documentation" href="../../index.html"/>
+    <link rel="top" title="imbalanced-learn 0.1 documentation" href="../../index.html"/>
         <link rel="up" title="General examples" href="../index.html"/>
         <link rel="next" title="Random over-sampling" href="plot_random_over_sampling.html"/>
         <link rel="prev" title="SMOTE borderline 1" href="plot_smote_bordeline_1.html"/> 
@@ -53,7 +53,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> unbalanced_dataset
+            <a href="../../index.html" class="icon icon-home"> imbalanced-learn
           
 
           
@@ -91,7 +91,7 @@
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html"><cite>imbalanced-learn</cite> API</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
 <ul class="current">
@@ -123,7 +123,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">unbalanced_dataset</a>
+        <a href="../../index.html">imbalanced-learn</a>
       </nav>
 
 
@@ -164,8 +164,8 @@
 <div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span>  Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
 Finding the 10 nearest neighbours...
 done!
-Generated 2133 new samples ...
-Generated 1866 new samples ...
+Generated 2186 new samples ...
+Generated 1814 new samples ...
 </pre></div>
 </div>
 <div class="line-block">
@@ -184,7 +184,7 @@ Generated 1866 new samples ...
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
 <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
 
-<span class="kn">from</span> <span class="nn">unbalanced_dataset.over_sampling</span> <span class="kn">import</span> <span class="n">SMOTE</span>
+<span class="kn">from</span> <span class="nn">imblearn.over_sampling</span> <span class="kn">import</span> <span class="n">SMOTE</span>
 
 <span class="c1"># Generate the dataset</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span><span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">class_sep</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
@@ -223,7 +223,7 @@ Generated 1866 new samples ...
 </pre></div>
 </div>
 <p><strong>Total running time of the script:</strong>
-(0 minutes 0.587 seconds)</p>
+(0 minutes 0.479 seconds)</p>
 <div class="sphx-glr-download container">
 <strong>Download Python source code:</strong> <a class="reference download internal" href="../../_downloads/plot_smote_bordeline_2.py" download=""><code class="xref download docutils literal"><span class="pre">plot_smote_bordeline_2.py</span></code></a></div>
 <div class="sphx-glr-download container">
@@ -271,7 +271,7 @@ Generated 1866 new samples ...
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.dev0',
+            VERSION:'0.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

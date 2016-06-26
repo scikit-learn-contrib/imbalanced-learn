@@ -20,7 +20,7 @@ palette = sns.color_palette()
 from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA
 
-from unbalanced_dataset.under_sampling import TomekLinks
+from imblearn.under_sampling import TomekLinks
 
 # Generate the dataset
 X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],

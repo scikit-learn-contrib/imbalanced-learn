@@ -21,23 +21,23 @@ An illustration of the balance cascade ensemble method.
  Out::
 
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
-    Elements misclassified: [2304 1166 3818 3982  328 2815]
+    Elements misclassified: [ 192  124 1032 2007]
     Creation of the subset #0
-    Elements misclassified: [2304 3982  182  898 4144 3681 1032 2402]
+    Elements misclassified: [ 192  124 1032 2175 2237 3273 1773 3755]
     Creation of the subset #1
-    Elements misclassified: [1032 3389 2172  352  382 1979  861 3216]
+    Elements misclassified: [ 192  124 1032 2175 2237 3273 1769 3389 4230 2332]
     Creation of the subset #2
-    Elements misclassified: [1032 3389  382 1979  861  917 2237 4110 2083]
+    Elements misclassified: [ 192  124 1032 2175 3273 3389 4102 3296 3787 3194]
     Creation of the subset #3
-    Elements misclassified: [3389  382  861  917 4190 2105 3997 2960 3646 3020 1183]
+    Elements misclassified: [ 192  124 1032 2175 3273 3389 4102 3296 1591  601 2763 1670]
     Creation of the subset #4
-    Elements misclassified: [3389  382  861  917 2105  465 2683 2332  371 3273 3810 4254  111 2175 2763]
+    Elements misclassified: [ 192  124 1032 2175 3389 3296 2763 1670 4039 3716 3818  382 2751 3133]
     Creation of the subset #5
-    Elements misclassified: [3389  382  917 2105 2683  371 3273 4254  111 2175]
+    Elements misclassified: [ 192  124 1032 2175 3389 4039 3716 3818  382  356  917 4190 4254]
     Creation of the subset #6
-    Elements misclassified: [3389 2683 3273 4254  111 2175 1562  124 4255]
+    Elements misclassified: [ 192  124 1032 3389 4039 3716  917 4254 2661  657 2083 2627 2745]
     Creation of the subset #7
-    Elements misclassified: [3389 2683 4254 2175  124 4255  759 2061 2150 3651]
+    Elements misclassified: [ 192  124 3389  917 4254 2627 2745  371 2672  898  727 2402]
     Creation of the subset #8
     Creation of the subset #9
     Not enough samples to continue creating subsets
@@ -65,7 +65,7 @@ An illustration of the balance cascade ensemble method.
     from sklearn.datasets import make_classification
     from sklearn.decomposition import PCA
 
-    from unbalanced_dataset.ensemble import BalanceCascade
+    from imblearn.ensemble import BalanceCascade
 
     # Generate the dataset
     X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
@@ -105,7 +105,7 @@ An illustration of the balance cascade ensemble method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.598 seconds)
+(0 minutes 0.493 seconds)
 
 
 

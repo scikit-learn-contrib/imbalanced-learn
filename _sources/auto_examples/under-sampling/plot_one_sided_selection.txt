@@ -23,7 +23,7 @@ An illustration of the one-sided selection method.
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
     Looking for majority Tomek links...
     16 Tomek links found.
-    Under-sampling performed: Counter({1: 4127, 0: 500})
+    Under-sampling performed: Counter({1: 4216, 0: 500})
 
 
 
@@ -47,7 +47,7 @@ An illustration of the one-sided selection method.
     from sklearn.datasets import make_classification
     from sklearn.decomposition import PCA
 
-    from unbalanced_dataset.under_sampling import OneSidedSelection
+    from imblearn.under_sampling import OneSidedSelection
 
     # Generate the dataset
     X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
@@ -85,7 +85,7 @@ An illustration of the one-sided selection method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.830 seconds)
+(0 minutes 1.075 seconds)
 
 
 
