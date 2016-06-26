@@ -89,3 +89,21 @@ Classes
    
    ensemble.BalanceCascade
    ensemble.EasyEnsemble
+
+
+.. _pipeline_ref:
+
+Pipeline
+========
+
+.. automodule:: unbalanced_dataset.pipeline
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: unbalanced_dataset
+
+.. autosummary::
+   :toctree: generated/
+   
+   pipeline.Pipeline
+   pipeline.make_pipeline

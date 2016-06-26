@@ -1,8 +1,11 @@
 """
+
 =========================
 Pipeline Object
 =========================
+
 An example of the Pipeline object working with transformers and resamplers.
+
 """
 
 print(__doc__)
