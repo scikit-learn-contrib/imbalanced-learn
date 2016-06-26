@@ -1,4 +1,4 @@
-"""
+﻿"""
 ``imbalanced-learn`` is a set of python methods to deal with imbalanced
 datset in machine learning and pattern recognition.
 """
@@ -56,7 +56,7 @@ def _import_module_with_version_check(module_name, minimum_version,
         user_friendly_info = ('Module "{0}" could not be found. {1}').format(
             module_name,
             install_info or 'Please install it properly to use'
-            ' unbalanced_dataset.')
+            ' imbalanced-learn.')
         exc.args += (user_friendly_info,)
         raise
 
@@ -69,7 +69,7 @@ def _import_module_with_version_check(module_name, minimum_version,
     if version_too_old:
         message = (
             'A {module_name} version of at least {minimum_version} '
-            'is required to use unbalanced_dataset. {module_version} was '
+            'is required to use imbalanced-learn. {module_version} was '
             'found. Please upgrade {module_name}').format(
                 module_name=module_name,
                 minimum_version=minimum_version,
@@ -81,10 +81,10 @@ def _import_module_with_version_check(module_name, minimum_version,
 
 
 def _check_module_dependencies(is_imbalanced_dataset_installing=False):
-    """Throw an exception if unbalanced_dataset dependencies are not installed.
+    """Throw an exception if imbalanced-learn dependencies are not installed.
     Parameters
     ----------
-    is_unbalanced_dataset_installing: boolean
+    is_imbalanced_dataset_installing: boolean
         if True, only error on missing packages that cannot be auto-installed.
         if False, error on any missing package.
     Throws
