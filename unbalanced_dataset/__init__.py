@@ -34,4 +34,4 @@ __all__ = ['combine',
            'ensemble',
            'over_sampling',
            'under_sampling',
-           'utils']
+           'pipeline']
