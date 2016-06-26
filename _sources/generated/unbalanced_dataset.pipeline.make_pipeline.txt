@@ -1,0 +1,6 @@
+unbalanced_dataset.pipeline.make_pipeline
+=========================================
+
+.. currentmodule:: unbalanced_dataset.pipeline
+
+.. autofunction:: make_pipeline

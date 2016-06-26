@@ -131,6 +131,17 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#module-unbalanced_dataset.pipeline">Pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/unbalanced_dataset.pipeline.Pipeline.html">unbalanced_dataset.pipeline.Pipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/unbalanced_dataset.pipeline.make_pipeline.html">unbalanced_dataset.pipeline.make_pipeline</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -291,6 +302,41 @@ under-sampled subsets combined inside an ensemble.</p>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/unbalanced_dataset.ensemble.EasyEnsemble.html#unbalanced_dataset.ensemble.EasyEnsemble" title="unbalanced_dataset.ensemble.EasyEnsemble"><code class="xref py py-obj docutils literal"><span class="pre">ensemble.EasyEnsemble</span></code></a>([ratio,&nbsp;...])</td>
 <td>Create an ensemble sets by iteratively applying random under-sampling.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="module-unbalanced_dataset.pipeline">
+<span id="pipeline"></span><span id="pipeline-ref"></span><h2>Pipeline<a class="headerlink" href="#module-unbalanced_dataset.pipeline" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>The <a class="reference internal" href="#module-unbalanced_dataset.pipeline" title="unbalanced_dataset.pipeline"><code class="xref py py-mod docutils literal"><span class="pre">unbalanced_dataset.pipeline</span></code></a> module implements utilities to build</dt>
+<dd>a composite estimator, as a chain of transforms, samples and estimators.</dd>
+</dl>
+<div class="section" id="id4">
+<h3>Classes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/unbalanced_dataset.pipeline.Pipeline.html#unbalanced_dataset.pipeline.Pipeline" title="unbalanced_dataset.pipeline.Pipeline"><code class="xref py py-obj docutils literal"><span class="pre">pipeline.Pipeline</span></code></a>(steps)</td>
+<td>Pipeline of transforms and resamples with a final estimator.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/unbalanced_dataset.pipeline.make_pipeline.html#unbalanced_dataset.pipeline.make_pipeline" title="unbalanced_dataset.pipeline.make_pipeline"><code class="xref py py-obj docutils literal"><span class="pre">pipeline.make_pipeline</span></code></a>(*steps)</td>
+<td>Construct a Pipeline from the given estimators.</td>
 </tr>
 </tbody>
 </table>

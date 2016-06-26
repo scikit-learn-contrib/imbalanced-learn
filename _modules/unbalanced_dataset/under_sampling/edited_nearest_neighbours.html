@@ -202,6 +202,9 @@
 <span class="sd">        A dictionary in which the number of occurences of each class is</span>
 <span class="sd">        reported.</span>
 
+<span class="sd">    X_shape_ : tuple of int</span>
+<span class="sd">        Shape of the data `X` during fitting.</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The method is based on [1]_.</span>
@@ -444,6 +447,9 @@
 <span class="sd">        Maximum number of iterations of the edited nearest neighbours</span>
 <span class="sd">        algorithm for a single run.</span>
 
+<span class="sd">    X_shape_ : tuple of int</span>
+<span class="sd">        Shape of the data `X` during fitting.</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The method is based on [1]_.</span>
@@ -575,18 +581,24 @@
         <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
+        <span class="nb">super</span><span class="p">(</span><span class="n">RepeatedEditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
             <span class="n">idx_under</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 
         <span class="n">prev_len</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">n_iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Apply ENN iteration #{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
             <span class="n">prev_len</span> <span class="o">=</span> <span class="n">y_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
-                <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">,</span> <span class="n">idx_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enn_</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">)</span>
+                <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">,</span> <span class="n">idx_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enn_</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">)</span>
                 <span class="n">idx_under</span> <span class="o">=</span> <span class="n">idx_under</span><span class="p">[</span><span class="n">idx_</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enn_</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">)</span>
+                <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enn_</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">prev_len</span> <span class="o">==</span> <span class="n">y_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
                 <span class="k">break</span>

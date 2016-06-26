@@ -33,7 +33,8 @@
 
   
     <link rel="top" title="unbalanced_dataset 0.1.dev0 documentation" href="../index.html"/>
-        <link rel="next" title="SMOTE + ENN" href="combine/plot_smote_enn.html"/> 
+        <link rel="next" title="SMOTE + ENN" href="combine/plot_smote_enn.html"/>
+        <link rel="prev" title="unbalanced_dataset.pipeline.make_pipeline" href="../generated/unbalanced_dataset.pipeline.make_pipeline.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -112,6 +113,10 @@
 <li class="toctree-l3"><a class="reference internal" href="over-sampling/plot_random_over_sampling.html">Random over-sampling</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#pipeline-examples">Pipeline examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipeline/plot_pipeline_classification.html">Pipeline Object</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#example-using-under-sampling-class-methods">Example using under-sampling class methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_nearmiss_1.html">Nearmiss 1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="under-sampling/plot_nearmiss_2.html">Nearmiss 2</a></li>
@@ -182,13 +187,13 @@
 <div class="section" id="examples-using-combine-class-methods">
 <span id="combine-examples"></span><h2>Examples using combine class methods<a class="headerlink" href="#examples-using-combine-class-methods" title="Permalink to this headline">¶</a></h2>
 <p>Combine methods mixed over- and under-sampling methods. Generally SMOTE is used for over-sampling while some cleaning methods (i.e., ENN and Tomek links) are used to under-sample.</p>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the SMOTE + ENN method."><div class="figure" id="id2">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the SMOTE + ENN method."><div class="figure" id="id3">
 <img alt="../_images/sphx_glr_plot_smote_enn_thumb.png" src="../_images/sphx_glr_plot_smote_enn_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="combine/plot_smote_enn.html#sphx-glr-auto-examples-combine-plot-smote-enn-py"><span class="std std-ref">SMOTE + ENN</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the SMOTE + Tomek method."><div class="figure" id="id3">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the SMOTE + Tomek method."><div class="figure" id="id4">
 <img alt="../_images/sphx_glr_plot_smote_tomek_thumb.png" src="../_images/sphx_glr_plot_smote_tomek_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="combine/plot_smote_tomek.html#sphx-glr-auto-examples-combine-plot-smote-tomek-py"><span class="std std-ref">SMOTE + Tomek</span></a></span></p>
 </div>
@@ -200,13 +205,13 @@
 <p>Under-sampling methods implies that samples of the majority class are lost during the balancing procedure.
 Ensemble methods offer an alternative to use most of the samples.
 In fact, an ensemble of balanced sets is created and used to later train any classifier.</p>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the easy ensemble method."><div class="figure" id="id4">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the easy ensemble method."><div class="figure" id="id5">
 <img alt="../_images/sphx_glr_plot_easy_ensemble_thumb.png" src="../_images/sphx_glr_plot_easy_ensemble_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="ensemble/plot_easy_ensemble.html#sphx-glr-auto-examples-ensemble-plot-easy-ensemble-py"><span class="std std-ref">Easy ensemble</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the balance cascade ensemble method."><div class="figure" id="id5">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the balance cascade ensemble method."><div class="figure" id="id6">
 <img alt="../_images/sphx_glr_plot_balance_cascade_thumb.png" src="../_images/sphx_glr_plot_balance_cascade_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="ensemble/plot_balance_cascade.html#sphx-glr-auto-examples-ensemble-plot-balance-cascade-py"><span class="std std-ref">Balance cascade</span></a></span></p>
 </div>
@@ -216,33 +221,46 @@ In fact, an ensemble of balanced sets is created and used to later train any cla
 <div class="section" id="example-using-over-sampling-class-methods">
 <span id="over-sampling-examples"></span><h2>Example using over-sampling class methods<a class="headerlink" href="#example-using-over-sampling-class-methods" title="Permalink to this headline">¶</a></h2>
 <p>Data balancing can be performed by over-sampling such that new samples are generated in the minority class to reach a given balancing ratio.</p>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE SVM method."><div class="figure" id="id6">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE SVM method."><div class="figure" id="id7">
 <img alt="../_images/sphx_glr_plot_smote_svm_thumb.png" src="../_images/sphx_glr_plot_smote_svm_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_smote_svm.html#sphx-glr-auto-examples-over-sampling-plot-smote-svm-py"><span class="std std-ref">SMOTE SVM</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE regular method."><div class="figure" id="id7">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE regular method."><div class="figure" id="id8">
 <img alt="../_images/sphx_glr_plot_smote_thumb.png" src="../_images/sphx_glr_plot_smote_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_smote.html#sphx-glr-auto-examples-over-sampling-plot-smote-py"><span class="std std-ref">SMOTE regular</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE borderline 1 method."><div class="figure" id="id8">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE borderline 1 method."><div class="figure" id="id9">
 <img alt="../_images/sphx_glr_plot_smote_bordeline_1_thumb.png" src="../_images/sphx_glr_plot_smote_bordeline_1_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_smote_bordeline_1.html#sphx-glr-auto-examples-over-sampling-plot-smote-bordeline-1-py"><span class="std std-ref">SMOTE borderline 1</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE borderline 2 method."><div class="figure" id="id9">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE borderline 2 method."><div class="figure" id="id10">
 <img alt="../_images/sphx_glr_plot_smote_bordeline_2_thumb.png" src="../_images/sphx_glr_plot_smote_bordeline_2_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_smote_bordeline_2.html#sphx-glr-auto-examples-over-sampling-plot-smote-bordeline-2-py"><span class="std std-ref">SMOTE borderline 2</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random over-sampling method."><div class="figure" id="id10">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random over-sampling method."><div class="figure" id="id11">
 <img alt="../_images/sphx_glr_plot_random_over_sampling_thumb.png" src="../_images/sphx_glr_plot_random_over_sampling_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="over-sampling/plot_random_over_sampling.html#sphx-glr-auto-examples-over-sampling-plot-random-over-sampling-py"><span class="std std-ref">Random over-sampling</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div style='clear:both'></div></div>
+<div class="section" id="pipeline-examples">
+<span id="id2"></span><h2>Pipeline examples<a class="headerlink" href="#pipeline-examples" title="Permalink to this headline">¶</a></h2>
+<p>Example of how to use the a pipeline to include under-sampling with <cite>scikit-learn</cite> estimators.
+.. raw:: html</p>
+<blockquote>
+<div>&lt;div class=&#8221;sphx-glr-thumbcontainer&#8221; tooltip=&#8221;An example of the Pipeline object working with transformers and resamplers.&#8221;&gt;</div></blockquote>
+<div class="figure" id="id12">
+<img alt="../_images/sphx_glr_plot_pipeline_classification_thumb.png" src="../_images/sphx_glr_plot_pipeline_classification_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="pipeline/plot_pipeline_classification.html#sphx-glr-auto-examples-pipeline-plot-pipeline-classification-py"><span class="std std-ref">Pipeline Object</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
@@ -251,73 +269,73 @@ In fact, an ensemble of balanced sets is created and used to later train any cla
 <span id="under-sampling-examples"></span><h2>Example using under-sampling class methods<a class="headerlink" href="#example-using-under-sampling-class-methods" title="Permalink to this headline">¶</a></h2>
 <p>Under-sampling refers to the process of reducing the number of samples in the majority classes.
 The implemented methods can be categorized into 2 groups: (i) fixed under-sampling and (ii) cleaning under-sampling.</p>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id11">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id13">
 <img alt="../_images/sphx_glr_plot_nearmiss_1_thumb.png" src="../_images/sphx_glr_plot_nearmiss_1_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_nearmiss_1.html#sphx-glr-auto-examples-under-sampling-plot-nearmiss-1-py"><span class="std std-ref">Nearmiss 1</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id12">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id14">
 <img alt="../_images/sphx_glr_plot_nearmiss_2_thumb.png" src="../_images/sphx_glr_plot_nearmiss_2_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_nearmiss_2.html#sphx-glr-auto-examples-under-sampling-plot-nearmiss-2-py"><span class="std std-ref">Nearmiss 2</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id13">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the nearmiss 1 method."><div class="figure" id="id15">
 <img alt="../_images/sphx_glr_plot_nearmiss_3_thumb.png" src="../_images/sphx_glr_plot_nearmiss_3_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_nearmiss_3.html#sphx-glr-auto-examples-under-sampling-plot-nearmiss-3-py"><span class="std std-ref">Nearmiss 3</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the Tomek links method."><div class="figure" id="id14">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the Tomek links method."><div class="figure" id="id16">
 <img alt="../_images/sphx_glr_plot_tomek_links_thumb.png" src="../_images/sphx_glr_plot_tomek_links_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_tomek_links.html#sphx-glr-auto-examples-under-sampling-plot-tomek-links-py"><span class="std std-ref">Tomek links</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the cluster centroids method."><div class="figure" id="id15">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the cluster centroids method."><div class="figure" id="id17">
 <img alt="../_images/sphx_glr_plot_cluster_centroids_thumb.png" src="../_images/sphx_glr_plot_cluster_centroids_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_cluster_centroids.html#sphx-glr-auto-examples-under-sampling-plot-cluster-centroids-py"><span class="std std-ref">Cluster centroids</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the one-sided selection method."><div class="figure" id="id16">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the one-sided selection method."><div class="figure" id="id18">
 <img alt="../_images/sphx_glr_plot_one_sided_selection_thumb.png" src="../_images/sphx_glr_plot_one_sided_selection_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_one_sided_selection.html#sphx-glr-auto-examples-under-sampling-plot-one-sided-selection-py"><span class="std std-ref">One-sided selection</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random under-sampling method."><div class="figure" id="id17">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random under-sampling method."><div class="figure" id="id19">
 <img alt="../_images/sphx_glr_plot_random_under_sampler_thumb.png" src="../_images/sphx_glr_plot_random_under_sampler_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_random_under_sampler.html#sphx-glr-auto-examples-under-sampling-plot-random-under-sampler-py"><span class="std std-ref">Random under-sampling</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the edited nearest-neighbours method."><div class="figure" id="id18">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the edited nearest-neighbours method."><div class="figure" id="id20">
 <img alt="../_images/sphx_glr_plot_edited_nearest_neighbours_thumb.png" src="../_images/sphx_glr_plot_edited_nearest_neighbours_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_edited_nearest_neighbours.html#sphx-glr-auto-examples-under-sampling-plot-edited-nearest-neighbours-py"><span class="std std-ref">Edited nearest-neighbours</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the neighbourhood cleaning rule method."><div class="figure" id="id19">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the neighbourhood cleaning rule method."><div class="figure" id="id21">
 <img alt="../_images/sphx_glr_plot_neighbourhood_cleaning_rule_thumb.png" src="../_images/sphx_glr_plot_neighbourhood_cleaning_rule_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_neighbourhood_cleaning_rule.html#sphx-glr-auto-examples-under-sampling-plot-neighbourhood-cleaning-rule-py"><span class="std std-ref">Neighbourhood Cleaning Rule</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the condensed nearest-neighbour method."><div class="figure" id="id20">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the condensed nearest-neighbour method."><div class="figure" id="id22">
 <img alt="../_images/sphx_glr_plot_condensed_nearest_neighbour_thumb.png" src="../_images/sphx_glr_plot_condensed_nearest_neighbour_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_condensed_nearest_neighbour.html#sphx-glr-auto-examples-under-sampling-plot-condensed-nearest-neighbour-py"><span class="std std-ref">Condensed nearest-neighbour</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the instance hardness threshold method."><div class="figure" id="id21">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the instance hardness threshold method."><div class="figure" id="id23">
 <img alt="../_images/sphx_glr_plot_instance_hardness_threshold_thumb.png" src="../_images/sphx_glr_plot_instance_hardness_threshold_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_instance_hardness_threshold.html#sphx-glr-auto-examples-under-sampling-plot-instance-hardness-threshold-py"><span class="std std-ref">Instance Hardness Threshold</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the repeated edited nearest-neighbours method."><div class="figure" id="id22">
+<div class="sphx-glr-thumbcontainer" tooltip="An illustration of the repeated edited nearest-neighbours method."><div class="figure" id="id24">
 <img alt="../_images/sphx_glr_plot_repeated_edited_nearest_neighbours_thumb.png" src="../_images/sphx_glr_plot_repeated_edited_nearest_neighbours_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="under-sampling/plot_repeated_edited_nearest_neighbours.html#sphx-glr-auto-examples-under-sampling-plot-repeated-edited-nearest-neighbours-py"><span class="std std-ref">Repeated Edited nearest-neighbours</span></a></span></p>
 </div>
@@ -335,6 +353,8 @@ The implemented methods can be categorized into 2 groups: (i) fixed under-sampli
       
         <a href="combine/plot_smote_enn.html" class="btn btn-neutral float-right" title="SMOTE + ENN" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
+      
+        <a href="../generated/unbalanced_dataset.pipeline.make_pipeline.html" class="btn btn-neutral" title="unbalanced_dataset.pipeline.make_pipeline" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -220,6 +220,35 @@ Data balancing can be performed by over-sampling such that new samples are gener
 
     <div style='clear:both'></div>
 
+.. _pipeline_examples:
+
+Pipeline examples
+=================
+
+Example of how to use the a pipeline to include under-sampling with `scikit-learn` estimators.
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="An example of the Pipeline object working with transformers and resamplers.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/pipeline/images/thumb/sphx_glr_plot_pipeline_classification_thumb.png
+
+        :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/pipeline/plot_pipeline_classification
+.. raw:: html
+
+    <div style='clear:both'></div>
+
 .. _under_sampling_examples:
 
 Example using under-sampling class methods

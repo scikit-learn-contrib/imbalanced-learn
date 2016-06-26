@@ -149,7 +149,6 @@
 
 <span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_X_y</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_array</span>
-<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">LSHForest</span>
 <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">NearestNeighbors</span>
 <span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
 
@@ -211,6 +210,9 @@
 <span class="sd">    stats_c_ : dict of str/int : int</span>
 <span class="sd">        A dictionary in which the number of occurences of each class is</span>
 <span class="sd">        reported.</span>
+
+<span class="sd">    X_shape_ : tuple of int</span>
+<span class="sd">        Shape of the data `X` during fitting.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>

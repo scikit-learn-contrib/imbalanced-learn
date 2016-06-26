@@ -147,10 +147,10 @@
 
 <span class="kn">from</span> <span class="nn">..over_sampling</span> <span class="kn">import</span> <span class="n">SMOTE</span>
 <span class="kn">from</span> <span class="nn">..under_sampling</span> <span class="kn">import</span> <span class="n">TomekLinks</span>
-<span class="kn">from</span> <span class="nn">..base_sampler</span> <span class="kn">import</span> <span class="n">BaseSampler</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">SamplerMixin</span>
 
 
-<div class="viewcode-block" id="SMOTETomek"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.combine.SMOTETomek.html#unbalanced_dataset.combine.SMOTETomek">[docs]</a><span class="k">class</span> <span class="nc">SMOTETomek</span><span class="p">(</span><span class="n">BaseSampler</span><span class="p">):</span>
+<div class="viewcode-block" id="SMOTETomek"><a class="viewcode-back" href="../../../generated/unbalanced_dataset.combine.SMOTETomek.html#unbalanced_dataset.combine.SMOTETomek">[docs]</a><span class="k">class</span> <span class="nc">SMOTETomek</span><span class="p">(</span><span class="n">SamplerMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to perform over-sampling using SMOTE and cleaning using</span>
 <span class="sd">    Tomek links.</span>
 
@@ -220,6 +220,9 @@
 <span class="sd">    stats_c_ : dict of str/int : int</span>
 <span class="sd">        A dictionary in which the number of occurences of each class is</span>
 <span class="sd">        reported.</span>
+
+<span class="sd">    X_shape_ : tuple of int</span>
+<span class="sd">        Shape of the data `X` during fitting.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>

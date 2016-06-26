@@ -3,25 +3,41 @@
 .. _sphx_glr_auto_examples_under-sampling_plot_repeated_edited_nearest_neighbours.py:
 
 
-=========================
+==================================
 Repeated Edited nearest-neighbours
-=========================
+==================================
 
 An illustration of the repeated edited nearest-neighbours method.
 
 
 
 
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "/home/lemaitre/anaconda/lib/python2.7/site-packages/sphinx_gallery/gen_rst.py", line 467, in execute_script
-        exec(code_block, example_globals)
-      File "<string>", line 15, in <module>
-    ImportError: cannot import name RepeatedEditedNearestNeighbours
+.. image:: /auto_examples/under-sampling/images/sphx_glr_plot_repeated_edited_nearest_neighbours_001.png
+    :align: center
 
 
+.. rst-class:: sphx-glr-script-out
 
+ Out::
+
+      ENN
+    Determining classes statistics... 2 classes detected: Counter({1: 3500, 0: 1500})
+    Under-sampling performed: Counter({1: 3218, 0: 1500})
+    RENN
+    Determining classes statistics... 2 classes detected: Counter({1: 3500, 0: 1500})
+    Apply ENN iteration #1
+    Apply ENN iteration #2
+    Apply ENN iteration #3
+    Apply ENN iteration #4
+    Apply ENN iteration #5
+    Apply ENN iteration #6
+    Apply ENN iteration #7
+    Under-sampling performed: Counter({1: 3082, 0: 1500})
+
+
+
+
+|
 
 
 .. code-block:: python
@@ -66,7 +82,7 @@ An illustration of the repeated edited nearest-neighbours method.
     # Apply the ENN
     print('ENN')
     enn = EditedNearestNeighbours()
-    X_resampled, y_resampled = enn.fit_transform(X, y)
+    X_resampled, y_resampled = enn.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     ax2.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
@@ -80,7 +96,7 @@ An illustration of the repeated edited nearest-neighbours method.
     # Apply the RENN
     print('RENN')
     renn = RepeatedEditedNearestNeighbours()
-    X_resampled, y_resampled = renn.fit_transform(X, y)
+    X_resampled, y_resampled = renn.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     ax3.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
@@ -94,7 +110,7 @@ An illustration of the repeated edited nearest-neighbours method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.000 seconds)
+(0 minutes 1.501 seconds)
 
 
 
