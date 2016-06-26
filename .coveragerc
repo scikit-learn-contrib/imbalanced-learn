@@ -2,8 +2,8 @@
 
 [run]
 branch = True
-source = unbalanced_dataset
-include = */unbalanced_dataset/*
+source = imblearn
+include = */imblearn/*
 omit =
     */setup.py
 

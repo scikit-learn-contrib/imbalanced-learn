@@ -17,9 +17,9 @@ from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.metrics import classification_report
 
 
-from unbalanced_dataset.pipeline import make_pipeline
-from unbalanced_dataset.under_sampling import EditedNearestNeighbours, \
-    RepeatedEditedNearestNeighbours
+from imblearn.pipeline import make_pipeline
+from imblearn.under_sampling import EditedNearestNeighbours
+from imblearn.under_sampling import RepeatedEditedNearestNeighbours
 
 # Generate the dataset
 X, y = make_classification(n_classes=2, class_sep=1.25, weights=[0.3, 0.7],

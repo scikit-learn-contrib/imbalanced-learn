@@ -1,21 +1,21 @@
-#################
-API Documentation
-#################
+######################
+`imbalanced-learn` API
+######################
 
-This is the full API documentation of the `unbalanced_dataset` toolbox.
+This is the full API documentation of the `imbalanced-learn` toolbox.
 
 .. _under_sampling_ref:
 
 Under-sampling methods
 ======================
 
-.. automodule:: unbalanced_dataset.under_sampling
+.. automodule:: imblearn.under_sampling
     :no-members:
     :no-inherited-members:
 
 Classes
 -------
-.. currentmodule:: unbalanced_dataset
+.. currentmodule:: imblearn
 
 .. autosummary::
    :toctree: generated/
@@ -37,13 +37,13 @@ Classes
 Over-sampling methods
 =====================
 
-.. automodule:: unbalanced_dataset.over_sampling
+.. automodule:: imblearn.over_sampling
     :no-members:
     :no-inherited-members:
 
 Classes
 -------
-.. currentmodule:: unbalanced_dataset
+.. currentmodule:: imblearn
 
 .. autosummary::
    :toctree: generated/
@@ -57,13 +57,13 @@ Classes
 Combination of over- and under-sampling methods
 ===============================================
 
-.. automodule:: unbalanced_dataset.combine
+.. automodule:: imblearn.combine
     :no-members:
     :no-inherited-members:
 
 Classes
 -------
-.. currentmodule:: unbalanced_dataset
+.. currentmodule:: imblearn
 
 .. autosummary::
    :toctree: generated/
@@ -77,13 +77,13 @@ Classes
 Ensemble methods
 ================
 
-.. automodule:: unbalanced_dataset.ensemble
+.. automodule:: imblearn.ensemble
     :no-members:
     :no-inherited-members:
 
 Classes
 -------
-.. currentmodule:: unbalanced_dataset
+.. currentmodule:: imblearn
 
 .. autosummary::
    :toctree: generated/
@@ -97,17 +97,21 @@ Classes
 Pipeline
 ========
 
-.. automodule:: unbalanced_dataset.pipeline
+.. automodule:: imblearn.pipeline
     :no-members:
     :no-inherited-members:
 
-.. currentmodule:: unbalanced_dataset
+.. currentmodule:: imblearn
 
+Classes
+-------
 .. autosummary::
    :toctree: generated/
    
    pipeline.Pipeline
 
+Functions
+---------
 .. autosummary::
    :toctree: generated/
    

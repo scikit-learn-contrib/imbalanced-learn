@@ -5,7 +5,7 @@ Getting Started
 Install
 =======
 
-The install of ``UnbalancedDataset`` is almost straightforward. You need to clone it from GitHub_::
+The install of ``imbalanced-learn`` is almost straightforward. You need to clone it from GitHub_::
 
   $ git clone https://github.com/fmfn/UnbalancedDataset.git
   $ python setup.py install

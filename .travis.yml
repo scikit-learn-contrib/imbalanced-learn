@@ -23,7 +23,7 @@ env:
   global:
     # Directory where tests are run from
     - TEST_DIR=/tmp/test_dir
-    - MODULE=unbalanced_dataset
+    - MODULE=imblearn
     - OMP_NUM_THREADS=4
     - OPENBLAS_NUM_THREADS=4
   matrix:

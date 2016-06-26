@@ -17,13 +17,13 @@ clean:
 	rm -rf examples/.ipynb_checkpoints
 
 test:
-	$(NOSETESTS) -s -v unbalanced_dataset
+	$(NOSETESTS) -s -v imblearn
 
 # doctest:
-# 	$(PYTHON) -c "import unbalanced_dataset, sys, io; sys.exit(unbalanced_dataset.doctest_verbose())"
+# 	$(PYTHON) -c "import imblearn, sys, io; sys.exit(imblearn.doctest_verbose())"
 
 coverage:
-	$(NOSETESTS) unbalanced_dataset -s -v --with-coverage --cover-package=unbalanced_dataset
+	$(NOSETESTS) imblearn -s -v --with-coverage --cover-package=imblearn
 
 html:
 	conda install -y sphinx sphinx_rtd_theme numpydoc
