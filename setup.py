@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-"""Toolbox for unbalanced dataset in machine learning."""
+"""Toolbox for imbalanced dataset in machine learning."""
 
 import sys
 import os
@@ -8,13 +8,13 @@ from setuptools import setup, find_packages
 
 
 def load_version():
-    """Executes unbalanced_dataset/version.py in a globals dictionary and
+    """Executes imblearn/version.py in a globals dictionary and
     return it.
     """
     # load all vars into globals, otherwise
     #   the later function call using global vars doesn't work.
     globals_dict = {}
-    with open(os.path.join('unbalanced_dataset', 'version.py')) as fp:
+    with open(os.path.join('imblearn', 'version.py')) as fp:
         exec(fp.read(), globals_dict)
 
     return globals_dict
@@ -29,11 +29,11 @@ def is_installing():
 # Make sources available using relative paths from this file's directory.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-descr = """Toolbox for unbalanced dataset in machine learning."""
+descr = """Toolbox for imbalanced dataset in machine learning."""
 
 _VERSION_GLOBALS = load_version()
-DISTNAME = 'unbalanced_dataset'
-DESCRIPTION = 'Toolbox for unbalanced dataset in machine learning.'
+DISTNAME = 'imbalanced-learn'
+DESCRIPTION = 'Toolbox for imbalanced dataset in machine learning.'
 LONG_DESCRIPTION = descr
 MAINTAINER = 'Fernando Nogueira, Guillaume Lemaitre'
 MAINTAINER_EMAIL = 'fmfnogueira@gmail.com, g.lemaitre58@gmail.com'
@@ -46,7 +46,7 @@ VERSION = _VERSION_GLOBALS['__version__']
 if __name__ == "__main__":
     if is_installing():
         module_check_fn = _VERSION_GLOBALS['_check_module_dependencies']
-        module_check_fn(is_unbalanced_dataset_installing=True)
+        module_check_fn(is_imbalanced_dataset_installing=True)
 
     install_requires = \
         ['%s>=%s' % (mod, meta['min_version'])

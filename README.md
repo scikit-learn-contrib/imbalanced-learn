@@ -1,7 +1,7 @@
-UnbalancedDataset
+imbalanced-learn
 =================
 
-UnbalancedDataset is a python package offering a number of re-sampling techniques commonly used in datasets showing strong between-class imbalance.
+imbalanced-learn is a python package offering a number of re-sampling techniques commonly used in datasets showing strong between-class imbalance.
 It is compatible with [scikit-learn](http://scikit-learn.org/stable/) and has been submitted to be part of [scikit-learn-contrib](https://github.com/scikit-learn-contrib) projects.
 
 [![Code Health](https://landscape.io/github/glemaitre/UnbalancedDataset/master/landscape.svg?style=flat)](https://landscape.io/github/glemaitre/UnbalancedDataset/master)
@@ -19,7 +19,7 @@ Installation
 
 ### Dependencies
 
-UnbalancedDataset is tested to work under Python 2.7 and Python 3.5.
+imbalanced-learn is tested to work under Python 2.7 and Python 3.5.
 
 * scipy(>=0.17.0)
 * numpy(>=1.10.4)
@@ -27,7 +27,7 @@ UnbalancedDataset is tested to work under Python 2.7 and Python 3.5.
 
 ### Installation
 
-UnbalancedDataset is not currently available on the PyPi's reporitories, 
+imbalanced-learn is not currently available on the PyPi's reporitories, 
 however you can install it via `pip`:
 
     pip install git+https://github.com/fmfn/UnbalancedDataset
@@ -60,7 +60,7 @@ Re-sampling techniques are divided in two categories:
 	3. Combining over- and under-sampling.
 	4. Create ensemble balanced sets.
     
-Bellow is a list of the methods currently implemented in this module.
+Below is a list of the methods currently implemented in this module.
 
 * Under-sampling
     1. Random majority under-sampling with replacement
