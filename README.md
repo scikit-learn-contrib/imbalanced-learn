@@ -79,6 +79,7 @@ Below is a list of the methods currently implemented in this module.
     2. [SMOTE - Synthetic Minority Over-sampling Technique](#ref8)
     3. [bSMOTE(1 & 2) - Borderline SMOTE of types 1 and 2](#ref9)
     4. [SVM SMOTE - Support Vectors SMOTE](#ref10)
+	5. [ADASYN - Adaptive synthetic sampling approach for imbalanced learning](#ref15)
 
 * Over-sampling followed by under-sampling
     1. [SMOTE + Tomek links](#ref12)
@@ -121,4 +122,6 @@ References:
 
 <a name="ref13"></a>[13]: X. Y. Liu, J. Wu and Z. H. Zhou, [“Exploratory Undersampling for Class-Imbalance Learning,”](http://cse.seu.edu.cn/people/xyliu/publication/tsmcb09.pdf) in IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550, April 2009.
 
-<a name="ref14"></a>[14]:I. Tomek, [“An Experiment with the Edited Nearest-Neighbor Rule,”](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=4309523) IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6), pp. 448-452, June 1976.
+<a name="ref14"></a>[14]: I. Tomek, [“An Experiment with the Edited Nearest-Neighbor Rule,”](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=4309523) IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6), pp. 448-452, June 1976.
+
+<a name="ref15"></a>[15]: He, Haibo, Yang Bai, Edwardo A. Garcia, and Shutao Li. [“ADASYN: Adaptive synthetic sampling approach for imbalanced learning,”](http://140.123.102.14:8080/reportSys/file/paper/manto/manto_6_paper.pdf) In IEEE International Joint Conference on Neural Networks (IEEE World Congress on Computational Intelligence), pp. 1322-1328, 2008.
