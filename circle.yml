@@ -1,0 +1,56 @@
+machine:
+  environment:
+    # The github organization or username of the repository which hosts the
+    # project and documentation.
+    USERNAME: "glemaitre"
+
+    # The repository where the documentation will be hosted
+    DOC_REPO: "UnbalancedDataset"
+
+    # The base URL for the Github page where the documentation will be hosted
+    DOC_URL: ""
+
+    # The email is to be used for commits in the Github Page
+    EMAIL: "g.lemaitre58@gmail.com"
+
+dependencies:
+
+  # Various dependencies
+  pre:
+    - sudo -E apt-get -yq remove texlive-binaries --purge
+    - sudo apt-get update
+    - sudo apt-get install libatlas-dev libatlas3gf-base
+    - sudo apt-get install build-essential python-dev python-setuptools
+    # install numpy first as it is a compile time dependency for other packages
+    - pip install --upgrade numpy
+    - pip install --upgrade scipy matplotlib setuptools nose coverage sphinx pillow sphinx-gallery sphinx_rtd_theme
+    # Installing required packages for `make -C doc check command` to work.
+    - sudo -E apt-get -yq update
+    - sudo -E apt-get -yq --no-install-suggests --no-install-recommends --force-yes install dvipng texlive-latex-base texlive-latex-extra
+    - pip install --upgrade cython numpydoc
+    - pip install --upgrade scikit-learn
+
+  # The --user is needed to let sphinx see the source and the binaries
+  # The pipefail is requested to propagate exit code
+  override:
+    - python setup.py clean
+    - python setup.py develop
+    - set -o pipefail && cd doc && make html 2>&1 | tee ~/log.txt
+test:
+  # Grep error on the documentation
+  override:
+    - cat ~/log.txt && if grep -q "Traceback (most recent call last):" ~/log.txt; then false; else true; fi
+deployment:
+  push:
+    branch: master
+    commands:
+      - bash build_tools/circle/push_doc.sh
+general:
+  # Open the doc to the API
+  artifacts:
+    - "doc/_build/html"
+    - "~/log.txt"
+  # Restric the build to the branch master only
+  branches:
+    ignore:
+- gh-pages
