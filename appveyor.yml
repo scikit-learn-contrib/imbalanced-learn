@@ -41,7 +41,7 @@ test_script:
   # Change to a non-source folder to make sure we run the tests on the
   # installed library.
   - "cd C:\\"
-  - "python -c \"import nose; nose.main()\" -v -s imbalanced-learn --with-timer --timer-top-n 50"
+  - "python -c \"import nose; nose.main()\" -v -s --with-timer --timer-top-n 50 imblearn"
 
 artifacts:
   # Archive the generated packages in the ci.appveyor.com build report.
