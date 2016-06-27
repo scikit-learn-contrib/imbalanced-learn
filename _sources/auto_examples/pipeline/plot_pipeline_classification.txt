@@ -85,7 +85,7 @@ An example of the Pipeline object working with transformers and resamplers.
     print(classification_report(y_test, y_hat))
 
 **Total running time of the script:**
-(0 minutes 0.792 seconds)
+(0 minutes 1.120 seconds)
 
 
 
