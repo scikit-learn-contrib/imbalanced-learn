@@ -308,8 +308,8 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">ADASYN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
         <span class="c1"># Keep the samples from the majority class</span>
-        <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">]</span>
-        <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">]</span>
+        <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># Define the number of sample to create</span>
         <span class="c1"># We handle only two classes problem for the moment.</span>

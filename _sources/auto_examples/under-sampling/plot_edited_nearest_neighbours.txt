@@ -83,7 +83,7 @@ An illustration of the edited nearest-neighbours method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.605 seconds)
+(0 minutes 1.733 seconds)
 
 
 
