@@ -53,4 +53,4 @@ general:
   # Restric the build to the branch master only
   branches:
     ignore:
-- gh-pages
+      - gh-pages
