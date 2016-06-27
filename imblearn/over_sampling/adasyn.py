@@ -167,8 +167,8 @@ class ADASYN(OverSampler):
         super(ADASYN, self).sample(X, y)
 
         # Keep the samples from the majority class
-        X_resampled = X[y == self.maj_c_]
-        y_resampled = y[y == self.maj_c_]
+        X_resampled = X.copy()
+        y_resampled = y.copy()
 
         # Define the number of sample to create
         # We handle only two classes problem for the moment.
