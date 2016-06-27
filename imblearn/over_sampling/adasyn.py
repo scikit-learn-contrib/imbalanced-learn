@@ -191,7 +191,7 @@ class ADASYN(OverSampler):
         self.nearest_neighbour.fit(X)
 
         # Get the distance to the NN
-        dist_nn, ind_nn = self.nearest_neighbour.kneighbors(X_min)
+        _, ind_nn = self.nearest_neighbour.kneighbors(X_min)
 
         # Compute the ratio of majority samples next to minority samples
         ratio_nn = np.sum(y[ind_nn[:, 1:]] == self.maj_c_, axis=1) / self.k
