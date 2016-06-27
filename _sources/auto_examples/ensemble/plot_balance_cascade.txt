@@ -21,24 +21,23 @@ An illustration of the balance cascade ensemble method.
  Out::
 
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
-    Elements misclassified: [2184 2237 1032]
+    Elements misclassified: [4190 1425 1670]
     Creation of the subset #0
-    Elements misclassified: [2237 1032  861 3379 2763]
+    Elements misclassified: [1670 1138 4300 1562  382  111 3982]
     Creation of the subset #1
-    Elements misclassified: [2237  861 2763 1979 2590 4039 2175 3716 3787 1386]
+    Elements misclassified: [1138 4300  382  111  898 3162 4255 2365 2763 1069 1505 4254 2509 2930 3296]
     Creation of the subset #2
-    Elements misclassified: [2237  861 2763 1979 4039 2175 3716 3997 1769  898 1425  142 2672 3389 2934
-     3014]
+    Elements misclassified: [1138 2763 4254 3296 2512  354  727 2699  182]
     Creation of the subset #3
-    Elements misclassified: [2237 2763 4039 2175 3389 3014  371 1069  917 2627 4300]
+    Elements misclassified: [1138 4254  727 2699 2237 3273 2815  192]
     Creation of the subset #4
-    Elements misclassified: [2763 2175 3389 3014 1069  917 2627 3431 4254 2930 3982 1472]
+    Elements misclassified: [1138 4254  727 2237 3273 2815  192   53 3822 3020 3389]
     Creation of the subset #5
-    Elements misclassified: [2175 3389 1069 2627 4254 2930 3982  192 2815 2485 3512 2150  382]
+    Elements misclassified: [4254  727 2237 3273 2815  192   53 3389 2603 3216  752 4040  124]
     Creation of the subset #6
-    Elements misclassified: [2175 3389 1069 2627 4254 3982  192 2485 2150  382 3020 1773 4255 3681]
+    Elements misclassified: [4254  727 2237 3273 2815  192   53 3389  124 3676 2751 4413 1032]
     Creation of the subset #7
-    Elements misclassified: [2175 3389 2627 4254  192  382 3020 3273  727  124]
+    Elements misclassified: [4254 2237 2815  192   53 3389  124 2751 1032 2919 2175 2683 1773]
     Creation of the subset #8
     Creation of the subset #9
     Not enough samples to continue creating subsets
@@ -106,7 +105,7 @@ An illustration of the balance cascade ensemble method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.782 seconds)
+(0 minutes 0.815 seconds)
 
 
 

@@ -332,7 +332,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nearest_neighbour</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="c1"># Get the distance to the NN</span>
-        <span class="n">dist_nn</span><span class="p">,</span> <span class="n">ind_nn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nearest_neighbour</span><span class="o">.</span><span class="n">kneighbors</span><span class="p">(</span><span class="n">X_min</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">ind_nn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nearest_neighbour</span><span class="o">.</span><span class="n">kneighbors</span><span class="p">(</span><span class="n">X_min</span><span class="p">)</span>
 
         <span class="c1"># Compute the ratio of majority samples next to minority samples</span>
         <span class="n">ratio_nn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">ind_nn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span>
