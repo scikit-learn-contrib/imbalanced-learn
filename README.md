@@ -7,6 +7,7 @@ It is compatible with [scikit-learn](http://scikit-learn.org/stable/) and has be
 [![Code Health](https://landscape.io/github/glemaitre/UnbalancedDataset/master/landscape.svg?style=flat)](https://landscape.io/github/glemaitre/UnbalancedDataset/master)
 [![Build Status](https://travis-ci.org/glemaitre/UnbalancedDataset.svg?branch=master)](https://travis-ci.org/glemaitre/UnbalancedDataset)
 [![Coverage Status](https://coveralls.io/repos/github/glemaitre/UnbalancedDataset/badge.svg?branch=master)](https://coveralls.io/github/glemaitre/UnbalancedDataset?branch=master)
+[![CircleCI Status](https://circleci.com/gh/glemaitre/UnbalancedDataset.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/glemaitre/UnbalancedDataset/tree/master)
 [![Join the chat at https://gitter.im/glemaitre/UnbalancedDataset](https://badges.gitter.im/glemaitre/UnbalancedDataset.svg)](https://gitter.im/glemaitre/UnbalancedDataset?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Documentation
