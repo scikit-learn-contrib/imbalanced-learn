@@ -48,6 +48,7 @@ Classes
 .. autosummary::
    :toctree: generated/
    
+   over_sampling.ADASYN
    over_sampling.RandomOverSampler
    over_sampling.SMOTE
 
