@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>imblearn.ensemble.BalanceCascade &mdash; imbalanced-learn 0.1 documentation</title>
+  <title>imblearn.over_sampling.ADASYN &mdash; imbalanced-learn 0.1 documentation</title>
   
 
   
@@ -91,16 +91,17 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html"><cite>imbalanced-learn</cite> API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-imblearn.under_sampling">Under-sampling methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-imblearn.over_sampling">Over-sampling methods</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-imblearn.over_sampling">Over-sampling methods</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../api.html#id1">Classes</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">imblearn.over_sampling.ADASYN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imblearn.over_sampling.RandomOverSampler.html">imblearn.over_sampling.RandomOverSampler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imblearn.over_sampling.SMOTE.html">imblearn.over_sampling.SMOTE</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-imblearn.combine">Combination of over- and under-sampling methods</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-imblearn.ensemble">Ensemble methods</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../api.html#id3">Classes</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">imblearn.ensemble.BalanceCascade</a></li>
-<li class="toctree-l4"><a class="reference internal" href="imblearn.ensemble.EasyEnsemble.html">imblearn.ensemble.EasyEnsemble</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-imblearn.ensemble">Ensemble methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-imblearn.pipeline">Pipeline</a></li>
 </ul>
 </li>
@@ -140,11 +141,11 @@
       
           <li><a href="../api.html"><cite>imbalanced-learn</cite> API</a> &raquo;</li>
       
-    <li>imblearn.ensemble.BalanceCascade</li>
+    <li>imblearn.over_sampling.ADASYN</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/generated/imblearn.ensemble.BalanceCascade.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/imblearn.over_sampling.ADASYN.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -154,15 +155,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="imblearn-ensemble-balancecascade">
-<h1>imblearn.ensemble.BalanceCascade<a class="headerlink" href="#imblearn-ensemble-balancecascade" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="imblearn-over-sampling-adasyn">
+<h1>imblearn.over_sampling.ADASYN<a class="headerlink" href="#imblearn-over-sampling-adasyn" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="imblearn.ensemble.BalanceCascade">
-<em class="property">class </em><code class="descclassname">imblearn.ensemble.</code><code class="descname">BalanceCascade</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>n_max_subset=None</em>, <em>classifier='knn'</em>, <em>bootstrap=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/ensemble/balance_cascade.html#BalanceCascade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.ensemble.BalanceCascade" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create an ensemble of balanced sets by iteratively under-sampling the
-imbalanced dataset using an estimator.</p>
-<p>This method iteratively select subset and make an ensemble of the
-different sets. The selection is performed using a specific classifier.</p>
+<dt id="imblearn.over_sampling.ADASYN">
+<em class="property">class </em><code class="descclassname">imblearn.over_sampling.</code><code class="descname">ADASYN</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>k=5</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/over_sampling/adasyn.html#ADASYN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.over_sampling.ADASYN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform over-sampling using ADASYN.</p>
+<p>Perform over-sampling using Adaptive Synthetic Sampling Approach for
+Imbalanced Learning.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -174,11 +174,6 @@ the dataset. Otherwise, the ratio is defined as the number
 of samples in the minority class over the the number of samples
 in the majority class.</p>
 </div></blockquote>
-<p><strong>return_indices</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to return the indices of the samples randomly
-selected from the majority class.</p>
-</div></blockquote>
 <p><strong>random_state</strong> : int or None, optional (default=None)</p>
 <blockquote>
 <div><p>Seed for random number generation.</p>
@@ -187,42 +182,29 @@ selected from the majority class.</p>
 <blockquote>
 <div><p>Whether or not to print information about the processing.</p>
 </div></blockquote>
-<p><strong>n_max_subset</strong> : int or None, optional (default=None)</p>
+<p><strong>k</strong> : int, optional (default=5)</p>
 <blockquote>
-<div><p>Maximum number of subsets to generate. By default, all data from
-the training will be selected that could lead to a large number of
-subsets. We can probably reduced this number empirically.</p>
+<div><p>Number of nearest neighbours to used to construct synthetic samples.</p>
 </div></blockquote>
-<p><strong>classifier</strong> : str, optional (default=&#8217;knn&#8217;)</p>
-<blockquote>
-<div><p>The classifier that will be selected to confront the prediction
-with the real labels. The choices are the following: &#8216;knn&#8217;,
-&#8216;decision-tree&#8217;, &#8216;random-forest&#8217;, &#8216;adaboost&#8217;, &#8216;gradient-boosting&#8217;
-and &#8216;linear-svm&#8217;.</p>
-</div></blockquote>
-<p><strong>bootstrap</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether to bootstrap the data before each iteration.</p>
-</div></blockquote>
-<p><strong>**kwargs</strong> : keywords</p>
+<p><strong>n_jobs</strong> : int, optional (default=-1)</p>
 <blockquote class="last">
-<div><p>The parameters associated with the classifier provided.</p>
+<div><p>Number of threads to run the algorithm when it is possible.</p>
 </div></blockquote>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>The method is described in <a class="reference internal" href="#r3" id="id1">[R3]</a>.</p>
-<p>This class does not support multi-class.</p>
+<p>Does not support multi-class.</p>
+<p>The implementation is based on <a class="reference internal" href="#r5" id="id1">[R5]</a>.</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r3" rules="none">
+<table class="docutils citation" frame="void" id="r5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R3]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> X. Y. Liu, J. Wu and Z. H. Zhou, &#8220;Exploratory Undersampling for
-Class-Imbalance Learning,&#8221; in IEEE Transactions on Systems, Man, and
-Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550,
-April 2009.</td></tr>
+<tr><td class="label">[R5]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> He, Haibo, Yang Bai, Edwardo A. Garcia, and Shutao Li. &#8220;ADASYN:
+Adaptive synthetic sampling approach for imbalanced learning,&#8221; In IEEE
+International Joint Conference on Neural Networks (IEEE World Congress
+on Computational Intelligence), pp. 1322-1328, 2008.</td></tr>
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
@@ -259,27 +241,27 @@ April 2009.</td></tr>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.fit" title="imblearn.ensemble.BalanceCascade.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.fit" title="imblearn.over_sampling.ADASYN.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.fit_sample" title="imblearn.ensemble.BalanceCascade.fit_sample"><code class="xref py py-obj docutils literal"><span class="pre">fit_sample</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.fit_sample" title="imblearn.over_sampling.ADASYN.fit_sample"><code class="xref py py-obj docutils literal"><span class="pre">fit_sample</span></code></a>(X,&nbsp;y)</td>
 <td>Fit the statistics and resample the data directly.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.get_params" title="imblearn.ensemble.BalanceCascade.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.get_params" title="imblearn.over_sampling.ADASYN.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.sample" title="imblearn.ensemble.BalanceCascade.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.sample" title="imblearn.over_sampling.ADASYN.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(X,&nbsp;y)</td>
 <td>Resample the dataset.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.set_params" title="imblearn.ensemble.BalanceCascade.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.set_params" title="imblearn.over_sampling.ADASYN.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
 <td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="imblearn.ensemble.BalanceCascade.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>n_max_subset=None</em>, <em>classifier='knn'</em>, <em>bootstrap=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/ensemble/balance_cascade.html#BalanceCascade.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.ensemble.BalanceCascade.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialise the balance cascade object.</p>
+<dt id="imblearn.over_sampling.ADASYN.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>k=5</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/over_sampling/adasyn.html#ADASYN.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.over_sampling.ADASYN.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize this object and its instance variables.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -291,11 +273,6 @@ the dataset. Otherwise, the ratio is defined as the number
 of samples in the minority class over the the number of samples
 in the majority class.</p>
 </div></blockquote>
-<p><strong>return_indices</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to return the indices of the samples randomly
-selected from the majority class.</p>
-</div></blockquote>
 <p><strong>random_state</strong> : int or None, optional (default=None)</p>
 <blockquote>
 <div><p>Seed for random number generation.</p>
@@ -304,26 +281,14 @@ selected from the majority class.</p>
 <blockquote>
 <div><p>Whether or not to print information about the processing.</p>
 </div></blockquote>
-<p><strong>n_max_subset</strong> : int or None, optional (default=None)</p>
+<p><strong>k</strong> : int, optional (default=5)</p>
 <blockquote>
-<div><p>Maximum number of subsets to generate. By default, all data from
-the training will be selected that could lead to a large number of
-subsets. We can probably reduced this number empirically.</p>
+<div><p>Number of nearest neighbours to used to construct synthetic
+samples.</p>
 </div></blockquote>
-<p><strong>classifier</strong> : str, optional (default=&#8217;knn&#8217;)</p>
+<p><strong>n_jobs</strong> : int, optional (default=-1)</p>
 <blockquote>
-<div><p>The classifier that will be selected to confront the prediction
-with the real labels. The choices are the following: &#8216;knn&#8217;,
-&#8216;decision-tree&#8217;, &#8216;random-forest&#8217;, &#8216;adaboost&#8217;, &#8216;gradient-boosting&#8217;
-and &#8216;linear-svm&#8217;.</p>
-</div></blockquote>
-<p><strong>bootstrap</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether to bootstrap the data before each iteration.</p>
-</div></blockquote>
-<p><strong>**kwargs</strong> : keywords</p>
-<blockquote>
-<div><p>The parameters associated with the classifier provided.</p>
+<div><p>Number of threads to run the algorithm when it is possible.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -341,29 +306,29 @@ and &#8216;linear-svm&#8217;.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.__init__" title="imblearn.ensemble.BalanceCascade.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;return_indices,&nbsp;...])</td>
-<td>Initialise the balance cascade object.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.__init__" title="imblearn.over_sampling.ADASYN.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;random_state,&nbsp;verbose,&nbsp;k,&nbsp;...])</td>
+<td>Initialize this object and its instance variables.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.fit" title="imblearn.ensemble.BalanceCascade.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-even"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.fit" title="imblearn.over_sampling.ADASYN.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.fit_sample" title="imblearn.ensemble.BalanceCascade.fit_sample"><code class="xref py py-obj docutils literal"><span class="pre">fit_sample</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.fit_sample" title="imblearn.over_sampling.ADASYN.fit_sample"><code class="xref py py-obj docutils literal"><span class="pre">fit_sample</span></code></a>(X,&nbsp;y)</td>
 <td>Fit the statistics and resample the data directly.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.get_params" title="imblearn.ensemble.BalanceCascade.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
+<tr class="row-even"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.get_params" title="imblearn.over_sampling.ADASYN.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.sample" title="imblearn.ensemble.BalanceCascade.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.sample" title="imblearn.over_sampling.ADASYN.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(X,&nbsp;y)</td>
 <td>Resample the dataset.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#imblearn.ensemble.BalanceCascade.set_params" title="imblearn.ensemble.BalanceCascade.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
+<tr class="row-even"><td><a class="reference internal" href="#imblearn.over_sampling.ADASYN.set_params" title="imblearn.over_sampling.ADASYN.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
 <td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="imblearn.ensemble.BalanceCascade.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/ensemble/balance_cascade.html#BalanceCascade.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.ensemble.BalanceCascade.fit" title="Permalink to this definition">¶</a></dt>
+<dt id="imblearn.over_sampling.ADASYN.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/over_sampling/adasyn.html#ADASYN.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.over_sampling.ADASYN.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the classes statistics before to perform sampling.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -390,8 +355,8 @@ and &#8216;linear-svm&#8217;.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="imblearn.ensemble.BalanceCascade.fit_sample">
-<code class="descname">fit_sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.ensemble.BalanceCascade.fit_sample" title="Permalink to this definition">¶</a></dt>
+<dt id="imblearn.over_sampling.ADASYN.fit_sample">
+<code class="descname">fit_sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.over_sampling.ADASYN.fit_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit the statistics and resample the data directly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -422,8 +387,8 @@ and &#8216;linear-svm&#8217;.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="imblearn.ensemble.BalanceCascade.get_params">
-<code class="descname">get_params</code><span class="sig-paren">(</span><em>deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.ensemble.BalanceCascade.get_params" title="Permalink to this definition">¶</a></dt>
+<dt id="imblearn.over_sampling.ADASYN.get_params">
+<code class="descname">get_params</code><span class="sig-paren">(</span><em>deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.over_sampling.ADASYN.get_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get parameters for this estimator.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -447,8 +412,8 @@ contained subobjects that are estimators.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="imblearn.ensemble.BalanceCascade.sample">
-<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/ensemble/balance_cascade.html#BalanceCascade.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.ensemble.BalanceCascade.sample" title="Permalink to this definition">¶</a></dt>
+<dt id="imblearn.over_sampling.ADASYN.sample">
+<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/over_sampling/adasyn.html#ADASYN.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.over_sampling.ADASYN.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -464,18 +429,13 @@ contained subobjects that are estimators.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X_resampled</strong> : ndarray, shape (n_subset, n_samples_new, n_features)</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X_resampled</strong> : ndarray, shape (n_samples_new, n_features)</p>
 <blockquote>
 <div><p>The array containing the resampled data.</p>
 </div></blockquote>
-<p><strong>y_resampled</strong> : ndarray, shape (n_subset, n_samples_new)</p>
-<blockquote>
-<div><p>The corresponding label of <cite>X_resampled</cite></p>
-</div></blockquote>
-<p><strong>idx_under</strong> : ndarray, shape (n_subset, n_samples, )</p>
+<p><strong>y_resampled</strong> : ndarray, shape (n_samples_new)</p>
 <blockquote class="last">
-<div><p>If <cite>return_indices</cite> is <cite>True</cite>, a boolean array will be returned
-containing the which samples have been selected.</p>
+<div><p>The corresponding label of <cite>X_resampled</cite></p>
 </div></blockquote>
 </td>
 </tr>
@@ -484,8 +444,8 @@ containing the which samples have been selected.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="imblearn.ensemble.BalanceCascade.set_params">
-<code class="descname">set_params</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.ensemble.BalanceCascade.set_params" title="Permalink to this definition">¶</a></dt>
+<dt id="imblearn.over_sampling.ADASYN.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.over_sampling.ADASYN.set_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the parameters of this estimator.</p>
 <p>The method works on simple estimators as well as on nested objects
 (such as pipelines). The former have parameters of the form

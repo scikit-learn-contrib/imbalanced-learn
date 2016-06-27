@@ -1,18 +1,19 @@
 
 
-.. _sphx_glr_auto_examples_over-sampling_plot_smote_svm.py:
+.. _sphx_glr_auto_examples_over-sampling_plot_adasyn.py:
 
 
-=========
-SMOTE SVM
-=========
+======
+ADASYN
+======
 
-An illustration of the random SMOTE SVM method.
+An illustration of the Adaptive Synthetic Sampling Approach for Imbalanced
+Learning ADASYN method.
 
 
 
 
-.. image:: /auto_examples/over-sampling/images/sphx_glr_plot_smote_svm_001.png
+.. image:: /auto_examples/over-sampling/images/sphx_glr_plot_adasyn_001.png
     :align: center
 
 
@@ -21,14 +22,8 @@ An illustration of the random SMOTE SVM method.
  Out::
 
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
-    Finding the 10 nearest neighbours...
-    done!
-    Out of 125 support vectors, 31 are noisy, 82 are in danger and 43 are safe.
     Finding the 5 nearest neighbours...
-    done!
-    Creating synthetic samples...Generated 1715 new samples ...
-    Generated 2284 new samples ...
-    done!
+    Over-sampling performed: Counter({1: 4500, 0: 3976})
 
 
 
@@ -52,7 +47,7 @@ An illustration of the random SMOTE SVM method.
     from sklearn.datasets import make_classification
     from sklearn.decomposition import PCA
 
-    from imblearn.over_sampling import SMOTE
+    from imblearn.over_sampling import ADASYN
 
     # Generate the dataset
     X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
@@ -65,9 +60,9 @@ An illustration of the random SMOTE SVM method.
     # Fit and transform x to visualise inside a 2D feature space
     X_vis = pca.fit_transform(X)
 
-    # Apply SMOTE SVM
-    sm = SMOTE(kind='svm')
-    X_resampled, y_resampled = sm.fit_sample(X, y)
+    # Apply the random over-sampling
+    ada = ADASYN()
+    X_resampled, y_resampled = ada.fit_sample(X, y)
     X_res_vis = pca.transform(X_resampled)
 
     # Two subplots, unpack the axes array immediately
@@ -85,20 +80,20 @@ An illustration of the random SMOTE SVM method.
     ax2.scatter(X_res_vis[y_resampled == 1, 0], X_res_vis[y_resampled == 1, 1],
                 label="Class #1", alpha=.5, edgecolor=almost_black,
                 facecolor=palette[2], linewidth=0.15)
-    ax2.set_title('SMOTE svm')
+    ax2.set_title('ADASYN')
 
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.148 seconds)
+(0 minutes 2.344 seconds)
 
 
 
 .. container:: sphx-glr-download
 
-    **Download Python source code:** :download:`plot_smote_svm.py <plot_smote_svm.py>`
+    **Download Python source code:** :download:`plot_adasyn.py <plot_adasyn.py>`
 
 
 .. container:: sphx-glr-download
 
-    **Download IPython notebook:** :download:`plot_smote_svm.ipynb <plot_smote_svm.ipynb>`
+    **Download IPython notebook:** :download:`plot_adasyn.ipynb <plot_adasyn.ipynb>`

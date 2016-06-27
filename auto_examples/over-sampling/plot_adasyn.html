@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Nearmiss 2 &mdash; imbalanced-learn 0.1 documentation</title>
+  <title>ADASYN &mdash; imbalanced-learn 0.1 documentation</title>
   
 
   
@@ -34,8 +34,8 @@
   
     <link rel="top" title="imbalanced-learn 0.1 documentation" href="../../index.html"/>
         <link rel="up" title="General examples" href="../index.html"/>
-        <link rel="next" title="Nearmiss 3" href="plot_nearmiss_3.html"/>
-        <link rel="prev" title="Nearmiss 1" href="plot_nearmiss_1.html"/> 
+        <link rel="next" title="SMOTE regular" href="plot_smote.html"/>
+        <link rel="prev" title="SMOTE SVM" href="plot_smote_svm.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -98,23 +98,17 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">General examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#examples-using-combine-class-methods">Examples using combine class methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-ensemble-class-methods">Example using ensemble class methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-over-sampling-class-methods">Example using over-sampling class methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#pipeline-examples">Pipeline examples</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#example-using-under-sampling-class-methods">Example using under-sampling class methods</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_1.html">Nearmiss 1</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Nearmiss 2</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_nearmiss_3.html">Nearmiss 3</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_tomek_links.html">Tomek links</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_cluster_centroids.html">Cluster centroids</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_one_sided_selection.html">One-sided selection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_random_under_sampler.html">Random under-sampling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_edited_nearest_neighbours.html">Edited nearest-neighbours</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_neighbourhood_cleaning_rule.html">Neighbourhood Cleaning Rule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_condensed_nearest_neighbour.html">Condensed nearest-neighbour</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_instance_hardness_threshold.html">Instance Hardness Threshold</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_repeated_edited_nearest_neighbours.html">Repeated Edited nearest-neighbours</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#example-using-over-sampling-class-methods">Example using over-sampling class methods</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="plot_smote_svm.html">SMOTE SVM</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ADASYN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_smote.html">SMOTE regular</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_smote_bordeline_1.html">SMOTE borderline 1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_smote_bordeline_2.html">SMOTE borderline 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_random_over_sampling.html">Random over-sampling</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#pipeline-examples">Pipeline examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#example-using-under-sampling-class-methods">Example using under-sampling class methods</a></li>
 </ul>
 </li>
 </ul>
@@ -149,11 +143,11 @@
       
           <li><a href="../index.html">General examples</a> &raquo;</li>
       
-    <li>Nearmiss 2</li>
+    <li>ADASYN</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/auto_examples/under-sampling/plot_nearmiss_2.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/auto_examples/over-sampling/plot_adasyn.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -163,13 +157,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="nearmiss-2">
-<span id="sphx-glr-auto-examples-under-sampling-plot-nearmiss-2-py"></span><h1>Nearmiss 2<a class="headerlink" href="#nearmiss-2" title="Permalink to this headline">¶</a></h1>
-<p>An illustration of the nearmiss 1 method.</p>
-<img alt="../../_images/sphx_glr_plot_nearmiss_2_001.png" class="align-center" src="../../_images/sphx_glr_plot_nearmiss_2_001.png" />
+  <div class="section" id="adasyn">
+<span id="sphx-glr-auto-examples-over-sampling-plot-adasyn-py"></span><h1>ADASYN<a class="headerlink" href="#adasyn" title="Permalink to this headline">¶</a></h1>
+<p>An illustration of the Adaptive Synthetic Sampling Approach for Imbalanced
+Learning ADASYN method.</p>
+<img alt="../../_images/sphx_glr_plot_adasyn_001.png" class="align-center" src="../../_images/sphx_glr_plot_adasyn_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span>  <span class="n">Determining</span> <span class="n">classes</span> <span class="n">statistics</span><span class="o">...</span> <span class="mi">2</span> <span class="n">classes</span> <span class="n">detected</span><span class="p">:</span> <span class="n">Counter</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">4500</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span> <span class="mi">500</span><span class="p">})</span>
-<span class="n">Under</span><span class="o">-</span><span class="n">sampling</span> <span class="n">performed</span><span class="p">:</span> <span class="n">Counter</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">500</span><span class="p">})</span>
+<span class="n">Finding</span> <span class="n">the</span> <span class="mi">5</span> <span class="n">nearest</span> <span class="n">neighbours</span><span class="o">...</span>
+<span class="n">Over</span><span class="o">-</span><span class="n">sampling</span> <span class="n">performed</span><span class="p">:</span> <span class="n">Counter</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">4500</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span> <span class="mi">3976</span><span class="p">})</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -188,7 +184,7 @@
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
 <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
 
-<span class="kn">from</span> <span class="nn">imblearn.under_sampling</span> <span class="kn">import</span> <span class="n">NearMiss</span>
+<span class="kn">from</span> <span class="nn">imblearn.over_sampling</span> <span class="kn">import</span> <span class="n">ADASYN</span>
 
 <span class="c1"># Generate the dataset</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span><span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">class_sep</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
@@ -201,9 +197,9 @@
 <span class="c1"># Fit and transform x to visualise inside a 2D feature space</span>
 <span class="n">X_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-<span class="c1"># Apply Nearmiss 2</span>
-<span class="n">nm2</span> <span class="o">=</span> <span class="n">NearMiss</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">nm2</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="c1"># Apply the random over-sampling</span>
+<span class="n">ada</span> <span class="o">=</span> <span class="n">ADASYN</span><span class="p">()</span>
+<span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">ada</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_res_vis</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_resampled</span><span class="p">)</span>
 
 <span class="c1"># Two subplots, unpack the axes array immediately</span>
@@ -221,17 +217,17 @@
 <span class="n">ax2</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_res_vis</span><span class="p">[</span><span class="n">y_resampled</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X_res_vis</span><span class="p">[</span><span class="n">y_resampled</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
             <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Class #1&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="n">almost_black</span><span class="p">,</span>
             <span class="n">facecolor</span><span class="o">=</span><span class="n">palette</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;NearMiss 2&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;ADASYN&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <p><strong>Total running time of the script:</strong>
-(0 minutes 0.608 seconds)</p>
+(0 minutes 2.344 seconds)</p>
 <div class="sphx-glr-download container">
-<strong>Download Python source code:</strong> <a class="reference download internal" href="../../_downloads/plot_nearmiss_2.py" download=""><code class="xref download docutils literal"><span class="pre">plot_nearmiss_2.py</span></code></a></div>
+<strong>Download Python source code:</strong> <a class="reference download internal" href="../../_downloads/plot_adasyn.py" download=""><code class="xref download docutils literal"><span class="pre">plot_adasyn.py</span></code></a></div>
 <div class="sphx-glr-download container">
-<strong>Download IPython notebook:</strong> <a class="reference download internal" href="../../_downloads/plot_nearmiss_2.ipynb" download=""><code class="xref download docutils literal"><span class="pre">plot_nearmiss_2.ipynb</span></code></a></div>
+<strong>Download IPython notebook:</strong> <a class="reference download internal" href="../../_downloads/plot_adasyn.ipynb" download=""><code class="xref download docutils literal"><span class="pre">plot_adasyn.ipynb</span></code></a></div>
 </div>
 
 
@@ -241,10 +237,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="plot_nearmiss_3.html" class="btn btn-neutral float-right" title="Nearmiss 3" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="plot_smote.html" class="btn btn-neutral float-right" title="SMOTE regular" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="plot_nearmiss_1.html" class="btn btn-neutral" title="Nearmiss 1" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="plot_smote_svm.html" class="btn btn-neutral" title="SMOTE SVM" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

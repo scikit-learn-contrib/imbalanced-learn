@@ -139,6 +139,26 @@ Data balancing can be performed by over-sampling such that new samples are gener
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the Adaptive Synthetic Sampling Approach for Imbalanced Learning ADASYN meth...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/over-sampling/images/thumb/sphx_glr_plot_adasyn_thumb.png
+
+        :ref:`sphx_glr_auto_examples_over-sampling_plot_adasyn.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/over-sampling/plot_adasyn
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="An illustration of the random SMOTE regular method.">
 
 .. only:: html
