@@ -85,7 +85,7 @@ Learning ADASYN method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.846 seconds)
+(0 minutes 2.060 seconds)
 
 
 
