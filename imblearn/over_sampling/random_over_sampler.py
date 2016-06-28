@@ -37,12 +37,6 @@ class RandomOverSampler(SamplerMixin):
 
     Attributes
     ----------
-    ratio : str or float
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
-
     min_c_ : str or int
         The identifier of the minority class.
 
