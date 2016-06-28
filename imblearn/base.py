@@ -28,7 +28,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     _estimator_type = "sampler"
 
-
     def __init__(self, ratio='auto', verbose=True):
         """Initialize this object and its instance variables.
 
@@ -150,7 +149,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         X, y = check_X_y(X, y)
 
         # Check that the data have been fitted
-        if not self.stats_c_:
+        if not hasattr(self, 'stats_c_'):
             raise RuntimeError('You need to fit the data, first!!!')
 
         # Check if the size of the data is identical than at fitting
