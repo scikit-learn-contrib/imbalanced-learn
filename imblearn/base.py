@@ -1,4 +1,4 @@
-"""Base class for sampling"""
+﻿"""Base class for sampling"""
 
 from __future__ import division
 from __future__ import print_function
@@ -19,14 +19,17 @@ from six import string_types
 
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
+
     """Mixin class for samplers with abstact method.
 
     Warning: This class should not be used directly. Use the derive classes
     instead.
     """
 
-    @abstractmethod
-    def __init__(self, ratio='auto', random_state=None, verbose=True):
+    _estimator_type = "sampler"
+
+
+    def __init__(self, ratio='auto', verbose=True):
         """Initialize this object and its instance variables.
 
         Parameters
@@ -48,34 +51,12 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         None
 
         """
-        # The ratio correspond to the number of samples in the minority class
-        # over the number of samples in the majority class. Thus, the ratio
-        # cannot be greater than 1.0
-        if isinstance(ratio, float):
-            if ratio > 1:
-                raise ValueError('Ration cannot be greater than one.')
-            elif ratio <= 0:
-                raise ValueError('Ratio cannot be negative.')
-            else:
-                self.ratio = ratio
-        elif isinstance(ratio, string_types):
-            if ratio == 'auto':
-                self.ratio = ratio
-            else:
-                raise ValueError('Unknown string for the parameter ratio.')
-        else:
-            raise ValueError('Unknown parameter type for ratio.')
 
-        self.random_state = random_state
+        self.ratio = ratio
         self.verbose = verbose
 
         # Create the member variables regarding the classes statistics
-        self.min_c_ = None
-        self.maj_c_ = None
-        self.stats_c_ = {}
-        self.X_shape_ = None
 
-    @abstractmethod
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
 
@@ -96,6 +77,14 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
+
+        self.min_c_ = None
+        self.maj_c_ = None
+        self.stats_c_ = {}
+        self.X_shape_ = None
+
+        if hasattr(self, 'ratio'):
+            self._validate_ratio()
 
         if self.verbose:
             print("Determining classes statistics... ", end="")
@@ -136,7 +125,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         return self
 
-    @abstractmethod
     def sample(self, X, y):
         """Resample the dataset.
 
@@ -158,6 +146,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         """
 
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
+
         # Check that the data have been fitted
         if not self.stats_c_:
             raise RuntimeError('You need to fit the data, first!!!')
@@ -168,7 +159,10 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
                                ' seem to be the one earlier fitted. Use the'
                                ' fitted data.')
 
-        return self
+        if hasattr(self, 'ratio'):
+            self._validate_ratio()
+
+        return self._sample(X, y)
 
     def fit_sample(self, X, y):
         """Fit the statistics and resample the data directly.
@@ -192,3 +186,41 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         """
 
         return self.fit(X, y).sample(X, y)
+
+    def _validate_ratio(self):
+        # The ratio correspond to the number of samples in the minority class
+        # over the number of samples in the majority class. Thus, the ratio
+        # cannot be greater than 1.0
+        if isinstance(self.ratio, float):
+            if self.ratio > 1:
+                raise ValueError('Ration cannot be greater than one.')
+            elif self.ratio <= 0:
+                raise ValueError('Ratio cannot be negative.')
+
+        elif isinstance(self.ratio, string_types):
+            if self.ratio != 'auto':
+                raise ValueError('Unknown string for the parameter ratio.')
+        else:
+            raise ValueError('Unknown parameter type for ratio.')
+
+    @abstractmethod
+    def _sample(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
+        """
+        pass
