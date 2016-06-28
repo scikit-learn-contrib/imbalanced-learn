@@ -28,8 +28,11 @@ class ADASYN(SamplerMixin):
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
 
     verbose : bool, optional (default=True)
         Whether or not to print information about the processing.
@@ -104,7 +107,6 @@ class ADASYN(SamplerMixin):
             The corresponding label of `X_resampled`
 
         """
-
         random_state = check_random_state(self.random_state)
 
         # Keep the samples from the majority class
