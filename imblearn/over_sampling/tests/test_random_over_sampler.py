@@ -33,19 +33,23 @@ def test_ros_bad_ratio():
 
     # Define a negative ratio
     ratio = -1.0
-    assert_raises(ValueError, RandomOverSampler, ratio=ratio)
+    ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, ros.fit_sample, X, Y)
 
     # Define a ratio greater than 1
     ratio = 100.0
-    assert_raises(ValueError, RandomOverSampler, ratio=ratio)
+    ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, ros.fit_sample, X, Y)
 
     # Define ratio as an unknown string
     ratio = 'rnd'
-    assert_raises(ValueError, RandomOverSampler, ratio=ratio)
+    ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, ros.fit_sample, X, Y)
 
     # Define ratio as a list which is not supported
     ratio = [.5, .5]
-    assert_raises(ValueError, RandomOverSampler, ratio=ratio)
+    ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, ros.fit_sample, X, Y)
 
 
 def test_ros_init():
@@ -59,9 +63,6 @@ def test_ros_init():
 
     assert_equal(ros.random_state, RND_SEED)
     assert_equal(ros.verbose, verbose)
-    assert_equal(ros.min_c_, None)
-    assert_equal(ros.maj_c_, None)
-    assert_equal(ros.stats_c_, {})
 
 
 def test_ros_fit_single_class():
