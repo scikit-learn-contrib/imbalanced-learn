@@ -40,9 +40,6 @@ def test_renn_init():
     assert_equal(renn.n_jobs, -1)
     assert_equal(renn.random_state, RND_SEED)
     assert_equal(renn.verbose, verbose)
-    assert_equal(renn.min_c_, None)
-    assert_equal(renn.maj_c_, None)
-    assert_equal(renn.stats_c_, {})
 
 
 def test_renn_iter_wrong():
@@ -51,8 +48,9 @@ def test_renn_iter_wrong():
 
     # Create the object
     max_iter = -1
-    assert_raises(ValueError, RepeatedEditedNearestNeighbours,
-                  max_iter=max_iter, random_state=RND_SEED)
+    renn = RepeatedEditedNearestNeighbours(max_iter=max_iter,
+                                           random_state=RND_SEED)
+    assert_raises(ValueError, renn.fit_sample, X, Y)
 
 
 def test_renn_fit_single_class():

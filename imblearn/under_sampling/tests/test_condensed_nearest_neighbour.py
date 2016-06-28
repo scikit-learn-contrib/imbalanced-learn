@@ -37,11 +37,7 @@ def test_cnn_init():
     assert_equal(cnn.size_ngh, 1)
     assert_equal(cnn.n_seeds_S, 1)
     assert_equal(cnn.n_jobs, -1)
-    assert_equal(cnn.random_state, RND_SEED)
     assert_equal(cnn.verbose, verbose)
-    assert_equal(cnn.min_c_, None)
-    assert_equal(cnn.maj_c_, None)
-    assert_equal(cnn.stats_c_, {})
 
 
 def test_cnn_fit_single_class():

@@ -9,10 +9,10 @@ from collections import Counter
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_X_y
 
-from .under_sampler import UnderSampler
+from ..base import SamplerMixin
 
 
-class NeighbourhoodCleaningRule(UnderSampler):
+class NeighbourhoodCleaningRule(SamplerMixin):
     """Class performing under-sampling based on the neighbourhood cleaning
     rule.
 
@@ -22,8 +22,11 @@ class NeighbourhoodCleaningRule(UnderSampler):
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
 
     verbose : bool, optional (default=True)
         Whether or not to print information about the processing.
@@ -40,9 +43,6 @@ class NeighbourhoodCleaningRule(UnderSampler):
 
     Attributes
     ----------
-    random state : int or None
-        Seed for random number generation.
-
     min_c_ : str or int
         The identifier of the minority class.
 
@@ -69,68 +69,13 @@ class NeighbourhoodCleaningRule(UnderSampler):
 
     def __init__(self, return_indices=False, random_state=None, verbose=True,
                  size_ngh=3, n_jobs=-1):
-        """Initialisation of NCL object.
-
-        Parameters
-        ----------
-        return_indices : bool, optional (default=False)
-            Whether or not to return the indices of the samples randomly
-            selected from the majority class.
-
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Whether or not to print information about the processing.
-
-        size_ngh : int, optional (default=3)
-            Size of the neighbourhood to consider in order to make
-            the comparison between each samples and their NN.
-
-        n_jobs : int, optional (default=-1)
-            The number of threads to open if possible.
-
-        **kwargs : keywords
-            Parameter to use for the Neareast Neighbours object.
-
-        Returns
-        -------
-        None
-
-        """
-        super(NeighbourhoodCleaningRule, self).__init__(
-            return_indices=return_indices,
-            random_state=random_state,
-            verbose=verbose)
-
+        super(NeighbourhoodCleaningRule, self).__init__(verbose=verbose)
+        self.return_indices = return_indices
+        self.random_state = random_state
         self.size_ngh = size_ngh
         self.n_jobs = n_jobs
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        super(NeighbourhoodCleaningRule, self).fit(X, y)
-
-        return self
-
-    def sample(self, X, y):
+    def _sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -154,10 +99,6 @@ class NeighbourhoodCleaningRule(UnderSampler):
             containing the which samples have been selected.
 
         """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        super(NeighbourhoodCleaningRule, self).sample(X, y)
 
         # Start with the minority class
         X_min = X[y == self.min_c_]

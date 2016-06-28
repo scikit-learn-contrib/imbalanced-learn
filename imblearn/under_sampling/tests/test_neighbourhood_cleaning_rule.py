@@ -38,9 +38,6 @@ def test_ncr_init():
     assert_equal(ncr.n_jobs, -1)
     assert_equal(ncr.random_state, RND_SEED)
     assert_equal(ncr.verbose, verbose)
-    assert_equal(ncr.min_c_, None)
-    assert_equal(ncr.maj_c_, None)
-    assert_equal(ncr.stats_c_, {})
 
 
 def test_ncr_fit_single_class():

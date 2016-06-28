@@ -33,19 +33,23 @@ def test_cc_bad_ratio():
 
     # Define a negative ratio
     ratio = -1.0
-    assert_raises(ValueError, ClusterCentroids, ratio=ratio)
+    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, cc.fit, X, Y)
 
     # Define a ratio greater than 1
     ratio = 100.0
-    assert_raises(ValueError, ClusterCentroids, ratio=ratio)
+    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, cc.fit, X, Y)
 
     # Define ratio as an unknown string
     ratio = 'rnd'
-    assert_raises(ValueError, ClusterCentroids, ratio=ratio)
+    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, cc.fit, X, Y)
 
     # Define ratio as a list which is not supported
     ratio = [.5, .5]
-    assert_raises(ValueError, ClusterCentroids, ratio=ratio)
+    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, cc.fit, X, Y)
 
 
 def test_init():
@@ -57,11 +61,7 @@ def test_init():
     cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED, verbose=verbose)
 
     assert_equal(cc.ratio, ratio)
-    assert_equal(cc.random_state, RND_SEED)
     assert_equal(cc.verbose, verbose)
-    assert_equal(cc.min_c_, None)
-    assert_equal(cc.maj_c_, None)
-    assert_equal(cc.stats_c_, {})
 
 
 def test_cc_fit_single_class():

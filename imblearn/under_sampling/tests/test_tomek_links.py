@@ -37,9 +37,6 @@ def test_tl_init():
     assert_equal(tl.n_jobs, -1)
     assert_equal(tl.random_state, RND_SEED)
     assert_equal(tl.verbose, verbose)
-    assert_equal(tl.min_c_, None)
-    assert_equal(tl.maj_c_, None)
-    assert_equal(tl.stats_c_, {})
 
 
 def test_tl_fit_single_class():
