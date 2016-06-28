@@ -48,8 +48,11 @@ class SMOTE(SamplerMixin):
         The type of SMOTE algorithm to use one of the following options:
         'regular', 'borderline1', 'borderline2', 'svm'.
 
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
 
     Attributes
     ----------
@@ -106,7 +109,6 @@ class SMOTE(SamplerMixin):
         self.k = k
         self.m = m
         self.out_step = out_step
-        self.verbose = verbose
         self.n_jobs = n_jobs
         self.kwargs = kwargs
 
@@ -194,19 +196,21 @@ class SMOTE(SamplerMixin):
 
         # Check the consistency of X
         X = check_array(X)
+        # Check the random state
+        random_state = check_random_state(self.random_state)
 
         # A matrix to store the synthetic samples
         X_new = np.zeros((n_samples, X.shape[1]))
 
-        # Set seeds
-        seeds = self.random_state.randint(low=0,
-                                          high=100 * len(nn_num.flatten()),
-                                          size=n_samples)
+        # # Set seeds
+        # seeds = random_state.randint(low=0,
+        #                              high=100 * len(nn_num.flatten()),
+        #                              size=n_samples)
 
         # Randomly pick samples to construct neighbours from
-        samples = self.random_state.randint(low=0,
-                                            high=len(nn_num.flatten()),
-                                            size=n_samples)
+        samples = random_state.randint(low=0,
+                                       high=len(nn_num.flatten()),
+                                       size=n_samples)
 
         # Loop over the NN matrix and create new samples
         for i, n in enumerate(samples):
@@ -216,7 +220,11 @@ class SMOTE(SamplerMixin):
 
             # Take a step of random size (0,1) in the direction of the
             # n nearest neighbours
-            step = step_size * self.random_state.uniform()
+            # if self.random_state is None:
+            #     np.random.seed(seeds[i])
+            # else:
+            #     np.random.seed(self.random_state)
+            step = step_size * random_state.uniform()
 
             # Construct synthetic sample
             X_new[i] = X[row] - step * (X[row] -
@@ -255,7 +263,7 @@ class SMOTE(SamplerMixin):
         if self.kind not in SMOTE_KIND:
             raise ValueError('Unknown kind for SMOTE algorithm.')
 
-        self.random_state = check_random_state(self.random_state)
+        random_state = check_random_state(self.random_state)
 
         self._get_smote_kind()
 
@@ -374,7 +382,7 @@ class SMOTE(SamplerMixin):
                 # (type 2).
                 # The fraction is sampled from a beta distribution centered
                 # around 0.5 with variance ~0.01
-                fractions = self.random_state.beta(10, 10)
+                fractions = random_state.beta(10, 10)
 
                 # Only minority
                 X_new_1, y_new_1 = self._make_samples(X_min[danger_index],
@@ -465,7 +473,7 @@ class SMOTE(SamplerMixin):
 
             # The fraction are sampled from a beta distribution with mean
             # 0.5 and variance 0.01#
-            fractions = self.random_state.beta(10, 10)
+            fractions = random_state.beta(10, 10)
 
             # Interpolate samples in danger
             if np.count_nonzero(danger_bool) > 0:
