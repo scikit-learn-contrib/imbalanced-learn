@@ -39,9 +39,6 @@ def test_oss_init():
     assert_equal(oss.n_jobs, -1)
     assert_equal(oss.random_state, RND_SEED)
     assert_equal(oss.verbose, verbose)
-    assert_equal(oss.min_c_, None)
-    assert_equal(oss.maj_c_, None)
-    assert_equal(oss.stats_c_, {})
 
 
 def test_oss_fit_single_class():

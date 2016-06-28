@@ -7,11 +7,12 @@ import numpy as np
 from collections import Counter
 
 from sklearn.utils import check_X_y
+from sklearn.utils import check_random_state
 
-from .under_sampler import UnderSampler
+from ..base import SamplerMixin
 
 
-class RandomUnderSampler(UnderSampler):
+class RandomUnderSampler(SamplerMixin):
     """Class to perform random under-sampling.
 
     Under-sample the majority class(es) by randomly picking samples
@@ -29,8 +30,11 @@ class RandomUnderSampler(UnderSampler):
         Whether or not to return the indices of the samples randomly selected
         from the majority class.
 
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
 
     verbose : bool, optional (default=True)
         Whether or not to print information about the processing.
@@ -40,15 +44,6 @@ class RandomUnderSampler(UnderSampler):
 
     Attributes
     ----------
-    ratio : str or float
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
-
-    random state : int or None, optional (default=None)
-        Seed for random number generation.
-
     min_c_ : str or int
         The identifier of the minority class.
 
@@ -69,66 +64,13 @@ class RandomUnderSampler(UnderSampler):
 
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
                  verbose=True, replacement=True):
-        """Initialse the random under-sampler object.
-
-        Parameters
-        ----------
-        ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balance
-            the dataset. Otherwise, the ratio is defined as the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-        return_indices : bool, optional (default=False)
-            Whether or not to return the indices of the samples randomly
-            selected from the majority class.
-
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Whether or not to print information about the processing
-
-        n_jobs : int, optional (default=-1)
-            The number of threads to open if possible.
-
-        Returns
-        -------
-        None
-
-        """
         super(RandomUnderSampler, self).__init__(ratio=ratio,
-                                                 return_indices=return_indices,
-                                                 random_state=random_state,
                                                  verbose=verbose)
-
+        self.return_indices = return_indices
+        self.random_state = random_state
         self.replacement = replacement
 
-    def fit(self, X, y):
-        """Find the class statistics before performing sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        super(RandomUnderSampler, self).fit(X, y)
-
-        return self
-
-    def sample(self, X, y):
+    def _sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -153,10 +95,8 @@ class RandomUnderSampler(UnderSampler):
             that sample was selected or not.
 
         """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
 
-        super(RandomUnderSampler, self).sample(X, y)
+        random_state = check_random_state(self.random_state)
 
         # Compute the number of clusters needed
         if self.ratio == 'auto':
@@ -180,10 +120,9 @@ class RandomUnderSampler(UnderSampler):
                 continue
 
             # Pick some elements at random
-            np.random.seed(self.random_state)
             indx = range(np.count_nonzero(y == key))
-            indx = np.random.choice(indx, size=num_samples,
-                                    replace=self.replacement)
+            indx = random_state.choice(indx, size=num_samples,
+                                       replace=self.replacement)
 
             # If we need to offer support for the indices selected
             if self.return_indices:

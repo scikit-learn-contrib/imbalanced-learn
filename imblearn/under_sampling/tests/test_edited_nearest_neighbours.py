@@ -39,9 +39,6 @@ def test_enn_init():
     assert_equal(enn.n_jobs, -1)
     assert_equal(enn.random_state, RND_SEED)
     assert_equal(enn.verbose, verbose)
-    assert_equal(enn.min_c_, None)
-    assert_equal(enn.maj_c_, None)
-    assert_equal(enn.stats_c_, {})
 
 
 def test_enn_fit_single_class():

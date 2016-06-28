@@ -10,10 +10,14 @@ from collections import Counter
 from sklearn.utils import check_X_y
 from sklearn.cross_validation import StratifiedKFold
 
-from .under_sampler import UnderSampler
+from ..base import SamplerMixin
 
 
-class InstanceHardnessThreshold(UnderSampler):
+ESTIMATOR_KIND = ('knn', 'decision-tree', 'random-forest', 'adaboost',
+                  'gradient-boosting', 'linear-svm')
+
+
+class InstanceHardnessThreshold(SamplerMixin):
     """Class to perform under-sampling based on the instance hardness
     threshold.
 
@@ -35,8 +39,11 @@ class InstanceHardnessThreshold(UnderSampler):
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
 
     verbose : bool, optional (default=True)
         Whether or not to print information about the processing.
@@ -49,15 +56,6 @@ class InstanceHardnessThreshold(UnderSampler):
 
     Attributes
     ----------
-    ratio : str or float
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
-
-    random state : int or None
-        Seed for random number generation.
-
     min_c_ : str or int
         The identifier of the minority class.
 
@@ -91,86 +89,16 @@ class InstanceHardnessThreshold(UnderSampler):
     def __init__(self, estimator='linear-svm', ratio='auto',
                  return_indices=False, random_state=None, verbose=True,
                  cv=5, n_jobs=-1, **kwargs):
-        """Initialisation of Instance Hardness Threshold object.
-
-        Parameters
-        ----------
-        estimator : str, optional (default='linear-svm')
-            Classifier to be used in to estimate instance hardness of
-            the samples. The choices are the following: 'knn',
-            'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
-            and 'linear-svm'.
-
-        ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balance
-            the dataset. Otherwise, the ratio is defined as the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-        return_indices : bool, optional (default=False)
-            Whether or not to return the indices of the samples randomly
-            selected from the majority class.
-
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Whether or not to print information about the processing.
-
-        cv : int, optional (default=5)
-            Number of folds to be used when estimating samples' instance
-            hardness.
-
-        n_jobs : int, optional (default=-1)
-            The number of threads to open if possible.
-
-        Returns
-        -------
-        None
-
-        """
-        super(InstanceHardnessThreshold, self).__init__(
-            ratio=ratio,
-            return_indices=return_indices,
-            random_state=random_state,
-            verbose=verbose)
-
-        # Define the estimator to use
-        list_estimator = ('knn', 'decision-tree', 'random-forest', 'adaboost',
-                          'gradient-boosting', 'linear-svm')
-        if estimator in list_estimator:
-            self.estimator = estimator
-        else:
-            raise NotImplementedError
+        super(InstanceHardnessThreshold, self).__init__(ratio=ratio,
+                                                        verbose=verbose)
+        self.estimator = estimator
+        self.return_indices = return_indices
+        self.random_state = random_state
         self.kwargs = kwargs
         self.cv = cv
         self.n_jobs = n_jobs
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        super(InstanceHardnessThreshold, self).fit(X, y)
-
-        return self
-
-    def sample(self, X, y):
+    def _sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -194,10 +122,9 @@ class InstanceHardnessThreshold(UnderSampler):
             containing the which samples have been selected.
 
         """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
 
-        super(InstanceHardnessThreshold, self).sample(X, y)
+        if self.estimator not in ESTIMATOR_KIND:
+            raise NotImplementedError
 
         # Select the appropriate classifier
         if self.estimator == 'knn':
