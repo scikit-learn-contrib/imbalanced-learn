@@ -1,20 +1,22 @@
-"""Class to perform over-sampling using SMOTE."""
+﻿"""Class to perform over-sampling using SMOTE."""
 from __future__ import print_function
 from __future__ import division
 
 import numpy as np
 
-from numpy.random import beta
-
-from sklearn.utils import check_X_y
 from sklearn.utils import check_array
+from sklearn.utils import check_random_state
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 
-from .over_sampler import OverSampler
+from ..base import SamplerMixin
 
 
-class SMOTE(OverSampler):
+SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
+
+
+class SMOTE(SamplerMixin):
+
     """Class to perform over-sampling using SMOTE.
 
     This object is an implementation of SMOTE - Synthetic Minority
@@ -28,9 +30,6 @@ class SMOTE(OverSampler):
         the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
-
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
 
     verbose : bool, optional (default=True)
         Whether or not to print information about the processing.
@@ -49,17 +48,11 @@ class SMOTE(OverSampler):
         The type of SMOTE algorithm to use one of the following options:
         'regular', 'borderline1', 'borderline2', 'svm'.
 
-    Attributes
-    ----------
-    ratio : str or float
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
-
-    random_state : int or None
+    random_state : int or None, optional (default=None)
         Seed for random number generation.
 
+    Attributes
+    ----------
     min_c_ : str or int
         The identifier of the minority class.
 
@@ -96,119 +89,26 @@ class SMOTE(OverSampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, verbose=True,
-                 k=5, m=10, out_step=0.5, kind='regular', n_jobs=-1, **kwargs):
-        """Initialisation of SMOTE object.
-
-        Parameters
-        ----------
-        ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balance
-            the dataset. Otherwise, the ratio is defined as the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Whether or not to print information about the processing.
-
-        k : int, optional (default=5)
-            Number of nearest neighbours to used to construct synthetic
-            samples.
-
-        m : int, optional (default=10)
-            Number of nearest neighbours to use to determine if a minority
-            sample is in danger.
-
-        out_step : float, optional (default=0.5)
-            Step size when extrapolating.
-
-        kind : str, optional (default='regular')
-            The type of SMOTE algorithm to use one of the following
-            options: 'regular', 'borderline1', 'borderline2', 'svm'.
-
-        n_jobs : int, optional (default=-1)
-            Number of threads to run the algorithm when it is possible.
-
-        """
+    def __init__(self,
+                 ratio='auto',
+                 random_state=None,
+                 verbose=True,
+                 k=5,
+                 m=10,
+                 out_step=0.5,
+                 kind='regular',
+                 n_jobs=-1,
+                 **kwargs):
         super(SMOTE, self).__init__(ratio=ratio,
-                                    random_state=random_state,
                                     verbose=verbose)
-
-        # --- The type of smote
-        # This object can perform regular smote over-sampling, borderline 1,
-        # borderline 2 and svm smote. Since the algorithms are fairly simple
-        # they share most methods.
-        possible_kind = ('regular', 'borderline1', 'borderline2', 'svm')
-        if kind in possible_kind:
-            self.kind = kind
-        else:
-            raise ValueError('Unknown kind for SMOTE algorithm.')
-
+        self.random_state = random_state
+        self.kind = kind
         self.k = k
         self.m = m
         self.out_step = out_step
         self.verbose = verbose
-        self.kwargs = kwargs
         self.n_jobs = n_jobs
-
-        # --- NN object
-        # Import the NN object from scikit-learn library. Since in the smote
-        # variations we must first find samples that are in danger, we
-        # initialize the NN object differently depending on the method chosen
-        if kind == 'regular':
-            # Regular smote does not look for samples in danger, instead it
-            # creates synthetic samples directly from the k-th nearest
-            # neighbours with not filtering
-            self.nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1,
-                                                      n_jobs=self.n_jobs)
-        else:
-            # Borderline1, 2 and SVM variations of smote must first look for
-            # samples that could be considered noise and samples that live
-            # near the boundary between the classes. Therefore, before
-            # creating synthetic samples from the k-th nns, it first look
-            # for m nearest neighbors to decide whether or not a sample is
-            # noise or near the boundary.
-            self.nearest_neighbour = NearestNeighbors(n_neighbors=self.m + 1,
-                                                      n_jobs=self.n_jobs)
-
-        # --- SVM smote
-        # Unlike the borderline variations, the SVM variation uses the support
-        # vectors to decide which samples are in danger (near the boundary).
-        # Additionally it also introduces extrapolation for samples that are
-        # considered safe (far from boundary) and interpolation for samples
-        # in danger (near the boundary). The level of extrapolation is
-        # controled by the out_step.
-        if kind == 'svm':
-            # Store SVM object with any parameters
-            self.svm = SVC(random_state=self.random_state, **self.kwargs)
-
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        # Call the parent function
-        super(SMOTE, self).fit(X, y)
-
-        return self
+        self.kwargs = kwargs
 
     def _in_danger_noise(self, samples, y, kind='danger'):
         """Estimate if a set of sample are in danger or noise.
@@ -299,16 +199,14 @@ class SMOTE(OverSampler):
         X_new = np.zeros((n_samples, X.shape[1]))
 
         # Set seeds
-        np.random.seed(self.random_state)
-        seeds = np.random.randint(low=0,
-                                  high=100*len(nn_num.flatten()),
-                                  size=n_samples)
+        seeds = self.random_state.randint(low=0,
+                                          high=100 * len(nn_num.flatten()),
+                                          size=n_samples)
 
         # Randomly pick samples to construct neighbours from
-        np.random.seed(self.random_state)
-        samples = np.random.randint(low=0,
-                                    high=len(nn_num.flatten()),
-                                    size=n_samples)
+        samples = self.random_state.randint(low=0,
+                                            high=len(nn_num.flatten()),
+                                            size=n_samples)
 
         # Loop over the NN matrix and create new samples
         for i, n in enumerate(samples):
@@ -318,11 +216,7 @@ class SMOTE(OverSampler):
 
             # Take a step of random size (0,1) in the direction of the
             # n nearest neighbours
-            if self.random_state is None:
-                np.random.seed(seeds[i])
-            else:
-                np.random.seed(self.random_state)
-            step = step_size * np.random.uniform()
+            step = step_size * self.random_state.uniform()
 
             # Construct synthetic sample
             X_new[i] = X[row] - step * (X[row] -
@@ -337,7 +231,7 @@ class SMOTE(OverSampler):
 
         return X_new, y_new
 
-    def sample(self, X, y):
+    def _sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -357,11 +251,13 @@ class SMOTE(OverSampler):
             The corresponding label of `X_resampled`
 
         """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
 
-        # Call the parent function
-        super(SMOTE, self).sample(X, y)
+        if self.kind not in SMOTE_KIND:
+            raise ValueError('Unknown kind for SMOTE algorithm.')
+
+        self.random_state = check_random_state(self.random_state)
+
+        self._get_smote_kind()
 
         # Define the number of sample to create
         # We handle only two classes problem for the moment.
@@ -467,7 +363,8 @@ class SMOTE(OverSampler):
                 y_resampled = np.concatenate((y, y_new), axis=0)
 
                 # Reset the k-neighbours to m+1 neighbours
-                self.nearest_neighbour.set_params(**{'n_neighbors': self.m+1})
+                self.nearest_neighbour.set_params(
+                    **{'n_neighbors': self.m + 1})
 
                 return X_resampled, y_resampled
 
@@ -475,10 +372,9 @@ class SMOTE(OverSampler):
                 # Split the number of synthetic samples between only minority
                 # (type 1), or minority and majority (with reduced step size)
                 # (type 2).
-                np.random.seed(self.random_state)
                 # The fraction is sampled from a beta distribution centered
                 # around 0.5 with variance ~0.01
-                fractions = beta(10, 10)
+                fractions = self.random_state.beta(10, 10)
 
                 # Only minority
                 X_new_1, y_new_1 = self._make_samples(X_min[danger_index],
@@ -504,7 +400,8 @@ class SMOTE(OverSampler):
                 y_resampled = np.concatenate((y, y_new_1, y_new_2), axis=0)
 
                 # Reset the k-neighbours to m+1 neighbours
-                self.nearest_neighbour.set_params(**{'n_neighbors': self.m+1})
+                self.nearest_neighbour.set_params(
+                    **{'n_neighbors': self.m + 1})
 
                 return X_resampled, y_resampled
 
@@ -568,8 +465,7 @@ class SMOTE(OverSampler):
 
             # The fraction are sampled from a beta distribution with mean
             # 0.5 and variance 0.01#
-            np.random.seed(self.random_state)
-            fractions = beta(10, 10)
+            fractions = self.random_state.beta(10, 10)
 
             # Interpolate samples in danger
             if np.count_nonzero(danger_bool) > 0:
@@ -617,6 +513,38 @@ class SMOTE(OverSampler):
                 y_resampled = np.concatenate((y, y_new_1), axis=0)
 
             # Reset the k-neighbours to m+1 neighbours
-            self.nearest_neighbour.set_params(**{'n_neighbors': self.m+1})
+            self.nearest_neighbour.set_params(**{'n_neighbors': self.m + 1})
 
             return X_resampled, y_resampled
+
+    def _get_smote_kind(self):
+        # --- NN object
+        # Import the NN object from scikit-learn library. Since in the smote
+        # variations we must first find samples that are in danger, we
+        # initialize the NN object differently depending on the method chosen
+        if self.kind == 'regular':
+            # Regular smote does not look for samples in danger, instead it
+            # creates synthetic samples directly from the k-th nearest
+            # neighbours with not filtering
+            self.nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1,
+                                                      n_jobs=self.n_jobs)
+        else:
+            # Borderline1, 2 and SVM variations of smote must first look for
+            # samples that could be considered noise and samples that live
+            # near the boundary between the classes. Therefore, before
+            # creating synthetic samples from the k-th nns, it first look
+            # for m nearest neighbors to decide whether or not a sample is
+            # noise or near the boundary.
+            self.nearest_neighbour = NearestNeighbors(n_neighbors=self.m + 1,
+                                                      n_jobs=self.n_jobs)
+
+        # --- SVM smote
+        # Unlike the borderline variations, the SVM variation uses the support
+        # vectors to decide which samples are in danger (near the boundary).
+        # Additionally it also introduces extrapolation for samples that are
+        # considered safe (far from boundary) and interpolation for samples
+        # in danger (near the boundary). The level of extrapolation is
+        # controled by the out_step.
+        if self.kind == 'svm':
+            # Store SVM object with any parameters
+            self.svm = SVC(random_state=self.random_state, **self.kwargs)

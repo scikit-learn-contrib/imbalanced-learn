@@ -1,4 +1,4 @@
-"""Class to perform random over-sampling."""
+﻿"""Class to perform random over-sampling."""
 from __future__ import print_function
 from __future__ import division
 
@@ -6,12 +6,13 @@ import numpy as np
 
 from collections import Counter
 
-from sklearn.utils import check_X_y
+from sklearn.utils import check_random_state
 
-from .over_sampler import OverSampler
+from ..base import SamplerMixin
 
 
-class RandomOverSampler(OverSampler):
+class RandomOverSampler(SamplerMixin):
+
     """Class to perform random over-sampling.
 
     Object to over-sample the minority class(es) by picking samples at random
@@ -24,9 +25,6 @@ class RandomOverSampler(OverSampler):
         the dataset. Otherwise, the ratio is defined as the number
         of samples in the minority class over the the number of samples
         in the majority class.
-
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
 
     verbose : bool, optional (default=True)
         Whether or not to print information about the processing.
@@ -60,58 +58,16 @@ class RandomOverSampler(OverSampler):
     Supports multiple classes.
     """
 
-    def __init__(self, ratio='auto', random_state=None, verbose=True):
-        """Initialize this object and its instance variables.
+    def __init__(self,
+                 ratio='auto',
+                 verbose=True,
+                 random_state=None):
 
-        Parameters
-        ----------
-        ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balance
-            the dataset. Otherwise, the ratio is defined as the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Whether or not to print information about the processing.
-
-        Returns
-        -------
-        None
-
-        """
         super(RandomOverSampler, self).__init__(ratio=ratio,
-                                                random_state=random_state,
                                                 verbose=verbose)
+        self.random_state = random_state
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        # Call the parent function
-        super(RandomOverSampler, self).fit(X, y)
-
-        return self
-
-    def sample(self, X, y):
+    def _sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -131,11 +87,6 @@ class RandomOverSampler(OverSampler):
             The corresponding label of `X_resampled`
 
         """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        # Call the parent function
-        super(RandomOverSampler, self).sample(X, y)
 
         # Keep the samples from the majority class
         X_resampled = X[y == self.maj_c_]
@@ -157,9 +108,9 @@ class RandomOverSampler(OverSampler):
                                   self.stats_c_[key])
 
             # Pick some elements at random
-            np.random.seed(self.random_state)
-            indx = np.random.randint(low=0, high=self.stats_c_[key],
-                                     size=num_samples)
+            random_state = check_random_state(random_state)
+            indx = self.random_state.randint(low=0, high=self.stats_c_[key],
+                                             size=num_samples)
 
             # Concatenate to the majority class
             X_resampled = np.concatenate((X_resampled,
