@@ -31,6 +31,12 @@ class SMOTE(SamplerMixin):
         of samples in the minority class over the the number of samples
         in the majority class.
 
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
+
     verbose : bool, optional (default=True)
         Whether or not to print information about the processing.
 
@@ -47,12 +53,6 @@ class SMOTE(SamplerMixin):
     kind : str, optional (default='regular')
         The type of SMOTE algorithm to use one of the following options:
         'regular', 'borderline1', 'borderline2', 'svm'.
-
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
 
     Attributes
     ----------

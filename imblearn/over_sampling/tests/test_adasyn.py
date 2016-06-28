@@ -33,19 +33,23 @@ def test_ada_bad_ratio():
 
     # Define a negative ratio
     ratio = -1.0
-    assert_raises(ValueError, ADASYN, ratio=ratio)
+    ada = ADASYN(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, ada.fit, X, Y)
 
     # Define a ratio greater than 1
     ratio = 100.0
-    assert_raises(ValueError, ADASYN, ratio=ratio)
+    ada = ADASYN(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, ada.fit, X, Y)
 
     # Define ratio as an unknown string
     ratio = 'rnd'
-    assert_raises(ValueError, ADASYN, ratio=ratio)
+    ada = ADASYN(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, ada.fit, X, Y)
 
     # Define ratio as a list which is not supported
     ratio = [.5, .5]
-    assert_raises(ValueError, ADASYN, ratio=ratio)
+    ada = ADASYN(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, ada.fit, X, Y)
 
 
 def test_ada_init():
@@ -59,9 +63,6 @@ def test_ada_init():
 
     assert_equal(ada.random_state, RND_SEED)
     assert_equal(ada.verbose, verbose)
-    assert_equal(ada.min_c_, None)
-    assert_equal(ada.maj_c_, None)
-    assert_equal(ada.stats_c_, {})
 
 
 def test_ada_fit_single_class():
