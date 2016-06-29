@@ -4,11 +4,16 @@ from __future__ import print_function
 import numpy as np
 
 from sklearn.utils import check_X_y
+from sklearn.utils import check_random_state
 
-from .ensemble_sampler import EnsembleSampler
+from ..base import SamplerMixin
 
 
-class BalanceCascade(EnsembleSampler):
+ESTIMATOR_KIND = ('knn', 'decision-tree', 'random-forest', 'adaboost',
+                  'gradient-boosting', 'linear-svm')
+
+
+class BalanceCascade(SamplerMixin):
     """Create an ensemble of balanced sets by iteratively under-sampling the
     imbalanced dataset using an estimator.
 
@@ -27,8 +32,11 @@ class BalanceCascade(EnsembleSampler):
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
 
     verbose : bool, optional (default=True)
         Whether or not to print information about the processing.
@@ -52,15 +60,6 @@ class BalanceCascade(EnsembleSampler):
 
     Attributes
     ----------
-    ratio : str or float
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
-
-    random_state : int or None
-        Seed for random number generation.
-
     min_c_ : str or int
         The identifier of the minority class.
 
@@ -91,89 +90,16 @@ class BalanceCascade(EnsembleSampler):
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
                  verbose=True, n_max_subset=None, classifier='knn',
                  bootstrap=True, **kwargs):
-        """Initialise the balance cascade object.
-
-        Parameters
-        ----------
-        ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balance
-            the dataset. Otherwise, the ratio is defined as the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-        return_indices : bool, optional (default=True)
-            Whether or not to return the indices of the samples randomly
-            selected from the majority class.
-
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Whether or not to print information about the processing.
-
-        n_max_subset : int or None, optional (default=None)
-            Maximum number of subsets to generate. By default, all data from
-            the training will be selected that could lead to a large number of
-            subsets. We can probably reduced this number empirically.
-
-        classifier : str, optional (default='knn')
-            The classifier that will be selected to confront the prediction
-            with the real labels. The choices are the following: 'knn',
-            'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
-            and 'linear-svm'.
-
-        bootstrap : bool, optional (default=True)
-            Whether to bootstrap the data before each iteration.
-
-        **kwargs : keywords
-            The parameters associated with the classifier provided.
-
-        Returns
-        -------
-        None
-
-        """
         super(BalanceCascade, self).__init__(ratio=ratio,
-                                             return_indices=return_indices,
-                                             verbose=verbose,
-                                             random_state=random_state)
-        # Define the classifier to use
-        list_classifier = ('knn', 'decision-tree', 'random-forest', 'adaboost',
-                          'gradient-boosting', 'linear-svm')
-        if classifier in list_classifier:
-            self.classifier = classifier
-        else:
-            raise NotImplementedError
+                                             verbose=verbose)
+        self.return_indices = return_indices
+        self.random_state = random_state
+        self.classifier = classifier
         self.n_max_subset = n_max_subset
         self.bootstrap = bootstrap
         self.kwargs = kwargs
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        # Call the parent function
-        super(BalanceCascade, self).fit(X, y)
-
-        return self
-
-    def sample(self, X, y):
+    def _sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -197,10 +123,11 @@ class BalanceCascade(EnsembleSampler):
             containing the which samples have been selected.
 
         """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
 
-        super(BalanceCascade, self).sample(X, y)
+        if self.classifier not in ESTIMATOR_KIND:
+            raise NotImplementedError
+
+        random_state = check_random_state(self.random_state)
 
         # Define the classifier to use
         if self.classifier == 'knn':
@@ -210,25 +137,26 @@ class BalanceCascade(EnsembleSampler):
         elif self.classifier == 'decision-tree':
             from sklearn.tree import DecisionTreeClassifier
             classifier = DecisionTreeClassifier(
+                random_state=random_state,
                 **self.kwargs)
         elif self.classifier == 'random-forest':
             from sklearn.ensemble import RandomForestClassifier
             classifier = RandomForestClassifier(
-                random_state=self.random_state,
+                random_state=random_state,
                 **self.kwargs)
         elif self.classifier == 'adaboost':
             from sklearn.ensemble import AdaBoostClassifier
             classifier = AdaBoostClassifier(
-                random_state=self.random_state,
+                random_state=random_state,
                 **self.kwargs)
         elif self.classifier == 'gradient-boosting':
             from sklearn.ensemble import GradientBoostingClassifier
             classifier = GradientBoostingClassifier(
-                random_state=self.random_state,
+                random_state=random_state,
                 **self.kwargs)
         elif self.classifier == 'linear-svm':
             from sklearn.svm import LinearSVC
-            classifier = LinearSVC(random_state=self.random_state,
+            classifier = LinearSVC(random_state=random_state,
                                    **self.kwargs)
         else:
             raise NotImplementedError
@@ -267,8 +195,7 @@ class BalanceCascade(EnsembleSampler):
             # Generate an appropriate number of index to extract
             # from the majority class depending of the false classification
             # rate of the previous iteration
-            np.random.seed(self.random_state)
-            idx_sel_from_maj = np.random.choice(np.nonzero(b_sel_N)[0],
+            idx_sel_from_maj = random_state.choice(np.nonzero(b_sel_N)[0],
                                                 size=num_samples,
                                                 replace=False)
             idx_sel_from_maj = np.concatenate((idx_mis_class,
@@ -296,7 +223,7 @@ class BalanceCascade(EnsembleSampler):
                     self.bootstrap):
                 # Apply a bootstrap on x_data
                 curr_sample_weight = np.ones((y_data.size,), dtype=np.float64)
-                indices = np.random.randint(0, y_data.size, y_data.size)
+                indices = random_state.randint(0, y_data.size, y_data.size)
                 sample_counts = np.bincount(indices, minlength=y_data.size)
                 curr_sample_weight *= sample_counts
 
