@@ -195,8 +195,8 @@ class BalanceCascade(SamplerMixin):
             # from the majority class depending of the false classification
             # rate of the previous iteration
             idx_sel_from_maj = random_state.choice(np.nonzero(b_sel_N)[0],
-                                                size=num_samples,
-                                                replace=False)
+                                                   size=num_samples,
+                                                   replace=False)
             idx_sel_from_maj = np.concatenate((idx_mis_class,
                                                idx_sel_from_maj),
                                               axis=0).astype(int)

@@ -60,6 +60,7 @@ def test_nearmiss_wrong_version():
     nm3 = NearMiss(version=version, random_state=RND_SEED)
     assert_raises(ValueError, nm3.fit_sample, X, Y)
 
+
 def test_nearmiss_init():
     """Test the initialisation of the object"""
 

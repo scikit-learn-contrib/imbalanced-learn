@@ -64,6 +64,7 @@ def test_iht_wrong_estimator():
                                     random_state=RND_SEED)
     assert_raises(NotImplementedError, iht.fit_sample, X, Y)
 
+
 def test_iht_init():
     """Test the initialisation of the object"""
 
@@ -231,7 +232,6 @@ def test_iht_fit_sample_adaboost():
     y_gt = np.load(os.path.join(currdir, 'data', 'iht_y_adb.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
 
 
 def test_iht_fit_sample_gradient_boosting():
