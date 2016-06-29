@@ -2,8 +2,6 @@
 from __future__ import print_function
 from __future__ import division
 
-from sklearn.utils import check_X_y
-
 from ..over_sampling import SMOTE
 from ..under_sampling import EditedNearestNeighbours
 from ..base import SamplerMixin

@@ -3,7 +3,6 @@ from __future__ import print_function
 
 import numpy as np
 
-from sklearn.utils import check_X_y
 from sklearn.utils import check_random_state
 
 from ..base import SamplerMixin

@@ -3,8 +3,6 @@ from __future__ import print_function
 
 import numpy as np
 
-from sklearn.utils import check_X_y
-
 from ..base import SamplerMixin
 from ..under_sampling import RandomUnderSampler
 
