@@ -9,7 +9,6 @@ from collections import Counter
 
 from scipy.stats import mode
 
-from sklearn.utils import check_X_y
 from sklearn.neighbors import NearestNeighbors
 
 from ..base import SamplerMixin

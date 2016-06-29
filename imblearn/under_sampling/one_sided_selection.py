@@ -8,7 +8,6 @@ from collections import Counter
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import check_X_y
 from sklearn.utils import check_random_state
 
 from ..base import SamplerMixin

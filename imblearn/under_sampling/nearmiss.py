@@ -6,7 +6,6 @@ import numpy as np
 
 from collections import Counter
 
-from sklearn.utils import check_X_y
 from sklearn.neighbors import NearestNeighbors
 
 from ..base import SamplerMixin

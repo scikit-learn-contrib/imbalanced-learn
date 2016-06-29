@@ -7,7 +7,6 @@ import numpy as np
 
 from collections import Counter
 
-from sklearn.utils import check_X_y
 from sklearn.utils import check_random_state
 from sklearn.neighbors import KNeighborsClassifier
 
