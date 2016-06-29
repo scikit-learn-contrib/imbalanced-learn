@@ -33,19 +33,23 @@ def test_senn_bad_ratio():
 
     # Define a negative ratio
     ratio = -1.0
-    assert_raises(ValueError, SMOTEENN, ratio=ratio)
+    smote = SMOTEENN(ratio=ratio)
+    assert_raises(ValueError, smote.fit, X, Y)
 
     # Define a ratio greater than 1
     ratio = 100.0
-    assert_raises(ValueError, SMOTEENN, ratio=ratio)
+    smote = SMOTEENN(ratio=ratio)
+    assert_raises(ValueError, smote.fit, X, Y)
 
     # Define ratio as an unknown string
     ratio = 'rnd'
-    assert_raises(ValueError, SMOTEENN, ratio=ratio)
+    smote = SMOTEENN(ratio=ratio)
+    assert_raises(ValueError, smote.fit, X, Y)
 
     # Define ratio as a list which is not supported
     ratio = [.5, .5]
-    assert_raises(ValueError, SMOTEENN, ratio=ratio)
+    smote = SMOTEENN(ratio=ratio)
+    assert_raises(ValueError, smote.fit, X, Y)
 
 
 def test_smote_fit_single_class():
