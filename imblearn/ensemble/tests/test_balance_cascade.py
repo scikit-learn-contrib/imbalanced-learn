@@ -33,19 +33,23 @@ def test_bc_bad_ratio():
 
     # Define a negative ratio
     ratio = -1.0
-    assert_raises(ValueError, BalanceCascade, ratio=ratio)
+    bc = BalanceCascade(ratio=ratio)
+    assert_raises(ValueError, bc.fit, X, Y)
 
     # Define a ratio greater than 1
     ratio = 100.0
-    assert_raises(ValueError, BalanceCascade, ratio=ratio)
+    bc = BalanceCascade(ratio=ratio)
+    assert_raises(ValueError, bc.fit, X, Y)
 
     # Define ratio as an unknown string
     ratio = 'rnd'
-    assert_raises(ValueError, BalanceCascade, ratio=ratio)
+    bc = BalanceCascade(ratio=ratio)
+    assert_raises(ValueError, bc.fit, X, Y)
 
     # Define ratio as a list which is not supported
     ratio = [.5, .5]
-    assert_raises(ValueError, BalanceCascade, ratio=ratio)
+    bc = BalanceCascade(ratio=ratio)
+    assert_raises(ValueError, bc.fit, X, Y)
 
 
 def test_bc_init():
@@ -61,9 +65,6 @@ def test_bc_init():
     assert_equal(bc.n_max_subset, None)
     assert_equal(bc.random_state, RND_SEED)
     assert_equal(bc.verbose, verbose)
-    assert_equal(bc.min_c_, None)
-    assert_equal(bc.maj_c_, None)
-    assert_equal(bc.stats_c_, {})
 
 
 def test_bc_fit_single_class():
@@ -299,12 +300,10 @@ def test_init_wrong_classifier():
     """Test either if an error is raised the classifier provided is unknown."""
 
     # Define the ratio parameter
-    ratio = 'auto'
     classifier = 'rnd'
 
-    assert_raises(NotImplementedError, BalanceCascade, ratio=ratio,
-                  random_state=RND_SEED, return_indices=True,
-                  classifier=classifier)
+    bc = BalanceCascade(classifier=classifier)
+    assert_raises(NotImplementedError, bc.fit_sample, X, Y)
 
 
 def test_fit_sample_auto_early_stop():
