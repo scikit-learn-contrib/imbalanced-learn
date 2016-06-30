@@ -30,6 +30,13 @@ Contents:
 
    auto_examples/index
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Addtional information
+
+   whats_new
+   about
+
 See the `README <https://github.com/vighneshbirodkar/project-template/blob/master/README.md>`_
 for more information.
 

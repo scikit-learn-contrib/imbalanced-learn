@@ -1,0 +1,7 @@
+
+recursive-include doc *
+recursive-include examples *
+include AUTHORS.rst
+include CONTRIBUTING.rst
+include LICENSE.md
+include README.md
