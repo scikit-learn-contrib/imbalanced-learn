@@ -83,7 +83,7 @@ An illustration of the cluster centroids method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 42.358 seconds)
+(0 minutes 47.908 seconds)
 
 
 

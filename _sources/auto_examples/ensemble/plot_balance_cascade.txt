@@ -21,23 +21,24 @@ An illustration of the balance cascade ensemble method.
  Out::
 
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
-    Elements misclassified: [3133  861 1175 3818 1069  356 1773  922]
+    Elements misclassified: [ 356  182  359   53 1032 1003]
     Creation of the subset #0
-    Elements misclassified: [3133  861 1069 1773 1830 2007  727  200]
+    Elements misclassified: [ 356 1032  917 3014  727 2175]
     Creation of the subset #1
-    Elements misclassified: [1069 1583 4039]
+    Elements misclassified: [1032  917 3014 2175  416 1962 3755 3982]
     Creation of the subset #2
-    Elements misclassified: [3787 3982 2763 2317]
+    Elements misclassified: [1032  917 3014 2175  416 3755 3982 4122 4254 4300 2627]
     Creation of the subset #3
-    Elements misclassified: [3982 2317   53 3020 2699  898 4300  917]
+    Elements misclassified: [1032  917 3014 2175  416 4254 2627 1425 2237 3818]
     Creation of the subset #4
-    Elements misclassified: [  53 3020  917 1562 3997  316  657]
+    Elements misclassified: [ 917 3014 2175 4254 2627  898  657 2512 3681 2815  371]
     Creation of the subset #5
-    Elements misclassified: [  53 3020  917 2105  601  382 3273 2150   50  352]
+    Elements misclassified: [ 917 2175 4254 2627  898 2815  371 2763 2402  382 1175]
     Creation of the subset #6
-    Elements misclassified: [  53 3020  917  382 3662 4254  124  111  192 4190 3221  416 3716]
+    Elements misclassified: [ 917 2175 4254 2627  898 2815 2763 2402  382 3878 4039 3389 1138 1670  100
+     2683 3296]
     Creation of the subset #7
-    Elements misclassified: [  53  917  382 4254  192 3716 2237 1858 1138 2627 3528 1032 2175 4243]
+    Elements misclassified: [2175 4254 2627  898 2815 2763  382 3389 2683 3296 4397 4413  124 2509]
     Creation of the subset #8
     Creation of the subset #9
     Not enough samples to continue creating subsets
@@ -105,7 +106,7 @@ An illustration of the balance cascade ensemble method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.871 seconds)
+(0 minutes 0.687 seconds)
 
 
 
