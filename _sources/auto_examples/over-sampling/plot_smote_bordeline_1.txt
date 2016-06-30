@@ -85,7 +85,7 @@ An illustration of the random SMOTE borderline 1 method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.049 seconds)
+(0 minutes 0.901 seconds)
 
 
 
