@@ -37,9 +37,6 @@ class SMOTE(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     k : int, optional (default=5)
         Number of nearest neighbours to used to construct synthetic samples.
 
@@ -95,15 +92,13 @@ class SMOTE(SamplerMixin):
     def __init__(self,
                  ratio='auto',
                  random_state=None,
-                 verbose=True,
                  k=5,
                  m=10,
                  out_step=0.5,
                  kind='regular',
                  n_jobs=-1,
                  **kwargs):
-        super(SMOTE, self).__init__(ratio=ratio,
-                                    verbose=verbose)
+        super(SMOTE, self).__init__(ratio=ratio)
         self.random_state = random_state
         self.kind = kind
         self.k = k
@@ -234,8 +229,7 @@ class SMOTE(SamplerMixin):
         # minority label
         y_new = np.array([y_type] * len(X_new))
 
-        if self.verbose:
-            print("Generated {} new samples ...".format(len(X_new)))
+        self.logger.info('Generated {} new samples ...'.format(len(X_new)))
 
         return X_new, y_new
 
@@ -282,9 +276,8 @@ class SMOTE(SamplerMixin):
         # If regular SMOTE is to be performed
         if self.kind == 'regular':
 
-            # Print if verbose is true#
-            if self.verbose:
-                print('Finding the {} nearest neighbours...'.format(self.k))
+            self.logger.debug('Finding the {} nearest neighbours...'.format(
+                self.k))
 
             # Look for k-th nearest neighbours, excluding, of course, the
             # point itself.
@@ -296,10 +289,7 @@ class SMOTE(SamplerMixin):
                 X_min,
                 return_distance=False)[:, 1:]
 
-            # Print status if verbose is true
-            if self.verbose:
-                print("done!")
-                print("Creating synthetic samples...", end="")
+            self.logger.debug('Create synthetic samples ...')
 
             # --- Generating synthetic samples
             # Use static method make_samples to generate minority samples
@@ -310,9 +300,6 @@ class SMOTE(SamplerMixin):
                                               num_samples,
                                               1.0)
 
-            if self.verbose:
-                print("done!")
-
             # Concatenate the newly generated samples to the original data set
             X_resampled = np.concatenate((X, X_new), axis=0)
             y_resampled = np.concatenate((y, y_new), axis=0)
@@ -321,23 +308,19 @@ class SMOTE(SamplerMixin):
 
         if self.kind == 'borderline1' or self.kind == 'borderline2':
 
-            if self.verbose:
-                print("Finding the {} nearest neighbours...".format(self.m))
+            self.logger.debug('Finding the {} nearest neighbours ...'.format(
+                self.m))
 
             # Find the NNs for all samples in the data set.
             self.nearest_neighbour.fit(X)
-
-            if self.verbose:
-                print("done!")
 
             # Boolean array with True for minority samples in danger
             danger_index = self._in_danger_noise(X_min, y, kind='danger')
 
             # If all minority samples are safe, return the original data set.
             if not any(danger_index):
-                if self.verbose:
-                    print('There are no samples in danger. No borderline '
-                          'synthetic samples created.')
+                self.logger.debug('There are no samples in danger. No'
+                                  ' borderline synthetic samples created.')
 
                 # All are safe, nothing to be done here.
                 return X, y
@@ -430,17 +413,13 @@ class SMOTE(SamplerMixin):
 
             # First, find the nn of all the samples to identify samples
             # in danger and noisy ones
-            if self.verbose:
-                print("Finding the {} nearest neighbours...".format(self.m))
+            self.logger.debug('Finding the {} nearest neighbours ...'.format(
+                self.m))
 
             # As usual, fit a nearest neighbour model to the data
             self.nearest_neighbour.fit(X)
 
-            if self.verbose:
-                print("done!")
-
             # Now, get rid of noisy support vectors
-
             noise_bool = self._in_danger_noise(support_vector, y, kind='noise')
 
             # Remove noisy support vectors
@@ -449,24 +428,22 @@ class SMOTE(SamplerMixin):
                                                 kind='danger')
             safety_bool = np.logical_not(danger_bool)
 
-            if self.verbose:
-                print("Out of {0} support vectors, {1} are noisy, "
-                      "{2} are in danger "
-                      "and {3} are safe.".format(support_vector.shape[0],
-                                                 noise_bool.sum().astype(int),
-                                                 danger_bool.sum().astype(int),
-                                                 safety_bool.sum().astype(int)
-                                                 ))
+            self.logger.debug('Out of {0} support vectors, {1} are noisy, '
+                              '{2} are in danger '
+                              'and {3} are safe.'.format(
+                                  support_vector.shape[0],
+                                  noise_bool.sum().astype(int),
+                                  danger_bool.sum().astype(int),
+                                  safety_bool.sum().astype(int)))
 
-                # Proceed to find support vectors NNs among the minority class
-                print("Finding the {} nearest neighbours...".format(self.k))
+            # Proceed to find support vectors NNs among the minority class
+            self.logger.debug('Finding the {} nearest neighbours ...'.format(
+                self.k))
 
             self.nearest_neighbour.set_params(**{'n_neighbors': self.k + 1})
             self.nearest_neighbour.fit(X_min)
 
-            if self.verbose:
-                print("done!")
-                print("Creating synthetic samples...", end="")
+            self.logger.debug('Create synthetic samples ...')
 
             # Split the number of synthetic samples between interpolation and
             # extrapolation
@@ -502,9 +479,6 @@ class SMOTE(SamplerMixin):
                     nns,
                     int((1 - fractions) * num_samples),
                     step_size=-self.out_step)
-
-            if self.verbose:
-                print("done!")
 
             # Concatenate the newly generated samples to the original data set
             if (np.count_nonzero(danger_bool) > 0 and

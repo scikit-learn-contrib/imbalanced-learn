@@ -57,14 +57,12 @@ def test_ee_init():
 
     # Define a ratio
     ratio = 1.
-    verbose = True
-    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED, verbose=verbose)
+    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
 
     assert_equal(ee.ratio, ratio)
     assert_equal(ee.replacement, False)
     assert_equal(ee.n_subsets, 10)
     assert_equal(ee.random_state, RND_SEED)
-    assert_equal(ee.verbose, verbose)
 
 
 def test_ee_fit_single_class():

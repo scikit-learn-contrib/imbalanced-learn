@@ -57,11 +57,9 @@ def test_init():
 
     # Define a ratio
     ratio = 1.
-    verbose = True
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED, verbose=verbose)
+    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
 
     assert_equal(cc.ratio, ratio)
-    assert_equal(cc.verbose, verbose)
 
 
 def test_cc_fit_single_class():

@@ -31,14 +31,12 @@ def test_oss_init():
     """Test the initialisation of the object"""
 
     # Define a ratio
-    verbose = True
-    oss = OneSidedSelection(random_state=RND_SEED, verbose=verbose)
+    oss = OneSidedSelection(random_state=RND_SEED)
 
     assert_equal(oss.size_ngh, 1)
     assert_equal(oss.n_seeds_S, 1)
     assert_equal(oss.n_jobs, -1)
     assert_equal(oss.random_state, RND_SEED)
-    assert_equal(oss.verbose, verbose)
 
 
 def test_oss_fit_single_class():

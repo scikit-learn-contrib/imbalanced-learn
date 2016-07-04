@@ -29,9 +29,6 @@ class OneSidedSelection(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     size_ngh : int, optional (default=1)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
@@ -71,9 +68,9 @@ class OneSidedSelection(SamplerMixin):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None, verbose=True,
+    def __init__(self, return_indices=False, random_state=None,
                  size_ngh=1, n_seeds_S=1, n_jobs=-1, **kwargs):
-        super(OneSidedSelection, self).__init__(verbose=verbose)
+        super(OneSidedSelection, self).__init__()
         self.return_indices = return_indices
         self.random_state = random_state
         self.size_ngh = size_ngh
@@ -174,14 +171,11 @@ class OneSidedSelection(SamplerMixin):
         nns = nn.kneighbors(X_resampled, return_distance=False)[:, 1]
 
         # Send the information to is_tomek function to get boolean vector back
-        if self.verbose:
-            print("Looking for majority Tomek links...")
-        links = TomekLinks.is_tomek(y_resampled, nns, self.min_c_,
-                                    self.verbose)
+        self.logger.debug('Looking for majority Tomek links ...')
+        links = TomekLinks.is_tomek(y_resampled, nns, self.min_c_)
 
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(
-                y_resampled[np.logical_not(links)])))
+        self.logger.info('Under-sampling performed: {}'.format(Counter(
+            y_resampled[np.logical_not(links)])))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

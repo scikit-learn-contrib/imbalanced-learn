@@ -35,9 +35,6 @@ class RandomUnderSampler(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     n_jobs : int, optional (default=-1)
         The number of threads to open if possible.
 
@@ -62,9 +59,8 @@ class RandomUnderSampler(SamplerMixin):
     """
 
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
-                 verbose=True, replacement=True):
-        super(RandomUnderSampler, self).__init__(ratio=ratio,
-                                                 verbose=verbose)
+                 replacement=True):
+        super(RandomUnderSampler, self).__init__(ratio=ratio)
         self.return_indices = return_indices
         self.random_state = random_state
         self.replacement = replacement
@@ -134,8 +130,8 @@ class RandomUnderSampler(SamplerMixin):
             y_resampled = np.concatenate((y_resampled, y[y == key][indx]),
                                          axis=0)
 
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(y_resampled)))
+        self.logger.info("Under-sampling performed: {}".format(
+            Counter(y_resampled)))
 
         # Check if the indices of the samples selected should be returned as
         # well

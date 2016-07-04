@@ -56,13 +56,10 @@ def test_ros_init():
     """Test the initialisation of the object"""
 
     # Define a ratio
-    verbose = True
     ratio = 'auto'
-    ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED,
-                            verbose=verbose)
+    ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
 
     assert_equal(ros.random_state, RND_SEED)
-    assert_equal(ros.verbose, verbose)
 
 
 def test_ros_fit_single_class():

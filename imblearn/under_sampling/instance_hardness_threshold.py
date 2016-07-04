@@ -44,9 +44,6 @@ class InstanceHardnessThreshold(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     cv : int, optional (default=5)
         Number of folds to be used when estimating samples' instance hardness.
 
@@ -86,10 +83,9 @@ class InstanceHardnessThreshold(SamplerMixin):
     """
 
     def __init__(self, estimator='linear-svm', ratio='auto',
-                 return_indices=False, random_state=None, verbose=True,
-                 cv=5, n_jobs=-1, **kwargs):
-        super(InstanceHardnessThreshold, self).__init__(ratio=ratio,
-                                                        verbose=verbose)
+                 return_indices=False, random_state=None, cv=5, n_jobs=-1,
+                 **kwargs):
+        super(InstanceHardnessThreshold, self).__init__(ratio=ratio)
         self.estimator = estimator
         self.return_indices = return_indices
         self.random_state = random_state
@@ -192,8 +188,8 @@ class InstanceHardnessThreshold(SamplerMixin):
         X_resampled = X[mask]
         y_resampled = y[mask]
 
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(y_resampled)))
+        self.logger.info('Under-sampling performed: {}'.format(Counter(
+            y_resampled)))
 
         # If we need to offer support for the indices
         if self.return_indices:

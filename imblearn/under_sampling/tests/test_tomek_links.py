@@ -31,12 +31,10 @@ def test_tl_init():
     """Test the initialisation of the object"""
 
     # Define a ratio
-    verbose = True
-    tl = TomekLinks(random_state=RND_SEED, verbose=verbose)
+    tl = TomekLinks(random_state=RND_SEED)
 
     assert_equal(tl.n_jobs, -1)
     assert_equal(tl.random_state, RND_SEED)
-    assert_equal(tl.verbose, verbose)
 
 
 def test_tl_fit_single_class():

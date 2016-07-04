@@ -31,9 +31,6 @@ class EasyEnsemble(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     replacement : bool, optional (default=False)
         Whether or not to sample randomly with replacement or not.
 
@@ -68,10 +65,9 @@ class EasyEnsemble(SamplerMixin):
 
     """
 
-    def __init__(self, ratio='auto', return_indices=False, verbose=True,
+    def __init__(self, ratio='auto', return_indices=False,
                  random_state=None, replacement=False, n_subsets=10):
-        super(EasyEnsemble, self).__init__(ratio=ratio,
-                                           verbose=verbose)
+        super(EasyEnsemble, self).__init__(ratio=ratio)
         self.return_indices = return_indices
         self.random_state = random_state
         self.replacement = replacement
@@ -108,14 +104,12 @@ class EasyEnsemble(SamplerMixin):
             idx_under = []
 
         for s in range(self.n_subsets):
-            if self.verbose:
-                print("Creation of the set #{}".format(s))
+            self.logger.debug('Creation of the set #{}'.format(s))
 
             # Create the object for random under-sampling
             rus = RandomUnderSampler(ratio=self.ratio,
                                      return_indices=self.return_indices,
                                      random_state=self.random_state,
-                                     verbose=self.verbose,
                                      replacement=self.replacement)
             if self.return_indices:
                 sel_x, sel_y, sel_idx = rus.fit_sample(X, y)

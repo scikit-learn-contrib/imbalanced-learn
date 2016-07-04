@@ -29,7 +29,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     _estimator_type = "sampler"
 
-    def __init__(self, ratio='auto', verbose=True):
+    def __init__(self, ratio='auto'):
         """Initialize this object and its instance variables.
 
         Parameters
@@ -40,12 +40,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             of samples in the minority class over the the number of samples
             in the majority class.
 
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
-
         Returns
         -------
         None
@@ -53,7 +47,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         """
 
         self.ratio = ratio
-        self.verbose = verbose
         self.logger = logging.getLogger(__name__)
 
     def fit(self, X, y):
@@ -85,8 +78,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         if hasattr(self, 'ratio'):
             self._validate_ratio()
 
-        if self.verbose:
-            print("Determining classes statistics... ", end="")
+        self.logger.info('Compute classes statistics ...')
 
         # Get all the unique elements in the target array
         uniques = np.unique(y)
@@ -110,9 +102,8 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.min_c_ = min(self.stats_c_, key=self.stats_c_.get)
         self.maj_c_ = max(self.stats_c_, key=self.stats_c_.get)
 
-        if self.verbose:
-            print('{} classes detected: {}'.format(uniques.size,
-                                                   self.stats_c_))
+        self.logger.info('{} classes detected: {}'.format(uniques.size,
+                                                          self.stats_c_))
 
         # Check if the ratio provided at initialisation make sense
         if isinstance(self.ratio, float):

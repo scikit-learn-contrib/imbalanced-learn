@@ -37,9 +37,6 @@ class BalanceCascade(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     n_max_subset : int or None, optional (default=None)
         Maximum number of subsets to generate. By default, all data from
         the training will be selected that could lead to a large number of
@@ -87,10 +84,9 @@ class BalanceCascade(SamplerMixin):
 
     """
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
-                 verbose=True, n_max_subset=None, classifier='knn',
-                 bootstrap=True, **kwargs):
-        super(BalanceCascade, self).__init__(ratio=ratio,
-                                             verbose=verbose)
+                 n_max_subset=None, classifier='knn', bootstrap=True,
+                 **kwargs):
+        super(BalanceCascade, self).__init__(ratio=ratio)
         self.return_indices = return_indices
         self.random_state = random_state
         self.classifier = classifier
@@ -242,8 +238,9 @@ class BalanceCascade(SamplerMixin):
             # Find the misclassified index to keep them for the next round
             idx_mis_class = idx_sel_from_maj[np.nonzero(pred_label !=
                                                         N_y[idx_sel_from_maj])]
-            if self.verbose:
-                print("Elements misclassified: {}".format(idx_mis_class))
+            self.logger.debug('Elements misclassified: {}'.format(
+                idx_mis_class))
+
             # Count how many random element will be selected
             if self.ratio == 'auto':
                 num_samples = self.stats_c_[self.min_c_]
@@ -251,8 +248,7 @@ class BalanceCascade(SamplerMixin):
                 num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
             num_samples -= idx_mis_class.size
 
-            if self.verbose:
-                print("Creation of the subset #{}".format(n_subsets))
+            self.logger.debug('Creation of the subset #{}'.format(n_subsets))
 
             # We found a new subset, increase the counter
             n_subsets += 1
@@ -279,13 +275,14 @@ class BalanceCascade(SamplerMixin):
                                                          idx_sel_from_maj),
                                                         axis=0))
 
-                    if self.verbose:
-                        print("Creation of the subset #" + str(n_subsets))
+                    self.logger.debug('Creation of the subset #{}'.format(
+                        n_subsets))
 
-                        # We found a new subset, increase the counter
-                        n_subsets += 1
-                    if self.verbose:
-                        print('The number of subset achieved their maximum')
+                    # We found a new subset, increase the counter
+                    n_subsets += 1
+
+                    self.logger.debug('The number of subset reached is'
+                                      ' maximum.')
 
             # Also check that we will have enough sample to extract at the
             # next round
@@ -307,14 +304,14 @@ class BalanceCascade(SamplerMixin):
                     idx_under.append(np.concatenate((idx_min,
                                                      idx_sel_from_maj),
                                                     axis=0))
-                if self.verbose:
-                    print("Creation of the subset #" + str(n_subsets))
+                self.logger.debug('Creation of the subset #{}'.format(
+                        n_subsets))
 
                 # We found a new subset, increase the counter
                 n_subsets += 1
 
-                if self.verbose:
-                    print('Not enough samples to continue creating subsets')
+                self.logger.debug('Not enough samples to continue creating'
+                                  ' subsets.')
 
         if self.return_indices:
             return (np.array(X_resampled), np.array(y_resampled),

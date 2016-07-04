@@ -26,9 +26,6 @@ class TomekLinks(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        The number of threads to open if possible.
-
     n_jobs : int, optional (default=-1)
         The number of threads to open if possible.
 
@@ -60,15 +57,15 @@ class TomekLinks(SamplerMixin):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None, verbose=True,
+    def __init__(self, return_indices=False, random_state=None,
                  n_jobs=-1):
-        super(TomekLinks, self).__init__(verbose=verbose)
+        super(TomekLinks, self).__init__()
         self.return_indices = return_indices
         self.random_state = random_state
         self.n_jobs = n_jobs
 
     @staticmethod
-    def is_tomek(y, nn_index, class_type, verbose=True):
+    def is_tomek(y, nn_index, class_type):
         """is_tomek uses the target vector and the first neighbour of every
         sample point and looks for Tomek pairs. Returning a boolean vector with
         True for majority Tomek links.
@@ -115,9 +112,6 @@ class TomekLinks(SamplerMixin):
                     links[ind] = True
                     count += 1
 
-        if verbose:
-            print("{} Tomek links found.".format(count))
-
         return links
 
     def _sample(self, X, y):
@@ -151,13 +145,11 @@ class TomekLinks(SamplerMixin):
         nns = nn.kneighbors(X, return_distance=False)[:, 1]
 
         # Send the information to is_tomek function to get boolean vector back
-        if self.verbose:
-            print("Looking for majority Tomek links...")
-        links = self.is_tomek(y, nns, self.min_c_, self.verbose)
+        self.logger.debug('Looking for majority Tomek links ...')
+        links = self.is_tomek(y, nns, self.min_c_)
 
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(
-                y[np.logical_not(links)])))
+        self.logger.info('Under-sampling performed: {}'.format(Counter(
+            y[np.logical_not(links)])))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

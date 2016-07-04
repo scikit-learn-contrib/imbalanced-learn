@@ -26,9 +26,6 @@ class RandomOverSampler(SamplerMixin):
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
@@ -57,11 +54,9 @@ class RandomOverSampler(SamplerMixin):
 
     def __init__(self,
                  ratio='auto',
-                 verbose=True,
                  random_state=None):
 
-        super(RandomOverSampler, self).__init__(ratio=ratio,
-                                                verbose=verbose)
+        super(RandomOverSampler, self).__init__(ratio=ratio)
         self.random_state = random_state
 
     def _sample(self, X, y):
@@ -119,7 +114,7 @@ class RandomOverSampler(SamplerMixin):
                                           y[y == key],
                                           y[y == key][indx]), axis=0)
 
-        if self.verbose:
-            print("Over-sampling performed: {}".format(Counter(y_resampled)))
+        self.logger.info('Over-sampling performed: {}'.format(Counter(
+            y_resampled)))
 
         return X_resampled, y_resampled
