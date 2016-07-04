@@ -33,9 +33,6 @@ class ADASYN(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     k : int, optional (default=5)
         Number of nearest neighbours to used to construct synthetic samples.
 
@@ -75,11 +72,9 @@ class ADASYN(SamplerMixin):
     def __init__(self,
                  ratio='auto',
                  random_state=None,
-                 verbose=True,
                  k=5,
                  n_jobs=1):
-        super(ADASYN, self).__init__(ratio=ratio,
-                                     verbose=verbose)
+        super(ADASYN, self).__init__(ratio=ratio)
         self.random_state = random_state
         self.k = k
         self.n_jobs = n_jobs
@@ -125,8 +120,8 @@ class ADASYN(SamplerMixin):
         X_min = X[y == self.min_c_]
 
         # Print if verbose is true
-        if self.verbose:
-            print('Finding the {} nearest neighbours...'.format(self.k))
+        self.logger.debug('Finding the {} nearest neighbours...'.format(
+            self.k))
 
         # Look for k-th nearest neighbours, excluding, of course, the
         # point itself.
@@ -156,7 +151,7 @@ class ADASYN(SamplerMixin):
                 X_resampled = np.vstack((X_resampled, x_gen))
                 y_resampled = np.hstack((y_resampled, self.min_c_))
 
-        if self.verbose:
-            print("Over-sampling performed: {}".format(Counter(y_resampled)))
+        self.logger.info('Over-sampling performed: {}'.format(Counter(
+            y_resampled)))
 
         return X_resampled, y_resampled

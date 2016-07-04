@@ -27,9 +27,6 @@ class SMOTETomek(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     k : int, optional (default=5)
         Number of nearest neighbours to used to construct synthetic
         samples.
@@ -88,10 +85,10 @@ class SMOTETomek(SamplerMixin):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, verbose=True,
+    def __init__(self, ratio='auto', random_state=None,
                  k=5, m=10, out_step=0.5, kind_smote='regular',
                  n_jobs=-1, **kwargs):
-        super(SMOTETomek, self).__init__(ratio=ratio, verbose=verbose)
+        super(SMOTETomek, self).__init__(ratio=ratio)
         self.random_state = random_state
         self.k = k
         self.m = m
@@ -100,11 +97,10 @@ class SMOTETomek(SamplerMixin):
         self.n_jobs = n_jobs
         self.kwargs = kwargs
         self.sm = SMOTE(ratio=self.ratio, random_state=self.random_state,
-                        verbose=self.verbose, k=self.k, m=self.m,
-                        out_step=self.out_step, kind=self.kind_smote,
-                        n_jobs=self.n_jobs, **self.kwargs)
-        self.tomek = TomekLinks(random_state=self.random_state,
-                                verbose=self.verbose)
+                        k=self.k, m=self.m, out_step=self.out_step,
+                        kind=self.kind_smote, n_jobs=self.n_jobs,
+                        **self.kwargs)
+        self.tomek = TomekLinks(random_state=self.random_state)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

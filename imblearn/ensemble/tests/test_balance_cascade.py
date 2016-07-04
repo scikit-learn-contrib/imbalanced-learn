@@ -57,14 +57,12 @@ def test_bc_init():
 
     # Define a ratio
     ratio = 1.
-    verbose = True
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED, verbose=verbose)
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
 
     assert_equal(bc.ratio, ratio)
     assert_equal(bc.bootstrap, True)
     assert_equal(bc.n_max_subset, None)
     assert_equal(bc.random_state, RND_SEED)
-    assert_equal(bc.verbose, verbose)
 
 
 def test_bc_fit_single_class():

@@ -56,13 +56,10 @@ def test_rus_init():
     """Test the initialisation of the object"""
 
     # Define a ratio
-    verbose = True
     ratio = 'auto'
-    rus = RandomUnderSampler(ratio=ratio, random_state=RND_SEED,
-                             verbose=verbose)
+    rus = RandomUnderSampler(ratio=ratio, random_state=RND_SEED)
 
     assert_equal(rus.random_state, RND_SEED)
-    assert_equal(rus.verbose, verbose)
 
 
 def test_rus_fit_single_class():

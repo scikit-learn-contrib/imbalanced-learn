@@ -31,14 +31,12 @@ def test_enn_init():
     """Test the initialisation of the object"""
 
     # Define a ratio
-    verbose = True
-    enn = EditedNearestNeighbours(random_state=RND_SEED, verbose=verbose)
+    enn = EditedNearestNeighbours(random_state=RND_SEED)
 
     assert_equal(enn.size_ngh, 3)
     assert_equal(enn.kind_sel, 'all')
     assert_equal(enn.n_jobs, -1)
     assert_equal(enn.random_state, RND_SEED)
-    assert_equal(enn.verbose, verbose)
 
 
 def test_enn_fit_single_class():

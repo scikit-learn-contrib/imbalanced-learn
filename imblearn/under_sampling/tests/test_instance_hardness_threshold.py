@@ -69,15 +69,12 @@ def test_iht_init():
     """Test the initialisation of the object"""
 
     # Define a ratio
-    verbose = True
     ratio = 'auto'
     iht = InstanceHardnessThreshold(ESTIMATOR, ratio=ratio,
-                                    random_state=RND_SEED,
-                                    verbose=verbose)
+                                    random_state=RND_SEED)
 
     assert_equal(iht.ratio, ratio)
     assert_equal(iht.random_state, RND_SEED)
-    assert_equal(iht.verbose, verbose)
 
 
 def test_iht_fit_single_class():

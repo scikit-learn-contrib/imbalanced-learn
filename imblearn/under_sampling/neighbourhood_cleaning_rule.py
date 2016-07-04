@@ -27,9 +27,6 @@ class NeighbourhoodCleaningRule(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     size_ngh : int, optional (default=3)
         Size of the neighbourhood to consider in order to make
         the comparison between each samples and their NN.
@@ -66,9 +63,9 @@ class NeighbourhoodCleaningRule(SamplerMixin):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None, verbose=True,
-                 size_ngh=3, n_jobs=-1):
-        super(NeighbourhoodCleaningRule, self).__init__(verbose=verbose)
+    def __init__(self, return_indices=False, random_state=None, size_ngh=3,
+                 n_jobs=-1):
+        super(NeighbourhoodCleaningRule, self).__init__()
         self.return_indices = return_indices
         self.random_state = random_state
         self.size_ngh = size_ngh
@@ -170,8 +167,8 @@ class NeighbourhoodCleaningRule(SamplerMixin):
         X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
         y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        if self.verbose:
-            print("Under-sampling performed: {}" + str(Counter(y_resampled)))
+        self.logger.info('Under-sampling performed: {}'.format(Counter(
+            y_resampled)))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

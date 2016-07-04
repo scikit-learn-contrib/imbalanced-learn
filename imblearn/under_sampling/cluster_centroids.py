@@ -37,9 +37,6 @@ class ClusterCentroids(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     n_jobs : int, optional (default=-1)
         The number of threads to open if possible.
 
@@ -67,10 +64,8 @@ class ClusterCentroids(SamplerMixin):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, verbose=True,
-                 n_jobs=-1, **kwargs):
-        super(ClusterCentroids, self).__init__(ratio=ratio,
-                                               verbose=verbose)
+    def __init__(self, ratio='auto', random_state=None, n_jobs=-1, **kwargs):
+        super(ClusterCentroids, self).__init__(ratio=ratio)
         self.random_state = random_state
         self.n_jobs = n_jobs
         self.kwargs = kwargs
@@ -132,7 +127,7 @@ class ClusterCentroids(SamplerMixin):
                                                                 num_samples)),
                                          axis=0)
 
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(y_resampled)))
+        self.logger.info('Under-sampling performed: {}'.format(Counter(
+            y_resampled)))
 
         return X_resampled, y_resampled

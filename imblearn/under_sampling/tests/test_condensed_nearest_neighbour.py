@@ -31,13 +31,11 @@ def test_cnn_init():
     """Test the initialisation of the object"""
 
     # Define a ratio
-    verbose = True
-    cnn = CondensedNearestNeighbour(random_state=RND_SEED, verbose=verbose)
+    cnn = CondensedNearestNeighbour(random_state=RND_SEED)
 
     assert_equal(cnn.size_ngh, 1)
     assert_equal(cnn.n_seeds_S, 1)
     assert_equal(cnn.n_jobs, -1)
-    assert_equal(cnn.verbose, verbose)
 
 
 def test_cnn_fit_single_class():

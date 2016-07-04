@@ -56,13 +56,10 @@ def test_ada_init():
     """Test the initialisation of the object"""
 
     # Define a ratio
-    verbose = True
     ratio = 'auto'
-    ada = ADASYN(ratio=ratio, random_state=RND_SEED,
-                 verbose=verbose)
+    ada = ADASYN(ratio=ratio, random_state=RND_SEED)
 
     assert_equal(ada.random_state, RND_SEED)
-    assert_equal(ada.verbose, verbose)
 
 
 def test_ada_fit_single_class():

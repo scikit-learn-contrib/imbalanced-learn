@@ -33,9 +33,6 @@ class EditedNearestNeighbours(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     size_ngh : int, optional (default=3)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
@@ -80,9 +77,9 @@ class EditedNearestNeighbours(SamplerMixin):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None, verbose=True,
+    def __init__(self, return_indices=False, random_state=None,
                  size_ngh=3, kind_sel='all', n_jobs=-1):
-        super(EditedNearestNeighbours, self).__init__(verbose=verbose)
+        super(EditedNearestNeighbours, self).__init__()
         self.return_indices = return_indices
         self.random_state = random_state
         self.size_ngh = size_ngh
@@ -176,8 +173,8 @@ class EditedNearestNeighbours(SamplerMixin):
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(y_resampled)))
+        self.logger.info("Under-sampling performed: {}".format(Counter(
+            y_resampled)))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:
@@ -202,9 +199,6 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by np.random.
-
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
 
     size_ngh : int, optional (default=3)
         Size of the neighbourhood to consider to compute the average
@@ -254,9 +248,9 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None, verbose=True,
+    def __init__(self, return_indices=False, random_state=None,
                  size_ngh=3, max_iter=100, kind_sel='all', n_jobs=-1):
-        super(RepeatedEditedNearestNeighbours, self).__init__(verbose=verbose)
+        super(RepeatedEditedNearestNeighbours, self).__init__()
         self.return_indices = return_indices
         self.random_state = random_state
         self.size_ngh = size_ngh
@@ -265,8 +259,9 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
         self.max_iter = max_iter
         self.enn_ = EditedNearestNeighbours(
             return_indices=self.return_indices,
-            random_state=self.random_state, verbose=False,
-            size_ngh=self.size_ngh, kind_sel=self.kind_sel,
+            random_state=self.random_state,
+            size_ngh=self.size_ngh,
+            kind_sel=self.kind_sel,
             n_jobs=self.n_jobs)
 
     def fit(self, X, y):
@@ -331,8 +326,7 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
 
         for n_iter in range(self.max_iter):
 
-            if self.verbose:
-                print('Apply ENN iteration #{}'.format(n_iter + 1))
+            self.logger.debug('Apply ENN iteration #{}'.format(n_iter + 1))
 
             prev_len = y_.shape[0]
             if self.return_indices:
@@ -344,8 +338,7 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
             if prev_len == y_.shape[0]:
                 break
 
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(y_)))
+        self.logger.info("Under-sampling performed: {}".format(Counter(y_)))
 
         X_resampled, y_resampled = X_, y_
 

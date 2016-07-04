@@ -66,15 +66,13 @@ def test_nearmiss_init():
 
     # Define a ratio
     ratio = 1.
-    verbose = True
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED, verbose=verbose,
+    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
                    version=VERSION_NEARMISS)
 
     assert_equal(nm1.version, VERSION_NEARMISS)
     assert_equal(nm1.size_ngh, 3)
     assert_equal(nm1.ratio, ratio)
     assert_equal(nm1.random_state, RND_SEED)
-    assert_equal(nm1.verbose, verbose)
 
 
 def test_nearmiss_fit_single_class():

@@ -32,9 +32,6 @@ class NearMiss(SamplerMixin):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
-
     version : int, optional (default=1)
         Version of the NearMiss to use. Possible values
         are 1, 2 or 3.
@@ -84,9 +81,8 @@ class NearMiss(SamplerMixin):
     """
 
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
-                 verbose=True, version=1, size_ngh=3, ver3_samp_ngh=3,
-                 n_jobs=-1, **kwargs):
-        super(NearMiss, self).__init__(ratio=ratio, verbose=verbose)
+                 version=1, size_ngh=3, ver3_samp_ngh=3, n_jobs=-1, **kwargs):
+        super(NearMiss, self).__init__(ratio=ratio)
         self.return_indices = return_indices
         self.random_state = random_state
         self.version = version
@@ -294,8 +290,8 @@ class NearMiss(SamplerMixin):
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(y_resampled)))
+        self.logger.info('Under-sampling performed: {}'.format(Counter(
+            y_resampled)))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:
