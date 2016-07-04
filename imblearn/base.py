@@ -225,3 +225,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             The corresponding label of `X_resampled`
         """
         pass
+
+    def __getstate__(self):
+        """Prevent logger from being pickled"""
+        object_dictionary = dict(self.__dict__)
+        del object_dictionary['logger']
+        return object_dictionary
