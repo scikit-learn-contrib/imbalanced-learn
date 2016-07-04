@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 
 import warnings
+import logging
 
 import numpy as np
 
@@ -54,8 +55,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.ratio = ratio
         self.verbose = verbose
 
-        # Create the member variables regarding the classes statistics
-
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
 
@@ -73,6 +72,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             Return self.
 
         """
+
+        # Create logger
+        self.logger = logging.getLogger(__name__)
 
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
