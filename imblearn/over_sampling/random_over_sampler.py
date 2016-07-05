@@ -114,7 +114,7 @@ class RandomOverSampler(SamplerMixin):
                                           y[y == key],
                                           y[y == key][indx]), axis=0)
 
-        self.logger.info('Over-sampling performed: {}'.format(Counter(
-            y_resampled)))
+        self.logger.info('Over-sampling performed: %s', Counter(
+            y_resampled))
 
         return X_resampled, y_resampled

@@ -120,8 +120,7 @@ class ADASYN(SamplerMixin):
         X_min = X[y == self.min_c_]
 
         # Print if verbose is true
-        self.logger.debug('Finding the {} nearest neighbours...'.format(
-            self.k))
+        self.logger.debug('Finding the %s nearest neighbours ...', self.k)
 
         # Look for k-th nearest neighbours, excluding, of course, the
         # point itself.
@@ -151,7 +150,7 @@ class ADASYN(SamplerMixin):
                 X_resampled = np.vstack((X_resampled, x_gen))
                 y_resampled = np.hstack((y_resampled, self.min_c_))
 
-        self.logger.info('Over-sampling performed: {}'.format(Counter(
-            y_resampled)))
+        self.logger.info('Over-sampling performed: %s', Counter(
+            y_resampled))
 
         return X_resampled, y_resampled

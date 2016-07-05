@@ -104,7 +104,7 @@ class EasyEnsemble(SamplerMixin):
             idx_under = []
 
         for s in range(self.n_subsets):
-            self.logger.debug('Creation of the set #{}'.format(s))
+            self.logger.debug('Creation of the set #%s', s)
 
             # Create the object for random under-sampling
             rus = RandomUnderSampler(ratio=self.ratio,

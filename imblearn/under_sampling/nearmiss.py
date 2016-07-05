@@ -290,8 +290,8 @@ class NearMiss(SamplerMixin):
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        self.logger.info('Under-sampling performed: {}'.format(Counter(
-            y_resampled)))
+        self.logger.info('Under-sampling performed: %s', Counter(
+            y_resampled))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

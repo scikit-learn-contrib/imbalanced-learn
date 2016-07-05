@@ -127,7 +127,7 @@ class ClusterCentroids(SamplerMixin):
                                                                 num_samples)),
                                          axis=0)
 
-        self.logger.info('Under-sampling performed: {}'.format(Counter(
-            y_resampled)))
+        self.logger.info('Under-sampling performed: %s', Counter(
+            y_resampled))
 
         return X_resampled, y_resampled

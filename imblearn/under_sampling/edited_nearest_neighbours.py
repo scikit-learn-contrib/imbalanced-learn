@@ -173,8 +173,8 @@ class EditedNearestNeighbours(SamplerMixin):
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        self.logger.info("Under-sampling performed: {}".format(Counter(
-            y_resampled)))
+        self.logger.info('Under-sampling performed: %s', Counter(
+            y_resampled))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:
@@ -326,7 +326,7 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
 
         for n_iter in range(self.max_iter):
 
-            self.logger.debug('Apply ENN iteration #{}'.format(n_iter + 1))
+            self.logger.debug('Apply ENN iteration #%s', n_iter + 1)
 
             prev_len = y_.shape[0]
             if self.return_indices:
@@ -338,7 +338,7 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
             if prev_len == y_.shape[0]:
                 break
 
-        self.logger.info("Under-sampling performed: {}".format(Counter(y_)))
+        self.logger.info('Under-sampling performed: %s', Counter(y_))
 
         X_resampled, y_resampled = X_, y_
 
