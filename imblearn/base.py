@@ -47,7 +47,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         """
 
         self.ratio = ratio
-        
+        self.logger = logging.getLogger(__name__)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -69,8 +69,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
-		
-        self._get_logger()
 
         self.min_c_ = None
         self.maj_c_ = None
@@ -140,8 +138,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
-		
-        self._get_logger()
 
         # Check that the data have been fitted
         if not hasattr(self, 'stats_c_'):
@@ -220,11 +216,13 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         pass
 
     def __getstate__(self):
-        """Prevent logger from being pickled"""
+        """Prevent logger from being pickled."""
         object_dictionary = self.__dict__.copy()
         del object_dictionary['logger']
         return object_dictionary
 
-		
-    def _get_logger(self):
-        self.logger = logging.getLogger(__name__)
+    def __setstate__(self, dict):
+        """Re-open the logger."""
+        logger = logging.getLogger(__name__)
+        self.__dict__.update(dict)
+        self.logger = logger
