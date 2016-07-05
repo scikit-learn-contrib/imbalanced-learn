@@ -174,8 +174,8 @@ class OneSidedSelection(SamplerMixin):
         self.logger.debug('Looking for majority Tomek links ...')
         links = TomekLinks.is_tomek(y_resampled, nns, self.min_c_)
 
-        self.logger.info('Under-sampling performed: {}'.format(Counter(
-            y_resampled[np.logical_not(links)])))
+        self.logger.info('Under-sampling performed: %s', Counter(
+            y_resampled[np.logical_not(links)]))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

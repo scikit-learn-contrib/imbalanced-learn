@@ -238,8 +238,7 @@ class BalanceCascade(SamplerMixin):
             # Find the misclassified index to keep them for the next round
             idx_mis_class = idx_sel_from_maj[np.nonzero(pred_label !=
                                                         N_y[idx_sel_from_maj])]
-            self.logger.debug('Elements misclassified: {}'.format(
-                idx_mis_class))
+            self.logger.debug('Elements misclassified: %s', idx_mis_class)
 
             # Count how many random element will be selected
             if self.ratio == 'auto':
@@ -248,7 +247,7 @@ class BalanceCascade(SamplerMixin):
                 num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
             num_samples -= idx_mis_class.size
 
-            self.logger.debug('Creation of the subset #{}'.format(n_subsets))
+            self.logger.debug('Creation of the subset #%s', n_subsets)
 
             # We found a new subset, increase the counter
             n_subsets += 1
@@ -275,8 +274,7 @@ class BalanceCascade(SamplerMixin):
                                                          idx_sel_from_maj),
                                                         axis=0))
 
-                    self.logger.debug('Creation of the subset #{}'.format(
-                        n_subsets))
+                    self.logger.debug('Creation of the subset #%s', n_subsets)
 
                     # We found a new subset, increase the counter
                     n_subsets += 1
@@ -304,8 +302,7 @@ class BalanceCascade(SamplerMixin):
                     idx_under.append(np.concatenate((idx_min,
                                                      idx_sel_from_maj),
                                                     axis=0))
-                self.logger.debug('Creation of the subset #{}'.format(
-                        n_subsets))
+                self.logger.debug('Creation of the subset #%s', n_subsets)
 
                 # We found a new subset, increase the counter
                 n_subsets += 1

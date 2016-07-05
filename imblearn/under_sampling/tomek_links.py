@@ -148,8 +148,8 @@ class TomekLinks(SamplerMixin):
         self.logger.debug('Looking for majority Tomek links ...')
         links = self.is_tomek(y, nns, self.min_c_)
 
-        self.logger.info('Under-sampling performed: {}'.format(Counter(
-            y[np.logical_not(links)])))
+        self.logger.info('Under-sampling performed: %s', Counter(
+            y[np.logical_not(links)]))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

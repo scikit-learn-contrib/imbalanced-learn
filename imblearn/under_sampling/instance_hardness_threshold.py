@@ -188,8 +188,8 @@ class InstanceHardnessThreshold(SamplerMixin):
         X_resampled = X[mask]
         y_resampled = y[mask]
 
-        self.logger.info('Under-sampling performed: {}'.format(Counter(
-            y_resampled)))
+        self.logger.info('Under-sampling performed: %s', Counter(
+            y_resampled))
 
         # If we need to offer support for the indices
         if self.return_indices:

@@ -229,7 +229,7 @@ class SMOTE(SamplerMixin):
         # minority label
         y_new = np.array([y_type] * len(X_new))
 
-        self.logger.info('Generated {} new samples ...'.format(len(X_new)))
+        self.logger.info('Generated %s new samples ...', len(X_new))
 
         return X_new, y_new
 
@@ -276,8 +276,7 @@ class SMOTE(SamplerMixin):
         # If regular SMOTE is to be performed
         if self.kind == 'regular':
 
-            self.logger.debug('Finding the {} nearest neighbours...'.format(
-                self.k))
+            self.logger.debug('Finding the %s nearest neighbours ...', self.k)
 
             # Look for k-th nearest neighbours, excluding, of course, the
             # point itself.
@@ -308,8 +307,7 @@ class SMOTE(SamplerMixin):
 
         if self.kind == 'borderline1' or self.kind == 'borderline2':
 
-            self.logger.debug('Finding the {} nearest neighbours ...'.format(
-                self.m))
+            self.logger.debug('Finding the %s nearest neighbours ...', self.m)
 
             # Find the NNs for all samples in the data set.
             self.nearest_neighbour.fit(X)
@@ -413,8 +411,7 @@ class SMOTE(SamplerMixin):
 
             # First, find the nn of all the samples to identify samples
             # in danger and noisy ones
-            self.logger.debug('Finding the {} nearest neighbours ...'.format(
-                self.m))
+            self.logger.debug('Finding the %s nearest neighbours ...', self.m)
 
             # As usual, fit a nearest neighbour model to the data
             self.nearest_neighbour.fit(X)
@@ -428,17 +425,16 @@ class SMOTE(SamplerMixin):
                                                 kind='danger')
             safety_bool = np.logical_not(danger_bool)
 
-            self.logger.debug('Out of {0} support vectors, {1} are noisy, '
-                              '{2} are in danger '
-                              'and {3} are safe.'.format(
-                                  support_vector.shape[0],
-                                  noise_bool.sum().astype(int),
-                                  danger_bool.sum().astype(int),
-                                  safety_bool.sum().astype(int)))
+            self.logger.debug('Out of %s support vectors, %s are noisy, '
+                              '%s are in danger '
+                              'and %s are safe.',
+                              support_vector.shape[0],
+                              noise_bool.sum().astype(int),
+                              danger_bool.sum().astype(int),
+                              safety_bool.sum().astype(int))
 
             # Proceed to find support vectors NNs among the minority class
-            self.logger.debug('Finding the {} nearest neighbours ...'.format(
-                self.k))
+            self.logger.debug('Finding the %s nearest neighbours ...', self.k)
 
             self.nearest_neighbour.set_params(**{'n_neighbors': self.k + 1})
             self.nearest_neighbour.fit(X_min)

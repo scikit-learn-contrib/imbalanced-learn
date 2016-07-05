@@ -130,8 +130,7 @@ class RandomUnderSampler(SamplerMixin):
             y_resampled = np.concatenate((y_resampled, y[y == key][indx]),
                                          axis=0)
 
-        self.logger.info("Under-sampling performed: {}".format(
-            Counter(y_resampled)))
+        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         # Check if the indices of the samples selected should be returned as
         # well
