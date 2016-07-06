@@ -4,9 +4,13 @@ imbalanced-learn
 ================
 
 imbalanced-learn is a python package offering a number of re-sampling techniques commonly used in datasets showing strong between-class imbalance.
-It is compatible with [scikit-learn](http://scikit-learn.org/stable/) and has been submitted to be part of [scikit-learn-contrib](https://github.com/scikit-learn-contrib) projects.
+It is compatible with scikit-learn_ and has been submitted to be part of scikit-learn-contrib_ projects.
 
-|Landscape|_ |Travis|_ |Coveralls|_ |CircleCI|_ |Gitter|_
+.. _scikit-learn: http://scikit-learn.org/stable/
+
+.. _scikit-learn-contrib: https://github.com/scikit-learn-contrib 
+
+|Landscape|_ |Travis|_ |Coveralls|_ |CircleCI|_ |Python27|_ |Python35|_ |Pypi|_ |Gitter|_
 
 .. |Landscape| image:: https://landscape.io/github/glemaitre/UnbalancedDataset/master/landscape.svg?style=flat
 .. _Landscape: https://landscape.io/github/glemaitre/UnbalancedDataset/master
@@ -19,6 +23,15 @@ It is compatible with [scikit-learn](http://scikit-learn.org/stable/) and has be
 
 .. |CircleCI| image:: https://circleci.com/gh/glemaitre/UnbalancedDataset.svg?style=shield&circle-token=:circle-token
 .. _CircleCI: https://circleci.com/gh/glemaitre/UnbalancedDataset/tree/master
+
+.. |Python27| image:: https://img.shields.io/badge/python-2.7-blue.svg
+.. _Python27: https://badge.fury.io/py/scikit-learn
+
+.. |Python35| image:: https://img.shields.io/badge/python-3.5-blue.svg
+.. _Python35: https://badge.fury.io/py/scikit-learn
+
+.. |Pypi| image:: https://badge.fury.io/py/imbalanced-learn.svg
+.. _Pypi: https://badge.fury.io/py/imbalanced-learn
 
 .. |Gitter| image:: https://badges.gitter.im/glemaitre/UnbalancedDataset.svg
 .. _Gitter: https://gitter.im/glemaitre/UnbalancedDataset?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
@@ -33,7 +46,8 @@ Installation documentation, API documentation, and examples can be found on the 
 Installation
 ============
 
-### Dependencies
+Dependencies
+------------
 
 imbalanced-learn is tested to work under Python 2.7 and Python 3.5.
 
@@ -41,27 +55,27 @@ imbalanced-learn is tested to work under Python 2.7 and Python 3.5.
 * numpy(>=1.10.4)
 * scikit-learn(>=0.17.1)
 
-### Installation
+Installation
+------------
 
 imbalanced-learn is not currently available on the PyPi's reporitories, 
-however you can install it via `pip`:
+however you can install it via `pip`::
 
     pip install git+https://github.com/fmfn/UnbalancedDataset
 
 If you prefer, you can clone it and run the setup.py file. Use the following commands to get a 
-copy from Github and install all dependencies:
+copy from Github and install all dependencies::
 
     git clone https://github.com/fmfn/UnbalancedDataset.git
     cd UnbalancedDataset
     python setup.py install
 
-### Testing
+Testing
+-------
 
-After installation, you can use `nose` to run the test suite:
+After installation, you can use `nose` to run the test suite::
 
-```
-make coverage
-```
+  make coverage
 
 About
 =====
@@ -73,8 +87,8 @@ One way of addresing this issue is by re-sampling the dataset as to offset this 
 Re-sampling techniques are divided in two categories:
     1. Under-sampling the majority class(es).
     2. Over-sampling the minority class.
-	3. Combining over- and under-sampling.
-	4. Create ensemble balanced sets.
+    3. Combining over- and under-sampling.
+    4. Create ensemble balanced sets.
     
 Below is a list of the methods currently implemented in this module.
 
