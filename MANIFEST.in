@@ -3,5 +3,5 @@ recursive-include doc *
 recursive-include examples *
 include AUTHORS.rst
 include CONTRIBUTING.ms
-include LICENSE.md
+include LICENSE
 include README.rst
