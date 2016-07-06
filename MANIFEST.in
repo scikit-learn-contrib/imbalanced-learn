@@ -2,6 +2,6 @@
 recursive-include doc *
 recursive-include examples *
 include AUTHORS.rst
-include CONTRIBUTING.rst
+include CONTRIBUTING.ms
 include LICENSE.md
-include README.md
+include README.rst
