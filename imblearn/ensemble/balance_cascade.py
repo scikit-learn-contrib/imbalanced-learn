@@ -36,7 +36,7 @@ class BalanceCascade(EnsembleSampler):
     n_max_subset : int or None, optional (default=None)
         Maximum number of subsets to generate. By default, all data from
         the training will be selected that could lead to a large number of
-        subsets. We can probably reduced this number empirically.
+        subsets. We can probably deduce this number empirically.
 
     classifier : str, optional (default='knn')
         The classifier that will be selected to confront the prediction
@@ -114,7 +114,7 @@ class BalanceCascade(EnsembleSampler):
         n_max_subset : int or None, optional (default=None)
             Maximum number of subsets to generate. By default, all data from
             the training will be selected that could lead to a large number of
-            subsets. We can probably reduced this number empirically.
+            subsets. We can probably deduce this number empirically.
 
         classifier : str, optional (default='knn')
             The classifier that will be selected to confront the prediction
