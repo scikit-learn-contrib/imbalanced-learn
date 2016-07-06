@@ -36,7 +36,8 @@ descr = """Toolbox for imbalanced dataset in machine learning."""
 _VERSION_GLOBALS = load_version()
 DISTNAME = 'imbalanced-learn'
 DESCRIPTION = 'Toolbox for imbalanced dataset in machine learning.'
-LONG_DESCRIPTION = descr
+with open('README.rst') as f:
+    LONG_DESCRIPTION = f.read()
 MAINTAINER = 'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
 MAINTAINER_EMAIL = 'g.lemaitre58@gmail.com, fmfnogueira@gmail.com, dvro@cin.ufpe.br, char@upatras.gr'
 URL = 'https://github.com/fmfn/UnbalancedDataset'
@@ -84,4 +85,6 @@ if __name__ == "__main__":
               'Programming Language :: Python :: 3.4',
           ],
           packages=find_packages(),
-          install_requires=install_requires,)
+          install_requires=['scipy>=0.17.0',
+                            'numpy>=1.10.4',
+                            'scikit-learn>=0.17.1'])
