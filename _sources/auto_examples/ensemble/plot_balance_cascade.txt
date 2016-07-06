@@ -21,23 +21,23 @@ An illustration of the balance cascade ensemble method.
  Out::
 
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
-    Elements misclassified: [4144 2304  431]
+    Elements misclassified: [1472 3662 3216 2105 2910 4255 3982 2733]
     Creation of the subset #0
-    Elements misclassified: [2157 3133 3379 3061  898]
+    Elements misclassified: [1472 2105 4255 2733 2763  316 2007 2627 3273  382]
     Creation of the subset #1
-    Elements misclassified: [ 898 3370  316  124 4300 4255  382 2761]
+    Elements misclassified: [4255 2763  382 2402 4243  759 2175]
     Creation of the subset #2
-    Elements misclassified: [ 124 4255 2007 4007 1032 4254 2512 3681 4039]
+    Elements misclassified: [4255  382 4243 2175  308  124]
     Creation of the subset #3
-    Elements misclassified: [4255 4254 4138  917 3646 1562]
+    Elements misclassified: [4255  382 2175  124 2251 1962   53]
     Creation of the subset #4
-    Elements misclassified: [4254  917 3646 1158 3843  359 3273 3265  111 3982   53  416]
+    Elements misclassified: [2175   53  182 1032 2815 3296 1069 4254]
     Creation of the subset #5
-    Elements misclassified: [4254  917 1158 3982   53  416  182]
+    Elements misclassified: [2175   53 1032 2815 3296 4254 4199  130 4413 2683  861 4096 2362]
     Creation of the subset #6
-    Elements misclassified: [4254  917  416  182 1138 3716  101 1773  371  192 2683]
+    Elements misclassified: [2175   53 1032 2815 3296 4254 2683  233  359  177]
     Creation of the subset #7
-    Elements misclassified: [4254  917  416  182 3716 1773  371  192 2683 2175 2237 4444 4065 3020 1940]
+    Elements misclassified: [2175   53 1032 3296 4254 2683  233  922  898 2237 1138  917 2150 3054 3524]
     Creation of the subset #8
     Creation of the subset #9
     Not enough samples to continue creating subsets
@@ -105,7 +105,7 @@ An illustration of the balance cascade ensemble method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.811 seconds)
+(0 minutes 0.670 seconds)
 
 
 

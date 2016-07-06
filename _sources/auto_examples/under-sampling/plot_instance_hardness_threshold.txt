@@ -89,7 +89,7 @@ An illustration of the instance hardness threshold method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 20.497 seconds)
+(0 minutes 20.248 seconds)
 
 
 

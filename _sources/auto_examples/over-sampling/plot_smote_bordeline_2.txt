@@ -23,8 +23,8 @@ An illustration of the random SMOTE borderline 2 method.
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
     Finding the 10 nearest neighbours...
     done!
-    Generated 2672 new samples ...
-    Generated 1328 new samples ...
+    Generated 2570 new samples ...
+    Generated 1429 new samples ...
 
 
 
@@ -86,7 +86,7 @@ An illustration of the random SMOTE borderline 2 method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.950 seconds)
+(0 minutes 0.954 seconds)
 
 
 
