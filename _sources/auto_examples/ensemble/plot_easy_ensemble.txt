@@ -115,7 +115,7 @@ An illustration of the easy ensemble method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.632 seconds)
+(0 minutes 0.558 seconds)
 
 
 
