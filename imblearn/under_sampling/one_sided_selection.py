@@ -205,6 +205,10 @@ class OneSidedSelection(UnderSampler):
             S_x = X[y == key]
             S_y = y[y == key]
 
+            # Remove the seed from S since that it will be added anyway
+            S_x = np.delete(S_x, idx_maj_sample, axis=0)
+            S_y = np.delete(S_y, idx_maj_sample, axis=0)
+
             # Create a k-NN classifier
             knn = KNeighborsClassifier(n_neighbors=self.size_ngh,
                                        n_jobs=self.n_jobs,
@@ -221,12 +225,23 @@ class OneSidedSelection(UnderSampler):
             sel_y = S_y[np.nonzero(pred_S_y != S_y)]
 
             # If we need to offer support for the indices selected
+            # We concatenate the misclassified samples with the seed and the
+            # minority samples
             if self.return_indices:
                 idx_tmp = np.nonzero(y == key)[0][np.nonzero(pred_S_y != S_y)]
-                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
+                idx_under = np.concatenate((idx_under,
+                                            idx_maj_sample,
+                                            idx_tmp),
+                                           axis=0)
 
-            X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
-            y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
+            X_resampled = np.concatenate((X_resampled,
+                                          maj_sample,
+                                          sel_x),
+                                         axis=0)
+            y_resampled = np.concatenate((y_resampled,
+                                          [key] * self.n_seeds_S,
+                                          sel_y),
+                                         axis=0)
 
         # Find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
