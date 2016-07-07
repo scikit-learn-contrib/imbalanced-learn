@@ -26,8 +26,8 @@ An illustration of the random SMOTE SVM method.
     Out of 125 support vectors, 31 are noisy, 82 are in danger and 43 are safe.
     Finding the 5 nearest neighbours...
     done!
-    Creating synthetic samples...Generated 2193 new samples ...
-    Generated 1806 new samples ...
+    Creating synthetic samples...Generated 1559 new samples ...
+    Generated 2440 new samples ...
     done!
 
 
@@ -90,7 +90,7 @@ An illustration of the random SMOTE SVM method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.681 seconds)
+(0 minutes 1.420 seconds)
 
 
 

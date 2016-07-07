@@ -35,6 +35,7 @@ Contents:
    :caption: Addtional information
 
    whats_new
+   todo
    about
 
 See the `README <https://github.com/vighneshbirodkar/project-template/blob/master/README.md>`_
