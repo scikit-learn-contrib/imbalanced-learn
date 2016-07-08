@@ -23,7 +23,7 @@ An illustration of the one-sided selection method.
       Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
     Looking for majority Tomek links...
     16 Tomek links found.
-    Under-sampling performed: Counter({1: 4069, 0: 500})
+    Under-sampling performed: Counter({1: 4428, 0: 500})
 
 
 
@@ -85,7 +85,7 @@ An illustration of the one-sided selection method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.438 seconds)
+(0 minutes 1.709 seconds)
 
 
 
