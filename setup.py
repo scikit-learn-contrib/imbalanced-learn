@@ -36,7 +36,7 @@ descr = """Toolbox for imbalanced dataset in machine learning."""
 _VERSION_GLOBALS = load_version()
 DISTNAME = 'imbalanced-learn'
 DESCRIPTION = 'Toolbox for imbalanced dataset in machine learning.'
-with open('README.rst') as f:
+with codecs.open('README.rst', encoding='utf-8-sig') as f:
     LONG_DESCRIPTION = f.read()
 MAINTAINER = 'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
 MAINTAINER_EMAIL = 'g.lemaitre58@gmail.com, fmfnogueira@gmail.com, dvro@cin.ufpe.br, char@upatras.gr'
