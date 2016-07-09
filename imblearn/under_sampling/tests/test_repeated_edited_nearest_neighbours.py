@@ -31,18 +31,12 @@ def test_renn_init():
     """Test the initialisation of the object"""
 
     # Define a ratio
-    verbose = True
-    renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED,
-                                           verbose=verbose)
+    renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
 
     assert_equal(renn.size_ngh, 3)
     assert_equal(renn.kind_sel, 'all')
     assert_equal(renn.n_jobs, -1)
     assert_equal(renn.random_state, RND_SEED)
-    assert_equal(renn.verbose, verbose)
-    assert_equal(renn.min_c_, None)
-    assert_equal(renn.maj_c_, None)
-    assert_equal(renn.stats_c_, {})
 
 
 def test_renn_iter_wrong():
@@ -51,8 +45,9 @@ def test_renn_iter_wrong():
 
     # Create the object
     max_iter = -1
-    assert_raises(ValueError, RepeatedEditedNearestNeighbours,
-                  max_iter=max_iter, random_state=RND_SEED)
+    renn = RepeatedEditedNearestNeighbours(max_iter=max_iter,
+                                           random_state=RND_SEED)
+    assert_raises(ValueError, renn.fit_sample, X, Y)
 
 
 def test_renn_fit_single_class():

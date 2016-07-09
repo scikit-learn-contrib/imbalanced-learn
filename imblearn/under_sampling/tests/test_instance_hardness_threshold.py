@@ -35,23 +35,23 @@ def test_iht_bad_ratio():
 
     # Define a negative ratio
     ratio = -1.0
-    assert_raises(ValueError, InstanceHardnessThreshold, ESTIMATOR,
-                  ratio=ratio)
+    iht = InstanceHardnessThreshold(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, iht.fit, X, Y)
 
     # Define a ratio greater than 1
     ratio = 100.0
-    assert_raises(ValueError, InstanceHardnessThreshold, ESTIMATOR,
-                  ratio=ratio)
+    iht = InstanceHardnessThreshold(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, iht.fit, X, Y)
 
     # Define ratio as an unknown string
     ratio = 'rnd'
-    assert_raises(ValueError, InstanceHardnessThreshold, ESTIMATOR,
-                  ratio=ratio)
+    iht = InstanceHardnessThreshold(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, iht.fit, X, Y)
 
     # Define ratio as a list which is not supported
     ratio = [.5, .5]
-    assert_raises(ValueError, InstanceHardnessThreshold, ESTIMATOR,
-                  ratio=ratio)
+    iht = InstanceHardnessThreshold(ratio=ratio, random_state=RND_SEED)
+    assert_raises(ValueError, iht.fit, X, Y)
 
 
 def test_iht_wrong_estimator():
@@ -60,25 +60,21 @@ def test_iht_wrong_estimator():
     # Resample the data
     ratio = 0.5
     est = 'rnd'
-    assert_raises(NotImplementedError, InstanceHardnessThreshold, est,
-                  ratio=ratio, random_state=RND_SEED)
+    iht = InstanceHardnessThreshold(estimator=est, ratio=ratio,
+                                    random_state=RND_SEED)
+    assert_raises(NotImplementedError, iht.fit_sample, X, Y)
+
 
 def test_iht_init():
     """Test the initialisation of the object"""
 
     # Define a ratio
-    verbose = True
     ratio = 'auto'
     iht = InstanceHardnessThreshold(ESTIMATOR, ratio=ratio,
-                                    random_state=RND_SEED,
-                                    verbose=verbose)
+                                    random_state=RND_SEED)
 
     assert_equal(iht.ratio, ratio)
     assert_equal(iht.random_state, RND_SEED)
-    assert_equal(iht.verbose, verbose)
-    assert_equal(iht.min_c_, None)
-    assert_equal(iht.maj_c_, None)
-    assert_equal(iht.stats_c_, {})
 
 
 def test_iht_fit_single_class():
@@ -233,7 +229,6 @@ def test_iht_fit_sample_adaboost():
     y_gt = np.load(os.path.join(currdir, 'data', 'iht_y_adb.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
 
 
 def test_iht_fit_sample_gradient_boosting():

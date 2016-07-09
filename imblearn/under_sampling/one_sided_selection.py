@@ -8,13 +8,13 @@ from collections import Counter
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import check_X_y
+from sklearn.utils import check_random_state
 
-from .under_sampler import UnderSampler
+from ..base import SamplerMixin
 from .tomek_links import TomekLinks
 
 
-class OneSidedSelection(UnderSampler):
+class OneSidedSelection(SamplerMixin):
     """Class to perform under-sampling based on one-sided selection method.
 
     Parameters
@@ -23,11 +23,11 @@ class OneSidedSelection(UnderSampler):
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
-
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
 
     size_ngh : int, optional (default=1)
         Size of the neighbourhood to consider to compute the average
@@ -44,9 +44,6 @@ class OneSidedSelection(UnderSampler):
 
     Attributes
     ----------
-    random state : int or None
-        Seed for random number generation.
-
     min_c_ : str or int
         The identifier of the minority class.
 
@@ -71,75 +68,17 @@ class OneSidedSelection(UnderSampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None, verbose=True,
+    def __init__(self, return_indices=False, random_state=None,
                  size_ngh=1, n_seeds_S=1, n_jobs=-1, **kwargs):
-        """Initialisation of OSS object.
-
-        Parameters
-        ----------
-        return_indices : bool, optional (default=False)
-            Whether or not to return the indices of the samples randomly
-            selected from the majority class.
-
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Whether or not to print information about the processing.
-
-        size_ngh : int, optional (default=1)
-            Size of the neighbourhood to consider to compute the average
-            distance to the minority point samples.
-
-        n_seeds_S : int, optional (default=1)
-            Number of samples to extract in order to build the set S.
-
-        n_jobs : int, optional (default=-1)
-            The number of threads to open if possible.
-
-        **kwargs : keywords
-            Parameter to use for the Neareast Neighbours object.
-
-        Returns
-        -------
-        None
-
-        """
-        super(OneSidedSelection, self).__init__(
-            return_indices=return_indices,
-            random_state=random_state,
-            verbose=verbose)
-
+        super(OneSidedSelection, self).__init__()
+        self.return_indices = return_indices
+        self.random_state = random_state
         self.size_ngh = size_ngh
         self.n_seeds_S = n_seeds_S
         self.n_jobs = n_jobs
         self.kwargs = kwargs
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        super(OneSidedSelection, self).fit(X, y)
-
-        return self
-
-    def sample(self, X, y):
+    def _sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -163,10 +102,8 @@ class OneSidedSelection(UnderSampler):
             containing the which samples have been selected.
 
         """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
 
-        super(OneSidedSelection, self).sample(X, y)
+        random_state = check_random_state(self.random_state)
 
         # Start with the minority class
         X_min = X[y == self.min_c_]
@@ -188,10 +125,10 @@ class OneSidedSelection(UnderSampler):
                 continue
 
             # Randomly get one sample from the majority class
-            np.random.seed(self.random_state)
             # Generate the index to select
-            idx_maj_sample = np.random.randint(low=0, high=self.stats_c_[key],
-                                               size=self.n_seeds_S)
+            idx_maj_sample = random_state.randint(low=0,
+                                                  high=self.stats_c_[key],
+                                                  size=self.n_seeds_S)
             maj_sample = X[y == key][idx_maj_sample]
 
             # Create the set C
@@ -249,14 +186,11 @@ class OneSidedSelection(UnderSampler):
         nns = nn.kneighbors(X_resampled, return_distance=False)[:, 1]
 
         # Send the information to is_tomek function to get boolean vector back
-        if self.verbose:
-            print("Looking for majority Tomek links...")
-        links = TomekLinks.is_tomek(y_resampled, nns, self.min_c_,
-                                    self.verbose)
+        self.logger.debug('Looking for majority Tomek links ...')
+        links = TomekLinks.is_tomek(y_resampled, nns, self.min_c_)
 
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(
-                y_resampled[np.logical_not(links)])))
+        self.logger.info('Under-sampling performed: %s', Counter(
+            y_resampled[np.logical_not(links)]))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

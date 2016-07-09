@@ -424,6 +424,7 @@ def test_pipeline_sample_transform():
 
     pipeline.fit(X, y).transform(X)
 
+
 def test_pipeline_methods_anova_rus():
     # Test the various methods of the pipeline (anova).
     X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],

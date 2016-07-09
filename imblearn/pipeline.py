@@ -70,7 +70,7 @@ class Pipeline(pipeline.Pipeline):
         for t in transforms:
             if (not (hasattr(t, "fit") or hasattr(t, "fit_transform") or
                      hasattr(t, "fit_sample")) or
-                not (hasattr(t, "transform") or hasattr(t, "sample"))):
+                    not (hasattr(t, "transform") or hasattr(t, "sample"))):
                 raise TypeError("All intermediate steps of the chain should "
                                 "be transforms and implement fit and transform"
                                 " '%s' (type %s) doesn't)" % (t, type(t)))
