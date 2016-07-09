@@ -5,10 +5,20 @@ Getting Started
 Install
 =======
 
-The install of ``imbalanced-learn`` is almost straightforward. You need to clone it from GitHub_::
+imbalanced-learn is currently available on the PyPi's reporitories and you can install it via `pip`::
 
-  $ git clone https://github.com/fmfn/UnbalancedDataset.git
-  $ python setup.py install
+  pip install -U imbalanced-learn
+
+The package is release also in Anaconda Cloud platform::
+
+  conda install -c glemaitre imbalanced-learn
+
+If you prefer, you can clone it and run the setup.py file. Use the following commands to get a 
+copy from Github and install all dependencies::
+
+  git clone https://github.com/fmfn/UnbalancedDataset.git
+  cd UnbalancedDataset
+  python setup.py install
 
 Test and coverage
 =================
