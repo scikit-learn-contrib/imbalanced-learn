@@ -73,7 +73,7 @@ An illustration of the one-sided selection method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.645 seconds)
+(0 minutes 1.619 seconds)
 
 
 
