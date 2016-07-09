@@ -76,7 +76,7 @@ An illustration of the balance cascade ensemble method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.798 seconds)
+(0 minutes 0.677 seconds)
 
 
 

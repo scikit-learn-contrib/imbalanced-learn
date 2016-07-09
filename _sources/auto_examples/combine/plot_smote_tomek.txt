@@ -73,7 +73,7 @@ An illustration of the SMOTE + Tomek method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 2.258 seconds)
+(0 minutes 2.241 seconds)
 
 
 

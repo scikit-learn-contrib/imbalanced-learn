@@ -73,7 +73,7 @@ An illustration of the Tomek links method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.649 seconds)
+(0 minutes 1.599 seconds)
 
 
 
