@@ -58,17 +58,20 @@ imbalanced-learn is tested to work under Python 2.7 and Python 3.5.
 Installation
 ------------
 
-imbalanced-learn is not currently available on the PyPi's reporitories, 
-however you can install it via `pip`::
+imbalanced-learn is currently available on the PyPi's reporitories and you can install it via `pip`::
 
-    pip install git+https://github.com/fmfn/UnbalancedDataset
+  pip install -U imbalanced-learn
+
+The package is release also in Anaconda Cloud platform::
+
+  conda install -c glemaitre imbalanced-learn
 
 If you prefer, you can clone it and run the setup.py file. Use the following commands to get a 
 copy from Github and install all dependencies::
 
-    git clone https://github.com/fmfn/UnbalancedDataset.git
-    cd UnbalancedDataset
-    python setup.py install
+  git clone https://github.com/fmfn/UnbalancedDataset.git
+  cd UnbalancedDataset
+  python setup.py install
 
 Testing
 -------
