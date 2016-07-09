@@ -158,13 +158,15 @@
 
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">mode</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_X_y</span>
 <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">NearestNeighbors</span>
 
-<span class="kn">from</span> <span class="nn">.under_sampler</span> <span class="kn">import</span> <span class="n">UnderSampler</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">SamplerMixin</span>
 
 
-<div class="viewcode-block" id="EditedNearestNeighbours"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.EditedNearestNeighbours.html#imblearn.under_sampling.EditedNearestNeighbours">[docs]</a><span class="k">class</span> <span class="nc">EditedNearestNeighbours</span><span class="p">(</span><span class="n">UnderSampler</span><span class="p">):</span>
+<span class="n">SEL_KIND</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;mode&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="EditedNearestNeighbours"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.EditedNearestNeighbours.html#imblearn.under_sampling.EditedNearestNeighbours">[docs]</a><span class="k">class</span> <span class="nc">EditedNearestNeighbours</span><span class="p">(</span><span class="n">SamplerMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to perform under-sampling based on the edited nearest neighbour</span>
 <span class="sd">    method.</span>
 
@@ -174,11 +176,11 @@
 <span class="sd">        Whether or not to return the indices of the samples randomly</span>
 <span class="sd">        selected from the majority class.</span>
 
-<span class="sd">    random_state : int or None, optional (default=None)</span>
-<span class="sd">        Seed for random number generation.</span>
-
-<span class="sd">    verbose : bool, optional (default=True)</span>
-<span class="sd">        Whether or not to print information about the processing.</span>
+<span class="sd">    random_state : int, RandomState instance or None, optional (default=None)</span>
+<span class="sd">        If int, random_state is the seed used by the random number generator;</span>
+<span class="sd">        If RandomState instance, random_state is the random number generator;</span>
+<span class="sd">        If None, the random number generator is the RandomState instance used</span>
+<span class="sd">        by np.random.</span>
 
 <span class="sd">    size_ngh : int, optional (default=3)</span>
 <span class="sd">        Size of the neighbourhood to consider to compute the average</span>
@@ -197,9 +199,6 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    random state : int or None</span>
-<span class="sd">        Seed for random number generation.</span>
-
 <span class="sd">    min_c_ : str or int</span>
 <span class="sd">        The identifier of the minority class.</span>
 
@@ -227,80 +226,16 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EditedNearestNeighbours.__init__"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.EditedNearestNeighbours.html#imblearn.under_sampling.EditedNearestNeighbours.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+<div class="viewcode-block" id="EditedNearestNeighbours.__init__"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.EditedNearestNeighbours.html#imblearn.under_sampling.EditedNearestNeighbours.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">size_ngh</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">kind_sel</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialisation of ENN object.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        return_indices : bool, optional (default=False)</span>
-<span class="sd">            Whether or not to return the indices of the samples randomly</span>
-<span class="sd">            selected from the majority class.</span>
-
-<span class="sd">        random_state : int or None, optional (default=None)</span>
-<span class="sd">            Seed for random number generation.</span>
-
-<span class="sd">        verbose : bool, optional (default=True)</span>
-<span class="sd">            Whether or not to print information about the processing.</span>
-
-<span class="sd">        size_ngh : int, optional (default=3)</span>
-<span class="sd">            Size of the neighbourhood to consider to compute the average</span>
-<span class="sd">            distance to the minority point samples.</span>
-
-<span class="sd">        kind_sel : str, optional (default=&#39;all&#39;)</span>
-<span class="sd">            Strategy to use in order to exclude samples.</span>
-
-<span class="sd">            - If &#39;all&#39;, all neighbours will have to agree with the samples of</span>
-<span class="sd">            interest to not be excluded.</span>
-<span class="sd">            - If &#39;mode&#39;, the majority vote of the neighbours will be used in</span>
-<span class="sd">            order to exclude a sample.</span>
-
-<span class="sd">        n_jobs : int, optional (default=-1)</span>
-<span class="sd">            The number of threads to open if possible.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">EditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
-            <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span><span class="p">,</span>
-            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-
+        <span class="nb">super</span><span class="p">(</span><span class="n">EditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span> <span class="o">=</span> <span class="n">return_indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size_ngh</span> <span class="o">=</span> <span class="n">size_ngh</span>
-        <span class="n">possible_kind_sel</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;mode&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">kind_sel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">possible_kind_sel</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">kind_sel</span> <span class="o">=</span> <span class="n">kind_sel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind_sel</span> <span class="o">=</span> <span class="n">kind_sel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span></div>
 
-<div class="viewcode-block" id="EditedNearestNeighbours.fit"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.EditedNearestNeighbours.html#imblearn.under_sampling.EditedNearestNeighbours.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find the classes statistics before to perform sampling.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : ndarray, shape (n_samples, n_features)</span>
-<span class="sd">            Matrix containing the data which have to be sampled.</span>
-
-<span class="sd">        y : ndarray, shape (n_samples, )</span>
-<span class="sd">            Corresponding label for each sample in X.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        self : object,</span>
-<span class="sd">            Return self.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check the consistency of X and y</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-        <span class="nb">super</span><span class="p">(</span><span class="n">EditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-<div class="viewcode-block" id="EditedNearestNeighbours.sample"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.EditedNearestNeighbours.html#imblearn.under_sampling.EditedNearestNeighbours.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -324,10 +259,9 @@
 <span class="sd">            containing the which samples have been selected.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check the consistency of X and y</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">EditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_sel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SEL_KIND</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
         <span class="c1"># Start with the minority class</span>
         <span class="n">X_min</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">]</span>
@@ -388,32 +322,32 @@
             <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X_resampled</span><span class="p">,</span> <span class="n">sel_x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">y_resampled</span><span class="p">,</span> <span class="n">sel_y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Under-sampling performed: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">y_resampled</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Under-sampling performed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">Counter</span><span class="p">(</span>
+            <span class="n">y_resampled</span><span class="p">))</span>
 
         <span class="c1"># Check if the indices of the samples selected should be returned too</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
             <span class="c1"># Return the indices of interest</span>
             <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span><span class="p">,</span> <span class="n">idx_under</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span></div></div>
+            <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span></div>
 
 
-<div class="viewcode-block" id="RepeatedEditedNearestNeighbours"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.RepeatedEditedNearestNeighbours.html#imblearn.under_sampling.RepeatedEditedNearestNeighbours">[docs]</a><span class="k">class</span> <span class="nc">RepeatedEditedNearestNeighbours</span><span class="p">(</span><span class="n">UnderSampler</span><span class="p">):</span>
+<div class="viewcode-block" id="RepeatedEditedNearestNeighbours"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.RepeatedEditedNearestNeighbours.html#imblearn.under_sampling.RepeatedEditedNearestNeighbours">[docs]</a><span class="k">class</span> <span class="nc">RepeatedEditedNearestNeighbours</span><span class="p">(</span><span class="n">SamplerMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to perform under-sampling based on the repeated edited nearest</span>
 <span class="sd">    neighbour method.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    return_indices : bool, optional (default=False)</span>
-<span class="sd">        Either to return or not the indices which will be selected from</span>
-<span class="sd">        the majority class.</span>
+<span class="sd">        Whether or not to return the indices of the samples randomly</span>
+<span class="sd">        selected from the majority class.</span>
 
-<span class="sd">    random_state : int or None, optional (default=None)</span>
-<span class="sd">        Seed for random number generation.</span>
-
-<span class="sd">    verbose : bool, optional (default=True)</span>
-<span class="sd">        Boolean to either or not print information about the processing</span>
+<span class="sd">    random_state : int, RandomState instance or None, optional (default=None)</span>
+<span class="sd">        If int, random_state is the seed used by the random number generator;</span>
+<span class="sd">        If RandomState instance, random_state is the random number generator;</span>
+<span class="sd">        If None, the random number generator is the RandomState instance used</span>
+<span class="sd">        by np.random.</span>
 
 <span class="sd">    size_ngh : int, optional (default=3)</span>
 <span class="sd">        Size of the neighbourhood to consider to compute the average</span>
@@ -432,15 +366,6 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio_ : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balanced</span>
-<span class="sd">        the dataset. Otherwise, the ratio will corresponds to the number</span>
-<span class="sd">        of samples in the minority class over the the number of samples</span>
-<span class="sd">        in the majority class.</span>
-
-<span class="sd">    rs_ : int or None, optional (default=None)</span>
-<span class="sd">        Seed for random number generation.</span>
-
 <span class="sd">    min_c_ : str or int</span>
 <span class="sd">        The identifier of the minority class.</span>
 
@@ -472,68 +397,20 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RepeatedEditedNearestNeighbours.__init__"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.RepeatedEditedNearestNeighbours.html#imblearn.under_sampling.RepeatedEditedNearestNeighbours.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+<div class="viewcode-block" id="RepeatedEditedNearestNeighbours.__init__"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.RepeatedEditedNearestNeighbours.html#imblearn.under_sampling.RepeatedEditedNearestNeighbours.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">size_ngh</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">kind_sel</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialisation of RENN object.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        return_indices : bool, optional (default=False)</span>
-<span class="sd">            Either to return or not the indices which will be selected from</span>
-<span class="sd">            the majority class.</span>
-
-<span class="sd">        random_state : int or None, optional (default=None)</span>
-<span class="sd">            Seed for random number generation.</span>
-
-<span class="sd">        verbose : bool, optional (default=True)</span>
-<span class="sd">            Boolean to either or not print information about the processing</span>
-
-<span class="sd">        size_ngh : int, optional (default=3)</span>
-<span class="sd">            Size of the neighbourhood to consider to compute the average</span>
-<span class="sd">            distance to the minority point samples.</span>
-
-<span class="sd">        max_iter : int, optional (default=100)</span>
-<span class="sd">            Maximum number of iterations of the edited nearest neighbours</span>
-<span class="sd">            algorithm for a single run.</span>
-
-<span class="sd">        kind_sel : str, optional (default=&#39;all&#39;)</span>
-<span class="sd">            Strategy to use in order to exclude samples.</span>
-
-<span class="sd">            - If &#39;all&#39;, all neighbours will have to agree with the samples of</span>
-<span class="sd">            interest to not be excluded.</span>
-<span class="sd">            - If &#39;mode&#39;, the majority vote of the neighbours will be used in</span>
-<span class="sd">            order to exclude a sample.</span>
-
-<span class="sd">        n_jobs : int, optional (default=-1)</span>
-<span class="sd">            The number of thread to open when it is possible.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">RepeatedEditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
-            <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span><span class="p">,</span>
-            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-
+        <span class="nb">super</span><span class="p">(</span><span class="n">RepeatedEditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span> <span class="o">=</span> <span class="n">return_indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size_ngh</span> <span class="o">=</span> <span class="n">size_ngh</span>
-        <span class="n">possible_kind_sel</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;mode&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">kind_sel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">possible_kind_sel</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">kind_sel</span> <span class="o">=</span> <span class="n">kind_sel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind_sel</span> <span class="o">=</span> <span class="n">kind_sel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
-
-        <span class="k">if</span> <span class="n">max_iter</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;max_iter must be greater than 1.&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enn_</span> <span class="o">=</span> <span class="n">EditedNearestNeighbours</span><span class="p">(</span>
             <span class="n">return_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">,</span>
-            <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-            <span class="n">size_ngh</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size_ngh</span><span class="p">,</span> <span class="n">kind_sel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kind_sel</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
+            <span class="n">size_ngh</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size_ngh</span><span class="p">,</span>
+            <span class="n">kind_sel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kind_sel</span><span class="p">,</span>
             <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RepeatedEditedNearestNeighbours.fit"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.RepeatedEditedNearestNeighbours.html#imblearn.under_sampling.RepeatedEditedNearestNeighbours.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
@@ -553,15 +430,12 @@
 <span class="sd">            Return self.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check the consistency of X and y</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
         <span class="nb">super</span><span class="p">(</span><span class="n">RepeatedEditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enn_</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="RepeatedEditedNearestNeighbours.sample"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.RepeatedEditedNearestNeighbours.html#imblearn.under_sampling.RepeatedEditedNearestNeighbours.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -585,11 +459,14 @@
 <span class="sd">            containing the which samples have been selected.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check the consistency of X and y</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-        <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">RepeatedEditedNearestNeighbours</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_sel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SEL_KIND</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;max_iter must be greater than 1.&#39;</span><span class="p">)</span>
+
+        <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
             <span class="n">idx_under</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
@@ -598,8 +475,7 @@
 
         <span class="k">for</span> <span class="n">n_iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">):</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Apply ENN iteration #{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Apply ENN iteration #</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">n_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
             <span class="n">prev_len</span> <span class="o">=</span> <span class="n">y_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
@@ -611,8 +487,7 @@
             <span class="k">if</span> <span class="n">prev_len</span> <span class="o">==</span> <span class="n">y_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
                 <span class="k">break</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Under-sampling performed: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">y_</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Under-sampling performed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">Counter</span><span class="p">(</span><span class="n">y_</span><span class="p">))</span>
 
         <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span>
 
@@ -621,7 +496,7 @@
             <span class="c1"># Return the indices of interest</span>
             <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span><span class="p">,</span> <span class="n">idx_under</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span></div></div>
+            <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span></div>
 </pre></div>
 
            </div>

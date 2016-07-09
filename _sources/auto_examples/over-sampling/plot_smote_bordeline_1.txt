@@ -16,19 +16,7 @@ An illustration of the random SMOTE borderline 1 method.
     :align: center
 
 
-.. rst-class:: sphx-glr-script-out
 
- Out::
-
-      Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
-    Finding the 10 nearest neighbours...
-    done!
-    Generated 4000 new samples ...
-
-
-
-
-|
 
 
 .. code-block:: python
@@ -85,7 +73,7 @@ An illustration of the random SMOTE borderline 1 method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.900 seconds)
+(0 minutes 0.871 seconds)
 
 
 

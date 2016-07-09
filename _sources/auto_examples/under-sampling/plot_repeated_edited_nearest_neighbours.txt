@@ -21,18 +21,7 @@ An illustration of the repeated edited nearest-neighbours method.
  Out::
 
       ENN
-    Determining classes statistics... 2 classes detected: Counter({1: 3500, 0: 1500})
-    Under-sampling performed: Counter({1: 3218, 0: 1500})
     RENN
-    Determining classes statistics... 2 classes detected: Counter({1: 3500, 0: 1500})
-    Apply ENN iteration #1
-    Apply ENN iteration #2
-    Apply ENN iteration #3
-    Apply ENN iteration #4
-    Apply ENN iteration #5
-    Apply ENN iteration #6
-    Apply ENN iteration #7
-    Under-sampling performed: Counter({1: 3082, 0: 1500})
 
 
 
@@ -110,7 +99,7 @@ An illustration of the repeated edited nearest-neighbours method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 1.692 seconds)
+(0 minutes 1.857 seconds)
 
 
 

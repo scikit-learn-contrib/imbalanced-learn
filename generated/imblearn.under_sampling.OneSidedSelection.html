@@ -174,7 +174,7 @@
 <h1>imblearn.under_sampling.OneSidedSelection<a class="headerlink" href="#imblearn-under-sampling-onesidedselection" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="imblearn.under_sampling.OneSidedSelection">
-<em class="property">class </em><code class="descclassname">imblearn.under_sampling.</code><code class="descname">OneSidedSelection</code><span class="sig-paren">(</span><em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>size_ngh=1</em>, <em>n_seeds_S=1</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/one_sided_selection.html#OneSidedSelection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.OneSidedSelection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">imblearn.under_sampling.</code><code class="descname">OneSidedSelection</code><span class="sig-paren">(</span><em>return_indices=False</em>, <em>random_state=None</em>, <em>size_ngh=1</em>, <em>n_seeds_S=1</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/one_sided_selection.html#OneSidedSelection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.OneSidedSelection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to perform under-sampling based on one-sided selection method.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -185,13 +185,12 @@
 <div><p>Whether or not to return the indices of the samples randomly
 selected from the majority class.</p>
 </div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
+<p><strong>random_state</strong> : int, RandomState instance or None, optional (default=None)</p>
 <blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to print information about the processing.</p>
+<div><p>If int, random_state is the seed used by the random number generator;
+If RandomState instance, random_state is the random number generator;
+If None, the random number generator is the RandomState instance used
+by np.random.</p>
 </div></blockquote>
 <p><strong>size_ngh</strong> : int, optional (default=1)</p>
 <blockquote>
@@ -227,23 +226,20 @@ sets: one-sided selection,&#8221; In ICML, vol. 97, pp. 179-186, 1997.</td></tr>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="12%" />
-<col width="88%" />
+<col width="8%" />
+<col width="92%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>random state</td>
-<td>(int or None) Seed for random number generation.</td>
-</tr>
-<tr class="row-even"><td><a href="#id3"><span class="problematic" id="id4">min_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id3"><span class="problematic" id="id4">min_c_</span></a></td>
 <td>(str or int) The identifier of the minority class.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id5"><span class="problematic" id="id6">max_c_</span></a></td>
+<tr class="row-even"><td><a href="#id5"><span class="problematic" id="id6">max_c_</span></a></td>
 <td>(str or int) The identifier of the majority class.</td>
 </tr>
-<tr class="row-even"><td><a href="#id7"><span class="problematic" id="id8">stats_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id7"><span class="problematic" id="id8">stats_c_</span></a></td>
 <td>(dict of str/int) A dictionary in which the number of occurences of each class is reported.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id9"><span class="problematic" id="id10">X_shape_</span></a></td>
+<tr class="row-even"><td><a href="#id9"><span class="problematic" id="id10">X_shape_</span></a></td>
 <td>(tuple of int) Shape of the data <cite>X</cite> during fitting.</td>
 </tr>
 </tbody>
@@ -274,50 +270,8 @@ sets: one-sided selection,&#8221; In ICML, vol. 97, pp. 179-186, 1997.</td></tr>
 </table>
 <dl class="method">
 <dt id="imblearn.under_sampling.OneSidedSelection.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>size_ngh=1</em>, <em>n_seeds_S=1</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/one_sided_selection.html#OneSidedSelection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.OneSidedSelection.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialisation of OSS object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>return_indices</strong> : bool, optional (default=False)</p>
-<blockquote>
-<div><p>Whether or not to return the indices of the samples randomly
-selected from the majority class.</p>
-</div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
-<blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to print information about the processing.</p>
-</div></blockquote>
-<p><strong>size_ngh</strong> : int, optional (default=1)</p>
-<blockquote>
-<div><p>Size of the neighbourhood to consider to compute the average
-distance to the minority point samples.</p>
-</div></blockquote>
-<p><strong>n_seeds_S</strong> : int, optional (default=1)</p>
-<blockquote>
-<div><p>Number of samples to extract in order to build the set S.</p>
-</div></blockquote>
-<p><strong>n_jobs</strong> : int, optional (default=-1)</p>
-<blockquote>
-<div><p>The number of threads to open if possible.</p>
-</div></blockquote>
-<p><strong>**kwargs</strong> : keywords</p>
-<blockquote>
-<div><p>Parameter to use for the Neareast Neighbours object.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>return_indices=False</em>, <em>random_state=None</em>, <em>size_ngh=1</em>, <em>n_seeds_S=1</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/one_sided_selection.html#OneSidedSelection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.OneSidedSelection.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
@@ -327,7 +281,7 @@ distance to the minority point samples.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#imblearn.under_sampling.OneSidedSelection.__init__" title="imblearn.under_sampling.OneSidedSelection.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([return_indices,&nbsp;random_state,&nbsp;...])</td>
-<td>Initialisation of OSS object.</td>
+<td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#imblearn.under_sampling.OneSidedSelection.fit" title="imblearn.under_sampling.OneSidedSelection.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
@@ -348,7 +302,7 @@ distance to the minority point samples.</p>
 </table>
 <dl class="method">
 <dt id="imblearn.under_sampling.OneSidedSelection.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/one_sided_selection.html#OneSidedSelection.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.OneSidedSelection.fit" title="Permalink to this definition">¶</a></dt>
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.under_sampling.OneSidedSelection.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the classes statistics before to perform sampling.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -433,7 +387,7 @@ contained subobjects that are estimators.</p>
 
 <dl class="method">
 <dt id="imblearn.under_sampling.OneSidedSelection.sample">
-<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/one_sided_selection.html#OneSidedSelection.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.OneSidedSelection.sample" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.under_sampling.OneSidedSelection.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -454,13 +408,8 @@ contained subobjects that are estimators.</p>
 <div><p>The array containing the resampled data.</p>
 </div></blockquote>
 <p><strong>y_resampled</strong> : ndarray, shape (n_samples_new)</p>
-<blockquote>
-<div><p>The corresponding label of <cite>X_resampled</cite></p>
-</div></blockquote>
-<p><strong>idx_under</strong> : ndarray, shape (n_samples, )</p>
 <blockquote class="last">
-<div><p>If <cite>return_indices</cite> is <cite>True</cite>, a boolean array will be returned
-containing the which samples have been selected.</p>
+<div><p>The corresponding label of <cite>X_resampled</cite></p>
 </div></blockquote>
 </td>
 </tr>

@@ -155,12 +155,13 @@
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_X_y</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_random_state</span>
 
-<span class="kn">from</span> <span class="nn">.over_sampler</span> <span class="kn">import</span> <span class="n">OverSampler</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">SamplerMixin</span>
 
 
-<div class="viewcode-block" id="RandomOverSampler"><a class="viewcode-back" href="../../../generated/imblearn.over_sampling.RandomOverSampler.html#imblearn.over_sampling.RandomOverSampler">[docs]</a><span class="k">class</span> <span class="nc">RandomOverSampler</span><span class="p">(</span><span class="n">OverSampler</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomOverSampler"><a class="viewcode-back" href="../../../generated/imblearn.over_sampling.RandomOverSampler.html#imblearn.over_sampling.RandomOverSampler">[docs]</a><span class="k">class</span> <span class="nc">RandomOverSampler</span><span class="p">(</span><span class="n">SamplerMixin</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;Class to perform random over-sampling.</span>
 
 <span class="sd">    Object to over-sample the minority class(es) by picking samples at random</span>
@@ -174,23 +175,14 @@
 <span class="sd">        of samples in the minority class over the the number of samples</span>
 <span class="sd">        in the majority class.</span>
 
-<span class="sd">    random_state : int or None, optional (default=None)</span>
-<span class="sd">        Seed for random number generation.</span>
-
-<span class="sd">    verbose : bool, optional (default=True)</span>
-<span class="sd">        Whether or not to print information about the processing.</span>
+<span class="sd">    random_state : int, RandomState instance or None, optional (default=None)</span>
+<span class="sd">        If int, random_state is the seed used by the random number generator;</span>
+<span class="sd">        If RandomState instance, random_state is the random number generator;</span>
+<span class="sd">        If None, the random number generator is the RandomState instance used</span>
+<span class="sd">        by np.random.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio : str or float</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
-<span class="sd">        the dataset. Otherwise, the ratio is defined as the number</span>
-<span class="sd">        of samples in the minority class over the the number of samples</span>
-<span class="sd">        in the majority class.</span>
-
-<span class="sd">    random_state : int or None</span>
-<span class="sd">        Seed for random number generation.</span>
-
 <span class="sd">    min_c_ : str or int</span>
 <span class="sd">        The identifier of the minority class.</span>
 
@@ -209,58 +201,14 @@
 <span class="sd">    Supports multiple classes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RandomOverSampler.__init__"><a class="viewcode-back" href="../../../generated/imblearn.over_sampling.RandomOverSampler.html#imblearn.over_sampling.RandomOverSampler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize this object and its instance variables.</span>
+<div class="viewcode-block" id="RandomOverSampler.__init__"><a class="viewcode-back" href="../../../generated/imblearn.over_sampling.RandomOverSampler.html#imblearn.over_sampling.RandomOverSampler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">ratio</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                 <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ratio : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
-<span class="sd">            the dataset. Otherwise, the ratio is defined as the number</span>
-<span class="sd">            of samples in the minority class over the the number of samples</span>
-<span class="sd">            in the majority class.</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RandomOverSampler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="n">ratio</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span></div>
 
-<span class="sd">        random_state : int or None, optional (default=None)</span>
-<span class="sd">            Seed for random number generation.</span>
-
-<span class="sd">        verbose : bool, optional (default=True)</span>
-<span class="sd">            Whether or not to print information about the processing.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">RandomOverSampler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="n">ratio</span><span class="p">,</span>
-                                                <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-                                                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="RandomOverSampler.fit"><a class="viewcode-back" href="../../../generated/imblearn.over_sampling.RandomOverSampler.html#imblearn.over_sampling.RandomOverSampler.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find the classes statistics before to perform sampling.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : ndarray, shape (n_samples, n_features)</span>
-<span class="sd">            Matrix containing the data which have to be sampled.</span>
-
-<span class="sd">        y : ndarray, shape (n_samples, )</span>
-<span class="sd">            Corresponding label for each sample in X.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        self : object,</span>
-<span class="sd">            Return self.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check the consistency of X and y</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-        <span class="c1"># Call the parent function</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">RandomOverSampler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-<div class="viewcode-block" id="RandomOverSampler.sample"><a class="viewcode-back" href="../../../generated/imblearn.over_sampling.RandomOverSampler.html#imblearn.over_sampling.RandomOverSampler.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -280,11 +228,6 @@
 <span class="sd">            The corresponding label of `X_resampled`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check the consistency of X and y</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-        <span class="c1"># Call the parent function</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">RandomOverSampler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
         <span class="c1"># Keep the samples from the majority class</span>
         <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">maj_c_</span><span class="p">]</span>
@@ -306,9 +249,9 @@
                                   <span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
             <span class="c1"># Pick some elements at random</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
-            <span class="n">indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
-                                     <span class="n">size</span><span class="o">=</span><span class="n">num_samples</span><span class="p">)</span>
+            <span class="n">random_state</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
+            <span class="n">indx</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stats_c_</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                                        <span class="n">size</span><span class="o">=</span><span class="n">num_samples</span><span class="p">)</span>
 
             <span class="c1"># Concatenate to the majority class</span>
             <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X_resampled</span><span class="p">,</span>
@@ -320,10 +263,10 @@
                                           <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="n">key</span><span class="p">],</span>
                                           <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="n">key</span><span class="p">][</span><span class="n">indx</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Over-sampling performed: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">y_resampled</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Over-sampling performed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">Counter</span><span class="p">(</span>
+            <span class="n">y_resampled</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span></div></div>
+        <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span></div>
 </pre></div>
 
            </div>

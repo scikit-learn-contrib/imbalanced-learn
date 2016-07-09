@@ -166,7 +166,7 @@
 <h1>imblearn.combine.SMOTEENN<a class="headerlink" href="#imblearn-combine-smoteenn" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="imblearn.combine.SMOTEENN">
-<em class="property">class </em><code class="descclassname">imblearn.combine.</code><code class="descname">SMOTEENN</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>k=5</em>, <em>m=10</em>, <em>out_step=0.5</em>, <em>kind_smote='regular'</em>, <em>size_ngh=3</em>, <em>kind_enn='all'</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/combine/smote_enn.html#SMOTEENN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.combine.SMOTEENN" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">imblearn.combine.</code><code class="descname">SMOTEENN</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em>, <em>k=5</em>, <em>m=10</em>, <em>out_step=0.5</em>, <em>kind_smote='regular'</em>, <em>size_ngh=3</em>, <em>kind_enn='all'</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/combine/smote_enn.html#SMOTEENN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.combine.SMOTEENN" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to perform over-sampling using SMOTE and cleaning using ENN.</p>
 <p>Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -180,13 +180,12 @@ the dataset. Otherwise, the ratio is defined as the
 number of samples in the minority class over the the number of
 samples in the majority class.</p>
 </div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
+<p><strong>random_state</strong> : int, RandomState instance or None, optional (default=None)</p>
 <blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to print information about the processing.</p>
+<div><p>If int, random_state is the seed used by the random number generator;
+If RandomState instance, random_state is the random number generator;
+If None, the random number generator is the RandomState instance used
+by np.random.</p>
 </div></blockquote>
 <p><strong>k</strong> : int, optional (default=5)</p>
 <blockquote>
@@ -245,16 +244,10 @@ Sigkdd Explorations Newsletter 6 (1), 20-29, 2004.</td></tr>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="5%" />
-<col width="95%" />
+<col width="8%" />
+<col width="92%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>ratio</td>
-<td>(str or float) If &#8216;auto&#8217;, the ratio will be defined automatically to balance the dataset. Otherwise, the ratio is defined as the number of samples in the minority class over the the number of samples in the majority class.</td>
-</tr>
-<tr class="row-even"><td>random_state</td>
-<td>(int or None) Seed for random number generation.</td>
-</tr>
 <tr class="row-odd"><td><a href="#id3"><span class="problematic" id="id4">min_c_</span></a></td>
 <td>(str or int) The identifier of the minority class.</td>
 </tr>
@@ -295,73 +288,8 @@ Sigkdd Explorations Newsletter 6 (1), 20-29, 2004.</td></tr>
 </table>
 <dl class="method">
 <dt id="imblearn.combine.SMOTEENN.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>k=5</em>, <em>m=10</em>, <em>out_step=0.5</em>, <em>kind_smote='regular'</em>, <em>size_ngh=3</em>, <em>kind_enn='all'</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/combine/smote_enn.html#SMOTEENN.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.combine.SMOTEENN.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialise the SMOTE ENN object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
-<blockquote>
-<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balance
-the dataset. Otherwise, the ratio is defined as the
-number of samples in the minority class over the the number of
-samples in the majority class.</p>
-</div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
-<blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to print information about the processing.</p>
-</div></blockquote>
-<p><strong>k</strong> : int, optional (default=5)</p>
-<blockquote>
-<div><p>Number of nearest neighbours to used to construct synthetic
-samples.</p>
-</div></blockquote>
-<p><strong>m</strong> : int, optional (default=10)</p>
-<blockquote>
-<div><p>Number of nearest neighbours to use to determine if a minority
-sample is in danger.</p>
-</div></blockquote>
-<p><strong>out_step</strong> : float, optional (default=0.5)</p>
-<blockquote>
-<div><p>Step size when extrapolating.</p>
-</div></blockquote>
-<p><strong>kind_smote</strong> : str, optional (default=&#8217;regular&#8217;)</p>
-<blockquote>
-<div><p>The type of SMOTE algorithm to use one of the following
-options: &#8216;regular&#8217;, &#8216;borderline1&#8217;, &#8216;borderline2&#8217;, &#8216;svm&#8217;.</p>
-</div></blockquote>
-<p><strong>size_ngh</strong> : int, optional (default=3)</p>
-<blockquote>
-<div><p>Size of the neighbourhood to consider to compute the average
-distance to the minority point samples.</p>
-</div></blockquote>
-<p><strong>kind_sel</strong> : str, optional (default=&#8217;all&#8217;)</p>
-<blockquote>
-<div><p>Strategy to use in order to exclude samples.</p>
-<ul class="simple">
-<li>If &#8216;all&#8217;, all neighbours will have to agree with the samples of</li>
-</ul>
-<p>interest to not be excluded.
-- If &#8216;mode&#8217;, the majority vote of the neighbours will be used in
-order to exclude a sample.</p>
-</div></blockquote>
-<p><strong>n_jobs</strong> : int, optional (default=-1)</p>
-<blockquote>
-<div><p>The number of threads to open if possible.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em>, <em>k=5</em>, <em>m=10</em>, <em>out_step=0.5</em>, <em>kind_smote='regular'</em>, <em>size_ngh=3</em>, <em>kind_enn='all'</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/combine/smote_enn.html#SMOTEENN.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.combine.SMOTEENN.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
@@ -370,8 +298,8 @@ order to exclude a sample.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#imblearn.combine.SMOTEENN.__init__" title="imblearn.combine.SMOTEENN.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;random_state,&nbsp;verbose,&nbsp;k,&nbsp;...])</td>
-<td>Initialise the SMOTE ENN object.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#imblearn.combine.SMOTEENN.__init__" title="imblearn.combine.SMOTEENN.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;random_state,&nbsp;k,&nbsp;m,&nbsp;...])</td>
+<td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#imblearn.combine.SMOTEENN.fit" title="imblearn.combine.SMOTEENN.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
@@ -477,7 +405,7 @@ contained subobjects that are estimators.</p>
 
 <dl class="method">
 <dt id="imblearn.combine.SMOTEENN.sample">
-<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/combine/smote_enn.html#SMOTEENN.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.combine.SMOTEENN.sample" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.combine.SMOTEENN.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

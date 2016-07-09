@@ -167,7 +167,7 @@
 <h1>imblearn.over_sampling.RandomOverSampler<a class="headerlink" href="#imblearn-over-sampling-randomoversampler" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="imblearn.over_sampling.RandomOverSampler">
-<em class="property">class </em><code class="descclassname">imblearn.over_sampling.</code><code class="descname">RandomOverSampler</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/over_sampling/random_over_sampler.html#RandomOverSampler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.over_sampling.RandomOverSampler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">imblearn.over_sampling.</code><code class="descname">RandomOverSampler</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/over_sampling/random_over_sampler.html#RandomOverSampler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.over_sampling.RandomOverSampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to perform random over-sampling.</p>
 <p>Object to over-sample the minority class(es) by picking samples at random
 with replacement.</p>
@@ -182,13 +182,12 @@ the dataset. Otherwise, the ratio is defined as the number
 of samples in the minority class over the the number of samples
 in the majority class.</p>
 </div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
-<blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
+<p><strong>random_state</strong> : int, RandomState instance or None, optional (default=None)</p>
 <blockquote class="last">
-<div><p>Whether or not to print information about the processing.</p>
+<div><p>If int, random_state is the seed used by the random number generator;
+If RandomState instance, random_state is the random number generator;
+If None, the random number generator is the RandomState instance used
+by np.random.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -199,16 +198,10 @@ in the majority class.</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="5%" />
-<col width="95%" />
+<col width="8%" />
+<col width="92%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>ratio</td>
-<td>(str or float) If &#8216;auto&#8217;, the ratio will be defined automatically to balance the dataset. Otherwise, the ratio is defined as the number of samples in the minority class over the the number of samples in the majority class.</td>
-</tr>
-<tr class="row-even"><td>random_state</td>
-<td>(int or None) Seed for random number generation.</td>
-</tr>
 <tr class="row-odd"><td><a href="#id1"><span class="problematic" id="id2">min_c_</span></a></td>
 <td>(str or int) The identifier of the minority class.</td>
 </tr>
@@ -249,35 +242,8 @@ in the majority class.</p>
 </table>
 <dl class="method">
 <dt id="imblearn.over_sampling.RandomOverSampler.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/over_sampling/random_over_sampler.html#RandomOverSampler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.over_sampling.RandomOverSampler.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize this object and its instance variables.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
-<blockquote>
-<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balance
-the dataset. Otherwise, the ratio is defined as the number
-of samples in the minority class over the the number of samples
-in the majority class.</p>
-</div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
-<blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to print information about the processing.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/over_sampling/random_over_sampler.html#RandomOverSampler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.over_sampling.RandomOverSampler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
@@ -286,8 +252,8 @@ in the majority class.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#imblearn.over_sampling.RandomOverSampler.__init__" title="imblearn.over_sampling.RandomOverSampler.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;random_state,&nbsp;verbose])</td>
-<td>Initialize this object and its instance variables.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#imblearn.over_sampling.RandomOverSampler.__init__" title="imblearn.over_sampling.RandomOverSampler.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;random_state])</td>
+<td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#imblearn.over_sampling.RandomOverSampler.fit" title="imblearn.over_sampling.RandomOverSampler.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
@@ -308,7 +274,7 @@ in the majority class.</p>
 </table>
 <dl class="method">
 <dt id="imblearn.over_sampling.RandomOverSampler.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/over_sampling/random_over_sampler.html#RandomOverSampler.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.over_sampling.RandomOverSampler.fit" title="Permalink to this definition">¶</a></dt>
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.over_sampling.RandomOverSampler.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the classes statistics before to perform sampling.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -393,7 +359,7 @@ contained subobjects that are estimators.</p>
 
 <dl class="method">
 <dt id="imblearn.over_sampling.RandomOverSampler.sample">
-<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/over_sampling/random_over_sampler.html#RandomOverSampler.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.over_sampling.RandomOverSampler.sample" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.over_sampling.RandomOverSampler.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

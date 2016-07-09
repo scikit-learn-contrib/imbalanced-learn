@@ -16,36 +16,7 @@ An illustration of the balance cascade ensemble method.
     :align: center
 
 
-.. rst-class:: sphx-glr-script-out
 
- Out::
-
-      Determining classes statistics... 2 classes detected: Counter({1: 4500, 0: 500})
-    Elements misclassified: [ 382 1069 2402  124 2733   53]
-    Creation of the subset #0
-    Elements misclassified: [ 382 1069 2402 2733 2916 2237 4300 2917 3273 3389 1486  771 3194 2304]
-    Creation of the subset #1
-    Elements misclassified: [2402 2237 4300 3273 3389  200 3818 2815]
-    Creation of the subset #2
-    Elements misclassified: [2402 2237  917 4040 2683 3296 4190]
-    Creation of the subset #3
-    Elements misclassified: [2402 2237  917 2683 4190  745  416 2751 2763 1890  359  354  861  111]
-    Creation of the subset #4
-    Elements misclassified: [2237 2683 4190  745  416 2751  861 2672 4144 1032 2881 4138 2083]
-    Creation of the subset #5
-    Elements misclassified: [2237 2683 4190  416 1032 2083 1187 3787  657  367  898 3716]
-    Creation of the subset #6
-    Elements misclassified: [2237 2683  416 1032 3787  367  898  182  601 2704 2175]
-    Creation of the subset #7
-    Elements misclassified: [ 416 1032 3787  898  182 2175 2590 1979 4254 2631 2627  192 2757]
-    Creation of the subset #8
-    Creation of the subset #9
-    Not enough samples to continue creating subsets
-
-
-
-
-|
 
 
 .. code-block:: python
@@ -105,7 +76,7 @@ An illustration of the balance cascade ensemble method.
     plt.show()
 
 **Total running time of the script:**
-(0 minutes 0.568 seconds)
+(0 minutes 0.798 seconds)
 
 
 

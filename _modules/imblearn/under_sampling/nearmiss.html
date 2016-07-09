@@ -155,13 +155,12 @@
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_X_y</span>
 <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">NearestNeighbors</span>
 
-<span class="kn">from</span> <span class="nn">.under_sampler</span> <span class="kn">import</span> <span class="n">UnderSampler</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">SamplerMixin</span>
 
 
-<div class="viewcode-block" id="NearMiss"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.NearMiss.html#imblearn.under_sampling.NearMiss">[docs]</a><span class="k">class</span> <span class="nc">NearMiss</span><span class="p">(</span><span class="n">UnderSampler</span><span class="p">):</span>
+<div class="viewcode-block" id="NearMiss"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.NearMiss.html#imblearn.under_sampling.NearMiss">[docs]</a><span class="k">class</span> <span class="nc">NearMiss</span><span class="p">(</span><span class="n">SamplerMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to perform under-sampling based on NearMiss methods.</span>
 
 <span class="sd">    Parameters</span>
@@ -176,11 +175,11 @@
 <span class="sd">        Whether or not to return the indices of the samples randomly</span>
 <span class="sd">        selected from the majority class.</span>
 
-<span class="sd">    random_state : int or None, optional (default=None)</span>
-<span class="sd">        Seed for random number generation.</span>
-
-<span class="sd">    verbose : bool, optional (default=True)</span>
-<span class="sd">        Whether or not to print information about the processing.</span>
+<span class="sd">    random_state : int, RandomState instance or None, optional (default=None)</span>
+<span class="sd">        If int, random_state is the seed used by the random number generator;</span>
+<span class="sd">        If RandomState instance, random_state is the random number generator;</span>
+<span class="sd">        If None, the random number generator is the RandomState instance used</span>
+<span class="sd">        by np.random.</span>
 
 <span class="sd">    version : int, optional (default=1)</span>
 <span class="sd">        Version of the NearMiss to use. Possible values</span>
@@ -203,15 +202,6 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio : str or float</span>
-<span class="sd">        If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
-<span class="sd">        the dataset. Otherwise, the ratio is defined as the number</span>
-<span class="sd">        of samples in the minority class over the the number of samples</span>
-<span class="sd">        in the majority class.</span>
-
-<span class="sd">    random state : int or None</span>
-<span class="sd">        Seed for random number generation.</span>
-
 <span class="sd">    min_c_ : str or int</span>
 <span class="sd">        The identifier of the minority class.</span>
 
@@ -240,92 +230,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NearMiss.__init__"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.NearMiss.html#imblearn.under_sampling.NearMiss.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size_ngh</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ver3_samp_ngh</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                 <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialisation of clustering centroids object.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ratio : str or float, optional (default=&#39;auto&#39;)</span>
-<span class="sd">            If &#39;auto&#39;, the ratio will be defined automatically to balance</span>
-<span class="sd">            the dataset. Otherwise, the ratio is defined as the number</span>
-<span class="sd">            of samples in the minority class over the the number of samples</span>
-<span class="sd">            in the majority class.</span>
-
-<span class="sd">        return_indices : bool, optional (default=False)</span>
-<span class="sd">            Whether or not to return the indices of the samples randomly</span>
-<span class="sd">            selected from the majority class.</span>
-
-<span class="sd">        random_state : int or None, optional (default=None)</span>
-<span class="sd">            Seed for random number generation.</span>
-
-<span class="sd">        verbose : bool, optional (default=True)</span>
-<span class="sd">            Whether or not to print information about the processing.</span>
-
-<span class="sd">        version : int, optional (default=1)</span>
-<span class="sd">            Version of the NearMiss to use. Possible values</span>
-<span class="sd">            are 1, 2 or 3.</span>
-
-<span class="sd">        size_ngh : int, optional (default=3)</span>
-<span class="sd">            Size of the neighbourhood to consider to compute the</span>
-<span class="sd">            average distance to the minority point samples.</span>
-
-<span class="sd">        ver3_samp_ngh : int, optional (default=3)</span>
-<span class="sd">            NearMiss-3 algorithm start by a phase of re-sampling. This</span>
-<span class="sd">            parameter correspond to the number of neighbours selected</span>
-<span class="sd">            create the sub_set in which the selection will be performed.</span>
-
-<span class="sd">        n_jobs : int, optional (default=-1)</span>
-<span class="sd">            The number of threads to open if possible.</span>
-
-<span class="sd">        **kwargs : keywords</span>
-<span class="sd">            Parameter to use for the Nearest Neighbours object.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">NearMiss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="n">ratio</span><span class="p">,</span>
-                                       <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span><span class="p">,</span>
-                                       <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-                                       <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-
-        <span class="c1"># Assign the parameter of the element of this class</span>
-        <span class="c1"># Check that the version asked is implemented</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">version</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;UnbalancedData.NearMiss: there is only 3 &#39;</span>
-                             <span class="s1">&#39;versions available with parameter version=1/2/3&#39;</span><span class="p">)</span>
-
+                 <span class="n">version</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size_ngh</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ver3_samp_ngh</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NearMiss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="n">ratio</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span> <span class="o">=</span> <span class="n">return_indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size_ngh</span> <span class="o">=</span> <span class="n">size_ngh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ver3_samp_ngh</span> <span class="o">=</span> <span class="n">ver3_samp_ngh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></div>
-
-<div class="viewcode-block" id="NearMiss.fit"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.NearMiss.html#imblearn.under_sampling.NearMiss.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find the classes statistics before to perform sampling.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : ndarray, shape (n_samples, n_features)</span>
-<span class="sd">            Matrix containing the data which have to be sampled.</span>
-
-<span class="sd">        y : ndarray, shape (n_samples, )</span>
-<span class="sd">            Corresponding label for each sample in X.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        self : object,</span>
-<span class="sd">            Return self.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check the consistency of X and y</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-        <span class="nb">super</span><span class="p">(</span><span class="n">NearMiss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_selection_dist_based</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dist_vec</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
                               <span class="n">sel_strategy</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">):</span>
@@ -385,7 +298,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="n">key</span><span class="p">][</span><span class="n">sel_idx</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="n">key</span><span class="p">][</span><span class="n">sel_idx</span><span class="p">],</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="n">sel_idx</span><span class="p">])</span>
 
-<div class="viewcode-block" id="NearMiss.sample"><a class="viewcode-back" href="../../../generated/imblearn.under_sampling.NearMiss.html#imblearn.under_sampling.NearMiss.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resample the dataset.</span>
 
 <span class="sd">        Parameters</span>
@@ -409,10 +322,12 @@
 <span class="sd">            containing the which samples have been selected.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check the consistency of X and y</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">NearMiss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="c1"># Assign the parameter of the element of this class</span>
+        <span class="c1"># Check that the version asked is implemented</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;UnbalancedData.NearMiss: there is only 3 &#39;</span>
+                             <span class="s1">&#39;versions available with parameter version=1/2/3&#39;</span><span class="p">)</span>
 
         <span class="c1"># Start with the minority class</span>
         <span class="n">X_min</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_c_</span><span class="p">]</span>
@@ -524,15 +439,15 @@
             <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X_resampled</span><span class="p">,</span> <span class="n">sel_x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">y_resampled</span><span class="p">,</span> <span class="n">sel_y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Under-sampling performed: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">y_resampled</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Under-sampling performed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">Counter</span><span class="p">(</span>
+            <span class="n">y_resampled</span><span class="p">))</span>
 
         <span class="c1"># Check if the indices of the samples selected should be returned too</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span><span class="p">:</span>
             <span class="c1"># Return the indices of interest</span>
             <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span><span class="p">,</span> <span class="n">idx_under</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span></div></div>
+            <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span></div>
 </pre></div>
 
            </div>

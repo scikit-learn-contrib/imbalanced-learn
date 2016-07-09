@@ -166,7 +166,7 @@
 <h1>imblearn.ensemble.EasyEnsemble<a class="headerlink" href="#imblearn-ensemble-easyensemble" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="imblearn.ensemble.EasyEnsemble">
-<em class="property">class </em><code class="descclassname">imblearn.ensemble.</code><code class="descname">EasyEnsemble</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>verbose=True</em>, <em>random_state=None</em>, <em>replacement=False</em>, <em>n_subsets=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/ensemble/easy_ensemble.html#EasyEnsemble"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.ensemble.EasyEnsemble" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">imblearn.ensemble.</code><code class="descname">EasyEnsemble</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>replacement=False</em>, <em>n_subsets=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/ensemble/easy_ensemble.html#EasyEnsemble"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.ensemble.EasyEnsemble" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an ensemble sets by iteratively applying random under-sampling.</p>
 <p>This method iteratively select a random subset and make an ensemble of the
 different sets.</p>
@@ -186,13 +186,12 @@ in the majority class.</p>
 <div><p>Whether or not to return the indices of the samples randomly
 selected from the majority class.</p>
 </div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
+<p><strong>random_state</strong> : int, RandomState instance or None, optional (default=None)</p>
 <blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to print information about the processing.</p>
+<div><p>If int, random_state is the seed used by the random number generator;
+If RandomState instance, random_state is the random number generator;
+If None, the random number generator is the RandomState instance used
+by np.random.</p>
 </div></blockquote>
 <p><strong>replacement</strong> : bool, optional (default=False)</p>
 <blockquote>
@@ -221,16 +220,10 @@ April 2009.</td></tr>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="5%" />
-<col width="95%" />
+<col width="8%" />
+<col width="92%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>ratio</td>
-<td>(str or float) If &#8216;auto&#8217;, the ratio will be defined automatically to balance the dataset. Otherwise, the ratio is defined as the number of samples in the minority class over the the number of samples in the majority class.</td>
-</tr>
-<tr class="row-even"><td>random_state</td>
-<td>(int or None) Seed for random number generation.</td>
-</tr>
 <tr class="row-odd"><td><a href="#id3"><span class="problematic" id="id4">min_c_</span></a></td>
 <td>(str or int) The identifier of the minority class.</td>
 </tr>
@@ -271,48 +264,8 @@ April 2009.</td></tr>
 </table>
 <dl class="method">
 <dt id="imblearn.ensemble.EasyEnsemble.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>verbose=True</em>, <em>random_state=None</em>, <em>replacement=False</em>, <em>n_subsets=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/ensemble/easy_ensemble.html#EasyEnsemble.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.ensemble.EasyEnsemble.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialise the easy ensenble object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
-<blockquote>
-<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balance
-the dataset. Otherwise, the ratio is defined as the number
-of samples in the minority class over the the number of samples
-in the majority class.</p>
-</div></blockquote>
-<p><strong>return_indices</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to return the indices of the samples randomly
-selected from the majority class.</p>
-</div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
-<blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to print information about the processing.</p>
-</div></blockquote>
-<p><strong>replacement</strong> : bool, optional (default=False)</p>
-<blockquote>
-<div><p>Whether or not to sample randomly with replacement or not.</p>
-</div></blockquote>
-<p><strong>n_subsets</strong> : int, optional (default=10)</p>
-<blockquote>
-<div><p>Number of subsets to generate.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>replacement=False</em>, <em>n_subsets=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/ensemble/easy_ensemble.html#EasyEnsemble.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.ensemble.EasyEnsemble.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
@@ -321,8 +274,8 @@ selected from the majority class.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#imblearn.ensemble.EasyEnsemble.__init__" title="imblearn.ensemble.EasyEnsemble.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;return_indices,&nbsp;verbose,&nbsp;...])</td>
-<td>Initialise the easy ensenble object.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#imblearn.ensemble.EasyEnsemble.__init__" title="imblearn.ensemble.EasyEnsemble.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;return_indices,&nbsp;...])</td>
+<td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#imblearn.ensemble.EasyEnsemble.fit" title="imblearn.ensemble.EasyEnsemble.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
@@ -343,7 +296,7 @@ selected from the majority class.</p>
 </table>
 <dl class="method">
 <dt id="imblearn.ensemble.EasyEnsemble.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/ensemble/easy_ensemble.html#EasyEnsemble.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.ensemble.EasyEnsemble.fit" title="Permalink to this definition">¶</a></dt>
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.ensemble.EasyEnsemble.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the classes statistics before to perform sampling.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -428,7 +381,7 @@ contained subobjects that are estimators.</p>
 
 <dl class="method">
 <dt id="imblearn.ensemble.EasyEnsemble.sample">
-<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/ensemble/easy_ensemble.html#EasyEnsemble.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.ensemble.EasyEnsemble.sample" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.ensemble.EasyEnsemble.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -444,18 +397,13 @@ contained subobjects that are estimators.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X_resampled</strong> : ndarray, shape (n_subset, n_samples_new, n_features)</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X_resampled</strong> : ndarray, shape (n_samples_new, n_features)</p>
 <blockquote>
 <div><p>The array containing the resampled data.</p>
 </div></blockquote>
-<p><strong>y_resampled</strong> : ndarray, shape (n_subset, n_samples_new)</p>
-<blockquote>
-<div><p>The corresponding label of <cite>X_resampled</cite></p>
-</div></blockquote>
-<p><strong>idx_under</strong> : ndarray, shape (n_subset, n_samples, )</p>
+<p><strong>y_resampled</strong> : ndarray, shape (n_samples_new)</p>
 <blockquote class="last">
-<div><p>If <cite>return_indices</cite> is <cite>True</cite>, a boolean array will be returned
-containing the which samples have been selected.</p>
+<div><p>The corresponding label of <cite>X_resampled</cite></p>
 </div></blockquote>
 </td>
 </tr>

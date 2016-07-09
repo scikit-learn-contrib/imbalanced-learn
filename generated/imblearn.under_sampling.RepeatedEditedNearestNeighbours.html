@@ -174,7 +174,7 @@
 <h1>imblearn.under_sampling.RepeatedEditedNearestNeighbours<a class="headerlink" href="#imblearn-under-sampling-repeatededitednearestneighbours" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="imblearn.under_sampling.RepeatedEditedNearestNeighbours">
-<em class="property">class </em><code class="descclassname">imblearn.under_sampling.</code><code class="descname">RepeatedEditedNearestNeighbours</code><span class="sig-paren">(</span><em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>size_ngh=3</em>, <em>max_iter=100</em>, <em>kind_sel='all'</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/edited_nearest_neighbours.html#RepeatedEditedNearestNeighbours"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.RepeatedEditedNearestNeighbours" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">imblearn.under_sampling.</code><code class="descname">RepeatedEditedNearestNeighbours</code><span class="sig-paren">(</span><em>return_indices=False</em>, <em>random_state=None</em>, <em>size_ngh=3</em>, <em>max_iter=100</em>, <em>kind_sel='all'</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/edited_nearest_neighbours.html#RepeatedEditedNearestNeighbours"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.RepeatedEditedNearestNeighbours" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to perform under-sampling based on the repeated edited nearest
 neighbour method.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -183,16 +183,15 @@ neighbour method.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>return_indices</strong> : bool, optional (default=False)</p>
 <blockquote>
-<div><p>Either to return or not the indices which will be selected from
-the majority class.</p>
+<div><p>Whether or not to return the indices of the samples randomly
+selected from the majority class.</p>
 </div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
+<p><strong>random_state</strong> : int, RandomState instance or None, optional (default=None)</p>
 <blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Boolean to either or not print information about the processing</p>
+<div><p>If int, random_state is the seed used by the random number generator;
+If RandomState instance, random_state is the random number generator;
+If None, the random number generator is the RandomState instance used
+by np.random.</p>
 </div></blockquote>
 <p><strong>size_ngh</strong> : int, optional (default=3)</p>
 <blockquote>
@@ -232,29 +231,23 @@ pp. 448-452, June 1976.</td></tr>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="3%" />
-<col width="97%" />
+<col width="6%" />
+<col width="94%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a href="#id3"><span class="problematic" id="id4">ratio_</span></a></td>
-<td>(str or float, optional (default=&#8217;auto&#8217;)) If &#8216;auto&#8217;, the ratio will be defined automatically to balanced the dataset. Otherwise, the ratio will corresponds to the number of samples in the minority class over the the number of samples in the majority class.</td>
-</tr>
-<tr class="row-even"><td><a href="#id5"><span class="problematic" id="id6">rs_</span></a></td>
-<td>(int or None, optional (default=None)) Seed for random number generation.</td>
-</tr>
-<tr class="row-odd"><td><a href="#id7"><span class="problematic" id="id8">min_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id3"><span class="problematic" id="id4">min_c_</span></a></td>
 <td>(str or int) The identifier of the minority class.</td>
 </tr>
-<tr class="row-even"><td><a href="#id9"><span class="problematic" id="id10">max_c_</span></a></td>
+<tr class="row-even"><td><a href="#id5"><span class="problematic" id="id6">max_c_</span></a></td>
 <td>(str or int) The identifier of the majority class.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id11"><span class="problematic" id="id12">stats_c_</span></a></td>
+<tr class="row-odd"><td><a href="#id7"><span class="problematic" id="id8">stats_c_</span></a></td>
 <td>(dict of str/int) A dictionary in which the number of occurences of each class is reported.</td>
 </tr>
 <tr class="row-even"><td>max_iter</td>
 <td>(int, optional (default=100)) Maximum number of iterations of the edited nearest neighbours algorithm for a single run.</td>
 </tr>
-<tr class="row-odd"><td><a href="#id13"><span class="problematic" id="id14">X_shape_</span></a></td>
+<tr class="row-odd"><td><a href="#id9"><span class="problematic" id="id10">X_shape_</span></a></td>
 <td>(tuple of int) Shape of the data <cite>X</cite> during fitting.</td>
 </tr>
 </tbody>
@@ -285,57 +278,8 @@ pp. 448-452, June 1976.</td></tr>
 </table>
 <dl class="method">
 <dt id="imblearn.under_sampling.RepeatedEditedNearestNeighbours.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>size_ngh=3</em>, <em>max_iter=100</em>, <em>kind_sel='all'</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/edited_nearest_neighbours.html#RepeatedEditedNearestNeighbours.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.RepeatedEditedNearestNeighbours.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialisation of RENN object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>return_indices</strong> : bool, optional (default=False)</p>
-<blockquote>
-<div><p>Either to return or not the indices which will be selected from
-the majority class.</p>
-</div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
-<blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Boolean to either or not print information about the processing</p>
-</div></blockquote>
-<p><strong>size_ngh</strong> : int, optional (default=3)</p>
-<blockquote>
-<div><p>Size of the neighbourhood to consider to compute the average
-distance to the minority point samples.</p>
-</div></blockquote>
-<p><strong>max_iter</strong> : int, optional (default=100)</p>
-<blockquote>
-<div><p>Maximum number of iterations of the edited nearest neighbours
-algorithm for a single run.</p>
-</div></blockquote>
-<p><strong>kind_sel</strong> : str, optional (default=&#8217;all&#8217;)</p>
-<blockquote>
-<div><p>Strategy to use in order to exclude samples.</p>
-<ul class="simple">
-<li>If &#8216;all&#8217;, all neighbours will have to agree with the samples of</li>
-</ul>
-<p>interest to not be excluded.
-- If &#8216;mode&#8217;, the majority vote of the neighbours will be used in
-order to exclude a sample.</p>
-</div></blockquote>
-<p><strong>n_jobs</strong> : int, optional (default=-1)</p>
-<blockquote>
-<div><p>The number of thread to open when it is possible.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>return_indices=False</em>, <em>random_state=None</em>, <em>size_ngh=3</em>, <em>max_iter=100</em>, <em>kind_sel='all'</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/edited_nearest_neighbours.html#RepeatedEditedNearestNeighbours.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.RepeatedEditedNearestNeighbours.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
@@ -345,7 +289,7 @@ order to exclude a sample.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#imblearn.under_sampling.RepeatedEditedNearestNeighbours.__init__" title="imblearn.under_sampling.RepeatedEditedNearestNeighbours.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([return_indices,&nbsp;random_state,&nbsp;...])</td>
-<td>Initialisation of RENN object.</td>
+<td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#imblearn.under_sampling.RepeatedEditedNearestNeighbours.fit" title="imblearn.under_sampling.RepeatedEditedNearestNeighbours.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
@@ -451,7 +395,7 @@ contained subobjects that are estimators.</p>
 
 <dl class="method">
 <dt id="imblearn.under_sampling.RepeatedEditedNearestNeighbours.sample">
-<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/edited_nearest_neighbours.html#RepeatedEditedNearestNeighbours.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.RepeatedEditedNearestNeighbours.sample" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.under_sampling.RepeatedEditedNearestNeighbours.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -472,13 +416,8 @@ contained subobjects that are estimators.</p>
 <div><p>The array containing the resampled data.</p>
 </div></blockquote>
 <p><strong>y_resampled</strong> : ndarray, shape (n_samples_new)</p>
-<blockquote>
-<div><p>The corresponding label of <cite>X_resampled</cite></p>
-</div></blockquote>
-<p><strong>idx_under</strong> : ndarray, shape (n_samples, )</p>
 <blockquote class="last">
-<div><p>If <cite>return_indices</cite> is <cite>True</cite>, a boolean array will be returned
-containing the which samples have been selected.</p>
+<div><p>The corresponding label of <cite>X_resampled</cite></p>
 </div></blockquote>
 </td>
 </tr>

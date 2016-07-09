@@ -174,7 +174,7 @@
 <h1>imblearn.under_sampling.NearMiss<a class="headerlink" href="#imblearn-under-sampling-nearmiss" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="imblearn.under_sampling.NearMiss">
-<em class="property">class </em><code class="descclassname">imblearn.under_sampling.</code><code class="descname">NearMiss</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>version=1</em>, <em>size_ngh=3</em>, <em>ver3_samp_ngh=3</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/nearmiss.html#NearMiss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.NearMiss" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">imblearn.under_sampling.</code><code class="descname">NearMiss</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>version=1</em>, <em>size_ngh=3</em>, <em>ver3_samp_ngh=3</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/nearmiss.html#NearMiss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.NearMiss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to perform under-sampling based on NearMiss methods.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -192,13 +192,12 @@ in the majority class.</p>
 <div><p>Whether or not to return the indices of the samples randomly
 selected from the majority class.</p>
 </div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
+<p><strong>random_state</strong> : int, RandomState instance or None, optional (default=None)</p>
 <blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to print information about the processing.</p>
+<div><p>If int, random_state is the seed used by the random number generator;
+If RandomState instance, random_state is the random number generator;
+If None, the random number generator is the RandomState instance used
+by np.random.</p>
 </div></blockquote>
 <p><strong>version</strong> : int, optional (default=1)</p>
 <blockquote>
@@ -243,16 +242,10 @@ workshop on learning from imbalanced datasets, 2003.</td></tr>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="5%" />
-<col width="95%" />
+<col width="8%" />
+<col width="92%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>ratio</td>
-<td>(str or float) If &#8216;auto&#8217;, the ratio will be defined automatically to balance the dataset. Otherwise, the ratio is defined as the number of samples in the minority class over the the number of samples in the majority class.</td>
-</tr>
-<tr class="row-even"><td>random state</td>
-<td>(int or None) Seed for random number generation.</td>
-</tr>
 <tr class="row-odd"><td><a href="#id3"><span class="problematic" id="id4">min_c_</span></a></td>
 <td>(str or int) The identifier of the minority class.</td>
 </tr>
@@ -293,64 +286,8 @@ workshop on learning from imbalanced datasets, 2003.</td></tr>
 </table>
 <dl class="method">
 <dt id="imblearn.under_sampling.NearMiss.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>verbose=True</em>, <em>version=1</em>, <em>size_ngh=3</em>, <em>ver3_samp_ngh=3</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/nearmiss.html#NearMiss.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.NearMiss.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialisation of clustering centroids object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ratio</strong> : str or float, optional (default=&#8217;auto&#8217;)</p>
-<blockquote>
-<div><p>If &#8216;auto&#8217;, the ratio will be defined automatically to balance
-the dataset. Otherwise, the ratio is defined as the number
-of samples in the minority class over the the number of samples
-in the majority class.</p>
-</div></blockquote>
-<p><strong>return_indices</strong> : bool, optional (default=False)</p>
-<blockquote>
-<div><p>Whether or not to return the indices of the samples randomly
-selected from the majority class.</p>
-</div></blockquote>
-<p><strong>random_state</strong> : int or None, optional (default=None)</p>
-<blockquote>
-<div><p>Seed for random number generation.</p>
-</div></blockquote>
-<p><strong>verbose</strong> : bool, optional (default=True)</p>
-<blockquote>
-<div><p>Whether or not to print information about the processing.</p>
-</div></blockquote>
-<p><strong>version</strong> : int, optional (default=1)</p>
-<blockquote>
-<div><p>Version of the NearMiss to use. Possible values
-are 1, 2 or 3.</p>
-</div></blockquote>
-<p><strong>size_ngh</strong> : int, optional (default=3)</p>
-<blockquote>
-<div><p>Size of the neighbourhood to consider to compute the
-average distance to the minority point samples.</p>
-</div></blockquote>
-<p><strong>ver3_samp_ngh</strong> : int, optional (default=3)</p>
-<blockquote>
-<div><p>NearMiss-3 algorithm start by a phase of re-sampling. This
-parameter correspond to the number of neighbours selected
-create the sub_set in which the selection will be performed.</p>
-</div></blockquote>
-<p><strong>n_jobs</strong> : int, optional (default=-1)</p>
-<blockquote>
-<div><p>The number of threads to open if possible.</p>
-</div></blockquote>
-<p><strong>**kwargs</strong> : keywords</p>
-<blockquote>
-<div><p>Parameter to use for the Nearest Neighbours object.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>ratio='auto'</em>, <em>return_indices=False</em>, <em>random_state=None</em>, <em>version=1</em>, <em>size_ngh=3</em>, <em>ver3_samp_ngh=3</em>, <em>n_jobs=-1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/nearmiss.html#NearMiss.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.NearMiss.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
@@ -360,7 +297,7 @@ create the sub_set in which the selection will be performed.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#imblearn.under_sampling.NearMiss.__init__" title="imblearn.under_sampling.NearMiss.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([ratio,&nbsp;return_indices,&nbsp;...])</td>
-<td>Initialisation of clustering centroids object.</td>
+<td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#imblearn.under_sampling.NearMiss.fit" title="imblearn.under_sampling.NearMiss.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(X,&nbsp;y)</td>
 <td>Find the classes statistics before to perform sampling.</td>
@@ -381,7 +318,7 @@ create the sub_set in which the selection will be performed.</p>
 </table>
 <dl class="method">
 <dt id="imblearn.under_sampling.NearMiss.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/nearmiss.html#NearMiss.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.NearMiss.fit" title="Permalink to this definition">¶</a></dt>
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.under_sampling.NearMiss.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the classes statistics before to perform sampling.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -466,7 +403,7 @@ contained subobjects that are estimators.</p>
 
 <dl class="method">
 <dt id="imblearn.under_sampling.NearMiss.sample">
-<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/imblearn/under_sampling/nearmiss.html#NearMiss.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imblearn.under_sampling.NearMiss.sample" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sample</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#imblearn.under_sampling.NearMiss.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resample the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -487,13 +424,8 @@ contained subobjects that are estimators.</p>
 <div><p>The array containing the resampled data.</p>
 </div></blockquote>
 <p><strong>y_resampled</strong> : ndarray, shape (n_samples_new)</p>
-<blockquote>
-<div><p>The corresponding label of <cite>X_resampled</cite></p>
-</div></blockquote>
-<p><strong>idx_under</strong> : ndarray, shape (n_samples, )</p>
 <blockquote class="last">
-<div><p>If <cite>return_indices</cite> is <cite>True</cite>, a boolean array will be returned
-containing the which samples have been selected.</p>
+<div><p>The corresponding label of <cite>X_resampled</cite></p>
 </div></blockquote>
 </td>
 </tr>
