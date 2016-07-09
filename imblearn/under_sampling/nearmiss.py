@@ -6,13 +6,12 @@ import numpy as np
 
 from collections import Counter
 
-from sklearn.utils import check_X_y
 from sklearn.neighbors import NearestNeighbors
 
-from .under_sampler import UnderSampler
+from ..base import SamplerMixin
 
 
-class NearMiss(UnderSampler):
+class NearMiss(SamplerMixin):
     """Class to perform under-sampling based on NearMiss methods.
 
     Parameters
@@ -27,11 +26,11 @@ class NearMiss(UnderSampler):
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
-
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
 
     version : int, optional (default=1)
         Version of the NearMiss to use. Possible values
@@ -54,15 +53,6 @@ class NearMiss(UnderSampler):
 
     Attributes
     ----------
-    ratio : str or float
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
-
-    random state : int or None
-        Seed for random number generation.
-
     min_c_ : str or int
         The identifier of the minority class.
 
@@ -91,92 +81,15 @@ class NearMiss(UnderSampler):
     """
 
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
-                 verbose=True, version=1, size_ngh=3, ver3_samp_ngh=3,
-                 n_jobs=-1, **kwargs):
-        """Initialisation of clustering centroids object.
-
-        Parameters
-        ----------
-        ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balance
-            the dataset. Otherwise, the ratio is defined as the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-        return_indices : bool, optional (default=False)
-            Whether or not to return the indices of the samples randomly
-            selected from the majority class.
-
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Whether or not to print information about the processing.
-
-        version : int, optional (default=1)
-            Version of the NearMiss to use. Possible values
-            are 1, 2 or 3.
-
-        size_ngh : int, optional (default=3)
-            Size of the neighbourhood to consider to compute the
-            average distance to the minority point samples.
-
-        ver3_samp_ngh : int, optional (default=3)
-            NearMiss-3 algorithm start by a phase of re-sampling. This
-            parameter correspond to the number of neighbours selected
-            create the sub_set in which the selection will be performed.
-
-        n_jobs : int, optional (default=-1)
-            The number of threads to open if possible.
-
-        **kwargs : keywords
-            Parameter to use for the Nearest Neighbours object.
-
-        Returns
-        -------
-        None
-
-        """
-        super(NearMiss, self).__init__(ratio=ratio,
-                                       return_indices=return_indices,
-                                       random_state=random_state,
-                                       verbose=verbose)
-
-        # Assign the parameter of the element of this class
-        # Check that the version asked is implemented
-        if not (version == 1 or version == 2 or version == 3):
-            raise ValueError('UnbalancedData.NearMiss: there is only 3 '
-                             'versions available with parameter version=1/2/3')
-
+                 version=1, size_ngh=3, ver3_samp_ngh=3, n_jobs=-1, **kwargs):
+        super(NearMiss, self).__init__(ratio=ratio)
+        self.return_indices = return_indices
+        self.random_state = random_state
         self.version = version
         self.size_ngh = size_ngh
         self.ver3_samp_ngh = ver3_samp_ngh
         self.n_jobs = n_jobs
         self.kwargs = kwargs
-
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        super(NearMiss, self).fit(X, y)
-
-        return self
 
     def _selection_dist_based(self, X, y, dist_vec, num_samples, key,
                               sel_strategy='nearest'):
@@ -236,7 +149,7 @@ class NearMiss(UnderSampler):
         return (X[y == key][sel_idx], y[y == key][sel_idx],
                 np.nonzero(y == key)[0][sel_idx])
 
-    def sample(self, X, y):
+    def _sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -260,10 +173,12 @@ class NearMiss(UnderSampler):
             containing the which samples have been selected.
 
         """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
 
-        super(NearMiss, self).sample(X, y)
+        # Assign the parameter of the element of this class
+        # Check that the version asked is implemented
+        if not (self.version == 1 or self.version == 2 or self.version == 3):
+            raise ValueError('UnbalancedData.NearMiss: there is only 3 '
+                             'versions available with parameter version=1/2/3')
 
         # Start with the minority class
         X_min = X[y == self.min_c_]
@@ -375,8 +290,8 @@ class NearMiss(UnderSampler):
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        if self.verbose:
-            print("Under-sampling performed: {}".format(Counter(y_resampled)))
+        self.logger.info('Under-sampling performed: %s', Counter(
+            y_resampled))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

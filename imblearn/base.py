@@ -1,9 +1,10 @@
-"""Base class for sampling"""
+﻿"""Base class for sampling"""
 
 from __future__ import division
 from __future__ import print_function
 
 import warnings
+import logging
 
 import numpy as np
 
@@ -19,14 +20,16 @@ from six import string_types
 
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
+
     """Mixin class for samplers with abstact method.
 
     Warning: This class should not be used directly. Use the derive classes
     instead.
     """
 
-    @abstractmethod
-    def __init__(self, ratio='auto', random_state=None, verbose=True):
+    _estimator_type = "sampler"
+
+    def __init__(self, ratio='auto'):
         """Initialize this object and its instance variables.
 
         Parameters
@@ -37,45 +40,15 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             of samples in the minority class over the the number of samples
             in the majority class.
 
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Boolean to either or not print information about the processing
-
         Returns
         -------
         None
 
         """
-        # The ratio correspond to the number of samples in the minority class
-        # over the number of samples in the majority class. Thus, the ratio
-        # cannot be greater than 1.0
-        if isinstance(ratio, float):
-            if ratio > 1:
-                raise ValueError('Ration cannot be greater than one.')
-            elif ratio <= 0:
-                raise ValueError('Ratio cannot be negative.')
-            else:
-                self.ratio = ratio
-        elif isinstance(ratio, string_types):
-            if ratio == 'auto':
-                self.ratio = ratio
-            else:
-                raise ValueError('Unknown string for the parameter ratio.')
-        else:
-            raise ValueError('Unknown parameter type for ratio.')
 
-        self.random_state = random_state
-        self.verbose = verbose
+        self.ratio = ratio
+        self.logger = logging.getLogger(__name__)
 
-        # Create the member variables regarding the classes statistics
-        self.min_c_ = None
-        self.maj_c_ = None
-        self.stats_c_ = {}
-        self.X_shape_ = None
-
-    @abstractmethod
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
 
@@ -97,8 +70,15 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        if self.verbose:
-            print("Determining classes statistics... ", end="")
+        self.min_c_ = None
+        self.maj_c_ = None
+        self.stats_c_ = {}
+        self.X_shape_ = None
+
+        if hasattr(self, 'ratio'):
+            self._validate_ratio()
+
+        self.logger.info('Compute classes statistics ...')
 
         # Get all the unique elements in the target array
         uniques = np.unique(y)
@@ -122,9 +102,8 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.min_c_ = min(self.stats_c_, key=self.stats_c_.get)
         self.maj_c_ = max(self.stats_c_, key=self.stats_c_.get)
 
-        if self.verbose:
-            print('{} classes detected: {}'.format(uniques.size,
-                                                   self.stats_c_))
+        self.logger.info('%s classes detected: %s', uniques.size,
+                         self.stats_c_)
 
         # Check if the ratio provided at initialisation make sense
         if isinstance(self.ratio, float):
@@ -136,7 +115,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         return self
 
-    @abstractmethod
     def sample(self, X, y):
         """Resample the dataset.
 
@@ -158,8 +136,11 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         """
 
+        # Check the consistency of X and y
+        X, y = check_X_y(X, y)
+
         # Check that the data have been fitted
-        if not self.stats_c_:
+        if not hasattr(self, 'stats_c_'):
             raise RuntimeError('You need to fit the data, first!!!')
 
         # Check if the size of the data is identical than at fitting
@@ -168,7 +149,10 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
                                ' seem to be the one earlier fitted. Use the'
                                ' fitted data.')
 
-        return self
+        if hasattr(self, 'ratio'):
+            self._validate_ratio()
+
+        return self._sample(X, y)
 
     def fit_sample(self, X, y):
         """Fit the statistics and resample the data directly.
@@ -192,3 +176,53 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         """
 
         return self.fit(X, y).sample(X, y)
+
+    def _validate_ratio(self):
+        # The ratio correspond to the number of samples in the minority class
+        # over the number of samples in the majority class. Thus, the ratio
+        # cannot be greater than 1.0
+        if isinstance(self.ratio, float):
+            if self.ratio > 1:
+                raise ValueError('Ration cannot be greater than one.')
+            elif self.ratio <= 0:
+                raise ValueError('Ratio cannot be negative.')
+
+        elif isinstance(self.ratio, string_types):
+            if self.ratio != 'auto':
+                raise ValueError('Unknown string for the parameter ratio.')
+        else:
+            raise ValueError('Unknown parameter type for ratio.')
+
+    @abstractmethod
+    def _sample(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
+        """
+        pass
+
+    def __getstate__(self):
+        """Prevent logger from being pickled."""
+        object_dictionary = self.__dict__.copy()
+        del object_dictionary['logger']
+        return object_dictionary
+
+    def __setstate__(self, dict):
+        """Re-open the logger."""
+        logger = logging.getLogger(__name__)
+        self.__dict__.update(dict)
+        self.logger = logger

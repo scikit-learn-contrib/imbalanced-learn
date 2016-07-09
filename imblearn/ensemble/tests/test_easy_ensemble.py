@@ -33,19 +33,23 @@ def test_ee_bad_ratio():
 
     # Define a negative ratio
     ratio = -1.0
-    assert_raises(ValueError, EasyEnsemble, ratio=ratio)
+    ee = EasyEnsemble(ratio=ratio)
+    assert_raises(ValueError, ee.fit, X, Y)
 
     # Define a ratio greater than 1
     ratio = 100.0
-    assert_raises(ValueError, EasyEnsemble, ratio=ratio)
+    ee = EasyEnsemble(ratio=ratio)
+    assert_raises(ValueError, ee.fit, X, Y)
 
     # Define ratio as an unknown string
     ratio = 'rnd'
-    assert_raises(ValueError, EasyEnsemble, ratio=ratio)
+    ee = EasyEnsemble(ratio=ratio)
+    assert_raises(ValueError, ee.fit, X, Y)
 
     # Define ratio as a list which is not supported
     ratio = [.5, .5]
-    assert_raises(ValueError, EasyEnsemble, ratio=ratio)
+    ee = EasyEnsemble(ratio=ratio)
+    assert_raises(ValueError, ee.fit, X, Y)
 
 
 def test_ee_init():
@@ -53,17 +57,12 @@ def test_ee_init():
 
     # Define a ratio
     ratio = 1.
-    verbose = True
-    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED, verbose=verbose)
+    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
 
     assert_equal(ee.ratio, ratio)
     assert_equal(ee.replacement, False)
     assert_equal(ee.n_subsets, 10)
     assert_equal(ee.random_state, RND_SEED)
-    assert_equal(ee.verbose, verbose)
-    assert_equal(ee.min_c_, None)
-    assert_equal(ee.maj_c_, None)
-    assert_equal(ee.stats_c_, {})
 
 
 def test_ee_fit_single_class():

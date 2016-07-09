@@ -2,8 +2,6 @@
 from __future__ import print_function
 from __future__ import division
 
-from sklearn.utils import check_X_y
-
 from ..over_sampling import SMOTE
 from ..under_sampling import TomekLinks
 from ..base import SamplerMixin
@@ -23,11 +21,11 @@ class SMOTETomek(SamplerMixin):
         number of samples in the minority class over the the number of
         samples in the majority class.
 
-    random_state : int or None, optional (default=None)
-        Seed for random number generation.
-
-    verbose : bool, optional (default=True)
-        Whether or not to print information about the processing.
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
 
     k : int, optional (default=5)
         Number of nearest neighbours to used to construct synthetic
@@ -61,15 +59,6 @@ class SMOTETomek(SamplerMixin):
 
     Attributes
     ----------
-    ratio : str or float
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the
-        number of samples in the minority class over the the number of
-        samples in the majority class.
-
-    random_state : int or None
-        Seed for random number generation.
-
     min_c_ : str or int
         The identifier of the minority class.
 
@@ -96,67 +85,22 @@ class SMOTETomek(SamplerMixin):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, verbose=True,
+    def __init__(self, ratio='auto', random_state=None,
                  k=5, m=10, out_step=0.5, kind_smote='regular',
                  n_jobs=-1, **kwargs):
-
-        """Initialise the SMOTE Tomek links object.
-
-        Parameters
-        ----------
-        ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balance
-            the dataset. Otherwise, the ratio is defined as the
-            number of samples in the minority class over the the number of
-            samples in the majority class.
-
-        random_state : int or None, optional (default=None)
-            Seed for random number generation.
-
-        verbose : bool, optional (default=True)
-            Whether or not to print information about the processing.
-
-        k : int, optional (default=5)
-            Number of nearest neighbours to used to construct synthetic
-            samples.
-
-        m : int, optional (default=10)
-            Number of nearest neighbours to use to determine if a minority
-            sample is in danger.
-
-        out_step : float, optional (default=0.5)
-            Step size when extrapolating.
-
-        kind_smote : str, optional (default='regular')
-            The type of SMOTE algorithm to use one of the following
-            options: 'regular', 'borderline1', 'borderline2', 'svm'.
-
-        n_jobs : int, optional (default=-1)
-            Number of threads to run the algorithm when it is possible.
-
-        Returns
-        -------
-        None
-
-        """
-        super(SMOTETomek, self).__init__(ratio=ratio,
-                                         random_state=random_state,
-                                         verbose=verbose)
-
+        super(SMOTETomek, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.k = k
         self.m = m
         self.out_step = out_step
         self.kind_smote = kind_smote
         self.n_jobs = n_jobs
         self.kwargs = kwargs
-
         self.sm = SMOTE(ratio=self.ratio, random_state=self.random_state,
-                        verbose=self.verbose, k=self.k, m=self.m,
-                        out_step=self.out_step, kind=self.kind_smote,
-                        n_jobs=self.n_jobs, **self.kwargs)
-
-        self.tomek = TomekLinks(random_state=self.random_state,
-                                verbose=self.verbose)
+                        k=self.k, m=self.m, out_step=self.out_step,
+                        kind=self.kind_smote, n_jobs=self.n_jobs,
+                        **self.kwargs)
+        self.tomek = TomekLinks(random_state=self.random_state)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -175,8 +119,6 @@ class SMOTETomek(SamplerMixin):
             Return self.
 
         """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
 
         super(SMOTETomek, self).fit(X, y)
 
@@ -185,7 +127,7 @@ class SMOTETomek(SamplerMixin):
 
         return self
 
-    def sample(self, X, y):
+    def _sample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -205,10 +147,6 @@ class SMOTETomek(SamplerMixin):
             The corresponding label of `X_resampled`
 
         """
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
-
-        super(SMOTETomek, self).sample(X, y)
 
         # Transform using SMOTE
         X, y = self.sm.sample(X, y)
