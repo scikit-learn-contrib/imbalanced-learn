@@ -74,6 +74,23 @@ class InstanceHardnessThreshold(SamplerMixin):
 
     This class does not support multi-class.
 
+    Examples
+    --------
+
+    >>> import tempfile
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.under_sampling import InstanceHardnessThreshold
+    >>> test_data_home = tempfile.mkdtemp()
+    >>> pima = fetch_mldata('diabetes_scale', data_home=test_data_home)
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> iht = InstanceHardnessThreshold(random_state=42)
+    >>> X_res, y_res = iht.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({1: 268, -1: 268})
+
     References
     ----------
     .. [1] D. Smith, Michael R., Tony Martinez, and Christophe Giraud-Carrier.
