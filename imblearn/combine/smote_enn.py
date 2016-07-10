@@ -77,6 +77,21 @@ class SMOTEENN(SamplerMixin):
 
     This class does not support mutli-class.
 
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.combine import SMOTEENN
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> sme = SMOTEENN(random_state=42)
+    >>> X_res, y_res = sme.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({1: 500, -1: 315})
+
     References
     ----------
     .. [1] G. Batista, R. C. Prati, M. C. Monard. "A study of the behavior of
@@ -99,6 +114,7 @@ class SMOTEENN(SamplerMixin):
         self.kind_enn = kind_enn
         self.n_jobs = n_jobs
         self.kwargs = kwargs
+        from collections import Counter
         self.sm = SMOTE(ratio=self.ratio, random_state=self.random_state,
                         k=self.k, m=self.m, out_step=self.out_step,
                         kind=self.kind_smote, n_jobs=self.n_jobs,

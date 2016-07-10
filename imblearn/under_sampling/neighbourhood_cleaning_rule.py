@@ -56,6 +56,21 @@ class NeighbourhoodCleaningRule(SamplerMixin):
     -----
     This class support multi-class.
 
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> ncr = NeighbourhoodCleaningRule(random_state=42)
+    >>> X_res, y_res = ncr.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({1: 314, -1: 268})
+
     References
     ----------
     .. [1] J. Laurikkala, "Improving identification of difficult small classes
