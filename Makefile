@@ -28,3 +28,6 @@ coverage:
 html:
 	conda install -y sphinx sphinx_rtd_theme numpydoc
 	export SPHINXOPTS=-W; make -C doc html
+
+conda:
+	conda-build conda-recipe
