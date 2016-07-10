@@ -78,6 +78,21 @@ class SMOTETomek(SamplerMixin):
 
     This class does not support mutli-class.
 
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.combine import SMOTETomek
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> smt = SMOTETomek(random_state=42)
+    >>> X_res, y_res = smt.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({1: 500, -1: 481})
+
     References
     ----------
     .. [1] G. Batista, B. Bazzan, M. Monard, "Balancing Training Data for

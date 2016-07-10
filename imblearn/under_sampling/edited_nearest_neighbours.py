@@ -69,6 +69,21 @@ class EditedNearestNeighbours(SamplerMixin):
 
     This class supports multi-class.
 
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.under_sampling import EditedNearestNeighbours
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> enn = EditedNearestNeighbours(random_state=42)
+    >>> X_res, y_res = enn.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({1: 279, -1: 268})
+
     References
     ----------
     .. [1] D. Wilson, "Asymptotic Properties of Nearest Neighbor Rules Using
@@ -239,6 +254,21 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
     The method is based on [1]_.
 
     This class supports multi-class.
+
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> renn = RepeatedEditedNearestNeighbours(random_state=42)
+    >>> X_res, y_res = renn.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({1: 227, -1: 200})
 
     References
     ----------

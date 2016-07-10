@@ -56,6 +56,21 @@ class EasyEnsemble(SamplerMixin):
     -----
     The method is described in [1]_.
 
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.ensemble import EasyEnsemble
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> ee = EasyEnsemble(random_state=42)
+    >>> X_res, y_res = ee.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res[0])))
+    Resampled dataset shape Counter({1: 268, -1: 268})
+
     References
     ----------
     .. [1] X. Y. Liu, J. Wu and Z. H. Zhou, "Exploratory Undersampling for
