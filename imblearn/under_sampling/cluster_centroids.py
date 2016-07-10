@@ -62,6 +62,21 @@ class ClusterCentroids(SamplerMixin):
     -----
     This class support multi-class.
 
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.under_sampling import ClusterCentroids
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> cc = ClusterCentroids(random_state=42)
+    >>> X_res, y_res = cc.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({1: 268, -1: 268})
+
     """
 
     def __init__(self, ratio='auto', random_state=None, n_jobs=-1, **kwargs):
