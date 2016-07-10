@@ -52,6 +52,41 @@ class Pipeline(pipeline.Pipeline):
         Read-only attribute to access any step parameter by user given name.
         Keys are step names and values are steps parameters.
 
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from sklearn.cross_validation import train_test_split as tts
+    >>> from sklearn.decomposition import PCA
+    >>> from sklearn.neighbors import KNeighborsClassifier as KNN
+    >>> from sklearn.metrics import classification_report
+    >>> from imblearn.over_sampling import SMOTE
+    >>> from imblearn.pipeline import Pipeline
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> pca = PCA()
+    >>> smt = SMOTE(random_state=42)
+    >>> knn = KNN()
+    >>> pipeline = Pipeline([('smt', smt), ('pca', pca), ('knn', knn)])
+    >>> X_train, X_test, y_train, y_test = tts(X, y, random_state=42)
+    >>> pipeline.fit(X_train, y_train)
+    Pipeline(steps=[('smt', SMOTE(k=5, kind='regular', m=10, n_jobs=-1, out_step=0.5, random_state=42,
+       ratio='auto')), ('pca', PCA(copy=True, n_components=None, whiten=False)), ('knn', KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+               metric_params=None, n_jobs=1, n_neighbors=5, p=2,
+               weights='uniform'))])
+    >>> y_hat = pipeline.predict(X_test)
+    >>> print(classification_report(y_test, y_hat))
+                 precision    recall  f1-score   support
+    <BLANKLINE>
+             -1       0.49      0.67      0.56        69
+              1       0.77      0.61      0.68       123
+    <BLANKLINE>
+    avg / total       0.67      0.63      0.64       192
+    <BLANKLINE>
+
     """
 
     # BaseEstimator interface

@@ -50,6 +50,21 @@ class TomekLinks(SamplerMixin):
 
     It does not support multi-class sampling.
 
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.under_sampling import TomekLinks
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> tl = TomekLinks(random_state=42)
+    >>> X_res, y_res = tl.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({1: 450, -1: 268})
+
     References
     ----------
     .. [1] I. Tomek, "Two modifications of CNN," In Systems, Man, and

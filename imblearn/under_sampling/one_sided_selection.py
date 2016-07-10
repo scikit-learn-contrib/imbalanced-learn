@@ -61,6 +61,21 @@ class OneSidedSelection(SamplerMixin):
     -----
     The method is based on [1]_.
 
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.under_sampling import OneSidedSelection
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> oss = OneSidedSelection(random_state=42)
+    >>> X_res, y_res = oss.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({1: 400, -1: 268})
+
     References
     ----------
     .. [1] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training

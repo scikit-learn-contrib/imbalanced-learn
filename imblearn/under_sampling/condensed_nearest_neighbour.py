@@ -64,6 +64,21 @@ class CondensedNearestNeighbour(SamplerMixin):
 
     This class supports multi-class.
 
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import fetch_mldata
+    >>> from imblearn.under_sampling import CondensedNearestNeighbour
+    >>> pima = fetch_mldata('diabetes_scale')
+    >>> X, y = pima['data'], pima['target']
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 500, -1: 268})
+    >>> cnn = CondensedNearestNeighbour(random_state=42)
+    >>> X_res, y_res = cnn.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({-1: 268, 1: 227})
+
     References
     ----------
     .. [1] P. Hart, "The condensed nearest neighbor rule,"

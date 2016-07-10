@@ -1,10 +1,22 @@
 .. currentmodule:: imbalanced-learn
 
-.. _changes_0_1:
-
 ===============
 Release history
 ===============
+
+.. _changes_0_2:
+
+Version 0.2
+===========
+
+Changelog
+---------
+
+- Added support for bumpversion.
+- Added doctest in the documentation.
+
+
+.. _changes_0_1:
 
 Version 0.1
 ===========

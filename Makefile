@@ -19,9 +19,6 @@ clean:
 test:
 	$(NOSETESTS) -s -v imblearn
 
-# doctest:
-# 	$(PYTHON) -c "import imblearn, sys, io; sys.exit(imblearn.doctest_verbose())"
-
 coverage:
 	$(NOSETESTS) imblearn -s -v --with-coverage --cover-package=imblearn
 
