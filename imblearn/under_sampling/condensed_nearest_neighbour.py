@@ -67,17 +67,17 @@ class CondensedNearestNeighbour(SamplerMixin):
     Examples
     --------
 
-    >>> from collections import Counter
-    >>> from sklearn.datasets import fetch_mldata
-    >>> from imblearn.under_sampling import CondensedNearestNeighbour
-    >>> pima = fetch_mldata('diabetes_scale')
-    >>> X, y = pima['data'], pima['target']
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 500, -1: 268})
-    >>> cnn = CondensedNearestNeighbour(random_state=42)
-    >>> X_res, y_res = cnn.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({-1: 268, 1: 227})
+    >>> from collections import Counter #doctest: +SKIP
+    >>> from sklearn.datasets import fetch_mldata #doctest: +SKIP
+    >>> from imblearn.under_sampling import CondensedNearestNeighbour #doctest: +SKIP
+    >>> pima = fetch_mldata('diabetes_scale') #doctest: +SKIP
+    >>> X, y = pima['data'], pima['target'] #doctest: +SKIP
+    >>> print('Original dataset shape {}'.format(Counter(y))) #doctest: +SKIP
+    Original dataset shape Counter({1: 500, -1: 268}) #doctest: +SKIP
+    >>> cnn = CondensedNearestNeighbour(random_state=42) #doctest: +SKIP
+    >>> X_res, y_res = cnn.fit_sample(X, y) #doctest: +SKIP
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res))) #doctest: +SKIP
+    Resampled dataset shape Counter({-1: 268, 1: 227}) #doctest: +SKIP
 
     References
     ----------
