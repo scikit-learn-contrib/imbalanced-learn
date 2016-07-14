@@ -41,7 +41,7 @@ Documentation
 
 Installation documentation, API documentation, and examples can be found on the documentation_.
 
-.. _documentation: http://glemaitre.github.io/UnbalancedDataset
+.. _documentation: http://glemaitre.github.io/imbalanced-learn
 
 Installation
 ============
@@ -69,8 +69,8 @@ The package is release also in Anaconda Cloud platform::
 If you prefer, you can clone it and run the setup.py file. Use the following commands to get a 
 copy from Github and install all dependencies::
 
-  git clone https://github.com/fmfn/UnbalancedDataset.git
-  cd UnbalancedDataset
+  git clone https://github.com/fmfn/imbalanced-learn.git
+  cd imbalanced-learn
   python setup.py install
 
 Testing
