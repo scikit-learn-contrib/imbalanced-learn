@@ -55,3 +55,8 @@ general:
   branches:
     ignore:
       - gh-pages
+notify:
+  webhooks:
+    # A list of hook hashes, containing the url field
+    # gitter hook
+    - url: https://webhooks.gitter.im/e/e7b85a95168ee375ea16
