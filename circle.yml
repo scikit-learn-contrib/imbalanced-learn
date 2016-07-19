@@ -2,10 +2,10 @@ machine:
   environment:
     # The github organization or username of the repository which hosts the
     # project and documentation.
-    USERNAME: "glemaitre"
+    USERNAME: "scikit-learn-contrib"
 
     # The repository where the documentation will be hosted
-    DOC_REPO: "UnbalancedDataset"
+    DOC_REPO: "imbalanced-learn"
 
     # The base URL for the Github page where the documentation will be hosted
     DOC_URL: ""
