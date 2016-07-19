@@ -131,6 +131,13 @@ class ADASYN(SamplerMixin):
 
         # Compute the ratio of majority samples next to minority samples
         ratio_nn = np.sum(y[ind_nn[:, 1:]] == self.maj_c_, axis=1) / self.k
+        # Check that we found at least some neighbours belonging to the
+        # majority class
+        if not np.sum(ratio_nn):
+            raise RuntimeError('Not any neigbours belong to the majority'
+                               ' class. This case will induce a NaN case with'
+                               ' a division by zero. ADASYN is not suited for'
+                               ' this specific dataset. Use SMOTE.')
         # Normalize the ratio
         ratio_nn /= np.sum(ratio_nn)
 
