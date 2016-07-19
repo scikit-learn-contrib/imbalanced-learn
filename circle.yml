@@ -59,4 +59,4 @@ notify:
   webhooks:
     # A list of hook hashes, containing the url field
     # gitter hook
-    - url: https://webhooks.gitter.im/e/e7b85a95168ee375ea16
+    - url: https://webhooks.gitter.im/e/c8d33a274b2b8f44819f
