@@ -41,7 +41,7 @@ Documentation
 
 Installation documentation, API documentation, and examples can be found on the documentation_.
 
-.. _documentation: http://glemaitre.github.io/imbalanced-learn
+.. _documentation: http://contrib.scikit-learn.org/imbalanced-learn/
 
 Installation
 ============
@@ -69,7 +69,7 @@ The package is release also in Anaconda Cloud platform::
 If you prefer, you can clone it and run the setup.py file. Use the following commands to get a 
 copy from Github and install all dependencies::
 
-  git clone https://github.com/fmfn/imbalanced-learn.git
+  git clone https://github.com/scikit-learn-contrib/imbalanced-learn.git
   cd imbalanced-learn
   python setup.py install
 
@@ -124,7 +124,7 @@ Below is a list of the methods currently implemented in this module.
 
 The different algorithms are presented in the following notebook_.
 
-.. _notebook: https://github.com/fmfn/UnbalancedDataset/blob/master/examples/plot_unbalanced_dataset.ipynb
+.. _notebook: https://github.com/scikit-learn-contrib/imbalanced-learn/blob/master/examples/plot_unbalanced_dataset.ipynb
 
 This is a work in progress. Any comments, suggestions or corrections are welcome.
 

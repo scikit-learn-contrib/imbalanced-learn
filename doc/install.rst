@@ -16,8 +16,8 @@ The package is release also in Anaconda Cloud platform::
 If you prefer, you can clone it and run the setup.py file. Use the following commands to get a 
 copy from Github and install all dependencies::
 
-  git clone https://github.com/fmfn/UnbalancedDataset.git
-  cd UnbalancedDataset
+  git clone https://github.com/scikit-learn-contrib/imbalanced-learn.git
+  cd imbalanced-learn
   python setup.py install
 
 Test and coverage
@@ -36,4 +36,4 @@ Contribute
 
 You can contribute to this code through Pull Request on GitHub_. Please, make sure that your code is coming with unit tests to ensure full coverage and continuous integration in the API.
 
-.. _GitHub: https://github.com/fmfn/UnbalancedDataset.git
+.. _GitHub: https://github.com/scikit-learn-contrib/imbalanced-learn/pulls

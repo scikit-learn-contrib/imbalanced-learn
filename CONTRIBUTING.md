@@ -2,16 +2,16 @@
 Contributing code
 =================
 
-This guide is adapted from (scikit-learn)[https://github.com/viisar/brew/blob/master/CONTRIBUTING.rst]
+This guide is adapted from (scikit-learn)[https://github.com/scikit-learn/scikit-learn/blob/master/CONTRIBUTING.md]
 
 How to contribute
 -----------------
 
 The preferred way to contribute to imbalanced-learn is to fork the 
-[main repository](https://github.com/fmfn/UnbalancedDataset) on
+[main repository](https://github.com/scikit-learn-contrib/imbalanced-learn) on
 GitHub:
 
-1. Fork the [project repository](https://github.com/fmfn/UnbalancedDataset):
+1. Fork the [project repository](https://github.com/scikit-learn-contrib/imbalanced-learn):
    click on the 'Fork' button near the top of the page. This creates
    a copy of the code under your account on the GitHub server.
 
@@ -126,8 +126,8 @@ It is recommended to check that your issue complies with the
 following rules before submitting:
 
 -  Verify that your issue is not being currently addressed by other
-   [issues](https://github.com/fmfn/UnbalancedDataset/issues?q=)
-   or [pull requests](https://github.com/fmfn/UnbalancedDataset/pulls?q=).
+   [issues](https://github.com/scikit-learn-contrib/imbalanced-learn/issues?q=)
+   or [pull requests](https://github.com/scikit-learn-contrib/imbalanced-learn/pulls?q=).
 
 -  Please ensure all code snippets and error messages are formatted in
    appropriate code blocks.
