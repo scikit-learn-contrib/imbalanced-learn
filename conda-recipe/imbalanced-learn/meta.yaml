@@ -1,0 +1,36 @@
+package:
+  name: imbalanced-learn
+  version: "0.1.3"
+
+source:
+  git_rev: 0.1.3
+  git_url: https://github.com/scikit-learn-contrib/imbalanced-learn.git
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - numpy
+    - scipy
+    - scikit-learn
+  run:
+    - python
+    - numpy
+    - scipy
+    - scikit-learn
+
+test:
+  requires:
+    - nose
+    - coverage
+  imports:
+    - imblearn
+
+about:
+  home: https://github.com/scikit-learn-contrib/imbalanced-learn
+  license: MIT
+  license_file: LICENSE
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
