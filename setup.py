@@ -40,9 +40,9 @@ with codecs.open('README.rst', encoding='utf-8-sig') as f:
     LONG_DESCRIPTION = f.read()
 MAINTAINER = 'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
 MAINTAINER_EMAIL = 'g.lemaitre58@gmail.com, fmfnogueira@gmail.com, dvro@cin.ufpe.br, char@upatras.gr'
-URL = 'https://github.com/fmfn/UnbalancedDataset'
+URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 LICENSE = 'new BSD'
-DOWNLOAD_URL = 'https://github.com/fmfn/UnbalancedDataset'
+DOWNLOAD_URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 VERSION = _VERSION_GLOBALS['__version__']
 
 

@@ -13,4 +13,4 @@ Contributors
 Refers to GitHub contributors page_.
 
 .. _scikit-learn: http://scikit-learn.org
-.. _page: https://github.com/fmfn/UnbalancedDataset/graphs/contributors
+.. _page: https://github.com/scikit-learn-contrib/imbalanced-learn/graphs/contributors
