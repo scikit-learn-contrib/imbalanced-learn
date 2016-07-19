@@ -4,7 +4,7 @@ imbalanced-learn
 ================
 
 imbalanced-learn is a python package offering a number of re-sampling techniques commonly used in datasets showing strong between-class imbalance.
-It is compatible with scikit-learn_ and has been submitted to be part of scikit-learn-contrib_ projects.
+It is compatible with scikit-learn_ and is part of scikit-learn-contrib_ projects.
 
 .. _scikit-learn: http://scikit-learn.org/stable/
 
@@ -12,17 +12,17 @@ It is compatible with scikit-learn_ and has been submitted to be part of scikit-
 
 |Landscape|_ |Travis|_ |Coveralls|_ |CircleCI|_ |Python27|_ |Python35|_ |Pypi|_ |Gitter|_
 
-.. |Landscape| image:: https://landscape.io/github/glemaitre/UnbalancedDataset/master/landscape.svg?style=flat
-.. _Landscape: https://landscape.io/github/glemaitre/UnbalancedDataset/master
+.. |Landscape| image:: https://landscape.io/github/scikit-learn-contrib/imbalanced-learn/master/landscape.svg?style=flat
+.. _Landscape: https://landscape.io/github/scikit-learn-contrib/imbalanced-learn/master
 
-.. |Travis| image:: https://travis-ci.org/glemaitre/UnbalancedDataset.svg?branch=master
-.. _Travis: https://travis-ci.org/glemaitre/UnbalancedDataset
+.. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn.svg?branch=master
+.. _Travis: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn
 
-.. |Coveralls| image:: https://coveralls.io/repos/github/glemaitre/UnbalancedDataset/badge.svg?branch=master
-.. _Coveralls: https://coveralls.io/github/glemaitre/UnbalancedDataset?branch=master
+.. |Coveralls| image:: https://coveralls.io/repos/github/scikit-learn-contrib/imbalanced-learn/badge.svg?branch=master
+.. _Coveralls: https://coveralls.io/github/scikit-learn-contrib/imbalanced-learn?branch=master
 
-.. |CircleCI| image:: https://circleci.com/gh/glemaitre/UnbalancedDataset.svg?style=shield&circle-token=:circle-token
-.. _CircleCI: https://circleci.com/gh/glemaitre/UnbalancedDataset/tree/master
+.. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield&circle-token=:circle-token
+.. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn/tree/master
 
 .. |Python27| image:: https://img.shields.io/badge/python-2.7-blue.svg
 .. _Python27: https://badge.fury.io/py/scikit-learn
@@ -33,8 +33,8 @@ It is compatible with scikit-learn_ and has been submitted to be part of scikit-
 .. |Pypi| image:: https://badge.fury.io/py/imbalanced-learn.svg
 .. _Pypi: https://badge.fury.io/py/imbalanced-learn
 
-.. |Gitter| image:: https://badges.gitter.im/glemaitre/UnbalancedDataset.svg
-.. _Gitter: https://gitter.im/glemaitre/UnbalancedDataset?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+.. |Gitter| image:: https://badges.gitter.im/scikit-learn-contrib/imbalanced-learn.svg
+.. _Gitter: https://gitter.im/scikit-learn-contrib/imbalanced-learn?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 Documentation
 =============
