@@ -7,6 +7,7 @@ import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_almost_equal
 from numpy.testing import assert_warns
 
 from sklearn.datasets import make_classification
@@ -84,8 +85,8 @@ def test_allknn_fit_sample():
     currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.load(os.path.join(currdir, 'data', 'allknn_x.npy'))
     y_gt = np.load(os.path.join(currdir, 'data', 'allknn_y.npy'))
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
+    assert_array_almost_equal(X_resampled, X_gt)
+    assert_array_almost_equal(y_resampled, y_gt)
 
 
 def test_allknn_fit_sample_with_indices():
@@ -99,9 +100,9 @@ def test_allknn_fit_sample_with_indices():
     X_gt = np.load(os.path.join(currdir, 'data', 'allknn_x.npy'))
     y_gt = np.load(os.path.join(currdir, 'data', 'allknn_y.npy'))
     idx_gt = np.load(os.path.join(currdir, 'data', 'allknn_idx.npy'))
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-    assert_array_equal(idx_under, idx_gt)
+    assert_array_almost_equal(X_resampled, X_gt)
+    assert_array_almost_equal(y_resampled, y_gt)
+    assert_array_almost_equal(idx_under, idx_gt)
 
 
 def test_allknn_fit_sample_mode():
@@ -115,7 +116,7 @@ def test_allknn_fit_sample_mode():
     X_gt = np.load(os.path.join(currdir, 'data', 'allknn_x_mode.npy'))
     y_gt = np.load(os.path.join(currdir, 'data', 'allknn_y_mode.npy'))
     assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
+    assert_array_almost_equal(y_resampled, y_gt)
 
 
 def test_allknn_sample_wrong_X():
