@@ -382,3 +382,173 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled
+
+
+class AllKNN(SamplerMixin):
+    """Class to perform under-sampling based on the AllKNN method.
+
+    Parameters
+    ----------
+    return_indices : bool, optional (default=False)
+        Whether or not to return the indices of the samples randomly
+        selected from the majority class.
+
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
+
+    size_ngh : int, optional (default=3)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+    kind_sel : str, optional (default='all')
+        Strategy to use in order to exclude samples.
+
+        - If 'all', all neighbours will have to agree with the samples of
+        interest to not be excluded.
+        - If 'mode', the majority vote of the neighbours will be used in
+        order to exclude a sample.
+
+    n_jobs : int, optional (default=-1)
+        The number of thread to open when it is possible.
+
+    Attributes
+    ----------
+    min_c_ : str or int
+        The identifier of the minority class.
+
+    max_c_ : str or int
+        The identifier of the majority class.
+
+    stats_c_ : dict of str/int : int
+        A dictionary in which the number of occurences of each class is
+        reported.
+
+    X_shape_ : tuple of int
+        Shape of the data `X` during fitting.
+
+    Notes
+    -----
+    The method is based on [1]_.
+
+    This class supports multi-class.
+
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import make_classification
+    >>> from imblearn.under_sampling import AllKNN
+    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
+    ...                            n_informative=3, n_redundant=1, flip_y=0,
+    ...                            n_features=20, n_clusters_per_class=1,
+    ...                            n_samples=1000, random_state=10)
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 900, 0: 100})
+    >>> allknn = AllKNN(random_state=42)
+    >>> X_res, y_res = allknn.fit_sample(X, y)
+    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    Resampled dataset shape Counter({1: 883, 0: 100})
+
+    References
+    ----------
+    .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
+       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
+       pp. 448-452, June 1976.
+
+    """
+
+    def __init__(self, return_indices=False, random_state=None,
+                 size_ngh=3, kind_sel='all', n_jobs=-1):
+        super(AllKNN, self).__init__()
+        self.return_indices = return_indices
+        self.random_state = random_state
+        self.size_ngh = size_ngh
+        self.kind_sel = kind_sel
+        self.n_jobs = n_jobs
+        self.enn_ = EditedNearestNeighbours(
+            return_indices=self.return_indices,
+            random_state=self.random_state,
+            size_ngh=self.size_ngh,
+            kind_sel=self.kind_sel,
+            n_jobs=self.n_jobs)
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+        super(AllKNN, self).fit(X, y)
+        self.enn_.fit(X, y)
+
+        return self
+
+    def _sample(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
+
+        idx_under : ndarray, shape (n_samples, )
+            If `return_indices` is `True`, a boolean array will be returned
+            containing the which samples have been selected.
+
+        """
+
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+
+        X_, y_ = X, y
+
+        if self.return_indices:
+            idx_under = np.arange(X.shape[0], dtype=int)
+
+        prev_len = y.shape[0]
+
+        for curr_size_ngh in range(1, self.size_ngh + 1):
+            self.logger.debug('Apply ENN size_ngh #%s', curr_size_ngh)
+            # updating ENN size_ngh
+            self.enn_.size_ngh = curr_size_ngh
+            if self.return_indices:
+                X_, y_, idx_ = self.enn_.fit_sample(X_, y_)
+                idx_under = idx_under[idx_]
+            else:
+                X_, y_ = self.enn_.fit_sample(X_, y_)
+
+        self.logger.info('Under-sampling performed: %s', Counter(y_))
+
+        X_resampled, y_resampled = X_, y_
+
+        # Check if the indices of the samples selected should be returned too
+        if self.return_indices:
+            # Return the indices of interest
+            return X_resampled, y_resampled, idx_under
+        else:
+            return X_resampled, y_resampled

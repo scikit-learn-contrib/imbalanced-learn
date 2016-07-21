@@ -106,6 +106,7 @@ Below is a list of the methods currently implemented in this module.
     8. Edited Nearest Neighbours [6]_
     9. Instance Hardness Threshold [7]_
     10. Repeated Edited Nearest Neighbours [14]_
+    11. AllKNN [14]_
 
 * Over-sampling
     1. Random minority over-sampling with replacement
