@@ -317,7 +317,7 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
         if self.max_iter < 2:
             raise ValueError('max_iter must be greater than 1.')
 
-        X_, y_ = X.copy(), y.copy()
+        X_, y_ = X, y
 
         if self.return_indices:
             idx_under = np.arange(X.shape[0], dtype=int)
