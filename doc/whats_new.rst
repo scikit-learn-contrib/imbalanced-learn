@@ -14,6 +14,7 @@ Changelog
 
 - Added support for bumpversion.
 - Added doctest in the documentation.
+- Added AllKNN under sampling technique.
 
 
 .. _changes_0_1:
