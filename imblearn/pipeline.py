@@ -56,17 +56,19 @@ class Pipeline(pipeline.Pipeline):
     --------
 
     >>> from collections import Counter
-    >>> from sklearn.datasets import fetch_mldata
+    >>> from sklearn.datasets import make_classification
     >>> from sklearn.cross_validation import train_test_split as tts
     >>> from sklearn.decomposition import PCA
     >>> from sklearn.neighbors import KNeighborsClassifier as KNN
     >>> from sklearn.metrics import classification_report
     >>> from imblearn.over_sampling import SMOTE
     >>> from imblearn.pipeline import Pipeline
-    >>> pima = fetch_mldata('diabetes_scale')
-    >>> X, y = pima['data'], pima['target']
+    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
+    ...                            n_informative=3, n_redundant=1, flip_y=0,
+    ...                            n_features=20, n_clusters_per_class=1,
+    ...                            n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 500, -1: 268})
+    Original dataset shape Counter({1: 900, 0: 100})
     >>> pca = PCA()
     >>> smt = SMOTE(random_state=42)
     >>> knn = KNN()
@@ -81,10 +83,10 @@ class Pipeline(pipeline.Pipeline):
     >>> print(classification_report(y_test, y_hat))
                  precision    recall  f1-score   support
     <BLANKLINE>
-             -1       0.49      0.67      0.56        69
-              1       0.77      0.61      0.68       123
+              0       0.71      1.00      0.83        24
+              1       1.00      0.96      0.98       226
     <BLANKLINE>
-    avg / total       0.67      0.63      0.64       192
+    avg / total       0.97      0.96      0.96       250
     <BLANKLINE>
 
     """
