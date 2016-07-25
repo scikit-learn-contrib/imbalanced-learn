@@ -42,7 +42,7 @@ class SMOTETomek(BaseBinarySampler):
         The type of SMOTE algorithm to use one of the following
         options: 'regular', 'borderline1', 'borderline2', 'svm'
 
-    size_ngh : int, optional (default=3)
+    n_neighbors : int, optional (default=3)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 

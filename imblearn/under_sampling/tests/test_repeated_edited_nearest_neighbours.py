@@ -69,7 +69,7 @@ def test_renn_init():
     # Define a ratio
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
 
-    assert_equal(renn.size_ngh, 3)
+    assert_equal(renn.n_neighbors, 3)
     assert_equal(renn.kind_sel, 'all')
     assert_equal(renn.n_jobs, -1)
     assert_equal(renn.random_state, RND_SEED)

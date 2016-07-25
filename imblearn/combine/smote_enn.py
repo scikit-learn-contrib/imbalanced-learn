@@ -40,7 +40,7 @@ class SMOTEENN(BaseBinarySampler):
         The type of SMOTE algorithm to use one of the following
         options: 'regular', 'borderline1', 'borderline2', 'svm'.
 
-    size_ngh : int, optional (default=3)
+    n_neighbors : int, optional (default=3)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
@@ -103,7 +103,7 @@ class SMOTEENN(BaseBinarySampler):
 
     def __init__(self, ratio='auto', random_state=None,
                  k=5, m=10, out_step=0.5, kind_smote='regular',
-                 size_ngh=3, kind_enn='all', n_jobs=-1, **kwargs):
+                 n_neighbors=3, kind_enn='all', n_jobs=-1, **kwargs):
 
         super(SMOTEENN, self).__init__(ratio=ratio)
         self.random_state = random_state
@@ -111,7 +111,7 @@ class SMOTEENN(BaseBinarySampler):
         self.m = m
         self.out_step = out_step
         self.kind_smote = kind_smote
-        self.size_ngh = size_ngh
+        self.n_neighbors = n_neighbors
         self.kind_enn = kind_enn
         self.n_jobs = n_jobs
         self.kwargs = kwargs
@@ -120,7 +120,7 @@ class SMOTEENN(BaseBinarySampler):
                         kind=self.kind_smote, n_jobs=self.n_jobs,
                         **self.kwargs)
         self.enn = EditedNearestNeighbours(random_state=self.random_state,
-                                           size_ngh=self.size_ngh,
+                                           n_neighbors=self.n_neighbors,
                                            kind_sel=self.kind_enn,
                                            n_jobs=self.n_jobs)
 

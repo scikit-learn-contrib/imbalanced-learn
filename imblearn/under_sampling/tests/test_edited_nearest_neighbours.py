@@ -47,7 +47,7 @@ def test_enn_init():
     # Define a ratio
     enn = EditedNearestNeighbours(random_state=RND_SEED)
 
-    assert_equal(enn.size_ngh, 3)
+    assert_equal(enn.n_neighbors, 3)
     assert_equal(enn.kind_sel, 'all')
     assert_equal(enn.n_jobs, -1)
     assert_equal(enn.random_state, RND_SEED)

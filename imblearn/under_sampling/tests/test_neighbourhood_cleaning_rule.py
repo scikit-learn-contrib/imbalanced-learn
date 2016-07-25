@@ -42,7 +42,7 @@ def test_ncr_init():
     # Define a ratio
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
 
-    assert_equal(ncr.size_ngh, 3)
+    assert_equal(ncr.n_neighbors, 3)
     assert_equal(ncr.n_jobs, -1)
     assert_equal(ncr.random_state, RND_SEED)
 

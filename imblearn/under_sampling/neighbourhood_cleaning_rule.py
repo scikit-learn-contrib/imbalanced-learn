@@ -25,7 +25,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    size_ngh : int, optional (default=3)
+    n_neighbors : int, optional (default=3)
         Size of the neighbourhood to consider in order to make
         the comparison between each samples and their NN.
 
@@ -78,12 +78,12 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None, size_ngh=3,
+    def __init__(self, return_indices=False, random_state=None, n_neighbors=3,
                  n_jobs=-1):
         super(NeighbourhoodCleaningRule, self).__init__()
         self.return_indices = return_indices
         self.random_state = random_state
-        self.size_ngh = size_ngh
+        self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
 
     def _sample(self, X, y):
@@ -124,7 +124,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
             idx_under = np.flatnonzero(y == self.min_c_)
 
         # Create a k-NN to fit the whole data
-        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh,
+        nn_obj = NearestNeighbors(n_neighbors=self.n_neighbors,
                                   n_jobs=self.n_jobs)
 
         # Fit the whole dataset
