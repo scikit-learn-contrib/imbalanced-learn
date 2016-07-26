@@ -2,6 +2,10 @@
 from __future__ import print_function
 from __future__ import division
 
+import warnings
+
+from sklearn.utils.multiclass import type_of_target
+
 from ..over_sampling import SMOTE
 from ..under_sampling import EditedNearestNeighbours
 from ..base import SamplerMixin
@@ -144,6 +148,10 @@ class SMOTEENN(SamplerMixin):
         """
 
         super(SMOTEENN, self).fit(X, y)
+
+        # Check that y is binary
+        if not type_of_target(y) == 'binary':
+            warnings.warn('The target type should be binary.')
 
         # Fit using SMOTE
         self.sm.fit(X, y)
