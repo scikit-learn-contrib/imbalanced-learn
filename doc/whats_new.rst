@@ -37,11 +37,22 @@ Enhancement
 - Added support for bumpversion. By `Guillaume Lemaitre`_.
 - Validate the type of target in binary samplers. A warning is raised for the moment. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
 
+New features
+~~~~~~~~~~~~
+
+- Added AllKNN under sampling technique.
+- Added support for bumpversion.
+
+API changes summary
+~~~~~~~~~~~~~~~~~~~
+
+- `size_ngh` has been deprecated in :class:`combine.SMOTEENN`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira` .
+- `size_ngh` has been deprecated in :class:`under_sampling.EditedNearestNeighbors`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
+
 Documentation changes
 ~~~~~~~~~~~~~~~~~~~~~
 
 - Added doctest in the documentation. By `Guillaume Lemaitre`_.
-- Renamed all occurrences of ``size_ngh`` to ``n_neighbors`` for consistency with scikit-learn. This applies to all estimators that accept the ``size_ngh`` as parameter. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
 
 .. _changes_0_1:
 
