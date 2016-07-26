@@ -116,7 +116,6 @@ class SMOTEENN(SamplerMixin):
         self.kind_enn = kind_enn
         self.n_jobs = n_jobs
         self.kwargs = kwargs
-        from collections import Counter
         self.sm = SMOTE(ratio=self.ratio, random_state=self.random_state,
                         k=self.k, m=self.m, out_step=self.out_step,
                         kind=self.kind_smote, n_jobs=self.n_jobs,
