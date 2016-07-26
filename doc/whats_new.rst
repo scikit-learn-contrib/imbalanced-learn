@@ -16,6 +16,10 @@ Changelog
 - Added doctest in the documentation.
 - Added AllKNN under sampling technique.
 
+Enhancement
+~~~~~~~~~~~
+
+- Validate the type of target in binary samplers. A warning is raised for the moment.
 
 .. _changes_0_1:
 
