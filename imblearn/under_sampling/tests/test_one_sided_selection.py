@@ -117,29 +117,16 @@ def test_oss_sample_wrong_X():
                   np.array([0] * 50 + [1] * 50))
 
 
-def test_continuous_error():
-    """Test either if an error is raised when the target are continuous
-    type"""
+def test_multiclass_error():
+    """ Test either if an error is raised when the target are not binary
+    type. """
 
     # continuous case
     y = np.linspace(0, 1, 5000)
     oss = OneSidedSelection(random_state=RND_SEED)
     assert_warns(UserWarning, oss.fit, X, y)
 
-
-def test_multiclass_fit_sample():
-    """Test fit sample method with multiclass target"""
-
-    # Make y to be multiclass
-    y = Y.copy()
-    y[0:1000] = 2
-
-    # Resample the data
+    # multiclass case
+    y = np.array([0] * 2000 + [1] * 2000 + [2] * 1000)
     oss = OneSidedSelection(random_state=RND_SEED)
-    X_resampled, y_resampled = oss.fit_sample(X, y)
-
-    # Check the size of y
-    count_y_res = Counter(y_resampled)
-    assert_equal(count_y_res[0], 400)
-    assert_equal(count_y_res[1], 2410)
-    assert_equal(count_y_res[2], 715)
+    assert_warns(UserWarning, oss.fit, X, y)

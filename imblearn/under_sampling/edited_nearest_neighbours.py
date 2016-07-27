@@ -11,13 +11,13 @@ from scipy.stats import mode
 
 from sklearn.neighbors import NearestNeighbors
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
 SEL_KIND = ('all', 'mode')
 
 
-class EditedNearestNeighbours(SamplerMixin):
+class EditedNearestNeighbours(BaseMulticlassSampler):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
 
@@ -93,8 +93,6 @@ class EditedNearestNeighbours(SamplerMixin):
        vol. 2 (3), pp. 408-421, 1972.
 
     """
-
-    _estimator_prop = {'handles_multiclass': True}
 
     def __init__(self, return_indices=False, random_state=None,
                  size_ngh=3, kind_sel='all', n_jobs=-1):
@@ -203,7 +201,7 @@ class EditedNearestNeighbours(SamplerMixin):
             return X_resampled, y_resampled
 
 
-class RepeatedEditedNearestNeighbours(SamplerMixin):
+class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
 
@@ -283,8 +281,6 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
        pp. 448-452, June 1976.
 
     """
-
-    _estimator_prop = {'handles_multiclass': True}
 
     def __init__(self, return_indices=False, random_state=None,
                  size_ngh=3, max_iter=100, kind_sel='all', n_jobs=-1):
@@ -388,7 +384,7 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
             return X_resampled, y_resampled
 
 
-class AllKNN(SamplerMixin):
+class AllKNN(BaseMulticlassSampler):
     """Class to perform under-sampling based on the AllKNN method.
 
     Parameters
@@ -463,8 +459,6 @@ class AllKNN(SamplerMixin):
        pp. 448-452, June 1976.
 
     """
-
-    _estimator_prop = {'handles_multiclass': True}
 
     def __init__(self, return_indices=False, random_state=None,
                  size_ngh=3, kind_sel='all', n_jobs=-1):

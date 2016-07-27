@@ -9,14 +9,14 @@ from collections import Counter
 
 from sklearn.cross_validation import StratifiedKFold
 
-from ..base import SamplerMixin
+from ..base import BaseBinaryclassSampler
 
 
 ESTIMATOR_KIND = ('knn', 'decision-tree', 'random-forest', 'adaboost',
                   'gradient-boosting', 'linear-svm')
 
 
-class InstanceHardnessThreshold(SamplerMixin):
+class InstanceHardnessThreshold(BaseBinaryclassSampler):
     """Class to perform under-sampling based on the instance hardness
     threshold.
 
@@ -98,8 +98,6 @@ class InstanceHardnessThreshold(SamplerMixin):
        95.2 (2014): 225-256.
 
     """
-
-    _estimator_prop = {'handles_multiclass': False}
 
     def __init__(self, estimator='linear-svm', ratio='auto',
                  return_indices=False, random_state=None, cv=5, n_jobs=-1,

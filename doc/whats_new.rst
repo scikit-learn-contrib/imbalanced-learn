@@ -20,8 +20,7 @@ New features
 API changes summary
 ~~~~~~~~~~~~~~~~~~~
 
-- A module :mod:`utils` has been created. It provides input checking functions.
-- The :class:`base.SamplerMixin` class has a new function `get_properties` in order to know the properties of each classifier. `_estimator_prop` is a dictionary is returned by this function.
+- Two base classes :class:`BaseBinaryclassSampler` and :class:`BaseMulticlassSampler` have been created to handle the target type and raise warning in case of abnormality.
 
 Enhancement
 ~~~~~~~~~~~

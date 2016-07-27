@@ -5,10 +5,10 @@ from __future__ import division
 
 from ..over_sampling import SMOTE
 from ..under_sampling import TomekLinks
-from ..base import SamplerMixin
+from ..base import BaseBinaryclassSampler
 
 
-class SMOTETomek(SamplerMixin):
+class SMOTETomek(BaseBinaryclassSampler):
     """Class to perform over-sampling using SMOTE and cleaning using
     Tomek links.
 
@@ -102,8 +102,6 @@ class SMOTETomek(SamplerMixin):
        Automated Annotation of Keywords: a Case Study," In WOB, 10-18, 2003.
 
     """
-
-    _estimator_prop = {'handles_multiclass': False}
 
     def __init__(self, ratio='auto', random_state=None,
                  k=5, m=10, out_step=0.5, kind_smote='regular',

@@ -8,10 +8,10 @@ from collections import Counter
 
 from sklearn.utils import check_random_state
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
-class RandomOverSampler(SamplerMixin):
+class RandomOverSampler(BaseMulticlassSampler):
 
     """Class to perform random over-sampling.
 
@@ -69,8 +69,6 @@ class RandomOverSampler(SamplerMixin):
     Resampled dataset shape Counter({0: 900, 1: 900})
 
     """
-
-    _estimator_prop = {'handles_multiclass': True}
 
     def __init__(self,
                  ratio='auto',

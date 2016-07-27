@@ -14,8 +14,6 @@ over_sampling
     Module which provides methods to under-sample a dataset.
 under-sampling
     Module which provides methods to over-sample a dataset.
-utils
-    Module which provides various utilities.
 pipeline
     Module which allowing to create pipeline with scikit-learn estimators.
 """
@@ -36,6 +34,5 @@ __all__ = ['combine',
            'ensemble',
            'over_sampling',
            'under_sampling',
-           'utils',
            'pipeline',
            '__version__']

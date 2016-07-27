@@ -8,10 +8,10 @@ from collections import Counter
 
 from sklearn.neighbors import NearestNeighbors
 
-from ..base import SamplerMixin
+from ..base import BaseBinaryclassSampler
 
 
-class TomekLinks(SamplerMixin):
+class TomekLinks(BaseBinaryclassSampler):
     """Class to perform under-sampling by removing Tomek's links.
 
     Parameters
@@ -73,8 +73,6 @@ class TomekLinks(SamplerMixin):
        Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 2010.
 
     """
-
-    _estimator_prop = {'handles_multiclass': False}
 
     def __init__(self, return_indices=False, random_state=None,
                  n_jobs=-1):

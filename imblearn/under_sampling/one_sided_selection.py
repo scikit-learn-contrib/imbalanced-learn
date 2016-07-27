@@ -10,11 +10,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_random_state
 
-from ..base import SamplerMixin
+from ..base import BaseBinaryclassSampler
 from .tomek_links import TomekLinks
 
 
-class OneSidedSelection(SamplerMixin):
+class OneSidedSelection(BaseBinaryclassSampler):
     """Class to perform under-sampling based on one-sided selection method.
 
     Parameters
@@ -86,8 +86,6 @@ class OneSidedSelection(SamplerMixin):
        sets: one-sided selection," In ICML, vol. 97, pp. 179-186, 1997.
 
     """
-
-    _estimator_prop = {'handles_multiclass': True}
 
     def __init__(self, return_indices=False, random_state=None,
                  size_ngh=1, n_seeds_S=1, n_jobs=-1, **kwargs):

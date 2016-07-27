@@ -10,10 +10,10 @@ from collections import Counter
 from sklearn.cluster import KMeans
 from sklearn.utils import check_random_state
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
-class ClusterCentroids(SamplerMixin):
+class ClusterCentroids(BaseMulticlassSampler):
     """Perform under-sampling by generating centroids based on
     clustering methods.
 
@@ -80,8 +80,6 @@ class ClusterCentroids(SamplerMixin):
     Resampled dataset shape Counter({0: 100, 1: 100})
 
     """
-
-    _estimator_prop = {'handles_multiclass': True}
 
     def __init__(self, ratio='auto', random_state=None, n_jobs=-1, **kwargs):
         super(ClusterCentroids, self).__init__(ratio=ratio)

@@ -14,11 +14,10 @@ from collections import Counter
 
 from sklearn.base import BaseEstimator
 from sklearn.utils import check_X_y
+from sklearn.utils.multiclass import type_of_target
 from sklearn.externals import six
 
 from six import string_types
-
-from .utils import check_target_type
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
@@ -70,9 +69,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
-
-        # Check the target type consistency
-        check_target_type(self, y)
 
         self.min_c_ = None
         self.maj_c_ = None
@@ -231,8 +227,119 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.__dict__.update(dict)
         self.logger = logger
 
-    @classmethod
-    def get_properties(cls):
-        """Get the properties for this estimator."""
 
-        return cls._estimator_prop
+class BaseBinaryclassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
+    """Base class for all binary class sampler.
+
+    Warning: This class should not be used directly. Use derived classes
+    instead.
+
+    """
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(BaseBinaryclassSampler, self).fit(X, y)
+
+        # Check that the target type is binary
+        if not type_of_target(y) == 'binary':
+            warnings.warn('The target type should be binary.')
+
+        return self
+
+
+    @abstractmethod
+    def _sample(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
+        """
+        pass
+
+
+class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
+    """Base class for all multiclass sampler.
+
+    Warning: This class should not be used directly. Use derived classes
+    instead.
+
+    """
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(BaseMulticlassSampler, self).fit(X, y)
+
+        # Check that the target type is either binary or multiclass
+        if not (type_of_target(y) == 'binary' or
+                type_of_target(y) == 'multiclass'):
+            warnings.warn('The target type should be binary or multiclass.')
+
+        return self
+
+
+    @abstractmethod
+    def _sample(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`
+        """
+        pass

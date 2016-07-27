@@ -8,10 +8,10 @@ from collections import Counter
 
 from sklearn.neighbors import NearestNeighbors
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
-class NearMiss(SamplerMixin):
+class NearMiss(BaseMulticlassSampler):
     """Class to perform under-sampling based on NearMiss methods.
 
     Parameters
@@ -96,8 +96,6 @@ class NearMiss(SamplerMixin):
        workshop on learning from imbalanced datasets, 2003.
 
     """
-
-    _estimator_prop = {'handles_multiclass': True}
 
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
                  version=1, size_ngh=3, ver3_samp_ngh=3, n_jobs=-1, **kwargs):

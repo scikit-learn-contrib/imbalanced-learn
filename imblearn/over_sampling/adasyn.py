@@ -9,10 +9,10 @@ from collections import Counter
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_random_state
 
-from ..base import SamplerMixin
+from ..base import BaseBinaryclassSampler
 
 
-class ADASYN(SamplerMixin):
+class ADASYN(BaseBinaryclassSampler):
 
     """Perform over-sampling using ADASYN.
 
@@ -85,8 +85,6 @@ class ADASYN(SamplerMixin):
        on Computational Intelligence), pp. 1322-1328, 2008.
 
     """
-
-    _estimator_prop = {'handles_multiclass': False}
 
     def __init__(self,
                  ratio='auto',

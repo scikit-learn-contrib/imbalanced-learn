@@ -10,10 +10,10 @@ from collections import Counter
 from sklearn.utils import check_random_state
 from sklearn.neighbors import KNeighborsClassifier
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
-class CondensedNearestNeighbour(SamplerMixin):
+class CondensedNearestNeighbour(BaseMulticlassSampler):
     """Class to perform under-sampling based on the condensed nearest neighbour
     method.
 
@@ -86,8 +86,6 @@ class CondensedNearestNeighbour(SamplerMixin):
        pp. 515-516, 1968.
 
     """
-
-    _estimator_prop = {'handles_multiclass': True}
 
     def __init__(self, return_indices=False, random_state=None,
                  size_ngh=1, n_seeds_S=1, n_jobs=-1, **kwargs):

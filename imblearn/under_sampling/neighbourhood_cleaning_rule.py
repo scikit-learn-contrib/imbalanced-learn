@@ -8,10 +8,10 @@ from collections import Counter
 
 from sklearn.neighbors import NearestNeighbors
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
-class NeighbourhoodCleaningRule(SamplerMixin):
+class NeighbourhoodCleaningRule(BaseMulticlassSampler):
     """Class performing under-sampling based on the neighbourhood cleaning
     rule.
 
@@ -79,8 +79,6 @@ class NeighbourhoodCleaningRule(SamplerMixin):
        by balancing class distribution," Springer Berlin Heidelberg, 2001.
 
     """
-
-    _estimator_prop = {'handles_multiclass': True}
 
     def __init__(self, return_indices=False, random_state=None, size_ngh=3,
                  n_jobs=-1):
