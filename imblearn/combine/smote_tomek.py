@@ -3,10 +3,6 @@ links."""
 from __future__ import print_function
 from __future__ import division
 
-import warnings
-
-from sklearn.utils.multiclass import type_of_target
-
 from ..over_sampling import SMOTE
 from ..under_sampling import TomekLinks
 from ..base import SamplerMixin
@@ -107,6 +103,8 @@ class SMOTETomek(SamplerMixin):
 
     """
 
+    _estimator_prop = {'handles_multiclass': False}
+
     def __init__(self, ratio='auto', random_state=None,
                  k=5, m=10, out_step=0.5, kind_smote='regular',
                  n_jobs=-1, **kwargs):
@@ -143,10 +141,6 @@ class SMOTETomek(SamplerMixin):
         """
 
         super(SMOTETomek, self).fit(X, y)
-
-        # Check that y is binary
-        if not type_of_target(y) == 'binary':
-            warnings.warn('The target type should be binary.')
 
         # Fit using SMOTE
         self.sm.fit(X, y)

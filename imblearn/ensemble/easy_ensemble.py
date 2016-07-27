@@ -1,11 +1,7 @@
 """Class to perform under-sampling using easy ensemble."""
 from __future__ import print_function
 
-import warnings
-
 import numpy as np
-
-from sklearn.utils.multiclass import type_of_target
 
 from ..base import SamplerMixin
 from ..under_sampling import RandomUnderSampler
@@ -60,6 +56,8 @@ class EasyEnsemble(SamplerMixin):
     -----
     The method is described in [1]_.
 
+    This method supports multiclass target type.
+
     Examples
     --------
 
@@ -86,6 +84,8 @@ class EasyEnsemble(SamplerMixin):
 
     """
 
+    _estimator_prop = {'handles_multiclass': True}
+
     def __init__(self, ratio='auto', return_indices=False,
                  random_state=None, replacement=False, n_subsets=10):
         super(EasyEnsemble, self).__init__(ratio=ratio)
@@ -93,32 +93,6 @@ class EasyEnsemble(SamplerMixin):
         self.random_state = random_state
         self.replacement = replacement
         self.n_subsets = n_subsets
-
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-
-        super(EasyEnsemble, self).fit(X, y)
-
-        # Check that y is binary
-        if not type_of_target(y) == 'binary':
-            warnings.warn('The target type should be binary.')
-
-        return self
 
     def _sample(self, X, y):
         """Resample the dataset.

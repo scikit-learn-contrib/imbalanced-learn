@@ -2,14 +2,11 @@
 from __future__ import print_function
 from __future__ import division
 
-import warnings
-
 import numpy as np
 
 from collections import Counter
 
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils.multiclass import type_of_target
 
 from ..base import SamplerMixin
 
@@ -83,6 +80,8 @@ class NeighbourhoodCleaningRule(SamplerMixin):
 
     """
 
+    _estimator_prop = {'handles_multiclass': True}
+
     def __init__(self, return_indices=False, random_state=None, size_ngh=3,
                  n_jobs=-1):
         super(NeighbourhoodCleaningRule, self).__init__()
@@ -90,33 +89,6 @@ class NeighbourhoodCleaningRule(SamplerMixin):
         self.random_state = random_state
         self.size_ngh = size_ngh
         self.n_jobs = n_jobs
-
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-
-        super(NeighbourhoodCleaningRule, self).fit(X, y)
-
-        # Check that y is binary
-        if not (type_of_target(y) == 'binary' or
-                type_of_target(y) == 'multiclass'):
-            warnings.warn('The target type should be binary or multiclass.')
-
-        return self
 
     def _sample(self, X, y):
         """Resample the dataset.

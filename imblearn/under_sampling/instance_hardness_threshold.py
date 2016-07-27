@@ -3,14 +3,11 @@ threshold."""
 from __future__ import print_function
 from __future__ import division
 
-import warnings
-
 import numpy as np
 
 from collections import Counter
 
 from sklearn.cross_validation import StratifiedKFold
-from sklearn.utils.multiclass import type_of_target
 
 from ..base import SamplerMixin
 
@@ -102,6 +99,8 @@ class InstanceHardnessThreshold(SamplerMixin):
 
     """
 
+    _estimator_prop = {'handles_multiclass': False}
+
     def __init__(self, estimator='linear-svm', ratio='auto',
                  return_indices=False, random_state=None, cv=5, n_jobs=-1,
                  **kwargs):
@@ -112,32 +111,6 @@ class InstanceHardnessThreshold(SamplerMixin):
         self.kwargs = kwargs
         self.cv = cv
         self.n_jobs = n_jobs
-
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-
-        super(InstanceHardnessThreshold, self).fit(X, y)
-
-        # Check that y is binary
-        if not type_of_target(y) == 'binary':
-            warnings.warn('The target type should be binary.')
-
-        return self
 
     def _sample(self, X, y):
         """Resample the dataset.

@@ -109,6 +109,8 @@ class SMOTE(SamplerMixin):
 
     """
 
+    _estimator_prop = {'handles_multiclass': False}
+
     def __init__(self,
                  ratio='auto',
                  random_state=None,
@@ -126,32 +128,6 @@ class SMOTE(SamplerMixin):
         self.out_step = out_step
         self.n_jobs = n_jobs
         self.kwargs = kwargs
-
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-
-        super(SMOTE, self).fit(X, y)
-
-        # Check that y is binary
-        if not type_of_target(y) == 'binary':
-            warnings.warn('The target type should be binary.')
-
-        return self
 
     def _in_danger_noise(self, samples, y, kind='danger'):
         """Estimate if a set of sample are in danger or noise.

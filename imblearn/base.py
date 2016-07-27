@@ -18,6 +18,7 @@ from sklearn.externals import six
 
 from six import string_types
 
+from .utils import check_target_type
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
@@ -27,7 +28,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     instead.
     """
 
-    _estimator_type = "sampler"
+    _estimator_type = 'sampler'
 
     def __init__(self, ratio='auto'):
         """Initialize this object and its instance variables.
@@ -69,6 +70,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
+
+        # Check the target type consistency
+        check_target_type(self, y)
 
         self.min_c_ = None
         self.maj_c_ = None
@@ -226,3 +230,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         logger = logging.getLogger(__name__)
         self.__dict__.update(dict)
         self.logger = logger
+
+    @classmethod
+    def get_properties(cls):
+        """Get the properties for this estimator."""
+
+        return cls._estimator_prop
