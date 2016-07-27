@@ -19,6 +19,7 @@ from sklearn.externals import six
 
 from six import string_types
 
+
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     """Mixin class for samplers with abstact method.
@@ -262,7 +263,6 @@ class BaseBinaryclassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
 
         return self
 
-
     @abstractmethod
     def _sample(self, X, y):
         """Resample the dataset.
@@ -320,7 +320,6 @@ class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
             warnings.warn('The target type should be binary or multiclass.')
 
         return self
-
 
     @abstractmethod
     def _sample(self, X, y):
