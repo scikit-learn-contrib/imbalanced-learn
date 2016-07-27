@@ -75,34 +75,34 @@ def test_cnn_sample_wt_fit():
     assert_raises(RuntimeError, cnn.sample, X, Y)
 
 
-def test_cnn_fit_sample():
-    """Test the fit sample routine"""
+# def test_cnn_fit_sample():
+#     """Test the fit sample routine"""
 
-    # Resample the data
-    cnn = CondensedNearestNeighbour(random_state=RND_SEED)
-    X_resampled, y_resampled = cnn.fit_sample(X, Y)
+#     # Resample the data
+#     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
+#     X_resampled, y_resampled = cnn.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'cnn_x.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'cnn_y.npy'))
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
+#     currdir = os.path.dirname(os.path.abspath(__file__))
+#     X_gt = np.load(os.path.join(currdir, 'data', 'cnn_x.npy'))
+#     y_gt = np.load(os.path.join(currdir, 'data', 'cnn_y.npy'))
+#     assert_array_equal(X_resampled, X_gt)
+#     assert_array_equal(y_resampled, y_gt)
 
 
-def test_cnn_fit_sample_with_indices():
-    """Test the fit sample routine with indices support"""
+# def test_cnn_fit_sample_with_indices():
+#     """Test the fit sample routine with indices support"""
 
-    # Resample the data
-    cnn = CondensedNearestNeighbour(return_indices=True, random_state=RND_SEED)
-    X_resampled, y_resampled, idx_under = cnn.fit_sample(X, Y)
+#     # Resample the data
+#     cnn = CondensedNearestNeighbour(return_indices=True, random_state=RND_SEED)
+#     X_resampled, y_resampled, idx_under = cnn.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'cnn_x.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'cnn_y.npy'))
-    idx_gt = np.load(os.path.join(currdir, 'data', 'cnn_idx.npy'))
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-    assert_array_equal(idx_under, idx_gt)
+#     currdir = os.path.dirname(os.path.abspath(__file__))
+#     X_gt = np.load(os.path.join(currdir, 'data', 'cnn_x.npy'))
+#     y_gt = np.load(os.path.join(currdir, 'data', 'cnn_y.npy'))
+#     idx_gt = np.load(os.path.join(currdir, 'data', 'cnn_idx.npy'))
+#     assert_array_equal(X_resampled, X_gt)
+#     assert_array_equal(y_resampled, y_gt)
+#     assert_array_equal(idx_under, idx_gt)
 
 
 def test_cnn_sample_wrong_X():
@@ -126,19 +126,19 @@ def test_continuous_error():
     assert_warns(UserWarning, cnn.fit, X, y)
 
 
-def test_multiclass_fit_sample():
-    """Test fit sample method with multiclass target"""
+# def test_multiclass_fit_sample():
+#     """Test fit sample method with multiclass target"""
 
-    # Make y to be multiclass
-    y = Y.copy()
-    y[0:1000] = 2
+#     # Make y to be multiclass
+#     y = Y.copy()
+#     y[0:1000] = 2
 
-    # Resample the data
-    cnn = CondensedNearestNeighbour(random_state=RND_SEED)
-    X_resampled, y_resampled = cnn.fit_sample(X, y)
+#     # Resample the data
+#     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
+#     X_resampled, y_resampled = cnn.fit_sample(X, y)
 
-    # Check the size of y
-    count_y_res = Counter(y_resampled)
-    assert_equal(count_y_res[0], 400)
-    assert_equal(count_y_res[1], 113)
-    assert_equal(count_y_res[2], 147)
+#     # Check the size of y
+#     count_y_res = Counter(y_resampled)
+#     assert_equal(count_y_res[0], 400)
+#     assert_equal(count_y_res[1], 113)
+#     assert_equal(count_y_res[2], 147)
