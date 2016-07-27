@@ -8,10 +8,10 @@ from collections import Counter
 
 from sklearn.neighbors import NearestNeighbors
 
-from ..base import BaseBinaryclassSampler
+from ..base import BaseBinarySampler
 
 
-class TomekLinks(BaseBinaryclassSampler):
+class TomekLinks(BaseBinarySampler):
     """Class to perform under-sampling by removing Tomek's links.
 
     Parameters

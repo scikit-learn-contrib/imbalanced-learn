@@ -10,11 +10,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_random_state
 
-from ..base import BaseBinaryclassSampler
+from ..base import BaseBinarySampler
 from .tomek_links import TomekLinks
 
 
-class OneSidedSelection(BaseBinaryclassSampler):
+class OneSidedSelection(BaseBinarySampler):
     """Class to perform under-sampling based on one-sided selection method.
 
     Parameters

@@ -5,14 +5,14 @@ import numpy as np
 
 from sklearn.utils import check_random_state
 
-from ..base import BaseBinaryclassSampler
+from ..base import BaseBinarySampler
 
 
 ESTIMATOR_KIND = ('knn', 'decision-tree', 'random-forest', 'adaboost',
                   'gradient-boosting', 'linear-svm')
 
 
-class BalanceCascade(BaseBinaryclassSampler):
+class BalanceCascade(BaseBinarySampler):
     """Create an ensemble of balanced sets by iteratively under-sampling the
     imbalanced dataset using an estimator.
 

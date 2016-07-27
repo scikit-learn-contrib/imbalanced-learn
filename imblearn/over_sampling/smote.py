@@ -12,13 +12,13 @@ from sklearn.utils.multiclass import type_of_target
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 
-from ..base import BaseBinaryclassSampler
+from ..base import BaseBinarySampler
 
 
 SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
 
-class SMOTE(BaseBinaryclassSampler):
+class SMOTE(BaseBinarySampler):
 
     """Class to perform over-sampling using SMOTE.
 

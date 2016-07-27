@@ -229,7 +229,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.logger = logger
 
 
-class BaseBinaryclassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
+class BaseBinarySampler(six.with_metaclass(ABCMeta, SamplerMixin)):
     """Base class for all binary class sampler.
 
     Warning: This class should not be used directly. Use derived classes
@@ -255,35 +255,13 @@ class BaseBinaryclassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
 
         """
 
-        super(BaseBinaryclassSampler, self).fit(X, y)
+        super(BaseBinarySampler, self).fit(X, y)
 
         # Check that the target type is binary
         if not type_of_target(y) == 'binary':
             warnings.warn('The target type should be binary.')
 
         return self
-
-    @abstractmethod
-    def _sample(self, X, y):
-        """Resample the dataset.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new)
-            The corresponding label of `X_resampled`
-        """
-        pass
 
 
 class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
@@ -320,25 +298,3 @@ class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
             warnings.warn('The target type should be binary or multiclass.')
 
         return self
-
-    @abstractmethod
-    def _sample(self, X, y):
-        """Resample the dataset.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new)
-            The corresponding label of `X_resampled`
-        """
-        pass

@@ -9,10 +9,10 @@ from collections import Counter
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_random_state
 
-from ..base import BaseBinaryclassSampler
+from ..base import BaseBinarySampler
 
 
-class ADASYN(BaseBinaryclassSampler):
+class ADASYN(BaseBinarySampler):
 
     """Perform over-sampling using ADASYN.
 
