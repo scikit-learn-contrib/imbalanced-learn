@@ -2,6 +2,8 @@
 from __future__ import print_function
 from __future__ import division
 
+import warnings
+
 import numpy as np
 
 from collections import Counter
@@ -9,6 +11,7 @@ from collections import Counter
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_random_state
+from sklearn.utils.multiclass import type_of_target
 
 from ..base import SamplerMixin
 from .tomek_links import TomekLinks
@@ -61,6 +64,8 @@ class OneSidedSelection(SamplerMixin):
     -----
     The method is based on [1]_.
 
+    This method support multiclass.
+
     Examples
     --------
 
@@ -94,6 +99,33 @@ class OneSidedSelection(SamplerMixin):
         self.n_seeds_S = n_seeds_S
         self.n_jobs = n_jobs
         self.kwargs = kwargs
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(OneSidedSelection, self).fit(X, y)
+
+        # Check that y is binary
+        if not (type_of_target(y) == 'binary' or
+                type_of_target(y) == 'multiclass'):
+            warnings.warn('The target type should be binary or multiclass.')
+
+        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
