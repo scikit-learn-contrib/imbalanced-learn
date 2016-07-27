@@ -3,6 +3,8 @@ method."""
 from __future__ import print_function
 from __future__ import division
 
+import warnings
+
 import numpy as np
 
 from collections import Counter
@@ -10,6 +12,7 @@ from collections import Counter
 from scipy.stats import mode
 
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils.multiclass import type_of_target
 
 from ..base import SamplerMixin
 
@@ -102,6 +105,33 @@ class EditedNearestNeighbours(SamplerMixin):
         self.size_ngh = size_ngh
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(EditedNearestNeighbours, self).fit(X, y)
+
+        # Check that y is binary
+        if not (type_of_target(y) == 'binary' or
+                type_of_target(y) == 'multiclass'):
+            warnings.warn('The target type should be binary or multiclass.')
+
+        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
