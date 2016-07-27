@@ -2,11 +2,14 @@
 from __future__ import print_function
 from __future__ import division
 
+import warnings
+
 import numpy as np
 
 from collections import Counter
 
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils.multiclass import type_of_target
 
 from ..base import SamplerMixin
 
@@ -107,6 +110,33 @@ class NearMiss(SamplerMixin):
         self.ver3_samp_ngh = ver3_samp_ngh
         self.n_jobs = n_jobs
         self.kwargs = kwargs
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(NearMiss, self).fit(X, y)
+
+        # Check that y is binary
+        if not (type_of_target(y) == 'binary' or
+                type_of_target(y) == 'multiclass'):
+            warnings.warn('The target type should be binary or multiclass.')
+
+        return self
 
     def _selection_dist_based(self, X, y, dist_vec, num_samples, key,
                               sel_strategy='nearest'):
