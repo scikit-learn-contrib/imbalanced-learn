@@ -1,8 +1,12 @@
 """Class to perform under-sampling using balace cascade."""
 from __future__ import print_function
 
+
+import warnings
+
 import numpy as np
 
+from sklearn.utils.multiclass import type_of_target
 from sklearn.utils import check_random_state
 
 from ..base import SamplerMixin
@@ -110,6 +114,32 @@ class BalanceCascade(SamplerMixin):
         self.n_max_subset = n_max_subset
         self.bootstrap = bootstrap
         self.kwargs = kwargs
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(BalanceCascade, self).fit(X, y)
+
+        # Check that y is binary
+        if not type_of_target(y) == 'binary':
+            warnings.warn('The target type should be binary.')
+
+        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
