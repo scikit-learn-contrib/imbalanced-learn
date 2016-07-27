@@ -146,3 +146,18 @@ def test_sample_wrong_X():
     ada.fit(X, Y)
     assert_raises(RuntimeError, ada.sample, np.random.random((100, 40)),
                   np.array([0] * 50 + [1] * 50))
+
+
+def test_multiclass_error():
+    """ Test either if an error is raised when the target are not binary
+    type. """
+
+    # continuous case
+    y = np.linspace(0, 1, 5000)
+    ada = ADASYN(random_state=RND_SEED)
+    assert_warns(UserWarning, ada.fit, X, y)
+
+    # multiclass case
+    y = np.array([0] * 2000 + [1] * 2000 + [2] * 1000)
+    ada = ADASYN(random_state=RND_SEED)
+    assert_warns(UserWarning, ada.fit, X, y)

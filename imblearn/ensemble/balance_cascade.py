@@ -1,7 +1,6 @@
 """Class to perform under-sampling using balace cascade."""
 from __future__ import print_function
 
-
 import warnings
 
 import numpy as np
