@@ -2,10 +2,13 @@
 from __future__ import print_function
 from __future__ import division
 
+import warnings
+
 import numpy as np
 
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
+from sklearn.utils.multiclass import type_of_target
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 
@@ -123,6 +126,32 @@ class SMOTE(SamplerMixin):
         self.out_step = out_step
         self.n_jobs = n_jobs
         self.kwargs = kwargs
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(SMOTE, self).fit(X, y)
+
+        # Check that y is binary
+        if not type_of_target(y) == 'binary':
+            warnings.warn('The target type should be binary.')
+
+        return self
 
     def _in_danger_noise(self, samples, y, kind='danger'):
         """Estimate if a set of sample are in danger or noise.
