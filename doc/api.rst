@@ -117,3 +117,22 @@ Functions
    :toctree: generated/
    
    pipeline.make_pipeline
+
+
+.. _utils_ref:
+
+Utility
+=======
+
+.. automodule:: imblearn.utils
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: imblearn
+
+Functions
+---------
+.. autosummary::
+   :toctree: generated/
+   
+   utils.check_target_type

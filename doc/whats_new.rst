@@ -12,14 +12,27 @@ Version 0.2
 Changelog
 ---------
 
-- Added support for bumpversion.
-- Added doctest in the documentation.
+New features
+~~~~~~~~~~~~
+
 - Added AllKNN under sampling technique.
+
+API changes summary
+~~~~~~~~~~~~~~~~~~~
+
+- A module :mod:`utils` has been created. It provides input checking functions.
+- The :class:`base.SamplerMixin` class has a new function `get_properties` in order to know the properties of each classifier. `_estimator_prop` is a dictionary is returned by this function.
 
 Enhancement
 ~~~~~~~~~~~
 
+- Added support for bumpversion.
 - Validate the type of target in binary samplers. A warning is raised for the moment.
+
+Documentation changes
+~~~~~~~~~~~~~~~~~~~~~
+
+- Added doctest in the documentation.
 
 .. _changes_0_1:
 
