@@ -8,10 +8,10 @@ from collections import Counter
 
 from sklearn.neighbors import NearestNeighbors
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
-class NeighbourhoodCleaningRule(SamplerMixin):
+class NeighbourhoodCleaningRule(BaseMulticlassSampler):
     """Class performing under-sampling based on the neighbourhood cleaning
     rule.
 

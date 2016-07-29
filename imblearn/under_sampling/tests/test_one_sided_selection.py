@@ -12,6 +12,8 @@ from numpy.testing import assert_warns
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 
+from collections import Counter
+
 from imblearn.under_sampling import OneSidedSelection
 
 # Generate a global dataset to use
@@ -113,3 +115,18 @@ def test_oss_sample_wrong_X():
     oss.fit(X, Y)
     assert_raises(RuntimeError, oss.sample, np.random.random((100, 40)),
                   np.array([0] * 50 + [1] * 50))
+
+
+def test_multiclass_error():
+    """ Test either if an error is raised when the target are not binary
+    type. """
+
+    # continuous case
+    y = np.linspace(0, 1, 5000)
+    oss = OneSidedSelection(random_state=RND_SEED)
+    assert_warns(UserWarning, oss.fit, X, y)
+
+    # multiclass case
+    y = np.array([0] * 2000 + [1] * 2000 + [2] * 1000)
+    oss = OneSidedSelection(random_state=RND_SEED)
+    assert_warns(UserWarning, oss.fit, X, y)

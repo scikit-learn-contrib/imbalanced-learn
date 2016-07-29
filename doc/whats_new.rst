@@ -12,10 +12,26 @@ Version 0.2
 Changelog
 ---------
 
-- Added support for bumpversion.
-- Added doctest in the documentation.
+New features
+~~~~~~~~~~~~
+
 - Added AllKNN under sampling technique.
 
+API changes summary
+~~~~~~~~~~~~~~~~~~~
+
+- Two base classes :class:`BaseBinaryclassSampler` and :class:`BaseMulticlassSampler` have been created to handle the target type and raise warning in case of abnormality.
+
+Enhancement
+~~~~~~~~~~~
+
+- Added support for bumpversion.
+- Validate the type of target in binary samplers. A warning is raised for the moment.
+
+Documentation changes
+~~~~~~~~~~~~~~~~~~~~~
+
+- Added doctest in the documentation.
 
 .. _changes_0_1:
 

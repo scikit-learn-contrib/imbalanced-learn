@@ -14,6 +14,7 @@ from collections import Counter
 
 from sklearn.base import BaseEstimator
 from sklearn.utils import check_X_y
+from sklearn.utils.multiclass import type_of_target
 from sklearn.externals import six
 
 from six import string_types
@@ -27,7 +28,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     instead.
     """
 
-    _estimator_type = "sampler"
+    _estimator_type = 'sampler'
 
     def __init__(self, ratio='auto'):
         """Initialize this object and its instance variables.
@@ -226,3 +227,74 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         logger = logging.getLogger(__name__)
         self.__dict__.update(dict)
         self.logger = logger
+
+
+class BaseBinarySampler(six.with_metaclass(ABCMeta, SamplerMixin)):
+    """Base class for all binary class sampler.
+
+    Warning: This class should not be used directly. Use derived classes
+    instead.
+
+    """
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(BaseBinarySampler, self).fit(X, y)
+
+        # Check that the target type is binary
+        if not type_of_target(y) == 'binary':
+            warnings.warn('The target type should be binary.')
+
+        return self
+
+
+class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
+    """Base class for all multiclass sampler.
+
+    Warning: This class should not be used directly. Use derived classes
+    instead.
+
+    """
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(BaseMulticlassSampler, self).fit(X, y)
+
+        # Check that the target type is either binary or multiclass
+        if not (type_of_target(y) == 'binary' or
+                type_of_target(y) == 'multiclass'):
+            warnings.warn('The target type should be binary or multiclass.')
+
+        return self

@@ -3,11 +3,11 @@ from __future__ import print_function
 
 import numpy as np
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 from ..under_sampling import RandomUnderSampler
 
 
-class EasyEnsemble(SamplerMixin):
+class EasyEnsemble(BaseMulticlassSampler):
     """Create an ensemble sets by iteratively applying random under-sampling.
 
     This method iteratively select a random subset and make an ensemble of the
@@ -55,6 +55,8 @@ class EasyEnsemble(SamplerMixin):
     Notes
     -----
     The method is described in [1]_.
+
+    This method supports multiclass target type.
 
     Examples
     --------

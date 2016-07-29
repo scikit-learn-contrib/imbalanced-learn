@@ -12,6 +12,8 @@ from numpy.testing import assert_warns
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 
+from collections import Counter
+
 from imblearn.under_sampling import RandomUnderSampler
 
 # Generate a global dataset to use
@@ -162,3 +164,31 @@ def test_rus_sample_wrong_X():
     rus.fit(X, Y)
     assert_raises(RuntimeError, rus.sample, np.random.random((100, 40)),
                   np.array([0] * 50 + [1] * 50))
+
+
+def test_continuous_error():
+    """Test either if an error is raised when the target are continuous
+    type"""
+
+    # continuous case
+    y = np.linspace(0, 1, 5000)
+    rus = RandomUnderSampler(random_state=RND_SEED)
+    assert_warns(UserWarning, rus.fit, X, y)
+
+
+def test_multiclass_fit_sample():
+    """Test fit sample method with multiclass target"""
+
+    # Make y to be multiclass
+    y = Y.copy()
+    y[0:1000] = 2
+
+    # Resample the data
+    rus = RandomUnderSampler(random_state=RND_SEED)
+    X_resampled, y_resampled = rus.fit_sample(X, y)
+
+    # Check the size of y
+    count_y_res = Counter(y_resampled)
+    assert_equal(count_y_res[0], 400)
+    assert_equal(count_y_res[1], 400)
+    assert_equal(count_y_res[2], 400)
