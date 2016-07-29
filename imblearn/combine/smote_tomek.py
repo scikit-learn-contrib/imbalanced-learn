@@ -5,10 +5,10 @@ from __future__ import division
 
 from ..over_sampling import SMOTE
 from ..under_sampling import TomekLinks
-from ..base import SamplerMixin
+from ..base import BaseBinarySampler
 
 
-class SMOTETomek(SamplerMixin):
+class SMOTETomek(BaseBinarySampler):
     """Class to perform over-sampling using SMOTE and cleaning using
     Tomek links.
 

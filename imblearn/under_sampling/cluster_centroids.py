@@ -10,10 +10,10 @@ from collections import Counter
 from sklearn.cluster import KMeans
 from sklearn.utils import check_random_state
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
-class ClusterCentroids(SamplerMixin):
+class ClusterCentroids(BaseMulticlassSampler):
     """Perform under-sampling by generating centroids based on
     clustering methods.
 

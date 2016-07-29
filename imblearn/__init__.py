@@ -14,6 +14,8 @@ over_sampling
     Module which provides methods to under-sample a dataset.
 under-sampling
     Module which provides methods to over-sample a dataset.
+pipeline
+    Module which allowing to create pipeline with scikit-learn estimators.
 """
 
 from .version import _check_module_dependencies, __version__

@@ -4,10 +4,10 @@ from __future__ import division
 
 from ..over_sampling import SMOTE
 from ..under_sampling import EditedNearestNeighbours
-from ..base import SamplerMixin
+from ..base import BaseBinarySampler
 
 
-class SMOTEENN(SamplerMixin):
+class SMOTEENN(BaseBinarySampler):
     """Class to perform over-sampling using SMOTE and cleaning using ENN.
 
     Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.

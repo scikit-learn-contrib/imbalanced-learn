@@ -8,10 +8,10 @@ from collections import Counter
 
 from sklearn.utils import check_random_state
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
-class RandomUnderSampler(SamplerMixin):
+class RandomUnderSampler(BaseMulticlassSampler):
     """Class to perform random under-sampling.
 
     Under-sample the majority class(es) by randomly picking samples

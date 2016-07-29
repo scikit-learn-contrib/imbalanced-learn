@@ -12,6 +12,8 @@ from numpy.testing import assert_warns
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 
+from collections import Counter
+
 from imblearn.under_sampling import ClusterCentroids
 
 # Generate a global dataset to use
@@ -167,3 +169,42 @@ def test_fit_sample_half():
     y_gt = np.load(os.path.join(currdir, 'data', 'cc_y_05.npy'))
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_sample_wrong_X():
+    """Test either if an error is raised when X is different at fitting
+    and sampling"""
+
+    # Create the object
+    cc = ClusterCentroids(random_state=RND_SEED)
+    cc.fit(X, Y)
+    assert_raises(RuntimeError, cc.sample, np.random.random((100, 40)),
+                  np.array([0] * 50 + [1] * 50))
+
+
+def test_continuous_error():
+    """Test either if an error is raised when the target are continuous
+    type"""
+
+    # continuous case
+    y = np.linspace(0, 1, 5000)
+    cc = ClusterCentroids(random_state=RND_SEED)
+    assert_warns(UserWarning, cc.fit, X, y)
+
+
+def test_multiclass_fit_sample():
+    """Test fit sample method with multiclass target"""
+
+    # Make y to be multiclass
+    y = Y.copy()
+    y[0:1000] = 2
+
+    # Resample the data
+    cc = ClusterCentroids(random_state=RND_SEED)
+    X_resampled, y_resampled = cc.fit_sample(X, y)
+
+    # Check the size of y
+    count_y_res = Counter(y_resampled)
+    assert_equal(count_y_res[0], 400)
+    assert_equal(count_y_res[1], 400)
+    assert_equal(count_y_res[2], 400)

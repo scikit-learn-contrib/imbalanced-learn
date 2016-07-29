@@ -8,10 +8,10 @@ from collections import Counter
 
 from sklearn.neighbors import NearestNeighbors
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
-class NearMiss(SamplerMixin):
+class NearMiss(BaseMulticlassSampler):
     """Class to perform under-sampling based on NearMiss methods.
 
     Parameters

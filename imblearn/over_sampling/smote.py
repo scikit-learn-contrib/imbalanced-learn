@@ -2,20 +2,23 @@
 from __future__ import print_function
 from __future__ import division
 
+import warnings
+
 import numpy as np
 
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
+from sklearn.utils.multiclass import type_of_target
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 
-from ..base import SamplerMixin
+from ..base import BaseBinarySampler
 
 
 SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
 
-class SMOTE(SamplerMixin):
+class SMOTE(BaseBinarySampler):
 
     """Class to perform over-sampling using SMOTE.
 

@@ -11,13 +11,13 @@ from scipy.stats import mode
 
 from sklearn.neighbors import NearestNeighbors
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
 SEL_KIND = ('all', 'mode')
 
 
-class EditedNearestNeighbours(SamplerMixin):
+class EditedNearestNeighbours(BaseMulticlassSampler):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
 
@@ -201,7 +201,7 @@ class EditedNearestNeighbours(SamplerMixin):
             return X_resampled, y_resampled
 
 
-class RepeatedEditedNearestNeighbours(SamplerMixin):
+class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
 
@@ -384,7 +384,7 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
             return X_resampled, y_resampled
 
 
-class AllKNN(SamplerMixin):
+class AllKNN(BaseMulticlassSampler):
     """Class to perform under-sampling based on the AllKNN method.
 
     Parameters

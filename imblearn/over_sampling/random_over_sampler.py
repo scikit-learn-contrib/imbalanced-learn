@@ -8,10 +8,10 @@ from collections import Counter
 
 from sklearn.utils import check_random_state
 
-from ..base import SamplerMixin
+from ..base import BaseMulticlassSampler
 
 
-class RandomOverSampler(SamplerMixin):
+class RandomOverSampler(BaseMulticlassSampler):
 
     """Class to perform random over-sampling.
 

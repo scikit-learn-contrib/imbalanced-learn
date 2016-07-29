@@ -117,3 +117,4 @@ Functions
    :toctree: generated/
    
    pipeline.make_pipeline
+
