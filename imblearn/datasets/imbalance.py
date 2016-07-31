@@ -1,11 +1,15 @@
 """Transform a dataset into an imbalanced dataset."""
 
+import logging
+
 import numpy as np
 
 from collections import Counter
 
 from sklearn.utils import check_X_y
 from sklearn.utils import check_random_state
+
+LOGGER = logging.getLogger(__name__)
 
 
 def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
@@ -54,8 +58,8 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
 
     stats_c_ = Counter(y)
 
-    self.logger.info('The original target distribution in the dataset is: %s',
-                     stats_c_)
+    LOGGER.info('The original target distribution in the dataset is: %s',
+                stats_c_)
 
     if min_c_ is None:
         min_c_ = min(stats_c_, key=stats_c_.get)
@@ -76,7 +80,7 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
 
     X_resampled, y_resampled = X[idx, :], y[idx]
 
-    self.logger.info('Make the dataset imbalanced: %s', Counter(y_resampled))
+    LOGGER.info('Make the dataset imbalanced: %s', Counter(y_resampled))
 
     return X_resampled, y_resampled
 
