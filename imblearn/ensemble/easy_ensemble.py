@@ -3,6 +3,8 @@ from __future__ import print_function
 
 import numpy as np
 
+from sklearn.utils import check_random_state
+
 from ..base import BaseMulticlassSampler
 from ..under_sampling import RandomUnderSampler
 
@@ -117,6 +119,21 @@ class EasyEnsemble(BaseMulticlassSampler):
 
         """
 
+        # Check the random state
+        random_state = check_random_state(self.random_state)
+        # Generate the seeds for the loop
+        if self.random_state is None:
+            random_state_rus = [None] * self.n_subsets
+
+        else:
+            random_state_rus = random_state.randint(
+                0,
+                high=np.iinfo(np.uint32).max,
+                size=self.n_subsets)
+
+        self.logger.debug('Some RandomState seeds have been created: %s',
+                          random_state_rus)
+
         X_resampled = []
         y_resampled = []
         if self.return_indices:
@@ -128,7 +145,7 @@ class EasyEnsemble(BaseMulticlassSampler):
             # Create the object for random under-sampling
             rus = RandomUnderSampler(ratio=self.ratio,
                                      return_indices=self.return_indices,
-                                     random_state=self.random_state,
+                                     random_state=random_state_rus[s],
                                      replacement=self.replacement)
             if self.return_indices:
                 sel_x, sel_y, sel_idx = rus.fit_sample(X, y)
