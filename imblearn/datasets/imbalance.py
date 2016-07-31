@@ -1,0 +1,74 @@
+"""Transform a dataset into an imbalanced dataset."""
+
+import numpy as np
+
+from collections import Counter
+
+from sklearn.utils import check_X_y
+from sklearn.utils import check_random_state
+
+def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
+    """Turns a dataset into an imbalanced dataset at specific ratio.
+    A simple toy dataset to visualize clustering and classification
+    algorithms.
+
+    Parameters
+    ----------
+    X : ndarray, shape (n_samples, n_features)
+        Matrix containing the data to be imbalanced.
+
+    y : ndarray, shape (n_samples, )
+        Corresponding label for each sample in X.
+
+    ratio : float, 
+        The desired ratio given by the number of samples in 
+        the minority class over the the number of samples in 
+        the majority class.
+
+    min_c_ : str or int, optional (default=None)
+        The identifier of the class to be the minority class.
+        If None, min_c_ is set to be the current minority class.
+
+    random_state : int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by np.random.
+
+    Returns
+    -------
+    X_resampled : ndarray, shape (n_samples_new, n_features)
+        The array containing the imbalanced data.
+
+    y_resampled : ndarray, shape (n_samples_new)
+        The corresponding label of `X_resampled`
+    """
+    if ratio <= 0.0 or ratio >= 1.0:
+        raise ValueError('ratio value must be such that 0.0 < ratio < 1.0')
+
+    X, y = check_X_y(X, y)
+
+    random_state = check_random_state(random_state)
+
+    stats_c_ = Counter(y)
+
+    if min_c_ is None:
+        min_c_ = min(stats_c_, key=stats_c_.get)
+
+    n_min_samples = int(np.count_nonzero(y != min_c_) * ratio)
+    if n_min_samples > stats_c_[min_c_]:
+        raise ValueError('Current imbalance ratio of data is lower than desired ratio!')
+    if n_min_samples == 0:
+        raise ValueError('Not enough samples for desired ratio!')
+
+    mask = y == min_c_
+
+    idx_maj = np.where(~mask)[0]
+    idx_min = np.where(mask)[0]
+    idx_min = random_state.choice(idx_min, size=n_min_samples, replace=False)
+    idx = np.concatenate((idx_min, idx_maj), axis=0)
+
+    X_resampled, y_resampled = X[idx,:], y[idx]
+
+    return X_resampled, y_resampled
+
