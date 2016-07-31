@@ -3,11 +3,17 @@ from __future__ import print_function
 
 import numpy as np
 
+from sklearn.utils import check_random_state
+
 from ..base import BaseMulticlassSampler
 from ..under_sampling import RandomUnderSampler
 
 
+MAX_INT = np.iinfo(np.int32).max
+
+
 class EasyEnsemble(BaseMulticlassSampler):
+
     """Create an ensemble sets by iteratively applying random under-sampling.
 
     This method iteratively select a random subset and make an ensemble of the
@@ -117,19 +123,26 @@ class EasyEnsemble(BaseMulticlassSampler):
 
         """
 
+        # Check the random state
+        random_state = check_random_state(self.random_state)
+
         X_resampled = []
         y_resampled = []
         if self.return_indices:
             idx_under = []
 
-        for s in range(self.n_subsets):
-            self.logger.debug('Creation of the set #%s', s)
+        self.samplers_ = []
 
-            # Create the object for random under-sampling
+        for _ in range(self.n_subsets):
             rus = RandomUnderSampler(ratio=self.ratio,
                                      return_indices=self.return_indices,
-                                     random_state=self.random_state,
+                                     random_state=random_state.randint(
+                                         MAX_INT),
                                      replacement=self.replacement)
+            self.samplers_.append(rus)
+
+        for rus in self.samplers_:
+
             if self.return_indices:
                 sel_x, sel_y, sel_idx = rus.fit_sample(X, y)
             else:
