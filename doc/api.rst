@@ -118,3 +118,21 @@ Functions
    
    pipeline.make_pipeline
 
+
+.. _datasets_ref:
+
+Datasets
+========
+
+.. automodule:: imblearn.datasets
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: imblearn
+
+Functions
+---------
+.. autosummary::
+   :toctree: generated/
+   
+   datasets.make_imbalance
