@@ -5,14 +5,14 @@ import numpy as np
 
 from sklearn.utils import check_random_state
 
-from ..base import BaseMulticlassSampler
+from ..base import SamplerMixin
 from ..under_sampling import RandomUnderSampler
 
 
 MAX_INT = np.iinfo(np.int32).max
 
 
-class EasyEnsemble(BaseMulticlassSampler):
+class EasyEnsemble(SamplerMixin):
     """Create an ensemble sets by iteratively applying random under-sampling.
 
     This method iteratively select a random subset and make an ensemble of the
