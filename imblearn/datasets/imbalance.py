@@ -1,11 +1,16 @@
 """Transform a dataset into an imbalanced dataset."""
 
+import logging
+
 import numpy as np
 
 from collections import Counter
 
 from sklearn.utils import check_X_y
 from sklearn.utils import check_random_state
+
+LOGGER = logging.getLogger(__name__)
+
 
 def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
     """Turns a dataset into an imbalanced dataset at specific ratio.
@@ -20,10 +25,10 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
     y : ndarray, shape (n_samples, )
         Corresponding label for each sample in X.
 
-    ratio : float, 
-        The desired ratio given by the number of samples in 
-        the minority class over the the number of samples in 
-        the majority class.
+    ratio : float,
+        The desired ratio given by the number of samples in
+        the minority class over the the number of samples in
+        the majority class. Thus the ratio should be in the interval [0., 1.]
 
     min_c_ : str or int, optional (default=None)
         The identifier of the class to be the minority class.
@@ -42,6 +47,7 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
 
     y_resampled : ndarray, shape (n_samples_new)
         The corresponding label of `X_resampled`
+
     """
     if ratio <= 0.0 or ratio >= 1.0:
         raise ValueError('ratio value must be such that 0.0 < ratio < 1.0')
@@ -52,12 +58,16 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
 
     stats_c_ = Counter(y)
 
+    LOGGER.info('The original target distribution in the dataset is: %s',
+                stats_c_)
+
     if min_c_ is None:
         min_c_ = min(stats_c_, key=stats_c_.get)
 
     n_min_samples = int(np.count_nonzero(y != min_c_) * ratio)
     if n_min_samples > stats_c_[min_c_]:
-        raise ValueError('Current imbalance ratio of data is lower than desired ratio!')
+        raise ValueError('Current imbalance ratio of data is lower than'
+                         ' desired ratio!')
     if n_min_samples == 0:
         raise ValueError('Not enough samples for desired ratio!')
 
@@ -68,7 +78,9 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
     idx_min = random_state.choice(idx_min, size=n_min_samples, replace=False)
     idx = np.concatenate((idx_min, idx_maj), axis=0)
 
-    X_resampled, y_resampled = X[idx,:], y[idx]
+    X_resampled, y_resampled = X[idx, :], y[idx]
+
+    LOGGER.info('Make the dataset imbalanced: %s', Counter(y_resampled))
 
     return X_resampled, y_resampled
 
