@@ -163,6 +163,19 @@ def test_fit_sample_half():
     assert_array_equal(y_resampled, y_gt)
 
 
+def test_random_state_none():
+    """Test that the processing is going throw with random state being None."""
+
+    # Define the ratio parameter
+    ratio = 0.5
+
+    # Create the sampling object
+    ee = EasyEnsemble(ratio=ratio, random_state=None)
+
+    # Get the different subset
+    X_resampled, y_resampled = ee.fit_sample(X, Y)
+
+
 def test_sample_wrong_X():
     """Test either if an error is raised when X is different at fitting
     and sampling"""

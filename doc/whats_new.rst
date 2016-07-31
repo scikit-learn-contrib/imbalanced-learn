@@ -44,6 +44,7 @@ Changelog
 API
 ~~~
 
+- In :class:`ensemble.EasyEnsemble`, correction of the `random_state` generation.
 - First release of the stable API.
 
 New methods
