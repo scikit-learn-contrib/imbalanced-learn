@@ -1,8 +1,6 @@
 """Test the module under sampler."""
 from __future__ import print_function
 
-import os
-
 import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal

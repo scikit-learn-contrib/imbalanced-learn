@@ -1,12 +1,11 @@
 """Test the module cluster centroids."""
 from __future__ import print_function
 
-import os
-
 import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_almost_equal
 from numpy.testing import assert_warns
 
 from sklearn.datasets import make_classification
@@ -18,10 +17,18 @@ from imblearn.under_sampling import ClusterCentroids
 
 # Generate a global dataset to use
 RND_SEED = 0
-X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                           n_informative=3, n_redundant=1, flip_y=0,
-                           n_features=20, n_clusters_per_class=1,
-                           n_samples=5000, random_state=RND_SEED)
+# Data generated for the toy example
+X = np.array([[0.04352327, -0.20515826],
+              [0.92923648, 0.76103773],
+              [0.20792588, 1.49407907],
+              [0.47104475, 0.44386323],
+              [0.22950086, 0.33367433],
+              [0.15490546, 0.3130677],
+              [0.09125309, -0.85409574],
+              [0.12372842, 0.6536186],
+              [0.13347175, 0.12167502],
+              [0.094035, -2.55298982]])
+Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 
 def test_cc_sk_estimator():
@@ -103,8 +110,8 @@ def test_cc_fit():
     # Check if the data information have been computed
     assert_equal(cc.min_c_, 0)
     assert_equal(cc.maj_c_, 1)
-    assert_equal(cc.stats_c_[0], 500)
-    assert_equal(cc.stats_c_[1], 4500)
+    assert_equal(cc.stats_c_[0], 3)
+    assert_equal(cc.stats_c_[1], 7)
 
 
 def test_sample_wrong_X():
@@ -145,10 +152,14 @@ def test_fit_sample_auto():
     # Fit and sample
     X_resampled, y_resampled = cc.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'cc_x.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'cc_y.npy'))
-    assert_array_equal(X_resampled, X_gt)
+    X_gt = np.array([[0.92923648, 0.76103773],
+                     [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502],
+                     [0.06738818, -0.529627],
+                     [0.17901516, 0.69860992],
+                     [0.094035, -2.55298982]])
+    y_gt = np.array([0, 0, 0, 1, 1, 1])
+    assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -164,10 +175,17 @@ def test_fit_sample_half():
     # Fit and sample
     X_resampled, y_resampled = cc.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'cc_x_05.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'cc_y_05.npy'))
-    assert_array_equal(X_resampled, X_gt)
+    X_gt = np.array([[0.92923648, 0.76103773],
+                     [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502],
+                     [0.09125309, -0.85409574],
+                     [0.19220316, 0.32337101],
+                     [0.094035, -2.55298982],
+                     [0.20792588, 1.49407907],
+                     [0.04352327, -0.20515826],
+                     [0.12372842, 0.6536186]])
+    y_gt = np.array([0, 0, 0, 1, 1, 1, 1, 1, 1])
+    assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -187,7 +205,7 @@ def test_continuous_error():
     type"""
 
     # continuous case
-    y = np.linspace(0, 1, 5000)
+    y = np.linspace(0, 1, 10)
     cc = ClusterCentroids(random_state=RND_SEED)
     assert_warns(UserWarning, cc.fit, X, y)
 
@@ -197,7 +215,8 @@ def test_multiclass_fit_sample():
 
     # Make y to be multiclass
     y = Y.copy()
-    y[0:1000] = 2
+    y[5] = 2
+    y[6] = 2
 
     # Resample the data
     cc = ClusterCentroids(random_state=RND_SEED)
@@ -205,6 +224,6 @@ def test_multiclass_fit_sample():
 
     # Check the size of y
     count_y_res = Counter(y_resampled)
-    assert_equal(count_y_res[0], 400)
-    assert_equal(count_y_res[1], 400)
-    assert_equal(count_y_res[2], 400)
+    assert_equal(count_y_res[0], 2)
+    assert_equal(count_y_res[1], 2)
+    assert_equal(count_y_res[2], 2)
