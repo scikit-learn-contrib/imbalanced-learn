@@ -87,7 +87,7 @@ copyright = u'2016, G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
 # built documents.
 #
 # The short X.Y version.
-__version__ = '0.1.5'
+__version__ = '0.1.6'
 version = __version__
 # The full version, including alpha/beta/rc tags.
 release = __version__
