@@ -6,17 +6,24 @@
 Release history
 ===============
 
+.. _changes_0_1:
+
 Version 0.1
 ===========
 
 Changelog
 ---------
 
+Bug fixes
+~~~~~~~~~
+
+- Fixed a bug in :class:`under_sampling.NearMiss` which was not picking the right samples during under sampling for the method 3. By `Guillaume Lemaitre`_.
+- Fixed a bug in :class:`ensemble.EasyEnsemble`, correction of the `random_state` generation. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
+
 API
 ~~~
 
-- In :class:`ensemble.EasyEnsemble`, correction of the `random_state` generation.
-- First release of the stable API.
+- First release of the stable API. By `Fernando Nogueira`_, `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
 
 New methods
 ~~~~~~~~~~~
@@ -47,3 +54,8 @@ New methods
 * Ensemble sampling
     1. EasyEnsemble
     2. BalanceCascade
+
+.. _Guillaume Lemaitre: https://github.com/glemaitre
+.. _Christos Aridas: https://github.com/chkoar
+.. _Fernando Nogueira: https://github.com/fmfn
+.. _Dayvid Oliveira: https://github.com/dvro
