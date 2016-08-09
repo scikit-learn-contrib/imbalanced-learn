@@ -2,6 +2,8 @@
 from __future__ import print_function
 from __future__ import division
 
+import warnings
+
 import numpy as np
 
 from collections import Counter
@@ -148,6 +150,17 @@ class NearMiss(BaseMulticlassSampler):
         # Compute the distance considering the farthest neighbour
         dist_avg_vec = np.sum(dist_vec[:, -self.size_ngh:], axis=1)
 
+        self.logger.debug('The size of the distance matrix is %s',
+                          dist_vec.shape)
+        self.logger.debug('The size of the samples that can be selected is %s',
+                          X[y == key].shape)
+
+        if dist_vec.shape[0] != X[y == key].shape[0]:
+            raise RuntimeError('The samples to be selected do not correspond'
+                               ' to the distance matrix given. Ensure that'
+                               ' both `X[y == key]` and `dist_vec` are'
+                               ' related.')
+
         # Sort the list of distance and get the index
         if sel_strategy == 'nearest':
             sort_way = False
@@ -159,6 +172,12 @@ class NearMiss(BaseMulticlassSampler):
         sorted_idx = sorted(range(len(dist_avg_vec)),
                             key=dist_avg_vec.__getitem__,
                             reverse=sort_way)
+
+        # Throw a warning to tell the user that we did not have enough samples
+        # to select and that we just select everything
+        warnings.warn('The number of the samples to be selected is larger than'
+                      ' the number of samples available. The balancing ratio'
+                      ' cannot be ensure and all samples will be returned.')
 
         # Select the desired number of samples
         sel_idx = sorted_idx[:num_samples]
@@ -291,8 +310,8 @@ class NearMiss(BaseMulticlassSampler):
                     n_neighbors=self.size_ngh)
 
                 sel_x, sel_y, idx_tmp = self._selection_dist_based(
-                    X,
-                    y,
+                    sub_samples_x,
+                    sub_samples_y,
                     dist_vec,
                     num_samples,
                     key,
