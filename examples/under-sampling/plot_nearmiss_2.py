@@ -3,7 +3,7 @@
 Nearmiss 2
 ==========
 
-An illustration of the nearmiss 1 method.
+An illustration of the nearmiss 2 method.
 
 """
 
