@@ -24,7 +24,7 @@ datset in machine learning and pattern recognition.
 __version__ = '0.2.0.dev0'
 
 _IMBALANCED_DATASET_INSTALL_MSG = 'See %s for installation information.' % (
-    'glemaitre.github.io/UnbalancedDataset/install.html')
+    'http://contrib.scikit-learn.org/imbalanced-learn/install.html')
 
 # This is a tuple to preserve order, so that dependencies are checked
 #   in some meaningful order (more => less 'core').  We avoid using
