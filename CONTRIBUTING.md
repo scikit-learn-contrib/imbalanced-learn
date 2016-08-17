@@ -17,7 +17,7 @@ GitHub:
 
 2. Clone this copy to your local disk:
 
-        $ git clone git@github.com:YourLogin/UnbalancedDataset.git
+        $ git clone git@github.com:YourLogin/imbalanced-learn.git
         $ cd UnbalancedDataset
 
 3. Create a branch to hold your changes:

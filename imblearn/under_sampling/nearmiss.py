@@ -212,9 +212,9 @@ class NearMiss(BaseMulticlassSampler):
 
         # Assign the parameter of the element of this class
         # Check that the version asked is implemented
-        if not (self.version == 1 or self.version == 2 or self.version == 3):
-            raise ValueError('UnbalancedData.NearMiss: there is only 3 '
-                             'versions available with parameter version=1/2/3')
+        if self.version not in [1,2,3]:
+            raise ValueError("Parameter 'version' must be 1, 2 or 3, " 
+	                     "got {0}".format(self.version))
 
         # Start with the minority class
         X_min = X[y == self.min_c_]
