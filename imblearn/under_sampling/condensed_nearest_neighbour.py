@@ -135,7 +135,7 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
 
         # If we need to offer support for the indices
         if self.return_indices:
-            idx_under = np.nonzero(y == self.min_c_)[0]
+            idx_under = np.flatnonzero(y == self.min_c_)
 
         # Loop over the other classes under picking at random
         for key in self.stats_c_.keys():
@@ -198,7 +198,7 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
                     pred_S_y = knn.predict(S_x)
                     good_classif_label = np.unique(
                         np.append(idx_maj_sample,
-                                  np.nonzero(pred_S_y == S_y)[0]))
+                                  np.flatnonzero(pred_S_y == S_y)))
 
             # Find the misclassified S_y
             sel_x = np.squeeze(S_x[idx_maj_sample, :])
