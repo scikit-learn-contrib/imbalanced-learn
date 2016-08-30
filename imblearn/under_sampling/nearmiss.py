@@ -175,9 +175,11 @@ class NearMiss(BaseMulticlassSampler):
 
         # Throw a warning to tell the user that we did not have enough samples
         # to select and that we just select everything
-        warnings.warn('The number of the samples to be selected is larger than'
-                      ' the number of samples available. The balancing ratio'
-                      ' cannot be ensure and all samples will be returned.')
+        if len(sorted_idx) < num_samples:
+            warnings.warn('The number of the samples to be selected is larger'
+                          ' than the number of samples available. The'
+                          ' balancing ratio cannot be ensure and all samples'
+                          ' will be returned.')
 
         # Select the desired number of samples
         sel_idx = sorted_idx[:num_samples]
