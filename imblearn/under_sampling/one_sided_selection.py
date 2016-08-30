@@ -134,7 +134,7 @@ class OneSidedSelection(BaseBinarySampler):
 
         # If we need to offer support for the indices
         if self.return_indices:
-            idx_under = np.nonzero(y == self.min_c_)[0]
+            idx_under = np.flatnonzero(y == self.min_c_)
 
         # Loop over the other classes under picking at random
         for key in self.stats_c_.keys():
@@ -177,14 +177,15 @@ class OneSidedSelection(BaseBinarySampler):
             pred_S_y = knn.predict(S_x)
 
             # Find the misclassified S_y
-            sel_x = np.squeeze(S_x[np.nonzero(pred_S_y != S_y), :])
-            sel_y = S_y[np.nonzero(pred_S_y != S_y)]
+            sel_x = S_x[np.flatnonzero(pred_S_y != S_y), :]
+            sel_y = S_y[np.flatnonzero(pred_S_y != S_y)]
 
             # If we need to offer support for the indices selected
             # We concatenate the misclassified samples with the seed and the
             # minority samples
             if self.return_indices:
-                idx_tmp = np.nonzero(y == key)[0][np.nonzero(pred_S_y != S_y)]
+                idx_tmp = np.flatnonzero(y == key)[
+                    np.flatnonzero(pred_S_y != S_y)]
                 idx_under = np.concatenate((idx_under,
                                             idx_maj_sample,
                                             idx_tmp),

@@ -210,7 +210,7 @@ class InstanceHardnessThreshold(BaseBinarySampler):
 
         # If we need to offer support for the indices
         if self.return_indices:
-            idx_under = np.nonzero(mask)[0]
+            idx_under = np.flatnonzero(mask)
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled

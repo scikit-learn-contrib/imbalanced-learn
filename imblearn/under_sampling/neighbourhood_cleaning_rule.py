@@ -123,7 +123,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
 
         # If we need to offer support for the indices
         if self.return_indices:
-            idx_under = np.nonzero(y == self.min_c_)[0]
+            idx_under = np.flatnonzero(y == self.min_c_)
 
         # Create a k-NN to fit the whole data
         nn_obj = NearestNeighbors(n_neighbors=self.size_ngh,
@@ -140,7 +140,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
             sub_samples_x = X[y == key]
 
             # Get the samples associated
-            idx_sub_sample = np.nonzero(y == key)[0]
+            idx_sub_sample = np.flatnonzero(y == key)
 
             # Find the NN for the current class
             nnhood_idx = nn_obj.kneighbors(sub_samples_x,
@@ -157,7 +157,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
             if key == self.min_c_:
                 # Get the index to exclude
                 idx_to_exclude += nnhood_idx[np.nonzero(
-                    nnhood_label[np.nonzero(nnhood_bool)])].tolist()
+                    nnhood_label[np.flatnonzero(nnhood_bool)])].tolist()
             else:
                 # Get the index to exclude
                 idx_to_exclude += idx_sub_sample[np.nonzero(
@@ -173,12 +173,12 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
         sel_idx[y == self.min_c_] = 0
 
         # Get the samples from the majority classes
-        sel_x = np.squeeze(X[np.nonzero(sel_idx), :])
-        sel_y = y[np.nonzero(sel_idx)]
+        sel_x = X[np.flatnonzero(sel_idx), :]
+        sel_y = y[np.flatnonzero(sel_idx)]
 
         # If we need to offer support for the indices selected
         if self.return_indices:
-            idx_tmp = np.nonzero(sel_idx)[0]
+            idx_tmp = np.flatnonzero(sel_idx)
             idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
 
         X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
