@@ -537,10 +537,42 @@ class AllKNN(BaseMulticlassSampler):
             # updating ENN size_ngh
             self.enn_.size_ngh = curr_size_ngh
             if self.return_indices:
-                X_, y_, idx_ = self.enn_.fit_sample(X_, y_)
-                idx_under = idx_under[idx_]
+                X_enn, y_enn, idx_enn = self.enn_.fit_sample(X_, y_)
             else:
-                X_, y_ = self.enn_.fit_sample(X_, y_)
+                X_enn, y_enn = self.enn_.fit_sample(X_, y_)
+
+            # Check the stopping criterion
+            # 1. If the number of samples in the other class become inferior to
+            # the number of samples in the majority class
+            # 2. If one of the class is disappearing
+            # Case 1
+            stats_enn = Counter(y_enn)
+            self.logger.debug('Current ENN stats: %s', stats_enn)
+            # Get the number of samples in the non-minority classes
+            count_non_min = np.array([val for val, key
+                                      in zip(stats_enn.itervalues(),
+                                             stats_enn.iterkeys())
+                                      if key != self.min_c_])
+            self.logger.debug('Number of samples in the non-majority'
+                              ' classes: %s', count_non_min)
+            # Check the minority stop to be the minority
+            b_min_bec_maj = np.any(count_non_min < self.stats_c_[self.min_c_])
+
+            # Case 2
+            b_remove_maj_class = (len(stats_enn) < len(self.stats_c_))
+
+            if b_min_bec_maj or b_remove_maj_class:
+                # Log the variables to explain the stop of the algorithm
+                self.logger.debug('AllKNN minority become majority: %s',
+                                  b_min_bec_maj)
+                self.logger.debug('AllKNN remove one class: %s',
+                                  b_remove_maj_class)
+                break
+
+            # Update the data for the next iteration
+            X_, y_, = X_enn, y_enn
+            if self.return_indices:
+                idx_under = idx_under[idx_enn]
 
         self.logger.info('Under-sampling performed: %s', Counter(y_))
 
