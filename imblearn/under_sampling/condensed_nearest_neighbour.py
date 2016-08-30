@@ -204,6 +204,12 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
             sel_x = np.squeeze(S_x[idx_maj_sample, :])
             sel_y = S_y[idx_maj_sample]
 
+            # The indexes found are relative to the current class, we need to
+            # find the absolute value
+            # Build the array with the absolute position
+            abs_pos = np.flatnonzero(y == key)
+            idx_maj_sample = abs_pos[idx_maj_sample]
+
             # If we need to offer support for the indices selected
             if self.return_indices:
                 idx_under = np.concatenate((idx_under, idx_maj_sample), axis=0)
