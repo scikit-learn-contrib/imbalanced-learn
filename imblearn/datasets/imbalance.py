@@ -83,4 +83,3 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
     LOGGER.info('Make the dataset imbalanced: %s', Counter(y_resampled))
 
     return X_resampled, y_resampled
-

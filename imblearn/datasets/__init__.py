@@ -1,5 +1,5 @@
 """
-The :mod:`imblearn.datasets` provides methods to generate 
+The :mod:`imblearn.datasets` provides methods to generate
 imbalanced data.
 """
 

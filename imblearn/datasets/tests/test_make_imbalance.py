@@ -14,6 +14,7 @@ X = np.random.random((1000, 2))
 Y = np.zeros(1000)
 Y[500:] = 1
 
+
 def test_make_imbalance_bad_ratio():
     """Test either if an error is raised with bad ratio
     argument"""
@@ -46,11 +47,13 @@ def test_make_imbalance_invalid_ratio():
     ratio = 0.5
     assert_raises(ValueError, make_imbalance, X, y_, ratio)
 
+
 def test_make_imbalance_single_class():
     """Test either if an error when there is a single class"""
     y_ = np.zeros((X.shape[0], ))
     ratio = 0.5
     assert_raises(ValueError, make_imbalance, X, y_, ratio)
+
 
 def test_make_imbalance_1():
     """Test make_imbalance"""
@@ -60,6 +63,7 @@ def test_make_imbalance_1():
     assert_equal(counter[1], 250)
     assert(np.all([X_i in X for X_i in X_]))
 
+
 def test_make_imbalance_2():
     """Test make_imbalance"""
     X_, y_ = make_imbalance(X, Y, ratio=0.25, min_c_=1)
@@ -67,6 +71,7 @@ def test_make_imbalance_2():
     assert_equal(counter[0], 500)
     assert_equal(counter[1], 125)
     assert(np.all([X_i in X for X_i in X_]))
+
 
 def test_make_imbalance_3():
     """Test make_imbalance"""
@@ -76,6 +81,7 @@ def test_make_imbalance_3():
     assert_equal(counter[1], 50)
     assert(np.all([X_i in X for X_i in X_]))
 
+
 def test_make_imbalance_4():
     """Test make_imbalance"""
     X_, y_ = make_imbalance(X, Y, ratio=0.01, min_c_=1)
@@ -84,6 +90,7 @@ def test_make_imbalance_4():
     assert_equal(counter[1], 5)
     assert(np.all([X_i in X for X_i in X_]))
 
+
 def test_make_imbalance_5():
     """Test make_imbalance"""
     X_, y_ = make_imbalance(X, Y, ratio=0.01, min_c_=0)
@@ -91,6 +98,7 @@ def test_make_imbalance_5():
     assert_equal(counter[1], 500)
     assert_equal(counter[0], 5)
     assert(np.all([X_i in X for X_i in X_]))
+
 
 def test_make_imbalance_multiclass():
     """Test make_imbalance with multiclass data"""
