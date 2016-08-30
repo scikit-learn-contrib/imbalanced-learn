@@ -18,10 +18,22 @@ from imblearn.under_sampling import OneSidedSelection
 
 # Generate a global dataset to use
 RND_SEED = 0
-X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                           n_informative=3, n_redundant=1, flip_y=0,
-                           n_features=20, n_clusters_per_class=1,
-                           n_samples=5000, random_state=RND_SEED)
+X = np.array([[-0.3879569, 0.6894251],
+              [-0.09322739, 1.28177189],
+              [-0.77740357, 0.74097941],
+              [0.91542919, -0.65453327],
+              [-0.03852113, 0.40910479],
+              [-0.43877303, 1.07366684],
+              [-0.85795321, 0.82980738],
+              [-0.18430329, 0.52328473],
+              [-0.30126957, -0.66268378],
+              [-0.65571327, 0.42412021],
+              [-0.28305528, 0.30284991],
+              [0.20246714, -0.34727125],
+              [1.06446472, -1.09279772],
+              [0.30543283, -0.02589502],
+              [-0.00717161, 0.00318087]])
+Y = np.array([0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0])
 
 
 def test_oss_sk_estimator():
@@ -63,8 +75,8 @@ def test_oss_fit():
     # Check if the data information have been computed
     assert_equal(oss.min_c_, 0)
     assert_equal(oss.maj_c_, 1)
-    assert_equal(oss.stats_c_[0], 500)
-    assert_equal(oss.stats_c_[1], 4500)
+    assert_equal(oss.stats_c_[0], 6)
+    assert_equal(oss.stats_c_[1], 9)
 
 
 def test_oss_sample_wt_fit():
@@ -83,9 +95,19 @@ def test_oss_fit_sample():
     oss = OneSidedSelection(random_state=RND_SEED)
     X_resampled, y_resampled = oss.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'oss_x.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'oss_y.npy'))
+    X_gt = np.array([[-0.3879569, 0.6894251],
+                     [0.91542919, -0.65453327],
+                     [-0.65571327, 0.42412021],
+                     [1.06446472, -1.09279772],
+                     [0.30543283, -0.02589502],
+                     [-0.00717161, 0.00318087],
+                     [-0.09322739, 1.28177189],
+                     [-0.77740357, 0.74097941],
+                     [-0.43877303, 1.07366684],
+                     [-0.85795321, 0.82980738],
+                     [-0.30126957, -0.66268378],
+                     [0.20246714, -0.34727125]])
+    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -97,10 +119,20 @@ def test_oss_fit_sample_with_indices():
     oss = OneSidedSelection(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = oss.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'oss_x.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'oss_y.npy'))
-    idx_gt = np.load(os.path.join(currdir, 'data', 'oss_idx.npy'))
+    X_gt = np.array([[-0.3879569, 0.6894251],
+                     [0.91542919, -0.65453327],
+                     [-0.65571327, 0.42412021],
+                     [1.06446472, -1.09279772],
+                     [0.30543283, -0.02589502],
+                     [-0.00717161, 0.00318087],
+                     [-0.09322739, 1.28177189],
+                     [-0.77740357, 0.74097941],
+                     [-0.43877303, 1.07366684],
+                     [-0.85795321, 0.82980738],
+                     [-0.30126957, -0.66268378],
+                     [0.20246714, -0.34727125]])
+    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+    idx_gt = np.array([0, 3, 9, 12, 13, 14, 1, 2, 5, 6, 7, 10])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
@@ -122,11 +154,11 @@ def test_multiclass_error():
     type. """
 
     # continuous case
-    y = np.linspace(0, 1, 5000)
+    y = np.linspace(0, 1, 15)
     oss = OneSidedSelection(random_state=RND_SEED)
     assert_warns(UserWarning, oss.fit, X, y)
 
     # multiclass case
-    y = np.array([0] * 2000 + [1] * 2000 + [2] * 1000)
+    y = np.array([0] * 10 + [1] * 3 + [2] * 2)
     oss = OneSidedSelection(random_state=RND_SEED)
     assert_warns(UserWarning, oss.fit, X, y)
