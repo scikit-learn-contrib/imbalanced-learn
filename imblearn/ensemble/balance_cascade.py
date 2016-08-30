@@ -168,7 +168,7 @@ class BalanceCascade(SamplerMixin):
         # Keep the indices of the minority class somewhere if we need to
         # return them later
         if self.return_indices:
-            idx_min = np.nonzero(y == self.min_c_)[0]
+            idx_min = np.flatnonzero(y == self.min_c_)
 
         # Condition to initiliase before the search
         b_subset_search = True
@@ -190,7 +190,7 @@ class BalanceCascade(SamplerMixin):
             # Generate an appropriate number of index to extract
             # from the majority class depending of the false classification
             # rate of the previous iteration
-            idx_sel_from_maj = random_state.choice(np.nonzero(b_sel_N)[0],
+            idx_sel_from_maj = random_state.choice(np.flatnonzero(b_sel_N),
                                                    size=num_samples,
                                                    replace=False)
             idx_sel_from_maj = np.concatenate((idx_mis_class,
@@ -236,8 +236,8 @@ class BalanceCascade(SamplerMixin):
             # next round
 
             # Find the misclassified index to keep them for the next round
-            idx_mis_class = idx_sel_from_maj[np.nonzero(pred_label !=
-                                                        N_y[idx_sel_from_maj])]
+            idx_mis_class = idx_sel_from_maj[np.flatnonzero(
+                pred_label != N_y[idx_sel_from_maj])]
             self.logger.debug('Elements misclassified: %s', idx_mis_class)
 
             # Count how many random element will be selected
@@ -257,7 +257,7 @@ class BalanceCascade(SamplerMixin):
                 if n_subsets == (self.n_max_subset - 1):
                     b_subset_search = False
                     # Select the remaining data
-                    idx_sel_from_maj = np.nonzero(b_sel_N)[0]
+                    idx_sel_from_maj = np.flatnonzero(b_sel_N)
                     idx_sel_from_maj = np.concatenate((idx_mis_class,
                                                        idx_sel_from_maj),
                                                       axis=0).astype(int)
@@ -287,7 +287,7 @@ class BalanceCascade(SamplerMixin):
             if num_samples > np.count_nonzero(b_sel_N):
                 b_subset_search = False
                 # Select the remaining data
-                idx_sel_from_maj = np.nonzero(b_sel_N)[0]
+                idx_sel_from_maj = np.flatnonzero(b_sel_N)
                 idx_sel_from_maj = np.concatenate((idx_mis_class,
                                                    idx_sel_from_maj),
                                                   axis=0).astype(int)
