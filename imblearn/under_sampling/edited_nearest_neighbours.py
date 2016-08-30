@@ -187,6 +187,10 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
                 idx_tmp = np.flatnonzero(y == key)[np.flatnonzero(nnhood_bool)]
                 idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
 
+            self.logger.debug('Shape of the selected feature: %s', sel_x.shape)
+            self.logger.debug('Shape of current features: %s',
+                              X_resampled.shape)
+
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
