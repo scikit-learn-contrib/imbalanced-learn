@@ -4,6 +4,7 @@ from __future__ import print_function
 import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
+from nose.tools import assert_true
 
 from collections import Counter
 
@@ -61,7 +62,7 @@ def test_make_imbalance_1():
     counter = Counter(y_)
     assert_equal(counter[0], 500)
     assert_equal(counter[1], 250)
-    assert(np.all([X_i in X for X_i in X_]))
+    assert_true(np.all([X_i in X for X_i in X_]))
 
 
 def test_make_imbalance_2():
@@ -70,7 +71,7 @@ def test_make_imbalance_2():
     counter = Counter(y_)
     assert_equal(counter[0], 500)
     assert_equal(counter[1], 125)
-    assert(np.all([X_i in X for X_i in X_]))
+    assert_true(np.all([X_i in X for X_i in X_]))
 
 
 def test_make_imbalance_3():
@@ -79,7 +80,7 @@ def test_make_imbalance_3():
     counter = Counter(y_)
     assert_equal(counter[0], 500)
     assert_equal(counter[1], 50)
-    assert(np.all([X_i in X for X_i in X_]))
+    assert_true(np.all([X_i in X for X_i in X_]))
 
 
 def test_make_imbalance_4():
@@ -88,7 +89,7 @@ def test_make_imbalance_4():
     counter = Counter(y_)
     assert_equal(counter[0], 500)
     assert_equal(counter[1], 5)
-    assert(np.all([X_i in X for X_i in X_]))
+    assert_true(np.all([X_i in X for X_i in X_]))
 
 
 def test_make_imbalance_5():
@@ -97,7 +98,7 @@ def test_make_imbalance_5():
     counter = Counter(y_)
     assert_equal(counter[1], 500)
     assert_equal(counter[0], 5)
-    assert(np.all([X_i in X for X_i in X_]))
+    assert_true(np.all([X_i in X for X_i in X_]))
 
 
 def test_make_imbalance_multiclass():
@@ -113,4 +114,4 @@ def test_make_imbalance_multiclass():
     assert_equal(counter[0], 90)
     assert_equal(counter[1], 400)
     assert_equal(counter[2], 500)
-    assert(np.all([X_i in X for X_i in X_]))
+    assert_true(np.all([X_i in X for X_i in X_]))
