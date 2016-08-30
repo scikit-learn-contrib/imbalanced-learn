@@ -183,7 +183,7 @@ class NearMiss(BaseMulticlassSampler):
         sel_idx = sorted_idx[:num_samples]
 
         return (X[y == key][sel_idx], y[y == key][sel_idx],
-                np.nonzero(y == key)[0][sel_idx])
+                np.flatnonzero(y == key)[sel_idx])
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -212,9 +212,9 @@ class NearMiss(BaseMulticlassSampler):
 
         # Assign the parameter of the element of this class
         # Check that the version asked is implemented
-        if self.version not in [1,2,3]:
-            raise ValueError("Parameter 'version' must be 1, 2 or 3, " 
-	                     "got {0}".format(self.version))
+        if self.version not in [1, 2, 3]:
+            raise ValueError('Parameter `version` must be 1, 2 or 3, got'
+                             ' {}'.format(self.version))
 
         # Start with the minority class
         X_min = X[y == self.min_c_]
@@ -232,7 +232,7 @@ class NearMiss(BaseMulticlassSampler):
 
         # If we need to offer support for the indices
         if self.return_indices:
-            idx_under = np.nonzero(y == self.min_c_)[0]
+            idx_under = np.flatnonzero(y == self.min_c_)
 
         # For each element of the current class, find the set of NN
         # of the minority class

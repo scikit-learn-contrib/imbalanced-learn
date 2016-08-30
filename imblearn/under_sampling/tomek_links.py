@@ -172,7 +172,7 @@ class TomekLinks(BaseBinarySampler):
         if self.return_indices:
             # Return the indices of interest
             return (X[np.logical_not(links)], y[np.logical_not(links)],
-                    np.nonzero(np.logical_not(links))[0])
+                    np.flatnonzero(np.logical_not(links)))
         else:
             # Return data set without majority Tomek links.
             return X[np.logical_not(links)], y[np.logical_not(links)]

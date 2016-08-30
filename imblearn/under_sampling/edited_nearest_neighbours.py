@@ -141,7 +141,7 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
 
         # If we need to offer support for the indices
         if self.return_indices:
-            idx_under = np.nonzero(y == self.min_c_)[0]
+            idx_under = np.flatnonzero(y == self.min_c_)
 
         # Create a k-NN to fit the whole data
         nn_obj = NearestNeighbors(n_neighbors=self.size_ngh + 1,
@@ -179,12 +179,12 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
                 raise NotImplementedError
 
             # Get the samples which agree all together
-            sel_x = np.squeeze(sub_samples_x[np.nonzero(nnhood_bool), :])
-            sel_y = sub_samples_y[np.nonzero(nnhood_bool)]
+            sel_x = sub_samples_x[np.flatnonzero(nnhood_bool), :]
+            sel_y = sub_samples_y[np.flatnonzero(nnhood_bool)]
 
             # If we need to offer support for the indices selected
             if self.return_indices:
-                idx_tmp = np.nonzero(y == key)[0][np.nonzero(nnhood_bool)]
+                idx_tmp = np.flatnonzero(y == key)[np.flatnonzero(nnhood_bool)]
                 idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
 
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
