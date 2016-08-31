@@ -1,15 +1,12 @@
 """Test the module random under sampler."""
 from __future__ import print_function
 
-import os
-
 import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
 from numpy.testing import assert_warns
 
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 
 from collections import Counter
@@ -18,10 +15,18 @@ from imblearn.under_sampling import RandomUnderSampler
 
 # Generate a global dataset to use
 RND_SEED = 0
-X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                           n_informative=3, n_redundant=1, flip_y=0,
-                           n_features=20, n_clusters_per_class=1,
-                           n_samples=5000, random_state=RND_SEED)
+# Data generated for the toy example
+X = np.array([[0.04352327, -0.20515826],
+              [0.92923648, 0.76103773],
+              [0.20792588, 1.49407907],
+              [0.47104475, 0.44386323],
+              [0.22950086, 0.33367433],
+              [0.15490546, 0.3130677],
+              [0.09125309, -0.85409574],
+              [0.12372842, 0.6536186],
+              [0.13347175, 0.12167502],
+              [0.094035, -2.55298982]])
+Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 
 def test_rus_sk_estimator():
@@ -97,8 +102,8 @@ def test_rus_fit():
     # Check if the data information have been computed
     assert_equal(rus.min_c_, 0)
     assert_equal(rus.maj_c_, 1)
-    assert_equal(rus.stats_c_[0], 500)
-    assert_equal(rus.stats_c_[1], 4500)
+    assert_equal(rus.stats_c_[0], 3)
+    assert_equal(rus.stats_c_[1], 7)
 
 
 def test_rus_sample_wt_fit():
@@ -117,9 +122,14 @@ def test_rus_fit_sample():
     rus = RandomUnderSampler(random_state=RND_SEED)
     X_resampled, y_resampled = rus.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'rus_x.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'rus_y.npy'))
+
+    X_gt = np.array([[0.92923648, 0.76103773],
+                     [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502],
+                     [0.09125309, -0.85409574],
+                     [0.12372842, 0.6536186],
+                     [0.04352327, -0.20515826]])
+    y_gt = np.array([0, 0, 0, 1, 1, 1])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -131,10 +141,14 @@ def test_rus_fit_sample_with_indices():
     rus = RandomUnderSampler(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = rus.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'rus_x.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'rus_y.npy'))
-    idx_gt = np.load(os.path.join(currdir, 'data', 'rus_idx.npy'))
+    X_gt = np.array([[0.92923648, 0.76103773],
+                     [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502],
+                     [0.09125309, -0.85409574],
+                     [0.12372842, 0.6536186],
+                     [0.04352327, -0.20515826]])
+    y_gt = np.array([0, 0, 0, 1, 1, 1])
+    idx_gt = np.array([1, 3, 8, 6, 7, 0])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
@@ -148,9 +162,16 @@ def test_rus_fit_sample_half():
     rus = RandomUnderSampler(ratio=ratio, random_state=RND_SEED)
     X_resampled, y_resampled = rus.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'rus_x_05.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'rus_y_05.npy'))
+    X_gt = np.array([[0.92923648, 0.76103773],
+                    [0.47104475, 0.44386323],
+                    [0.13347175, 0.12167502],
+                    [0.09125309, -0.85409574],
+                    [0.12372842, 0.6536186],
+                    [0.04352327, -0.20515826],
+                    [0.15490546, 0.3130677],
+                    [0.15490546, 0.3130677],
+                    [0.15490546, 0.3130677]])
+    y_gt = np.array([0, 0, 0, 1, 1, 1, 1, 1, 1])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -171,7 +192,7 @@ def test_continuous_error():
     type"""
 
     # continuous case
-    y = np.linspace(0, 1, 5000)
+    y = np.linspace(0, 1, 10)
     rus = RandomUnderSampler(random_state=RND_SEED)
     assert_warns(UserWarning, rus.fit, X, y)
 
@@ -181,7 +202,8 @@ def test_multiclass_fit_sample():
 
     # Make y to be multiclass
     y = Y.copy()
-    y[0:1000] = 2
+    y[5] = 2
+    y[6] = 2
 
     # Resample the data
     rus = RandomUnderSampler(random_state=RND_SEED)
@@ -189,6 +211,6 @@ def test_multiclass_fit_sample():
 
     # Check the size of y
     count_y_res = Counter(y_resampled)
-    assert_equal(count_y_res[0], 400)
-    assert_equal(count_y_res[1], 400)
-    assert_equal(count_y_res[2], 400)
+    assert_equal(count_y_res[0], 2)
+    assert_equal(count_y_res[1], 2)
+    assert_equal(count_y_res[2], 2)

@@ -16,10 +16,27 @@ from imblearn.under_sampling import TomekLinks
 
 # Generate a global dataset to use
 RND_SEED = 0
-X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                           n_informative=3, n_redundant=1, flip_y=0,
-                           n_features=20, n_clusters_per_class=1,
-                           n_samples=5000, random_state=RND_SEED)
+X = np.array([[0.31230513, 0.1216318 ],
+              [0.68481731, 0.51935141],
+              [1.34192108, -0.13367336],
+              [0.62366841, -0.21312976],
+              [1.61091956, -0.40283504],
+              [-0.37162401, -2.19400981],
+              [0.74680821, 1.63827342],
+              [0.2184254, 0.24299982],
+              [0.61472253, -0.82309052],
+              [0.19893132, -0.47761769],
+              [1.06514042, -0.0770537],
+              [0.97407872, 0.44454207],
+              [1.40301027, -0.83648734],
+              [-1.20515198, -1.02689695],
+              [-0.27410027, -0.54194484],
+              [0.8381014, 0.44085498],
+              [-0.23374509, 0.18370049],
+              [-0.32635887, -0.29299653],
+              [-0.00288378, 0.84259929],
+              [1.79580611, -0.02219234]])
+Y = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
 def test_tl_sk_estimator():
@@ -59,8 +76,8 @@ def test_tl_fit():
     # Check if the data information have been computed
     assert_equal(tl.min_c_, 0)
     assert_equal(tl.maj_c_, 1)
-    assert_equal(tl.stats_c_[0], 500)
-    assert_equal(tl.stats_c_[1], 4500)
+    assert_equal(tl.stats_c_[0], 7)
+    assert_equal(tl.stats_c_[1], 13)
 
 
 def test_tl_sample_wt_fit():
@@ -79,9 +96,24 @@ def test_tl_fit_sample():
     tl = TomekLinks(random_state=RND_SEED)
     X_resampled, y_resampled = tl.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'tl_x.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'tl_y.npy'))
+    X_gt = np.array([[0.31230513, 0.1216318],
+                     [0.68481731, 0.51935141],
+                     [1.34192108, -0.13367336],
+                     [0.62366841, -0.21312976],
+                     [1.61091956, -0.40283504],
+                     [-0.37162401, -2.19400981],
+                     [0.74680821, 1.63827342],
+                     [0.2184254, 0.24299982],
+                     [0.61472253, -0.82309052],
+                     [0.19893132, -0.47761769],
+                     [0.97407872, 0.44454207],
+                     [1.40301027, -0.83648734],
+                     [-1.20515198, -1.02689695],
+                     [-0.23374509, 0.18370049],
+                     [-0.32635887, -0.29299653],
+                     [-0.00288378, 0.84259929],
+                     [1.79580611, -0.02219234]])
+    y_gt = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -93,10 +125,26 @@ def test_tl_fit_sample_with_indices():
     tl = TomekLinks(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = tl.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'tl_x.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'tl_y.npy'))
-    idx_gt = np.load(os.path.join(currdir, 'data', 'tl_idx.npy'))
+    X_gt = np.array([[0.31230513, 0.1216318],
+                     [0.68481731, 0.51935141],
+                     [1.34192108, -0.13367336],
+                     [0.62366841, -0.21312976],
+                     [1.61091956, -0.40283504],
+                     [-0.37162401, -2.19400981],
+                     [0.74680821, 1.63827342],
+                     [0.2184254, 0.24299982],
+                     [0.61472253, -0.82309052],
+                     [0.19893132, -0.47761769],
+                     [0.97407872, 0.44454207],
+                     [1.40301027, -0.83648734],
+                     [-1.20515198, -1.02689695],
+                     [-0.23374509, 0.18370049],
+                     [-0.32635887, -0.29299653],
+                     [-0.00288378, 0.84259929],
+                     [1.79580611, -0.02219234]])
+    y_gt = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0])
+    idx_gt = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 16, 17,
+                       18, 19])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
@@ -118,11 +166,11 @@ def test_multiclass_error():
     type. """
 
     # continuous case
-    y = np.linspace(0, 1, 5000)
+    y = np.linspace(0, 1, 20)
     tl = TomekLinks(random_state=RND_SEED)
     assert_warns(UserWarning, tl.fit, X, y)
 
     # multiclass case
-    y = np.array([0] * 2000 + [1] * 2000 + [2] * 1000)
+    y = np.array([0] * 3 + [1] * 7 + [2] * 10)
     tl = TomekLinks(random_state=RND_SEED)
     assert_warns(UserWarning, tl.fit, X, y)
