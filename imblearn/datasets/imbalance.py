@@ -49,8 +49,13 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
         The corresponding label of `X_resampled`
 
     """
-    if ratio <= 0.0 or ratio >= 1.0:
-        raise ValueError('ratio value must be such that 0.0 < ratio < 1.0')
+    if isinstance(ratio, float):
+        if ratio > 1:
+            raise ValueError('Ration cannot be greater than one.')
+        elif ratio <= 0:
+            raise ValueError('Ratio cannot be negative.')
+    else:
+        raise ValueError('Ratio must be a float between 0.0 < ratio < 1.0')
 
     X, y = check_X_y(X, y)
 

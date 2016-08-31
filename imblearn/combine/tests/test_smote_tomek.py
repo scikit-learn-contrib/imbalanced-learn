@@ -7,6 +7,7 @@ import numpy as np
 from numpy.testing import assert_raises
 from numpy.testing import assert_equal
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_almost_equal
 from numpy.testing import assert_warns
 
 from sklearn.datasets import make_classification
@@ -16,10 +17,27 @@ from imblearn.combine import SMOTETomek
 
 # Generate a global dataset to use
 RND_SEED = 0
-X, Y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                           n_informative=3, n_redundant=1, flip_y=0,
-                           n_features=20, n_clusters_per_class=1,
-                           n_samples=5000, random_state=RND_SEED)
+X = np.array([[0.20622591, 0.0582794],
+              [0.68481731, 0.51935141],
+              [1.34192108, -0.13367336],
+              [0.62366841, -0.21312976],
+              [1.61091956, -0.40283504],
+              [-0.37162401, -2.19400981],
+              [0.74680821, 1.63827342],
+              [0.2184254, 0.24299982],
+              [0.61472253, -0.82309052],
+              [0.19893132, -0.47761769],
+              [1.06514042, -0.0770537],
+              [0.97407872, 0.44454207],
+              [1.40301027, -0.83648734],
+              [-1.20515198, -1.02689695],
+              [-0.27410027, -0.54194484],
+              [0.8381014, 0.44085498],
+              [-0.23374509, 0.18370049],
+              [-0.32635887, -0.29299653],
+              [-0.00288378, 0.84259929],
+              [1.79580611, -0.02219234]])
+Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
 def test_smote_sk_estimator():
@@ -74,8 +92,8 @@ def test_smote_fit():
     # Check if the data information have been computed
     assert_equal(smote.min_c_, 0)
     assert_equal(smote.maj_c_, 1)
-    assert_equal(smote.stats_c_[0], 500)
-    assert_equal(smote.stats_c_[1], 4500)
+    assert_equal(smote.stats_c_[0], 8)
+    assert_equal(smote.stats_c_[1], 12)
 
 
 def test_smote_sample_wt_fit():
@@ -97,10 +115,29 @@ def test_sample_regular():
 
     X_resampled, y_resampled = smote.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'smote_tomek_reg_x.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'smote_tomek_reg_y.npy'))
-    assert_array_equal(X_resampled, X_gt)
+    X_gt = np.array([[0.20622591, 0.0582794],
+                     [0.68481731, 0.51935141],
+                     [1.34192108, -0.13367336],
+                     [0.62366841, -0.21312976],
+                     [1.61091956, -0.40283504],
+                     [-0.37162401, -2.19400981],
+                     [0.74680821, 1.63827342],
+                     [0.61472253, -0.82309052],
+                     [0.19893132, -0.47761769],
+                     [0.97407872, 0.44454207],
+                     [1.40301027, -0.83648734],
+                     [-1.20515198, -1.02689695],
+                     [-0.23374509, 0.18370049],
+                     [-0.32635887, -0.29299653],
+                     [-0.00288378, 0.84259929],
+                     [1.79580611, -0.02219234],
+                     [0.38307743, -0.05670439],
+                     [0.93976473, -0.06570176],
+                     [0.70319159, -0.02571668],
+                     [0.75052536, -0.19246517]])
+    y_gt = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0,
+                     0])
+    assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -108,17 +145,32 @@ def test_sample_regular_half():
     """Test sample function with regular SMOTE and a ratio of 0.5."""
 
     # Create the object
-    ratio = 0.5
+    ratio = 0.8
     smote = SMOTETomek(ratio=ratio, random_state=RND_SEED)
     # Fit the data
     smote.fit(X, Y)
 
     X_resampled, y_resampled = smote.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
-    X_gt = np.load(os.path.join(currdir, 'data', 'smote_tomek_reg_x_05.npy'))
-    y_gt = np.load(os.path.join(currdir, 'data', 'smote_tomek_reg_y_05.npy'))
-    assert_array_equal(X_resampled, X_gt)
+    X_gt = np.array([[0.20622591, 0.0582794],
+                     [0.68481731, 0.51935141],
+                     [1.34192108, -0.13367336],
+                     [0.62366841, -0.21312976],
+                     [1.61091956, -0.40283504],
+                     [-0.37162401, -2.19400981],
+                     [0.74680821, 1.63827342],
+                     [0.61472253, -0.82309052],
+                     [0.19893132, -0.47761769],
+                     [0.97407872, 0.44454207],
+                     [1.40301027, -0.83648734],
+                     [-1.20515198, -1.02689695],
+                     [-0.23374509, 0.18370049],
+                     [-0.32635887, -0.29299653],
+                     [-0.00288378, 0.84259929],
+                     [1.79580611, -0.02219234],
+                     [0.45784496, -0.1053161]])
+    y_gt = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0])
+    assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -138,11 +190,11 @@ def test_multiclass_error():
     type. """
 
     # continuous case
-    y = np.linspace(0, 1, 5000)
+    y = np.linspace(0, 1, 20)
     sm = SMOTETomek(random_state=RND_SEED)
     assert_warns(UserWarning, sm.fit, X, y)
 
     # multiclass case
-    y = np.array([0] * 2000 + [1] * 2000 + [2] * 1000)
+    y = np.array([0] * 3 + [1] * 2 + [2] * 15)
     sm = SMOTETomek(random_state=RND_SEED)
     assert_warns(UserWarning, sm.fit, X, y)

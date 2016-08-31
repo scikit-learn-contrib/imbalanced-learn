@@ -187,6 +187,10 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
                 idx_tmp = np.flatnonzero(y == key)[np.flatnonzero(nnhood_bool)]
                 idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
 
+            self.logger.debug('Shape of the selected feature: %s', sel_x.shape)
+            self.logger.debug('Shape of current features: %s',
+                              X_resampled.shape)
+
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
@@ -382,8 +386,8 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
             self.logger.debug('Current ENN stats: %s', stats_enn)
             # Get the number of samples in the non-minority classes
             count_non_min = np.array([val for val, key
-                                      in zip(stats_enn.itervalues(),
-                                             stats_enn.iterkeys())
+                                      in zip(stats_enn.values(),
+                                             stats_enn.keys())
                                       if key != self.min_c_])
             self.logger.debug('Number of samples in the non-majority'
                               ' classes: %s', count_non_min)
@@ -572,8 +576,6 @@ class AllKNN(BaseMulticlassSampler):
         if self.return_indices:
             idx_under = np.arange(X.shape[0], dtype=int)
 
-        prev_len = y.shape[0]
-
         for curr_size_ngh in range(1, self.size_ngh + 1):
             self.logger.debug('Apply ENN size_ngh #%s', curr_size_ngh)
             # updating ENN size_ngh
@@ -592,8 +594,8 @@ class AllKNN(BaseMulticlassSampler):
             self.logger.debug('Current ENN stats: %s', stats_enn)
             # Get the number of samples in the non-minority classes
             count_non_min = np.array([val for val, key
-                                      in zip(stats_enn.itervalues(),
-                                             stats_enn.iterkeys())
+                                      in zip(stats_enn.values(),
+                                             stats_enn.keys())
                                       if key != self.min_c_])
             self.logger.debug('Number of samples in the non-majority'
                               ' classes: %s', count_non_min)

@@ -166,7 +166,9 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         elif self.estimator == 'linear-svm':
             from sklearn.svm import SVC
             estimator = SVC(probability=True,
-                            random_state=self.random_state, **self.kwargs)
+                            random_state=self.random_state,
+                            kernel='linear',
+                            **self.kwargs)
         else:
             raise NotImplementedError
 
