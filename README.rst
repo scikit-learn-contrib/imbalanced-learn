@@ -10,13 +10,16 @@ It is compatible with scikit-learn_ and is part of scikit-learn-contrib_ project
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib 
 
-|Landscape|_ |Travis|_ |Coveralls|_ |CircleCI|_ |Python27|_ |Python35|_ |Pypi|_ |Gitter|_
+|Landscape|_ |Travis|_ |AppVeyor|_ |Coveralls|_ |CircleCI|_ |Python27|_ |Python35|_ |Pypi|_ |Gitter|_
 
 .. |Landscape| image:: https://landscape.io/github/scikit-learn-contrib/imbalanced-learn/master/landscape.svg?style=flat
 .. _Landscape: https://landscape.io/github/scikit-learn-contrib/imbalanced-learn/master
 
 .. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn.svg?branch=master
 .. _Travis: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn
+
+.. |AppVeyor| image:: https://ci.appveyor.com/api/projects/status/c8w4xb7re4euntvi/branch/master?svg=true
+.. _AppVeyor: https://ci.appveyor.com/project/glemaitre/imbalanced-learn/history
 
 .. |Coveralls| image:: https://coveralls.io/repos/github/scikit-learn-contrib/imbalanced-learn/badge.svg?branch=master
 .. _Coveralls: https://coveralls.io/github/scikit-learn-contrib/imbalanced-learn?branch=master
