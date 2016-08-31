@@ -348,6 +348,7 @@ def test_iht_fit_sample_linear_svm():
     est = 'linear-svm'
     iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
     X_resampled, y_resampled = iht.fit_sample(X, Y)
+    print(X_resampled)
 
     X_gt = np.array([[-0.3879569, 0.6894251],
                      [-0.09322739, 1.28177189],
