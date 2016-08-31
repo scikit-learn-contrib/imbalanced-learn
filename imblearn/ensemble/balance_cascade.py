@@ -205,6 +205,7 @@ class BalanceCascade(BaseBinarySampler):
 
         # Loop to create the different subsets
         while b_subset_search:
+            self.logger.debug('Search boolean: %s', b_subset_search)
             # Generate an appropriate number of index to extract
             # from the majority class depending of the false classification
             # rate of the previous iteration
@@ -272,6 +273,7 @@ class BalanceCascade(BaseBinarySampler):
 
             # Check if we have to make an early stopping
             if self.n_max_subset is not None:
+                self.logger.debug('Current number of subset %s', n_subsets)
                 if n_subsets == (self.n_max_subset - 1):
                     b_subset_search = False
                     # Select the remaining data
@@ -299,6 +301,10 @@ class BalanceCascade(BaseBinarySampler):
 
                     self.logger.debug('The number of subset reached is'
                                       ' maximum.')
+                    break
+                # Specific case with n_max_subset = 1
+                elif n_subsets > (self.n_max_subset - 1):
+                    break
 
             # Also check that we will have enough sample to extract at the
             # next round
