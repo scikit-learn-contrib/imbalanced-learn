@@ -19,6 +19,8 @@ from sklearn.externals import six
 
 from six import string_types
 
+TARGET_STR = ('minority', 'not minority', 'majority', 'all')
+
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
@@ -30,7 +32,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     _estimator_type = 'sampler'
 
-    def __init__(self, ratio='auto'):
+    def __init__(self, ratio='auto', target_classes='not minority'):
         """Initialize this object and its instance variables.
 
         Parameters
@@ -41,6 +43,10 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             of samples in the minority class over the the number of samples
             in the majority class.
 
+        target_classes : str or tuple target, optional (default='not minority')
+            A string or a tuple of target to specify which class to consider
+            to apply the balancing.
+
         Returns
         -------
         None
@@ -48,6 +54,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         """
 
         self.ratio = ratio
+        self.target_classes = target_classes
         self.logger = logging.getLogger(__name__)
 
     def fit(self, X, y):
@@ -105,6 +112,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         self.logger.info('%s classes detected: %s', uniques.size,
                          self.stats_c_)
+
+        if hasattr(self, 'target_classes'):
+            self.target_classes_ = self._validate_target_classes()
 
         # Check if the ratio provided at initialisation make sense
         if isinstance(self.ratio, float):
@@ -179,6 +189,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         return self.fit(X, y).sample(X, y)
 
     def _validate_ratio(self):
+        """Private function to check if the ratio as a good value"""
         # The ratio correspond to the number of samples in the minority class
         # over the number of samples in the majority class. Thus, the ratio
         # cannot be greater than 1.0
@@ -193,6 +204,38 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
                 raise ValueError('Unknown string for the parameter ratio.')
         else:
             raise ValueError('Unknown parameter type for ratio.')
+
+    def _validate_target_classes(self):
+        """Private method to check whether the parameters pass are in
+        accordance with the class statistics."""
+
+        if isinstance(self.target_classes, string_types):
+            if self.target_classes not in TARGET_STR:
+                raise ValueError('The target classes parameters specified is'
+                                 'unknown.')
+            else:
+                # Convert the string to a tuple with the targeted classes
+                if self.target_classes == 'minority':
+                    return tuple([self.min_c_])
+                elif self.target_classes == 'majority':
+                    return tuple([self.maj_c_])
+                elif self.target_classes == 'all':
+                    return tuple(self.stats_c_.keys())
+                elif self.target_classes == 'not minority':
+                    return tuple([val for val in
+                                                 self.stats_c_.keys()
+                                                 if val != self.min_c_])
+        elif isinstance(self.target_classes, tuple):
+            # Create a tuple with the different class present in the statistics
+            classes_tuple = tuple(self.stats_c_.keys())
+            for val in self.target_classes:
+                if val not in classes_tuple:
+                    raise ValueError('The class specified in class target is'
+                                     ' unknown and no present in the data'
+                                     ' provided')
+            return self.target_classes
+        else:
+            raise ValueError('Unknown type for the target classes parameters.')
 
     @abstractmethod
     def _sample(self, X, y):

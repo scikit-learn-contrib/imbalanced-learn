@@ -95,8 +95,10 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
     """
 
     def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=3, kind_sel='all', n_jobs=-1):
-        super(EditedNearestNeighbours, self).__init__()
+                 size_ngh=3, kind_sel='all', n_jobs=-1,
+                 target_classes='not minority'):
+        super(EditedNearestNeighbours, self).__init__(
+            target_classes=target_classes)
         self.return_indices = return_indices
         self.random_state = random_state
         self.size_ngh = size_ngh
@@ -152,8 +154,8 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         # Loop over the other classes under picking at random
         for key in self.stats_c_.keys():
 
-            # If the minority class is up, skip it
-            if key == self.min_c_:
+            # If the key is not part of the classes to be downsampled
+            if key not in self.target_classes_:
                 continue
 
             # Get the sample of the current class
