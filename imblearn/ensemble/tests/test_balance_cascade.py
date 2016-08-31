@@ -559,8 +559,7 @@ def test_init_wrong_classifier():
 
 
 def test_fit_sample_auto_early_stop():
-    """Test the fit and sample routine with auto ratio with a static number
-    of subsets."""
+    """Test the fit and sample routine with auto ratio with 1 subset."""
 
     # Define the ratio parameter
     ratio = 'auto'
@@ -596,6 +595,67 @@ def test_fit_sample_auto_early_stop():
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
+
+
+def test_fit_sample_auto_early_stop_2():
+    """Test the fit and sample routine with auto ratio with a 2 subsets."""
+
+    # Define the ratio parameter
+    ratio = 'auto'
+    n_subset = 2
+
+    # Create the sampling object
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=True, n_max_subset=n_subset)
+
+    # Get the different subset
+    X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
+
+    X_gt = np.array([np.array([[0.11622591, -0.0317206],
+                               [1.25192108, -0.22367336],
+                               [0.53366841, -0.30312976],
+                               [1.52091956, -0.49283504],
+                               [0.88407872, 0.35454207],
+                               [1.31301027, -0.92648734],
+                               [-0.41635887, -0.38299653],
+                               [1.70580611, -0.11219234],
+                               [1.15514042, 0.0129463],
+                               [0.08711622, 0.93259929],
+                               [0.70472253, -0.73309052],
+                               [-0.14374509, 0.27370049],
+                               [0.83680821, 1.72827342],
+                               [-0.18410027, -0.45194484],
+                               [-0.28162401, -2.10400981],
+                               [-1.11515198, -0.93689695]]),
+                     np.array([[0.11622591, -0.0317206],
+                               [1.25192108, -0.22367336],
+                               [0.53366841, -0.30312976],
+                               [1.52091956, -0.49283504],
+                               [0.88407872, 0.35454207],
+                               [1.31301027, -0.92648734],
+                               [-0.41635887, -0.38299653],
+                               [1.70580611, -0.11219234],
+                               [1.15514042, 0.0129463],
+                               [0.70472253, -0.73309052],
+                               [-0.18410027, -0.45194484],
+                               [0.77481731, 0.60935141],
+                               [0.3084254, 0.33299982],
+                               [0.28893132, -0.38761769],
+                               [0.9281014, 0.53085498]])], dtype=object)
+    y_gt = np.array([np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+                               1, 1, 1]),
+                     np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+                               1, 1])], dtype=object)
+    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 11, 4, 10,
+                                 2, 8, 1, 7]),
+                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 4, 8, 0, 3,
+                                 5, 9])], dtype=object)
+
+    # Check each array
+    for idx in range(X_gt.size):
+        assert_array_equal(X_resampled[idx], X_gt[idx])
+        assert_array_equal(y_resampled[idx], y_gt[idx])
+        assert_array_equal(idx_under[idx], idx_gt[idx])
 
 
 def test_sample_wrong_X():
