@@ -364,13 +364,55 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
 
             prev_len = y_.shape[0]
             if self.return_indices:
-                X_, y_, idx_ = self.enn_.fit_sample(X_, y_)
-                idx_under = idx_under[idx_]
+                X_enn, y_enn, idx_enn = self.enn_.fit_sample(X_, y_)
             else:
-                X_, y_ = self.enn_.fit_sample(X_, y_)
+                X_enn, y_enn = self.enn_.fit_sample(X_, y_)
 
-            if prev_len == y_.shape[0]:
+            # Check the stopping criterion
+            # 1. If there is no changes for the vector y
+            # 2. If the number of samples in the other class become inferior to
+            # the number of samples in the majority class
+            # 3. If one of the class is disappearing
+
+            # Case 1
+            b_conv = (prev_len == y_enn.shape[0])
+
+            # Case 2
+            stats_enn = Counter(y_enn)
+            self.logger.debug('Current ENN stats: %s', stats_enn)
+            # Get the number of samples in the non-minority classes
+            count_non_min = np.array([val for val, key
+                                      in zip(stats_enn.itervalues(),
+                                             stats_enn.iterkeys())
+                                      if key != self.min_c_])
+            self.logger.debug('Number of samples in the non-majority'
+                              ' classes: %s', count_non_min)
+            # Check the minority stop to be the minority
+            b_min_bec_maj = np.any(count_non_min < self.stats_c_[self.min_c_])
+
+            # Case 3
+            b_remove_maj_class = (len(stats_enn) < len(self.stats_c_))
+
+            if b_conv or b_min_bec_maj or b_remove_maj_class:
+                # If this is a normal convergence, get the last data
+                if b_conv:
+                    if self.return_indices:
+                        X_, y_, = X_enn, y_enn
+                        idx_under = idx_under[idx_enn]
+                    else:
+                        X_, y_, = X_enn, y_enn
+                # Log the variables to explain the stop of the algorithm
+                self.logger.debug('RENN converged: %s', b_conv)
+                self.logger.debug('RENN minority become majority: %s',
+                                  b_min_bec_maj)
+                self.logger.debug('RENN remove one class: %s',
+                                  b_remove_maj_class)
                 break
+
+            # Update the data for the next iteration
+            X_, y_, = X_enn, y_enn
+            if self.return_indices:
+                idx_under = idx_under[idx_enn]
 
         self.logger.info('Under-sampling performed: %s', Counter(y_))
 

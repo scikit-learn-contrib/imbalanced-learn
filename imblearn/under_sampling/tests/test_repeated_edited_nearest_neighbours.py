@@ -167,6 +167,6 @@ def test_multiclass_fit_sample():
 
     # Check the size of y
     count_y_res = Counter(y_resampled)
-    assert_equal(count_y_res[0], 378)
-    assert_equal(count_y_res[1], 1828)
-    assert_equal(count_y_res[2], 5)
+    assert_equal(count_y_res[0], 400)
+    assert_equal(count_y_res[1], 3600)
+    assert_equal(count_y_res[2], 1000)
