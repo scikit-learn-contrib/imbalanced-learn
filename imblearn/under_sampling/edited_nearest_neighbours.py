@@ -27,6 +27,15 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
+    target_classes : str or tuple target, optional (default='not minority')
+        A string or a tuple of target to specify which class to consider
+        to apply the balancing. The string choices can be:
+        - 'minority': only resample the minority class,
+        - 'majority': only resmaple the majority class,
+        - 'all': resample all the classes,
+        - 'not minority': resample all classes apart of the minority one.
+        The tuple should contains the target classes.
+
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
