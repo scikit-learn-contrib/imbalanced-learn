@@ -115,6 +115,8 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         if hasattr(self, 'target_classes'):
             self.target_classes_ = self._validate_target_classes()
+            self.logger.debug('The target classes have been set to %s',
+                              self.target_classes_)
 
         # Check if the ratio provided at initialisation make sense
         if isinstance(self.ratio, float):
@@ -212,7 +214,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         if isinstance(self.target_classes, string_types):
             if self.target_classes not in TARGET_STR:
                 raise ValueError('The target classes parameters specified is'
-                                 'unknown.')
+                                 ' unknown.')
             else:
                 # Convert the string to a tuple with the targeted classes
                 if self.target_classes == 'minority':

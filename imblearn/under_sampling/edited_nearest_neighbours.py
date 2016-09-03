@@ -63,6 +63,9 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
+    target_classes_ : tuple
+        Tuple containing the classes which will be re-sampled.
+
     Notes
     -----
     The method is based on [1]_.
