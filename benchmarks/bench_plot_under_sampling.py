@@ -26,14 +26,12 @@ from sklearn.metrics import auc
 
 from scipy import interp
 
-current_palette = sns.color_palette()
-
 STORE_PATH = './results/under-sampling'
 N_JOBS = -1
 
 # Check that the storage path is existing
 if not os.path.exists(STORE_PATH):
-    os.mkdir(STORE_PATH)
+    os.makedirs(STORE_PATH)
 
 # Fetch the dataset if not done already done
 dataset = fetch_benchmark()
@@ -103,10 +101,10 @@ for idx_dataset, current_set in enumerate(dataset):
             elapsed_time = time() - tstart
             cv_time.append(elapsed_time)
             # Predict on the testing set
-            y_hat = pipe.predict_proba(X_test, y_test)
+            y_hat = pipe.predict_proba(X_test)
 
             # Compute the statistics
-            fpr, tpr, thresholds = roc_curve(y_test, y_hat)
+            fpr, tpr, thresholds = roc_curve(y_test, y_hat[:, 1])
             mean_tpr.append(interp(mean_fpr, fpr, tpr))
             mean_tpr[-1][0] = 0.0
             cv_auc.append(auc(mean_fpr, mean_tpr[-1]))
@@ -134,16 +132,16 @@ for idx_dataset, current_set in enumerate(dataset):
 
             ax.plot(mean_fpr, pipeline_tpr_mean[idx_pipeline],
                     label=(under_samplers_legend[us_idx] +
-                           r'- AUC $= {:1.3f} \pm {:1.3f}$'.format(
+                           r' - AUC $= {:1.3f} \pm {:1.3f}$'.format(
                                pipeline_auc[idx_pipeline],
                                pipeline_auc_std[idx_pipeline])),
                     lw=2)
-            ax.fill_between(mean_fpr,
-                            (pipeline_tpr_mean[idx_pipeline] +
-                             pipeline_tpr_std[idx_pipeline]),
-                            (pipeline_tpr_mean[idx_pipeline] -
-                             pipeline_tpr_std[idx_pipeline]),
-                            facecolor=current_palette[us_idx], alpha=0.2)
+#             ax.fill_between(mean_fpr,
+#                             (pipeline_tpr_mean[idx_pipeline] +
+#                              pipeline_tpr_std[idx_pipeline]),
+#                             (pipeline_tpr_mean[idx_pipeline] -
+#                              pipeline_tpr_std[idx_pipeline]),
+#                             alpha=0.2)
 
 
         plt.xlim([0.0, 1.0])
