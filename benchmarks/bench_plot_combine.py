@@ -157,16 +157,20 @@ for idx_dataset, current_set in enumerate(dataset):
                     bbox_extra_artists=(lgd,),
                     bbox_inches='tight')
 
+    # Keep only the interesting data
+    datasets_nb_samples.append(np.mean(pipeline_nb_samples))
+    datasets_time.append(pipeline_time[:len(combine_samplers)])
+
 datasets_time = np.array(datasets_time)
 datasets_nb_samples = np.array(datasets_nb_samples)
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
-for us_idx in range(len(combine_samplers)):
-    ax.plot(datasets_nb_samples, datasets_time[:, us_idx],
-            label=combine_samplers_legend[us_idx],
-            lw=2, linestyle=lines_marker[us_idx%len(lines_marker)])
+for comb_idx in range(len(combine_samplers)):
+    ax.plot(datasets_nb_samples, datasets_time[:, comb_idx],
+            label=combine_samplers_legend[comb_idx],
+            lw=2, linestyle=lines_marker[comb_idx%len(lines_marker)])
     plt.xlabel('# samples')
     plt.ylabel('Time (s)')
     plt.title('Complexity time of the different combining over- and'

@@ -161,9 +161,10 @@ for idx_dataset, current_set in enumerate(dataset):
             classifiers_legend[cl_idx])),
                     bbox_extra_artists=(lgd,),
                     bbox_inches='tight')
+
     # Keep only the interesting data
     datasets_nb_samples.append(np.mean(pipeline_nb_samples))
-    datasets_time.append(pipeline_time[:len(under_samplers)])
+    datasets_time.append(pipeline_time[:len(over_samplers)])
 
 datasets_time = np.array(datasets_time)
 datasets_nb_samples = np.array(datasets_nb_samples)
@@ -171,10 +172,10 @@ datasets_nb_samples = np.array(datasets_nb_samples)
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
-for us_idx in range(len(over_samplers)):
-    ax.plot(datasets_nb_samples, datasets_time[:, us_idx],
-            label=over_samplers_legend[us_idx],
-            lw=2, linestyle=lines_marker[us_idx%len(lines_marker)])
+for os_idx in range(len(over_samplers)):
+    ax.plot(datasets_nb_samples, datasets_time[:, os_idx],
+            label=over_samplers_legend[os_idx],
+            lw=2, linestyle=lines_marker[os_idx%len(lines_marker)])
     plt.xlabel('# samples')
     plt.ylabel('Time (s)')
     plt.title('Complexity time of the different over-sampling methods')
