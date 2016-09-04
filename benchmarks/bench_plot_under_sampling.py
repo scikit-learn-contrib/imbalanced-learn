@@ -68,6 +68,8 @@ for cl in classifiers:
     for us in under_samplers:
         pipelines.append(make_pipeline(us, cl))
 
+datasets_nb_samples = []
+datasets_time = []
 # For each dataset
 for idx_dataset, current_set in enumerate(dataset):
 
@@ -80,18 +82,21 @@ for idx_dataset, current_set in enumerate(dataset):
     pipeline_auc = []
     pipeline_auc_std = []
     pipeline_time = []
+    pipeline_nb_samples = []
     for pipe in pipelines:
         # For each fold from the cross-validation
         mean_tpr = []
         mean_fpr = np.linspace(0, 1, 30)
         cv_auc = []
         cv_time = []
+        cv_nb_samples = []
         for train_index, test_index in skf:
             # Extract the data
             X_train, X_test = (current_set['data'][train_index],
                                current_set['data'][test_index])
             y_train, y_test = (current_set['label'][train_index],
                                current_set['label'][test_index])
+            cv_nb_samples.append(y_train.size)
 
             # Launch the time to check the performance of each under-sampler
             tstart = time()
@@ -117,6 +122,11 @@ for idx_dataset, current_set in enumerate(dataset):
         pipeline_auc.append(auc(mean_fpr, avg_tpr))
         pipeline_auc_std.append(np.std(cv_auc))
         pipeline_time.append(np.mean(cv_time))
+        pipeline_nb_samples.append(np.mean(cv_nb_samples))
+
+    # Keep only the interesting data
+    datasets_nb_samples.append(np.mean(pipeline_nb_samples))
+    datasets_time.append(pipeline_time[:len(under_samplers)])
 
     # For each classifier make a different plot
     for cl_idx in range(len(classifiers)):
@@ -159,3 +169,23 @@ for idx_dataset, current_set in enumerate(dataset):
             classifiers_legend[cl_idx])),
                     bbox_extra_artists=(lgd,),
                     bbox_inches='tight')
+
+datasets_time = np.array(datasets_time)
+datasets_nb_samples = np.array(datasets_nb_samples)
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+
+for us_idx in range(len(under_samplers)):
+    ax.plot(datasets_nb_samples[:, us_idx], datasets_time,
+             label=under_samplers_legend[us_idx])
+    plt.xlabel('# samples')
+    plt.ylabel('Time (s)')
+    plt.title('Complexity time of the different under-sampling methods')
+    handles, labels = ax.get_legend_handles_labels()
+    lgd = ax.legend(handles, labels, loc='lower right')
+
+# Save the plot
+plt.savefig(os.path.join(STORE_PATH, 'complexity.pdf'),
+            bbox_extra_artists=(lgd,),
+            bbox_inches='tight')
