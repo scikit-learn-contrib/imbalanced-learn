@@ -1,0 +1,153 @@
+"""Benchmarks of the over-sampling methods.
+"""
+
+import os
+
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+from time import time
+
+from imblearn import over_sampling
+from imblearn.datasets import fetch_benchmark
+from imblearn.pipeline import make_pipeline
+
+from sklearn.cross_validation import StratifiedKFold
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import roc_curve
+from sklearn.metrics import auc
+
+from scipy import interp
+
+STORE_PATH = './results/over-sampling'
+N_JOBS = -1
+
+# Check that the storage path is existing
+if not os.path.exists(STORE_PATH):
+    os.makedirs(STORE_PATH)
+
+# Fetch the dataset if not done already done
+dataset = fetch_benchmark()
+
+# Create the over-sampling objects
+over_samplers = [over_sampling.ADASYN(n_jobs=N_JOBS),
+                  over_sampling.SMOTE(kind='regular', n_jobs=N_JOBS),
+                  over_sampling.SMOTE(kind='borderline1', n_jobs=N_JOBS),
+                  over_sampling.SMOTE(kind='borderline2', n_jobs=N_JOBS),
+                  over_sampling.SMOTE(kind='svm', n_jobs=N_JOBS),
+                  over_sampling.RandomOverSampler()]
+over_samplers_legend = ['ADASYN', 'SMOTE', 'SMOTE-B1', 'SMOTE-B2',
+                         'SMOTE-SVM', 'ROS']
+
+# Create the classifier objects
+classifiers = [RandomForestClassifier(n_jobs=N_JOBS),
+               GradientBoostingClassifier(),
+               GaussianNB(),
+               KNeighborsClassifier(n_jobs=N_JOBS),
+               DecisionTreeClassifier()]
+classifiers_legend = ['RF', 'GB', 'NB', 'kNN', 'DT']
+
+# Create the diffrent pipeline
+pipelines = []
+for cl in classifiers:
+    for os in over_samplers:
+        pipelines.append(make_pipeline(os, cl))
+
+# For each dataset
+for idx_dataset, current_set in enumerate(dataset):
+
+    # Apply sttratified k-fold cross-validation
+    skf = StratifiedKFold(current_set['label'])
+
+    # For each pipeline, make the classification
+    pipeline_tpr_mean = []
+    pipeline_tpr_std = []
+    pipeline_auc = []
+    pipeline_auc_std = []
+    pipeline_time = []
+    for pipe in pipelines:
+        # For each fold from the cross-validation
+        mean_tpr = []
+        mean_fpr = np.linspace(0, 1, 30)
+        cv_auc = []
+        cv_time = []
+        for train_index, test_index in skf:
+            # Extract the data
+            X_train, X_test = (current_set['data'][train_index],
+                               current_set['data'][test_index])
+            y_train, y_test = (current_set['label'][train_index],
+                               current_set['label'][test_index])
+
+            # Launch the time to check the performance of each over-sampler
+            tstart = time()
+            # Fit the pipeline on the training_set
+            pipe.fit(X_train, y_train)
+            # Stop the timer
+            elapsed_time = time() - tstart
+            cv_time.append(elapsed_time)
+            # Predict on the testing set
+            y_hat = pipe.predict_proba(X_test)
+
+            # Compute the statistics
+            fpr, tpr, thresholds = roc_curve(y_test, y_hat[:, 1])
+            mean_tpr.append(interp(mean_fpr, fpr, tpr))
+            mean_tpr[-1][0] = 0.0
+            cv_auc.append(auc(mean_fpr, mean_tpr[-1]))
+
+        avg_tpr = np.mean(mean_tpr, axis=0)
+        std_tpr = np.std(mean_tpr, axis=0)
+        avg_tpr[-1] = 1.0
+        pipeline_tpr_mean.append(avg_tpr)
+        pipeline_tpr_std.append(std_tpr)
+        pipeline_auc.append(auc(mean_fpr, avg_tpr))
+        pipeline_auc_std.append(np.std(cv_auc))
+        pipeline_time.append(np.mean(cv_time))
+
+    # For each classifier make a different plot
+    for cl_idx in range(len(classifiers)):
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+
+        # For each over-sampling methods
+        for os_idx in range(len(over_samplers)):
+
+            # Find the linear index for the pipeline
+            idx_pipeline = cl_idx * len(over_samplers) + os_idx
+
+            ax.plot(mean_fpr, pipeline_tpr_mean[idx_pipeline],
+                    label=(over_samplers_legend[os_idx] +
+                           r' - AUC $= {:1.3f} \pm {:1.3f}$'.format(
+                               pipeline_auc[idx_pipeline],
+                               pipeline_auc_std[idx_pipeline])),
+                    lw=2)
+#             ax.fill_between(mean_fpr,
+#                             (pipeline_tpr_mean[idx_pipeline] +
+#                              pipeline_tpr_std[idx_pipeline]),
+#                             (pipeline_tpr_mean[idx_pipeline] -
+#                              pipeline_tpr_std[idx_pipeline]),
+#                             alpha=0.2)
+
+
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.0])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('ROC analysis using a ' + classifiers_legend[cl_idx] +
+                  ' classifier')
+        handles, labels = ax.get_legend_handles_labels()
+        lgd = ax.legend(handles, labels, loc='lower right')
+
+        # Save the plot
+        plt.savefig(os.path.join(STORE_PATH, 'x{}data_{}.pdf'.format(
+            idx_dataset,
+            classifiers_legend[cl_idx])),
+                    bbox_extra_artists=(lgd,),
+                    bbox_inches='tight')
