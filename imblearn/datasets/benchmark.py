@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 MODULE_DOCS = __doc__
 
 
-def fetch_benchmark(data_home=None):
+def fetch_benchmark(data_home=None, download_if_missing=True):
     """Loader for the imbalanced dataset used as benchmark.
 
     Parameters
@@ -46,6 +46,10 @@ def fetch_benchmark(data_home=None):
     data_home : optional, default: None
         Specify another download and cache folder for the datasets. By default
         all scikit learn data is stored in '~/scikit_learn_data' subfolders.
+
+    download_if_missing: optional, True by default
+        If False, raise an IOError if the data is not locally available
+        instead of trying to download the data from the source site.
 
     Returns
     -------
@@ -80,10 +84,13 @@ def fetch_benchmark(data_home=None):
 
     # Check if we need to download the data
     if b_download:
-        logger.info('Download the benchmark dataset')
-        opener = urlopen(DATA_URL)
-        with open(archive_path, 'wb') as f:
-            f.write(opener.read())
+        if download_if_missing:
+            logger.info('Download the benchmark dataset')
+            opener = urlopen(DATA_URL)
+            with open(archive_path, 'wb') as f:
+                f.write(opener.read())
+        else:
+            raise IOError('Benchmark dataset not found')
     else:
         logger.info('The dataset was already downloaded')
 

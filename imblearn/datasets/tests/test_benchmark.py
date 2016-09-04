@@ -4,20 +4,25 @@ from __future__ import print_function
 from os import remove
 from os.path import join
 
+from numpy.testing import assert_equal
+from nose import SkipTest
+
 from imblearn.datasets import fetch_benchmark
-from sklearn.datasets.base import get_data_home
 
 
 def test_fetch_data():
     """Testing that fetching the data is working."""
 
     # Download and extract the data
-    data = fetch_benchmark()
+    try:
+        data = fetch_benchmark(download_if_missing=False)
+    except IOError:
+        raise SkipTest("Download 20 newsgroups to run this test")
 
-    # Redo the same to check if this is working if the archive is
-    # already existing
-    data = fetch_benchmark()
+    # Check that we have the 27 dataset
+    assert_equal(len(data), 27)
 
-    # Remove a file and check that the decompressing is working
-    data_home = get_data_home(None)
-    remove(join(data_home, 'x1data.npz'))
+    # Check that each object has a 'data' and 'label' ndarray
+    obj_name = ('data', 'label')
+    for dataset in data:
+        assert_equal(tuple([key for key in dataset.keys()]), obj_name)

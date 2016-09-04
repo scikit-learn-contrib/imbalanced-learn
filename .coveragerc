@@ -6,6 +6,7 @@ source = imblearn
 include = */imblearn/*
 omit =
     */setup.py
+    */benchmarks/*
 
 [report]
 exclude_lines =
