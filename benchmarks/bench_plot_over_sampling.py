@@ -65,8 +65,8 @@ classifiers_legend = ['RF', 'GB', 'NB', 'kNN', 'DT']
 # Create the diffrent pipeline
 pipelines = []
 for cl in classifiers:
-    for os in over_samplers:
-        pipelines.append(make_pipeline(os, cl))
+    for oss in over_samplers:
+        pipelines.append(make_pipeline(oss, cl))
 
 datasets_nb_samples = []
 datasets_time = []
