@@ -26,6 +26,7 @@ New features
 ~~~~~~~~~~~~
 
 - Added AllKNN under sampling technique. By `Dayvid Oliveira`_.
+- Added benchmark dataset which can be fetch using `fetch_benchmark` from the module `datasets`. By `Guillaume Lemaitre`_.
 
 API changes summary
 ~~~~~~~~~~~~~~~~~~~

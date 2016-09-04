@@ -136,3 +136,4 @@ Functions
    :toctree: generated/
    
    datasets.make_imbalance
+   datasets.fetch_benchmark
