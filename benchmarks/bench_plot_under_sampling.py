@@ -1,5 +1,6 @@
 """Benchmarks of the under-sampling methods.
 """
+from __future__ import print_function
 
 import os
 
@@ -7,6 +8,9 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+lines_marker = ['-', '-.', '--', ':']
+
 import numpy as np
 
 from time import time
@@ -51,8 +55,13 @@ under_samplers = [under_sampling.ClusterCentroids(n_jobs=N_JOBS),
                   under_sampling.OneSidedSelection(n_jobs=N_JOBS),
                   under_sampling.RandomUnderSampler(),
                   under_sampling.TomekLinks(n_jobs=N_JOBS)]
-under_samplers_legend = ['CC', 'CNN', 'ENN', 'RENN', 'AkNN', 'IHT', 'NM1',
+under_samplers_legend = ['CC',
+                         'CNN',
+                         'ENN', 'RENN', 'AkNN', 'IHT', 'NM1',
                          'NM2', 'NM3', 'NCR', 'OSS', 'RUS', 'TL']
+
+# Set the number of color in the palette depending of the number of methods
+sns.palplot(sns.color_palette("hls", len(under_samplers_legend)))
 
 # Create the classifier objects
 classifiers = [RandomForestClassifier(n_jobs=N_JOBS),
@@ -73,6 +82,8 @@ datasets_time = []
 # For each dataset
 for idx_dataset, current_set in enumerate(dataset):
 
+    print('Process the dataset {}/{}'.format(idx_dataset+1, len(dataset)))
+
     # Apply sttratified k-fold cross-validation
     skf = StratifiedKFold(current_set['label'])
 
@@ -83,7 +94,8 @@ for idx_dataset, current_set in enumerate(dataset):
     pipeline_auc_std = []
     pipeline_time = []
     pipeline_nb_samples = []
-    for pipe in pipelines:
+    for idx_pipe, pipe in enumerate(pipelines):
+        print('Pipeline {}/{}'.format(idx_pipe+1, len(pipelines)))
         # For each fold from the cross-validation
         mean_tpr = []
         mean_fpr = np.linspace(0, 1, 30)
@@ -124,10 +136,6 @@ for idx_dataset, current_set in enumerate(dataset):
         pipeline_time.append(np.mean(cv_time))
         pipeline_nb_samples.append(np.mean(cv_nb_samples))
 
-    # Keep only the interesting data
-    datasets_nb_samples.append(np.mean(pipeline_nb_samples))
-    datasets_time.append(pipeline_time[:len(under_samplers)])
-
     # For each classifier make a different plot
     for cl_idx in range(len(classifiers)):
 
@@ -145,14 +153,7 @@ for idx_dataset, current_set in enumerate(dataset):
                            r' - AUC $= {:1.3f} \pm {:1.3f}$'.format(
                                pipeline_auc[idx_pipeline],
                                pipeline_auc_std[idx_pipeline])),
-                    lw=2)
-#             ax.fill_between(mean_fpr,
-#                             (pipeline_tpr_mean[idx_pipeline] +
-#                              pipeline_tpr_std[idx_pipeline]),
-#                             (pipeline_tpr_mean[idx_pipeline] -
-#                              pipeline_tpr_std[idx_pipeline]),
-#                             alpha=0.2)
-
+                    lw=2, linestyle=lines_marker[us_idx%len(lines_marker)])
 
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.0])
@@ -170,6 +171,10 @@ for idx_dataset, current_set in enumerate(dataset):
                     bbox_extra_artists=(lgd,),
                     bbox_inches='tight')
 
+    # Keep only the interesting data
+    datasets_nb_samples.append(np.mean(pipeline_nb_samples))
+    datasets_time.append(pipeline_time[:len(under_samplers)])
+
 datasets_time = np.array(datasets_time)
 datasets_nb_samples = np.array(datasets_nb_samples)
 
@@ -177,8 +182,9 @@ fig = plt.figure()
 ax = fig.add_subplot(111)
 
 for us_idx in range(len(under_samplers)):
-    ax.plot(datasets_nb_samples[:, us_idx], datasets_time,
-             label=under_samplers_legend[us_idx])
+    ax.plot(datasets_nb_samples, datasets_time[:, us_idx],
+            label=under_samplers_legend[us_idx],
+            lw=2, linestyle=lines_marker[us_idx%len(lines_marker)])
     plt.xlabel('# samples')
     plt.ylabel('Time (s)')
     plt.title('Complexity time of the different under-sampling methods')
