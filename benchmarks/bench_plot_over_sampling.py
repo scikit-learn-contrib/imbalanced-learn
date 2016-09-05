@@ -169,13 +169,19 @@ for idx_dataset, current_set in enumerate(dataset):
 datasets_time = np.array(datasets_time)
 datasets_nb_samples = np.array(datasets_nb_samples)
 
+# Sort the array
+idx_sort = np.argsort(datasets_nb_samples)
+datasets_nb_samples = datasets_nb_samples[idx_sort]
+for i in range(datasets_time.shape[1]):
+    datasets_time[:, i] = datasets_time[idx_sort, i]
+
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
 for os_idx in range(len(over_samplers)):
-    ax.plot(datasets_nb_samples, datasets_time[:, os_idx],
-            label=over_samplers_legend[os_idx],
-            lw=2, linestyle=lines_marker[os_idx%len(lines_marker)])
+    ax.loglog(datasets_nb_samples, datasets_time[:, os_idx],
+              label=over_samplers_legend[os_idx],
+              lw=2, linestyle=lines_marker[os_idx%len(lines_marker)])
     plt.xlabel('# samples')
     plt.ylabel('Time (s)')
     plt.title('Complexity time of the different over-sampling methods')

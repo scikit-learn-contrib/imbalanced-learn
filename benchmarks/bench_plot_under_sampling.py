@@ -178,13 +178,19 @@ for idx_dataset, current_set in enumerate(dataset):
 datasets_time = np.array(datasets_time)
 datasets_nb_samples = np.array(datasets_nb_samples)
 
+# Sort the array
+idx_sort = np.argsort(datasets_nb_samples)
+datasets_nb_samples = datasets_nb_samples[idx_sort]
+for i in range(datasets_time.shape[1]):
+    datasets_time[:, i] = datasets_time[idx_sort, i]
+
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
 for us_idx in range(len(under_samplers)):
-    ax.plot(datasets_nb_samples, datasets_time[:, us_idx],
-            label=under_samplers_legend[us_idx],
-            lw=2, linestyle=lines_marker[us_idx%len(lines_marker)])
+    ax.loglog(datasets_nb_samples, datasets_time[:, us_idx],
+              label=under_samplers_legend[us_idx],
+              lw=2, linestyle=lines_marker[us_idx%len(lines_marker)])
     plt.xlabel('# samples')
     plt.ylabel('Time (s)')
     plt.title('Complexity time of the different under-sampling methods')
