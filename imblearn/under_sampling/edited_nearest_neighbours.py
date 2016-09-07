@@ -348,8 +348,8 @@ class RepeatedEditedNearestNeighbours(SamplerMixin):
             self.logger.debug('Current ENN stats: %s', stats_enn)
             # Get the number of samples in the non-minority classes
             count_non_min = np.array([val for val, key
-                                      in zip(stats_enn.itervalues(),
-                                             stats_enn.iterkeys())
+                                      in zip(stats_enn.values(),
+                                             stats_enn.keys())
                                       if key != self.min_c_])
             self.logger.debug('Number of samples in the non-majority'
                               ' classes: %s', count_non_min)
