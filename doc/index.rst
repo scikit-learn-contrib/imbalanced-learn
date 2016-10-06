@@ -38,7 +38,7 @@ Contents:
    todo
    about
 
-See the `README <https://github.com/vighneshbirodkar/project-template/blob/master/README.md>`_
+See the `README <https://github.com/scikit-learn-contrib/imbalanced-learn/blob/master/README.rst>`_
 for more information.
 
 
