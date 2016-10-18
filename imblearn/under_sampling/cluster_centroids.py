@@ -1,12 +1,10 @@
 """Class to perform under-sampling by generating centroids based on
 clustering."""
-from __future__ import print_function
-from __future__ import division
-
-import numpy as np
+from __future__ import division, print_function
 
 from collections import Counter
 
+import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.utils import check_random_state
 

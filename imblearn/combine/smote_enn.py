@@ -1,10 +1,9 @@
 """Class to perform over-sampling using SMOTE and cleaning using ENN."""
-from __future__ import print_function
-from __future__ import division
+from __future__ import division, print_function
 
+from ..base import BaseBinarySampler
 from ..over_sampling import SMOTE
 from ..under_sampling import EditedNearestNeighbours
-from ..base import BaseBinarySampler
 
 
 class SMOTEENN(BaseBinarySampler):

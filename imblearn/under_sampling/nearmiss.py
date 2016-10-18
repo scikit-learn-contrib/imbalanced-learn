@@ -1,13 +1,10 @@
 """Class to perform under-sampling based on nearmiss methods."""
-from __future__ import print_function
-from __future__ import division
+from __future__ import division, print_function
 
 import warnings
-
-import numpy as np
-
 from collections import Counter
 
+import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
 from ..base import BaseMulticlassSampler

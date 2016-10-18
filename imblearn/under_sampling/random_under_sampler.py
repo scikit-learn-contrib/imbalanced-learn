@@ -1,11 +1,9 @@
 """Class to perform random under-sampling."""
-from __future__ import print_function
-from __future__ import division
-
-import numpy as np
+from __future__ import division, print_function
 
 from collections import Counter
 
+import numpy as np
 from sklearn.utils import check_random_state
 
 from ..base import BaseMulticlassSampler
