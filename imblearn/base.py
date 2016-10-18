@@ -76,14 +76,11 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         self.logger.info('Compute classes statistics ...')
 
-        # Get all the unique elements in the target array
-        uniques = np.unique(y)
-
         # # Raise an error if there is only one class
         # if uniques.size == 1:
         #     raise RuntimeError("Only one class detected, aborting...")
         # Raise a warning for the moment to be compatible with BaseEstimator
-        if uniques.size == 1:
+        if np.unique(y).size == 1:
             warnings.warn('Only one class detected, something will get wrong',
                           RuntimeWarning)
 
@@ -98,7 +95,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.min_c_ = min(self.stats_c_, key=self.stats_c_.get)
         self.maj_c_ = max(self.stats_c_, key=self.stats_c_.get)
 
-        self.logger.info('%s classes detected: %s', uniques.size,
+        self.logger.info('%s classes detected: %s', np.unique(y).size,
                          self.stats_c_)
 
         # Check if the ratio provided at initialisation make sense
