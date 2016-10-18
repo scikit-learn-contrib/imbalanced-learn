@@ -84,7 +84,7 @@ def test_ada_fit_single_class():
     # Resample the data
     # Create a wrong y
     y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(RuntimeWarning, ada.fit, X, y_single_class)
+    assert_warns(UserWarning, ada.fit, X, y_single_class)
 
 
 def test_ada_fit_invalid_ratio():
