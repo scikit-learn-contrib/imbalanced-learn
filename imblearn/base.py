@@ -14,7 +14,7 @@ from sklearn.externals import six
 from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import type_of_target
 
-
+logging.captureWarnings(False)
 warnings.simplefilter('always', UserWarning)
 
 
