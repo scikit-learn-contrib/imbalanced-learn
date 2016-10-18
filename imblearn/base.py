@@ -81,8 +81,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         #     raise RuntimeError("Only one class detected, aborting...")
         # Raise a warning for the moment to be compatible with BaseEstimator
         if np.unique(y).size == 1:
-            warnings.warn('Only one class detected, something will get wrong',
-                          RuntimeWarning)
+            warnings.warn('Only one class detected, something will get wrong')
 
         # Store the size of X to check at sampling time if we have the
         # same data
