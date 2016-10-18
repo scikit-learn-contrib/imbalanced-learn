@@ -1,11 +1,9 @@
 """Class performing under-sampling based on the neighbourhood cleaning rule."""
-from __future__ import print_function
-from __future__ import division
-
-import numpy as np
+from __future__ import division, print_function
 
 from collections import Counter
 
+import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
 from ..base import BaseMulticlassSampler

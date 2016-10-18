@@ -1,17 +1,13 @@
 """Test the module cluster centroids."""
 from __future__ import print_function
 
-import numpy as np
-from numpy.testing import assert_raises
-from numpy.testing import assert_equal
-from numpy.testing import assert_array_equal
-from numpy.testing import assert_array_almost_equal
-from numpy.testing import assert_warns
+from collections import Counter
 
+import numpy as np
+from numpy.testing import (assert_array_almost_equal, assert_array_equal,
+                           assert_equal, assert_raises, assert_warns)
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
-
-from collections import Counter
 
 from imblearn.under_sampling import ClusterCentroids
 

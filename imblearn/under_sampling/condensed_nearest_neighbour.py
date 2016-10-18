@@ -1,14 +1,12 @@
 """Class to perform under-sampling based on the condensed nearest neighbour
 method."""
-from __future__ import print_function
-from __future__ import division
-
-import numpy as np
+from __future__ import division, print_function
 
 from collections import Counter
 
-from sklearn.utils import check_random_state
+import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.utils import check_random_state
 
 from ..base import BaseMulticlassSampler
 
