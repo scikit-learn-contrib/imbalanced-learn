@@ -295,4 +295,7 @@ class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
                 type_of_target(y) == 'multiclass'):
             warnings.warn('The target type should be binary or multiclass.')
 
+        if np.unique(X).size == 1:
+            warnings.warn('Hello')
+
         return self
