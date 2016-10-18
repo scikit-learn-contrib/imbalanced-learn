@@ -6,7 +6,7 @@ environment:
   # We use miniconda versions of Python provided by appveyor windows images
   matrix:
     - PYTHON: "C:\\Miniconda-x64"
-      PYTHON_VERSION: "2.7.x"
+      PYTHON_VERSION: "2.7.11"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Miniconda3-x64"
