@@ -15,6 +15,9 @@ from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import type_of_target
 
 
+warnings.simplefilter('always', category=UserWarning)
+
+
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     """Mixin class for samplers with abstact method.
