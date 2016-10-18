@@ -14,9 +14,6 @@ from sklearn.externals import six
 from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import type_of_target
 
-logging.captureWarnings(False)
-warnings.simplefilter('always', UserWarning)
-
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
@@ -87,6 +84,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.logger.debug('Shall we raise a warning: %s',
                           np.unique(y).size == 1)
         if np.unique(y).size == 1:
+            warnings.simplefilter('always', UserWarning)
             warnings.warn('Only one class detected, something will get wrong')
             self.logger.debug('The warning should has been raised.')
 
@@ -257,6 +255,7 @@ class BaseBinarySampler(six.with_metaclass(ABCMeta, SamplerMixin)):
 
         # Check that the target type is binary
         if not type_of_target(y) == 'binary':
+            warnings.simplefilter('always', UserWarning)
             warnings.warn('The target type should be binary.')
 
         return self
@@ -293,6 +292,7 @@ class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
         # Check that the target type is either binary or multiclass
         if not (type_of_target(y) == 'binary' or
                 type_of_target(y) == 'multiclass'):
+            warnings.simplefilter('always', UserWarning)
             warnings.warn('The target type should be binary or multiclass.')
 
         return self
