@@ -11,17 +11,19 @@ print(__doc__)
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.datasets import make_classification
+from sklearn.decomposition import PCA
+
+from imblearn.under_sampling import (EditedNearestNeighbours,
+                                     RepeatedEditedNearestNeighbours)
+
 sns.set()
 
 # Define some color for the plotting
 almost_black = '#262626'
 palette = sns.color_palette()
 
-from sklearn.datasets import make_classification
-from sklearn.decomposition import PCA
 
-from imblearn.under_sampling import EditedNearestNeighbours
-from imblearn.under_sampling import RepeatedEditedNearestNeighbours
 
 # Generate the dataset
 X, y = make_classification(n_classes=2, class_sep=1.25, weights=[0.3, 0.7],

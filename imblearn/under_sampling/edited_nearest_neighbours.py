@@ -1,18 +1,14 @@
 """Class to perform under-sampling based on the edited nearest neighbour
 method."""
-from __future__ import print_function
-from __future__ import division
-
-import numpy as np
+from __future__ import division, print_function
 
 from collections import Counter
 
+import numpy as np
 from scipy.stats import mode
-
 from sklearn.neighbors import NearestNeighbors
 
 from ..base import BaseMulticlassSampler
-
 
 SEL_KIND = ('all', 'mode')
 

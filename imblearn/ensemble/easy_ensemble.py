@@ -2,12 +2,10 @@
 from __future__ import print_function
 
 import numpy as np
-
 from sklearn.utils import check_random_state
 
 from ..base import BaseMulticlassSampler
 from ..under_sampling import RandomUnderSampler
-
 
 MAX_INT = np.iinfo(np.int32).max
 

@@ -2,11 +2,9 @@
 from __future__ import print_function
 
 import numpy as np
-
 from sklearn.utils import check_random_state
 
 from ..base import BaseBinarySampler
-
 
 ESTIMATOR_KIND = ('knn', 'decision-tree', 'random-forest', 'adaboost',
                   'gradient-boosting', 'linear-svm')

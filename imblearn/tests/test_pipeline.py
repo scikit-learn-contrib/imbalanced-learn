@@ -2,32 +2,22 @@
 Test the pipeline module.
 """
 import numpy as np
-
-from sklearn.utils.testing import assert_raises
-from sklearn.utils.testing import assert_raises_regex
-from sklearn.utils.testing import assert_raise_message
-from sklearn.utils.testing import assert_equal
-from sklearn.utils.testing import assert_false
-from sklearn.utils.testing import assert_true
-from sklearn.utils.testing import assert_array_equal
-from sklearn.utils.testing import assert_array_almost_equal
-from sklearn.utils.testing import assert_warns_message
-
 from sklearn.base import clone
-from sklearn.svm import SVC
-from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import LinearRegression
 from sklearn.cluster import KMeans
-from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.datasets import load_iris, make_classification
 from sklearn.decomposition import PCA
-from sklearn.datasets import load_iris
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.preprocessing import StandardScaler
-from sklearn.datasets import make_classification
+from sklearn.svm import SVC
+from sklearn.utils.testing import (assert_array_almost_equal,
+                                   assert_array_equal, assert_equal,
+                                   assert_false, assert_raise_message,
+                                   assert_raises, assert_raises_regex,
+                                   assert_true, assert_warns_message)
 
-from imblearn.pipeline import Pipeline
-from imblearn.pipeline import make_pipeline
+from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import RandomUnderSampler
-
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",

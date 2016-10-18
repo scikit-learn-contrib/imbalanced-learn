@@ -1,23 +1,18 @@
 ﻿"""Base class for sampling"""
 
-from __future__ import division
-from __future__ import print_function
+from __future__ import division, print_function
 
-import warnings
 import logging
-
-import numpy as np
-
+import warnings
 from abc import ABCMeta, abstractmethod
-
 from collections import Counter
 
+import numpy as np
+from six import string_types
 from sklearn.base import BaseEstimator
+from sklearn.externals import six
 from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import type_of_target
-from sklearn.externals import six
-
-from six import string_types
 
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):

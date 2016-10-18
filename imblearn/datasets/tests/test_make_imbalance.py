@@ -1,12 +1,11 @@
 """Test the module easy ensemble."""
 from __future__ import print_function
 
-import numpy as np
-from numpy.testing import assert_raises
-from numpy.testing import assert_equal
-from nose.tools import assert_true
-
 from collections import Counter
+
+import numpy as np
+from nose.tools import assert_true
+from numpy.testing import assert_equal, assert_raises
 
 from imblearn.datasets import make_imbalance
 
