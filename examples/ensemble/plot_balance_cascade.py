@@ -9,19 +9,21 @@ An illustration of the balance cascade ensemble method.
 
 print(__doc__)
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
+from sklearn.datasets import make_classification
+from sklearn.decomposition import PCA
+
+from imblearn.ensemble import BalanceCascade
+
 sns.set()
 
 # Define some color for the plotting
 almost_black = '#262626'
 palette = sns.color_palette()
 
-from sklearn.datasets import make_classification
-from sklearn.decomposition import PCA
 
-from imblearn.ensemble import BalanceCascade
 
 # Generate the dataset
 X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],

@@ -1,16 +1,13 @@
 """Class to perform under-sampling based on the instance hardness
 threshold."""
-from __future__ import print_function
-from __future__ import division
-
-import numpy as np
+from __future__ import division, print_function
 
 from collections import Counter
 
+import numpy as np
 from sklearn.cross_validation import StratifiedKFold
 
 from ..base import BaseBinarySampler
-
 
 ESTIMATOR_KIND = ('knn', 'decision-tree', 'random-forest', 'adaboost',
                   'gradient-boosting', 'linear-svm')

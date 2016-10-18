@@ -1,13 +1,10 @@
 """Transform a dataset into an imbalanced dataset."""
 
 import logging
-
-import numpy as np
-
 from collections import Counter
 
-from sklearn.utils import check_X_y
-from sklearn.utils import check_random_state
+import numpy as np
+from sklearn.utils import check_random_state, check_X_y
 
 LOGGER = logging.getLogger(__name__)
 

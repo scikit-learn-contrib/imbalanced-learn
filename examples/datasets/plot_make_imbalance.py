@@ -11,14 +11,16 @@ print(__doc__)
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.datasets import make_moons
+
+from imblearn.datasets import make_imbalance
+
 sns.set()
 
 # Define some color for the plotting
 almost_black = '#262626'
 palette = sns.color_palette()
 
-from sklearn.datasets import make_moons
-from imblearn.datasets import make_imbalance
 
 
 # Generate the dataset

@@ -12,13 +12,12 @@ composite estimator, as a chain of transforms, samples and estimators.
 #         chkoar
 # License: BSD
 
-from __future__ import print_function
-from __future__ import division
+from __future__ import division, print_function
 
 from warnings import warn
 
-from sklearn.externals import six
 from sklearn import pipeline
+from sklearn.externals import six
 from sklearn.utils import tosequence
 from sklearn.utils.metaestimators import if_delegate_has_method
 
