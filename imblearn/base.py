@@ -255,9 +255,6 @@ class BaseBinarySampler(six.with_metaclass(ABCMeta, SamplerMixin)):
 
         super(BaseBinarySampler, self).fit(X, y)
 
-        if np.size(np.unique(y)) == 1:
-            warnings.warn('Hello')
-
         # Check that the target type is binary
         if not type_of_target(y) == 'binary':
             warnings.warn('The target type should be binary.')
@@ -292,9 +289,6 @@ class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
         """
 
         super(BaseMulticlassSampler, self).fit(X, y)
-
-        if np.size(np.unique(y)) == 1:
-            warnings.warn('Hello')
 
         # Check that the target type is either binary or multiclass
         if not (type_of_target(y) == 'binary' or
