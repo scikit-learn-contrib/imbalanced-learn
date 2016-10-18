@@ -90,7 +90,7 @@ def test_bc_fit_single_class():
     # Resample the data
     # Create a wrong y
     y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(RuntimeWarning, bc.fit, X, y_single_class)
+    assert_warns(UserWarning, bc.fit, X, y_single_class)
 
 
 def test_bc_fit_invalid_ratio():

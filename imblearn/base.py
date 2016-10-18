@@ -76,16 +76,17 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         self.logger.info('Compute classes statistics ...')
 
-        # Get all the unique elements in the target array
-        uniques = np.unique(y)
-
         # # Raise an error if there is only one class
         # if uniques.size == 1:
         #     raise RuntimeError("Only one class detected, aborting...")
         # Raise a warning for the moment to be compatible with BaseEstimator
-        if uniques.size == 1:
-            warnings.warn('Only one class detected, something will get wrong',
-                          RuntimeWarning)
+        self.logger.debug('The number of classes is %s', np.unique(y).size)
+        self.logger.debug('Shall we raise a warning: %s',
+                          np.unique(y).size == 1)
+        if np.unique(y).size == 1:
+            warnings.simplefilter('always', UserWarning)
+            warnings.warn('Only one class detected, something will get wrong')
+            self.logger.debug('The warning should has been raised.')
 
         # Store the size of X to check at sampling time if we have the
         # same data
@@ -98,7 +99,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.min_c_ = min(self.stats_c_, key=self.stats_c_.get)
         self.maj_c_ = max(self.stats_c_, key=self.stats_c_.get)
 
-        self.logger.info('%s classes detected: %s', uniques.size,
+        self.logger.info('%s classes detected: %s', np.unique(y).size,
                          self.stats_c_)
 
         # Check if the ratio provided at initialisation make sense
@@ -254,6 +255,7 @@ class BaseBinarySampler(six.with_metaclass(ABCMeta, SamplerMixin)):
 
         # Check that the target type is binary
         if not type_of_target(y) == 'binary':
+            warnings.simplefilter('always', UserWarning)
             warnings.warn('The target type should be binary.')
 
         return self
@@ -290,6 +292,7 @@ class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
         # Check that the target type is either binary or multiclass
         if not (type_of_target(y) == 'binary' or
                 type_of_target(y) == 'multiclass'):
+            warnings.simplefilter('always', UserWarning)
             warnings.warn('The target type should be binary or multiclass.')
 
         return self
