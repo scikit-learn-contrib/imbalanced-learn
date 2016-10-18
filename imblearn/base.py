@@ -15,7 +15,7 @@ from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import type_of_target
 
 
-warnings.simplefilter('always', category=UserWarning)
+warnings.simplefilter('always', UserWarning)
 
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
@@ -83,6 +83,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         # if uniques.size == 1:
         #     raise RuntimeError("Only one class detected, aborting...")
         # Raise a warning for the moment to be compatible with BaseEstimator
+        self.logger.debug('The number of classes is %s', np.unique(y).size)
+        self.logger.debug('Shall we raise a warning: %s',
+                          np.unique(y).size == 1)
         if np.unique(y).size == 1:
             warnings.warn('Only one class detected, something will get wrong')
 
