@@ -88,6 +88,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
                           np.unique(y).size == 1)
         if np.unique(y).size == 1:
             warnings.warn('Only one class detected, something will get wrong')
+            self.logger.debug('The warning should has been raised.')
 
         # Store the size of X to check at sampling time if we have the
         # same data
