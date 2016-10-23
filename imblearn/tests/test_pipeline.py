@@ -74,6 +74,20 @@ class FitParamT(object):
         return self.successful
 
 
+
+class FitTransformSample(T):
+    """Mock classifier
+    """  
+
+    def fit(self, X, y, should_succeed=False):
+        pass
+
+    def sample(X, y=None):
+        return X, y
+
+    def transform(X, y=None):
+        return  X
+
 def test_pipeline_init():
     # Test the various init parameters of the pipeline.
     assert_raises(TypeError, Pipeline)
@@ -431,3 +445,32 @@ def test_pipeline_methods_anova_rus():
     pipe.predict_proba(X)
     pipe.predict_log_proba(X)
     pipe.score(X, y)
+
+
+
+
+def test_pipeline_with_step_that_implements_both_sample_and_transform():
+    # Test the various methods of the pipeline (anova).
+    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
+                               n_informative=3, n_redundant=1, flip_y=0,
+                               n_features=20, n_clusters_per_class=1,
+                               n_samples=5000, random_state=0)
+
+    clf = LogisticRegression()
+    assert_raises(TypeError, Pipeline, [('step', FitTransformSample()), ('logistic', clf)])
+    #assert_raises(TypeError, lambda x: [][0])
+
+
+def test_pipeline_with_step_that_it_is_pipeline():
+    # Test the various methods of the pipeline (anova).
+    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
+                               n_informative=3, n_redundant=1, flip_y=0,
+                               n_features=20, n_clusters_per_class=1,
+                               n_samples=5000, random_state=0)
+    # Test with RandomUnderSampling + Anova + LogisticRegression
+    clf = LogisticRegression()
+    rus = RandomUnderSampler(random_state=0)
+    filter1 = SelectKBest(f_classif, k=2)
+    pipe1 = Pipeline([('rus', rus), ('anova', filter1)])
+    assert_raises(TypeError, Pipeline, [('pipe1', pipe1), ('logistic', clf)])
+
