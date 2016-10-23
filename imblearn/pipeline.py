@@ -24,6 +24,32 @@ from sklearn.utils.metaestimators import if_delegate_has_method
 __all__ = ['Pipeline']
 
 
+def _validate_step_methods(step):
+
+    if (not (hasattr(step, "fit") or hasattr(step, "fit_transform") or hasattr(
+            step, "fit_sample")) or
+            not (hasattr(step, "transform") or hasattr(step, "sample"))):
+        raise TypeError(
+            "All intermediate steps of the chain should "
+            "be estimators that implement fit and transform or sample (but not both)"
+            " '%s' (type %s) doesn't)" % (step, type(t)))
+
+
+def _validate_step_behaviour(step):
+    if (hasattr(step, "fit_sample") and hasattr(step, "fit_transform")) or (
+            hasattr(step, "sample") and hasattr(step, "transform")):
+        raise TypeError(
+            "All intermediate steps of the chain should "
+            "be estimators that implement fit and transform or sample."
+            " '%s' implements both)" % (step))
+
+
+def _validate_step_class(step):
+    if isinstance(step, pipeline.Pipeline):
+        raise TypeError(
+            "All intermediate steps of the chain should not be Pipelines")
+
+
 class Pipeline(pipeline.Pipeline):
 
     """Pipeline of transforms and resamples with a final estimator.
@@ -104,12 +130,9 @@ class Pipeline(pipeline.Pipeline):
         estimator = estimators[-1]
 
         for t in transforms:
-            if (not (hasattr(t, "fit") or hasattr(t, "fit_transform") or
-                     hasattr(t, "fit_sample")) or
-                    not (hasattr(t, "transform") or hasattr(t, "sample"))):
-                raise TypeError("All intermediate steps of the chain should "
-                                "be transforms and implement fit and transform"
-                                " '%s' (type %s) doesn't)" % (t, type(t)))
+            _validate_step_methods(t)
+            _validate_step_behaviour(t)
+            _validate_step_class(t)
 
         if not hasattr(estimator, "fit"):
             raise TypeError("Last step of chain should implement fit "
