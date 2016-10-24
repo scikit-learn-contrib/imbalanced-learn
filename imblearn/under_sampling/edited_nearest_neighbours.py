@@ -23,6 +23,15 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
+    target_classes : str or tuple target, optional (default='not minority')
+        A string or a tuple of target to specify which class to consider
+        to apply the balancing. The string choices can be:
+        - 'minority': only resample the minority class,
+        - 'majority': only resmaple the majority class,
+        - 'all': resample all the classes,
+        - 'not minority': resample all classes apart of the minority one.
+        The tuple should contains the target classes.
+
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
@@ -59,6 +68,9 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
+    target_classes_ : tuple
+        Tuple containing the classes which will be re-sampled.
+
     Notes
     -----
     The method is based on [1]_.
@@ -91,8 +103,10 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
     """
 
     def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=3, kind_sel='all', n_jobs=-1):
-        super(EditedNearestNeighbours, self).__init__()
+                 size_ngh=3, kind_sel='all', n_jobs=-1,
+                 target_classes='not minority'):
+        super(EditedNearestNeighbours, self).__init__(
+            target_classes=target_classes)
         self.return_indices = return_indices
         self.random_state = random_state
         self.size_ngh = size_ngh
@@ -148,8 +162,8 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         # Loop over the other classes under picking at random
         for key in self.stats_c_.keys():
 
-            # If the minority class is up, skip it
-            if key == self.min_c_:
+            # If the key is not part of the classes to be downsampled
+            if key not in self.target_classes_:
                 continue
 
             # Get the sample of the current class

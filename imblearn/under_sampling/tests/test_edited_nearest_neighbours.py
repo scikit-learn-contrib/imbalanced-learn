@@ -53,6 +53,44 @@ def test_enn_init():
     assert_equal(enn.random_state, RND_SEED)
 
 
+def test_target_classes():
+    """Test the consistency of the target classes"""
+
+    # Define a target class from an unknown string
+    target_classes = 'rnd'
+    enn = EditedNearestNeighbours(target_classes=target_classes,
+                                  random_state=RND_SEED)
+    assert_raises(ValueError, enn.fit, X, Y)
+
+    # Define a target class from all the possible known string
+    target_classes = ('minority', 'majority', 'all', 'not minority')
+    class_cases = ((0, ), (2, ), (0, 1, 2), (1, 2))
+    for tc, cc in zip(target_classes, class_cases):
+        enn = EditedNearestNeighbours(target_classes=tc,
+                                      random_state=RND_SEED)
+        enn.fit(X, Y)
+        assert_equal(enn.target_classes_, cc)
+
+    # Define a tuple which does not have the expected class inside
+    target_classes = (10, 1, 2)
+    enn = EditedNearestNeighbours(target_classes=target_classes,
+                                  random_state=RND_SEED)
+    assert_raises(ValueError, enn.fit, X, Y)
+
+    # Check that everything goes fine while passing a right tuple
+    target_classes = (1, 2)
+    enn = EditedNearestNeighbours(target_classes=target_classes,
+                                  random_state=RND_SEED)
+    enn.fit(X, Y)
+    assert_equal(target_classes, enn.target_classes_)
+
+    # Define an unknown type for target classes
+    target_classes = 5.
+    enn = EditedNearestNeighbours(target_classes=target_classes,
+                                  random_state=RND_SEED)
+    assert_raises(ValueError, enn.fit, X, Y)
+
+
 def test_enn_fit_single_class():
     """Test either if an error when there is a single class"""
 

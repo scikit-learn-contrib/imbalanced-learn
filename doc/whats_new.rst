@@ -31,6 +31,7 @@ API changes summary
 ~~~~~~~~~~~~~~~~~~~
 
 - Two base classes :class:`BaseBinaryclassSampler` and :class:`BaseMulticlassSampler` have been created to handle the target type and raise warning in case of abnormality. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
+- An additional parameter `target_classes` is added to :class:`EditedNearestneighbours` such that the user can specified which class the resample. By `Guillaume Lemaitre`_, `Dayvid Oliveira`_, and `Chirstos Aridas`_.
 
 Enhancement
 ~~~~~~~~~~~
