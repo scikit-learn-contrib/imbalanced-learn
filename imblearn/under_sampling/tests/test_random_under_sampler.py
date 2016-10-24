@@ -211,3 +211,23 @@ def test_multiclass_fit_sample():
     assert_equal(count_y_res[0], 2)
     assert_equal(count_y_res[1], 2)
     assert_equal(count_y_res[2], 2)
+    
+    
+def test_multiclass_fit_sample_with_nans():
+    """Test fit sample method with multiclass target"""
+
+    # Make y to be multiclass
+    y = Y.copy()
+    y[5] = 2
+    y[6] = 2
+    X[0, 0] = np.nan
+    X[1, 0] = np.nan
+    # Resample the data
+    ros = RandomUnderSampler(random_state=RND_SEED)
+    X_resampled, y_resampled = ros.fit_sample(X, y)
+
+    # Check the size of y
+    count_y_res = Counter(y_resampled)
+    assert_equal(count_y_res[0], 2)
+    assert_equal(count_y_res[1], 2)
+    assert_equal(count_y_res[2], 2)
