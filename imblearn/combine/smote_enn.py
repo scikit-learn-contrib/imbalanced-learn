@@ -42,12 +42,12 @@ class SMOTEENN(BaseBinarySampler):
         The type of SMOTE algorithm to use one of the following
         options: 'regular', 'borderline1', 'borderline2', 'svm'.
 
-    size_ngh : int, optional (default=3)
+    size_ngh : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-       NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
-       Use ``n_neighbors`` instead.
+        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
+        Use ``n_neighbors`` instead.
 
     n_neighbors : int, optional (default=3)
         Size of the neighbourhood to consider to compute the average
@@ -112,7 +112,7 @@ class SMOTEENN(BaseBinarySampler):
 
     def __init__(self, ratio='auto', random_state=None,
                  k=5, m=10, out_step=0.5, kind_smote='regular',
-                 size_ngh=3, n_neighbors=3, kind_enn='all', n_jobs=-1,
+                 size_ngh=None, n_neighbors=3, kind_enn='all', n_jobs=-1,
                  **kwargs):
 
         super(SMOTEENN, self).__init__(ratio=ratio)
@@ -156,9 +156,11 @@ class SMOTEENN(BaseBinarySampler):
 
         super(SMOTEENN, self).fit(X, y)
 
-        # Annonce deprecation
-        warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
-                      ' `n_neighbors` instead.', DeprecationWarning)
+        # Annonce deprecation if necessary
+        if self.size_ngh is not None:
+            warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
+                          ' `n_neighbors` instead.', DeprecationWarning)
+            self.n_neighbors = self.size_ngh
 
         # Fit using SMOTE
         self.sm.fit(X, y)

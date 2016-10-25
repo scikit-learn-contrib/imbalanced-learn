@@ -30,7 +30,7 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    size_ngh : int, optional (default=3)
+    size_ngh : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
@@ -99,7 +99,7 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
     """
 
     def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=3, n_neighbors=3, kind_sel='all', n_jobs=-1):
+                 size_ngh=None, n_neighbors=3, kind_sel='all', n_jobs=-1):
         super(EditedNearestNeighbours, self).__init__()
         self.return_indices = return_indices
         self.random_state = random_state
@@ -107,31 +107,6 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
-
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(EditedNearestNeighbours, self).fit(X, y)
-
-        # Annonce deprecation
-        warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
-                      ' `n_neighbors` instead.', DeprecationWarning)
-
-        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -251,6 +226,13 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
+    size_ngh : int, optional (default=None)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
+        Use ``n_neighbors`` instead.
+
     n_neighbors : int, optional (default=3)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
@@ -317,10 +299,12 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
     """
 
     def __init__(self, return_indices=False, random_state=None,
-                 n_neighbors=3, max_iter=100, kind_sel='all', n_jobs=-1):
+                 size_ngh=None, n_neighbors=3, max_iter=100, kind_sel='all',
+                 n_jobs=-1):
         super(RepeatedEditedNearestNeighbours, self).__init__()
         self.return_indices = return_indices
         self.random_state = random_state
+        self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
@@ -475,6 +459,13 @@ class AllKNN(BaseMulticlassSampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
+    size_ngh : int, optional (default=None)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
+        Use ``n_neighbors`` instead.
+
     n_neighbors : int, optional (default=3)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
@@ -537,10 +528,11 @@ class AllKNN(BaseMulticlassSampler):
     """
 
     def __init__(self, return_indices=False, random_state=None,
-                 n_neighbors=3, kind_sel='all', n_jobs=-1):
+                 size_ngh=None, n_neighbors=3, kind_sel='all', n_jobs=-1):
         super(AllKNN, self).__init__()
         self.return_indices = return_indices
         self.random_state = random_state
+        self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
@@ -606,7 +598,7 @@ class AllKNN(BaseMulticlassSampler):
         if self.return_indices:
             idx_under = np.arange(X.shape[0], dtype=int)
 
-        for curr_size_ngh in range(1, self.size_ngh + 1):
+        for curr_size_ngh in range(1, self.n_neighbors + 1):
             self.logger.debug('Apply ENN size_ngh #%s', curr_size_ngh)
             # updating ENN size_ngh
             self.enn_.size_ngh = curr_size_ngh

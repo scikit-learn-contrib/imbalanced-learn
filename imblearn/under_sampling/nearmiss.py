@@ -35,6 +35,13 @@ class NearMiss(BaseMulticlassSampler):
         Version of the NearMiss to use. Possible values
         are 1, 2 or 3.
 
+    size_ngh : int, optional (default=None)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
+        Use ``n_neighbors`` instead.
+
     n_neighbors : int, optional (default=3)
         Size of the neighbourhood to consider to compute the
         average distance to the minority point samples.
@@ -97,11 +104,13 @@ class NearMiss(BaseMulticlassSampler):
     """
 
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
-                 version=1, n_neighbors=3, ver3_samp_ngh=3, n_jobs=-1, **kwargs):
+                 version=1, size_ngh=None, n_neighbors=3, ver3_samp_ngh=3,
+                 n_jobs=-1, **kwargs):
         super(NearMiss, self).__init__(ratio=ratio)
         self.return_indices = return_indices
         self.random_state = random_state
         self.version = version
+        self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.ver3_samp_ngh = ver3_samp_ngh
         self.n_jobs = n_jobs
