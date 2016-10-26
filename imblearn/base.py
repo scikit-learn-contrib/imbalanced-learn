@@ -74,9 +74,12 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         if hasattr(self, 'ratio'):
             self._validate_ratio()
 
+        if hasattr(self, 'size_ngh'):
+            self._validate_size_ngh_deprecation()
+
         self.logger.info('Compute classes statistics ...')
 
-        # # Raise an error if there is only one class
+        # Raise an error if there is only one class
         # if uniques.size == 1:
         #     raise RuntimeError("Only one class detected, aborting...")
         # Raise a warning for the moment to be compatible with BaseEstimator
@@ -149,6 +152,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         if hasattr(self, 'ratio'):
             self._validate_ratio()
 
+        if hasattr(self, 'size_ngh'):
+            self._validate_size_ngh_deprecation()
+
         return self._sample(X, y)
 
     def fit_sample(self, X, y):
@@ -189,6 +195,15 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
                 raise ValueError('Unknown string for the parameter ratio.')
         else:
             raise ValueError('Unknown parameter type for ratio.')
+
+    def _validate_size_ngh_deprecation(self):
+        "Private function to warn about the deprecation about size_ngh."
+
+        # Announce deprecation if necessary
+        if self.size_ngh is not None:
+            warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
+                          ' `n_neighbors` instead.', DeprecationWarning)
+            self.n_neighbors = self.size_ngh
 
     @abstractmethod
     def _sample(self, X, y):

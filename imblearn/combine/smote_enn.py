@@ -1,6 +1,8 @@
 """Class to perform over-sampling using SMOTE and cleaning using ENN."""
 from __future__ import division, print_function
 
+import warnings
+
 from ..base import BaseBinarySampler
 from ..over_sampling import SMOTE
 from ..under_sampling import EditedNearestNeighbours
@@ -40,7 +42,14 @@ class SMOTEENN(BaseBinarySampler):
         The type of SMOTE algorithm to use one of the following
         options: 'regular', 'borderline1', 'borderline2', 'svm'.
 
-    size_ngh : int, optional (default=3)
+    size_ngh : int, optional (default=None)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
+        Use ``n_neighbors`` instead.
+
+    n_neighbors : int, optional (default=3)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
@@ -103,7 +112,8 @@ class SMOTEENN(BaseBinarySampler):
 
     def __init__(self, ratio='auto', random_state=None,
                  k=5, m=10, out_step=0.5, kind_smote='regular',
-                 size_ngh=3, kind_enn='all', n_jobs=-1, **kwargs):
+                 size_ngh=None, n_neighbors=3, kind_enn='all', n_jobs=-1,
+                 **kwargs):
 
         super(SMOTEENN, self).__init__(ratio=ratio)
         self.random_state = random_state
@@ -112,6 +122,7 @@ class SMOTEENN(BaseBinarySampler):
         self.out_step = out_step
         self.kind_smote = kind_smote
         self.size_ngh = size_ngh
+        self.n_neighbors = n_neighbors
         self.kind_enn = kind_enn
         self.n_jobs = n_jobs
         self.kwargs = kwargs
@@ -121,6 +132,7 @@ class SMOTEENN(BaseBinarySampler):
                         **self.kwargs)
         self.enn = EditedNearestNeighbours(random_state=self.random_state,
                                            size_ngh=self.size_ngh,
+                                           n_neighbors=self.n_neighbors,
                                            kind_sel=self.kind_enn,
                                            n_jobs=self.n_jobs)
 
@@ -143,6 +155,12 @@ class SMOTEENN(BaseBinarySampler):
         """
 
         super(SMOTEENN, self).fit(X, y)
+
+        # Annonce deprecation if necessary
+        if self.size_ngh is not None:
+            warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
+                          ' `n_neighbors` instead.', DeprecationWarning)
+            self.n_neighbors = self.size_ngh
 
         # Fit using SMOTE
         self.sm.fit(X, y)

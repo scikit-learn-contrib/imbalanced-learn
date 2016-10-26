@@ -26,7 +26,14 @@ class OneSidedSelection(BaseBinarySampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    size_ngh : int, optional (default=1)
+    size_ngh : int, optional (default=None)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
+        Use ``n_neighbors`` instead.
+
+    n_neighbors : int, optional (default=1)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
@@ -85,11 +92,13 @@ class OneSidedSelection(BaseBinarySampler):
     """
 
     def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=1, n_seeds_S=1, n_jobs=-1, **kwargs):
+                 size_ngh=None, n_neighbors=1, n_seeds_S=1, n_jobs=-1,
+                 **kwargs):
         super(OneSidedSelection, self).__init__()
         self.return_indices = return_indices
         self.random_state = random_state
         self.size_ngh = size_ngh
+        self.n_neighbors = n_neighbors
         self.n_seeds_S = n_seeds_S
         self.n_jobs = n_jobs
         self.kwargs = kwargs
@@ -163,7 +172,7 @@ class OneSidedSelection(BaseBinarySampler):
             S_y = np.delete(S_y, idx_maj_sample, axis=0)
 
             # Create a k-NN classifier
-            knn = KNeighborsClassifier(n_neighbors=self.size_ngh,
+            knn = KNeighborsClassifier(n_neighbors=self.n_neighbors,
                                        n_jobs=self.n_jobs,
                                        **self.kwargs)
 
