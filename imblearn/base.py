@@ -79,7 +79,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         self.logger.info('Compute classes statistics ...')
 
-        # # Raise an error if there is only one class
+        # Raise an error if there is only one class
         # if uniques.size == 1:
         #     raise RuntimeError("Only one class detected, aborting...")
         # Raise a warning for the moment to be compatible with BaseEstimator
@@ -199,7 +199,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     def _validate_size_ngh_deprecation(self):
         "Private function to warn about the deprecation about size_ngh."
 
-        # Annonce deprecation if necessary
+        # Announce deprecation if necessary
         if self.size_ngh is not None:
             warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
                           ' `n_neighbors` instead.', DeprecationWarning)
