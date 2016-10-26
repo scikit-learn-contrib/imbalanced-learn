@@ -43,7 +43,7 @@ def test_oss_init():
     # Define a ratio
     oss = OneSidedSelection(random_state=RND_SEED)
 
-    assert_equal(oss.size_ngh, 1)
+    assert_equal(oss.n_neighbors, 1)
     assert_equal(oss.n_seeds_S, 1)
     assert_equal(oss.n_jobs, -1)
     assert_equal(oss.random_state, RND_SEED)

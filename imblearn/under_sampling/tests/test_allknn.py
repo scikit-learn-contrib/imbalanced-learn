@@ -69,7 +69,7 @@ def test_allknn_init():
     # Define a ratio
     allknn = AllKNN(random_state=RND_SEED)
 
-    assert_equal(allknn.size_ngh, 3)
+    assert_equal(allknn.n_neighbors, 3)
     assert_equal(allknn.kind_sel, 'all')
     assert_equal(allknn.n_jobs, -1)
     assert_equal(allknn.random_state, RND_SEED)

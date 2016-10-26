@@ -35,7 +35,14 @@ class NearMiss(BaseMulticlassSampler):
         Version of the NearMiss to use. Possible values
         are 1, 2 or 3.
 
-    size_ngh : int, optional (default=3)
+    size_ngh : int, optional (default=None)
+        Size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+
+        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
+        Use ``n_neighbors`` instead.
+
+    n_neighbors : int, optional (default=3)
         Size of the neighbourhood to consider to compute the
         average distance to the minority point samples.
 
@@ -97,12 +104,14 @@ class NearMiss(BaseMulticlassSampler):
     """
 
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
-                 version=1, size_ngh=3, ver3_samp_ngh=3, n_jobs=-1, **kwargs):
+                 version=1, size_ngh=None, n_neighbors=3, ver3_samp_ngh=3,
+                 n_jobs=-1, **kwargs):
         super(NearMiss, self).__init__(ratio=ratio)
         self.return_indices = return_indices
         self.random_state = random_state
         self.version = version
         self.size_ngh = size_ngh
+        self.n_neighbors = n_neighbors
         self.ver3_samp_ngh = ver3_samp_ngh
         self.n_jobs = n_jobs
         self.kwargs = kwargs
@@ -145,7 +154,7 @@ class NearMiss(BaseMulticlassSampler):
         """
 
         # Compute the distance considering the farthest neighbour
-        dist_avg_vec = np.sum(dist_vec[:, -self.size_ngh:], axis=1)
+        dist_avg_vec = np.sum(dist_vec[:, -self.n_neighbors:], axis=1)
 
         self.logger.debug('The size of the distance matrix is %s',
                           dist_vec.shape)
@@ -236,7 +245,7 @@ class NearMiss(BaseMulticlassSampler):
         # For each element of the current class, find the set of NN
         # of the minority class
         # Call the constructor of the NN
-        nn_obj = NearestNeighbors(n_neighbors=self.size_ngh,
+        nn_obj = NearestNeighbors(n_neighbors=self.n_neighbors,
                                   n_jobs=self.n_jobs,
                                   **self.kwargs)
 
@@ -259,7 +268,7 @@ class NearMiss(BaseMulticlassSampler):
                 # Find the NN
                 dist_vec, idx_vec = nn_obj.kneighbors(
                     sub_samples_x,
-                    n_neighbors=self.size_ngh)
+                    n_neighbors=self.n_neighbors)
 
                 # Select the right samples
                 sel_x, sel_y, idx_tmp = self._selection_dist_based(
@@ -306,7 +315,7 @@ class NearMiss(BaseMulticlassSampler):
                 # Compute the NN considering the current class
                 dist_vec, idx_vec = nn_obj.kneighbors(
                     sub_samples_x,
-                    n_neighbors=self.size_ngh)
+                    n_neighbors=self.n_neighbors)
 
                 sel_x, sel_y, idx_tmp = self._selection_dist_based(
                     sub_samples_x,

@@ -47,7 +47,7 @@ def test_cnn_init():
     # Define a ratio
     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
 
-    assert_equal(cnn.size_ngh, 1)
+    assert_equal(cnn.n_neighbors, 1)
     assert_equal(cnn.n_seeds_S, 1)
     assert_equal(cnn.n_jobs, -1)
 

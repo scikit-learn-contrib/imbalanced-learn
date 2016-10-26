@@ -80,7 +80,7 @@ def test_nearmiss_init():
                    version=VERSION_NEARMISS)
 
     assert_equal(nm3.version, VERSION_NEARMISS)
-    assert_equal(nm3.size_ngh, 3)
+    assert_equal(nm3.n_neighbors, 3)
     assert_equal(nm3.ratio, ratio)
     assert_equal(nm3.random_state, RND_SEED)
 

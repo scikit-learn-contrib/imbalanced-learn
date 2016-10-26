@@ -14,7 +14,6 @@ Changelog
 
 Bug fixes
 ~~~~~~~~~
-
 - Fixed a bug in :class:`under_sampling.NearMiss` which was not picking the right samples during under sampling for the method 3. By `Guillaume Lemaitre`_.
 - Fixed a bug in :class:`ensemble.EasyEnsemble`, correction of the `random_state` generation. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
 - Fixed a bug in :class:`under_sampling.RepeatedEditedNearestNeighbours`, add additional stopping criterion to avoid that the minority class become a majority class or that a class disappear. By `Guillaume Lemaitre`_.
@@ -37,6 +36,18 @@ Enhancement
 
 - Added support for bumpversion. By `Guillaume Lemaitre`_.
 - Validate the type of target in binary samplers. A warning is raised for the moment. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
+
+New features
+~~~~~~~~~~~~
+
+- Added AllKNN under sampling technique.
+- Added support for bumpversion.
+
+API changes summary
+~~~~~~~~~~~~~~~~~~~
+
+- `size_ngh` has been deprecated in :class:`combine.SMOTEENN`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira` .
+- `size_ngh` has been deprecated in :class:`under_sampling.EditedNearestNeighbors`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
 
 Documentation changes
 ~~~~~~~~~~~~~~~~~~~~~
