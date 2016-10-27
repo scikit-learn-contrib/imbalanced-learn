@@ -71,9 +71,9 @@ class RandomOverSampler(BaseMulticlassSampler):
     def __init__(self,
                  ratio='auto',
                  random_state=None):
-
         super(RandomOverSampler, self).__init__(ratio=ratio)
         self.random_state = random_state
+        self._force_all_finite = False
 
     def _sample(self, X, y):
         """Resample the dataset.

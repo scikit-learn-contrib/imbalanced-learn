@@ -79,6 +79,7 @@ class RandomUnderSampler(BaseMulticlassSampler):
         self.return_indices = return_indices
         self.random_state = random_state
         self.replacement = replacement
+        self._force_all_finite = False
 
     def _sample(self, X, y):
         """Resample the dataset.

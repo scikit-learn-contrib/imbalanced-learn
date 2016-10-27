@@ -44,7 +44,8 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         self.ratio = ratio
         self.logger = logging.getLogger(__name__)
-
+        self._force_all_finite = True
+        
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
 
@@ -64,12 +65,13 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         """
 
         # Check the consistency of X and y
-        X, y = check_X_y(X, y)
+        X, y = check_X_y(X, y, force_all_finite=self._force_all_finite)
 
         self.min_c_ = None
         self.maj_c_ = None
         self.stats_c_ = {}
         self.X_shape_ = None
+        
 
         if hasattr(self, 'ratio'):
             self._validate_ratio()
@@ -137,7 +139,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         """
 
         # Check the consistency of X and y
-        X, y = check_X_y(X, y)
+        X, y = check_X_y(X, y, force_all_finite=self._force_all_finite)
 
         # Check that the data have been fitted
         if not hasattr(self, 'stats_c_'):
