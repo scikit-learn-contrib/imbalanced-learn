@@ -74,7 +74,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         if hasattr(self, 'ratio'):
             self._validate_ratio()
 
-        if hasattr(self, 'size_ngh'):
+        if hasattr(self, 'size_ngh') or hasattr(self, 'k'):
             self._validate_size_ngh_deprecation()
 
         self.logger.info('Compute classes statistics ...')
@@ -152,7 +152,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         if hasattr(self, 'ratio'):
             self._validate_ratio()
 
-        if hasattr(self, 'size_ngh'):
+        if hasattr(self, 'size_ngh') or hasattr(self, 'k'):
             self._validate_size_ngh_deprecation()
 
         return self._sample(X, y)
@@ -204,6 +204,11 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
                           ' `n_neighbors` instead.', DeprecationWarning)
             self.n_neighbors = self.size_ngh
+
+        if self.k is not None:
+            warnings.warn('`k` will be replaced in version 0.4. Use'
+                          ' `n_neighbors` instead.', DeprecationWarning)
+            self.n_neighbors = self.k
 
     @abstractmethod
     def _sample(self, X, y):
