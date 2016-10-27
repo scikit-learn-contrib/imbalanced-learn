@@ -121,8 +121,8 @@ class ADASYN(BaseBinarySampler):
         random_state = check_random_state(self.random_state)
 
         # Initialise the nearest_neighbours
-        self.nearest_neighbour = NearestNeighbors(n_neighbors=self.n_neighbors,
-                                                  n_jobs=self.n_jobs)
+        self.nearest_neighbour = NearestNeighbors(
+            n_neighbors=self.n_neighbors + 1, n_jobs=self.n_jobs)
 
         # Keep the samples from the majority class
         X_resampled = X.copy()
