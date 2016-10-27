@@ -199,16 +199,16 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     def _validate_size_ngh_deprecation(self):
         "Private function to warn about the deprecation about size_ngh."
 
-        # Announce deprecation if necessary
-        if self.size_ngh is not None:
-            warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
-                          ' `n_neighbors` instead.', DeprecationWarning)
-            self.n_neighbors = self.size_ngh
-
-        if self.k is not None:
-            warnings.warn('`k` will be replaced in version 0.4. Use'
-                          ' `n_neighbors` instead.', DeprecationWarning)
-            self.n_neighbors = self.k
+        if hasattr(self, 'size_ngh'):
+            if self.size_ngh is not None:
+                warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
+                              ' `n_neighbors` instead.', DeprecationWarning)
+                self.n_neighbors = self.size_ngh
+        elif hasattr(self, 'k'):
+            if self.k is not None:
+                warnings.warn('`k` will be replaced in version 0.4. Use'
+                              ' `n_neighbors` instead.', DeprecationWarning)
+                self.n_neighbors = self.k
 
     @abstractmethod
     def _sample(self, X, y):
