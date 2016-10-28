@@ -187,7 +187,10 @@ class SMOTEENN(BaseBinarySampler):
                                 kind=self.kind_smote, n_jobs=smote_jobs)
         # If an object was given, affect
         elif self.smote is not None:
-            self.smote_ = self.smote
+            if isinstance(self.smote, SMOTE):
+                self.smote_ = self.smote
+            else:
+                raise ValueError('smote needs to be a SMOTE object.')
         # Otherwise create a default SMOTE
         else:
             self.smote_ = SMOTE(ratio=self.ratio,
@@ -215,7 +218,10 @@ class SMOTEENN(BaseBinarySampler):
                                                 n_jobs=self.n_jobs)
         # If an object was given, affect
         elif self.enn is not None:
-            self.enn_ = self.enn
+            if isinstance(self.enn, EditedNearestNeighbours):
+                self.enn_ = self.enn
+            else:
+                raise ValueError('enn needs to be an EditedNearestNeighbours.')
         # Otherwise create a default EditedNearestNeighbours
         else:
             self.enn_ = EditedNearestNeighbours(random_state=self.random_state)

@@ -217,6 +217,7 @@ def test_validate_estimator_init():
     assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
+
 def test_validate_estimator_default():
     """Test right processing while passing no object as initialization"""
 
@@ -243,6 +244,7 @@ def test_validate_estimator_default():
 
     assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
 
 def test_validate_estimator_deprecation():
     """Test right processing while passing old parameters"""
@@ -273,3 +275,17 @@ def test_validate_estimator_deprecation():
     X_resampled, y_resampled = smt.fit_sample(X, Y)
     assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_error_wrong_object():
+    """Test either if an error is raised while wrong objects are provided
+    at the initialization"""
+
+    # Create a SMOTE and Tomek object
+    smote = 'rnd'
+    enn = 'rnd'
+
+    smt = SMOTEENN(smote=smote, random_state=RND_SEED)
+    assert_raises(ValueError, smt.fit, X, Y)
+    smt = SMOTEENN(enn=enn, random_state=RND_SEED)
+    assert_raises(ValueError, smt.fit, X, Y)

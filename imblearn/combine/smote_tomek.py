@@ -160,7 +160,10 @@ class SMOTETomek(BaseBinarySampler):
                                 kind=self.kind_smote, n_jobs=smote_jobs)
         # If an object was given, affect
         elif self.smote is not None:
-            self.smote_ = self.smote
+            if isinstance(self.smote, SMOTE):
+                self.smote_ = self.smote
+            else:
+                raise ValueError('smote needs to be a SMOTE object.')
         # Otherwise create a default SMOTE
         else:
             self.smote_ = SMOTE(ratio=self.ratio,
@@ -176,7 +179,10 @@ class SMOTETomek(BaseBinarySampler):
                                      n_jobs=self.n_jobs)
         # If an object was given, affect
         elif self.tomek is not None:
-            self.tomek_ = self.tomek
+            if isinstance(self.tomek, TomekLinks):
+                self.tomek_ = self.tomek
+            else:
+                raise ValueError('tomek needs to be a TomekLinks object.')
         # Otherwise create a default EditedNearestNeighbours
         else:
             self.tomek_ = TomekLinks(random_state=self.random_state)
