@@ -293,14 +293,11 @@ def test_validate_estimator_deprecation():
                      0])
 
     smt = SMOTETomek(random_state=RND_SEED, n_jobs=-1)
-
     X_resampled, y_resampled = smt.fit_sample(X, Y)
     assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
-
     smt = SMOTETomek(random_state=RND_SEED, k=5)
-
     X_resampled, y_resampled = smt.fit_sample(X, Y)
     assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)

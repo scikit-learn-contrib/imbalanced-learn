@@ -162,14 +162,29 @@ class SMOTEENN(BaseBinarySampler):
         # Check any parameters for SMOTE was provided
         # Anounce deprecation
         if (self.k is not None or self.m is not None or
-                self.out_step is not None or self.kind_smote is not None):
+                self.out_step is not None or self.kind_smote is not None or
+                self.n_jobs is not None):
+            # We need to list each parameter and decide if we affect a default
+            # value or not
+            if self.k is None:
+                self.k = 5
+            if self.m is None:
+                self.m = 10
+            if self.out_step is None:
+                self.out_step = 0.5
+            if self.kind_smote is None:
+                self.kind_smote = 'regular'
+            if self.n_jobs is None:
+                smote_jobs = -1
+            else:
+                smote_jobs = self.n_jobs
             warnings.warn('Parameters initialization will be replaced in'
                           ' version 0.4. Use a SMOTE object instead.',
                           DeprecationWarning)
             self.smote_ = SMOTE(ratio=self.ratio,
                                 random_state=self.random_state,
                                 k=self.k, m=self.m, out_step=self.out_step,
-                                kind=self.kind_smote, n_jobs=self.n_jobs)
+                                kind=self.kind_smote, n_jobs=smote_jobs)
         # If an object was given, affect
         elif self.smote is not None:
             self.smote_ = self.smote
@@ -185,6 +200,14 @@ class SMOTEENN(BaseBinarySampler):
             warnings.warn('Parameters initialization will be replaced in'
                           ' version 0.4. Use a ENN object instead.',
                           DeprecationWarning)
+            # We need to list each parameter and decide if we affect a default
+            # value or not
+            if self.n_neighbors is None:
+                self.n_neighbors = 3
+            if self.kind_enn is None:
+                self.kind_enn = 'all'
+            if self.n_jobs is None:
+                self.n_jobs = -1
             self.enn_ = EditedNearestNeighbours(random_state=self.random_state,
                                                 size_ngh=self.size_ngh,
                                                 n_neighbors=self.n_neighbors,
