@@ -91,7 +91,7 @@ class SMOTEENN(BaseBinarySampler):
         The number of threads to open if possible.
 
         NOTE: `n_jobs` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a EditedNearestNeighbours object.
+        Give directly a SMOTE and EditedNearestNeighbours object.
 
     Attributes
     ----------
@@ -155,15 +155,6 @@ class SMOTEENN(BaseBinarySampler):
         self.n_neighbors = n_neighbors
         self.kind_enn = kind_enn
         self.n_jobs = n_jobs
-        # self.sm = SMOTE(ratio=self.ratio, random_state=self.random_state,
-        #                 k=self.k, m=self.m, out_step=self.out_step,
-        #                 kind=self.kind_smote, n_jobs=self.n_jobs,
-        #                 **self.kwargs)
-        # self.enn = EditedNearestNeighbours(random_state=self.random_state,
-        #                                    size_ngh=self.size_ngh,
-        #                                    n_neighbors=self.n_neighbors,
-        #                                    kind_sel=self.kind_enn,
-        #                                    n_jobs=self.n_jobs)
 
     def _validate_estimator(self):
         "Private function to validate SMOTE and ENN objects"
