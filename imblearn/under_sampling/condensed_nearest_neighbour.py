@@ -97,10 +97,9 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
     def __init__(self, return_indices=False, random_state=None,
                  size_ngh=None, n_neighbors=1, n_seeds_S=1, n_jobs=-1,
                  **kwargs):
-        super(CondensedNearestNeighbour, self).__init__()
-
+        super(CondensedNearestNeighbour, self).__init__(
+            random_state=random_state)
         self.return_indices = return_indices
-        self.random_state = random_state
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.n_seeds_S = n_seeds_S

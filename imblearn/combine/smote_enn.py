@@ -115,8 +115,7 @@ class SMOTEENN(BaseBinarySampler):
                  size_ngh=None, n_neighbors=3, kind_enn='all', n_jobs=-1,
                  **kwargs):
 
-        super(SMOTEENN, self).__init__(ratio=ratio)
-        self.random_state = random_state
+        super(SMOTEENN, self).__init__(ratio=ratio, random_state=random_state)
         self.k = k
         self.m = m
         self.out_step = out_step

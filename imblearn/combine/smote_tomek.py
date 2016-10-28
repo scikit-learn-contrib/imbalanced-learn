@@ -101,8 +101,8 @@ class SMOTETomek(BaseBinarySampler):
     def __init__(self, ratio='auto', random_state=None,
                  k=5, m=10, out_step=0.5, kind_smote='regular',
                  n_jobs=-1, **kwargs):
-        super(SMOTETomek, self).__init__(ratio=ratio)
-        self.random_state = random_state
+        super(SMOTETomek, self).__init__(ratio=ratio,
+                                         random_state=random_state)
         self.k = k
         self.m = m
         self.out_step = out_step

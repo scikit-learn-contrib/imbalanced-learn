@@ -102,9 +102,9 @@ class BalanceCascade(BaseBinarySampler):
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
                  n_max_subset=None, classifier='knn', bootstrap=True,
                  **kwargs):
-        super(BalanceCascade, self).__init__(ratio=ratio)
+        super(BalanceCascade, self).__init__(ratio=ratio,
+                                             random_state=random_state)
         self.return_indices = return_indices
-        self.random_state = random_state
         self.classifier = classifier
         self.n_max_subset = n_max_subset
         self.bootstrap = bootstrap

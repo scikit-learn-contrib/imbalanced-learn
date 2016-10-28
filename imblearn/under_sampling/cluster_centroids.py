@@ -80,8 +80,8 @@ class ClusterCentroids(BaseMulticlassSampler):
     """
 
     def __init__(self, ratio='auto', random_state=None, n_jobs=-1, **kwargs):
-        super(ClusterCentroids, self).__init__(ratio=ratio)
-        self.random_state = random_state
+        super(ClusterCentroids, self).__init__(ratio=ratio,
+                                               random_state=random_state)
         self.n_jobs = n_jobs
         self.kwargs = kwargs
 
