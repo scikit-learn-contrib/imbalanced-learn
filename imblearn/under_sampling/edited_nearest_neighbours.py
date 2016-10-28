@@ -601,7 +601,7 @@ class AllKNN(BaseMulticlassSampler):
         for curr_size_ngh in range(1, self.n_neighbors + 1):
             self.logger.debug('Apply ENN size_ngh #%s', curr_size_ngh)
             # updating ENN size_ngh
-            self.enn_.size_ngh = curr_size_ngh
+            self.enn_.n_neighbors = curr_size_ngh
 
             if self.return_indices:
                 X_enn, y_enn, idx_enn = self.enn_.fit_sample(X_, y_)
