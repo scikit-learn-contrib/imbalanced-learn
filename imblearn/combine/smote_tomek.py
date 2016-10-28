@@ -117,8 +117,8 @@ class SMOTETomek(BaseBinarySampler):
 
     def __init__(self, ratio='auto', random_state=None,
                  smote=None, tomek=None,
-                 k=5, m=10, out_step=0.5, kind_smote='regular',
-                 n_jobs=-1):
+                 k=None, m=None, out_step=None, kind_smote=None,
+                 n_jobs=None):
         super(SMOTETomek, self).__init__(ratio=ratio,
                                          random_state=random_state)
         self.smote = smote
@@ -135,14 +135,29 @@ class SMOTETomek(BaseBinarySampler):
         # Check any parameters for SMOTE was provided
         # Anounce deprecation
         if (self.k is not None or self.m is not None or
-                self.out_step is not None or self.kind_smote is not None):
+                self.out_step is not None or self.kind_smote is not None or
+                self.n_jobs is not None):
             warnings.warn('Parameters initialization will be replaced in'
                           ' version 0.4. Use a SMOTE object instead.',
                           DeprecationWarning)
+            # We need to list each parameter and decide if we affect a default
+            # value or not
+            if self.k is None:
+                self.k = 5
+            if self.m is None:
+                self.m = 10
+            if self.out_step is None:
+                self.out_step = 0.5
+            if self.kind_smote is None:
+                self.kind_smote = 'regular'
+            if self.n_jobs is None:
+                smote_jobs = -1
+            else:
+                smote_jobs = self.n_jobs
             self.smote_ = SMOTE(ratio=self.ratio,
                                 random_state=self.random_state,
                                 k=self.k, m=self.m, out_step=self.out_step,
-                                kind=self.kind_smote, n_jobs=self.n_jobs)
+                                kind=self.kind_smote, n_jobs=smote_jobs)
         # If an object was given, affect
         elif self.smote is not None:
             self.smote_ = self.smote
