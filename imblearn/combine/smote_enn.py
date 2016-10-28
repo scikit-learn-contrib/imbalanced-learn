@@ -156,12 +156,6 @@ class SMOTEENN(BaseBinarySampler):
 
         super(SMOTEENN, self).fit(X, y)
 
-        # Annonce deprecation if necessary
-        if self.size_ngh is not None:
-            warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
-                          ' `n_neighbors` instead.', DeprecationWarning)
-            self.n_neighbors = self.size_ngh
-
         # Fit using SMOTE
         self.sm.fit(X, y)
 
