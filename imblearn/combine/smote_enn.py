@@ -226,6 +226,8 @@ class SMOTEENN(BaseBinarySampler):
 
         super(SMOTEENN, self).fit(X, y)
 
+        self._validate_estimator()
+
         # Fit using SMOTE
         self.smote_.fit(X, y)
 
