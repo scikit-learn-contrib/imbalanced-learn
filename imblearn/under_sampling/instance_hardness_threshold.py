@@ -99,10 +99,11 @@ class InstanceHardnessThreshold(BaseBinarySampler):
     def __init__(self, estimator='linear-svm', ratio='auto',
                  return_indices=False, random_state=None, cv=5, n_jobs=-1,
                  **kwargs):
-        super(InstanceHardnessThreshold, self).__init__(ratio=ratio)
+        super(InstanceHardnessThreshold, self).__init__(
+            ratio=ratio,
+            random_state=random_state)
         self.estimator = estimator
         self.return_indices = return_indices
-        self.random_state = random_state
         self.kwargs = kwargs
         self.cv = cv
         self.n_jobs = n_jobs

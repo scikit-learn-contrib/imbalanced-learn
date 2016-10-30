@@ -100,9 +100,9 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
 
     def __init__(self, return_indices=False, random_state=None,
                  size_ngh=None, n_neighbors=3, kind_sel='all', n_jobs=-1):
-        super(EditedNearestNeighbours, self).__init__()
+        super(EditedNearestNeighbours, self).__init__(
+            random_state=random_state)
         self.return_indices = return_indices
-        self.random_state = random_state
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel

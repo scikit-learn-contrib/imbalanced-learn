@@ -90,9 +90,9 @@ class EasyEnsemble(BaseMulticlassSampler):
 
     def __init__(self, ratio='auto', return_indices=False,
                  random_state=None, replacement=False, n_subsets=10):
-        super(EasyEnsemble, self).__init__(ratio=ratio)
+        super(EasyEnsemble, self).__init__(ratio=ratio,
+                                           random_state=random_state)
         self.return_indices = return_indices
-        self.random_state = random_state
         self.replacement = replacement
         self.n_subsets = n_subsets
 

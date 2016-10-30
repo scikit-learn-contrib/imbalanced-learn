@@ -84,13 +84,8 @@ class ADASYN(BaseBinarySampler):
 
     """
 
-    def __init__(self,
-                 ratio='auto',
-                 random_state=None,
-                 k=5,
-                 n_jobs=1):
-        super(ADASYN, self).__init__(ratio=ratio)
-        self.random_state = random_state
+    def __init__(self, ratio='auto', random_state=None, k=5, n_jobs=1):
+        super(ADASYN, self).__init__(ratio=ratio, random_state=random_state)
         self.k = k
         self.n_jobs = n_jobs
         self.nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1,

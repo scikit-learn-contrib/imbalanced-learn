@@ -74,9 +74,8 @@ class TomekLinks(BaseBinarySampler):
 
     def __init__(self, return_indices=False, random_state=None,
                  n_jobs=-1):
-        super(TomekLinks, self).__init__()
+        super(TomekLinks, self).__init__(random_state=random_state)
         self.return_indices = return_indices
-        self.random_state = random_state
         self.n_jobs = n_jobs
 
     @staticmethod

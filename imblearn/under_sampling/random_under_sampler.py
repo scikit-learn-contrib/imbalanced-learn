@@ -75,9 +75,9 @@ class RandomUnderSampler(BaseMulticlassSampler):
 
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
                  replacement=True):
-        super(RandomUnderSampler, self).__init__(ratio=ratio)
+        super(RandomUnderSampler, self).__init__(ratio=ratio,
+                                                 random_state=random_state)
         self.return_indices = return_indices
-        self.random_state = random_state
         self.replacement = replacement
 
     def _sample(self, X, y):
