@@ -230,10 +230,14 @@ class Pipeline(pipeline.Pipeline):
         Xt = X
         for _, transform in self.steps[:-1]:
             if hasattr(transform, "fit_sample"):
-                pass
+                # XXX: Calling sample in pipeline it means that the
+                # last estimator is a sampler. Samplers don't carry 
+                # the sampled data. So, call 'fit_sample' in all intermediate
+                # steps to get the sampled data for the last estimator.
+                Xt, y = transform.fit_sample(Xt, y)
             else:
                 Xt = transform.transform(Xt)
-        return self.steps[-1][-1].sample(Xt, y)
+        return self.steps[-1][-1].fit_sample(Xt, y)
 
     @if_delegate_has_method(delegate='_final_estimator')
     def predict(self, X):
