@@ -106,9 +106,8 @@ class NearMiss(BaseMulticlassSampler):
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
                  version=1, size_ngh=None, n_neighbors=3, ver3_samp_ngh=3,
                  n_jobs=-1, **kwargs):
-        super(NearMiss, self).__init__(ratio=ratio)
+        super(NearMiss, self).__init__(ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
-        self.random_state = random_state
         self.version = version
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
