@@ -20,16 +20,13 @@ Bug fixes
 - Fixed a bug in :class:`under_sampling.AllKNN`, add stopping criteria to avoid that the minority class become a majority class or that a class disappear. By `Guillaume Lemaitre`_.
 - Fixed a bug in :class:`under_sampling.CondensedNeareastNeigbour`, correction of the list of indices returned. By `Guillaume Lemaitre`_.
 - Fixed a bug in :class:`ensemble.BalanceCascade`, solve the issue to obtain a single array if desired. By `Guillaume Lemaitre`_.
+- Fixed a bug in :class:`pipeline.Pipeline`, solve to embed `Pipeline` in other `Pipeline. By `Christos Aridos`_ .
+- Fixed a bug in :class:`pipeline.Pipeline`, solve the issue to put to sampler in the same `Pipeline`. By `Christos Aridos`_ .
 
 New features
 ~~~~~~~~~~~~
 
 - Added AllKNN under sampling technique. By `Dayvid Oliveira`_.
-
-API changes summary
-~~~~~~~~~~~~~~~~~~~
-
-- Two base classes :class:`BaseBinaryclassSampler` and :class:`BaseMulticlassSampler` have been created to handle the target type and raise warning in case of abnormality. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
 
 Enhancement
 ~~~~~~~~~~~
@@ -48,10 +45,19 @@ API changes summary
 
 - `size_ngh` has been deprecated in :class:`combine.SMOTEENN`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira` .
 - `size_ngh` has been deprecated in :class:`under_sampling.EditedNearestNeighbors`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
+- `size_ngh` has been deprecated in :class:`under_sampling.CondensedNeareastNeigbour`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
+- `size_ngh` has been deprecated in :class:`under_sampling.OneSidedSelection`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
+- `size_ngh` has been deprecated in :class:`under_sampling.NeighbourhoodCleaningRule`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
+- `size_ngh` has been deprecated in :class:`under_sampling.RepeatedEditedNearestNeighbours`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
+- `size_ngh` has been deprecated in :class:`under_sampling.AllKNN`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
+- Two base classes :class:`BaseBinaryclassSampler` and :class:`BaseMulticlassSampler` have been created to handle the target type and raise warning in case of abnormality. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
+- Move `random_state` to be assigned in the :class:`SamplerMixin` initialization. By `Guillaume Lemaitre`_.
+- Provide estimators instead of parameters in :class:`combine.SMOTEENN` and :class:`combine.SMOTETomek`. Therefore, the list of parameters have been deprecated. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
 
 Documentation changes
 ~~~~~~~~~~~~~~~~~~~~~
 
+- Replace some remaining `UnbalancedDataset` occurences. By `Francois Magimel`_.
 - Added doctest in the documentation. By `Guillaume Lemaitre`_.
 
 .. _changes_0_1:
@@ -101,3 +107,4 @@ New methods
 .. _Christos Aridas: https://github.com/chkoar
 .. _Fernando Nogueira: https://github.com/fmfn
 .. _Dayvid Oliveira: https://github.com/dvro
+.. _Francois Magimel: https://github.com/Linkid
