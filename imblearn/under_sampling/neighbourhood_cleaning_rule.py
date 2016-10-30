@@ -5,6 +5,7 @@ from collections import Counter
 
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors.base import KNeighborsMixin
 
 from ..base import BaseMulticlassSampler
 
@@ -34,13 +35,14 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
 
     n_neighbors : int, optional (default=3)
         Size of the neighbourhood to consider in order to make
-        the comparison between each samples and their NN.
+        the comparison between each samples and their NN. A KNeighborsMixin
+        object implementing a `kneighbors` method can be provided. Currently,
+        `NearestNeighbors` (i.e., exact NN algorithm) and `LSHForest`
+        (i.e., approximate NN algorithm) are the 2 types provided in
+        scikit-learn.
 
     n_jobs : int, optional (default=-1)
         The number of threads to open if possible.
-
-    **kwargs : keywords
-        Parameter to use for the Neareast Neighbours object.
 
     Attributes
     ----------
@@ -94,6 +96,42 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
 
+    def _validate_estimator(self):
+        """Private function to create the NN estimator"""
+
+        if isinstance(self.n_neighbors, int):
+            self.nn_ = NearestNeighbors(n_neighbors=self.n_neighbors,
+                                        n_jobs=self.n_jobs)
+        elif isinstance(self.n_neighbors, KNeighborsMixin):
+            self.nn_ = self.n_neighbors
+        else:
+            raise ValueError('`n_neighbors` has to be be either int or a'
+                             ' subclass of KNeighborsMixin.')
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(NeighbourhoodCleaningRule, self).fit(X, y)
+
+        self._validate_estimator()
+
+        return self
+
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -131,12 +169,8 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
         if self.return_indices:
             idx_under = np.flatnonzero(y == self.min_c_)
 
-        # Create a k-NN to fit the whole data
-        nn_obj = NearestNeighbors(n_neighbors=self.n_neighbors,
-                                  n_jobs=self.n_jobs)
-
         # Fit the whole dataset
-        nn_obj.fit(X)
+        self.nn_.fit(X)
 
         idx_to_exclude = []
         # Loop over the other classes under picking at random
@@ -149,7 +183,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
             idx_sub_sample = np.flatnonzero(y == key)
 
             # Find the NN for the current class
-            nnhood_idx = nn_obj.kneighbors(sub_samples_x,
+            nnhood_idx = self.nn_.kneighbors(sub_samples_x,
                                            return_distance=False)
 
             # Get the label of the corresponding to the index
