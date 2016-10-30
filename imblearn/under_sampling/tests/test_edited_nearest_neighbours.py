@@ -9,6 +9,7 @@ from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
+from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import EditedNearestNeighbours
 
@@ -97,12 +98,12 @@ def test_enn_fit_sample():
     X_resampled, y_resampled = enn.fit_sample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181],
-                  [0.01936241, 0.17799828],
-                  [2.59928271, 0.93323465],
-                  [1.92365863, 0.82718767],
-                  [0.25738379, 0.95564169],
-                  [0.78318102, 2.59153329],
-                  [0.52726792, -0.38735648]])
+                     [0.01936241, 0.17799828],
+                     [2.59928271, 0.93323465],
+                     [1.92365863, 0.82718767],
+                     [0.25738379, 0.95564169],
+                     [0.78318102, 2.59153329],
+                     [0.52726792, -0.38735648]])
     y_gt = np.array([0, 0, 1, 1, 2, 2, 2])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
@@ -116,12 +117,12 @@ def test_enn_fit_sample_with_indices():
     X_resampled, y_resampled, idx_under = enn.fit_sample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181],
-                  [0.01936241, 0.17799828],
-                  [2.59928271, 0.93323465],
-                  [1.92365863, 0.82718767],
-                  [0.25738379, 0.95564169],
-                  [0.78318102, 2.59153329],
-                  [0.52726792, -0.38735648]])
+                     [0.01936241, 0.17799828],
+                     [2.59928271, 0.93323465],
+                     [1.92365863, 0.82718767],
+                     [0.25738379, 0.95564169],
+                     [0.78318102, 2.59153329],
+                     [0.52726792, -0.38735648]])
     y_gt = np.array([0, 0, 1, 1, 2, 2, 2])
     idx_gt = np.array([4, 11, 0, 3, 1, 8, 15])
     assert_array_equal(X_resampled, X_gt)
@@ -174,3 +175,41 @@ def test_continuous_error():
     y = np.linspace(0, 1, 20)
     enn = EditedNearestNeighbours(random_state=RND_SEED)
     assert_warns(UserWarning, enn.fit, X, y)
+
+
+def test_enn_fit_sample_with_nn_object():
+    """Test the fit sample routine using a NN object"""
+
+    # Resample the data
+    nn = NearestNeighbors(n_neighbors=4)
+    enn = EditedNearestNeighbours(n_neighbors=nn, random_state=RND_SEED,
+                                  kind_sel='mode')
+    X_resampled, y_resampled = enn.fit_sample(X, Y)
+
+    X_gt = np.array([[-0.10903849, -0.12085181],
+                     [0.01936241, 0.17799828],
+                     [2.59928271, 0.93323465],
+                     [1.42772181, 0.526027],
+                     [1.92365863, 0.82718767],
+                     [0.25738379, 0.95564169],
+                     [-0.284881, -0.62730973],
+                     [0.57062627, 1.19528323],
+                     [0.78318102, 2.59153329],
+                     [0.35831463, 1.33483198],
+                     [-0.14313184, -1.0412815],
+                     [-0.09816301, -0.74662486],
+                     [0.52726792, -0.38735648],
+                     [0.2821046, -0.07862747]])
+    y_gt = np.array([0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_enn_not_good_object():
+    """Test either if an error is raised while a wrong type of NN is given"""
+
+    # Resample the data
+    nn = 'rnd'
+    enn = EditedNearestNeighbours(n_neighbors=nn, random_state=RND_SEED,
+                                  kind_sel='mode')
+    assert_raises(ValueError, enn.fit_sample, X, Y)
