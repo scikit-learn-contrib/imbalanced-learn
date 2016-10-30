@@ -15,7 +15,7 @@ class SMOTEENN(BaseBinarySampler):
 
     Parameters
     ----------
-    ratio : str or float, optional (default='auto')
+    ratio : str or float, optional (default=None)
         If 'auto', the ratio will be defined automatically to balance
         the dataset. Otherwise, the ratio is defined as the
         number of samples in the minority class over the the number of
@@ -27,20 +27,40 @@ class SMOTEENN(BaseBinarySampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    k : int, optional (default=5)
+    smote : object, optional (default=SMOTE())
+        The SMOTE object to use. If not given, a SMOTE object with default
+        parameters will be given.
+
+    enn : object, optional (default=EditedNearestNeighbours())
+        The ENN object to use. If not given, an EditedNearestNeighbours object
+        with default parameters will be given.
+
+    k : int, optional (default=None)
         Number of nearest neighbours to used to construct synthetic
         samples.
 
-    m : int, optional (default=10)
+        NOTE: `k` is deprecated from 0.2 and will be replaced in 0.4
+        Give directly a SMOTE object.
+
+    m : int, optional (default=None)
         Number of nearest neighbours to use to determine if a minority
         sample is in danger.
 
-    out_step : float, optional (default=0.5)
+        NOTE: `m` is deprecated from 0.2 and will be replaced in 0.4
+        Give directly a SMOTE object.
+
+    out_step : float, optional (default=None)
         Step size when extrapolating.
 
-    kind_smote : str, optional (default='regular')
+        NOTE: `out_step` is deprecated from 0.2 and will be replaced in 0.4
+        Give directly a SMOTE object.
+
+    kind_smote : str, optional (default=None)
         The type of SMOTE algorithm to use one of the following
         options: 'regular', 'borderline1', 'borderline2', 'svm'.
+
+    NOTE: `kind_smote` is deprecated from 0.2 and will be replaced in 0.4
+        Give directly a SMOTE object.
 
     size_ngh : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
@@ -49,11 +69,14 @@ class SMOTEENN(BaseBinarySampler):
         NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbors : int, optional (default=3)
+    n_neighbors : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-    kind_sel : str, optional (default='all')
+        NOTE: `n_neighbors` is deprecated from 0.2 and will be replaced in 0.4
+        Give directly a EditedNearestNeighbours object.
+
+    kind_sel : str, optional (default=None)
         Strategy to use in order to exclude samples.
 
         - If 'all', all neighbours will have to agree with the samples of
@@ -61,8 +84,14 @@ class SMOTEENN(BaseBinarySampler):
         - If 'mode', the majority vote of the neighbours will be used in
         order to exclude a sample.
 
-    n_jobs : int, optional (default=-1)
+        NOTE: `kind_sel` is deprecated from 0.2 and will be replaced in 0.4
+        Give directly a EditedNearestNeighbours object.
+
+    n_jobs : int, optional (default=None)
         The number of threads to open if possible.
+
+        NOTE: `n_jobs` is deprecated from 0.2 and will be replaced in 0.4
+        Give directly a SMOTE and EditedNearestNeighbours object.
 
     Attributes
     ----------
@@ -111,11 +140,13 @@ class SMOTEENN(BaseBinarySampler):
     """
 
     def __init__(self, ratio='auto', random_state=None,
-                 k=5, m=10, out_step=0.5, kind_smote='regular',
-                 size_ngh=None, n_neighbors=3, kind_enn='all', n_jobs=-1,
-                 **kwargs):
+                 smote=None, enn=None,
+                 k=None, m=None, out_step=None, kind_smote=None,
+                 size_ngh=None, n_neighbors=None, kind_enn=None, n_jobs=None):
 
         super(SMOTEENN, self).__init__(ratio=ratio, random_state=random_state)
+        self.smote = smote
+        self.enn = enn
         self.k = k
         self.m = m
         self.out_step = out_step
@@ -124,16 +155,76 @@ class SMOTEENN(BaseBinarySampler):
         self.n_neighbors = n_neighbors
         self.kind_enn = kind_enn
         self.n_jobs = n_jobs
-        self.kwargs = kwargs
-        self.sm = SMOTE(ratio=self.ratio, random_state=self.random_state,
-                        k=self.k, m=self.m, out_step=self.out_step,
-                        kind=self.kind_smote, n_jobs=self.n_jobs,
-                        **self.kwargs)
-        self.enn = EditedNearestNeighbours(random_state=self.random_state,
-                                           size_ngh=self.size_ngh,
-                                           n_neighbors=self.n_neighbors,
-                                           kind_sel=self.kind_enn,
-                                           n_jobs=self.n_jobs)
+
+    def _validate_estimator(self):
+        "Private function to validate SMOTE and ENN objects"
+
+        # Check any parameters for SMOTE was provided
+        # Anounce deprecation
+        if (self.k is not None or self.m is not None or
+                self.out_step is not None or self.kind_smote is not None or
+                self.n_jobs is not None):
+            # We need to list each parameter and decide if we affect a default
+            # value or not
+            if self.k is None:
+                self.k = 5
+            if self.m is None:
+                self.m = 10
+            if self.out_step is None:
+                self.out_step = 0.5
+            if self.kind_smote is None:
+                self.kind_smote = 'regular'
+            if self.n_jobs is None:
+                smote_jobs = -1
+            else:
+                smote_jobs = self.n_jobs
+            warnings.warn('Parameters initialization will be replaced in'
+                          ' version 0.4. Use a SMOTE object instead.',
+                          DeprecationWarning)
+            self.smote_ = SMOTE(ratio=self.ratio,
+                                random_state=self.random_state,
+                                k=self.k, m=self.m, out_step=self.out_step,
+                                kind=self.kind_smote, n_jobs=smote_jobs)
+        # If an object was given, affect
+        elif self.smote is not None:
+            if isinstance(self.smote, SMOTE):
+                self.smote_ = self.smote
+            else:
+                raise ValueError('smote needs to be a SMOTE object.')
+        # Otherwise create a default SMOTE
+        else:
+            self.smote_ = SMOTE(ratio=self.ratio,
+                                random_state=self.random_state)
+
+        # Check any parameters for ENN was provided
+        # Anounce deprecation
+        if (self.size_ngh is not None or self.n_neighbors is not None or
+                self.kind_enn is not None or self.n_jobs is not None):
+            warnings.warn('Parameters initialization will be replaced in'
+                          ' version 0.4. Use a ENN object instead.',
+                          DeprecationWarning)
+            # We need to list each parameter and decide if we affect a default
+            # value or not
+            if self.n_neighbors is None:
+                self.n_neighbors = 3
+            if self.kind_enn is None:
+                self.kind_enn = 'all'
+            if self.n_jobs is None:
+                self.n_jobs = -1
+            self.enn_ = EditedNearestNeighbours(random_state=self.random_state,
+                                                size_ngh=self.size_ngh,
+                                                n_neighbors=self.n_neighbors,
+                                                kind_sel=self.kind_enn,
+                                                n_jobs=self.n_jobs)
+        # If an object was given, affect
+        elif self.enn is not None:
+            if isinstance(self.enn, EditedNearestNeighbours):
+                self.enn_ = self.enn
+            else:
+                raise ValueError('enn needs to be an EditedNearestNeighbours.')
+        # Otherwise create a default EditedNearestNeighbours
+        else:
+            self.enn_ = EditedNearestNeighbours(random_state=self.random_state)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -155,14 +246,10 @@ class SMOTEENN(BaseBinarySampler):
 
         super(SMOTEENN, self).fit(X, y)
 
-        # Annonce deprecation if necessary
-        if self.size_ngh is not None:
-            warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
-                          ' `n_neighbors` instead.', DeprecationWarning)
-            self.n_neighbors = self.size_ngh
+        self._validate_estimator()
 
         # Fit using SMOTE
-        self.sm.fit(X, y)
+        self.smote_.fit(X, y)
 
         return self
 
@@ -188,7 +275,7 @@ class SMOTEENN(BaseBinarySampler):
         """
 
         # Transform using SMOTE
-        X, y = self.sm.sample(X, y)
+        X, y = self.smote_.sample(X, y)
 
         # Fit and transform using ENN
-        return self.enn.fit_sample(X, y)
+        return self.enn_.fit_sample(X, y)
