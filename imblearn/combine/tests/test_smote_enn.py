@@ -10,6 +10,8 @@ from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.combine import SMOTEENN
+from imblearn.under_sampling import EditedNearestNeighbours
+from imblearn.over_sampling import SMOTE
 
 # Generate a global dataset to use
 RND_SEED = 0
@@ -183,3 +185,107 @@ def test_senn_multiclass_error():
     y = np.array([0] * 3 + [1] * 2 + [2] * 15)
     sm = SMOTEENN(random_state=RND_SEED)
     assert_warns(UserWarning, sm.fit, X, y)
+
+
+def test_validate_estimator_init():
+    """Test right processing while passing objects as initialization"""
+
+    # Create a SMOTE and Tomek object
+    smote = SMOTE(random_state=RND_SEED)
+    enn = EditedNearestNeighbours(random_state=RND_SEED)
+
+    smt = SMOTEENN(smote=smote, enn=enn, random_state=RND_SEED)
+
+    X_resampled, y_resampled = smt.fit_sample(X, Y)
+
+    X_gt = np.array([[0.11622591, -0.0317206],
+                     [1.25192108, -0.22367336],
+                     [0.53366841, -0.30312976],
+                     [1.52091956, -0.49283504],
+                     [0.88407872, 0.35454207],
+                     [1.31301027, -0.92648734],
+                     [-0.41635887, -0.38299653],
+                     [1.70580611, -0.11219234],
+                     [0.29307743, -0.14670439],
+                     [0.84976473, -0.15570176],
+                     [0.61319159, -0.11571668],
+                     [0.66052536, -0.28246517],
+                     [-0.28162401, -2.10400981],
+                     [0.83680821, 1.72827342],
+                     [0.08711622, 0.93259929]])
+    y_gt = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1])
+    assert_array_almost_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_validate_estimator_default():
+    """Test right processing while passing no object as initialization"""
+
+    smt = SMOTEENN(random_state=RND_SEED)
+
+    X_resampled, y_resampled = smt.fit_sample(X, Y)
+
+    X_gt = np.array([[0.11622591, -0.0317206],
+                     [1.25192108, -0.22367336],
+                     [0.53366841, -0.30312976],
+                     [1.52091956, -0.49283504],
+                     [0.88407872, 0.35454207],
+                     [1.31301027, -0.92648734],
+                     [-0.41635887, -0.38299653],
+                     [1.70580611, -0.11219234],
+                     [0.29307743, -0.14670439],
+                     [0.84976473, -0.15570176],
+                     [0.61319159, -0.11571668],
+                     [0.66052536, -0.28246517],
+                     [-0.28162401, -2.10400981],
+                     [0.83680821, 1.72827342],
+                     [0.08711622, 0.93259929]])
+    y_gt = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1])
+
+    assert_array_almost_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_validate_estimator_deprecation():
+    """Test right processing while passing old parameters"""
+
+    X_gt = np.array([[0.11622591, -0.0317206],
+                     [1.25192108, -0.22367336],
+                     [0.53366841, -0.30312976],
+                     [1.52091956, -0.49283504],
+                     [0.88407872, 0.35454207],
+                     [1.31301027, -0.92648734],
+                     [-0.41635887, -0.38299653],
+                     [1.70580611, -0.11219234],
+                     [0.29307743, -0.14670439],
+                     [0.84976473, -0.15570176],
+                     [0.61319159, -0.11571668],
+                     [0.66052536, -0.28246517],
+                     [-0.28162401, -2.10400981],
+                     [0.83680821, 1.72827342],
+                     [0.08711622, 0.93259929]])
+    y_gt = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1])
+
+    smt = SMOTEENN(random_state=RND_SEED, n_jobs=-1)
+    X_resampled, y_resampled = smt.fit_sample(X, Y)
+    assert_array_almost_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+    smt = SMOTEENN(random_state=RND_SEED, k=5)
+    X_resampled, y_resampled = smt.fit_sample(X, Y)
+    assert_array_almost_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_error_wrong_object():
+    """Test either if an error is raised while wrong objects are provided
+    at the initialization"""
+
+    # Create a SMOTE and Tomek object
+    smote = 'rnd'
+    enn = 'rnd'
+
+    smt = SMOTEENN(smote=smote, random_state=RND_SEED)
+    assert_raises(ValueError, smt.fit, X, Y)
+    smt = SMOTEENN(enn=enn, random_state=RND_SEED)
+    assert_raises(ValueError, smt.fit, X, Y)
