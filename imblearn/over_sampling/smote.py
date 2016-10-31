@@ -33,10 +33,23 @@ class SMOTE(BaseBinarySampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    k : int, optional (default=5)
+    k : int, optional (default=None)
         Number of nearest neighbours to used to construct synthetic samples.
 
-    m : int, optional (default=10)
+        NOTE: `k` is deprecated from 0.2 and will be replaced in 0.4
+        Use ``k_neighbors`` instead.
+
+    k_neighbors : int, optional (default=5)
+        Number of nearest neighbours to used to construct synthetic samples.
+
+    m : int, optional (default=None)
+        Number of nearest neighbours to use to determine if a minority sample
+        is in danger.
+
+        NOTE: `m` is deprecated from 0.2 and will be replaced in 0.4
+        Use ``m_neighbors`` instead.
+
+    m_neighbors : int, optional (default=10)
         Number of nearest neighbours to use to determine if a minority sample
         is in danger.
 
@@ -102,12 +115,15 @@ class SMOTE(BaseBinarySampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, k=5, m=10,
-                 out_step=0.5, kind='regular', n_jobs=-1, **kwargs):
+    def __init__(self, ratio='auto', random_state=None, k=None, k_neighbors=5,
+                 m=None, m_neighbors=10, out_step=0.5, kind='regular',
+                 n_jobs=-1, **kwargs):
         super(SMOTE, self).__init__(ratio=ratio, random_state=random_state)
         self.kind = kind
         self.k = k
+        self.k_neighbors = k_neighbors
         self.m = m
+        self.m_neighbors = m_neighbors
         self.out_step = out_step
         self.n_jobs = n_jobs
         self.kwargs = kwargs
@@ -149,11 +165,11 @@ class SMOTE(BaseBinarySampler):
 
         if kind == 'danger':
             # Samples are in danger for m/2 <= m' < m
-            return np.bitwise_and(n_maj >= float(self.m) / 2.,
-                                  n_maj < self.m)
+            return np.bitwise_and(n_maj >= float(self.m_neighbors) / 2.,
+                                  n_maj < self.m_neighbors)
         elif kind == 'noise':
             # Samples are noise for m = m'
-            return n_maj == self.m
+            return n_maj == self.m_neighbors
         else:
             raise NotImplementedError
 
@@ -281,7 +297,8 @@ class SMOTE(BaseBinarySampler):
         # If regular SMOTE is to be performed
         if self.kind == 'regular':
 
-            self.logger.debug('Finding the %s nearest neighbours ...', self.k)
+            self.logger.debug('Finding the %s nearest neighbours ...',
+                              self.k_neighbors)
 
             # Look for k-th nearest neighbours, excluding, of course, the
             # point itself.
@@ -312,7 +329,8 @@ class SMOTE(BaseBinarySampler):
 
         if self.kind == 'borderline1' or self.kind == 'borderline2':
 
-            self.logger.debug('Finding the %s nearest neighbours ...', self.m)
+            self.logger.debug('Finding the %s nearest neighbours ...',
+                              self.m_neighbors)
 
             # Find the NNs for all samples in the data set.
             self.nearest_neighbour.fit(X)
@@ -334,7 +352,8 @@ class SMOTE(BaseBinarySampler):
             #
             # We start by changing the number of NNs to consider from m + 1
             # to k + 1
-            self.nearest_neighbour.set_params(**{'n_neighbors': self.k + 1})
+            self.nearest_neighbour.set_params(**{'n_neighbors':
+                                                 self.k_neighbors + 1})
             self.nearest_neighbour.fit(X_min)
 
             # nns...#
@@ -358,7 +377,7 @@ class SMOTE(BaseBinarySampler):
 
                 # Reset the k-neighbours to m+1 neighbours
                 self.nearest_neighbour.set_params(
-                    **{'n_neighbors': self.m + 1})
+                    **{'n_neighbors': self.m_neighbors + 1})
 
                 return X_resampled, y_resampled
 
@@ -395,7 +414,7 @@ class SMOTE(BaseBinarySampler):
 
                 # Reset the k-neighbours to m+1 neighbours
                 self.nearest_neighbour.set_params(
-                    **{'n_neighbors': self.m + 1})
+                    **{'n_neighbors': self.m_neighbors + 1})
 
                 return X_resampled, y_resampled
 
@@ -416,7 +435,8 @@ class SMOTE(BaseBinarySampler):
 
             # First, find the nn of all the samples to identify samples
             # in danger and noisy ones
-            self.logger.debug('Finding the %s nearest neighbours ...', self.m)
+            self.logger.debug('Finding the %s nearest neighbours ...',
+                              self.m_neighbors)
 
             # As usual, fit a nearest neighbour model to the data
             self.nearest_neighbour.fit(X)
@@ -439,9 +459,11 @@ class SMOTE(BaseBinarySampler):
                               safety_bool.sum().astype(int))
 
             # Proceed to find support vectors NNs among the minority class
-            self.logger.debug('Finding the %s nearest neighbours ...', self.k)
+            self.logger.debug('Finding the %s nearest neighbours ...',
+                              self.k_neighbors)
 
-            self.nearest_neighbour.set_params(**{'n_neighbors': self.k + 1})
+            self.nearest_neighbour.set_params(**{'n_neighbors':
+                                                 self.k_neighbors + 1})
             self.nearest_neighbour.fit(X_min)
 
             self.logger.debug('Create synthetic samples ...')
@@ -496,7 +518,8 @@ class SMOTE(BaseBinarySampler):
                 y_resampled = np.concatenate((y, y_new_1), axis=0)
 
             # Reset the k-neighbours to m+1 neighbours
-            self.nearest_neighbour.set_params(**{'n_neighbors': self.m + 1})
+            self.nearest_neighbour.set_params(**{'n_neighbors':
+                                                 self.m_neighbors + 1})
 
             return X_resampled, y_resampled
 
@@ -509,8 +532,9 @@ class SMOTE(BaseBinarySampler):
             # Regular smote does not look for samples in danger, instead it
             # creates synthetic samples directly from the k-th nearest
             # neighbours with not filtering
-            self.nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1,
-                                                      n_jobs=self.n_jobs)
+            self.nearest_neighbour = NearestNeighbors(
+                n_neighbors=self.k_neighbors + 1,
+                n_jobs=self.n_jobs)
         else:
             # Borderline1, 2 and SVM variations of smote must first look for
             # samples that could be considered noise and samples that live
@@ -518,8 +542,9 @@ class SMOTE(BaseBinarySampler):
             # creating synthetic samples from the k-th nns, it first look
             # for m nearest neighbors to decide whether or not a sample is
             # noise or near the boundary.
-            self.nearest_neighbour = NearestNeighbors(n_neighbors=self.m + 1,
-                                                      n_jobs=self.n_jobs)
+            self.nearest_neighbour = NearestNeighbors(
+                n_neighbors=self.m_neighbors + 1,
+                n_jobs=self.n_jobs)
 
         # --- SVM smote
         # Unlike the borderline variations, the SVM variation uses the support
