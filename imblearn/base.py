@@ -83,6 +83,10 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         if hasattr(self, 'size_ngh'):
             self._validate_size_ngh_deprecation()
+        elif hasattr(self, 'k') and not hasattr(self, 'm'):
+            self._validate_k_deprecation()
+        elif hasattr(self, 'k') and hasattr(self, 'm'):
+            self._validate_k_m_deprecation()
 
         self.logger.info('Compute classes statistics ...')
 
@@ -161,6 +165,10 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         if hasattr(self, 'size_ngh'):
             self._validate_size_ngh_deprecation()
+        elif hasattr(self, 'k') and not hasattr(self, 'm'):
+            self._validate_k_deprecation()
+        elif hasattr(self, 'k') and hasattr(self, 'm'):
+            self._validate_k_m_deprecation()
 
         return self._sample(X, y)
 
@@ -211,6 +219,25 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
                           ' `n_neighbors` instead.', DeprecationWarning)
             self.n_neighbors = self.size_ngh
+
+    def _validate_k_deprecation(self):
+        """Private function to warn about deprecation of k in ADASYN"""
+        if self.k is not None:
+            warnings.warn('`k` will be replaced in version 0.4. Use'
+                          ' `n_neighbors` instead.', DeprecationWarning)
+            self.n_neighbors = self.k
+
+    def _validate_k_m_deprecation(self):
+        """Private function to warn about deprecation of k in ADASYN"""
+        if self.k is not None:
+            warnings.warn('`k` will be replaced in version 0.4. Use'
+                          ' `k_neighbors` instead.', DeprecationWarning)
+            self.k_neighbors = self.k
+
+        if self.m is not None:
+            warnings.warn('`m` will be replaced in version 0.4. Use'
+                          ' `m_neighbors` instead.', DeprecationWarning)
+            self.m_neighbors = self.m
 
     @abstractmethod
     def _sample(self, X, y):

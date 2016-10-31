@@ -31,7 +31,13 @@ class ADASYN(BaseBinarySampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    k : int, optional (default=5)
+    k : int, optional (default=None)
+        Number of nearest neighbours to used to construct synthetic samples.
+
+        NOTE: `k` is deprecated from 0.2 and will be replaced in 0.4
+        Use ``n_neighbors`` instead.
+
+    n_neighbours : int, optional (default=5)
         Number of nearest neighbours to used to construct synthetic samples.
 
     n_jobs : int, optional (default=1)
@@ -84,12 +90,15 @@ class ADASYN(BaseBinarySampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, k=5, n_jobs=1):
+    def __init__(self, ratio='auto', random_state=None, k=None, n_neighbors=5,
+                 n_jobs=1):
         super(ADASYN, self).__init__(ratio=ratio, random_state=random_state)
         self.k = k
+        self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
-        self.nearest_neighbour = NearestNeighbors(n_neighbors=self.k + 1,
-                                                  n_jobs=self.n_jobs)
+        self.nearest_neighbour = NearestNeighbors(
+            n_neighbors=self.n_neighbors + 1,
+            n_jobs=self.n_jobs)
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -130,7 +139,8 @@ class ADASYN(BaseBinarySampler):
         X_min = X[y == self.min_c_]
 
         # Print if verbose is true
-        self.logger.debug('Finding the %s nearest neighbours ...', self.k)
+        self.logger.debug('Finding the %s nearest neighbours ...',
+                          self.n_neighbors)
 
         # Look for k-th nearest neighbours, excluding, of course, the
         # point itself.
@@ -140,7 +150,8 @@ class ADASYN(BaseBinarySampler):
         _, ind_nn = self.nearest_neighbour.kneighbors(X_min)
 
         # Compute the ratio of majority samples next to minority samples
-        ratio_nn = np.sum(y[ind_nn[:, 1:]] == self.maj_c_, axis=1) / self.k
+        ratio_nn = (np.sum(y[ind_nn[:, 1:]] == self.maj_c_, axis=1) /
+                    self.n_neighbors)
         # Check that we found at least some neighbours belonging to the
         # majority class
         if not np.sum(ratio_nn):
@@ -158,7 +169,8 @@ class ADASYN(BaseBinarySampler):
         for x_i, x_i_nn, num_sample_i in zip(X_min, ind_nn, num_samples_nn):
 
             # Pick-up the neighbors wanted
-            nn_zs = random_state.randint(1, high=self.k + 1, size=num_sample_i)
+            nn_zs = random_state.randint(1, high=self.n_neighbors + 1,
+                                         size=num_sample_i)
 
             # Create a new sample
             for nn_z in nn_zs:
