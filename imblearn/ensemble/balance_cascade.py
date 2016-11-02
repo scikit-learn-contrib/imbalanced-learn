@@ -311,7 +311,9 @@ class BalanceCascade(BaseBinarySampler):
                     curr_sample_weight *= sample_counts
                 else:
                     self.logger.debug('No bootsrap')
-                    not_indices_mask = ~indices_to_mask(indices, y_data.size)
+                    mask = np.zeros(y_data.size, dtype=np.bool)
+                    mask[indices] = True
+                    not_indices_mask = not mask
                     curr_sample_weight[not_indices_mask] = 0
 
                 self.estimator_.fit(x_data, y_data,
