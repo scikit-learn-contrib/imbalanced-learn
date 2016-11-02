@@ -125,14 +125,15 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         """Private function to create the cluster estimator"""
 
         if (self.estimator is not None and
-                isinstance(self.estimator, ClassifierMixin)):
+                isinstance(self.estimator, ClassifierMixin) and
+                hasattr(self.estimator, 'predict_proba')):
             self.estimator_ = self.estimator
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
                 random_state=self.random_state, n_jobs=self.n_jobs)
         # To be removed in 0.4
         elif (self.estimator is not None and
-                isinstance(self.estimator, string_types)):
+              isinstance(self.estimator, string_types)):
             # Select the appropriate classifier
             if self.estimator == 'knn':
                 from sklearn.neighbors import KNeighborsClassifier
