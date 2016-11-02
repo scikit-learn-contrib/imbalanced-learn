@@ -175,7 +175,7 @@ class SMOTEENN(BaseBinarySampler):
             if self.kind_smote is None:
                 self.kind_smote = 'regular'
             if self.n_jobs is None:
-                smote_jobs = -1
+                smote_jobs = 1
             else:
                 smote_jobs = self.n_jobs
             warnings.warn('Parameters initialization will be replaced in'
@@ -210,7 +210,7 @@ class SMOTEENN(BaseBinarySampler):
             if self.kind_enn is None:
                 self.kind_enn = 'all'
             if self.n_jobs is None:
-                self.n_jobs = -1
+                self.n_jobs = 1
             self.enn_ = EditedNearestNeighbours(random_state=self.random_state,
                                                 size_ngh=self.size_ngh,
                                                 n_neighbors=self.n_neighbors,

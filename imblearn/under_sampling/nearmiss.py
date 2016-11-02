@@ -66,7 +66,7 @@ class NearMiss(BaseMulticlassSampler):
         `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
         the k_neighbors.
 
-    n_jobs : int, optional (default=-1)
+    n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
     Attributes
@@ -117,7 +117,7 @@ class NearMiss(BaseMulticlassSampler):
 
     def __init__(self, ratio='auto', return_indices=False, random_state=None,
                  version=1, size_ngh=None, n_neighbors=3, ver3_samp_ngh=None,
-                 n_neighbors_ver3=3, n_jobs=-1):
+                 n_neighbors_ver3=3, n_jobs=1):
         super(NearMiss, self).__init__(ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.version = version

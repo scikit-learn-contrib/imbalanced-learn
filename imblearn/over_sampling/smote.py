@@ -68,6 +68,9 @@ class SMOTE(BaseBinarySampler):
         The type of SMOTE algorithm to use one of the following options:
         'regular', 'borderline1', 'borderline2', 'svm'.
 
+    n_jobs : int, optional (default=1)
+        The number of threads to open if possible.
+
     Attributes
     ----------
     min_c_ : str or int
@@ -125,7 +128,7 @@ class SMOTE(BaseBinarySampler):
 
     def __init__(self, ratio='auto', random_state=None, k=None, k_neighbors=5,
                  m=None, m_neighbors=10, out_step=0.5, kind='regular',
-                 n_jobs=-1, **kwargs):
+                 n_jobs=1, **kwargs):
         super(SMOTE, self).__init__(ratio=ratio, random_state=random_state)
         self.kind = kind
         self.k = k

@@ -44,7 +44,7 @@ class InstanceHardnessThreshold(BaseBinarySampler):
     cv : int, optional (default=5)
         Number of folds to be used when estimating samples' instance hardness.
 
-    n_jobs : int, optional (default=-1)
+    n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
     Attributes
@@ -97,7 +97,7 @@ class InstanceHardnessThreshold(BaseBinarySampler):
     """
 
     def __init__(self, estimator='linear-svm', ratio='auto',
-                 return_indices=False, random_state=None, cv=5, n_jobs=-1,
+                 return_indices=False, random_state=None, cv=5, n_jobs=1,
                  **kwargs):
         super(InstanceHardnessThreshold, self).__init__(
             ratio=ratio,

@@ -151,7 +151,7 @@ class SMOTETomek(BaseBinarySampler):
             if self.kind_smote is None:
                 self.kind_smote = 'regular'
             if self.n_jobs is None:
-                smote_jobs = -1
+                smote_jobs = 1
             else:
                 smote_jobs = self.n_jobs
             self.smote_ = SMOTE(ratio=self.ratio,
