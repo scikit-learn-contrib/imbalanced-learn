@@ -184,10 +184,10 @@ def test_fit_sample_auto():
                                1, 1, 1, 1, 1, 1]),
                      np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
                                1, 1, 1, 1, 1])], dtype=object)
-    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 11, 4, 10, 2,
-                                 8, 1, 7]),
-                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 4, 8, 0, 3, 5,
-                                 9])], dtype=object)
+    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 18, 8, 16, 6,
+                                 14, 5, 13]),
+                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 8, 14, 1, 7,
+                                 9, 15])], dtype=object)
     # Check each array
     for idx in range(X_gt.size):
         assert_array_equal(X_resampled[idx], X_gt[idx])
@@ -298,10 +298,10 @@ def test_fit_sample_auto_decision_tree():
                                1, 1, 1, 1]),
                      np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
                                1])], dtype=object)
-    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 11, 4,
-                                 10, 2, 8, 1, 7]),
-                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 7, 0, 3, 5,
-                                 9])], dtype=object)
+    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 18, 8, 16, 6,
+                                 14, 5, 13]),
+                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 13, 1, 7, 9,
+                                 15])], dtype=object)
     # Check each array
     for idx in range(X_gt.size):
         assert_array_equal(X_resampled[idx], X_gt[idx])
@@ -359,10 +359,10 @@ def test_fit_sample_auto_random_forest():
                                1, 1]),
                      np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
                                1])], dtype=object)
-    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 11, 4, 10,
-                                 2, 8, 1, 7]),
-                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 10, 7,
-                                 0, 3, 5, 9])], dtype=object)
+    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 18, 8, 16, 6,
+                                 14, 5, 13]),
+                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 16, 13, 1, 7,
+                                 9, 15])], dtype=object)
     # Check each array
     for idx in range(X_gt.size):
         assert_array_equal(X_resampled[idx], X_gt[idx])
@@ -418,10 +418,10 @@ def test_fit_sample_auto_adaboost():
                                1, 1]),
                      np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
                                1])], dtype=object)
-    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 11, 4, 10, 2,
-                                 8, 1, 7]),
-                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 7, 0, 3, 5,
-                                 9])], dtype=object)
+    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 18, 8, 16,
+                                 6, 14, 5, 13]),
+                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 16, 13, 1, 7,
+                                 9, 15])], dtype=object)
     # Check each array
     for idx in range(X_gt.size):
         assert_array_equal(X_resampled[idx], X_gt[idx])
@@ -478,10 +478,11 @@ def test_fit_sample_auto_gradient_boosting():
                                1, 1, 1]),
                      np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
                                1])], dtype=object)
-    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 11, 4, 10,
-                                 2, 8, 1, 7]),
-                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 7, 0, 3,
-                                 5, 9])], dtype=object)
+    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 18, 8, 16, 6,
+                                 14, 5, 13]),
+                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 16, 13, 1, 7, 9,
+                                 15])], dtype=object)
+
     # Check each array
     for idx in range(X_gt.size):
         assert_array_equal(X_resampled[idx], X_gt[idx])
@@ -538,10 +539,11 @@ def test_fit_sample_auto_linear_svm():
                                1, 1]),
                      np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
                                1])], dtype=object)
-    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 11, 4, 10,
-                                 2, 8, 1, 7]),
-                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 4, 0, 3,
-                                 5, 9])], dtype=object)
+    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 18, 8, 16, 6,
+                                 14, 5, 13]),
+                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 8, 1, 7, 9,
+                                 15])], dtype=object)
+
     # Check each array
     for idx in range(X_gt.size):
         assert_array_equal(X_resampled[idx], X_gt[idx])
@@ -591,7 +593,8 @@ def test_fit_sample_auto_early_stop():
                       [-1.11515198, -0.93689695]]])
 
     y_gt = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]])
-    idx_gt = np.array([[0, 2, 3, 4, 11, 12, 17, 19, 6, 11, 4, 10, 2, 8, 1, 7]])
+    idx_gt = np.array([[0, 2, 3, 4, 11, 12, 17, 19, 10, 18, 8, 16, 6, 14,
+                        5, 13]])
     # Check each array
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
@@ -648,11 +651,10 @@ def test_fit_sample_auto_early_stop_2():
                                1, 1, 1]),
                      np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
                                1, 1])], dtype=object)
-    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 11, 4, 10,
-                                 2, 8, 1, 7]),
-                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 4, 8, 0, 3,
-                                 5, 9])], dtype=object)
-
+    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 18, 8, 16, 6,
+                                 14, 5, 13]),
+                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 8, 14, 1, 7,
+                                 9, 15])], dtype=object)
     # Check each array
     for idx in range(X_gt.size):
         assert_array_equal(X_resampled[idx], X_gt[idx])
@@ -735,10 +737,11 @@ def test_give_classifier_obj():
                                1, 1]),
                      np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
                                1])], dtype=object)
-    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 11, 4, 10,
-                                 2, 8, 1, 7]),
-                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 6, 10, 7,
-                                 0, 3, 5, 9])], dtype=object)
+    idx_gt = np.array([np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 18, 8, 16, 6,
+                                 14, 5, 13]),
+                       np.array([0, 2, 3, 4, 11, 12, 17, 19, 10, 16, 13, 1, 7,
+                                 9, 15])], dtype=object)
+
     # Check each array
     for idx in range(X_gt.size):
         assert_array_equal(X_resampled[idx], X_gt[idx])

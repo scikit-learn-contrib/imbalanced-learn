@@ -249,6 +249,7 @@ class BalanceCascade(BaseBinarySampler):
         # return them later
         if self.return_indices:
             idx_min = np.flatnonzero(y == self.min_c_)
+            idx_maj = np.flatnonzero(y == self.maj_c_)
 
         # Condition to initiliase before the search
         b_subset_search = True
@@ -291,7 +292,8 @@ class BalanceCascade(BaseBinarySampler):
             X_resampled.append(x_data)
             y_resampled.append(y_data)
             if self.return_indices:
-                idx_under.append(np.concatenate((idx_min, idx_sel_from_maj),
+                idx_under.append(np.concatenate((idx_min,
+                                                 idx_maj[idx_sel_from_maj]),
                                                 axis=0))
 
             # Get the indices of interest
@@ -366,9 +368,8 @@ class BalanceCascade(BaseBinarySampler):
                     X_resampled.append(x_data)
                     y_resampled.append(y_data)
                     if self.return_indices:
-                        idx_under.append(np.concatenate((idx_min,
-                                                         idx_sel_from_maj),
-                                                        axis=0))
+                        idx_under.append(np.concatenate(
+                            (idx_min, idx_maj[idx_sel_from_maj]), axis=0))
 
                     self.logger.debug('Creation of the subset #%s', n_subsets)
 
@@ -399,9 +400,8 @@ class BalanceCascade(BaseBinarySampler):
                 X_resampled.append(x_data)
                 y_resampled.append(y_data)
                 if self.return_indices:
-                    idx_under.append(np.concatenate((idx_min,
-                                                     idx_sel_from_maj),
-                                                    axis=0))
+                    idx_under.append(np.concatenate(
+                        (idx_min, idx_maj[idx_sel_from_maj]), axis=0))
                 self.logger.debug('Creation of the subset #%s', n_subsets)
 
                 # We found a new subset, increase the counter
