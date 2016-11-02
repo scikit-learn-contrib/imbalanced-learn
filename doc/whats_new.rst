@@ -21,8 +21,8 @@ Bug fixes
 - Fixed a bug in :class:`under_sampling.AllKNN`, add stopping criteria to avoid that the minority class become a majority class or that a class disappear. By `Guillaume Lemaitre`_.
 - Fixed a bug in :class:`under_sampling.CondensedNeareastNeigbour`, correction of the list of indices returned. By `Guillaume Lemaitre`_.
 - Fixed a bug in :class:`ensemble.BalanceCascade`, solve the issue to obtain a single array if desired. By `Guillaume Lemaitre`_.
-- Fixed a bug in :class:`pipeline.Pipeline`, solve to embed `Pipeline` in other `Pipeline. By `Christos Aridos`_ .
-- Fixed a bug in :class:`pipeline.Pipeline`, solve the issue to put to sampler in the same `Pipeline`. By `Christos Aridos`_ .
+- Fixed a bug in :class:`pipeline.Pipeline`, solve to embed `Pipeline` in other `Pipeline. By `Christos Aridas`_ .
+- Fixed a bug in :class:`pipeline.Pipeline`, solve the issue to put to sampler in the same `Pipeline`. By `Christos Aridas`_ .
 
 New features
 ~~~~~~~~~~~~
