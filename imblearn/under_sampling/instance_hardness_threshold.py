@@ -6,7 +6,7 @@ import warnings
 
 from collections import Counter
 
-import numpy as n
+import numpy as np
 
 from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
