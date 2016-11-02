@@ -47,7 +47,7 @@ def test_tl_init():
     # Define a ratio
     tl = TomekLinks(random_state=RND_SEED)
 
-    assert_equal(tl.n_jobs, -1)
+    assert_equal(tl.n_jobs, 1)
     assert_equal(tl.random_state, RND_SEED)
 
 

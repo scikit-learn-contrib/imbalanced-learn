@@ -53,7 +53,7 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         - If 'mode', the majority vote of the neighbours will be used in
         order to exclude a sample.
 
-    n_jobs : int, optional (default=-1)
+    n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
     Attributes
@@ -103,7 +103,7 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
     """
 
     def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=None, n_neighbors=3, kind_sel='all', n_jobs=-1):
+                 size_ngh=None, n_neighbors=3, kind_sel='all', n_jobs=1):
         super(EditedNearestNeighbours, self).__init__(
             random_state=random_state)
         self.return_indices = return_indices

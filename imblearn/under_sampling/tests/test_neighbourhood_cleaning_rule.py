@@ -44,7 +44,7 @@ def test_ncr_init():
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
 
     assert_equal(ncr.n_neighbors, 3)
-    assert_equal(ncr.n_jobs, -1)
+    assert_equal(ncr.n_jobs, 1)
     assert_equal(ncr.random_state, RND_SEED)
 
 

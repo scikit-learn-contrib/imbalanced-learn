@@ -49,7 +49,7 @@ def test_cnn_init():
 
     assert_equal(cnn.n_neighbors, 1)
     assert_equal(cnn.n_seeds_S, 1)
-    assert_equal(cnn.n_jobs, -1)
+    assert_equal(cnn.n_jobs, 1)
 
 
 def test_cnn_fit_single_class():
