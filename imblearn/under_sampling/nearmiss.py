@@ -43,13 +43,12 @@ class NearMiss(BaseMulticlassSampler):
         NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbors : int or KNeighborsMixin object, optional (default=3)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples. A KNeighborsMixin object
-        implementing a `kneighbors` method can be provided. Currently,
-        `NearestNeighbors` (i.e., exact NN algorithm) and `LSHForest`
-        (i.e., approximate NN algorithm) are the 2 types provided in
-        scikit-learn.
+    n_neighbors : int or object, optional (default=3)
+        If int, size of the neighbourhood to consider to compute the average
+        distance to the minority point samples.
+        If object, an estimator that inherits from
+        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
+        the k_neighbors.
 
     ver3_samp_ngh : int, optional (default=3)
         NearMiss-3 algorithm start by a phase of re-sampling. This
@@ -59,14 +58,13 @@ class NearMiss(BaseMulticlassSampler):
         NOTE: `ver3_samp_ngh` is deprecated from 0.2 and will be replaced
         in 0.4. Use ``n_neighbors_ver3`` instead.
 
-    n_neighbors_ver3 : int or KNeighborsMixin object, optional (default=3)
-        NearMiss-3 algorithm start by a phase of re-sampling. This
+    n_neighbors_ver3 : int or object, optional (default=3)
+        If int, NearMiss-3 algorithm start by a phase of re-sampling. This
         parameter correspond to the number of neighbours selected
         create the sub_set in which the selection will be performed.
-        A KNeighborsMixin object implementing a `kneighbors` method can
-        be provided. Currently, `NearestNeighbors` (i.e., exact NN algorithm)
-        and `LSHForest` (i.e., approximate NN algorithm) are the 2 types
-        provided in scikit-learn.
+        If object, an estimator that inherits from
+        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
+        the k_neighbors.
 
     n_jobs : int, optional (default=-1)
         The number of threads to open if possible.

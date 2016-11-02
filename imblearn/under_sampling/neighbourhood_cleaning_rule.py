@@ -33,13 +33,12 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
         NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbors : int, optional (default=3)
-        Size of the neighbourhood to consider in order to make
-        the comparison between each samples and their NN. A KNeighborsMixin
-        object implementing a `kneighbors` method can be provided. Currently,
-        `NearestNeighbors` (i.e., exact NN algorithm) and `LSHForest`
-        (i.e., approximate NN algorithm) are the 2 types provided in
-        scikit-learn.
+    n_neighbors : int or object, optional (default=3)
+        If int, size of the neighbourhood to consider in order to make
+        the comparison between each samples and their NN.
+        If object, an estimator that inherits from
+        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
+        the k_neighbors.
 
     n_jobs : int, optional (default=-1)
         The number of threads to open if possible.

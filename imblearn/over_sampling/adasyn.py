@@ -38,12 +38,12 @@ class ADASYN(BaseBinarySampler):
         NOTE: `k` is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbours : int, optional (default=5)
-        Number of nearest neighbours to used to construct synthetic samples.
-        A KNeighborsMixin object implementing a `kneighbors` method can be
-        provided. Currently, `NearestNeighbors` (i.e., exact NN algorithm)
-        and `LSHForest` (i.e., approximate NN algorithm) are the 2 types
-        provided in scikit-learn.
+    n_neighbours : int int or object, optional (default=5)
+        If int, number of nearest neighbours to used to construct
+        synthetic samples.
+        If object, an estimator that inherits from
+        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
+        the k_neighbors.
 
     n_jobs : int, optional (default=1)
         Number of threads to run the algorithm when it is possible.
