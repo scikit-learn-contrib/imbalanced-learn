@@ -6,10 +6,11 @@ import warnings
 
 from collections import Counter
 
-import numpy as np
-from sklearn.cross_validation import StratifiedKFold
+import numpy as n
+
 from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.cross_validation import StratifiedKFold
 
 from six import string_types
 
@@ -22,12 +23,14 @@ class InstanceHardnessThreshold(BaseBinarySampler):
 
     Parameters
     ----------
-    estimator : ClassifierMixin, optional (default=RandomForestClassifier())
+    estimator : object, optional (default=RandomForestClassifier())
         Classifier to be used to estimate instance hardness of the samples.
         By default a RandomForestClassifer will be used.
-        The choices using a string are the following: 'knn',
+        If str, the choices using a string are the following: 'knn',
         'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
         and 'linear-svm'.
+        If object, an estimator inherited from `sklearn.base.ClassifierMixin`
+        and having an attribute `predict_proba`.
 
         NOTE: `estimator` as a string object is deprecated from 0.2 and will be
         replaced in 0.4. Use `ClassifierMixin` object instead.
@@ -135,6 +138,9 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         elif (self.estimator is not None and
               isinstance(self.estimator, string_types)):
             # Select the appropriate classifier
+            warnings.warn('`estimator` will be replaced in version'
+                          ' 0.4. Use a classifier object instead of a string.',
+                          DeprecationWarning)
             if self.estimator == 'knn':
                 from sklearn.neighbors import KNeighborsClassifier
                 self.estimator_ = KNeighborsClassifier(
