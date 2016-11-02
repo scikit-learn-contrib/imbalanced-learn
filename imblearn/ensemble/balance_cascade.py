@@ -9,6 +9,7 @@ from sklearn.base import ClassifierMixin
 from sklearn.ensemble.bagging import _generate_indices
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, indices_to_mask
+from sklearn.utils.random import sample_without_replacement
 from sklearn.utils.validation import has_fit_parameter
 
 from six import string_types
@@ -296,8 +297,10 @@ class BalanceCascade(BaseBinarySampler):
                                                 axis=0))
 
             # Get the indices of interest
-            indices = _generate_indices(random_state, self.bootstrap,
-                                        y_data.size, y_data.size)
+            if self.bootstrap:
+                indices = random_state.randint(0, y_data.size, y_data.size)
+            else:
+                indices = range(y_data.size)
 
             # Draw samples, using sample weights, and then fit
             if support_sample_weight:
