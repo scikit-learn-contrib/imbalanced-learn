@@ -9,6 +9,7 @@ from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
+from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NeighbourhoodCleaningRule
 
@@ -143,3 +144,36 @@ def test_continuous_error():
     y = np.linspace(0, 1, 15)
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
     assert_warns(UserWarning, ncr.fit, X, y)
+
+
+def test_ncr_fit_sample_nn_obj():
+    """Test fit-sample with nn object"""
+
+    # Resample the data
+    nn = NearestNeighbors(n_neighbors=3)
+    ncr = NeighbourhoodCleaningRule(return_indices=True, random_state=RND_SEED,
+                                    n_neighbors=nn)
+    X_resampled, y_resampled, idx_under = ncr.fit_sample(X, Y)
+
+    X_gt = np.array([[-1.20809175, -1.49917302],
+                     [-0.60497017, -0.66630228],
+                     [-0.91735824, 0.93110278],
+                     [-0.20413357, 0.64628718],
+                     [0.35967591, 2.61186964],
+                     [-1.55581933, 1.09609604],
+                     [1.55157493, -1.6981518]])
+    y_gt = np.array([0, 0, 1, 1, 2, 1, 2])
+    idx_gt = np.array([10, 11, 3, 5, 7, 13, 14])
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+    assert_array_equal(idx_under, idx_gt)
+
+
+def test_ncr_wrong_nn_obj():
+    """Test either if an error is raised with wrong NN object"""
+
+    # Resample the data
+    nn = 'rnd'
+    ncr = NeighbourhoodCleaningRule(return_indices=True, random_state=RND_SEED,
+                                    n_neighbors=nn)
+    assert_raises(ValueError, ncr.fit_sample, X, Y)

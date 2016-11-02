@@ -9,6 +9,7 @@ from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
+from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NearMiss
 
@@ -247,3 +248,62 @@ def test_continuous_error():
     y = np.linspace(0, 1, 15)
     nm = NearMiss(random_state=RND_SEED, version=VERSION_NEARMISS)
     assert_warns(UserWarning, nm.fit, X, y)
+
+
+def test_nm3_fit_sample_nn_obj():
+    """Test fit-sample with nn object"""
+
+    # Define the parameter for the under-sampling
+    ratio = 'auto'
+
+    # Create the object
+    nn = NearestNeighbors(n_neighbors=3)
+    nn3 = NearestNeighbors(n_neighbors=3)
+    nm3 = NearMiss(ratio=ratio, random_state=RND_SEED,
+                   version=VERSION_NEARMISS, return_indices=True,
+                   n_neighbors=nn, n_neighbors_ver3=nn3)
+
+    # Fit and sample
+    X_resampled, y_resampled, idx_under = nm3.fit_sample(X, Y)
+
+    X_gt = np.array([[0.91464286, 1.61369212],
+                     [-0.80809175, -1.09917302],
+                     [-0.20497017, -0.26630228],
+                     [1.17737838, -0.2002118],
+                     [-0.60413357, 0.24628718],
+                     [0.03142011, 0.12323596],
+                     [1.15157493, -1.2981518],
+                     [-0.54619583, 1.73009918],
+                     [0.99272351, -0.11631728]])
+    y_gt = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
+    idx_gt = np.array([3, 10, 11, 0, 2, 3, 5, 1, 4])
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+    assert_array_equal(idx_under, idx_gt)
+
+
+def test_nm3_wrong_nn_obj():
+    """Test either if an error is raised with wrong NN object"""
+
+    # Define the parameter for the under-sampling
+    ratio = 'auto'
+
+    # Create the object
+    nn = 'rnd'
+    nn3 = NearestNeighbors(n_neighbors=3)
+    nm3 = NearMiss(ratio=ratio, random_state=RND_SEED,
+                   version=VERSION_NEARMISS, return_indices=True,
+                   n_neighbors=nn, n_neighbors_ver3=nn3)
+
+    # Fit and sample
+    assert_raises(ValueError, nm3.fit_sample, X, Y)
+
+    # Create the object
+    nn3 = 'rnd'
+    nn = NearestNeighbors(n_neighbors=3)
+    nm3 = NearMiss(ratio=ratio, random_state=RND_SEED,
+                   version=VERSION_NEARMISS, return_indices=True,
+                   n_neighbors=nn, n_neighbors_ver3=nn3)
+
+    # Fit and sample
+    assert_raises(ValueError, nm3.fit_sample, X, Y)
