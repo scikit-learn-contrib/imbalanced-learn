@@ -6,7 +6,7 @@ from collections import Counter
 
 import numpy as np
 from sklearn.cluster import KMeans
-from sklearn.utils import check_random_state
+from sklearn.base import ClusterMixin
 
 from ..base import BaseMulticlassSampler
 
@@ -35,11 +35,13 @@ class ClusterCentroids(BaseMulticlassSampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
+    base_cluster : ClusterMixin object, optional (default=KMeans())
+        The base cluster method to use. By default a K-means clustering method
+        is used. This clustering method needs to have a `fit` method and an
+        attribute `cluster_centers_`.
+
     n_jobs : int, optional (default=-1)
         The number of threads to open if possible.
-
-    **kwargs : keywords
-        Parameter to use for the KMeans object.
 
     Attributes
     ----------
@@ -79,11 +81,48 @@ class ClusterCentroids(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, n_jobs=-1, **kwargs):
+    def __init__(self, ratio='auto', random_state=None, base_cluster=None,
+                 n_jobs=-1):
         super(ClusterCentroids, self).__init__(ratio=ratio,
                                                random_state=random_state)
+        self.base_cluster = base_cluster
         self.n_jobs = n_jobs
-        self.kwargs = kwargs
+
+    def _validate_estimator(self):
+        """Private function to create the cluster estimator"""
+
+        if (self.base_cluster is not None and
+                isinstance(self.base_cluster, ClusterMixin)):
+            self.base_cluster_ = self.base_cluster
+        elif self.base_cluster is None:
+            self.base_cluster_ = KMeans(random_state=self.random_state,
+                                        n_jobs=self.n_jobs)
+        else:
+            raise ValueError('Invalid parameter `base_cluster`')
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(ClusterCentroids, self).fit(X, y)
+
+        self._validate_estimator()
+
+        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -105,7 +144,6 @@ class ClusterCentroids(BaseMulticlassSampler):
             The corresponding label of `X_resampled`
 
         """
-        random_state = check_random_state(self.random_state)
 
         # Compute the number of cluster needed
         if self.ratio == 'auto':
@@ -113,9 +151,9 @@ class ClusterCentroids(BaseMulticlassSampler):
         else:
             num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
 
-        # Create the clustering object
-        kmeans = KMeans(n_clusters=num_samples, random_state=random_state)
-        kmeans.set_params(**self.kwargs)
+        # Set the number of cluster of the clustering method
+        self.base_cluster_.set_params(**{'n_clusters': num_samples})
+        self.logger.debug(self.base_cluster_)
 
         # Start with the minority class
         X_min = X[y == self.min_c_]
@@ -133,8 +171,8 @@ class ClusterCentroids(BaseMulticlassSampler):
                 continue
 
             # Find the centroids via k-means
-            kmeans.fit(X[y == key])
-            centroids = kmeans.cluster_centers_
+            self.base_cluster_.fit(X[y == key])
+            centroids = self.base_cluster_.cluster_centers_
 
             # Concatenate to the minority class
             X_resampled = np.concatenate((X_resampled, centroids), axis=0)
