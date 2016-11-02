@@ -8,6 +8,7 @@ import warnings
 import numpy as np
 from scipy.stats import mode
 from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors.base import KNeighborsMixin
 
 from ..base import BaseMulticlassSampler
 
@@ -37,9 +38,12 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
        Use ``n_neighbors`` instead.
 
-    n_neighbors : int, optional (default=3)
-        Size of the neighbourhood to consider to compute the average
+    n_neighbors : int or object, optional (default=3)
+        If object, size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
+        If object, an estimator that inherits from
+        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
+        the k_neighbors.
 
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.
@@ -108,6 +112,42 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
 
+    def _validate_estimator(self):
+        """Private function to create the NN estimator"""
+
+        if isinstance(self.n_neighbors, int):
+            self.nn_ = NearestNeighbors(n_neighbors=self.n_neighbors + 1,
+                                        n_jobs=self.n_jobs)
+        elif isinstance(self.n_neighbors, KNeighborsMixin):
+            self.nn_ = self.n_neighbors
+        else:
+            raise ValueError('`n_neighbors` has to be be either int or a'
+                             ' subclass of KNeighborsMixin.')
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(EditedNearestNeighbours, self).fit(X, y)
+
+        self._validate_estimator()
+
+        return self
+
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -148,11 +188,8 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         if self.return_indices:
             idx_under = np.flatnonzero(y == self.min_c_)
 
-        # Create a k-NN to fit the whole data
-        nn_obj = NearestNeighbors(n_neighbors=self.n_neighbors + 1,
-                                  n_jobs=self.n_jobs)
         # Fit the data
-        nn_obj.fit(X)
+        self.nn_.fit(X)
 
         # Loop over the other classes under picking at random
         for key in self.stats_c_.keys():
@@ -166,8 +203,8 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
             sub_samples_y = y[y == key]
 
             # Find the NN for the current class
-            nnhood_idx = nn_obj.kneighbors(sub_samples_x,
-                                           return_distance=False)[:, 1:]
+            nnhood_idx = self.nn_.kneighbors(sub_samples_x,
+                                             return_distance=False)[:, 1:]
 
             # Get the label of the corresponding to the index
             nnhood_label = y[nnhood_idx]
@@ -233,9 +270,12 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
         NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbors : int, optional (default=3)
-        Size of the neighbourhood to consider to compute the average
+    n_neighbors : int or object, optional (default=3)
+        If int, size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
+        If object, an estimator that inherits from
+        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
+        the k_neighbors.
 
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.
@@ -301,20 +341,23 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
     def __init__(self, return_indices=False, random_state=None,
                  size_ngh=None, n_neighbors=3, max_iter=100, kind_sel='all',
                  n_jobs=-1):
-        super(RepeatedEditedNearestNeighbours, self).__init__()
+        super(RepeatedEditedNearestNeighbours, self).__init__(
+            random_state=random_state)
         self.return_indices = return_indices
-        self.random_state = random_state
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
         self.max_iter = max_iter
-        self.enn_ = EditedNearestNeighbours(
-            return_indices=self.return_indices,
-            random_state=self.random_state,
-            n_neighbors=self.n_neighbors,
-            kind_sel=self.kind_sel,
-            n_jobs=self.n_jobs)
+
+    def _validate_estimator(self):
+        """Private function to create the NN estimator"""
+
+        self.enn_ = EditedNearestNeighbours(return_indices=self.return_indices,
+                                            random_state=self.random_state,
+                                            n_neighbors=self.n_neighbors,
+                                            kind_sel=self.kind_sel,
+                                            n_jobs=self.n_jobs)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -333,7 +376,11 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
             Return self.
 
         """
+
         super(RepeatedEditedNearestNeighbours, self).fit(X, y)
+
+        self._validate_estimator()
+
         self.enn_.fit(X, y)
 
         return self
@@ -466,9 +513,12 @@ class AllKNN(BaseMulticlassSampler):
         NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbors : int, optional (default=3)
-        Size of the neighbourhood to consider to compute the average
+    n_neighbors : int or object, optional (default=3)
+        If int, size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
+        If object, an estimator that inherits from
+        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
+        the k_neighbors.
 
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.
@@ -529,19 +579,21 @@ class AllKNN(BaseMulticlassSampler):
 
     def __init__(self, return_indices=False, random_state=None,
                  size_ngh=None, n_neighbors=3, kind_sel='all', n_jobs=-1):
-        super(AllKNN, self).__init__()
+        super(AllKNN, self).__init__(random_state=random_state)
         self.return_indices = return_indices
-        self.random_state = random_state
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
-        self.enn_ = EditedNearestNeighbours(
-            return_indices=self.return_indices,
-            random_state=self.random_state,
-            n_neighbors=self.n_neighbors,
-            kind_sel=self.kind_sel,
-            n_jobs=self.n_jobs)
+
+    def _validate_estimator(self):
+        """Private function to create the NN estimator"""
+
+        self.enn_ = EditedNearestNeighbours(return_indices=self.return_indices,
+                                            random_state=self.random_state,
+                                            n_neighbors=self.n_neighbors,
+                                            kind_sel=self.kind_sel,
+                                            n_jobs=self.n_jobs)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -561,6 +613,9 @@ class AllKNN(BaseMulticlassSampler):
 
         """
         super(AllKNN, self).fit(X, y)
+
+        self._validate_estimator()
+
         self.enn_.fit(X, y)
 
         return self
@@ -598,10 +653,10 @@ class AllKNN(BaseMulticlassSampler):
         if self.return_indices:
             idx_under = np.arange(X.shape[0], dtype=int)
 
-        for curr_size_ngh in range(1, self.n_neighbors + 1):
-            self.logger.debug('Apply ENN size_ngh #%s', curr_size_ngh)
+        for curr_size_ngh in range(1, self.enn_.nn_.n_neighbors):
+            self.logger.debug('Apply ENN n_neighbors #%s', curr_size_ngh)
             # updating ENN size_ngh
-            self.enn_.size_ngh = curr_size_ngh
+            self.enn_.n_neighbors = curr_size_ngh
 
             if self.return_indices:
                 X_enn, y_enn, idx_enn = self.enn_.fit_sample(X_, y_)

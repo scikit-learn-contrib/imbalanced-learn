@@ -9,6 +9,7 @@ from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
+from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NearMiss
 
@@ -248,3 +249,50 @@ def test_continuous_error():
     y = np.linspace(0, 1, 15)
     nm1 = NearMiss(random_state=RND_SEED, version=VERSION_NEARMISS)
     assert_warns(UserWarning, nm1.fit, X, y)
+
+
+def test_nm1_fit_sample_nn_obj():
+    """Test fit-sample with nn object"""
+
+    # Define the parameter for the under-sampling
+    ratio = 'auto'
+
+    # Create the object
+    nn = NearestNeighbors(n_neighbors=3)
+    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
+                   version=VERSION_NEARMISS, return_indices=True,
+                   n_neighbors=nn)
+
+    # Fit and sample
+    X_resampled, y_resampled, idx_under = nm1.fit_sample(X, Y)
+
+    X_gt = np.array([[0.91464286, 1.61369212],
+                     [-0.80809175, -1.09917302],
+                     [-0.20497017, -0.26630228],
+                     [-0.05903827, 0.10947647],
+                     [0.03142011, 0.12323596],
+                     [-0.60413357, 0.24628718],
+                     [0.50701028, -0.17636928],
+                     [0.4960075, 0.86130762],
+                     [0.45713638, 1.31069295]])
+    y_gt = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
+    idx_gt = np.array([3, 10, 11, 2, 8, 5, 9, 1, 6])
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+    assert_array_equal(idx_under, idx_gt)
+
+
+def test_nm1_wrong_nn_obj():
+    """Test either if an error is raised with wrong NN object"""
+
+    # Define the parameter for the under-sampling
+    ratio = 'auto'
+
+    # Create the object
+    nn = 'rnd'
+    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
+                   version=VERSION_NEARMISS, return_indices=True,
+                   n_neighbors=nn)
+
+    # Fit and sample
+    assert_raises(ValueError, nm1.fit_sample, X, Y)

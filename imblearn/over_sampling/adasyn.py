@@ -5,6 +5,7 @@ from collections import Counter
 
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.utils import check_random_state
 
 from ..base import BaseBinarySampler
@@ -37,8 +38,12 @@ class ADASYN(BaseBinarySampler):
         NOTE: `k` is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbours : int, optional (default=5)
-        Number of nearest neighbours to used to construct synthetic samples.
+    n_neighbours : int int or object, optional (default=5)
+        If int, number of nearest neighbours to used to construct
+        synthetic samples.
+        If object, an estimator that inherits from
+        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
+        the k_neighbors.
 
     n_jobs : int, optional (default=1)
         Number of threads to run the algorithm when it is possible.
@@ -96,9 +101,42 @@ class ADASYN(BaseBinarySampler):
         self.k = k
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
-        self.nearest_neighbour = NearestNeighbors(
-            n_neighbors=self.n_neighbors + 1,
-            n_jobs=self.n_jobs)
+
+    def _validate_estimator(self):
+        """Private function to create the NN estimator"""
+
+        if isinstance(self.n_neighbors, int):
+            self.nn_ = NearestNeighbors(n_neighbors=self.n_neighbors + 1,
+                                        n_jobs=self.n_jobs)
+        elif isinstance(self.n_neighbors, KNeighborsMixin):
+            self.nn_ = self.n_neighbors
+        else:
+            raise ValueError('`n_neighbors` has to be be either int or a'
+                             ' subclass of KNeighborsMixin.')
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(ADASYN, self).fit(X, y)
+
+        self._validate_estimator()
+
+        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -140,18 +178,18 @@ class ADASYN(BaseBinarySampler):
 
         # Print if verbose is true
         self.logger.debug('Finding the %s nearest neighbours ...',
-                          self.n_neighbors)
+                          self.nn_.n_neighbors - 1)
 
         # Look for k-th nearest neighbours, excluding, of course, the
         # point itself.
-        self.nearest_neighbour.fit(X)
+        self.nn_.fit(X)
 
         # Get the distance to the NN
-        _, ind_nn = self.nearest_neighbour.kneighbors(X_min)
+        _, ind_nn = self.nn_.kneighbors(X_min)
 
         # Compute the ratio of majority samples next to minority samples
         ratio_nn = (np.sum(y[ind_nn[:, 1:]] == self.maj_c_, axis=1) /
-                    self.n_neighbors)
+                    (self.nn_.n_neighbors - 1))
         # Check that we found at least some neighbours belonging to the
         # majority class
         if not np.sum(ratio_nn):
@@ -169,7 +207,7 @@ class ADASYN(BaseBinarySampler):
         for x_i, x_i_nn, num_sample_i in zip(X_min, ind_nn, num_samples_nn):
 
             # Pick-up the neighbors wanted
-            nn_zs = random_state.randint(1, high=self.n_neighbors + 1,
+            nn_zs = random_state.randint(1, high=self.nn_.n_neighbors,
                                          size=num_sample_i)
 
             # Create a new sample
