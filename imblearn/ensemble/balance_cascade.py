@@ -7,7 +7,7 @@ import numpy as np
 
 from sklearn.base import ClassifierMixin
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils import check_random_state, indices_to_mask
+from sklearn.utils import check_random_state
 from sklearn.utils.validation import has_fit_parameter
 
 from six import string_types
