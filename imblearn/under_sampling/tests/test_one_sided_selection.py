@@ -45,7 +45,7 @@ def test_oss_init():
 
     assert_equal(oss.n_neighbors, 1)
     assert_equal(oss.n_seeds_S, 1)
-    assert_equal(oss.n_jobs, -1)
+    assert_equal(oss.n_jobs, 1)
     assert_equal(oss.random_state, RND_SEED)
 
 

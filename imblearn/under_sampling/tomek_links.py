@@ -24,7 +24,7 @@ class TomekLinks(BaseBinarySampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    n_jobs : int, optional (default=-1)
+    n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
     Attributes
@@ -73,7 +73,7 @@ class TomekLinks(BaseBinarySampler):
     """
 
     def __init__(self, return_indices=False, random_state=None,
-                 n_jobs=-1):
+                 n_jobs=1):
         super(TomekLinks, self).__init__(random_state=random_state)
         self.return_indices = return_indices
         self.n_jobs = n_jobs

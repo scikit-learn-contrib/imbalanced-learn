@@ -35,7 +35,7 @@ class ClusterCentroids(BaseMulticlassSampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    n_jobs : int, optional (default=-1)
+    n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
     **kwargs : keywords
@@ -79,7 +79,7 @@ class ClusterCentroids(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, n_jobs=-1, **kwargs):
+    def __init__(self, ratio='auto', random_state=None, n_jobs=1, **kwargs):
         super(ClusterCentroids, self).__init__(ratio=ratio,
                                                random_state=random_state)
         self.n_jobs = n_jobs

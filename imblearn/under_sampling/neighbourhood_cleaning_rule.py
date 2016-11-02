@@ -40,7 +40,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
         `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
         the k_neighbors.
 
-    n_jobs : int, optional (default=-1)
+    n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
     Attributes
@@ -87,7 +87,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
     """
 
     def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=None, n_neighbors=3, n_jobs=-1):
+                 size_ngh=None, n_neighbors=3, n_jobs=1):
         super(NeighbourhoodCleaningRule, self).__init__(
             random_state=random_state)
         self.return_indices = return_indices

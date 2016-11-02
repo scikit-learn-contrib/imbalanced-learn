@@ -33,9 +33,6 @@ class RandomUnderSampler(BaseMulticlassSampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    n_jobs : int, optional (default=-1)
-        The number of threads to open if possible.
-
     Attributes
     ----------
     min_c_ : str or int
