@@ -101,7 +101,7 @@ class Pipeline(pipeline.Pipeline):
     >>> X_train, X_test, y_train, y_test = tts(X, y, random_state=42)
     >>> pipeline.fit(X_train, y_train)
     Pipeline(steps=[('smt', SMOTE(k=None, k_neighbors=5, kind='regular', m=None, m_neighbors=10, n_jobs=1,
-       out_step=0.5, random_state=42, ratio='auto')), ('pca', PCA(copy=True, n_components=None, whiten=False)), ('knn', KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+       out_step=0.5, random_state=42, ratio='auto', svm_estimator=None)), ('pca', PCA(copy=True, n_components=None, whiten=False)), ('knn', KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
                metric_params=None, n_jobs=1, n_neighbors=5, p=2,
                weights='uniform'))])
     >>> y_hat = pipeline.predict(X_test)
