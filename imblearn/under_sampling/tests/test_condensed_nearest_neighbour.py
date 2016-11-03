@@ -178,6 +178,13 @@ def test_cnn_fit_sample_with_object():
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
+    cnn = CondensedNearestNeighbour(random_state=RND_SEED,
+                                    n_neighbors=1)
+    X_resampled, y_resampled = cnn.fit_sample(X, Y)
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
 
 def test_cnn_fit_sample_with_wrong_object():
     """Test either if an error is raised while a wrong object is given"""

@@ -183,6 +183,12 @@ def test_oss_with_object():
     y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+    # Resample the data
+    knn = 1
+    oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
+    X_resampled, y_resampled = oss.fit_sample(X, Y)
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
 
 
 def test_oss_with_wrong_object():
