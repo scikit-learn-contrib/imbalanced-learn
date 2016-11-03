@@ -128,7 +128,7 @@ class BalanceCascade(BaseBinarySampler):
         self.kwargs = kwargs
 
     def _validate_estimator(self):
-        """Private function to create the cluster estimator"""
+        """Private function to create the classifier"""
 
         if self.classifier is not None:
             warnings.warn('`classifier` will be replaced in version'

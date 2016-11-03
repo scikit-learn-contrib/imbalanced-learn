@@ -125,7 +125,7 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         self.kwargs = kwargs
 
     def _validate_estimator(self):
-        """Private function to create the cluster estimator"""
+        """Private function to create the classifier"""
 
         if (self.estimator is not None and
                 isinstance(self.estimator, ClassifierMixin) and
