@@ -68,6 +68,10 @@ class SMOTE(BaseBinarySampler):
         The type of SMOTE algorithm to use one of the following options:
         'regular', 'borderline1', 'borderline2', 'svm'.
 
+    svm_estimator : object, optional (default=SVC())
+        If `kind='svm'`, a parametrized `sklearn.svm.SVC` classifier can
+        be passed.
+
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
@@ -128,7 +132,7 @@ class SMOTE(BaseBinarySampler):
 
     def __init__(self, ratio='auto', random_state=None, k=None, k_neighbors=5,
                  m=None, m_neighbors=10, out_step=0.5, kind='regular',
-                 n_jobs=1, **kwargs):
+                 svm_estimator=None, n_jobs=1):
         super(SMOTE, self).__init__(ratio=ratio, random_state=random_state)
         self.kind = kind
         self.k = k
@@ -136,8 +140,8 @@ class SMOTE(BaseBinarySampler):
         self.m = m
         self.m_neighbors = m_neighbors
         self.out_step = out_step
+        self.svm_estimator = svm_estimator
         self.n_jobs = n_jobs
-        self.kwargs = kwargs
 
     def _in_danger_noise(self, samples, y, kind='danger'):
         """Estimate if a set of sample are in danger or noise.
@@ -316,8 +320,13 @@ class SMOTE(BaseBinarySampler):
         # in danger (near the boundary). The level of extrapolation is
         # controled by the out_step.
         if self.kind == 'svm':
-            # Store SVM object with any parameters
-            self.svm = SVC(random_state=self.random_state, **self.kwargs)
+            if self.svm_estimator is None:
+                # Store SVM object with any parameters
+                self.svm_estimator_ = SVC(random_state=self.random_state)
+            elif isinstance(self.svm_estimator, SVC):
+                self.svm_estimator_ = self.svm_estimator
+            else:
+                raise ValueError('`svm_estimator` has to be an SVC object')
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -503,11 +512,11 @@ class SMOTE(BaseBinarySampler):
             # belonging to each class.
 
             # Fit SVM to the full data#
-            self.svm.fit(X, y)
+            self.svm_estimator_.fit(X, y)
 
             # Find the support vectors and their corresponding indexes
-            support_index = self.svm.support_[y[self.svm.support_] ==
-                                              self.min_c_]
+            support_index = self.svm_estimator_.support_[
+                y[self.svm_estimator_.support_] == self.min_c_]
             support_vector = X[support_index]
 
             # First, find the nn of all the samples to identify samples
