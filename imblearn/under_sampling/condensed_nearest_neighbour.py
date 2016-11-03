@@ -36,19 +36,17 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
         NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbors : int, optional (default=1)
-        Size of the neighbourhood to consider to compute the average
+    n_neighbors : int or object, optional (default=KNeighborsClassifier(n_neighbors=1))
+        If int, size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
+        If object, an object inherited from
+        `sklearn.neigbors.KNeighborsClassifier` should be passed.
 
     n_seeds_S : int, optional (default=1)
         Number of samples to extract in order to build the set S.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
-
-    **kwargs : keywords
-        Parameter to use for the Neareast Neighbours object.
-
 
     Attributes
     ----------
@@ -95,8 +93,7 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
     """
 
     def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=None, n_neighbors=1, n_seeds_S=1, n_jobs=1,
-                 **kwargs):
+                 size_ngh=None, n_neighbors=None, n_seeds_S=1, n_jobs=1):
         super(CondensedNearestNeighbour, self).__init__(
             random_state=random_state)
         self.return_indices = return_indices
@@ -104,7 +101,47 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
         self.n_neighbors = n_neighbors
         self.n_seeds_S = n_seeds_S
         self.n_jobs = n_jobs
-        self.kwargs = kwargs
+
+    def _validate_estimator(self):
+        """Private function to create the NN estimator"""
+
+        if self.n_neighbors is None:
+            self.estimator_ = KNeighborsClassifier(
+                n_neighbors=1,
+                n_jobs=self.n_jobs)
+        elif isinstance(self.n_neighbors, int):
+            self.estimator_ = KNeighborsClassifier(
+                n_neighbors=self.n_neighbors,
+                n_jobs=self.n_jobs)
+        elif isinstance(self.n_neighbors, KNeighborsClassifier):
+            self.estimator_ = self.n_neighbors
+        else:
+            raise ValueError('`n_neighbors` has to be a in or an object'
+                             ' inhereited from KNeighborsClassifier.')
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(CondensedNearestNeighbour, self).fit(X, y)
+
+        self._validate_estimator()
+
+        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -167,13 +204,8 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
             S_x = X[y == key]
             S_y = y[y == key]
 
-            # Create a k-NN classifier
-            knn = KNeighborsClassifier(n_neighbors=self.n_neighbors,
-                                       n_jobs=self.n_jobs,
-                                       **self.kwargs)
-
             # Fit C into the knn
-            knn.fit(C_x, C_y)
+            self.estimator_.fit(C_x, C_y)
 
             good_classif_label = idx_maj_sample.copy()
             # Check each sample in S if we keep it or drop it
@@ -184,7 +216,7 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
                     continue
 
                 # Classify on S
-                pred_y = knn.predict(x_sam.reshape(1, -1))
+                pred_y = self.estimator_.predict(x_sam.reshape(1, -1))
 
                 # If the prediction do not agree with the true label
                 # append it in C_x
@@ -198,12 +230,12 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
                                                     idx_maj_sample.size))
 
                     # Fit C into the knn
-                    knn.fit(C_x, C_y)
+                    self.estimator_.fit(C_x, C_y)
 
                     # This experimental to speed up the search
                     # Classify all the element in S and avoid to test the
                     # well classified elements
-                    pred_S_y = knn.predict(S_x)
+                    pred_S_y = self.estimator_.predict(S_x)
                     good_classif_label = np.unique(
                         np.append(idx_maj_sample,
                                   np.flatnonzero(pred_S_y == S_y)))
