@@ -8,6 +8,7 @@ from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
+from sklearn.ensemble import GradientBoostingClassifier
 
 from imblearn.under_sampling import InstanceHardnessThreshold
 
@@ -386,3 +387,39 @@ def test_multiclass_error():
     y = np.array([0] * 10 + [1] * 3 + [2] *2)
     iht = InstanceHardnessThreshold(random_state=RND_SEED)
     assert_warns(UserWarning, iht.fit, X, y)
+
+
+def test_iht_fit_sample_class_obj():
+    """Test the fit sample routine passing a classifiermixin object"""
+
+    # Resample the data
+    est = GradientBoostingClassifier(random_state=RND_SEED)
+    iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)
+    X_resampled, y_resampled = iht.fit_sample(X, Y)
+
+    X_gt = np.array([[-0.3879569, 0.6894251],
+                     [-0.09322739, 1.28177189],
+                     [-0.77740357, 0.74097941],
+                     [0.91542919, -0.65453327],
+                     [-0.43877303, 1.07366684],
+                     [-0.85795321, 0.82980738],
+                     [-0.18430329, 0.52328473],
+                     [-0.65571327, 0.42412021],
+                     [-0.28305528, 0.30284991],
+                     [1.06446472, -1.09279772],
+                     [0.30543283, -0.02589502],
+                     [-0.00717161, 0.00318087]])
+    y_gt = np.array([0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0])
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_iht_fit_sample_wrong_class_obj():
+    """Test either if an error is raised while passing a wrong classifier
+    object"""
+
+    # Resample the data
+    from sklearn.cluster import KMeans
+    est = KMeans()
+    iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)
+    assert_raises(ValueError, iht.fit_sample, X, Y)
