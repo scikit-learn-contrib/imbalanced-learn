@@ -2,15 +2,19 @@
 threshold."""
 from __future__ import division, print_function
 
+import warnings
+
 from collections import Counter
 
 import numpy as np
+
+from sklearn.base import ClassifierMixin
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.cross_validation import StratifiedKFold
 
-from ..base import BaseBinarySampler
+from six import string_types
 
-ESTIMATOR_KIND = ('knn', 'decision-tree', 'random-forest', 'adaboost',
-                  'gradient-boosting', 'linear-svm')
+from ..base import BaseBinarySampler
 
 
 class InstanceHardnessThreshold(BaseBinarySampler):
@@ -19,11 +23,17 @@ class InstanceHardnessThreshold(BaseBinarySampler):
 
     Parameters
     ----------
-    estimator : str, optional (default='linear-svm')
-        Classifier to be used in to estimate instance hardness of the samples.
-        The choices are the following: 'knn',
+    estimator : object, optional (default=RandomForestClassifier())
+        Classifier to be used to estimate instance hardness of the samples.
+        By default a RandomForestClassifer will be used.
+        If str, the choices using a string are the following: 'knn',
         'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
         and 'linear-svm'.
+        If object, an estimator inherited from `sklearn.base.ClassifierMixin`
+        and having an attribute `predict_proba`.
+
+        NOTE: `estimator` as a string object is deprecated from 0.2 and will be
+        replaced in 0.4. Use `ClassifierMixin` object instead.
 
     ratio : str or float, optional (default='auto')
         If 'auto', the ratio will be defined automatically to balance
@@ -46,6 +56,13 @@ class InstanceHardnessThreshold(BaseBinarySampler):
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
+
+    **kwargs:
+        Option for the different classifier.
+
+        NOTE: `**kwargs` has been deprecated from 0.2 and will be replaced in
+        0.4. Use `ClassifierMixin` object instead to pass parameter associated
+        to an estimator.
 
     Attributes
     ----------
@@ -96,17 +113,91 @@ class InstanceHardnessThreshold(BaseBinarySampler):
 
     """
 
-    def __init__(self, estimator='linear-svm', ratio='auto',
-                 return_indices=False, random_state=None, cv=5, n_jobs=1,
-                 **kwargs):
+    def __init__(self, estimator=None, ratio='auto', return_indices=False,
+                 random_state=None, cv=5, n_jobs=1, **kwargs):
         super(InstanceHardnessThreshold, self).__init__(
             ratio=ratio,
             random_state=random_state)
         self.estimator = estimator
         self.return_indices = return_indices
-        self.kwargs = kwargs
         self.cv = cv
         self.n_jobs = n_jobs
+        self.kwargs = kwargs
+
+    def _validate_estimator(self):
+        """Private function to create the classifier"""
+
+        if (self.estimator is not None and
+                isinstance(self.estimator, ClassifierMixin) and
+                hasattr(self.estimator, 'predict_proba')):
+            self.estimator_ = self.estimator
+        elif self.estimator is None:
+            self.estimator_ = RandomForestClassifier(
+                random_state=self.random_state, n_jobs=self.n_jobs)
+        # To be removed in 0.4
+        elif (self.estimator is not None and
+              isinstance(self.estimator, string_types)):
+            # Select the appropriate classifier
+            warnings.warn('`estimator` will be replaced in version'
+                          ' 0.4. Use a classifier object instead of a string.',
+                          DeprecationWarning)
+            if self.estimator == 'knn':
+                from sklearn.neighbors import KNeighborsClassifier
+                self.estimator_ = KNeighborsClassifier(
+                    **self.kwargs)
+            elif self.estimator == 'decision-tree':
+                from sklearn.tree import DecisionTreeClassifier
+                self.estimator_ = DecisionTreeClassifier(
+                    random_state=self.random_state,
+                    **self.kwargs)
+            elif self.estimator == 'random-forest':
+                self.estimator_ = RandomForestClassifier(
+                    random_state=self.random_state,
+                    **self.kwargs)
+            elif self.estimator == 'adaboost':
+                from sklearn.ensemble import AdaBoostClassifier
+                self.estimator_ = AdaBoostClassifier(
+                    random_state=self.random_state,
+                    **self.kwargs)
+            elif self.estimator == 'gradient-boosting':
+                from sklearn.ensemble import GradientBoostingClassifier
+                self.estimator_ = GradientBoostingClassifier(
+                    random_state=self.random_state,
+                    **self.kwargs)
+            elif self.estimator == 'linear-svm':
+                from sklearn.svm import SVC
+                self.estimator_ = SVC(probability=True,
+                                      random_state=self.random_state,
+                                      kernel='linear',
+                                      **self.kwargs)
+            else:
+                raise NotImplementedError
+        else:
+            raise ValueError('Invalid parameter `estimator`')
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+
+        super(InstanceHardnessThreshold, self).fit(X, y)
+
+        self._validate_estimator()
+
+        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -133,43 +224,6 @@ class InstanceHardnessThreshold(BaseBinarySampler):
 
         """
 
-        if self.estimator not in ESTIMATOR_KIND:
-            raise NotImplementedError
-
-        # Select the appropriate classifier
-        if self.estimator == 'knn':
-            from sklearn.neighbors import KNeighborsClassifier
-            estimator = KNeighborsClassifier(
-                **self.kwargs)
-        elif self.estimator == 'decision-tree':
-            from sklearn.tree import DecisionTreeClassifier
-            estimator = DecisionTreeClassifier(
-                random_state=self.random_state,
-                **self.kwargs)
-        elif self.estimator == 'random-forest':
-            from sklearn.ensemble import RandomForestClassifier
-            estimator = RandomForestClassifier(
-                random_state=self.random_state,
-                **self.kwargs)
-        elif self.estimator == 'adaboost':
-            from sklearn.ensemble import AdaBoostClassifier
-            estimator = AdaBoostClassifier(
-                random_state=self.random_state,
-                **self.kwargs)
-        elif self.estimator == 'gradient-boosting':
-            from sklearn.ensemble import GradientBoostingClassifier
-            estimator = GradientBoostingClassifier(
-                random_state=self.random_state,
-                **self.kwargs)
-        elif self.estimator == 'linear-svm':
-            from sklearn.svm import SVC
-            estimator = SVC(probability=True,
-                            random_state=self.random_state,
-                            kernel='linear',
-                            **self.kwargs)
-        else:
-            raise NotImplementedError
-
         # Create the different folds
         skf = StratifiedKFold(y, n_folds=self.cv, shuffle=False,
                               random_state=self.random_state)
@@ -180,10 +234,10 @@ class InstanceHardnessThreshold(BaseBinarySampler):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
-            estimator.fit(X_train, y_train)
+            self.estimator_.fit(X_train, y_train)
 
-            probs = estimator.predict_proba(X_test)
-            classes = estimator.classes_
+            probs = self.estimator_.predict_proba(X_test)
+            classes = self.estimator_.classes_
             probabilities[test_index] = [
                 probs[l, np.where(classes == c)[0][0]]
                 for l, c in enumerate(y_test)]
