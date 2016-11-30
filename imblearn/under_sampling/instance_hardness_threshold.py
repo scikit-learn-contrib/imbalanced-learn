@@ -10,7 +10,13 @@ import numpy as np
 
 from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.cross_validation import StratifiedKFold
+
+import sklearn
+
+if hasattr(sklearn, 'model_selection'):
+    from sklearn.model_selection import StratifiedKFold
+else:
+    from sklearn.cross_validation import StratifiedKFold
 
 from six import string_types
 
@@ -225,8 +231,8 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         """
 
         # Create the different folds
-        skf = StratifiedKFold(y, n_folds=self.cv, shuffle=False,
-                              random_state=self.random_state)
+        skf = list(StratifiedKFold(y, n_folds=self.cv, shuffle=False,
+                              random_state=self.random_state))
 
         probabilities = np.zeros(y.shape[0], dtype=float)
 
