@@ -231,7 +231,8 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         """
 
         # Create the different folds
-        skf = list(StratifiedKFold(y, n_folds=self.cv, shuffle=False,
+        
+        skf = list(StratifiedKFold(y, self.cv, shuffle=False,
                               random_state=self.random_state))
 
         probabilities = np.zeros(y.shape[0], dtype=float)
