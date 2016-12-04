@@ -8,6 +8,7 @@ import numpy as np
 from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
 from sklearn.datasets import make_classification
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.under_sampling import CondensedNearestNeighbour
@@ -47,7 +48,6 @@ def test_cnn_init():
     # Define a ratio
     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
 
-    assert_equal(cnn.n_neighbors, 1)
     assert_equal(cnn.n_seeds_S, 1)
     assert_equal(cnn.n_jobs, 1)
 
@@ -153,3 +153,44 @@ def test_continuous_error():
     y = np.linspace(0, 1, 20)
     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
     assert_warns(UserWarning, cnn.fit, X, y)
+
+
+def test_cnn_fit_sample_with_object():
+    """Test the fit sample routine with a knn object"""
+
+    # Resample the data
+    knn = KNeighborsClassifier(n_neighbors=1)
+    cnn = CondensedNearestNeighbour(random_state=RND_SEED,
+                                    n_neighbors=knn)
+    X_resampled, y_resampled = cnn.fit_sample(X, Y)
+
+    X_gt = np.array([[-0.10903849, -0.12085181],
+                     [0.01936241, 0.17799828],
+                     [0.05230552, 0.09043907],
+                     [-1.25020462, -0.40402054],
+                     [0.70524765, 0.39816382],
+                     [0.35831463, 1.33483198],
+                     [-0.284881, -0.62730973],
+                     [0.03394306, 0.03986753],
+                     [-0.01252787, 0.34102657],
+                     [0.15198585, 0.12512646]])
+    y_gt = np.array([0, 0, 1, 1, 1, 2, 2, 2, 2, 2])
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+    cnn = CondensedNearestNeighbour(random_state=RND_SEED,
+                                    n_neighbors=1)
+    X_resampled, y_resampled = cnn.fit_sample(X, Y)
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+
+def test_cnn_fit_sample_with_wrong_object():
+    """Test either if an error is raised while a wrong object is given"""
+
+    # Resample the data
+    knn = 'rnd'
+    cnn = CondensedNearestNeighbour(random_state=RND_SEED,
+                                    n_neighbors=knn)
+    assert_raises(ValueError, cnn.fit_sample, X, Y)
