@@ -8,6 +8,7 @@ import numpy as np
 from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
 from sklearn.datasets import make_classification
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.under_sampling import OneSidedSelection
@@ -43,7 +44,6 @@ def test_oss_init():
     # Define a ratio
     oss = OneSidedSelection(random_state=RND_SEED)
 
-    assert_equal(oss.n_neighbors, 1)
     assert_equal(oss.n_seeds_S, 1)
     assert_equal(oss.n_jobs, 1)
     assert_equal(oss.random_state, RND_SEED)
@@ -158,3 +158,43 @@ def test_multiclass_error():
     y = np.array([0] * 10 + [1] * 3 + [2] * 2)
     oss = OneSidedSelection(random_state=RND_SEED)
     assert_warns(UserWarning, oss.fit, X, y)
+
+
+def test_oss_with_object():
+    """Test the fit sample routine with an knn object"""
+
+    # Resample the data
+    knn = KNeighborsClassifier(n_neighbors=1)
+    oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
+    X_resampled, y_resampled = oss.fit_sample(X, Y)
+
+    X_gt = np.array([[-0.3879569, 0.6894251],
+                     [0.91542919, -0.65453327],
+                     [-0.65571327, 0.42412021],
+                     [1.06446472, -1.09279772],
+                     [0.30543283, -0.02589502],
+                     [-0.00717161, 0.00318087],
+                     [-0.09322739, 1.28177189],
+                     [-0.77740357, 0.74097941],
+                     [-0.43877303, 1.07366684],
+                     [-0.85795321, 0.82980738],
+                     [-0.30126957, -0.66268378],
+                     [0.20246714, -0.34727125]])
+    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+    # Resample the data
+    knn = 1
+    oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
+    X_resampled, y_resampled = oss.fit_sample(X, Y)
+    assert_array_equal(X_resampled, X_gt)
+    assert_array_equal(y_resampled, y_gt)
+
+
+def test_oss_with_wrong_object():
+    """Test if an error is raised while passing a wrong object"""
+
+    # Resample the data
+    knn = 'rnd'
+    oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
+    assert_raises(ValueError, oss.fit_sample, X, Y)
