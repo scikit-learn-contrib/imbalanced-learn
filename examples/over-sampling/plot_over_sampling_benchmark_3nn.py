@@ -1,8 +1,8 @@
 """
 =============================================================
-Benchmark over-sampling methods using a 3NN classifier
+Benchmark over-sampling methods in a face regognition task
 =============================================================
-In this computer vision example two faces are used from the LFW 
+In this face recognition example two faces are used from the LFW 
 (Faces in the Wild) dataset. Several implemented over-sampling 
 methods are used in conjunction with a 3NN classifier in order 
 to examine the improvement of the classifier's output quality 
@@ -13,14 +13,15 @@ print(__doc__)
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import interp
-from sklearn import datasets, naive_bayes, neighbors
+from sklearn import datasets, neighbors
 from sklearn.metrics import auc, roc_curve
 from sklearn.model_selection import StratifiedKFold
 
 from imblearn.over_sampling import ADASYN, SMOTE, RandomOverSampler
 from imblearn.pipeline import make_pipeline
 
-RANDOM_STATE = np.random.RandomState(0)
+LW = 2
+RANDOM_STATE = 42
 
 
 class DummySampler(object):
@@ -35,16 +36,18 @@ class DummySampler(object):
         return self.sample(X, y)
 
 
-cv = StratifiedKFold(n_splits=5)
+cv = StratifiedKFold(n_splits=3)
 
 # Load the dataset
 data = datasets.fetch_lfw_people()
 majority_person = 1871  # 530 photos of George W Bush
 minority_person = 531  # 29 photos of Bill Clinton
-idx = np.where((data.target == majority_person) |
-               (data.target == minority_person))[0]
-X = data.data[idx]
-y = data.target[idx]
+majority_idxs = np.flatnonzero(data.target == majority_person)
+minority_idxs = np.flatnonzero(data.target == minority_person)
+idxs = np.hstack((majority_idxs, minority_idxs))
+
+X = data.data[idxs]
+y = data.target[idxs]
 y[y == majority_person] = 0
 y[y == minority_person] = 1
 
@@ -64,10 +67,8 @@ pipelines = [
     for sampler in samplers
 ]
 
-lw = 2
 
 for name, pipeline in pipelines:
-    i = 0
     mean_tpr = 0.0
     mean_fpr = np.linspace(0, 1, 100)
     for train, test in cv.split(X, y):
@@ -76,13 +77,12 @@ for name, pipeline in pipelines:
         mean_tpr += interp(mean_fpr, fpr, tpr)
         mean_tpr[0] = 0.0
         roc_auc = auc(fpr, tpr)
-        i += 1
 
     mean_tpr /= cv.get_n_splits(X, y)
     mean_tpr[-1] = 1.0
     mean_auc = auc(mean_fpr, mean_tpr)
     plt.plot(mean_fpr, mean_tpr, linestyle='--',
-             label='{} (area = %0.2f)'.format(name) % mean_auc, lw=lw)
+             label='{} (area = %0.2f)'.format(name) % mean_auc, lw=LW)
 
     plt.xlim([-0.05, 1.05])
     plt.ylim([-0.05, 1.05])
@@ -91,7 +91,7 @@ for name, pipeline in pipelines:
     plt.title('Receiver operating characteristic example')
     plt.legend(loc="lower right")
 
-plt.plot([0, 1], [0, 1], linestyle='--', lw=lw, color='k',
+plt.plot([0, 1], [0, 1], linestyle='--', lw=LW, color='k',
          label='Luck')
 
 plt.show()
