@@ -19,11 +19,12 @@ Classes
 
 .. autosummary::
    :toctree: generated/
-   
+
    under_sampling.ClusterCentroids
    under_sampling.CondensedNearestNeighbour
    under_sampling.EditedNearestNeighbours
    under_sampling.RepeatedEditedNearestNeighbours
+   under_sampling.AllKNN
    under_sampling.InstanceHardnessThreshold
    under_sampling.NearMiss
    under_sampling.NeighbourhoodCleaningRule
@@ -47,7 +48,7 @@ Classes
 
 .. autosummary::
    :toctree: generated/
-   
+
    over_sampling.ADASYN
    over_sampling.RandomOverSampler
    over_sampling.SMOTE
@@ -68,7 +69,7 @@ Classes
 
 .. autosummary::
    :toctree: generated/
-   
+
    combine.SMOTEENN
    combine.SMOTETomek
 
@@ -88,7 +89,7 @@ Classes
 
 .. autosummary::
    :toctree: generated/
-   
+
    ensemble.BalanceCascade
    ensemble.EasyEnsemble
 
@@ -108,14 +109,14 @@ Classes
 -------
 .. autosummary::
    :toctree: generated/
-   
+
    pipeline.Pipeline
 
 Functions
 ---------
 .. autosummary::
    :toctree: generated/
-   
+
    pipeline.make_pipeline
 
 
@@ -134,5 +135,5 @@ Functions
 ---------
 .. autosummary::
    :toctree: generated/
-   
+
    datasets.make_imbalance

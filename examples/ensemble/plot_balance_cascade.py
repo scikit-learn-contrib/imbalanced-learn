@@ -7,8 +7,6 @@ An illustration of the balance cascade ensemble method.
 
 """
 
-print(__doc__)
-
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -17,12 +15,13 @@ from sklearn.decomposition import PCA
 
 from imblearn.ensemble import BalanceCascade
 
+print(__doc__)
+
 sns.set()
 
 # Define some color for the plotting
 almost_black = '#262626'
 palette = sns.color_palette()
-
 
 
 # Generate the dataset

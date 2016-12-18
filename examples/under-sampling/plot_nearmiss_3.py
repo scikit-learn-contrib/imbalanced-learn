@@ -7,8 +7,6 @@ An illustration of the nearmiss 3 method.
 
 """
 
-print(__doc__)
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.datasets import make_classification
@@ -16,12 +14,13 @@ from sklearn.decomposition import PCA
 
 from imblearn.under_sampling import NearMiss
 
+print(__doc__)
+
 sns.set()
 
 # Define some color for the plotting
 almost_black = '#262626'
 palette = sns.color_palette()
-
 
 
 # Generate the dataset

@@ -1,14 +1,15 @@
 """
-=============================================================
+==========================================================
 Benchmark over-sampling methods in a face regognition task
-=============================================================
-In this face recognition example two faces are used from the LFW 
-(Faces in the Wild) dataset. Several implemented over-sampling 
-methods are used in conjunction with a 3NN classifier in order 
-to examine the improvement of the classifier's output quality 
+==========================================================
+
+In this face recognition example two faces are used from the LFW
+(Faces in the Wild) dataset. Several implemented over-sampling
+methods are used in conjunction with a 3NN classifier in order
+to examine the improvement of the classifier's output quality
 by using an over-sampler.
+
 """
-print(__doc__)
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,6 +20,8 @@ from sklearn.model_selection import StratifiedKFold
 
 from imblearn.over_sampling import ADASYN, SMOTE, RandomOverSampler
 from imblearn.pipeline import make_pipeline
+
+print(__doc__)
 
 LW = 2
 RANDOM_STATE = 42
