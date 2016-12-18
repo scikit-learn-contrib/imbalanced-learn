@@ -4,7 +4,7 @@ from __future__ import print_function
 from collections import Counter
 
 import numpy as np
-from nose.tools import assert_true
+from sklearn.utils.testing import assert_true
 from numpy.testing import assert_equal, assert_raises
 
 from imblearn.datasets import make_imbalance
