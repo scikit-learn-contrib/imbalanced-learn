@@ -7,8 +7,6 @@ An illustration of the AllKNN method.
 
 """
 
-print(__doc__)
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.datasets import make_classification
@@ -17,12 +15,13 @@ from sklearn.decomposition import PCA
 from imblearn.under_sampling import (AllKNN, EditedNearestNeighbours,
                                      RepeatedEditedNearestNeighbours)
 
+print(__doc__)
+
 sns.set()
 
 # Define some color for the plotting
 almost_black = '#262626'
 palette = sns.color_palette()
-
 
 
 # Generate the dataset
@@ -50,7 +49,7 @@ print('ENN')
 enn = EditedNearestNeighbours()
 X_resampled, y_resampled = enn.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
-print('Reduced {:.2f}\%'.format(100 * (1 - float(len(X_resampled))/ len(X))))
+print('Reduced {:.2f}\%'.format(100 * (1 - float(len(X_resampled)) / len(X))))
 
 ax2.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
             label="Class #0", alpha=.5, edgecolor=almost_black,
@@ -65,7 +64,7 @@ print('RENN')
 renn = RepeatedEditedNearestNeighbours()
 X_resampled, y_resampled = renn.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
-print('Reduced {:.2f}\%'.format(100 * (1 - float(len(X_resampled))/ len(X))))
+print('Reduced {:.2f}\%'.format(100 * (1 - float(len(X_resampled)) / len(X))))
 
 ax3.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
             label="Class #0", alpha=.5, edgecolor=almost_black,
@@ -80,7 +79,7 @@ print('AllKNN')
 allknn = AllKNN()
 X_resampled, y_resampled = allknn.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
-print('Reduced {:.2f}\%'.format(100 * (1 - float(len(X_resampled))/ len(X))))
+print('Reduced {:.2f}\%'.format(100 * (1 - float(len(X_resampled)) / len(X))))
 
 ax4.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
             label="Class #0", alpha=.5, edgecolor=almost_black,
