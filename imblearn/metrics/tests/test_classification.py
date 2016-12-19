@@ -14,6 +14,8 @@ from sklearn import svm
 
 from sklearn.utils.validation import check_random_state
 
+from imblearn.metrics import sensitivity_specificity_support
+
 RND_SEED = 42
 
 ###############################################################################
@@ -67,138 +69,138 @@ def make_prediction(dataset=None, binary=False):
 ###############################################################################
 # Tests
 
-def test_precision_recall_f1_score_binary():
-    # Test Precision Recall and F1 Score for binary classification task
+def test_sensitivity_specificity_support_binary():
+    """Test the sensitivity specificity for binary classification task"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
     # detailed measures for each class
-    p, r, f, s = precision_recall_fscore_support(y_true, y_pred, average=None)
-    assert_array_almost_equal(p, [0.73, 0.85], 2)
-    assert_array_almost_equal(r, [0.88, 0.68], 2)
-    assert_array_almost_equal(f, [0.80, 0.76], 2)
-    assert_array_equal(s, [25, 25])
+    sens, spec, supp = sensitivity_specificity_support(y_true, y_pred,
+                                                       average=None)
+    assert_array_almost_equal(sens, [0.88, 0.68], 2)
+    assert_array_almost_equal(spec, [0.73, 0.85], 2)
+    assert_array_equal(supp, [25, 25])
 
-    # individual scoring function that can be used for grid search: in the
-    # binary class case the score is the value of the measure for the positive
-    # class (e.g. label == 1). This is deprecated for average != 'binary'.
-    for kwargs, my_assert in [({}, assert_no_warnings),
-                              ({'average': 'binary'}, assert_no_warnings)]:
-        ps = my_assert(precision_score, y_true, y_pred, **kwargs)
-        assert_array_almost_equal(ps, 0.85, 2)
+    # # individual scoring function that can be used for grid search: in the
+    # # binary class case the score is the value of the measure for the positive
+    # # class (e.g. label == 1). This is deprecated for average != 'binary'.
+    # for kwargs, my_assert in [({}, assert_no_warnings),
+    #                           ({'average': 'binary'}, assert_no_warnings)]:
+    #     ps = my_assert(precision_score, y_true, y_pred, **kwargs)
+    #     assert_array_almost_equal(ps, 0.85, 2)
 
-        rs = my_assert(recall_score, y_true, y_pred, **kwargs)
-        assert_array_almost_equal(rs, 0.68, 2)
+    #     rs = my_assert(recall_score, y_true, y_pred, **kwargs)
+    #     assert_array_almost_equal(rs, 0.68, 2)
 
-        fs = my_assert(f1_score, y_true, y_pred, **kwargs)
-        assert_array_almost_equal(fs, 0.76, 2)
+    #     fs = my_assert(f1_score, y_true, y_pred, **kwargs)
+    #     assert_array_almost_equal(fs, 0.76, 2)
 
-        assert_almost_equal(my_assert(fbeta_score, y_true, y_pred, beta=2,
-                                      **kwargs),
-                            (1 + 2 ** 2) * ps * rs / (2 ** 2 * ps + rs), 2)
-
-
-def test_precision_recall_f_binary_single_class():
-    # Test precision, recall and F1 score behave with a single positive or
-    # negative class
-    # Such a case may occur with non-stratified cross-validation
-    assert_equal(1., precision_score([1, 1], [1, 1]))
-    assert_equal(1., recall_score([1, 1], [1, 1]))
-    assert_equal(1., f1_score([1, 1], [1, 1]))
-
-    assert_equal(0., precision_score([-1, -1], [-1, -1]))
-    assert_equal(0., recall_score([-1, -1], [-1, -1]))
-    assert_equal(0., f1_score([-1, -1], [-1, -1]))
+    #     assert_almost_equal(my_assert(fbeta_score, y_true, y_pred, beta=2,
+    #                                   **kwargs),
+    #                         (1 + 2 ** 2) * ps * rs / (2 ** 2 * ps + rs), 2)
 
 
-@ignore_warnings
-def test_precision_recall_f_extra_labels():
-    # Test handling of explicit additional (not in input) labels to PRF
-    y_true = [1, 3, 3, 2]
-    y_pred = [1, 1, 3, 2]
-    y_true_bin = label_binarize(y_true, classes=np.arange(5))
-    y_pred_bin = label_binarize(y_pred, classes=np.arange(5))
-    data = [(y_true, y_pred),
-            (y_true_bin, y_pred_bin)]
+# def test_precision_recall_f_binary_single_class():
+#     # Test precision, recall and F1 score behave with a single positive or
+#     # negative class
+#     # Such a case may occur with non-stratified cross-validation
+#     assert_equal(1., precision_score([1, 1], [1, 1]))
+#     assert_equal(1., recall_score([1, 1], [1, 1]))
+#     assert_equal(1., f1_score([1, 1], [1, 1]))
 
-    for i, (y_true, y_pred) in enumerate(data):
-        # No average: zeros in array
-        actual = recall_score(y_true, y_pred, labels=[0, 1, 2, 3, 4],
-                              average=None)
-        assert_array_almost_equal([0., 1., 1., .5, 0.], actual)
-
-        # Macro average is changed
-        actual = recall_score(y_true, y_pred, labels=[0, 1, 2, 3, 4],
-                              average='macro')
-        assert_array_almost_equal(np.mean([0., 1., 1., .5, 0.]), actual)
-
-        # No effect otheriwse
-        for average in ['micro', 'weighted', 'samples']:
-            if average == 'samples' and i == 0:
-                continue
-            assert_almost_equal(recall_score(y_true, y_pred,
-                                             labels=[0, 1, 2, 3, 4],
-                                             average=average),
-                                recall_score(y_true, y_pred, labels=None,
-                                             average=average))
-
-    # Error when introducing invalid label in multilabel case
-    # (although it would only affect performance if average='macro'/None)
-    for average in [None, 'macro', 'micro', 'samples']:
-        assert_raises(ValueError, recall_score, y_true_bin, y_pred_bin,
-                      labels=np.arange(6), average=average)
-        assert_raises(ValueError, recall_score, y_true_bin, y_pred_bin,
-                      labels=np.arange(-1, 4), average=average)
+#     assert_equal(0., precision_score([-1, -1], [-1, -1]))
+#     assert_equal(0., recall_score([-1, -1], [-1, -1]))
+#     assert_equal(0., f1_score([-1, -1], [-1, -1]))
 
 
-@ignore_warnings
-def test_precision_recall_f_ignored_labels():
-    # Test a subset of labels may be requested for PRF
-    y_true = [1, 1, 2, 3]
-    y_pred = [1, 3, 3, 3]
-    y_true_bin = label_binarize(y_true, classes=np.arange(5))
-    y_pred_bin = label_binarize(y_pred, classes=np.arange(5))
-    data = [(y_true, y_pred),
-            (y_true_bin, y_pred_bin)]
+# @ignore_warnings
+# def test_precision_recall_f_extra_labels():
+#     # Test handling of explicit additional (not in input) labels to PRF
+#     y_true = [1, 3, 3, 2]
+#     y_pred = [1, 1, 3, 2]
+#     y_true_bin = label_binarize(y_true, classes=np.arange(5))
+#     y_pred_bin = label_binarize(y_pred, classes=np.arange(5))
+#     data = [(y_true, y_pred),
+#             (y_true_bin, y_pred_bin)]
 
-    for i, (y_true, y_pred) in enumerate(data):
-        recall_13 = partial(recall_score, y_true, y_pred, labels=[1, 3])
-        recall_all = partial(recall_score, y_true, y_pred, labels=None)
+#     for i, (y_true, y_pred) in enumerate(data):
+#         # No average: zeros in array
+#         actual = recall_score(y_true, y_pred, labels=[0, 1, 2, 3, 4],
+#                               average=None)
+#         assert_array_almost_equal([0., 1., 1., .5, 0.], actual)
 
-        assert_array_almost_equal([.5, 1.], recall_13(average=None))
-        assert_almost_equal((.5 + 1.) / 2, recall_13(average='macro'))
-        assert_almost_equal((.5 * 2 + 1. * 1) / 3,
-                            recall_13(average='weighted'))
-        assert_almost_equal(2. / 3, recall_13(average='micro'))
+#         # Macro average is changed
+#         actual = recall_score(y_true, y_pred, labels=[0, 1, 2, 3, 4],
+#                               average='macro')
+#         assert_array_almost_equal(np.mean([0., 1., 1., .5, 0.]), actual)
 
-        # ensure the above were meaningful tests:
-        for average in ['macro', 'weighted', 'micro']:
-            assert_not_equal(recall_13(average=average),
-                             recall_all(average=average))
+#         # No effect otheriwse
+#         for average in ['micro', 'weighted', 'samples']:
+#             if average == 'samples' and i == 0:
+#                 continue
+#             assert_almost_equal(recall_score(y_true, y_pred,
+#                                              labels=[0, 1, 2, 3, 4],
+#                                              average=average),
+#                                 recall_score(y_true, y_pred, labels=None,
+#                                              average=average))
 
-
-@ignore_warnings
-def test_precision_recall_fscore_support_errors():
-    y_true, y_pred, _ = make_prediction(binary=True)
-
-    # Bad beta
-    assert_raises(ValueError, precision_recall_fscore_support,
-                  y_true, y_pred, beta=0.0)
-
-    # Bad pos_label
-    assert_raises(ValueError, precision_recall_fscore_support,
-                  y_true, y_pred, pos_label=2, average='binary')
-
-    # Bad average option
-    assert_raises(ValueError, precision_recall_fscore_support,
-                  [0, 1, 2], [1, 2, 0], average='mega')
+#     # Error when introducing invalid label in multilabel case
+#     # (although it would only affect performance if average='macro'/None)
+#     for average in [None, 'macro', 'micro', 'samples']:
+#         assert_raises(ValueError, recall_score, y_true_bin, y_pred_bin,
+#                       labels=np.arange(6), average=average)
+#         assert_raises(ValueError, recall_score, y_true_bin, y_pred_bin,
+#                       labels=np.arange(-1, 4), average=average)
 
 
-def test_precision_recall_f_unused_pos_label():
-    # Check warning that pos_label unused when set to non-default value
-    # but average != 'binary'; even if data is binary.
-    assert_warns_message(UserWarning,
-                         "Note that pos_label (set to 2) is "
-                         "ignored when average != 'binary' (got 'macro'). You "
-                         "may use labels=[pos_label] to specify a single "
-                         "positive class.", precision_recall_fscore_support,
-                         [1, 2, 1], [1, 2, 2], pos_label=2, average='macro')
+# @ignore_warnings
+# def test_precision_recall_f_ignored_labels():
+#     # Test a subset of labels may be requested for PRF
+#     y_true = [1, 1, 2, 3]
+#     y_pred = [1, 3, 3, 3]
+#     y_true_bin = label_binarize(y_true, classes=np.arange(5))
+#     y_pred_bin = label_binarize(y_pred, classes=np.arange(5))
+#     data = [(y_true, y_pred),
+#             (y_true_bin, y_pred_bin)]
+
+#     for i, (y_true, y_pred) in enumerate(data):
+#         recall_13 = partial(recall_score, y_true, y_pred, labels=[1, 3])
+#         recall_all = partial(recall_score, y_true, y_pred, labels=None)
+
+#         assert_array_almost_equal([.5, 1.], recall_13(average=None))
+#         assert_almost_equal((.5 + 1.) / 2, recall_13(average='macro'))
+#         assert_almost_equal((.5 * 2 + 1. * 1) / 3,
+#                             recall_13(average='weighted'))
+#         assert_almost_equal(2. / 3, recall_13(average='micro'))
+
+#         # ensure the above were meaningful tests:
+#         for average in ['macro', 'weighted', 'micro']:
+#             assert_not_equal(recall_13(average=average),
+#                              recall_all(average=average))
+
+
+# @ignore_warnings
+# def test_precision_recall_fscore_support_errors():
+#     y_true, y_pred, _ = make_prediction(binary=True)
+
+#     # Bad beta
+#     assert_raises(ValueError, precision_recall_fscore_support,
+#                   y_true, y_pred, beta=0.0)
+
+#     # Bad pos_label
+#     assert_raises(ValueError, precision_recall_fscore_support,
+#                   y_true, y_pred, pos_label=2, average='binary')
+
+#     # Bad average option
+#     assert_raises(ValueError, precision_recall_fscore_support,
+#                   [0, 1, 2], [1, 2, 0], average='mega')
+
+
+# def test_precision_recall_f_unused_pos_label():
+#     # Check warning that pos_label unused when set to non-default value
+#     # but average != 'binary'; even if data is binary.
+#     assert_warns_message(UserWarning,
+#                          "Note that pos_label (set to 2) is "
+#                          "ignored when average != 'binary' (got 'macro'). You "
+#                          "may use labels=[pos_label] to specify a single "
+#                          "positive class.", precision_recall_fscore_support,
+#                          [1, 2, 1], [1, 2, 2], pos_label=2, average='macro')

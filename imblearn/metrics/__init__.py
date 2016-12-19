@@ -3,5 +3,8 @@ The :mod:`imblearn.metrics` module includes score functions, performance
 metrics and pairwise metrics and distance computations.
 """
 
-import numpy as np
+from .classification import sensitivity_specificity_support
 
+__all__ = [
+    'sensitivity_specificity_support'
+]

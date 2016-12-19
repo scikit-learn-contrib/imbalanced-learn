@@ -10,6 +10,7 @@ the lower the better
 from __future__ import division
 
 import warnings
+import logging
 
 import numpy as np
 
@@ -148,20 +149,25 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     le.fit(labels)
     y_true = le.transform(y_true)
     y_pred = le.transform(y_pred)
-    sorted_labels = le.classes_n
+    sorted_labels = le.classes_
 
     # In a leave out strategy and for each label, compute:
     # TP, TN, FP, FN
     # These list contain an array in which each sample is labeled as
     # TP, TN, FP, FN
-    list_tp = [(y_true == label) == (y_pred == label)
+    list_tp = [np.bitwise_and((y_true == label), (y_pred == label))
                for label in sorted_labels]
-    list_tn = [(y_true != label) == (y_pred != label)
+    list_tn = [np.bitwise_and((y_true != label), (y_pred != label))
                for label in sorted_labels]
-    list_fp = [(y_true == label) == (y_pred != label)
+    list_fp = [np.bitwise_and((y_true == label), (y_pred != label))
                for label in sorted_labels]
-    list_fn = [(y_true != label) == (y_pred == label)
+    list_fn = [np.bitwise_and((y_true != label), (y_pred == label))
                for label in sorted_labels]
+
+    LOGGER.debug(list_tp)
+    LOGGER.debug(list_tn)
+    LOGGER.debug(list_fn)
+    LOGGER.debug(list_fn)
 
     # Compute the sum for each type
     tp_sum = [bincount(tp, weights=sample_weight, minlength=len(labels))
@@ -172,6 +178,11 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
               for fp in list_fp]
     fn_sum = [bincount(fn, weights=sample_weight, minlength=len(labels))
               for fn in list_fn]
+
+    LOGGER.debug(tp_sum)
+    LOGGER.debug(tn_sum)
+    LOGGER.debug(fp_sum)
+    LOGGER.debug(fn_sum)
 
     # Retain only selected labels
     indices = np.searchsorted(sorted_labels, labels[:n_labels])
@@ -187,6 +198,10 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
                                warn_for) for tp, fn in zip(tp_sum, fn_sum)]
     specificity = [_prf_divide(tn, tn + fp, 'specificity', 'tn + fp', average,
                                warn_for) for tn, fp in zip(tn_sum, fp_sum)]
+
+    LOGGER.debug('Computed the sensitivity and specificity for each class')
+    LOGGER.debug('The lengths of those two metrics are: %s - %s',
+                 len(sensitivity), len(specificity))
 
     # If we need to weight the results
     if average == 'weighted':
