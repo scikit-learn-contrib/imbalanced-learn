@@ -13,10 +13,12 @@ import warnings
 
 import numpy as np
 
-from sklearn.metrics.classification import _check_targets
+from sklearn.metrics.classification import (_check_targets, _prf_divide)
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.fixes import bincount
 from sklearn.utils.multiclass import unique_labels
+
+LOGGER = logging.getLogger(__name__)
 
 
 def sensitivity_specificity_support(y_true, y_pred, labels=None,
@@ -36,8 +38,8 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     The support is the number of occurrences of each class in ``y_true``.
 
     If ``pos_label is None`` and in binary classification, this function
-    returns the average precision, recall and F-measure if ``average``
-    is one of ``'micro'``, ``'macro'``, ``'weighted'`` or ``'samples'``.
+    returns the average sensitivity and specificity if ``average``
+    is one of ``'micro'`` or 'weighted'``.
 
     Parameters
     ----------
@@ -46,9 +48,6 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
 
     y_pred : 1d array-like, or label indicator array / sparse matrix
         Estimated targets as returned by a classifier.
-
-    beta : float, 1.0 by default
-        The strength of recall versus precision in the F-score.
 
     labels : list, optional
         The set of labels to include when ``average != 'binary'``, and their
@@ -65,25 +64,20 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : string, [None (default), 'binary', 'micro', 'macro', 'samples', \
-                       'weighted']
+    average : string, [None (default), 'binary', 'macro', 'weighted']
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
         ``'binary'``:
             Only report results for the class specified by ``pos_label``.
             This is applicable only if targets (``y_{true,pred}``) are binary.
-        ``'micro'``:
-            Calculate metrics globally by counting the total true positives,
-            false negatives and false positives.
         ``'macro'``:
             Calculate metrics for each label, and find their unweighted
             mean.  This does not take label imbalance into account.
         ``'weighted'``:
             Calculate metrics for each label, and find their average, weighted
             by support (the number of true instances for each label). This
-            alters 'macro' to account for label imbalance; it can result in an
-            F-score that is not between precision and recall.
+            alters 'macro' to account for label imbalance.
 
     warn_for : tuple or set, for internal use
         This determines which warnings will be made in the case that this
@@ -91,14 +85,14 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
 
     Returns
     -------
-    sensitivity : float (if average is not None) or array of float, shape =\
-        [n_unique_labels]
+    sensitivity : float (if ``average`` = None) or ndarray, \
+        shape(n_unique_labels,)
 
-    specificity : float (if average is not None) or array of float, , shape =\
-        [n_unique_labels]
+    specificity : float (if ``average`` = None) or ndarray, \
+        shape(n_unique_labels,)
 
-    support : int (if average is not None) or array of int, shape =\
-        [n_unique_labels]
+    support : int (if ``average`` = None) or ndarray, \
+        shape(n_unique_labels,)
         The number of occurrences of each label in ``y_true``.
 
     References
@@ -115,6 +109,9 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
 
     y_type, y_true, y_pred = _check_targets(y_true, y_pred)
     present_labels = unique_labels(y_true, y_pred)
+
+    LOGGER.debug('The labels in the prediction and ground-truth are %s',
+                 present_labels)
 
     # We do not support multilabel for the moment
     if y_type.startswith('multilabel'):
@@ -151,9 +148,11 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     le.fit(labels)
     y_true = le.transform(y_true)
     y_pred = le.transform(y_pred)
-    sorted_labels = le.classes_
+    sorted_labels = le.classes_n
 
     # In a leave out strategy and for each label, compute:
+    # TP, TN, FP, FN
+    # These list contain an array in which each sample is labeled as
     # TP, TN, FP, FN
     list_tp = [(y_true == label) == (y_pred == label)
                for label in sorted_labels]
@@ -164,17 +163,43 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     list_fn = [(y_true != label) == (y_pred == label)
                for label in sorted_labels]
 
+    # Compute the sum for each type
+    tp_sum = [bincount(tp, weights=sample_weight, minlength=len(labels))
+              for tp in list_tp]
+    tn_sum = [bincount(tn, weights=sample_weight, minlength=len(labels))
+              for tn in list_tn]
+    fp_sum = [bincount(fp, weights=sample_weight, minlength=len(labels))
+              for fp in list_fp]
+    fn_sum = [bincount(fn, weights=sample_weight, minlength=len(labels))
+              for fn in list_fn]
+
     # Retain only selected labels
     indices = np.searchsorted(sorted_labels, labels[:n_labels])
-    list_tp = [tp[indices] for tp in list_tp]
-    list_tp = [tn[indices] for tn in list_tn]
-    list_tp = [fp[indices] for fp in list_fp]
-    list_tp = [fn[indices] for fn in list_fn]
+    tp_sum = [tp[indices] for tp in tp_sum]
+    tn_sum = [tn[indices] for tn in tn_sum]
+    fp_sum = [fp[indices] for fp in fp_sum]
+    fn_sum = [fn[indices] for fn in fn_sum]
 
-    # # Compute the specificity and sensitivity for each label
-    # list_sp = [np.count_nonzero(tn) / (np.count_nonzero(tn) +
-    #                                    np.count_nonzero(fp))
-    #            for tn, fp in zip(list_tn, list_fp)]
-    # list_se = [np.count_nonzero(tp) / (np.count_nonzero(tp) +
-    #                                    np.count_nonzero(fn))
-    #            for tp, fn in zip(list_tp, list_fn)]
+    LOGGER.debug('Computed for each label the stats')
+
+    # Compute the sensitivity and specificity
+    sensitivity = [_prf_divide(tp, tp + fn, 'sensitivity', 'tp + fn', average,
+                               warn_for) for tp, fn in zip(tp_sum, fn_sum)]
+    specificity = [_prf_divide(tn, tn + fp, 'specificity', 'tn + fp', average,
+                               warn_for) for tn, fp in zip(tn_sum, fp_sum)]
+
+    # If we need to weight the results
+    if average == 'weighted':
+        weights = tp_sum
+        if weights.sum() == 0:
+            return 0, 0, None
+    else:
+        weights = None
+
+    if average is not None:
+        assert average != 'binary' or len(sensitivity) == 1
+        sensitivity = np.average(sensitivity, weights=weights)
+        specificity = np.average(specificity, weights=weights)
+        tp_sum = None
+
+    return sensitivity, specificity, tp_sum
