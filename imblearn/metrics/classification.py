@@ -14,7 +14,7 @@ import logging
 
 import numpy as np
 
-from sklearn.metrics.classification import (_check_targets, _prf_divide)
+from sklearn.metrics.classification import _check_targets, _prf_divide
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.fixes import bincount
 from sklearn.utils.multiclass import unique_labels
@@ -44,10 +44,10 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
 
     Parameters
     ----------
-    y_true : 1d array-like, or label indicator array / sparse matrix
+    y_true : ndarray, shape (n_samples, )
         Ground truth (correct) target values.
 
-    y_pred : 1d array-like, or label indicator array / sparse matrix
+    y_pred : ndarray, shape (n_samples, )
         Estimated targets as returned by a classifier.
 
     labels : list, optional
@@ -59,13 +59,13 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
         labels are column indices. By default, all labels in ``y_true`` and
         ``y_pred`` are used in sorted order.
 
-    pos_label : str or int, 1 by default
+    pos_label : str or int, optional (default=1)
         The class to report if ``average='binary'`` and the data is binary.
         If the data are multiclass or multilabel, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : string, [None (default), 'binary', 'macro', 'weighted']
+    average : str or None, optional (default=None)
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
@@ -84,16 +84,19 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
         This determines which warnings will be made in the case that this
         function is being used to return only one of its metrics.
 
+    sample_weight : ndarray, shape (n_samples, )
+        Sample weights.
+
     Returns
     -------
     sensitivity : float (if ``average`` = None) or ndarray, \
-        shape(n_unique_labels,)
+        shape (n_unique_labels, )
 
     specificity : float (if ``average`` = None) or ndarray, \
-        shape(n_unique_labels,)
+        shape (n_unique_labels, )
 
     support : int (if ``average`` = None) or ndarray, \
-        shape(n_unique_labels,)
+        shape (n_unique_labels, )
         The number of occurrences of each label in ``y_true``.
 
     References
@@ -151,6 +154,12 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     y_pred = le.transform(y_pred)
     sorted_labels = le.classes_
 
+    LOGGER.debug(y_true)
+    LOGGER.debug(y_pred)
+    LOGGER.debug(sorted_labels)
+
+    LOGGER.debug('The number of labels is %s' % n_labels)
+
     # In a leave out strategy and for each label, compute:
     # TP, TN, FP, FN
     # These list contain an array in which each sample is labeled as
@@ -159,39 +168,58 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
                for label in sorted_labels]
     list_tn = [np.bitwise_and((y_true != label), (y_pred != label))
                for label in sorted_labels]
-    list_fp = [np.bitwise_and((y_true == label), (y_pred != label))
+    list_fp = [np.bitwise_and((y_true != label), (y_pred == label))
                for label in sorted_labels]
-    list_fn = [np.bitwise_and((y_true != label), (y_pred == label))
+    list_fn = [np.bitwise_and((y_true == label), (y_pred != label))
                for label in sorted_labels]
-
-    LOGGER.debug(list_tp)
-    LOGGER.debug(list_tn)
-    LOGGER.debug(list_fn)
-    LOGGER.debug(list_fn)
 
     # Compute the sum for each type
-    tp_sum = [bincount(tp, weights=sample_weight, minlength=len(labels))
-              for tp in list_tp]
-    tn_sum = [bincount(tn, weights=sample_weight, minlength=len(labels))
-              for tn in list_tn]
-    fp_sum = [bincount(fp, weights=sample_weight, minlength=len(labels))
-              for fp in list_fp]
-    fn_sum = [bincount(fn, weights=sample_weight, minlength=len(labels))
-              for fn in list_fn]
-
-    LOGGER.debug(tp_sum)
-    LOGGER.debug(tn_sum)
-    LOGGER.debug(fp_sum)
-    LOGGER.debug(fn_sum)
+    # We keep only the counting corresponding to True values
+    # We are using bincount since it allows to weight the samples
+    tp_sum = np.array([bincount(tp, weights=sample_weight,
+                                minlength=2)[-1]
+                       for tp in list_tp])
+    tn_sum = np.array([bincount(tn, weights=sample_weight,
+                                minlength=2)[-1]
+                       for tn in list_tn])
+    fp_sum = np.array([bincount(fp, weights=sample_weight,
+                                minlength=2)[-1]
+                       for fp in list_fp])
+    fn_sum = np.array([bincount(fn, weights=sample_weight,
+                                minlength=2)[-1]
+                       for fn in list_fn])
 
     # Retain only selected labels
     indices = np.searchsorted(sorted_labels, labels[:n_labels])
-    tp_sum = [tp[indices] for tp in tp_sum]
-    tn_sum = [tn[indices] for tn in tn_sum]
-    fp_sum = [fp[indices] for fp in fp_sum]
-    fn_sum = [fn[indices] for fn in fn_sum]
+    # For support, we can count the number of occurrences of each label
+    support = np.array(bincount(y_true, weights=sample_weight,
+                                minlength=len(labels)))
+    # Sort the support
+    support = support[indices]
 
-    LOGGER.debug('Computed for each label the stats')
+
+    LOGGER.debug('The indices which are retained are %s' % indices)
+
+    LOGGER.debug('TP: %s' % tp_sum)
+    LOGGER.debug('TN: %s' % tn_sum)
+    LOGGER.debug('FP: %s' % fp_sum)
+    LOGGER.debug('FN: %s' % fn_sum)
+
+    tp_sum = tp_sum[indices]
+    tn_sum = tn_sum[indices]
+    fp_sum = fp_sum[indices]
+    fn_sum = fn_sum[indices]
+
+    if average == 'micro':
+        tp_sum = np.array([tp_sum.sum()])
+        tn_sum = np.array([tn_sum.sum()])
+        fp_sum = np.array([fp_sum.sum()])
+        fn_sum = np.array([fn_sum.sum()])
+
+    LOGGER.debug('Did we do the average micro %s' % tp_sum)
+
+    LOGGER.debug('Computed the necessary stats for the sensitivity and'
+                 ' specificity')
 
     # Compute the sensitivity and specificity
     sensitivity = [_prf_divide(tp, tp + fn, 'sensitivity', 'tp + fn', average,
@@ -199,13 +227,16 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     specificity = [_prf_divide(tn, tn + fp, 'specificity', 'tn + fp', average,
                                warn_for) for tn, fp in zip(tn_sum, fp_sum)]
 
+    LOGGER.debug('Sensitivity = %s - Specificity = %s' % (sensitivity,
+                                                          specificity))
+
     LOGGER.debug('Computed the sensitivity and specificity for each class')
     LOGGER.debug('The lengths of those two metrics are: %s - %s',
                  len(sensitivity), len(specificity))
 
     # If we need to weight the results
     if average == 'weighted':
-        weights = tp_sum
+        weights = support
         if weights.sum() == 0:
             return 0, 0, None
     else:
@@ -215,6 +246,149 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
         assert average != 'binary' or len(sensitivity) == 1
         sensitivity = np.average(sensitivity, weights=weights)
         specificity = np.average(specificity, weights=weights)
-        tp_sum = None
+        support = None
 
-    return sensitivity, specificity, tp_sum
+    return sensitivity, specificity, support
+
+
+def sensitivity_score(y_true, y_pred, labels=None, pos_label=1,
+                      average='binary', sample_weight=None):
+    """Compute the sensitivity
+
+    The sensitivity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
+    of true positives and ``fn`` the number of false negatives. The sensitivity
+    quantifies the ability to avoid false negatives.
+
+    The best value is 1 and the worst value is 0.
+
+    Parameters
+    ----------
+    y_true : ndarray, shape (n_samples, )
+        Ground truth (correct) target values.
+
+    y_pred : ndarray, shape (n_samples, )
+        Estimated targets as returned by a classifier.
+
+    labels : list, optional
+        The set of labels to include when ``average != 'binary'``, and their
+        order if ``average is None``. Labels present in the data can be
+        excluded, for example to calculate a multiclass average ignoring a
+        majority negative class, while labels not present in the data will
+        result in 0 components in a macro average. For multilabel targets,
+        labels are column indices. By default, all labels in ``y_true`` and
+        ``y_pred`` are used in sorted order.
+
+    pos_label : str or int, optional (default=1)
+        The class to report if ``average='binary'`` and the data is binary.
+        If the data are multiclass or multilabel, this will be ignored;
+        setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
+        scores for that label only.
+
+    average : str or None, optional (default=None)
+        If ``None``, the scores for each class are returned. Otherwise, this
+        determines the type of averaging performed on the data:
+
+        ``'binary'``:
+            Only report results for the class specified by ``pos_label``.
+            This is applicable only if targets (``y_{true,pred}``) are binary.
+        ``'macro'``:
+            Calculate metrics for each label, and find their unweighted
+            mean.  This does not take label imbalance into account.
+        ``'weighted'``:
+            Calculate metrics for each label, and find their average, weighted
+            by support (the number of true instances for each label). This
+            alters 'macro' to account for label imbalance.
+
+    warn_for : tuple or set, for internal use
+        This determines which warnings will be made in the case that this
+        function is being used to return only one of its metrics.
+
+    sample_weight : ndarray, shape (n_samples, )
+        Sample weights.
+
+    Returns
+    -------
+    specificity : float (if ``average`` = None) or ndarray, \
+        shape (n_unique_labels, )
+
+    """
+    s, _, _ = sensitivity_specificity_support(y_true, y_pred,
+                                              labels=labels,
+                                              pos_label=pos_label,
+                                              average=average,
+                                              warn_for=('specificity',),
+                                              sample_weight=sample_weight)
+
+    return s
+
+
+def specificity_score(y_true, y_pred, labels=None, pos_label=1,
+                      average='binary', sample_weight=None):
+    """Compute the specificity
+
+    The specificity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
+    of true positives and ``fn`` the number of false negatives. The specificity
+    is intuitively the ability of the classifier to find all the positive
+    samples.
+
+    The best value is 1 and the worst value is 0.
+
+    Parameters
+    ----------
+    y_true : ndarray, shape (n_samples, )
+        Ground truth (correct) target values.
+
+    y_pred : ndarray, shape (n_samples, )
+        Estimated targets as returned by a classifier.
+
+    labels : list, optional
+        The set of labels to include when ``average != 'binary'``, and their
+        order if ``average is None``. Labels present in the data can be
+        excluded, for example to calculate a multiclass average ignoring a
+        majority negative class, while labels not present in the data will
+        result in 0 components in a macro average. For multilabel targets,
+        labels are column indices. By default, all labels in ``y_true`` and
+        ``y_pred`` are used in sorted order.
+
+    pos_label : str or int, optional (default=1)
+        The class to report if ``average='binary'`` and the data is binary.
+        If the data are multiclass or multilabel, this will be ignored;
+        setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
+        scores for that label only.
+
+    average : str or None, optional (default=None)
+        If ``None``, the scores for each class are returned. Otherwise, this
+        determines the type of averaging performed on the data:
+
+        ``'binary'``:
+            Only report results for the class specified by ``pos_label``.
+            This is applicable only if targets (``y_{true,pred}``) are binary.
+        ``'macro'``:
+            Calculate metrics for each label, and find their unweighted
+            mean.  This does not take label imbalance into account.
+        ``'weighted'``:
+            Calculate metrics for each label, and find their average, weighted
+            by support (the number of true instances for each label). This
+            alters 'macro' to account for label imbalance.
+
+    warn_for : tuple or set, for internal use
+        This determines which warnings will be made in the case that this
+        function is being used to return only one of its metrics.
+
+    sample_weight : ndarray, shape (n_samples, )
+        Sample weights.
+
+    Returns
+    -------
+    specificity : float (if ``average`` = None) or ndarray, \
+        shape (n_unique_labels, )
+
+    """
+    _, s, _ = sensitivity_specificity_support(y_true, y_pred,
+                                              labels=labels,
+                                              pos_label=pos_label,
+                                              average=average,
+                                              warn_for=('specificity',),
+                                              sample_weight=sample_weight)
+
+    return s

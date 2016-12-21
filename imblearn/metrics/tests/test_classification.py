@@ -15,6 +15,8 @@ from sklearn import svm
 from sklearn.utils.validation import check_random_state
 
 from imblearn.metrics import sensitivity_specificity_support
+from imblearn.metrics import sensitivity_score
+from imblearn.metrics import specificity_score
 
 RND_SEED = 42
 
@@ -77,26 +79,19 @@ def test_sensitivity_specificity_support_binary():
     sens, spec, supp = sensitivity_specificity_support(y_true, y_pred,
                                                        average=None)
     assert_array_almost_equal(sens, [0.88, 0.68], 2)
-    assert_array_almost_equal(spec, [0.73, 0.85], 2)
+    assert_array_almost_equal(spec, [0.68, 0.88], 2)
     assert_array_equal(supp, [25, 25])
 
-    # # individual scoring function that can be used for grid search: in the
-    # # binary class case the score is the value of the measure for the positive
-    # # class (e.g. label == 1). This is deprecated for average != 'binary'.
-    # for kwargs, my_assert in [({}, assert_no_warnings),
-    #                           ({'average': 'binary'}, assert_no_warnings)]:
-    #     ps = my_assert(precision_score, y_true, y_pred, **kwargs)
-    #     assert_array_almost_equal(ps, 0.85, 2)
+    # individual scoring function that can be used for grid search: in the
+    # binary class case the score is the value of the measure for the positive
+    # class (e.g. label == 1). This is deprecated for average != 'binary'.
+    for kwargs, my_assert in [({}, assert_no_warnings),
+                              ({'average': 'binary'}, assert_no_warnings)]:
+        sens = my_assert(sensitivity_score, y_true, y_pred, **kwargs)
+        assert_array_almost_equal(sens, 0.68, 2)
 
-    #     rs = my_assert(recall_score, y_true, y_pred, **kwargs)
-    #     assert_array_almost_equal(rs, 0.68, 2)
-
-    #     fs = my_assert(f1_score, y_true, y_pred, **kwargs)
-    #     assert_array_almost_equal(fs, 0.76, 2)
-
-    #     assert_almost_equal(my_assert(fbeta_score, y_true, y_pred, beta=2,
-    #                                   **kwargs),
-    #                         (1 + 2 ** 2) * ps * rs / (2 ** 2 * ps + rs), 2)
+        spec = my_assert(specificity_score, y_true, y_pred, **kwargs)
+        assert_array_almost_equal(spec, 0.88, 2)
 
 
 # def test_precision_recall_f_binary_single_class():
@@ -204,3 +199,45 @@ def test_sensitivity_specificity_support_binary():
 #                          "may use labels=[pos_label] to specify a single "
 #                          "positive class.", precision_recall_fscore_support,
 #                          [1, 2, 1], [1, 2, 2], pos_label=2, average='macro')
+
+def test_precision_recall_f1_score_multiclass():
+    # Test Precision Recall and F1 Score for multiclass classification task
+    y_true, y_pred, _ = make_prediction(binary=False)
+
+    # compute scores with default labels introspection
+    sens, spec, supp = sensitivity_specificity_support(y_true, y_pred,
+                                                       average=None)
+    assert_array_almost_equal(spec, [0.92, 0.86, 0.55], 2)
+    assert_array_almost_equal(sens, [0.79, 0.09, 0.90], 2)
+    assert_array_equal(supp, [24, 31, 20])
+
+    # averaging tests
+    spec = specificity_score(y_true, y_pred, pos_label=1, average='micro')
+    assert_array_almost_equal(spec, 0.77, 2)
+
+    sens = sensitivity_score(y_true, y_pred, average='micro')
+    assert_array_almost_equal(sens, 0.53, 2)
+
+    spec = specificity_score(y_true, y_pred, average='macro')
+    assert_array_almost_equal(spec, 0.77, 2)
+
+    sens = sensitivity_score(y_true, y_pred, average='macro')
+    assert_array_almost_equal(sens, 0.60, 2)
+
+    spec = specificity_score(y_true, y_pred, average='weighted')
+    assert_array_almost_equal(spec, 0.80, 2)
+
+    sens = sensitivity_score(y_true, y_pred, average='weighted')
+    assert_array_almost_equal(sens, 0.53, 2)
+
+    assert_raises(ValueError, sensitivity_score, y_true, y_pred,
+                  average="samples")
+    assert_raises(ValueError, specificity_score, y_true, y_pred,
+                  average="samples")
+
+    # same prediction but with and explicit label ordering
+    sens, spec, supp = sensitivity_specificity_support(
+        y_true, y_pred, labels=[0, 2, 1], average=None)
+    assert_array_almost_equal(spec, [0.92, 0.55, 0.86], 2)
+    assert_array_almost_equal(sens, [0.79, 0.90, 0.10], 2)
+    assert_array_equal(supp, [24, 20, 31])
