@@ -26,6 +26,10 @@ else
    nosetests -v -s $MODULE
 fi
 
+if [[ "$RUN_FLAKE8" == "true" ]]; then
+    source build_tools/travis/flake8_diff.sh
+fi
+
 # Is directory still empty ?
 ls -ltra
 
