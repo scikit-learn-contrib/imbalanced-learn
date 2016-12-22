@@ -26,7 +26,7 @@ popd
 # provided versions
 conda create -n testenv --yes python=$PYTHON_VERSION pip nose \
     numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION \
-    libgfortran nomkl
+    libgfortran nomkl flake8
 #source activate testenv
 
 # Install nose-timer via pip
@@ -36,7 +36,7 @@ pip install nose-timer
 conda install --yes libgfortran \
     numpy=1.10.4 scipy=0.17.1 \
     scikit-learn=0.17.1 \
-    six=1.10.0 
+    six=1.10.0
 
 if [[ "$COVERAGE" == "true" ]]; then
     pip install coverage coveralls
@@ -50,3 +50,7 @@ python -c "import scipy; print('scipy %s' % scipy.__version__)"
 
 cd $TRAVIS_BUILD_DIR
 python setup.py develop
+
+if [[ "$RUN_FLAKE8" == "true" ]]; then
+    conda install --yes flake8
+fi
