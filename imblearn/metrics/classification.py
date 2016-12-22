@@ -40,7 +40,7 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
 
     If ``pos_label is None`` and in binary classification, this function
     returns the average sensitivity and specificity if ``average``
-    is one of ``'micro'`` or 'weighted'``.
+    is one of ``'weighted'``.
 
     Parameters
     ----------
@@ -105,8 +105,7 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
            <https://en.wikipedia.org/wiki/Sensitivity_and_specificity>`_
 
     """
-
-    average_options = (None, 'micro', 'macro', 'weighted')
+    average_options = (None, 'macro', 'weighted')
     if average not in average_options and average != 'binary':
         raise ValueError('average has to be one of ' +
                          str(average_options))
@@ -154,10 +153,6 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     y_pred = le.transform(y_pred)
     sorted_labels = le.classes_
 
-    LOGGER.debug(y_true)
-    LOGGER.debug(y_pred)
-    LOGGER.debug(sorted_labels)
-
     LOGGER.debug('The number of labels is %s' % n_labels)
 
     # In a leave out strategy and for each label, compute:
@@ -165,13 +160,13 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     # These list contain an array in which each sample is labeled as
     # TP, TN, FP, FN
     list_tp = [np.bitwise_and((y_true == label), (y_pred == label))
-               for label in sorted_labels]
+               for label in range(sorted_labels.size)]
     list_tn = [np.bitwise_and((y_true != label), (y_pred != label))
-               for label in sorted_labels]
+               for label in range(sorted_labels.size)]
     list_fp = [np.bitwise_and((y_true != label), (y_pred == label))
-               for label in sorted_labels]
+               for label in range(sorted_labels.size)]
     list_fn = [np.bitwise_and((y_true == label), (y_pred != label))
-               for label in sorted_labels]
+               for label in range(sorted_labels.size)]
 
     # Compute the sum for each type
     # We keep only the counting corresponding to True values
@@ -197,42 +192,32 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     # Sort the support
     support = support[indices]
 
-
     LOGGER.debug('The indices which are retained are %s' % indices)
-
-    LOGGER.debug('TP: %s' % tp_sum)
-    LOGGER.debug('TN: %s' % tn_sum)
-    LOGGER.debug('FP: %s' % fp_sum)
-    LOGGER.debug('FN: %s' % fn_sum)
 
     tp_sum = tp_sum[indices]
     tn_sum = tn_sum[indices]
     fp_sum = fp_sum[indices]
     fn_sum = fn_sum[indices]
 
-    if average == 'micro':
-        tp_sum = np.array([tp_sum.sum()])
-        tn_sum = np.array([tn_sum.sum()])
-        fp_sum = np.array([fp_sum.sum()])
-        fn_sum = np.array([fn_sum.sum()])
-
-    LOGGER.debug('Did we do the average micro %s' % tp_sum)
-
     LOGGER.debug('Computed the necessary stats for the sensitivity and'
                  ' specificity')
 
+    LOGGER.debug(tp_sum)
+    LOGGER.debug(tn_sum)
+    LOGGER.debug(fp_sum)
+    LOGGER.debug(fn_sum)
+
     # Compute the sensitivity and specificity
-    sensitivity = [_prf_divide(tp, tp + fn, 'sensitivity', 'tp + fn', average,
-                               warn_for) for tp, fn in zip(tp_sum, fn_sum)]
-    specificity = [_prf_divide(tn, tn + fp, 'specificity', 'tn + fp', average,
-                               warn_for) for tn, fp in zip(tn_sum, fp_sum)]
+    with np.errstate(divide='ignore', invalid='ignore'):
+        sensitivity = _prf_divide(tp_sum, tp_sum + fn_sum, 'sensitivity',
+                                  'tp + fn', average, warn_for)
+        specificity = _prf_divide(tn_sum, tn_sum + fp_sum, 'specificity',
+                                  'tn + fp', average, warn_for)
 
-    LOGGER.debug('Sensitivity = %s - Specificity = %s' % (sensitivity,
-                                                          specificity))
-
-    LOGGER.debug('Computed the sensitivity and specificity for each class')
-    LOGGER.debug('The lengths of those two metrics are: %s - %s',
-                 len(sensitivity), len(specificity))
+    # sensitivity = [_prf_divide(tp, tp + fn, 'sensitivity', 'tp + fn', average,
+    #                            warn_for) for tp, fn in zip(tp_sum, fn_sum)]
+    # specificity = [_prf_divide(tn, tn + fp, 'specificity', 'tn + fp', average,
+    #                            warn_for) for tn, fp in zip(tn_sum, fp_sum)]
 
     # If we need to weight the results
     if average == 'weighted':
