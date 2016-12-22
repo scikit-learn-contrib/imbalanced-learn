@@ -113,11 +113,16 @@ class InstanceHardnessThreshold(BaseBinarySampler):
 
     """
 
-    def __init__(self, estimator=None, ratio='auto', return_indices=False,
-                 random_state=None, cv=5, n_jobs=1, **kwargs):
+    def __init__(self,
+                 estimator=None,
+                 ratio='auto',
+                 return_indices=False,
+                 random_state=None,
+                 cv=5,
+                 n_jobs=1,
+                 **kwargs):
         super(InstanceHardnessThreshold, self).__init__(
-            ratio=ratio,
-            random_state=random_state)
+            ratio=ratio, random_state=random_state)
         self.estimator = estimator
         self.return_indices = return_indices
         self.cv = cv
@@ -143,27 +148,22 @@ class InstanceHardnessThreshold(BaseBinarySampler):
                           DeprecationWarning)
             if self.estimator == 'knn':
                 from sklearn.neighbors import KNeighborsClassifier
-                self.estimator_ = KNeighborsClassifier(
-                    **self.kwargs)
+                self.estimator_ = KNeighborsClassifier(**self.kwargs)
             elif self.estimator == 'decision-tree':
                 from sklearn.tree import DecisionTreeClassifier
                 self.estimator_ = DecisionTreeClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'random-forest':
                 self.estimator_ = RandomForestClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'adaboost':
                 from sklearn.ensemble import AdaBoostClassifier
                 self.estimator_ = AdaBoostClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'gradient-boosting':
                 from sklearn.ensemble import GradientBoostingClassifier
                 self.estimator_ = GradientBoostingClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'linear-svm':
                 from sklearn.svm import SVC
                 self.estimator_ = SVC(probability=True,
@@ -225,8 +225,8 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         """
 
         # Create the different folds
-        skf = StratifiedKFold(y, n_folds=self.cv, shuffle=False,
-                              random_state=self.random_state)
+        skf = StratifiedKFold(
+            y, n_folds=self.cv, shuffle=False, random_state=self.random_state)
 
         probabilities = np.zeros(y.shape[0], dtype=float)
 
@@ -240,7 +240,8 @@ class InstanceHardnessThreshold(BaseBinarySampler):
             classes = self.estimator_.classes_
             probabilities[test_index] = [
                 probs[l, np.where(classes == c)[0][0]]
-                for l, c in enumerate(y_test)]
+                for l, c in enumerate(y_test)
+            ]
 
         # Compute the number of cluster needed
         if self.ratio == 'auto':
@@ -259,8 +260,7 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         X_resampled = X[mask]
         y_resampled = y[mask]
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         # If we need to offer support for the indices
         if self.return_indices:

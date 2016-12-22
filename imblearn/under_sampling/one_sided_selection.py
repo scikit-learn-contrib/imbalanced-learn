@@ -91,8 +91,13 @@ class OneSidedSelection(BaseBinarySampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=None, n_neighbors=None, n_seeds_S=1, n_jobs=1):
+    def __init__(self,
+                 return_indices=False,
+                 random_state=None,
+                 size_ngh=None,
+                 n_neighbors=None,
+                 n_seeds_S=1,
+                 n_jobs=1):
         super(OneSidedSelection, self).__init__(random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
@@ -105,12 +110,10 @@ class OneSidedSelection(BaseBinarySampler):
 
         if self.n_neighbors is None:
             self.estimator_ = KNeighborsClassifier(
-                n_neighbors=1,
-                n_jobs=self.n_jobs)
+                n_neighbors=1, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, int):
             self.estimator_ = KNeighborsClassifier(
-                n_neighbors=self.n_neighbors,
-                n_jobs=self.n_jobs)
+                n_neighbors=self.n_neighbors, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
             self.estimator_ = self.n_neighbors
         else:
@@ -189,17 +192,13 @@ class OneSidedSelection(BaseBinarySampler):
 
             # Randomly get one sample from the majority class
             # Generate the index to select
-            idx_maj_sample = random_state.randint(low=0,
-                                                  high=self.stats_c_[key],
-                                                  size=self.n_seeds_S)
+            idx_maj_sample = random_state.randint(
+                low=0, high=self.stats_c_[key], size=self.n_seeds_S)
             maj_sample = X[y == key][idx_maj_sample]
 
             # Create the set C
-            C_x = np.append(X_min,
-                            maj_sample,
-                            axis=0)
-            C_y = np.append(y_min,
-                            [key] * self.n_seeds_S)
+            C_x = np.append(X_min, maj_sample, axis=0)
+            C_y = np.append(y_min, [key] * self.n_seeds_S)
 
             # Create the set S
             S_x = X[y == key]
@@ -223,21 +222,15 @@ class OneSidedSelection(BaseBinarySampler):
             # We concatenate the misclassified samples with the seed and the
             # minority samples
             if self.return_indices:
-                idx_tmp = np.flatnonzero(y == key)[
-                    np.flatnonzero(pred_S_y != S_y)]
-                idx_under = np.concatenate((idx_under,
-                                            idx_maj_sample,
-                                            idx_tmp),
-                                           axis=0)
+                idx_tmp = np.flatnonzero(
+                    y == key)[np.flatnonzero(pred_S_y != S_y)]
+                idx_under = np.concatenate(
+                    (idx_under, idx_maj_sample, idx_tmp), axis=0)
 
-            X_resampled = np.concatenate((X_resampled,
-                                          maj_sample,
-                                          sel_x),
-                                         axis=0)
-            y_resampled = np.concatenate((y_resampled,
-                                          [key] * self.n_seeds_S,
-                                          sel_y),
-                                         axis=0)
+            X_resampled = np.concatenate(
+                (X_resampled, maj_sample, sel_x), axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, [key] * self.n_seeds_S, sel_y), axis=0)
 
         # Find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
@@ -248,8 +241,8 @@ class OneSidedSelection(BaseBinarySampler):
         self.logger.debug('Looking for majority Tomek links ...')
         links = TomekLinks.is_tomek(y_resampled, nns, self.min_c_)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y_resampled[np.logical_not(links)]))
+        self.logger.info('Under-sampling performed: %s',
+                         Counter(y_resampled[np.logical_not(links)]))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

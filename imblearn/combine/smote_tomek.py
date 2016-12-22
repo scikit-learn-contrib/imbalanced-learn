@@ -115,12 +115,18 @@ class SMOTETomek(BaseBinarySampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None,
-                 smote=None, tomek=None,
-                 k=None, m=None, out_step=None, kind_smote=None,
+    def __init__(self,
+                 ratio='auto',
+                 random_state=None,
+                 smote=None,
+                 tomek=None,
+                 k=None,
+                 m=None,
+                 out_step=None,
+                 kind_smote=None,
                  n_jobs=None):
-        super(SMOTETomek, self).__init__(ratio=ratio,
-                                         random_state=random_state)
+        super(SMOTETomek, self).__init__(
+            ratio=ratio, random_state=random_state)
         self.smote = smote
         self.tomek = tomek
         self.k = k
@@ -154,10 +160,14 @@ class SMOTETomek(BaseBinarySampler):
                 smote_jobs = 1
             else:
                 smote_jobs = self.n_jobs
-            self.smote_ = SMOTE(ratio=self.ratio,
-                                random_state=self.random_state,
-                                k=self.k, m=self.m, out_step=self.out_step,
-                                kind=self.kind_smote, n_jobs=smote_jobs)
+            self.smote_ = SMOTE(
+                ratio=self.ratio,
+                random_state=self.random_state,
+                k=self.k,
+                m=self.m,
+                out_step=self.out_step,
+                kind=self.kind_smote,
+                n_jobs=smote_jobs)
         # If an object was given, affect
         elif self.smote is not None:
             if isinstance(self.smote, SMOTE):
@@ -166,8 +176,8 @@ class SMOTETomek(BaseBinarySampler):
                 raise ValueError('smote needs to be a SMOTE object.')
         # Otherwise create a default SMOTE
         else:
-            self.smote_ = SMOTE(ratio=self.ratio,
-                                random_state=self.random_state)
+            self.smote_ = SMOTE(
+                ratio=self.ratio, random_state=self.random_state)
 
         # Check any parameters for ENN was provided
         # Anounce deprecation
@@ -175,8 +185,8 @@ class SMOTETomek(BaseBinarySampler):
             warnings.warn('Parameters initialization will be replaced in'
                           ' version 0.4. Use a ENN object instead.',
                           DeprecationWarning)
-            self.tomek_ = TomekLinks(random_state=self.random_state,
-                                     n_jobs=self.n_jobs)
+            self.tomek_ = TomekLinks(
+                random_state=self.random_state, n_jobs=self.n_jobs)
         # If an object was given, affect
         elif self.tomek is not None:
             if isinstance(self.tomek, TomekLinks):

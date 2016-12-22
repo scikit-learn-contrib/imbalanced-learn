@@ -51,7 +51,6 @@ def _validate_step_class(step):
 
 
 class Pipeline(pipeline.Pipeline):
-
     """Pipeline of transforms and resamples with a final estimator.
 
     Sequentially apply a list of transforms, samples and a final estimator.
@@ -104,9 +103,9 @@ class Pipeline(pipeline.Pipeline):
     ratio='auto', svm_estimator=None)), ('pca', PCA(copy=True,
     iterated_power='auto', n_components=None, random_state=None,
     svd_solver='auto', tol=0.0, whiten=False)),
-    ('knn', KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
-               metric_params=None, n_jobs=1, n_neighbors=5, p=2,
-               weights='uniform'))])
+    ('knn', KNeighborsClassifier(algorithm='auto', leaf_size=30,
+    metric='minkowski', metric_params=None, n_jobs=1, n_neighbors=5, p=2,
+    weights='uniform'))])
     >>> y_hat = pipeline.predict(X_test)
     >>> print(classification_report(y_test, y_hat))
                  precision    recall  f1-score   support
@@ -124,8 +123,8 @@ class Pipeline(pipeline.Pipeline):
     def __init__(self, steps):
         names, estimators = zip(*steps)
         if len(dict(steps)) != len(steps):
-            raise ValueError("Provided step names are not unique: %s"
-                             % (names,))
+            raise ValueError("Provided step names are not unique: %s" %
+                             (names, ))
 
         # shallow copy of steps
         self.steps = tosequence(steps)
@@ -139,8 +138,8 @@ class Pipeline(pipeline.Pipeline):
 
         if not hasattr(estimator, "fit"):
             raise TypeError("Last step of chain should implement fit "
-                            "'%s' (type %s) doesn't)"
-                            % (estimator, type(estimator)))
+                            "'%s' (type %s) doesn't)" %
+                            (estimator, type(estimator)))
 
     # Estimator interface
 

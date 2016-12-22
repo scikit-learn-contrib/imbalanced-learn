@@ -70,10 +70,13 @@ class RandomUnderSampler(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, ratio='auto', return_indices=False, random_state=None,
+    def __init__(self,
+                 ratio='auto',
+                 return_indices=False,
+                 random_state=None,
                  replacement=True):
-        super(RandomUnderSampler, self).__init__(ratio=ratio,
-                                                 random_state=random_state)
+        super(RandomUnderSampler, self).__init__(
+            ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.replacement = replacement
 
@@ -128,8 +131,8 @@ class RandomUnderSampler(BaseMulticlassSampler):
 
             # Pick some elements at random
             indx = range(np.count_nonzero(y == key))
-            indx = random_state.choice(indx, size=num_samples,
-                                       replace=self.replacement)
+            indx = random_state.choice(
+                indx, size=num_samples, replace=self.replacement)
 
             # If we need to offer support for the indices selected
             if self.return_indices:
@@ -137,10 +140,10 @@ class RandomUnderSampler(BaseMulticlassSampler):
                 idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
 
             # Concatenate to the minority class
-            X_resampled = np.concatenate((X_resampled, X[y == key][indx]),
-                                         axis=0)
-            y_resampled = np.concatenate((y_resampled, y[y == key][indx]),
-                                         axis=0)
+            X_resampled = np.concatenate(
+                (X_resampled, X[y == key][indx]), axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, y[y == key][indx]), axis=0)
 
         self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 

@@ -72,8 +72,7 @@ class TomekLinks(BaseBinarySampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None,
-                 n_jobs=1):
+    def __init__(self, return_indices=False, random_state=None, n_jobs=1):
         super(TomekLinks, self).__init__(random_state=random_state)
         self.return_indices = return_indices
         self.n_jobs = n_jobs
@@ -162,8 +161,8 @@ class TomekLinks(BaseBinarySampler):
         self.logger.debug('Looking for majority Tomek links ...')
         links = self.is_tomek(y, nns, self.min_c_)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y[np.logical_not(links)]))
+        self.logger.info('Under-sampling performed: %s',
+                         Counter(y[np.logical_not(links)]))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

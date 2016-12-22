@@ -12,7 +12,6 @@ from ..base import BaseBinarySampler
 
 
 class ADASYN(BaseBinarySampler):
-
     """Perform over-sampling using ADASYN.
 
     Perform over-sampling using Adaptive Synthetic Sampling Approach for
@@ -96,7 +95,11 @@ class ADASYN(BaseBinarySampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, k=None, n_neighbors=5,
+    def __init__(self,
+                 ratio='auto',
+                 random_state=None,
+                 k=None,
+                 n_neighbors=5,
                  n_jobs=1):
         super(ADASYN, self).__init__(ratio=ratio, random_state=random_state)
         self.k = k
@@ -107,8 +110,8 @@ class ADASYN(BaseBinarySampler):
         """Private function to create the NN estimator"""
 
         if isinstance(self.n_neighbors, int):
-            self.nn_ = NearestNeighbors(n_neighbors=self.n_neighbors + 1,
-                                        n_jobs=self.n_jobs)
+            self.nn_ = NearestNeighbors(
+                n_neighbors=self.n_neighbors + 1, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, KNeighborsMixin):
             self.nn_ = self.n_neighbors
         else:
@@ -168,8 +171,8 @@ class ADASYN(BaseBinarySampler):
         # Define the number of sample to create
         # We handle only two classes problem for the moment.
         if self.ratio == 'auto':
-            num_samples = (self.stats_c_[self.maj_c_] -
-                           self.stats_c_[self.min_c_])
+            num_samples = (
+                self.stats_c_[self.maj_c_] - self.stats_c_[self.min_c_])
         else:
             num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
                               self.stats_c_[self.min_c_])
@@ -208,8 +211,8 @@ class ADASYN(BaseBinarySampler):
         for x_i, x_i_nn, num_sample_i in zip(X_min, ind_nn, num_samples_nn):
 
             # Pick-up the neighbors wanted
-            nn_zs = random_state.randint(1, high=self.nn_.n_neighbors,
-                                         size=num_sample_i)
+            nn_zs = random_state.randint(
+                1, high=self.nn_.n_neighbors, size=num_sample_i)
 
             # Create a new sample
             for nn_z in nn_zs:
@@ -218,7 +221,6 @@ class ADASYN(BaseBinarySampler):
                 X_resampled = np.vstack((X_resampled, x_gen))
                 y_resampled = np.hstack((y_resampled, self.min_c_))
 
-        self.logger.info('Over-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Over-sampling performed: %s', Counter(y_resampled))
 
         return X_resampled, y_resampled

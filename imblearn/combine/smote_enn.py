@@ -138,10 +138,19 @@ class SMOTEENN(BaseBinarySampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None,
-                 smote=None, enn=None,
-                 k=None, m=None, out_step=None, kind_smote=None,
-                 size_ngh=None, n_neighbors=None, kind_enn=None, n_jobs=None):
+    def __init__(self,
+                 ratio='auto',
+                 random_state=None,
+                 smote=None,
+                 enn=None,
+                 k=None,
+                 m=None,
+                 out_step=None,
+                 kind_smote=None,
+                 size_ngh=None,
+                 n_neighbors=None,
+                 kind_enn=None,
+                 n_jobs=None):
 
         super(SMOTEENN, self).__init__(ratio=ratio, random_state=random_state)
         self.smote = smote
@@ -180,10 +189,14 @@ class SMOTEENN(BaseBinarySampler):
             warnings.warn('Parameters initialization will be replaced in'
                           ' version 0.4. Use a SMOTE object instead.',
                           DeprecationWarning)
-            self.smote_ = SMOTE(ratio=self.ratio,
-                                random_state=self.random_state,
-                                k=self.k, m=self.m, out_step=self.out_step,
-                                kind=self.kind_smote, n_jobs=smote_jobs)
+            self.smote_ = SMOTE(
+                ratio=self.ratio,
+                random_state=self.random_state,
+                k=self.k,
+                m=self.m,
+                out_step=self.out_step,
+                kind=self.kind_smote,
+                n_jobs=smote_jobs)
         # If an object was given, affect
         elif self.smote is not None:
             if isinstance(self.smote, SMOTE):
@@ -192,8 +205,8 @@ class SMOTEENN(BaseBinarySampler):
                 raise ValueError('smote needs to be a SMOTE object.')
         # Otherwise create a default SMOTE
         else:
-            self.smote_ = SMOTE(ratio=self.ratio,
-                                random_state=self.random_state)
+            self.smote_ = SMOTE(
+                ratio=self.ratio, random_state=self.random_state)
 
         # Check any parameters for ENN was provided
         # Anounce deprecation
@@ -210,11 +223,12 @@ class SMOTEENN(BaseBinarySampler):
                 self.kind_enn = 'all'
             if self.n_jobs is None:
                 self.n_jobs = 1
-            self.enn_ = EditedNearestNeighbours(random_state=self.random_state,
-                                                size_ngh=self.size_ngh,
-                                                n_neighbors=self.n_neighbors,
-                                                kind_sel=self.kind_enn,
-                                                n_jobs=self.n_jobs)
+            self.enn_ = EditedNearestNeighbours(
+                random_state=self.random_state,
+                size_ngh=self.size_ngh,
+                n_neighbors=self.n_neighbors,
+                kind_sel=self.kind_enn,
+                n_jobs=self.n_jobs)
         # If an object was given, affect
         elif self.enn is not None:
             if isinstance(self.enn, EditedNearestNeighbours):

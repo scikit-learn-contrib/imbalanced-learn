@@ -78,10 +78,13 @@ class ClusterCentroids(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, estimator=None,
+    def __init__(self,
+                 ratio='auto',
+                 random_state=None,
+                 estimator=None,
                  n_jobs=1):
-        super(ClusterCentroids, self).__init__(ratio=ratio,
-                                               random_state=random_state)
+        super(ClusterCentroids, self).__init__(
+            ratio=ratio, random_state=random_state)
         self.estimator = estimator
         self.n_jobs = n_jobs
 
@@ -89,8 +92,8 @@ class ClusterCentroids(BaseMulticlassSampler):
         """Private function to create the NN estimator"""
 
         if self.estimator is None:
-            self.estimator_ = KMeans(random_state=self.random_state,
-                                     n_jobs=self.n_jobs)
+            self.estimator_ = KMeans(
+                random_state=self.random_state, n_jobs=self.n_jobs)
         elif isinstance(self.estimator, KMeans):
             self.estimator_ = self.estimator
         else:
@@ -171,11 +174,9 @@ class ClusterCentroids(BaseMulticlassSampler):
 
             # Concatenate to the minority class
             X_resampled = np.concatenate((X_resampled, centroids), axis=0)
-            y_resampled = np.concatenate((y_resampled, np.array([key] *
-                                                                num_samples)),
-                                         axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, np.array([key] * num_samples)), axis=0)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         return X_resampled, y_resampled

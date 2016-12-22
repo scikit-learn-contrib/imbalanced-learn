@@ -10,7 +10,6 @@ from ..base import BaseMulticlassSampler
 
 
 class RandomOverSampler(BaseMulticlassSampler):
-
     """Class to perform random over-sampling.
 
     Object to over-sample the minority class(es) by picking samples at random
@@ -68,12 +67,10 @@ class RandomOverSampler(BaseMulticlassSampler):
 
     """
 
-    def __init__(self,
-                 ratio='auto',
-                 random_state=None):
+    def __init__(self, ratio='auto', random_state=None):
 
-        super(RandomOverSampler, self).__init__(ratio=ratio,
-                                                random_state=random_state)
+        super(RandomOverSampler, self).__init__(
+            ratio=ratio, random_state=random_state)
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -109,28 +106,24 @@ class RandomOverSampler(BaseMulticlassSampler):
 
             # Define the number of sample to create
             if self.ratio == 'auto':
-                num_samples = int(self.stats_c_[self.maj_c_] -
-                                  self.stats_c_[key])
+                num_samples = int(self.stats_c_[self.maj_c_] - self.stats_c_[
+                    key])
             else:
                 num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
                                   self.stats_c_[key])
 
             # Pick some elements at random
             random_state = check_random_state(self.random_state)
-            indx = random_state.randint(low=0, high=self.stats_c_[key],
-                                        size=num_samples)
+            indx = random_state.randint(
+                low=0, high=self.stats_c_[key], size=num_samples)
 
             # Concatenate to the majority class
-            X_resampled = np.concatenate((X_resampled,
-                                          X[y == key],
-                                          X[y == key][indx]),
-                                         axis=0)
+            X_resampled = np.concatenate(
+                (X_resampled, X[y == key], X[y == key][indx]), axis=0)
 
-            y_resampled = np.concatenate((y_resampled,
-                                          y[y == key],
-                                          y[y == key][indx]), axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, y[y == key], y[y == key][indx]), axis=0)
 
-        self.logger.info('Over-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Over-sampling performed: %s', Counter(y_resampled))
 
         return X_resampled, y_resampled
