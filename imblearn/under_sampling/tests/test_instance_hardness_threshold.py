@@ -1,12 +1,9 @@
 """Test the module ."""
 from __future__ import print_function
 
-import os
-
 import numpy as np
 from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.ensemble import GradientBoostingClassifier
 
@@ -384,7 +381,7 @@ def test_multiclass_error():
     assert_warns(UserWarning, iht.fit, X, y)
 
     # multiclass case
-    y = np.array([0] * 10 + [1] * 3 + [2] *2)
+    y = np.array([0] * 10 + [1] * 3 + [2] * 2)
     iht = InstanceHardnessThreshold(random_state=RND_SEED)
     assert_warns(UserWarning, iht.fit, X, y)
 

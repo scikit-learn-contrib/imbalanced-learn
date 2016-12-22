@@ -1,12 +1,9 @@
 """Test the module balance cascade."""
 from __future__ import print_function
 
-import os
-
 import numpy as np
 from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.estimator_checks import check_estimator
 
@@ -148,7 +145,6 @@ def test_fit_sample_auto():
     # Get the different subset
     X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
 
-    currdir = os.path.dirname(os.path.abspath(__file__))
     X_gt = np.array([np.array([[0.11622591, -0.0317206],
                                [1.25192108, -0.22367336],
                                [0.53366841, -0.30312976],
@@ -758,7 +754,7 @@ def test_give_classifier_wrong_obj():
 
     # Create the sampling object
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
-                        return_indices=True, estimator=2)
+                        return_indices=True, estimator=classifier)
 
     # Get the different subset
     assert_raises(ValueError, bc.fit_sample, X, Y)

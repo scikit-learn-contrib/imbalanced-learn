@@ -7,7 +7,6 @@ import numpy as np
 from numpy.testing import (assert_array_almost_equal, assert_array_equal,
                            assert_equal, assert_raises, assert_warns)
 from sklearn.cluster import KMeans
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.under_sampling import ClusterCentroids
@@ -186,9 +185,9 @@ def test_fit_sample_half():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_sample_wrong_X():
+def test_sample_wrong_X_dft_ratio():
     """Test either if an error is raised when X is different at fitting
-    and sampling"""
+    and sampling without ratio"""
 
     # Create the object
     cc = ClusterCentroids(random_state=RND_SEED)

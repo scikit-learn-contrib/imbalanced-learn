@@ -1,12 +1,9 @@
 """Test the module SMOTE."""
 from __future__ import print_function
 
-import os
-
 import numpy as np
 from numpy.testing import (assert_array_almost_equal, assert_array_equal,
                            assert_equal, assert_raises, assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
@@ -435,7 +432,7 @@ def test_wrong_nn():
     assert_raises(ValueError, smote.fit_sample, X, Y)
 
     nn_k = 'rnd'
-    nn_n = NearestNeighbors(n_neighbors=10)
+    nn_m = NearestNeighbors(n_neighbors=10)
     smote = SMOTE(random_state=RND_SEED, kind=kind,
                   k_neighbors=nn_k, m_neighbors=nn_m)
 

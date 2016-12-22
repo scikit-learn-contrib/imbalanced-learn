@@ -17,7 +17,8 @@ from sklearn.utils.testing import (assert_array_almost_equal,
                                    assert_true, assert_warns_message)
 
 from imblearn.pipeline import Pipeline, make_pipeline
-from imblearn.under_sampling import RandomUnderSampler, EditedNearestNeighbours as ENN
+from imblearn.under_sampling import (RandomUnderSampler,
+                                     EditedNearestNeighbours as ENN)
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
@@ -74,19 +75,19 @@ class FitParamT(object):
         return self.successful
 
 
-
 class FitTransformSample(T):
     """Mock classifier
-    """  
+    """
 
     def fit(self, X, y, should_succeed=False):
         pass
 
-    def sample(X, y=None):
+    def sample(self, X, y=None):
         return X, y
 
-    def transform(X, y=None):
-        return  X
+    def transform(self, X, y=None):
+        return X
+
 
 def test_pipeline_init():
     # Test the various init parameters of the pipeline.
@@ -447,8 +448,6 @@ def test_pipeline_methods_anova_rus():
     pipe.score(X, y)
 
 
-
-
 def test_pipeline_with_step_that_implements_both_sample_and_transform():
     # Test the various methods of the pipeline (anova).
     X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
@@ -457,8 +456,9 @@ def test_pipeline_with_step_that_implements_both_sample_and_transform():
                                n_samples=5000, random_state=0)
 
     clf = LogisticRegression()
-    assert_raises(TypeError, Pipeline, [('step', FitTransformSample()), ('logistic', clf)])
-    #assert_raises(TypeError, lambda x: [][0])
+    assert_raises(TypeError, Pipeline, [('step', FitTransformSample()),
+                                        ('logistic', clf)])
+    # assert_raises(TypeError, lambda x: [][0])
 
 
 def test_pipeline_with_step_that_it_is_pipeline():
@@ -473,36 +473,37 @@ def test_pipeline_with_step_that_it_is_pipeline():
     filter1 = SelectKBest(f_classif, k=2)
     pipe1 = Pipeline([('rus', rus), ('anova', filter1)])
     assert_raises(TypeError, Pipeline, [('pipe1', pipe1), ('logistic', clf)])
-    
+
+
 def test_pipeline_fit_then_sample_with_sampler_last_estimator():
     X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-        n_informative=3, n_redundant=1, flip_y=0,
-        n_features=20, n_clusters_per_class=1,
-        n_samples=50000, random_state=0)
+                               n_informative=3, n_redundant=1, flip_y=0,
+                               n_features=20, n_clusters_per_class=1,
+                               n_samples=50000, random_state=0)
 
     rus = RandomUnderSampler(random_state=42)
     enn = ENN()
     pipeline = make_pipeline(rus, enn)
-    X_fit_sample_resampled, y_fit_sample_resampled = pipeline.fit_sample(X,y)
+    X_fit_sample_resampled, y_fit_sample_resampled = pipeline.fit_sample(X, y)
     pipeline = make_pipeline(rus, enn)
-    pipeline.fit(X,y)
-    X_fit_then_sample_resampled, y_fit_then_sample_resampled = pipeline.sample(X,y)
-    assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_resampled)
-    assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_resampled)
+    pipeline.fit(X, y)
+    X_fit_then_sample_res, y_fit_then_sample_res = pipeline.sample(X, y)
+    assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_res)
+    assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_res)
 
-    
-def test_pipeline_fit_then_sample_of_three_samplers_with_sampler_last_estimator():
+
+def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
     X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-        n_informative=3, n_redundant=1, flip_y=0,
-        n_features=20, n_clusters_per_class=1,
-        n_samples=50000, random_state=0)
+                               n_informative=3, n_redundant=1, flip_y=0,
+                               n_features=20, n_clusters_per_class=1,
+                               n_samples=50000, random_state=0)
 
     rus = RandomUnderSampler(random_state=42)
     enn = ENN()
     pipeline = make_pipeline(rus, enn, rus)
-    X_fit_sample_resampled, y_fit_sample_resampled = pipeline.fit_sample(X,y)
+    X_fit_sample_resampled, y_fit_sample_resampled = pipeline.fit_sample(X, y)
     pipeline = make_pipeline(rus, enn, rus)
-    pipeline.fit(X,y)
-    X_fit_then_sample_resampled, y_fit_then_sample_resampled = pipeline.sample(X,y)
-    assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_resampled)
-    assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_resampled)
+    pipeline.fit(X, y)
+    X_fit_then_sample_res, y_fit_then_sample_res = pipeline.sample(X, y)
+    assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_res)
+    assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_res)

@@ -1,13 +1,9 @@
 """Test the module neighbourhood cleaning rule."""
 from __future__ import print_function
 
-import os
-from collections import Counter
-
 import numpy as np
 from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.neighbors import NearestNeighbors
 
@@ -31,6 +27,7 @@ X = np.array([[1.57737838, 0.1997882],
               [-1.55581933, 1.09609604],
               [1.55157493, -1.6981518]])
 Y = np.array([1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
+
 
 def test_ncr_sk_estimator():
     """Test the sklearn estimator compatibility"""
@@ -109,7 +106,6 @@ def test_ncr_fit_sample_with_indices():
     # Resample the data
     ncr = NeighbourhoodCleaningRule(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = ncr.fit_sample(X, Y)
-
 
     X_gt = np.array([[-1.20809175, -1.49917302],
                      [-0.60497017, -0.66630228],

@@ -1,13 +1,9 @@
 """Test the module edited nearest neighbour."""
 from __future__ import print_function
 
-import os
-from collections import Counter
-
 import numpy as np
 from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.neighbors import NearestNeighbors
 
@@ -36,6 +32,7 @@ X = np.array([[2.59928271, 0.93323465],
               [0.15198585, 0.12512646],
               [0.70524765, 0.39816382]])
 Y = np.array([1, 2, 1, 1, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 1, 2, 1])
+
 
 def test_enn_sk_estimator():
     """Test the sklearn estimator compatibility"""

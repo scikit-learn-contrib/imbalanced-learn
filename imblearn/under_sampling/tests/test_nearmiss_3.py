@@ -1,13 +1,9 @@
 """Test the module nearmiss."""
 from __future__ import print_function
 
-import os
-from collections import Counter
-
 import numpy as np
 from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.neighbors import NearestNeighbors
 
@@ -130,6 +126,7 @@ def test_nm3_fit():
     assert_equal(nm3.stats_c_[0], 3)
     assert_equal(nm3.stats_c_[1], 5)
     assert_equal(nm3.stats_c_[2], 7)
+
 
 def test_nm3_sample_wt_fit():
     """Test either if an error is raised when sample is called before

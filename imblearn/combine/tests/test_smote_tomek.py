@@ -1,12 +1,9 @@
 """Test the module SMOTE ENN."""
 from __future__ import print_function
 
-import os
-
 import numpy as np
 from numpy.testing import (assert_array_almost_equal, assert_array_equal,
                            assert_equal, assert_raises, assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.combine import SMOTETomek

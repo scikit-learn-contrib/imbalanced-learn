@@ -119,7 +119,6 @@ def test_rus_fit_sample():
     rus = RandomUnderSampler(random_state=RND_SEED)
     X_resampled, y_resampled = rus.fit_sample(X, Y)
 
-
     X_gt = np.array([[0.92923648, 0.76103773],
                      [0.47104475, 0.44386323],
                      [0.13347175, 0.12167502],

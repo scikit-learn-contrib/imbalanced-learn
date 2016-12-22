@@ -1,13 +1,9 @@
 """Test the module repeated edited nearest neighbour."""
 from __future__ import print_function
 
-import os
-from collections import Counter
-
 import numpy as np
 from numpy.testing import (assert_array_almost_equal, assert_array_equal,
                            assert_equal, assert_raises, assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.neighbors import NearestNeighbors
 
@@ -102,6 +98,7 @@ def test_allknn_fit():
     assert_equal(allknn.stats_c_[1], 16)
     assert_equal(allknn.stats_c_[2], 20)
 
+
 def test_allknn_sample_wt_fit():
     """Test either if an error is raised when sample is called before
     fitting"""
@@ -157,7 +154,6 @@ def test_allknn_fit_sample_with_indices():
     # Resample the data
     allknn = AllKNN(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = allknn.fit_sample(X, Y)
-
 
     X_gt = np.array([[-0.53171468, -0.53735182],
                      [-0.88864036, -0.33782387],

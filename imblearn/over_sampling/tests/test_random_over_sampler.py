@@ -6,7 +6,6 @@ from collections import Counter
 import numpy as np
 from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.over_sampling import RandomOverSampler
@@ -148,15 +147,15 @@ def test_ros_fit_sample_half():
     X_resampled, y_resampled = ros.fit_sample(X, Y)
 
     X_gt = np.array([[0.04352327, -0.20515826],
-                  [0.20792588, 1.49407907],
-                  [0.22950086, 0.33367433],
-                  [0.15490546, 0.3130677],
-                  [0.09125309, -0.85409574],
-                  [0.12372842, 0.6536186],
-                  [0.094035, -2.55298982],
-                  [0.92923648, 0.76103773],
-                  [0.47104475, 0.44386323],
-                  [0.13347175, 0.12167502]])
+                     [0.20792588, 1.49407907],
+                     [0.22950086, 0.33367433],
+                     [0.15490546, 0.3130677],
+                     [0.09125309, -0.85409574],
+                     [0.12372842, 0.6536186],
+                     [0.094035, -2.55298982],
+                     [0.92923648, 0.76103773],
+                     [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502]])
     y_gt = np.array([1, 1, 1, 1, 1, 1, 1, 0, 0, 0])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
