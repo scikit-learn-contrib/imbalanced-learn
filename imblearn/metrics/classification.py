@@ -448,4 +448,6 @@ def geometric_mean_score(y_true, y_pred, labels=None, pos_label=1,
                                                             'specificity'),
                                                   sample_weight=sample_weight)
 
+    LOGGER.debug('The sensitivity and specificity are : %s - %s' % (sen, spe))
+
     return np.sqrt(sen * spe)

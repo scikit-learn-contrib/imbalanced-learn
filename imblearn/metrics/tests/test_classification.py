@@ -21,6 +21,7 @@ from sklearn.utils.validation import check_random_state
 from imblearn.metrics import sensitivity_specificity_support
 from imblearn.metrics import sensitivity_score
 from imblearn.metrics import specificity_score
+from imblearn.metrics import geometric_mean_score
 
 RND_SEED = 42
 
@@ -185,7 +186,7 @@ def test_sensitivity_specificity_unused_pos_label():
 
 
 def test_sensitivity_specificity_multiclass():
-    # Test Precision Recall and F1 Score for multiclass classification task
+    # Test sensitivity and specificity for multiclass classification task
     y_true, y_pred, _ = make_prediction(binary=False)
 
     # compute scores with default labels introspection
@@ -216,3 +217,29 @@ def test_sensitivity_specificity_multiclass():
     assert_array_almost_equal(spec, [0.92, 0.55, 0.86], 2)
     assert_array_almost_equal(sens, [0.79, 0.90, 0.10], 2)
     assert_array_equal(supp, [24, 20, 31])
+
+
+def test_geometric_mean_support_binary():
+    """Test the geometric mean for binary classification task"""
+    y_true, y_pred, _ = make_prediction(binary=True)
+
+    # compute the geometric mean for the binary problem
+    geo_mean = geometric_mean_score(y_true, y_pred)
+
+    assert_almost_equal(geo_mean, 0.77, 2)
+
+
+def test_geometric_mean_multiclass():
+    # Test geometric mean for multiclass classification task
+    y_true, y_pred, _ = make_prediction(binary=False)
+
+    # Compute the geometric mean for each of the classes
+    geo_mean = geometric_mean_score(y_true, y_pred, average=None)
+    assert_array_almost_equal(geo_mean, [0.85, 0.29, 0.7], 2)
+
+    # average tests
+    geo_mean = geometric_mean_score(y_true, y_pred, average='macro')
+    assert_almost_equal(geo_mean, 0.68, 2)
+
+    geo_mean = geometric_mean_score(y_true, y_pred, average='weighted')
+    assert_array_almost_equal(geo_mean, 0.65, 2)
