@@ -26,6 +26,10 @@ run_tests(){
     else
        nosetests -v -s $MODULE
     fi
+
+    # Test doc
+    cd $OLDPWD
+    make test-doc
 }
 
 if [[ "$RUN_FLAKE8" == "true" ]]; then
