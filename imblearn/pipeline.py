@@ -97,15 +97,8 @@ class Pipeline(pipeline.Pipeline):
     >>> knn = KNN()
     >>> pipeline = Pipeline([('smt', smt), ('pca', pca), ('knn', knn)])
     >>> X_train, X_test, y_train, y_test = tts(X, y, random_state=42)
-    >>> pipeline.fit(X_train, y_train) # doctest: +NORMALIZE_WHITESPACE
-    Pipeline(steps=[('smt', SMOTE(k=None, k_neighbors=5, kind='regular',
-    m=None, m_neighbors=10, n_jobs=1, out_step=0.5, random_state=42,
-    ratio='auto', svm_estimator=None)), ('pca', PCA(copy=True,
-    iterated_power='auto', n_components=None, random_state=None,
-    svd_solver='auto', tol=0.0, whiten=False)),
-    ('knn', KNeighborsClassifier(algorithm='auto', leaf_size=30,
-    metric='minkowski', metric_params=None, n_jobs=1, n_neighbors=5, p=2,
-    weights='uniform'))])
+    >>> pipeline.fit(X_train, y_train) # doctest: +ELLIPSIS
+    Pipeline(...)
     >>> y_hat = pipeline.predict(X_test)
     >>> print(classification_report(y_test, y_hat))
                  precision    recall  f1-score   support
