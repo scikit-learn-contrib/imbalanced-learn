@@ -1,3 +1,5 @@
+# coding: utf-8
+
 """Metrics to assess performance on classification task given class prediction
 
 Functions named as ``*_score`` return a scalar value to maximize: the higher
@@ -61,7 +63,7 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
 
     pos_label : str or int, optional (default=1)
         The class to report if ``average='binary'`` and the data is binary.
-        If the data are multiclass or multilabel, this will be ignored;
+        If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
@@ -202,22 +204,12 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     LOGGER.debug('Computed the necessary stats for the sensitivity and'
                  ' specificity')
 
-    LOGGER.debug(tp_sum)
-    LOGGER.debug(tn_sum)
-    LOGGER.debug(fp_sum)
-    LOGGER.debug(fn_sum)
-
     # Compute the sensitivity and specificity
     with np.errstate(divide='ignore', invalid='ignore'):
         sensitivity = _prf_divide(tp_sum, tp_sum + fn_sum, 'sensitivity',
                                   'tp + fn', average, warn_for)
         specificity = _prf_divide(tn_sum, tn_sum + fp_sum, 'specificity',
                                   'tn + fp', average, warn_for)
-
-    # sensitivity = [_prf_divide(tp, tp + fn, 'sensitivity', 'tp + fn', average,
-    #                            warn_for) for tp, fn in zip(tp_sum, fn_sum)]
-    # specificity = [_prf_divide(tn, tn + fp, 'specificity', 'tn + fp', average,
-    #                            warn_for) for tn, fp in zip(tn_sum, fp_sum)]
 
     # If we need to weight the results
     if average == 'weighted':
@@ -259,13 +251,11 @@ def sensitivity_score(y_true, y_pred, labels=None, pos_label=1,
         order if ``average is None``. Labels present in the data can be
         excluded, for example to calculate a multiclass average ignoring a
         majority negative class, while labels not present in the data will
-        result in 0 components in a macro average. For multilabel targets,
-        labels are column indices. By default, all labels in ``y_true`` and
-        ``y_pred`` are used in sorted order.
+        result in 0 components in a macro average.
 
     pos_label : str or int, optional (default=1)
         The class to report if ``average='binary'`` and the data is binary.
-        If the data are multiclass or multilabel, this will be ignored;
+        If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
@@ -331,13 +321,11 @@ def specificity_score(y_true, y_pred, labels=None, pos_label=1,
         order if ``average is None``. Labels present in the data can be
         excluded, for example to calculate a multiclass average ignoring a
         majority negative class, while labels not present in the data will
-        result in 0 components in a macro average. For multilabel targets,
-        labels are column indices. By default, all labels in ``y_true`` and
-        ``y_pred`` are used in sorted order.
+        result in 0 components in a macro average.
 
     pos_label : str or int, optional (default=1)
         The class to report if ``average='binary'`` and the data is binary.
-        If the data are multiclass or multilabel, this will be ignored;
+        If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
@@ -377,3 +365,87 @@ def specificity_score(y_true, y_pred, labels=None, pos_label=1,
                                               sample_weight=sample_weight)
 
     return s
+
+
+def geometric_mean_score(y_true, y_pred, labels=None, pos_label=1,
+                         average='binary', sample_weight=None):
+    """Compute the geometric mean
+
+    The geometric mean is the squared root of the product of the sensitivity
+    and specificity. This measure tries to maximize the accuracy on each
+    of the two classes while keeping these accuracies balanced.
+
+    The specificity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
+    of true positives and ``fn`` the number of false negatives. The specificity
+    is intuitively the ability of the classifier to find all the positive
+    samples.
+
+    The best value is 1 and the worst value is 0.
+
+    Parameters
+    ----------
+    y_true : ndarray, shape (n_samples, )
+        Ground truth (correct) target values.
+
+    y_pred : ndarray, shape (n_samples, )
+        Estimated targets as returned by a classifier.
+
+    labels : list, optional
+        The set of labels to include when ``average != 'binary'``, and their
+        order if ``average is None``. Labels present in the data can be
+        excluded, for example to calculate a multiclass average ignoring a
+        majority negative class, while labels not present in the data will
+        result in 0 components in a macro average.
+
+    pos_label : str or int, optional (default=1)
+        The class to report if ``average='binary'`` and the data is binary.
+        If the data are multiclass or multilabel, this will be ignored;
+        setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
+        scores for that label only.
+
+    average : str or None, optional (default=None)
+        If ``None``, the scores for each class are returned. Otherwise, this
+        determines the type of averaging performed on the data:
+
+        ``'binary'``:
+            Only report results for the class specified by ``pos_label``.
+            This is applicable only if targets (``y_{true,pred}``) are binary.
+        ``'macro'``:
+            Calculate metrics for each label, and find their unweighted
+            mean.  This does not take label imbalance into account.
+        ``'weighted'``:
+            Calculate metrics for each label, and find their average, weighted
+            by support (the number of true instances for each label). This
+            alters 'macro' to account for label imbalance.
+
+    warn_for : tuple or set, for internal use
+        This determines which warnings will be made in the case that this
+        function is being used to return only one of its metrics.
+
+    sample_weight : ndarray, shape (n_samples, )
+        Sample weights.
+
+    Returns
+    -------
+    geometric_mean : float (if ``average`` = None) or ndarray, \
+        shape (n_unique_labels, )
+
+    References
+    ----------
+    .. [1] Kubat, M. and Matwin, S. "Addressing the curse of
+       imbalanced training sets: one-sided selection" ICML (1997)
+
+    .. [2] Barandela, R., Sánchez, J. S., Garcıa, V., & Rangel, E. "Strategies
+       for learning in class imbalance problems", Pattern Recognition,
+       36(3), (2003), pp 849-851.
+
+    """
+    sen, spe, _ = sensitivity_specificity_support(y_true, y_pred,
+                                                  labels=labels,
+                                                  pos_label=pos_label,
+                                                  average=average,
+                                                  warn_for=('specificity',
+                                                            'specificity'),
+                                                  sample_weight=sample_weight)
+
+    return np.sqrt(sen * spe)
