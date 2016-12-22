@@ -16,11 +16,19 @@ clean:
 	rm -rf doc/modules
 	rm -rf examples/.ipynb_checkpoints
 
-test:
+test-code:
 	$(NOSETESTS) -s -v imblearn
 
-coverage:
+test-doc:
+ifeq ($(BITS),64)
+	$(NOSETESTS) -s -v doc/*.rst
+endif
+
+test-coverage:
+	rm -rf coverage .coverage
 	$(NOSETESTS) imblearn -s -v --with-coverage --cover-package=imblearn
+
+test: test-coverage test-doc
 
 html:
 	conda install -y sphinx sphinx_rtd_theme numpydoc
