@@ -26,6 +26,8 @@ else
    nosetests -v -s $MODULE
 fi
 
+ls -l
+
 if [[ "$RUN_FLAKE8" == "true" ]]; then
     source build_tools/travis/flake8_diff.sh
 fi
