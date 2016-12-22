@@ -28,3 +28,10 @@ html:
 
 conda:
 	conda-build conda-recipe
+
+code-analysis:
+	flake8 imblearn | grep -v __init__
+	pylint -E imblearn/ -d E1103,E0611,E1101
+
+flake8-diff:
+	./build_tools/travis/flake8_diff.sh
