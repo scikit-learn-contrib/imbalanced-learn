@@ -1,5 +1,4 @@
 # coding: utf-8
-
 """Metrics to assess performance on classification task given class prediction
 
 Functions named as ``*_score`` return a scalar value to maximize: the higher
@@ -20,12 +19,16 @@ from sklearn.metrics.classification import _check_targets, _prf_divide
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.fixes import bincount
 from sklearn.utils.multiclass import unique_labels
+from sklearn.utils.sparsefuncs import count_nonzero
 
 LOGGER = logging.getLogger(__name__)
 
 
-def sensitivity_specificity_support(y_true, y_pred, labels=None,
-                                    pos_label=1, average=None,
+def sensitivity_specificity_support(y_true,
+                                    y_pred,
+                                    labels=None,
+                                    pos_label=1,
+                                    average=None,
                                     warn_for=('sensitivity', 'specificity'),
                                     sample_weight=None):
     """Compute sensitivity, specificity, and support for each class
@@ -116,8 +119,7 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     """
     average_options = (None, 'micro', 'macro', 'weighted', 'samples')
     if average not in average_options and average != 'binary':
-        raise ValueError('average has to be one of ' +
-                         str(average_options))
+        raise ValueError('average has to be one of ' + str(average_options))
 
     y_type, y_true, y_pred = _check_targets(y_true, y_pred)
     present_labels = unique_labels(y_true, y_pred)
@@ -146,38 +148,14 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
         n_labels = None
     else:
         n_labels = len(labels)
-        labels = np.hstack([labels, np.setdiff1d(present_labels, labels,
-                                                 assume_unique=True)])
+        labels = np.hstack(
+            [labels, np.setdiff1d(
+                present_labels, labels, assume_unique=True)])
 
     # Calculate tp_sum, pred_sum, true_sum ###
 
     if y_type.startswith('multilabel'):
-        sum_axis = 1 if average == 'samples' else 0
-
-        # All labels are index integers for multilabel.
-        # Select labels:
-        if not np.all(labels == present_labels):
-            if np.max(labels) > np.max(present_labels):
-                raise ValueError('All labels must be in [0, n labels). '
-                                 'Got %d > %d' %
-                                 (np.max(labels), np.max(present_labels)))
-            if np.min(labels) < 0:
-                raise ValueError('All labels must be in [0, n labels). '
-                                 'Got %d < 0' % np.min(labels))
-
-            y_true = y_true[:, labels[:n_labels]]
-            y_pred = y_pred[:, labels[:n_labels]]
-
-        # calculate weighted counts
-        true_and_pred = y_true.multiply(y_pred)
-        tp_sum = count_nonzero(true_and_pred, axis=sum_axis,
-                               sample_weight=sample_weight)
-        pred_sum = count_nonzero(y_pred, axis=sum_axis,
-                                 sample_weight=sample_weight)
-        true_sum = count_nonzero(y_true, axis=sum_axis,
-                                 sample_weight=sample_weight)
-        tn_sum = y_true.size - (pred_sum + true_sum - tp_sum)
-
+        raise ValueError('imblearn does not support multilabel')
     elif average == 'samples':
         raise ValueError("Sample-based precision, recall, fscore is "
                          "not meaningful outside multilabel "
@@ -198,17 +176,17 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
             tp_bins_weights = None
 
         if len(tp_bins):
-            tp_sum = bincount(tp_bins, weights=tp_bins_weights,
-                              minlength=len(labels))
+            tp_sum = bincount(
+                tp_bins, weights=tp_bins_weights, minlength=len(labels))
         else:
             # Pathological case
             true_sum = pred_sum = tp_sum = np.zeros(len(labels))
         if len(y_pred):
-            pred_sum = bincount(y_pred, weights=sample_weight,
-                                minlength=len(labels))
+            pred_sum = bincount(
+                y_pred, weights=sample_weight, minlength=len(labels))
         if len(y_true):
-            true_sum = bincount(y_true, weights=sample_weight,
-                                minlength=len(labels))
+            true_sum = bincount(
+                y_true, weights=sample_weight, minlength=len(labels))
 
         # Compute the true negative
         tn_sum = y_true.size - (pred_sum + true_sum - tp_sum)
@@ -219,6 +197,11 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
         true_sum = true_sum[indices]
         pred_sum = pred_sum[indices]
         tn_sum = tn_sum[indices]
+
+        LOGGER.debug('tp: %s' % tp_sum)
+        LOGGER.debug('tn: %s' % tn_sum)
+        LOGGER.debug('pred_sum: %s' % pred_sum)
+        LOGGER.debug('true_sum: %s' % true_sum)
 
     if average == 'micro':
         tp_sum = np.array([tp_sum.sum()])
@@ -236,8 +219,8 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
         specificity = _prf_divide(tn_sum, tn_sum + pred_sum - tp_sum,
                                   'specificity', 'predicted', average,
                                   warn_for)
-        sensitivity = _prf_divide(tp_sum, true_sum,
-                                  'sensitivity', 'true', average, warn_for)
+        sensitivity = _prf_divide(tp_sum, true_sum, 'sensitivity', 'true',
+                                  average, warn_for)
 
     # Average the results
 
@@ -250,6 +233,9 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     else:
         weights = None
 
+    LOGGER.debug(specificity)
+    LOGGER.debug(weights)
+
     if average is not None:
         assert average != 'binary' or len(specificity) == 1
         specificity = np.average(specificity, weights=weights)
@@ -259,8 +245,12 @@ def sensitivity_specificity_support(y_true, y_pred, labels=None,
     return sensitivity, specificity, true_sum
 
 
-def sensitivity_score(y_true, y_pred, labels=None, pos_label=1,
-                      average='binary', sample_weight=None):
+def sensitivity_score(y_true,
+                      y_pred,
+                      labels=None,
+                      pos_label=1,
+                      average='binary',
+                      sample_weight=None):
     """Compute the sensitivity
 
     The sensitivity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
@@ -326,18 +316,24 @@ def sensitivity_score(y_true, y_pred, labels=None, pos_label=1,
         shape (n_unique_labels, )
 
     """
-    s, _, _ = sensitivity_specificity_support(y_true, y_pred,
-                                              labels=labels,
-                                              pos_label=pos_label,
-                                              average=average,
-                                              warn_for=('sensitivity',),
-                                              sample_weight=sample_weight)
+    s, _, _ = sensitivity_specificity_support(
+        y_true,
+        y_pred,
+        labels=labels,
+        pos_label=pos_label,
+        average=average,
+        warn_for=('sensitivity', ),
+        sample_weight=sample_weight)
 
     return s
 
 
-def specificity_score(y_true, y_pred, labels=None, pos_label=1,
-                      average='binary', sample_weight=None):
+def specificity_score(y_true,
+                      y_pred,
+                      labels=None,
+                      pos_label=1,
+                      average='binary',
+                      sample_weight=None):
     """Compute the specificity
 
     The specificity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
@@ -404,18 +400,24 @@ def specificity_score(y_true, y_pred, labels=None, pos_label=1,
         shape (n_unique_labels, )
 
     """
-    _, s, _ = sensitivity_specificity_support(y_true, y_pred,
-                                              labels=labels,
-                                              pos_label=pos_label,
-                                              average=average,
-                                              warn_for=('specificity',),
-                                              sample_weight=sample_weight)
+    _, s, _ = sensitivity_specificity_support(
+        y_true,
+        y_pred,
+        labels=labels,
+        pos_label=pos_label,
+        average=average,
+        warn_for=('specificity', ),
+        sample_weight=sample_weight)
 
     return s
 
 
-def geometric_mean_score(y_true, y_pred, labels=None, pos_label=1,
-                         average='binary', sample_weight=None):
+def geometric_mean_score(y_true,
+                         y_pred,
+                         labels=None,
+                         pos_label=1,
+                         average='binary',
+                         sample_weight=None):
     """Compute the geometric mean
 
     The geometric mean is the squared root of the product of the sensitivity
@@ -495,13 +497,14 @@ def geometric_mean_score(y_true, y_pred, labels=None, pos_label=1,
        36(3), (2003), pp 849-851.
 
     """
-    sen, spe, _ = sensitivity_specificity_support(y_true, y_pred,
-                                                  labels=labels,
-                                                  pos_label=pos_label,
-                                                  average=average,
-                                                  warn_for=('specificity',
-                                                            'specificity'),
-                                                  sample_weight=sample_weight)
+    sen, spe, _ = sensitivity_specificity_support(
+        y_true,
+        y_pred,
+        labels=labels,
+        pos_label=pos_label,
+        average=average,
+        warn_for=('specificity', 'specificity'),
+        sample_weight=sample_weight)
 
     LOGGER.debug('The sensitivity and specificity are : %s - %s' % (sen, spe))
 
