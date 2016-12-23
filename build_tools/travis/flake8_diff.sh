@@ -113,29 +113,9 @@ echo -e '\nRunning flake8 on the diff in the range' "$COMMIT_RANGE" \
      "($(git rev-list $COMMIT_RANGE | wc -l) commit(s)):"
 echo '--------------------------------------------------------------------------------'
 
-# We ignore files from sklearn/externals. Unfortunately there is no
-# way to do it with flake8 directly (the --exclude does not seem to
-# work with --diff). We could use the exclude magic in the git pathspec
-# ':!sklearn/externals' but it is only available on git 1.9 and Travis
-# uses git 1.8.
-# We need the following command to exit with 0 hence the echo in case
-# there is no match
-MODIFIED_FILES="$(git diff --name-only $COMMIT_RANGE | grep -v 'doc' \
-                     || echo "no_match")"
-check_files() {
-    files="$1"
-    options="$2"
-    # Conservative approach: diff without context (--unified=0) so that code
-    # that was not changed does not create failures
-    git diff --unified=0 $COMMIT_RANGE -- $files | flake8 --diff --show-source $options
-}
-
-if [[ "$MODIFIED_FILES" == "no_match" ]]; then
-    echo "No file outside doc has been modified"
-else
-    check_files "$(echo "$MODIFIED_FILES" | grep -v ^examples)"
-    # Examples are allowed to not have imports at top of file
-    check_files "$(echo "$MODIFIED_FILES" | grep ^examples)" --ignore=E402
-fi
+# Check the imblearn folder
+git diff --unified=0 $COMMIT_RANGE -- 'imblearn' | flake8 --diff --show-source
+# Check the example folder
+git diff --unified=0 $COMMIT_RANGE -- 'examples' | flake8 --diff --show-source --ignore=E402
 
 echo -e "No problem detected by flake8\n"
