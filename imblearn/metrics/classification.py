@@ -536,6 +536,7 @@ def make_indexed_balanced_accuracy(alpha=0.1, squared=True):
     >>> print(gmean(y_true, y_pred, average=None))
     [ 0.44444444  0.44444444]
     """
+
     def decorate(scoring_func):
         @functools.wraps(scoring_func)
         def compute_score(*args, **kwargs):
@@ -551,14 +552,20 @@ def make_indexed_balanced_accuracy(alpha=0.1, squared=True):
             average = kwargs.get('average', 'binary')
             sample_weight = kwargs.get('sample_weight', None)
             # Compute the sensitivity and specificity
-            dict_sen_spe = {'labels': labels, 'pos_label': pos_label,
-                            'average': average, 'sample_weight': sample_weight}
+            dict_sen_spe = {
+                'labels': labels,
+                'pos_label': pos_label,
+                'average': average,
+                'sample_weight': sample_weight
+            }
             sen, spe, _ = sensitivity_specificity_support(*args,
                                                           **dict_sen_spe)
             # Compute the dominance
             dom = sen - spe
             return (1. + alpha * dom) * _score
+
         return compute_score
+
     return decorate
 
 
@@ -625,8 +632,7 @@ def classification_report_imbalanced(y_true,
     name_width = max(len(cn) for cn in target_names)
     width = max(name_width, len(last_line_heading), digits)
 
-    headers = ["pre", "rec", "spe", "f1",
-               "geo", "iba",  "sup"]
+    headers = ["pre", "rec", "spe", "f1", "geo", "iba", "sup"]
     fmt = '%% %ds' % width  # first column: class name
     fmt += '  '
     fmt += ' '.join(['% 9s' for _ in headers])
@@ -639,26 +645,39 @@ def classification_report_imbalanced(y_true,
     # Compute the different metrics
     # Precision/recall/f1
     precision, recall, f1, support = precision_recall_fscore_support(
-        y_true, y_pred,
+        y_true,
+        y_pred,
         labels=labels,
         average=None,
         sample_weight=sample_weight)
     # Specificity
-    specificity = specificity_score(y_true, y_pred, labels=labels,
-                                    average=None, sample_weight=sample_weight)
+    specificity = specificity_score(
+        y_true,
+        y_pred,
+        labels=labels,
+        average=None,
+        sample_weight=sample_weight)
     # Geometric mean
-    geo_mean = geometric_mean_score(y_pred, y_true, labels=labels,
-                                    average=None, sample_weight=sample_weight)
+    geo_mean = geometric_mean_score(
+        y_pred,
+        y_true,
+        labels=labels,
+        average=None,
+        sample_weight=sample_weight)
     # Indexed balanced accuracy
-    iba_gmean = make_indexed_balanced_accuracy(alpha=alpha, squared=True)(
-        geometric_mean_score)
-    iba = iba_gmean(y_pred, y_true, labels=labels, average=None,
-                    sample_weight=sample_weight)
+    iba_gmean = make_indexed_balanced_accuracy(
+        alpha=alpha, squared=True)(geometric_mean_score)
+    iba = iba_gmean(
+        y_pred,
+        y_true,
+        labels=labels,
+        average=None,
+        sample_weight=sample_weight)
 
     for i, label in enumerate(labels):
         values = [target_names[i]]
-        for v in (precision[i], recall[i], specificity[i],
-                  f1[i], geo_mean[i], iba[i]):
+        for v in (precision[i], recall[i], specificity[i], f1[i], geo_mean[i],
+                  iba[i]):
             values += ["{0:0.{1}f}".format(v, digits)]
         values += ["{0}".format(support[i])]
         report += fmt % tuple(values)
@@ -667,12 +686,13 @@ def classification_report_imbalanced(y_true,
 
     # compute averages
     values = [last_line_heading]
-    for v in (np.average(precision, weights=support),
-              np.average(recall, weights=support),
-              np.average(specificity, weights=support),
-              np.average(f1, weights=support),
-              np.average(geo_mean, weights=support),
-              np.average(iba, weights=support)):
+    for v in (np.average(
+            precision, weights=support), np.average(
+                recall, weights=support), np.average(
+                    specificity, weights=support), np.average(
+                        f1, weights=support), np.average(
+                            geo_mean, weights=support), np.average(
+                                iba, weights=support)):
         values += ["{0:0.{1}f}".format(v, digits)]
     values += ['{0}'.format(np.sum(support))]
     report += fmt % tuple(values)

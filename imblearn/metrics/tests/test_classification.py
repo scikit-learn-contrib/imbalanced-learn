@@ -2,8 +2,6 @@
 
 from __future__ import division, print_function
 
-import re
-
 from functools import partial
 
 import numpy as np
