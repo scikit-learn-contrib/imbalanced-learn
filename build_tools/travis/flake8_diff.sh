@@ -120,7 +120,8 @@ echo '--------------------------------------------------------------------------
 # uses git 1.8.
 # We need the following command to exit with 0 hence the echo in case
 # there is no match
-MODIFIED_FILES="$(git diff --name-only $COMMIT_RANGE || echo "no_match")"
+MODIFIED_FILES="$(git diff --name-only $COMMIT_RANGE | grep -v 'doc'
+                       || echo "no_match")"
 
 check_files() {
     files="$1"
@@ -130,8 +131,12 @@ check_files() {
     git diff --unified=0 $COMMIT_RANGE -- $files | flake8 --diff --show-source $options
 }
 
-check_files "$(echo "$MODIFIED_FILES" | grep -v ^examples)"
-# Examples are allowed to not have imports at top of file
-check_files "$(echo "$MODIFIED_FILES" | grep ^examples)" --ignore=E402
+if [[ "$MODIFIED_FILES" == "no_match" ]]; then
+    echo "No file outside doc has been modified"
+else
+    check_files "$(echo "$MODIFIED_FILES" | grep -v ^examples)"
+    # Examples are allowed to not have imports at top of file
+    check_files "$(echo "$MODIFIED_FILES" | grep ^examples)" --ignore=E402
+fi
 
 echo -e "No problem detected by flake8\n"
