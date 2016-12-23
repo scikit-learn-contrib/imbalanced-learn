@@ -547,7 +547,7 @@ def indexed_balanced_accuracy_score(score_func,
        analysis of a performance measure for imbalanced data" ICPR (2010)
     """
 
-    score = score_func(**kwargs)
+    score = score_func(y_true, y_pred, **kwargs)
 
     if squared:
         score = np.power(score, 2)

@@ -22,6 +22,7 @@ from imblearn.metrics import sensitivity_specificity_support
 from imblearn.metrics import sensitivity_score
 from imblearn.metrics import specificity_score
 from imblearn.metrics import geometric_mean_score
+from imblearn.metrics import indexed_balanced_accuracy_score
 
 RND_SEED = 42
 
@@ -232,3 +233,13 @@ def test_geometric_mean_multiclass():
 
     geo_mean = geometric_mean_score(y_true, y_pred, average='weighted')
     assert_array_almost_equal(geo_mean, 0.65, 2)
+
+
+def test_iba_geo_mean_binary():
+    """Test to test the iba using the geometric mean"""
+    y_true, y_pred, _ = make_prediction(binary=True)
+
+    iba = indexed_balanced_accuracy_score(
+        geometric_mean_score, y_true, y_pred, alpha=0.5, squared=True)
+
+    assert_almost_equal(iba, 0.54, 2)
