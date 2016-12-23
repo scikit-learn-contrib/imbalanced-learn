@@ -12,10 +12,12 @@ from __future__ import division
 
 import warnings
 import logging
+import functools
 
 import numpy as np
 
-from sklearn.metrics.classification import _check_targets, _prf_divide
+from sklearn.metrics.classification import (_check_targets, _prf_divide,
+                                            precision_recall_fscore_support)
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.fixes import bincount
 from sklearn.utils.multiclass import unique_labels
@@ -502,29 +504,15 @@ def geometric_mean_score(y_true,
     return np.sqrt(sen * spe)
 
 
-def indexed_balanced_accuracy_score(score_func,
-                                    y_true,
-                                    y_pred,
-                                    alpha=0.1,
-                                    squared=True,
-                                    **kwargs):
-    """ Compute the indexed balanced accuracy of a scoring function
+def make_indexed_balanced_accuracy(alpha=0.1, squared=True):
+    """Balance any scoring function using the indexed balanced accuracy
 
-    The indexed balanced accuracy (IBA) tends to weight a scoring function
-    to take into account the imbalancing of the data.
+    This factory function wraps scoring function to express it as the
+    indexed balanced accuracy (IBA). You need to use this function to
+    decorate any scoring function.
 
     Parameters
     ----------
-    score_func : callable,
-        Score function (or loss function) with signature
-        ``score_func(y, y_pred, **kwargs)``.
-
-    y_true : ndarray, shape (n_samples, )
-        Ground truth (correct) target values.
-
-    y_pred : ndarray, shape (n_samples, )
-        Estimated targets as returned by a classifier.
-
     alpha : float, optional (default=0.1)
         Weighting factor.
 
@@ -532,39 +520,160 @@ def indexed_balanced_accuracy_score(score_func,
         If ``squared`` is True, then the metric computed will be squared
         before to be weighted.
 
-    **kwargs : additional arguments
-        Additional parameters to be passed to score_func.
+    Returns
+    -------
+    iba_scoring_func : callable,
+        Returns the scoring metric decorated which will automatically compute
+        the indexed balanced accuracy.
+
+    Examples
+    --------
+    >>> from imblearn.metrics import geometric_mean_score as gmean
+    >>> from imblearn.metrics import make_indexed_balanced_accuracy as iba
+    >>> gmean = iba(alpha=0.1, squared=True)(gmean)
+    >>> y_true = [1, 0, 0, 1, 0, 1]
+    >>> y_pred = [0, 0, 1, 1, 0, 1]
+    >>> print(gmean(y_true, y_pred, average=None))
+    [ 0.44444444  0.44444444]
+    """
+    def decorate(scoring_func):
+        @functools.wraps(scoring_func)
+        def compute_score(*args, **kwargs):
+            # Compute the score from the scoring function
+            _score = scoring_func(*args, **kwargs)
+            # Square if desired
+            if squared:
+                _score = np.power(_score, 2)
+            # args will contain the y_pred and y_true
+            # kwargs will contain the other parameters
+            labels = kwargs.get('labels', None)
+            pos_label = kwargs.get('pos_label', 1)
+            average = kwargs.get('average', 'binary')
+            sample_weight = kwargs.get('sample_weight', None)
+            # Compute the sensitivity and specificity
+            dict_sen_spe = {'labels': labels, 'pos_label': pos_label,
+                            'average': average, 'sample_weight': sample_weight}
+            sen, spe, _ = sensitivity_specificity_support(*args,
+                                                          **dict_sen_spe)
+            # Compute the dominance
+            dom = sen - spe
+            return (1. + alpha * dom) * _score
+        return compute_score
+    return decorate
+
+
+def classification_report_imbalanced(y_true,
+                                     y_pred,
+                                     labels=None,
+                                     target_names=None,
+                                     sample_weight=None,
+                                     digits=2,
+                                     alpha=0.1):
+    """Build a classification report based on metrics used with imbalanced
+    dataset
+
+    Specific metrics have been proposed to evaluate the classification
+    performed on imbalanced dataset. This report compiles the
+    state-of-the-art metrics: precision/recall/specificity, geometric
+    mean, and indexed balanced accuracy of the
+    geometric mean.
+
+    Parameters
+    ----------
+    y_true : ndarray, shape (n_samples, )
+        Ground truth (correct) target values.
+
+    y_pred : ndarray, shape (n_samples, )
+        Estimated targets as returned by a classifier.
+
+    labels : list, optional
+        The set of labels to include when ``average != 'binary'``, and their
+        order if ``average is None``. Labels present in the data can be
+        excluded, for example to calculate a multiclass average ignoring a
+        majority negative class, while labels not present in the data will
+        result in 0 components in a macro average.
+
+    target_names : list of strings, optional
+        Optional display names matching the labels (same order).
+
+    sample_weight : ndarray, shape (n_samples, )
+        Sample weights.
+
+    digits : int, optional (default=2)
+        Number of digits for formatting output floating point values
+
+    alpha : float, optional (default=0.1)
+        Weighting factor.
 
     Returns
     -------
-    iba : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    report : string
+        Text summary of the precision, recall, specificity, geometric mean,
+        and indexed balanced accuracy.
 
-    References
-    ----------
-    .. [1] Garcia, V. and Mollineda, R.A. and Sanchez, J.S. "Theoretical
-       analysis of a performance measure for imbalanced data" ICPR (2010)
     """
 
-    score = score_func(y_true, y_pred, **kwargs)
+    if labels is None:
+        labels = unique_labels(y_true, y_pred)
+    else:
+        labels = np.asarray(labels)
 
-    if squared:
-        score = np.power(score, 2)
+    last_line_heading = 'avg / total'
 
-    # Pop the arguments to have the proper average, etc. for the
-    # sensitivity and specificity
-    labels = kwargs.get('labels', None)
-    pos_label = kwargs.get('pos_label', 1)
-    average = kwargs.get('average', 'binary')
-    sample_weight = kwargs.get('sample_weight', None)
+    if target_names is None:
+        target_names = ['%s' % l for l in labels]
+    name_width = max(len(cn) for cn in target_names)
+    width = max(name_width, len(last_line_heading), digits)
 
-    # Compute the sensitivity and specificity
-    sen = sensitivity_score(y_true, y_pred, labels, pos_label, average,
-                            sample_weight)
-    spe = specificity_score(y_true, y_pred, labels, pos_label, average,
-                            sample_weight)
+    headers = ["pre", "rec", "spe", "f1",
+               "geo", "iba",  "sup"]
+    fmt = '%% %ds' % width  # first column: class name
+    fmt += '  '
+    fmt += ' '.join(['% 9s' for _ in headers])
+    fmt += '\n'
 
-    # Compute the dominance
-    dom = sen - spe
+    headers = [""] + headers
+    report = fmt % tuple(headers)
+    report += '\n'
 
-    return (1. + alpha * dom) * score
+    # Compute the different metrics
+    # Precision/recall/f1
+    precision, recall, f1, support = precision_recall_fscore_support(
+        y_true, y_pred,
+        labels=labels,
+        average=None,
+        sample_weight=sample_weight)
+    # Specificity
+    specificity = specificity_score(y_true, y_pred, labels=labels,
+                                    average=None, sample_weight=sample_weight)
+    # Geometric mean
+    geo_mean = geometric_mean_score(y_pred, y_true, labels=labels,
+                                    average=None, sample_weight=sample_weight)
+    # Indexed balanced accuracy
+    iba_gmean = make_indexed_balanced_accuracy(alpha=alpha, squared=True)(
+        geometric_mean_score)
+    iba = iba_gmean(y_pred, y_true, labels=labels, average=None,
+                    sample_weight=sample_weight)
+
+    for i, label in enumerate(labels):
+        values = [target_names[i]]
+        for v in (precision[i], recall[i], specificity[i],
+                  f1[i], geo_mean[i], iba[i]):
+            values += ["{0:0.{1}f}".format(v, digits)]
+        values += ["{0}".format(support[i])]
+        report += fmt % tuple(values)
+
+    report += '\n'
+
+    # compute averages
+    values = [last_line_heading]
+    for v in (np.average(precision, weights=support),
+              np.average(recall, weights=support),
+              np.average(specificity, weights=support),
+              np.average(f1, weights=support),
+              np.average(geo_mean, weights=support),
+              np.average(iba, weights=support)):
+        values += ["{0:0.{1}f}".format(v, digits)]
+    values += ['{0}'.format(np.sum(support))]
+    report += fmt % tuple(values)
+    return report

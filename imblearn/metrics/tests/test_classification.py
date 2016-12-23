@@ -2,6 +2,8 @@
 
 from __future__ import division, print_function
 
+import re
+
 from functools import partial
 
 import numpy as np
@@ -15,14 +17,16 @@ from sklearn import datasets
 from sklearn import svm
 
 from sklearn.preprocessing import label_binarize
-from sklearn.utils.testing import assert_not_equal
+from sklearn.utils.fixes import np_version
+from sklearn.utils.testing import assert_not_equal, assert_raise_message
 from sklearn.utils.validation import check_random_state
 
 from imblearn.metrics import sensitivity_specificity_support
 from imblearn.metrics import sensitivity_score
 from imblearn.metrics import specificity_score
 from imblearn.metrics import geometric_mean_score
-from imblearn.metrics import indexed_balanced_accuracy_score
+from imblearn.metrics import make_indexed_balanced_accuracy
+from imblearn.metrics import classification_report_imbalanced
 
 RND_SEED = 42
 
@@ -79,7 +83,7 @@ def make_prediction(dataset=None, binary=False):
 
 
 def test_sensitivity_specificity_score_binary():
-    # Test Sensitivity Specificity for binary classification task
+    """Test Sensitivity Specificity for binary classification task"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
     # detailed measures for each class
@@ -103,8 +107,8 @@ def test_sensitivity_specificity_score_binary():
 
 
 def test_sensitivity_specificity_f_binary_single_class():
-    # Test sensitivity and specificity behave with a single positive or
-    # negative class
+    """Test sensitivity and specificity behave with a single positive or
+    negative class"""
     # Such a case may occur with non-stratified cross-validation
     assert_equal(1., sensitivity_score([1, 1], [1, 1]))
     assert_equal(0., specificity_score([1, 1], [1, 1]))
@@ -115,7 +119,7 @@ def test_sensitivity_specificity_f_binary_single_class():
 
 @ignore_warnings
 def test_sensitivity_specificity_extra_labels():
-    # Test handling of explicit additional (not in input) labels to SS
+    """Test handling of explicit additional (not in input) labels to SS"""
     y_true = [1, 3, 3, 2]
     y_pred = [1, 1, 3, 2]
 
@@ -142,7 +146,7 @@ def test_sensitivity_specificity_extra_labels():
 
 @ignore_warnings
 def test_sensitivity_specificity_ignored_labels():
-    # Test a subset of labels may be requested for SS
+    """Test a subset of labels may be requested for SS"""
     y_true = [1, 1, 2, 3]
     y_pred = [1, 3, 3, 3]
 
@@ -166,7 +170,7 @@ def test_sensitivity_specificity_ignored_labels():
 
 
 def test_sensitivity_specificity_error_multilabels():
-    # Test either if an error is raised when the input are multilabels
+    """Test either if an error is raised when the input are multilabels"""
     y_true = [1, 3, 3, 2]
     y_pred = [1, 1, 3, 2]
     y_true_bin = label_binarize(y_true, classes=np.arange(5))
@@ -177,6 +181,7 @@ def test_sensitivity_specificity_error_multilabels():
 
 @ignore_warnings
 def test_sensitivity_specificity_support_errors():
+    """Test either if an error is raised depending on parameters"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
     # Bad pos_label
@@ -196,8 +201,8 @@ def test_sensitivity_specificity_support_errors():
 
 
 def test_sensitivity_specificity_unused_pos_label():
-    # Check warning that pos_label unused when set to non-default value
-    # but average != 'binary'; even if data is binary.
+    """Check warning that pos_label unused when set to non-default value
+    # but average != 'binary'; even if data is binary"""
     assert_warns_message(
         UserWarning,
         "Note that pos_label (set to 2) is "
@@ -220,7 +225,7 @@ def test_geometric_mean_support_binary():
 
 
 def test_geometric_mean_multiclass():
-    # Test geometric mean for multiclass classification task
+    """Test geometric mean for multiclass classification task"""
     y_true, y_pred, _ = make_prediction(binary=False)
 
     # Compute the geometric mean for each of the classes
@@ -239,7 +244,137 @@ def test_iba_geo_mean_binary():
     """Test to test the iba using the geometric mean"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
-    iba = indexed_balanced_accuracy_score(
-        geometric_mean_score, y_true, y_pred, alpha=0.5, squared=True)
+    iba_gmean = make_indexed_balanced_accuracy(alpha=0.5, squared=True)(
+        geometric_mean_score)
+    iba = iba_gmean(y_true, y_pred)
 
     assert_almost_equal(iba, 0.54, 2)
+
+def _format_report(report):
+    """Private function to reformat the report for testing"""
+
+    return ' '.join(report.split())
+
+
+def test_classification_report_imbalanced_multiclass():
+    """Test classification report for multiclass problem"""
+    iris = datasets.load_iris()
+    y_true, y_pred, _ = make_prediction(dataset=iris, binary=False)
+
+    # print classification report with class names
+    expected_report = ("pre rec spe f1 geo iba sup setosa 0.83 0.79 0.92 0.81 "
+                       "0.86 0.72 24 versicolor 0.33 0.10 0.86 0.15 0.44 "
+                       "0.08 31 virginica 0.42 0.90 0.55 0.57 0.63 0.51 20 "
+                       "avg / total 0.51 0.53 0.80 0.47 0.62 0.40 75")
+
+    report = classification_report_imbalanced(
+        y_true, y_pred, labels=np.arange(len(iris.target_names)),
+        target_names=iris.target_names)
+    assert_equal(_format_report(report), expected_report)
+    # print classification report with label detection
+    expected_report = ("pre rec spe f1 geo iba sup 0 0.83 0.79 0.92 0.81 "
+                       "0.86 0.72 24 1 0.33 0.10 0.86 0.15 0.44 0.08 31 2 "
+                       "0.42 0.90 0.55 0.57 0.63 0.51 20 avg / total 0.51 "
+                       "0.53 0.80 0.47 0.62 0.40 75")
+
+    report = classification_report_imbalanced(y_true, y_pred)
+    assert_equal(_format_report(report), expected_report)
+
+
+def test_classification_report_imbalanced_multiclass_with_digits():
+    """Test performance report with added digits in floating point values"""
+    iris = datasets.load_iris()
+    y_true, y_pred, _ = make_prediction(dataset=iris, binary=False)
+
+    # print classification report with class names
+    expected_report = ("pre rec spe f1 geo iba sup setosa 0.82609 0.79167 "
+                       "0.92157 0.80851 0.86409 0.72010 24 versicolor 0.33333 "
+                       "0.09677 0.86364 0.15000 0.43809 0.07717 31 virginica "
+                       "0.41860 0.90000 0.54545 0.57143 0.62645 0.50831 20 "
+                       "avg / total 0.51375 0.53333 0.79733 0.47310 0.62464 "
+                       "0.39788 75")
+    report = classification_report_imbalanced(
+        y_true, y_pred, labels=np.arange(len(iris.target_names)),
+        target_names=iris.target_names, digits=5)
+    assert_equal(_format_report(report), expected_report)
+    # print classification report with label detection
+    expected_report = ("pre rec spe f1 geo iba sup 0 0.83 0.79 0.92 0.81 "
+                       "0.86 0.72 24 1 0.33 0.10 0.86 0.15 0.44 0.08 31 "
+                       "2 0.42 0.90 0.55 0.57 0.63 0.51 20 "
+                       "avg / total 0.51 0.53 0.80 0.47 0.62 0.40 75")
+    report = classification_report_imbalanced(y_true, y_pred)
+    assert_equal(_format_report(report), expected_report)
+
+
+def test_classification_report_imbalanced_multiclass_with_string_label():
+    """Test the report with string label"""
+    y_true, y_pred, _ = make_prediction(binary=False)
+
+    y_true = np.array(["blue", "green", "red"])[y_true]
+    y_pred = np.array(["blue", "green", "red"])[y_pred]
+
+    expected_report = """\
+             precision    recall  f1-score   support
+       blue       0.83      0.79      0.81        24
+      green       0.33      0.10      0.15        31
+        red       0.42      0.90      0.57        20
+avg / total       0.51      0.53      0.47        75
+"""
+    report = classification_report_imbalanced(y_true, y_pred)
+    assert_equal(report, expected_report)
+
+    expected_report = """\
+             precision    recall  f1-score   support
+          a       0.83      0.79      0.81        24
+          b       0.33      0.10      0.15        31
+          c       0.42      0.90      0.57        20
+avg / total       0.51      0.53      0.47        75
+"""
+    report = classification_report_imbalanced(y_true, y_pred,
+                                   target_names=["a", "b", "c"])
+    assert_equal(report, expected_report)
+
+
+def test_classification_report_imbalanced_multiclass_with_unicode_label():
+    """Test classification report with unicode label"""
+    y_true, y_pred, _ = make_prediction(binary=False)
+
+    labels = np.array([u"blue\xa2", u"green\xa2", u"red\xa2"])
+    y_true = labels[y_true]
+    y_pred = labels[y_pred]
+
+    expected_report = u"""\
+             precision    recall  f1-score   support
+      blue\xa2       0.83      0.79      0.81        24
+     green\xa2       0.33      0.10      0.15        31
+       red\xa2       0.42      0.90      0.57        20
+avg / total       0.51      0.53      0.47        75
+"""
+    if np_version[:3] < (1, 7, 0):
+        expected_message = ("NumPy < 1.7.0 does not implement"
+                            " searchsorted on unicode data correctly.")
+        assert_raise_message(RuntimeError, expected_message,
+                             classification_report_imbalanced, y_true, y_pred)
+    else:
+        report = classification_report_imbalanced(y_true, y_pred)
+        assert_equal(report, expected_report)
+
+
+def test_classification_report_imbalanced_multiclass_with_long_string_label():
+    """Test classification report with long string label"""
+    y_true, y_pred, _ = make_prediction(binary=False)
+
+    labels = np.array(["blue", "green"*5, "red"])
+    y_true = labels[y_true]
+    y_pred = labels[y_pred]
+
+    expected_report = """\
+                           precision    recall  f1-score   support
+                     blue       0.83      0.79      0.81        24
+greengreengreengreengreen       0.33      0.10      0.15        31
+                      red       0.42      0.90      0.57        20
+              avg / total       0.51      0.53      0.47        75
+"""
+
+    report = classification_report_imbalanced(y_true, y_pred)
+    assert_equal(report, expected_report)
