@@ -6,7 +6,6 @@ from collections import Counter
 import numpy as np
 from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.over_sampling import RandomOverSampler
@@ -14,16 +13,11 @@ from imblearn.over_sampling import RandomOverSampler
 # Generate a global dataset to use
 RND_SEED = 0
 # Data generated for the toy example
-X = np.array([[0.04352327, -0.20515826],
-              [0.92923648, 0.76103773],
-              [0.20792588, 1.49407907],
-              [0.47104475, 0.44386323],
-              [0.22950086, 0.33367433],
-              [0.15490546, 0.3130677],
-              [0.09125309, -0.85409574],
-              [0.12372842, 0.6536186],
-              [0.13347175, 0.12167502],
-              [0.094035, -2.55298982]])
+X = np.array([[0.04352327, -0.20515826], [0.92923648, 0.76103773],
+              [0.20792588, 1.49407907], [0.47104475, 0.44386323],
+              [0.22950086, 0.33367433], [0.15490546, 0.3130677],
+              [0.09125309, -0.85409574], [0.12372842, 0.6536186],
+              [0.13347175, 0.12167502], [0.094035, -2.55298982]])
 Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 
@@ -120,20 +114,13 @@ def test_ros_fit_sample():
     ros = RandomOverSampler(random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_sample(X, Y)
 
-    X_gt = np.array([[0.04352327, -0.20515826],
-                     [0.20792588, 1.49407907],
-                     [0.22950086, 0.33367433],
-                     [0.15490546, 0.3130677],
-                     [0.09125309, -0.85409574],
-                     [0.12372842, 0.6536186],
-                     [0.094035, -2.55298982],
-                     [0.92923648, 0.76103773],
-                     [0.47104475, 0.44386323],
-                     [0.13347175, 0.12167502],
-                     [0.92923648, 0.76103773],
-                     [0.47104475, 0.44386323],
-                     [0.92923648, 0.76103773],
-                     [0.47104475, 0.44386323]])
+    X_gt = np.array([[0.04352327, -0.20515826], [0.20792588, 1.49407907],
+                     [0.22950086, 0.33367433], [0.15490546, 0.3130677],
+                     [0.09125309, -0.85409574], [0.12372842, 0.6536186],
+                     [0.094035, -2.55298982], [0.92923648, 0.76103773],
+                     [0.47104475, 0.44386323], [0.13347175, 0.12167502],
+                     [0.92923648, 0.76103773], [0.47104475, 0.44386323],
+                     [0.92923648, 0.76103773], [0.47104475, 0.44386323]])
     y_gt = np.array([1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
@@ -147,16 +134,11 @@ def test_ros_fit_sample_half():
     ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_sample(X, Y)
 
-    X_gt = np.array([[0.04352327, -0.20515826],
-                  [0.20792588, 1.49407907],
-                  [0.22950086, 0.33367433],
-                  [0.15490546, 0.3130677],
-                  [0.09125309, -0.85409574],
-                  [0.12372842, 0.6536186],
-                  [0.094035, -2.55298982],
-                  [0.92923648, 0.76103773],
-                  [0.47104475, 0.44386323],
-                  [0.13347175, 0.12167502]])
+    X_gt = np.array([[0.04352327, -0.20515826], [0.20792588, 1.49407907],
+                     [0.22950086, 0.33367433], [0.15490546, 0.3130677],
+                     [0.09125309, -0.85409574], [0.12372842, 0.6536186],
+                     [0.094035, -2.55298982], [0.92923648, 0.76103773],
+                     [0.47104475, 0.44386323], [0.13347175, 0.12167502]])
     y_gt = np.array([1, 1, 1, 1, 1, 1, 1, 0, 0, 0])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
@@ -169,8 +151,8 @@ def test_sample_wrong_X():
     # Create the object
     ros = RandomOverSampler(random_state=RND_SEED)
     ros.fit(X, Y)
-    assert_raises(RuntimeError, ros.sample, np.random.random((100, 40)),
-                  np.array([0] * 50 + [1] * 50))
+    assert_raises(RuntimeError, ros.sample,
+                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
 
 
 def test_continuous_error():

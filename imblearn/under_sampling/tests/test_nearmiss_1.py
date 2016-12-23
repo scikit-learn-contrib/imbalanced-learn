@@ -1,13 +1,9 @@
 """Test the module nearmiss."""
 from __future__ import print_function
 
-import os
-from collections import Counter
-
 import numpy as np
 from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
                            assert_warns)
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.neighbors import NearestNeighbors
 
@@ -15,20 +11,13 @@ from imblearn.under_sampling import NearMiss
 
 # Generate a global dataset to use
 RND_SEED = 0
-X = np.array([[1.17737838, -0.2002118],
-              [0.4960075, 0.86130762],
-              [-0.05903827, 0.10947647],
-              [0.91464286, 1.61369212],
-              [-0.54619583, 1.73009918],
-              [-0.60413357, 0.24628718],
-              [0.45713638, 1.31069295],
-              [-0.04032409, 3.01186964],
-              [0.03142011, 0.12323596],
-              [0.50701028, -0.17636928],
-              [-0.80809175, -1.09917302],
-              [-0.20497017, -0.26630228],
-              [0.99272351, -0.11631728],
-              [-1.95581933, 0.69609604],
+X = np.array([[1.17737838, -0.2002118], [0.4960075, 0.86130762],
+              [-0.05903827, 0.10947647], [0.91464286, 1.61369212],
+              [-0.54619583, 1.73009918], [-0.60413357, 0.24628718],
+              [0.45713638, 1.31069295], [-0.04032409, 3.01186964],
+              [0.03142011, 0.12323596], [0.50701028, -0.17636928],
+              [-0.80809175, -1.09917302], [-0.20497017, -0.26630228],
+              [0.99272351, -0.11631728], [-1.95581933, 0.69609604],
               [1.15157493, -1.2981518]])
 Y = np.array([1, 2, 1, 0, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 VERSION_NEARMISS = 1
@@ -77,8 +66,8 @@ def test_nearmiss_init():
 
     # Define a ratio
     ratio = 1.
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
-                   version=VERSION_NEARMISS)
+    nm1 = NearMiss(
+        ratio=ratio, random_state=RND_SEED, version=VERSION_NEARMISS)
 
     assert_equal(nm1.version, VERSION_NEARMISS)
     assert_equal(nm1.n_neighbors, 3)
@@ -93,8 +82,8 @@ def test_nearmiss_fit_single_class():
     ratio = 'auto'
 
     # Create the object
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
-                   version=VERSION_NEARMISS)
+    nm1 = NearMiss(
+        ratio=ratio, random_state=RND_SEED, version=VERSION_NEARMISS)
     # Resample the data
     # Create a wrong y
     y_single_class = np.zeros((X.shape[0], ))
@@ -119,8 +108,8 @@ def test_nm1_fit():
     ratio = 'auto'
 
     # Create the object
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
-                   version=VERSION_NEARMISS)
+    nm1 = NearMiss(
+        ratio=ratio, random_state=RND_SEED, version=VERSION_NEARMISS)
     # Fit the data
     nm1.fit(X, Y)
 
@@ -140,8 +129,8 @@ def test_nm1_sample_wt_fit():
     ratio = 'auto'
 
     # Create the object
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
-                   version=VERSION_NEARMISS)
+    nm1 = NearMiss(
+        ratio=ratio, random_state=RND_SEED, version=VERSION_NEARMISS)
     assert_raises(RuntimeError, nm1.sample, X, Y)
 
 
@@ -152,20 +141,16 @@ def test_nm1_fit_sample_auto():
     ratio = 'auto'
 
     # Create the object
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
-                   version=VERSION_NEARMISS)
+    nm1 = NearMiss(
+        ratio=ratio, random_state=RND_SEED, version=VERSION_NEARMISS)
 
     # Fit and sample
     X_resampled, y_resampled = nm1.fit_sample(X, Y)
 
-    X_gt = np.array([[0.91464286, 1.61369212],
-                     [-0.80809175, -1.09917302],
-                     [-0.20497017, -0.26630228],
-                     [-0.05903827, 0.10947647],
-                     [0.03142011, 0.12323596],
-                     [-0.60413357, 0.24628718],
-                     [0.50701028, -0.17636928],
-                     [0.4960075, 0.86130762],
+    X_gt = np.array([[0.91464286, 1.61369212], [-0.80809175, -1.09917302],
+                     [-0.20497017, -0.26630228], [-0.05903827, 0.10947647],
+                     [0.03142011, 0.12323596], [-0.60413357, 0.24628718],
+                     [0.50701028, -0.17636928], [0.4960075, 0.86130762],
                      [0.45713638, 1.31069295]])
     y_gt = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
     assert_array_equal(X_resampled, X_gt)
@@ -179,20 +164,19 @@ def test_nm1_fit_sample_auto_indices():
     ratio = 'auto'
 
     # Create the object
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
-                   version=VERSION_NEARMISS, return_indices=True)
+    nm1 = NearMiss(
+        ratio=ratio,
+        random_state=RND_SEED,
+        version=VERSION_NEARMISS,
+        return_indices=True)
 
     # Fit and sample
     X_resampled, y_resampled, idx_under = nm1.fit_sample(X, Y)
 
-    X_gt = np.array([[0.91464286, 1.61369212],
-                     [-0.80809175, -1.09917302],
-                     [-0.20497017, -0.26630228],
-                     [-0.05903827, 0.10947647],
-                     [0.03142011, 0.12323596],
-                     [-0.60413357, 0.24628718],
-                     [0.50701028, -0.17636928],
-                     [0.4960075, 0.86130762],
+    X_gt = np.array([[0.91464286, 1.61369212], [-0.80809175, -1.09917302],
+                     [-0.20497017, -0.26630228], [-0.05903827, 0.10947647],
+                     [0.03142011, 0.12323596], [-0.60413357, 0.24628718],
+                     [0.50701028, -0.17636928], [0.4960075, 0.86130762],
                      [0.45713638, 1.31069295]])
     y_gt = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
     idx_gt = np.array([3, 10, 11, 2, 8, 5, 9, 1, 6])
@@ -208,22 +192,17 @@ def test_nm1_fit_sample_half():
     ratio = .7
 
     # Create the object
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
-                   version=VERSION_NEARMISS)
+    nm1 = NearMiss(
+        ratio=ratio, random_state=RND_SEED, version=VERSION_NEARMISS)
 
     # Fit and sample
     X_resampled, y_resampled = nm1.fit_sample(X, Y)
 
-    X_gt = np.array([[0.91464286, 1.61369212],
-                     [-0.80809175, -1.09917302],
-                     [-0.20497017, -0.26630228],
-                     [-0.05903827, 0.10947647],
-                     [0.03142011, 0.12323596],
-                     [-0.60413357, 0.24628718],
-                     [1.17737838, -0.2002118],
-                     [0.50701028, -0.17636928],
-                     [0.4960075, 0.86130762],
-                     [0.45713638, 1.31069295],
+    X_gt = np.array([[0.91464286, 1.61369212], [-0.80809175, -1.09917302],
+                     [-0.20497017, -0.26630228], [-0.05903827, 0.10947647],
+                     [0.03142011, 0.12323596], [-0.60413357, 0.24628718],
+                     [1.17737838, -0.2002118], [0.50701028, -0.17636928],
+                     [0.4960075, 0.86130762], [0.45713638, 1.31069295],
                      [0.99272351, -0.11631728]])
     y_gt = np.array([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])
     assert_array_equal(X_resampled, X_gt)
@@ -237,8 +216,8 @@ def test_nm1_sample_wrong_X():
     # Create the object
     nm1 = NearMiss(random_state=RND_SEED)
     nm1.fit(X, Y)
-    assert_raises(RuntimeError, nm1.sample, np.random.random((100, 40)),
-                  np.array([0] * 50 + [1] * 50))
+    assert_raises(RuntimeError, nm1.sample,
+                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
 
 
 def test_continuous_error():
@@ -259,21 +238,20 @@ def test_nm1_fit_sample_nn_obj():
 
     # Create the object
     nn = NearestNeighbors(n_neighbors=3)
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
-                   version=VERSION_NEARMISS, return_indices=True,
-                   n_neighbors=nn)
+    nm1 = NearMiss(
+        ratio=ratio,
+        random_state=RND_SEED,
+        version=VERSION_NEARMISS,
+        return_indices=True,
+        n_neighbors=nn)
 
     # Fit and sample
     X_resampled, y_resampled, idx_under = nm1.fit_sample(X, Y)
 
-    X_gt = np.array([[0.91464286, 1.61369212],
-                     [-0.80809175, -1.09917302],
-                     [-0.20497017, -0.26630228],
-                     [-0.05903827, 0.10947647],
-                     [0.03142011, 0.12323596],
-                     [-0.60413357, 0.24628718],
-                     [0.50701028, -0.17636928],
-                     [0.4960075, 0.86130762],
+    X_gt = np.array([[0.91464286, 1.61369212], [-0.80809175, -1.09917302],
+                     [-0.20497017, -0.26630228], [-0.05903827, 0.10947647],
+                     [0.03142011, 0.12323596], [-0.60413357, 0.24628718],
+                     [0.50701028, -0.17636928], [0.4960075, 0.86130762],
                      [0.45713638, 1.31069295]])
     y_gt = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
     idx_gt = np.array([3, 10, 11, 2, 8, 5, 9, 1, 6])
@@ -290,9 +268,12 @@ def test_nm1_wrong_nn_obj():
 
     # Create the object
     nn = 'rnd'
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED,
-                   version=VERSION_NEARMISS, return_indices=True,
-                   n_neighbors=nn)
+    nm1 = NearMiss(
+        ratio=ratio,
+        random_state=RND_SEED,
+        version=VERSION_NEARMISS,
+        return_indices=True,
+        n_neighbors=nn)
 
     # Fit and sample
     assert_raises(ValueError, nm1.fit_sample, X, Y)

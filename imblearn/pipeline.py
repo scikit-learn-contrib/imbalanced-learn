@@ -31,8 +31,8 @@ def _validate_step_methods(step):
             not (hasattr(step, "transform") or hasattr(step, "sample"))):
         raise TypeError(
             "All intermediate steps of the chain should "
-            "be estimators that implement fit and transform or sample (but not both)"
-            " '%s' (type %s) doesn't)" % (step, type(t)))
+            "be estimators that implement fit and transform or sample"
+            "(but not both) '%s' (type %s) doesn't)" % (step, type(step)))
 
 
 def _validate_step_behaviour(step):
@@ -51,7 +51,6 @@ def _validate_step_class(step):
 
 
 class Pipeline(pipeline.Pipeline):
-
     """Pipeline of transforms and resamples with a final estimator.
 
     Sequentially apply a list of transforms, samples and a final estimator.
@@ -87,11 +86,10 @@ class Pipeline(pipeline.Pipeline):
     >>> from sklearn.neighbors import KNeighborsClassifier as KNN
     >>> from sklearn.metrics import classification_report
     >>> from imblearn.over_sampling import SMOTE
-    >>> from imblearn.pipeline import Pipeline
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.pipeline import Pipeline # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> pca = PCA()
@@ -99,11 +97,8 @@ class Pipeline(pipeline.Pipeline):
     >>> knn = KNN()
     >>> pipeline = Pipeline([('smt', smt), ('pca', pca), ('knn', knn)])
     >>> X_train, X_test, y_train, y_test = tts(X, y, random_state=42)
-    >>> pipeline.fit(X_train, y_train)
-    Pipeline(steps=[('smt', SMOTE(k=None, k_neighbors=5, kind='regular', m=None, m_neighbors=10, n_jobs=1,
-       out_step=0.5, random_state=42, ratio='auto', svm_estimator=None)), ('pca', PCA(copy=True, n_components=None, whiten=False)), ('knn', KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
-               metric_params=None, n_jobs=1, n_neighbors=5, p=2,
-               weights='uniform'))])
+    >>> pipeline.fit(X_train, y_train) # doctest: +ELLIPSIS
+    Pipeline(...)
     >>> y_hat = pipeline.predict(X_test)
     >>> print(classification_report(y_test, y_hat))
                  precision    recall  f1-score   support
@@ -121,8 +116,8 @@ class Pipeline(pipeline.Pipeline):
     def __init__(self, steps):
         names, estimators = zip(*steps)
         if len(dict(steps)) != len(steps):
-            raise ValueError("Provided step names are not unique: %s"
-                             % (names,))
+            raise ValueError("Provided step names are not unique: %s" %
+                             (names, ))
 
         # shallow copy of steps
         self.steps = tosequence(steps)
@@ -136,8 +131,8 @@ class Pipeline(pipeline.Pipeline):
 
         if not hasattr(estimator, "fit"):
             raise TypeError("Last step of chain should implement fit "
-                            "'%s' (type %s) doesn't)"
-                            % (estimator, type(estimator)))
+                            "'%s' (type %s) doesn't)" %
+                            (estimator, type(estimator)))
 
     # Estimator interface
 
@@ -231,7 +226,7 @@ class Pipeline(pipeline.Pipeline):
         for _, transform in self.steps[:-1]:
             if hasattr(transform, "fit_sample"):
                 # XXX: Calling sample in pipeline it means that the
-                # last estimator is a sampler. Samplers don't carry 
+                # last estimator is a sampler. Samplers don't carry
                 # the sampled data. So, call 'fit_sample' in all intermediate
                 # steps to get the sampled data for the last estimator.
                 Xt, y = transform.fit_sample(Xt, y)

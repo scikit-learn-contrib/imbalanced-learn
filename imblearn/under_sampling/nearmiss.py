@@ -95,11 +95,11 @@ class NearMiss(BaseMulticlassSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import NearMiss
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.under_sampling import \
+    NearMiss # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> nm = NearMiss(random_state=42)
@@ -115,9 +115,16 @@ class NearMiss(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, ratio='auto', return_indices=False, random_state=None,
-                 version=1, size_ngh=None, n_neighbors=3, ver3_samp_ngh=None,
-                 n_neighbors_ver3=3, n_jobs=1):
+    def __init__(self,
+                 ratio='auto',
+                 return_indices=False,
+                 random_state=None,
+                 version=1,
+                 size_ngh=None,
+                 n_neighbors=3,
+                 ver3_samp_ngh=None,
+                 n_neighbors_ver3=3,
+                 n_jobs=1):
         super(NearMiss, self).__init__(ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.version = version
@@ -127,7 +134,12 @@ class NearMiss(BaseMulticlassSampler):
         self.n_neighbors_ver3 = n_neighbors_ver3
         self.n_jobs = n_jobs
 
-    def _selection_dist_based(self, X, y, dist_vec, num_samples, key,
+    def _selection_dist_based(self,
+                              X,
+                              y,
+                              dist_vec,
+                              num_samples,
+                              key,
                               sel_strategy='nearest'):
         """Select the appropriate samples depending of the strategy selected.
 
@@ -186,9 +198,10 @@ class NearMiss(BaseMulticlassSampler):
         else:
             raise NotImplementedError
 
-        sorted_idx = sorted(range(len(dist_avg_vec)),
-                            key=dist_avg_vec.__getitem__,
-                            reverse=sort_way)
+        sorted_idx = sorted(
+            range(len(dist_avg_vec)),
+            key=dist_avg_vec.__getitem__,
+            reverse=sort_way)
 
         # Throw a warning to tell the user that we did not have enough samples
         # to select and that we just select everything
@@ -208,8 +221,8 @@ class NearMiss(BaseMulticlassSampler):
         """Private function to create the NN estimator"""
 
         if isinstance(self.n_neighbors, int):
-            self.nn_ = NearestNeighbors(n_neighbors=self.n_neighbors,
-                                        n_jobs=self.n_jobs)
+            self.nn_ = NearestNeighbors(
+                n_neighbors=self.n_neighbors, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, KNeighborsMixin):
             self.nn_ = self.n_neighbors
         else:
@@ -227,8 +240,7 @@ class NearMiss(BaseMulticlassSampler):
 
             if isinstance(self.n_neighbors_ver3, int):
                 self.nn_ver3_ = NearestNeighbors(
-                    n_neighbors=self.n_neighbors_ver3,
-                    n_jobs=self.n_jobs)
+                    n_neighbors=self.n_neighbors_ver3, n_jobs=self.n_jobs)
             elif isinstance(self.n_neighbors_ver3, KNeighborsMixin):
                 self.nn_ver3_ = self.n_neighbors_ver3
             else:
@@ -326,32 +338,20 @@ class NearMiss(BaseMulticlassSampler):
             if self.version == 1:
                 # Find the NN
                 dist_vec, idx_vec = self.nn_.kneighbors(
-                    sub_samples_x,
-                    n_neighbors=self.nn_.n_neighbors)
+                    sub_samples_x, n_neighbors=self.nn_.n_neighbors)
 
                 # Select the right samples
                 sel_x, sel_y, idx_tmp = self._selection_dist_based(
-                    X,
-                    y,
-                    dist_vec,
-                    num_samples,
-                    key,
-                    sel_strategy='nearest')
+                    X, y, dist_vec, num_samples, key, sel_strategy='nearest')
 
             elif self.version == 2:
                 # Find the NN
                 dist_vec, idx_vec = self.nn_.kneighbors(
-                    sub_samples_x,
-                    n_neighbors=self.stats_c_[self.min_c_])
+                    sub_samples_x, n_neighbors=self.stats_c_[self.min_c_])
 
                 # Select the right samples
                 sel_x, sel_y, idx_tmp = self._selection_dist_based(
-                    X,
-                    y,
-                    dist_vec,
-                    num_samples,
-                    key,
-                    sel_strategy='nearest')
+                    X, y, dist_vec, num_samples, key, sel_strategy='nearest')
 
             elif self.version == 3:
                 # We need a new NN object to fit the current class
@@ -370,8 +370,7 @@ class NearMiss(BaseMulticlassSampler):
 
                 # Compute the NN considering the current class
                 dist_vec, idx_vec = self.nn_.kneighbors(
-                    sub_samples_x,
-                    n_neighbors=self.nn_.n_neighbors)
+                    sub_samples_x, n_neighbors=self.nn_.n_neighbors)
 
                 sel_x, sel_y, idx_tmp = self._selection_dist_based(
                     sub_samples_x,
@@ -390,8 +389,7 @@ class NearMiss(BaseMulticlassSampler):
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

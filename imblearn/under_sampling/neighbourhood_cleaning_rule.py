@@ -67,11 +67,11 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.under_sampling import \
+    NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> ncr = NeighbourhoodCleaningRule(random_state=42)
@@ -86,8 +86,12 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=None, n_neighbors=3, n_jobs=1):
+    def __init__(self,
+                 return_indices=False,
+                 random_state=None,
+                 size_ngh=None,
+                 n_neighbors=3,
+                 n_jobs=1):
         super(NeighbourhoodCleaningRule, self).__init__(
             random_state=random_state)
         self.return_indices = return_indices
@@ -99,8 +103,8 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
         """Private function to create the NN estimator"""
 
         if isinstance(self.n_neighbors, int):
-            self.nn_ = NearestNeighbors(n_neighbors=self.n_neighbors,
-                                        n_jobs=self.n_jobs)
+            self.nn_ = NearestNeighbors(
+                n_neighbors=self.n_neighbors, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, KNeighborsMixin):
             self.nn_ = self.n_neighbors
         else:
@@ -182,8 +186,8 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
             idx_sub_sample = np.flatnonzero(y == key)
 
             # Find the NN for the current class
-            nnhood_idx = self.nn_.kneighbors(sub_samples_x,
-                                           return_distance=False)
+            nnhood_idx = self.nn_.kneighbors(
+                sub_samples_x, return_distance=False)
 
             # Get the label of the corresponding to the index
             nnhood_label = (y[nnhood_idx] == key)
@@ -195,8 +199,8 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
             # If the minority class remove the majority samples
             if key == self.min_c_:
                 # Get the index to exclude
-                idx_to_exclude += nnhood_idx[np.nonzero(
-                    nnhood_label[np.flatnonzero(nnhood_bool)])].tolist()
+                idx_to_exclude += nnhood_idx[np.nonzero(nnhood_label[
+                    np.flatnonzero(nnhood_bool)])].tolist()
             else:
                 # Get the index to exclude
                 idx_to_exclude += idx_sub_sample[np.nonzero(
@@ -223,8 +227,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
         X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
         y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

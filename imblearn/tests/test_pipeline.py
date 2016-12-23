@@ -10,14 +10,14 @@ from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
-from sklearn.utils.testing import (assert_array_almost_equal,
-                                   assert_array_equal, assert_equal,
-                                   assert_false, assert_raise_message,
-                                   assert_raises, assert_raises_regex,
-                                   assert_true, assert_warns_message)
+from sklearn.utils.testing import (
+    assert_array_almost_equal, assert_array_equal, assert_equal, assert_false,
+    assert_raise_message, assert_raises, assert_raises_regex, assert_true,
+    assert_warns_message)
 
 from imblearn.pipeline import Pipeline, make_pipeline
-from imblearn.under_sampling import RandomUnderSampler, EditedNearestNeighbours as ENN
+from imblearn.under_sampling import (RandomUnderSampler,
+                                     EditedNearestNeighbours as ENN)
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
@@ -25,8 +25,7 @@ JUNK_FOOD_DOCS = (
     "the the pizza beer beer copyright",
     "the burger beer beer copyright",
     "the coke burger coke copyright",
-    "the coke burger burger",
-)
+    "the coke burger burger", )
 
 
 class IncorrectT(object):
@@ -39,7 +38,6 @@ class IncorrectT(object):
 
 
 class T(IncorrectT):
-
     def fit(self, X, y):
         return self
 
@@ -52,7 +50,6 @@ class T(IncorrectT):
 
 
 class TransfT(T):
-
     def transform(self, X, y=None):
         return X
 
@@ -74,19 +71,19 @@ class FitParamT(object):
         return self.successful
 
 
-
 class FitTransformSample(T):
     """Mock classifier
-    """  
+    """
 
     def fit(self, X, y, should_succeed=False):
         pass
 
-    def sample(X, y=None):
+    def sample(self, X, y=None):
         return X, y
 
-    def transform(X, y=None):
-        return  X
+    def transform(self, X, y=None):
+        return X
+
 
 def test_pipeline_init():
     # Test the various init parameters of the pipeline.
@@ -97,9 +94,10 @@ def test_pipeline_init():
     # Smoke test with only an estimator
     clf = T()
     pipe = Pipeline([('svc', clf)])
-    assert_equal(pipe.get_params(deep=True),
-                 dict(svc__a=None, svc__b=None, svc=clf,
-                      **pipe.get_params(deep=False)))
+    assert_equal(
+        pipe.get_params(deep=True),
+        dict(
+            svc__a=None, svc__b=None, svc=clf, **pipe.get_params(deep=False)))
 
     # Check that params are set
     pipe.set_params(svc__a=0.1)
@@ -183,16 +181,18 @@ def test_pipeline_raise_set_params_error():
                  'Check the list of available parameters '
                  'with `estimator.get_params().keys()`.')
 
-    assert_raise_message(ValueError,
-                         error_msg % ('fake', 'Pipeline'),
-                         pipe.set_params,
-                         fake='nope')
+    assert_raise_message(
+        ValueError,
+        error_msg % ('fake', 'Pipeline'),
+        pipe.set_params,
+        fake='nope')
 
     # nested model check
-    assert_raise_message(ValueError,
-                         error_msg % ("fake", pipe),
-                         pipe.set_params,
-                         fake__estimator='nope')
+    assert_raise_message(
+        ValueError,
+        error_msg % ("fake", pipe),
+        pipe.set_params,
+        fake__estimator='nope')
 
 
 def test_pipeline_methods_pca_svm():
@@ -228,7 +228,7 @@ def test_pipeline_methods_preprocessing_svm():
 
         # check shapes of various prediction functions
         predict = pipe.predict(X)
-        assert_equal(predict.shape, (n_samples,))
+        assert_equal(predict.shape, (n_samples, ))
 
         proba = pipe.predict_proba(X)
         assert_equal(proba.shape, (n_samples, n_classes))
@@ -268,8 +268,8 @@ def test_fit_predict_on_pipeline_without_fit_predict():
     pca = PCA()
     pipe = Pipeline([('scaler', scaler), ('pca', pca)])
     assert_raises_regex(AttributeError,
-                        "'PCA' object has no attribute 'fit_predict'",
-                        getattr, pipe, 'fit_predict')
+                        "'PCA' object has no attribute 'fit_predict'", getattr,
+                        pipe, 'fit_predict')
 
 
 def test_pipeline_transform():
@@ -347,10 +347,17 @@ def test_X1d_inverse_transform():
 
 def test_pipeline_methods_pca_rus_svm():
     # Test the various methods of the pipeline (pca + svm).
-    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                               n_informative=3, n_redundant=1, flip_y=0,
-                               n_features=20, n_clusters_per_class=1,
-                               n_samples=5000, random_state=0)
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
 
     # Test with PCA + SVC
     clf = SVC(probability=True, random_state=0)
@@ -366,10 +373,17 @@ def test_pipeline_methods_pca_rus_svm():
 
 def test_pipeline_methods_rus_pca_svm():
     # Test the various methods of the pipeline (pca + svm).
-    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                               n_informative=3, n_redundant=1, flip_y=0,
-                               n_features=20, n_clusters_per_class=1,
-                               n_samples=5000, random_state=0)
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
 
     # Test with PCA + SVC
     clf = SVC(probability=True, random_state=0)
@@ -386,10 +400,17 @@ def test_pipeline_methods_rus_pca_svm():
 def test_pipeline_sample():
     # Test whether pipeline works with a sampler at the end.
     # Also test pipeline.sampler
-    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                               n_informative=3, n_redundant=1, flip_y=0,
-                               n_features=20, n_clusters_per_class=1,
-                               n_samples=5000, random_state=0)
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
 
     rus = RandomUnderSampler(random_state=0)
     pipeline = Pipeline([('rus', rus)])
@@ -416,10 +437,17 @@ def test_pipeline_sample():
 def test_pipeline_sample_transform():
     # Test whether pipeline works with a sampler at the end.
     # Also test pipeline.sampler
-    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                               n_informative=3, n_redundant=1, flip_y=0,
-                               n_features=20, n_clusters_per_class=1,
-                               n_samples=5000, random_state=0)
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
 
     rus = RandomUnderSampler(random_state=0)
     pca = PCA()
@@ -431,10 +459,17 @@ def test_pipeline_sample_transform():
 
 def test_pipeline_methods_anova_rus():
     # Test the various methods of the pipeline (anova).
-    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                               n_informative=3, n_redundant=1, flip_y=0,
-                               n_features=20, n_clusters_per_class=1,
-                               n_samples=5000, random_state=0)
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
     # Test with RandomUnderSampling + Anova + LogisticRegression
     clf = LogisticRegression()
     rus = RandomUnderSampler(random_state=0)
@@ -447,62 +482,90 @@ def test_pipeline_methods_anova_rus():
     pipe.score(X, y)
 
 
-
-
 def test_pipeline_with_step_that_implements_both_sample_and_transform():
     # Test the various methods of the pipeline (anova).
-    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                               n_informative=3, n_redundant=1, flip_y=0,
-                               n_features=20, n_clusters_per_class=1,
-                               n_samples=5000, random_state=0)
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
 
     clf = LogisticRegression()
-    assert_raises(TypeError, Pipeline, [('step', FitTransformSample()), ('logistic', clf)])
-    #assert_raises(TypeError, lambda x: [][0])
+    assert_raises(TypeError, Pipeline, [('step', FitTransformSample()),
+                                        ('logistic', clf)])
+    # assert_raises(TypeError, lambda x: [][0])
 
 
 def test_pipeline_with_step_that_it_is_pipeline():
     # Test the various methods of the pipeline (anova).
-    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                               n_informative=3, n_redundant=1, flip_y=0,
-                               n_features=20, n_clusters_per_class=1,
-                               n_samples=5000, random_state=0)
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
     # Test with RandomUnderSampling + Anova + LogisticRegression
     clf = LogisticRegression()
     rus = RandomUnderSampler(random_state=0)
     filter1 = SelectKBest(f_classif, k=2)
     pipe1 = Pipeline([('rus', rus), ('anova', filter1)])
     assert_raises(TypeError, Pipeline, [('pipe1', pipe1), ('logistic', clf)])
-    
+
+
 def test_pipeline_fit_then_sample_with_sampler_last_estimator():
-    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-        n_informative=3, n_redundant=1, flip_y=0,
-        n_features=20, n_clusters_per_class=1,
-        n_samples=50000, random_state=0)
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=50000,
+        random_state=0)
 
     rus = RandomUnderSampler(random_state=42)
     enn = ENN()
     pipeline = make_pipeline(rus, enn)
-    X_fit_sample_resampled, y_fit_sample_resampled = pipeline.fit_sample(X,y)
+    X_fit_sample_resampled, y_fit_sample_resampled = pipeline.fit_sample(X, y)
     pipeline = make_pipeline(rus, enn)
-    pipeline.fit(X,y)
-    X_fit_then_sample_resampled, y_fit_then_sample_resampled = pipeline.sample(X,y)
-    assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_resampled)
-    assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_resampled)
+    pipeline.fit(X, y)
+    X_fit_then_sample_res, y_fit_then_sample_res = pipeline.sample(X, y)
+    assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_res)
+    assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_res)
 
-    
-def test_pipeline_fit_then_sample_of_three_samplers_with_sampler_last_estimator():
-    X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-        n_informative=3, n_redundant=1, flip_y=0,
-        n_features=20, n_clusters_per_class=1,
-        n_samples=50000, random_state=0)
+
+def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=50000,
+        random_state=0)
 
     rus = RandomUnderSampler(random_state=42)
     enn = ENN()
     pipeline = make_pipeline(rus, enn, rus)
-    X_fit_sample_resampled, y_fit_sample_resampled = pipeline.fit_sample(X,y)
+    X_fit_sample_resampled, y_fit_sample_resampled = pipeline.fit_sample(X, y)
     pipeline = make_pipeline(rus, enn, rus)
-    pipeline.fit(X,y)
-    X_fit_then_sample_resampled, y_fit_then_sample_resampled = pipeline.sample(X,y)
-    assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_resampled)
-    assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_resampled)
+    pipeline.fit(X, y)
+    X_fit_then_sample_res, y_fit_then_sample_res = pipeline.sample(X, y)
+    assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_res)
+    assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_res)

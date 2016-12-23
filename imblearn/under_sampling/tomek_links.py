@@ -53,11 +53,11 @@ class TomekLinks(BaseBinarySampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import TomekLinks
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.under_sampling import \
+    TomekLinks # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> tl = TomekLinks(random_state=42)
@@ -72,8 +72,7 @@ class TomekLinks(BaseBinarySampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None,
-                 n_jobs=1):
+    def __init__(self, return_indices=False, random_state=None, n_jobs=1):
         super(TomekLinks, self).__init__(random_state=random_state)
         self.return_indices = return_indices
         self.n_jobs = n_jobs
@@ -162,8 +161,8 @@ class TomekLinks(BaseBinarySampler):
         self.logger.debug('Looking for majority Tomek links ...')
         links = self.is_tomek(y, nns, self.min_c_)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y[np.logical_not(links)]))
+        self.logger.info('Under-sampling performed: %s',
+                         Counter(y[np.logical_not(links)]))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

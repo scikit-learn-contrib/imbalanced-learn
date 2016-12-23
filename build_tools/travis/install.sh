@@ -52,5 +52,5 @@ cd $TRAVIS_BUILD_DIR
 python setup.py develop
 
 if [[ "$RUN_FLAKE8" == "true" ]]; then
-    conda install --yes flake8
+    pip install flake8
 fi
