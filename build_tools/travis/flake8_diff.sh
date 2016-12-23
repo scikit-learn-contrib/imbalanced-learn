@@ -120,9 +120,8 @@ echo '--------------------------------------------------------------------------
 # uses git 1.8.
 # We need the following command to exit with 0 hence the echo in case
 # there is no match
-MODIFIED_FILES="$(git diff --name-only $COMMIT_RANGE | grep -v 'doc'
-                       || echo "no_match")"
-
+MODIFIED_FILES="$(git diff --name-only $COMMIT_RANGE | grep -v 'doc' \
+                     || echo "no_match")"
 check_files() {
     files="$1"
     options="$2"
