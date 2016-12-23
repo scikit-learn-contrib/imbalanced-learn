@@ -19,7 +19,6 @@ from sklearn.metrics.classification import _check_targets, _prf_divide
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.fixes import bincount
 from sklearn.utils.multiclass import unique_labels
-from sklearn.utils.sparsefuncs import count_nonzero
 
 LOGGER = logging.getLogger(__name__)
 
