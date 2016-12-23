@@ -198,11 +198,6 @@ def sensitivity_specificity_support(y_true,
         pred_sum = pred_sum[indices]
         tn_sum = tn_sum[indices]
 
-        LOGGER.debug('tp: %s' % tp_sum)
-        LOGGER.debug('tn: %s' % tn_sum)
-        LOGGER.debug('pred_sum: %s' % pred_sum)
-        LOGGER.debug('true_sum: %s' % true_sum)
-
     if average == 'micro':
         tp_sum = np.array([tp_sum.sum()])
         pred_sum = np.array([pred_sum.sum()])
@@ -232,9 +227,6 @@ def sensitivity_specificity_support(y_true,
         weights = sample_weight
     else:
         weights = None
-
-    LOGGER.debug(specificity)
-    LOGGER.debug(weights)
 
     if average is not None:
         assert average != 'binary' or len(specificity) == 1
@@ -509,3 +501,71 @@ def geometric_mean_score(y_true,
     LOGGER.debug('The sensitivity and specificity are : %s - %s' % (sen, spe))
 
     return np.sqrt(sen * spe)
+
+
+def indexed_balanced_accuracy_score(score_func,
+                                    y_true,
+                                    y_pred,
+                                    alpha=0.1,
+                                    squared=True,
+                                    **kwargs):
+    """ Compute the indexed balanced accuracy of a scoring function
+
+    The indexed balanced accuracy (IBA) tends to weight a scoring function
+    to take into account the imbalancing of the data.
+
+    Parameters
+    ----------
+    score_func : callable,
+        Score function (or loss function) with signature
+        ``score_func(y, y_pred, **kwargs)``.
+
+    y_true : ndarray, shape (n_samples, )
+        Ground truth (correct) target values.
+
+    y_pred : ndarray, shape (n_samples, )
+        Estimated targets as returned by a classifier.
+
+    alpha : float, optional (default=0.1)
+        Weighting factor.
+
+    squared : bool, optional (default=True)
+        If ``squared`` is True, then the metric computed will be squared
+        before to be weighted.
+
+    **kwargs : additional arguments
+        Additional parameters to be passed to score_func.
+
+    Returns
+    -------
+    iba : float (if ``average`` = None) or ndarray, \
+        shape (n_unique_labels, )
+
+    References
+    ----------
+    .. [1] Garcia, V. and Mollineda, R.A. and Sanchez, J.S. "Theoretical
+       analysis of a performance measure for imbalanced data" ICPR (2010)
+    """
+
+    score = score_func(**kwargs)
+
+    if squared:
+        score = np.power(score, 2)
+
+    # Pop the arguments to have the proper average, etc. for the
+    # sensitivity and specificity
+    labels = kwargs.get('labels', None)
+    pos_label = kwargs.get('pos_label', 1)
+    average = kwargs.get('average', 'binary')
+    sample_weight = kwargs.get('sample_weight', None)
+
+    # Compute the sensitivity and specificity
+    sen = sensitivity_score(y_true, y_pred, labels, pos_label, average,
+                            sample_weight)
+    spe = specificity_score(y_true, y_pred, labels, pos_label, average,
+                            sample_weight)
+
+    # Compute the dominance
+    dom = sen - spe
+
+    return (1. + alpha * dom) * score
