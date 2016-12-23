@@ -244,11 +244,12 @@ def test_iba_geo_mean_binary():
     """Test to test the iba using the geometric mean"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
-    iba_gmean = make_indexed_balanced_accuracy(alpha=0.5, squared=True)(
-        geometric_mean_score)
+    iba_gmean = make_indexed_balanced_accuracy(
+        alpha=0.5, squared=True)(geometric_mean_score)
     iba = iba_gmean(y_true, y_pred)
 
     assert_almost_equal(iba, 0.54, 2)
+
 
 def _format_report(report):
     """Private function to reformat the report for testing"""
@@ -262,20 +263,22 @@ def test_classification_report_imbalanced_multiclass():
     y_true, y_pred, _ = make_prediction(dataset=iris, binary=False)
 
     # print classification report with class names
-    expected_report = ("pre rec spe f1 geo iba sup setosa 0.83 0.79 0.92 0.81 "
-                       "0.86 0.72 24 versicolor 0.33 0.10 0.86 0.15 0.44 "
-                       "0.08 31 virginica 0.42 0.90 0.55 0.57 0.63 0.51 20 "
-                       "avg / total 0.51 0.53 0.80 0.47 0.62 0.40 75")
+    expected_report = ('pre rec spe f1 geo iba sup setosa 0.83 0.79 0.92 '
+                       '0.81 0.86 0.74 24 versicolor 0.33 0.10 0.86 0.15 '
+                       '0.44 0.19 31 virginica 0.42 0.90 0.55 0.57 0.63 '
+                       '0.37 20 avg / total 0.51 0.53 0.80 0.47 0.62 0.41 75')
 
     report = classification_report_imbalanced(
-        y_true, y_pred, labels=np.arange(len(iris.target_names)),
+        y_true,
+        y_pred,
+        labels=np.arange(len(iris.target_names)),
         target_names=iris.target_names)
     assert_equal(_format_report(report), expected_report)
     # print classification report with label detection
-    expected_report = ("pre rec spe f1 geo iba sup 0 0.83 0.79 0.92 0.81 "
-                       "0.86 0.72 24 1 0.33 0.10 0.86 0.15 0.44 0.08 31 2 "
-                       "0.42 0.90 0.55 0.57 0.63 0.51 20 avg / total 0.51 "
-                       "0.53 0.80 0.47 0.62 0.40 75")
+    expected_report = ('pre rec spe f1 geo iba sup 0 0.83 0.79 0.92 0.81 '
+                       '0.86 0.74 24 1 0.33 0.10 0.86 0.15 0.44 0.19 31 2 '
+                       '0.42 0.90 0.55 0.57 0.63 0.37 20 avg / total 0.51 '
+                       '0.53 0.80 0.47 0.62 0.41 75')
 
     report = classification_report_imbalanced(y_true, y_pred)
     assert_equal(_format_report(report), expected_report)
@@ -287,21 +290,24 @@ def test_classification_report_imbalanced_multiclass_with_digits():
     y_true, y_pred, _ = make_prediction(dataset=iris, binary=False)
 
     # print classification report with class names
-    expected_report = ("pre rec spe f1 geo iba sup setosa 0.82609 0.79167 "
-                       "0.92157 0.80851 0.86409 0.72010 24 versicolor 0.33333 "
-                       "0.09677 0.86364 0.15000 0.43809 0.07717 31 virginica "
-                       "0.41860 0.90000 0.54545 0.57143 0.62645 0.50831 20 "
-                       "avg / total 0.51375 0.53333 0.79733 0.47310 0.62464 "
-                       "0.39788 75")
+    expected_report = ('pre rec spe f1 geo iba sup setosa 0.82609 0.79167 '
+                       '0.92157 0.80851 0.86409 0.74085 24 versicolor '
+                       '0.33333 0.09677 0.86364 0.15000 0.43809 0.18727 31 '
+                       'virginica 0.41860 0.90000 0.54545 0.57143 0.62645 '
+                       '0.37208 20 avg / total 0.51375 0.53333 0.79733 '
+                       '0.47310 0.62464 0.41370 75')
     report = classification_report_imbalanced(
-        y_true, y_pred, labels=np.arange(len(iris.target_names)),
-        target_names=iris.target_names, digits=5)
+        y_true,
+        y_pred,
+        labels=np.arange(len(iris.target_names)),
+        target_names=iris.target_names,
+        digits=5)
     assert_equal(_format_report(report), expected_report)
     # print classification report with label detection
-    expected_report = ("pre rec spe f1 geo iba sup 0 0.83 0.79 0.92 0.81 "
-                       "0.86 0.72 24 1 0.33 0.10 0.86 0.15 0.44 0.08 31 "
-                       "2 0.42 0.90 0.55 0.57 0.63 0.51 20 "
-                       "avg / total 0.51 0.53 0.80 0.47 0.62 0.40 75")
+    expected_report = ('pre rec spe f1 geo iba sup 0 0.83 0.79 0.92 0.81 '
+                       '0.86 0.74 24 1 0.33 0.10 0.86 0.15 0.44 0.19 31 2 '
+                       '0.42 0.90 0.55 0.57 0.63 0.37 20 avg / total 0.51 '
+                       '0.53 0.80 0.47 0.62 0.41 75')
     report = classification_report_imbalanced(y_true, y_pred)
     assert_equal(_format_report(report), expected_report)
 
@@ -313,26 +319,20 @@ def test_classification_report_imbalanced_multiclass_with_string_label():
     y_true = np.array(["blue", "green", "red"])[y_true]
     y_pred = np.array(["blue", "green", "red"])[y_pred]
 
-    expected_report = """\
-             precision    recall  f1-score   support
-       blue       0.83      0.79      0.81        24
-      green       0.33      0.10      0.15        31
-        red       0.42      0.90      0.57        20
-avg / total       0.51      0.53      0.47        75
-"""
+    expected_report = ('pre rec spe f1 geo iba sup blue 0.83 0.79 0.92 '
+                       '0.81 0.86 0.74 24 green 0.33 0.10 0.86 0.15 0.44 '
+                       '0.19 31 red 0.42 0.90 0.55 0.57 0.63 0.37 20 '
+                       'avg / total 0.51 0.53 0.80 0.47 0.62 0.41 75')
     report = classification_report_imbalanced(y_true, y_pred)
-    assert_equal(report, expected_report)
+    assert_equal(_format_report(report), expected_report)
 
-    expected_report = """\
-             precision    recall  f1-score   support
-          a       0.83      0.79      0.81        24
-          b       0.33      0.10      0.15        31
-          c       0.42      0.90      0.57        20
-avg / total       0.51      0.53      0.47        75
-"""
-    report = classification_report_imbalanced(y_true, y_pred,
-                                   target_names=["a", "b", "c"])
-    assert_equal(report, expected_report)
+    expected_report = ('pre rec spe f1 geo iba sup a 0.83 0.79 0.92 0.81 '
+                       '0.86 0.74 24 b 0.33 0.10 0.86 0.15 0.44 0.19 31 '
+                       'c 0.42 0.90 0.55 0.57 0.63 0.37 20 avg / total '
+                       '0.51 0.53 0.80 0.47 0.62 0.41 75')
+    report = classification_report_imbalanced(
+        y_true, y_pred, target_names=["a", "b", "c"])
+    assert_equal(_format_report(report), expected_report)
 
 
 def test_classification_report_imbalanced_multiclass_with_unicode_label():
@@ -343,13 +343,10 @@ def test_classification_report_imbalanced_multiclass_with_unicode_label():
     y_true = labels[y_true]
     y_pred = labels[y_pred]
 
-    expected_report = u"""\
-             precision    recall  f1-score   support
-      blue\xa2       0.83      0.79      0.81        24
-     green\xa2       0.33      0.10      0.15        31
-       red\xa2       0.42      0.90      0.57        20
-avg / total       0.51      0.53      0.47        75
-"""
+    expected_report = (u'pre rec spe f1 geo iba sup blue\xa2 0.83 0.79 '
+                       u'0.92 0.81 0.86 0.74 24 green\xa2 0.33 0.10 0.86 '
+                       u'0.15 0.44 0.19 31 red\xa2 0.42 0.90 0.55 0.57 0.63 '
+                       u'0.37 20 avg / total 0.51 0.53 0.80 0.47 0.62 0.41 75')
     if np_version[:3] < (1, 7, 0):
         expected_message = ("NumPy < 1.7.0 does not implement"
                             " searchsorted on unicode data correctly.")
@@ -357,24 +354,21 @@ avg / total       0.51      0.53      0.47        75
                              classification_report_imbalanced, y_true, y_pred)
     else:
         report = classification_report_imbalanced(y_true, y_pred)
-        assert_equal(report, expected_report)
+        assert_equal(_format_report(report), expected_report)
 
 
 def test_classification_report_imbalanced_multiclass_with_long_string_label():
     """Test classification report with long string label"""
     y_true, y_pred, _ = make_prediction(binary=False)
 
-    labels = np.array(["blue", "green"*5, "red"])
+    labels = np.array(["blue", "green" * 5, "red"])
     y_true = labels[y_true]
     y_pred = labels[y_pred]
 
-    expected_report = """\
-                           precision    recall  f1-score   support
-                     blue       0.83      0.79      0.81        24
-greengreengreengreengreen       0.33      0.10      0.15        31
-                      red       0.42      0.90      0.57        20
-              avg / total       0.51      0.53      0.47        75
-"""
+    expected_report = ('pre rec spe f1 geo iba sup blue 0.83 0.79 0.92 0.81 '
+                       '0.86 0.74 24 greengreengreengreengreen 0.33 0.10 '
+                       '0.86 0.15 0.44 0.19 31 red 0.42 0.90 0.55 0.57 0.63 '
+                       '0.37 20 avg / total 0.51 0.53 0.80 0.47 0.62 0.41 75')
 
     report = classification_report_imbalanced(y_true, y_pred)
-    assert_equal(report, expected_report)
+    assert_equal(_format_report(report), expected_report)

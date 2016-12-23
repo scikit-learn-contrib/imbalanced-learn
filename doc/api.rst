@@ -138,7 +138,7 @@ Functions
    metrics.sensitivity_score
    metrics.specificity_score
    metrics.geometric_mean_score
-   metrics.indexed_balanced_accuracy_score
+   metrics.make_indexed_balanced_accuracy
 
 .. _datasets_ref:
 
