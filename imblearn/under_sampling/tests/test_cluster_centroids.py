@@ -7,7 +7,6 @@ import numpy as np
 from numpy.testing import (assert_array_almost_equal, assert_array_equal,
                            assert_equal, assert_raises, assert_warns)
 from sklearn.cluster import KMeans
-from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.under_sampling import ClusterCentroids
@@ -15,16 +14,11 @@ from imblearn.under_sampling import ClusterCentroids
 # Generate a global dataset to use
 RND_SEED = 0
 # Data generated for the toy example
-X = np.array([[0.04352327, -0.20515826],
-              [0.92923648, 0.76103773],
-              [0.20792588, 1.49407907],
-              [0.47104475, 0.44386323],
-              [0.22950086, 0.33367433],
-              [0.15490546, 0.3130677],
-              [0.09125309, -0.85409574],
-              [0.12372842, 0.6536186],
-              [0.13347175, 0.12167502],
-              [0.094035, -2.55298982]])
+X = np.array([[0.04352327, -0.20515826], [0.92923648, 0.76103773],
+              [0.20792588, 1.49407907], [0.47104475, 0.44386323],
+              [0.22950086, 0.33367433], [0.15490546, 0.3130677],
+              [0.09125309, -0.85409574], [0.12372842, 0.6536186],
+              [0.13347175, 0.12167502], [0.094035, -2.55298982]])
 Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 
@@ -121,8 +115,8 @@ def test_sample_wrong_X():
     # Create the object
     cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
     cc.fit(X, Y)
-    assert_raises(RuntimeError, cc.sample, np.random.random((100, 40)),
-                  np.array([0] * 50 + [1] * 50))
+    assert_raises(RuntimeError, cc.sample,
+                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
 
 
 def test_sample_wt_fit():
@@ -149,12 +143,9 @@ def test_fit_sample_auto():
     # Fit and sample
     X_resampled, y_resampled = cc.fit_sample(X, Y)
 
-    X_gt = np.array([[0.92923648, 0.76103773],
-                     [0.47104475, 0.44386323],
-                     [0.13347175, 0.12167502],
-                     [0.06738818, -0.529627],
-                     [0.17901516, 0.69860992],
-                     [0.094035, -2.55298982]])
+    X_gt = np.array([[0.92923648, 0.76103773], [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502], [0.06738818, -0.529627],
+                     [0.17901516, 0.69860992], [0.094035, -2.55298982]])
     y_gt = np.array([0, 0, 0, 1, 1, 1])
     assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
@@ -172,29 +163,25 @@ def test_fit_sample_half():
     # Fit and sample
     X_resampled, y_resampled = cc.fit_sample(X, Y)
 
-    X_gt = np.array([[0.92923648, 0.76103773],
-                     [0.47104475, 0.44386323],
-                     [0.13347175, 0.12167502],
-                     [0.09125309, -0.85409574],
-                     [0.19220316, 0.32337101],
-                     [0.094035, -2.55298982],
-                     [0.20792588, 1.49407907],
-                     [0.04352327, -0.20515826],
+    X_gt = np.array([[0.92923648, 0.76103773], [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502], [0.09125309, -0.85409574],
+                     [0.19220316, 0.32337101], [0.094035, -2.55298982],
+                     [0.20792588, 1.49407907], [0.04352327, -0.20515826],
                      [0.12372842, 0.6536186]])
     y_gt = np.array([0, 0, 0, 1, 1, 1, 1, 1, 1])
     assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_sample_wrong_X():
+def test_sample_wrong_X_dft_ratio():
     """Test either if an error is raised when X is different at fitting
-    and sampling"""
+    and sampling without ratio"""
 
     # Create the object
     cc = ClusterCentroids(random_state=RND_SEED)
     cc.fit(X, Y)
-    assert_raises(RuntimeError, cc.sample, np.random.random((100, 40)),
-                  np.array([0] * 50 + [1] * 50))
+    assert_raises(RuntimeError, cc.sample,
+                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
 
 
 def test_continuous_error():
@@ -234,18 +221,15 @@ def test_fit_sample_object():
 
     # Create the object
     cluster = KMeans(random_state=RND_SEED)
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED,
-                          estimator=cluster)
+    cc = ClusterCentroids(
+        ratio=ratio, random_state=RND_SEED, estimator=cluster)
 
     # Fit and sample
     X_resampled, y_resampled = cc.fit_sample(X, Y)
 
-    X_gt = np.array([[0.92923648, 0.76103773],
-                     [0.47104475, 0.44386323],
-                     [0.13347175, 0.12167502],
-                     [0.06738818, -0.529627],
-                     [0.17901516, 0.69860992],
-                     [0.094035, -2.55298982]])
+    X_gt = np.array([[0.92923648, 0.76103773], [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502], [0.06738818, -0.529627],
+                     [0.17901516, 0.69860992], [0.094035, -2.55298982]])
     y_gt = np.array([0, 0, 0, 1, 1, 1])
     assert_array_almost_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
@@ -259,8 +243,8 @@ def test_fit_sample_wrong_object():
 
     # Create the object
     cluster = 'rnd'
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED,
-                          estimator=cluster)
+    cc = ClusterCentroids(
+        ratio=ratio, random_state=RND_SEED, estimator=cluster)
 
     # Fit and sample
     assert_raises(ValueError, cc.fit_sample, X, Y)

@@ -2,8 +2,6 @@
 method."""
 from __future__ import division, print_function
 
-import warnings
-
 from collections import Counter
 
 import numpy as np
@@ -36,7 +34,8 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
         NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbors : int or object, optional (default=KNeighborsClassifier(n_neighbors=1))
+    n_neighbors : int or object, optional (default=
+        KNeighborsClassifier(n_neighbors=1))
         If int, size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
         If object, an object inherited from
@@ -74,14 +73,16 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
 
     >>> from collections import Counter #doctest: +SKIP
     >>> from sklearn.datasets import fetch_mldata #doctest: +SKIP
-    >>> from imblearn.under_sampling import CondensedNearestNeighbour #doctest: +SKIP
+    >>> from imblearn.under_sampling import \
+    CondensedNearestNeighbour #doctest: +SKIP
     >>> pima = fetch_mldata('diabetes_scale') #doctest: +SKIP
     >>> X, y = pima['data'], pima['target'] #doctest: +SKIP
     >>> print('Original dataset shape {}'.format(Counter(y))) #doctest: +SKIP
     Original dataset shape Counter({1: 500, -1: 268}) #doctest: +SKIP
     >>> cnn = CondensedNearestNeighbour(random_state=42) #doctest: +SKIP
     >>> X_res, y_res = cnn.fit_sample(X, y) #doctest: +SKIP
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res))) #doctest: +SKIP
+    >>> print('Resampled dataset shape {}'.format(
+    ... Counter(y_res))) #doctest: +SKIP
     Resampled dataset shape Counter({-1: 268, 1: 227}) #doctest: +SKIP
 
     References
@@ -92,8 +93,13 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=None, n_neighbors=None, n_seeds_S=1, n_jobs=1):
+    def __init__(self,
+                 return_indices=False,
+                 random_state=None,
+                 size_ngh=None,
+                 n_neighbors=None,
+                 n_seeds_S=1,
+                 n_jobs=1):
         super(CondensedNearestNeighbour, self).__init__(
             random_state=random_state)
         self.return_indices = return_indices
@@ -107,12 +113,10 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
 
         if self.n_neighbors is None:
             self.estimator_ = KNeighborsClassifier(
-                n_neighbors=1,
-                n_jobs=self.n_jobs)
+                n_neighbors=1, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, int):
             self.estimator_ = KNeighborsClassifier(
-                n_neighbors=self.n_neighbors,
-                n_jobs=self.n_jobs)
+                n_neighbors=self.n_neighbors, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
             self.estimator_ = self.n_neighbors
         else:
@@ -191,9 +195,8 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
 
             # Randomly get one sample from the majority class
             # Generate the index to select
-            idx_maj_sample = random_state.randint(low=0,
-                                                  high=self.stats_c_[key],
-                                                  size=self.n_seeds_S)
+            idx_maj_sample = random_state.randint(
+                low=0, high=self.stats_c_[key], size=self.n_seeds_S)
             maj_sample = X[y == key][idx_maj_sample]
 
             # Create the set C - One majority samples and all minority
@@ -226,8 +229,8 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
 
                     # Update C
                     C_x = np.append(X_min, X[y == key][idx_maj_sample], axis=0)
-                    C_y = np.append(y_min, np.array([key] *
-                                                    idx_maj_sample.size))
+                    C_y = np.append(y_min,
+                                    np.array([key] * idx_maj_sample.size))
 
                     # Fit C into the knn
                     self.estimator_.fit(C_x, C_y)
@@ -257,8 +260,7 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

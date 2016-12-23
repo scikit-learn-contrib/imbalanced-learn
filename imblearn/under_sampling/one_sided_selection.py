@@ -33,7 +33,8 @@ class OneSidedSelection(BaseBinarySampler):
         NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbors : int or object, optional (default=KNeighborsClassifier(n_neighbors=1))
+    n_neighbors : int or object, optional (default=
+        KNeighborsClassifier(n_neighbors=1))
         If int, size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
         If object, an object inherited from
@@ -71,11 +72,11 @@ class OneSidedSelection(BaseBinarySampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import OneSidedSelection
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.under_sampling import \
+    OneSidedSelection # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> oss = OneSidedSelection(random_state=42)
@@ -90,8 +91,13 @@ class OneSidedSelection(BaseBinarySampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=None, n_neighbors=None, n_seeds_S=1, n_jobs=1):
+    def __init__(self,
+                 return_indices=False,
+                 random_state=None,
+                 size_ngh=None,
+                 n_neighbors=None,
+                 n_seeds_S=1,
+                 n_jobs=1):
         super(OneSidedSelection, self).__init__(random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
@@ -104,12 +110,10 @@ class OneSidedSelection(BaseBinarySampler):
 
         if self.n_neighbors is None:
             self.estimator_ = KNeighborsClassifier(
-                n_neighbors=1,
-                n_jobs=self.n_jobs)
+                n_neighbors=1, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, int):
             self.estimator_ = KNeighborsClassifier(
-                n_neighbors=self.n_neighbors,
-                n_jobs=self.n_jobs)
+                n_neighbors=self.n_neighbors, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
             self.estimator_ = self.n_neighbors
         else:
@@ -188,17 +192,13 @@ class OneSidedSelection(BaseBinarySampler):
 
             # Randomly get one sample from the majority class
             # Generate the index to select
-            idx_maj_sample = random_state.randint(low=0,
-                                                  high=self.stats_c_[key],
-                                                  size=self.n_seeds_S)
+            idx_maj_sample = random_state.randint(
+                low=0, high=self.stats_c_[key], size=self.n_seeds_S)
             maj_sample = X[y == key][idx_maj_sample]
 
             # Create the set C
-            C_x = np.append(X_min,
-                            maj_sample,
-                            axis=0)
-            C_y = np.append(y_min,
-                            [key] * self.n_seeds_S)
+            C_x = np.append(X_min, maj_sample, axis=0)
+            C_y = np.append(y_min, [key] * self.n_seeds_S)
 
             # Create the set S
             S_x = X[y == key]
@@ -222,21 +222,15 @@ class OneSidedSelection(BaseBinarySampler):
             # We concatenate the misclassified samples with the seed and the
             # minority samples
             if self.return_indices:
-                idx_tmp = np.flatnonzero(y == key)[
-                    np.flatnonzero(pred_S_y != S_y)]
-                idx_under = np.concatenate((idx_under,
-                                            idx_maj_sample,
-                                            idx_tmp),
-                                           axis=0)
+                idx_tmp = np.flatnonzero(
+                    y == key)[np.flatnonzero(pred_S_y != S_y)]
+                idx_under = np.concatenate(
+                    (idx_under, idx_maj_sample, idx_tmp), axis=0)
 
-            X_resampled = np.concatenate((X_resampled,
-                                          maj_sample,
-                                          sel_x),
-                                         axis=0)
-            y_resampled = np.concatenate((y_resampled,
-                                          [key] * self.n_seeds_S,
-                                          sel_y),
-                                         axis=0)
+            X_resampled = np.concatenate(
+                (X_resampled, maj_sample, sel_x), axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, [key] * self.n_seeds_S, sel_y), axis=0)
 
         # Find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
@@ -247,8 +241,8 @@ class OneSidedSelection(BaseBinarySampler):
         self.logger.debug('Looking for majority Tomek links ...')
         links = TomekLinks.is_tomek(y_resampled, nns, self.min_c_)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y_resampled[np.logical_not(links)]))
+        self.logger.info('Under-sampling performed: %s',
+                         Counter(y_resampled[np.logical_not(links)]))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:

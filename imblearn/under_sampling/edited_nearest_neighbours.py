@@ -4,7 +4,6 @@ from __future__ import division, print_function
 
 from collections import Counter
 
-import warnings
 import numpy as np
 from scipy.stats import mode
 from sklearn.neighbors import NearestNeighbors
@@ -82,11 +81,11 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import EditedNearestNeighbours
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.under_sampling import \
+    EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> enn = EditedNearestNeighbours(random_state=42)
@@ -102,8 +101,13 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=None, n_neighbors=3, kind_sel='all', n_jobs=1):
+    def __init__(self,
+                 return_indices=False,
+                 random_state=None,
+                 size_ngh=None,
+                 n_neighbors=3,
+                 kind_sel='all',
+                 n_jobs=1):
         super(EditedNearestNeighbours, self).__init__(
             random_state=random_state)
         self.return_indices = return_indices
@@ -116,8 +120,8 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         """Private function to create the NN estimator"""
 
         if isinstance(self.n_neighbors, int):
-            self.nn_ = NearestNeighbors(n_neighbors=self.n_neighbors + 1,
-                                        n_jobs=self.n_jobs)
+            self.nn_ = NearestNeighbors(
+                n_neighbors=self.n_neighbors + 1, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, KNeighborsMixin):
             self.nn_ = self.n_neighbors
         else:
@@ -203,8 +207,8 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
             sub_samples_y = y[y == key]
 
             # Find the NN for the current class
-            nnhood_idx = self.nn_.kneighbors(sub_samples_x,
-                                             return_distance=False)[:, 1:]
+            nnhood_idx = self.nn_.kneighbors(
+                sub_samples_x, return_distance=False)[:, 1:]
 
             # Get the label of the corresponding to the index
             nnhood_label = y[nnhood_idx]
@@ -236,8 +240,7 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
             X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
             y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:
@@ -318,11 +321,11 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.under_sampling import \
+    RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> renn = RepeatedEditedNearestNeighbours(random_state=42)
@@ -338,8 +341,13 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=None, n_neighbors=3, max_iter=100, kind_sel='all',
+    def __init__(self,
+                 return_indices=False,
+                 random_state=None,
+                 size_ngh=None,
+                 n_neighbors=3,
+                 max_iter=100,
+                 kind_sel='all',
                  n_jobs=-1):
         super(RepeatedEditedNearestNeighbours, self).__init__(
             random_state=random_state)
@@ -353,11 +361,12 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
 
-        self.enn_ = EditedNearestNeighbours(return_indices=self.return_indices,
-                                            random_state=self.random_state,
-                                            n_neighbors=self.n_neighbors,
-                                            kind_sel=self.kind_sel,
-                                            n_jobs=self.n_jobs)
+        self.enn_ = EditedNearestNeighbours(
+            return_indices=self.return_indices,
+            random_state=self.random_state,
+            n_neighbors=self.n_neighbors,
+            kind_sel=self.kind_sel,
+            n_jobs=self.n_jobs)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -446,10 +455,10 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
             stats_enn = Counter(y_enn)
             self.logger.debug('Current ENN stats: %s', stats_enn)
             # Get the number of samples in the non-minority classes
-            count_non_min = np.array([val for val, key
-                                      in zip(stats_enn.values(),
-                                             stats_enn.keys())
-                                      if key != self.min_c_])
+            count_non_min = np.array([
+                val for val, key in zip(stats_enn.values(), stats_enn.keys())
+                if key != self.min_c_
+            ])
             self.logger.debug('Number of samples in the non-majority'
                               ' classes: %s', count_non_min)
             # Check the minority stop to be the minority
@@ -557,11 +566,11 @@ class AllKNN(BaseMulticlassSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import AllKNN
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.under_sampling import \
+    AllKNN # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> allknn = AllKNN(random_state=42)
@@ -577,8 +586,13 @@ class AllKNN(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None,
-                 size_ngh=None, n_neighbors=3, kind_sel='all', n_jobs=-1):
+    def __init__(self,
+                 return_indices=False,
+                 random_state=None,
+                 size_ngh=None,
+                 n_neighbors=3,
+                 kind_sel='all',
+                 n_jobs=-1):
         super(AllKNN, self).__init__(random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
@@ -589,11 +603,12 @@ class AllKNN(BaseMulticlassSampler):
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
 
-        self.enn_ = EditedNearestNeighbours(return_indices=self.return_indices,
-                                            random_state=self.random_state,
-                                            n_neighbors=self.n_neighbors,
-                                            kind_sel=self.kind_sel,
-                                            n_jobs=self.n_jobs)
+        self.enn_ = EditedNearestNeighbours(
+            return_indices=self.return_indices,
+            random_state=self.random_state,
+            n_neighbors=self.n_neighbors,
+            kind_sel=self.kind_sel,
+            n_jobs=self.n_jobs)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -671,10 +686,10 @@ class AllKNN(BaseMulticlassSampler):
             stats_enn = Counter(y_enn)
             self.logger.debug('Current ENN stats: %s', stats_enn)
             # Get the number of samples in the non-minority classes
-            count_non_min = np.array([val for val, key
-                                      in zip(stats_enn.values(),
-                                             stats_enn.keys())
-                                      if key != self.min_c_])
+            count_non_min = np.array([
+                val for val, key in zip(stats_enn.values(), stats_enn.keys())
+                if key != self.min_c_
+            ])
             self.logger.debug('Number of samples in the non-majority'
                               ' classes: %s', count_non_min)
             # Check the minority stop to be the minority

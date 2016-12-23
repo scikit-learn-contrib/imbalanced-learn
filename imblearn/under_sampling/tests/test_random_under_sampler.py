@@ -13,16 +13,11 @@ from imblearn.under_sampling import RandomUnderSampler
 # Generate a global dataset to use
 RND_SEED = 0
 # Data generated for the toy example
-X = np.array([[0.04352327, -0.20515826],
-              [0.92923648, 0.76103773],
-              [0.20792588, 1.49407907],
-              [0.47104475, 0.44386323],
-              [0.22950086, 0.33367433],
-              [0.15490546, 0.3130677],
-              [0.09125309, -0.85409574],
-              [0.12372842, 0.6536186],
-              [0.13347175, 0.12167502],
-              [0.094035, -2.55298982]])
+X = np.array([[0.04352327, -0.20515826], [0.92923648, 0.76103773],
+              [0.20792588, 1.49407907], [0.47104475, 0.44386323],
+              [0.22950086, 0.33367433], [0.15490546, 0.3130677],
+              [0.09125309, -0.85409574], [0.12372842, 0.6536186],
+              [0.13347175, 0.12167502], [0.094035, -2.55298982]])
 Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 
@@ -119,13 +114,9 @@ def test_rus_fit_sample():
     rus = RandomUnderSampler(random_state=RND_SEED)
     X_resampled, y_resampled = rus.fit_sample(X, Y)
 
-
-    X_gt = np.array([[0.92923648, 0.76103773],
-                     [0.47104475, 0.44386323],
-                     [0.13347175, 0.12167502],
-                     [0.09125309, -0.85409574],
-                     [0.12372842, 0.6536186],
-                     [0.04352327, -0.20515826]])
+    X_gt = np.array([[0.92923648, 0.76103773], [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502], [0.09125309, -0.85409574],
+                     [0.12372842, 0.6536186], [0.04352327, -0.20515826]])
     y_gt = np.array([0, 0, 0, 1, 1, 1])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
@@ -138,12 +129,9 @@ def test_rus_fit_sample_with_indices():
     rus = RandomUnderSampler(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = rus.fit_sample(X, Y)
 
-    X_gt = np.array([[0.92923648, 0.76103773],
-                     [0.47104475, 0.44386323],
-                     [0.13347175, 0.12167502],
-                     [0.09125309, -0.85409574],
-                     [0.12372842, 0.6536186],
-                     [0.04352327, -0.20515826]])
+    X_gt = np.array([[0.92923648, 0.76103773], [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502], [0.09125309, -0.85409574],
+                     [0.12372842, 0.6536186], [0.04352327, -0.20515826]])
     y_gt = np.array([0, 0, 0, 1, 1, 1])
     idx_gt = np.array([1, 3, 8, 6, 7, 0])
     assert_array_equal(X_resampled, X_gt)
@@ -159,15 +147,11 @@ def test_rus_fit_sample_half():
     rus = RandomUnderSampler(ratio=ratio, random_state=RND_SEED)
     X_resampled, y_resampled = rus.fit_sample(X, Y)
 
-    X_gt = np.array([[0.92923648, 0.76103773],
-                    [0.47104475, 0.44386323],
-                    [0.13347175, 0.12167502],
-                    [0.09125309, -0.85409574],
-                    [0.12372842, 0.6536186],
-                    [0.04352327, -0.20515826],
-                    [0.15490546, 0.3130677],
-                    [0.15490546, 0.3130677],
-                    [0.15490546, 0.3130677]])
+    X_gt = np.array([[0.92923648, 0.76103773], [0.47104475, 0.44386323],
+                     [0.13347175, 0.12167502], [0.09125309, -0.85409574],
+                     [0.12372842, 0.6536186], [0.04352327, -0.20515826],
+                     [0.15490546, 0.3130677], [0.15490546, 0.3130677],
+                     [0.15490546, 0.3130677]])
     y_gt = np.array([0, 0, 0, 1, 1, 1, 1, 1, 1])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
@@ -180,8 +164,8 @@ def test_rus_sample_wrong_X():
     # Create the object
     rus = RandomUnderSampler(random_state=RND_SEED)
     rus.fit(X, Y)
-    assert_raises(RuntimeError, rus.sample, np.random.random((100, 40)),
-                  np.array([0] * 50 + [1] * 50))
+    assert_raises(RuntimeError, rus.sample,
+                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
 
 
 def test_continuous_error():

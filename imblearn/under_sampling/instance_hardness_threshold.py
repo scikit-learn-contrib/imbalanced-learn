@@ -93,11 +93,11 @@ class InstanceHardnessThreshold(BaseBinarySampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.under_sampling import \
+    RepeatedEditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> renn = RepeatedEditedNearestNeighbours(random_state=42)
@@ -113,11 +113,16 @@ class InstanceHardnessThreshold(BaseBinarySampler):
 
     """
 
-    def __init__(self, estimator=None, ratio='auto', return_indices=False,
-                 random_state=None, cv=5, n_jobs=1, **kwargs):
+    def __init__(self,
+                 estimator=None,
+                 ratio='auto',
+                 return_indices=False,
+                 random_state=None,
+                 cv=5,
+                 n_jobs=1,
+                 **kwargs):
         super(InstanceHardnessThreshold, self).__init__(
-            ratio=ratio,
-            random_state=random_state)
+            ratio=ratio, random_state=random_state)
         self.estimator = estimator
         self.return_indices = return_indices
         self.cv = cv
@@ -143,27 +148,22 @@ class InstanceHardnessThreshold(BaseBinarySampler):
                           DeprecationWarning)
             if self.estimator == 'knn':
                 from sklearn.neighbors import KNeighborsClassifier
-                self.estimator_ = KNeighborsClassifier(
-                    **self.kwargs)
+                self.estimator_ = KNeighborsClassifier(**self.kwargs)
             elif self.estimator == 'decision-tree':
                 from sklearn.tree import DecisionTreeClassifier
                 self.estimator_ = DecisionTreeClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'random-forest':
                 self.estimator_ = RandomForestClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'adaboost':
                 from sklearn.ensemble import AdaBoostClassifier
                 self.estimator_ = AdaBoostClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'gradient-boosting':
                 from sklearn.ensemble import GradientBoostingClassifier
                 self.estimator_ = GradientBoostingClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'linear-svm':
                 from sklearn.svm import SVC
                 self.estimator_ = SVC(probability=True,
@@ -225,8 +225,8 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         """
 
         # Create the different folds
-        skf = StratifiedKFold(y, n_folds=self.cv, shuffle=False,
-                              random_state=self.random_state)
+        skf = StratifiedKFold(
+            y, n_folds=self.cv, shuffle=False, random_state=self.random_state)
 
         probabilities = np.zeros(y.shape[0], dtype=float)
 
@@ -240,7 +240,8 @@ class InstanceHardnessThreshold(BaseBinarySampler):
             classes = self.estimator_.classes_
             probabilities[test_index] = [
                 probs[l, np.where(classes == c)[0][0]]
-                for l, c in enumerate(y_test)]
+                for l, c in enumerate(y_test)
+            ]
 
         # Compute the number of cluster needed
         if self.ratio == 'auto':
@@ -259,8 +260,7 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         X_resampled = X[mask]
         y_resampled = y[mask]
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         # If we need to offer support for the indices
         if self.return_indices:

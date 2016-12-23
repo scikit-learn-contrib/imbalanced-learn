@@ -10,7 +10,6 @@ from ..base import BaseMulticlassSampler
 
 
 class RandomOverSampler(BaseMulticlassSampler):
-
     """Class to perform random over-sampling.
 
     Object to over-sample the minority class(es) by picking samples at random
@@ -54,11 +53,11 @@ class RandomOverSampler(BaseMulticlassSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.over_sampling import RandomOverSampler
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.over_sampling import \
+    RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> ros = RandomOverSampler(random_state=42)
@@ -68,12 +67,10 @@ class RandomOverSampler(BaseMulticlassSampler):
 
     """
 
-    def __init__(self,
-                 ratio='auto',
-                 random_state=None):
+    def __init__(self, ratio='auto', random_state=None):
 
-        super(RandomOverSampler, self).__init__(ratio=ratio,
-                                                random_state=random_state)
+        super(RandomOverSampler, self).__init__(
+            ratio=ratio, random_state=random_state)
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -109,28 +106,24 @@ class RandomOverSampler(BaseMulticlassSampler):
 
             # Define the number of sample to create
             if self.ratio == 'auto':
-                num_samples = int(self.stats_c_[self.maj_c_] -
-                                  self.stats_c_[key])
+                num_samples = int(self.stats_c_[self.maj_c_] - self.stats_c_[
+                    key])
             else:
                 num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
                                   self.stats_c_[key])
 
             # Pick some elements at random
             random_state = check_random_state(self.random_state)
-            indx = random_state.randint(low=0, high=self.stats_c_[key],
-                                        size=num_samples)
+            indx = random_state.randint(
+                low=0, high=self.stats_c_[key], size=num_samples)
 
             # Concatenate to the majority class
-            X_resampled = np.concatenate((X_resampled,
-                                          X[y == key],
-                                          X[y == key][indx]),
-                                         axis=0)
+            X_resampled = np.concatenate(
+                (X_resampled, X[y == key], X[y == key][indx]), axis=0)
 
-            y_resampled = np.concatenate((y_resampled,
-                                          y[y == key],
-                                          y[y == key][indx]), axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, y[y == key], y[y == key][indx]), axis=0)
 
-        self.logger.info('Over-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Over-sampling performed: %s', Counter(y_resampled))
 
         return X_resampled, y_resampled

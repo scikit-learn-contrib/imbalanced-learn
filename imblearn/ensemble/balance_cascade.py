@@ -94,11 +94,11 @@ class BalanceCascade(BaseBinarySampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.ensemble import BalanceCascade
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.ensemble import \
+    BalanceCascade # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> bc = BalanceCascade(random_state=42)
@@ -115,11 +115,17 @@ class BalanceCascade(BaseBinarySampler):
 
     """
 
-    def __init__(self, ratio='auto', return_indices=False, random_state=None,
-                 n_max_subset=None, classifier=None, estimator=None,
-                 bootstrap=True, **kwargs):
-        super(BalanceCascade, self).__init__(ratio=ratio,
-                                             random_state=random_state)
+    def __init__(self,
+                 ratio='auto',
+                 return_indices=False,
+                 random_state=None,
+                 n_max_subset=None,
+                 classifier=None,
+                 estimator=None,
+                 bootstrap=True,
+                 **kwargs):
+        super(BalanceCascade, self).__init__(
+            ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.classifier = classifier
         self.estimator = estimator
@@ -150,32 +156,27 @@ class BalanceCascade(BaseBinarySampler):
                           DeprecationWarning)
             # Define the classifier to use
             if self.estimator == 'knn':
-                self.estimator_ = KNeighborsClassifier(
-                    **self.kwargs)
+                self.estimator_ = KNeighborsClassifier(**self.kwargs)
             elif self.estimator == 'decision-tree':
                 from sklearn.tree import DecisionTreeClassifier
                 self.estimator_ = DecisionTreeClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'random-forest':
                 from sklearn.ensemble import RandomForestClassifier
                 self.estimator_ = RandomForestClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'adaboost':
                 from sklearn.ensemble import AdaBoostClassifier
                 self.estimator_ = AdaBoostClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'gradient-boosting':
                 from sklearn.ensemble import GradientBoostingClassifier
                 self.estimator_ = GradientBoostingClassifier(
-                    random_state=self.random_state,
-                    **self.kwargs)
+                    random_state=self.random_state, **self.kwargs)
             elif self.estimator == 'linear-svm':
                 from sklearn.svm import LinearSVC
-                self.estimator_ = LinearSVC(random_state=self.random_state,
-                                            **self.kwargs)
+                self.estimator_ = LinearSVC(
+                    random_state=self.random_state, **self.kwargs)
             else:
                 raise NotImplementedError
         else:
@@ -272,12 +273,10 @@ class BalanceCascade(BaseBinarySampler):
             # Generate an appropriate number of index to extract
             # from the majority class depending of the false classification
             # rate of the previous iteration
-            idx_sel_from_maj = random_state.choice(np.flatnonzero(b_sel_N),
-                                                   size=num_samples,
-                                                   replace=False)
-            idx_sel_from_maj = np.concatenate((idx_mis_class,
-                                               idx_sel_from_maj),
-                                              axis=0).astype(int)
+            idx_sel_from_maj = random_state.choice(
+                np.flatnonzero(b_sel_N), size=num_samples, replace=False)
+            idx_sel_from_maj = np.concatenate(
+                (idx_mis_class, idx_sel_from_maj), axis=0).astype(int)
 
             # Mark these indexes as not being considered for next sampling
             b_sel_N[idx_sel_from_maj] = False
@@ -292,9 +291,9 @@ class BalanceCascade(BaseBinarySampler):
             X_resampled.append(x_data)
             y_resampled.append(y_data)
             if self.return_indices:
-                idx_under.append(np.concatenate((idx_min,
-                                                 idx_maj[idx_sel_from_maj]),
-                                                axis=0))
+                idx_under.append(
+                    np.concatenate(
+                        (idx_min, idx_maj[idx_sel_from_maj]), axis=0))
 
             # Get the indices of interest
             if self.bootstrap:
@@ -305,7 +304,7 @@ class BalanceCascade(BaseBinarySampler):
             # Draw samples, using sample weights, and then fit
             if support_sample_weight:
                 self.logger.debug('Sample-weight is supported')
-                curr_sample_weight = np.ones((y_data.size,), dtype=np.float64)
+                curr_sample_weight = np.ones((y_data.size, ), dtype=np.float64)
 
                 if self.bootstrap:
                     self.logger.debug('Go for a bootstrap')
@@ -318,7 +317,8 @@ class BalanceCascade(BaseBinarySampler):
                     not_indices_mask = ~mask
                     curr_sample_weight[not_indices_mask] = 0
 
-                self.estimator_.fit(x_data, y_data,
+                self.estimator_.fit(x_data,
+                                    y_data,
                                     sample_weight=curr_sample_weight)
 
             # Draw samples, using a mask, and then fit
@@ -333,8 +333,8 @@ class BalanceCascade(BaseBinarySampler):
             # next round
 
             # Find the misclassified index to keep them for the next round
-            idx_mis_class = idx_sel_from_maj[np.flatnonzero(
-                pred_label != N_y[idx_sel_from_maj])]
+            idx_mis_class = idx_sel_from_maj[np.flatnonzero(pred_label != N_y[
+                idx_sel_from_maj])]
             self.logger.debug('Elements misclassified: %s', idx_mis_class)
 
             # Count how many random element will be selected
@@ -356,20 +356,20 @@ class BalanceCascade(BaseBinarySampler):
                     b_subset_search = False
                     # Select the remaining data
                     idx_sel_from_maj = np.flatnonzero(b_sel_N)
-                    idx_sel_from_maj = np.concatenate((idx_mis_class,
-                                                       idx_sel_from_maj),
-                                                      axis=0).astype(int)
+                    idx_sel_from_maj = np.concatenate(
+                        (idx_mis_class, idx_sel_from_maj), axis=0).astype(int)
                     # Select the final batch
-                    x_data = np.concatenate((X_min, N_x[idx_sel_from_maj, :]),
-                                            axis=0)
-                    y_data = np.concatenate((y_min, N_y[idx_sel_from_maj]),
-                                            axis=0)
+                    x_data = np.concatenate(
+                        (X_min, N_x[idx_sel_from_maj, :]), axis=0)
+                    y_data = np.concatenate(
+                        (y_min, N_y[idx_sel_from_maj]), axis=0)
                     # Push these data into a new subset
                     X_resampled.append(x_data)
                     y_resampled.append(y_data)
                     if self.return_indices:
-                        idx_under.append(np.concatenate(
-                            (idx_min, idx_maj[idx_sel_from_maj]), axis=0))
+                        idx_under.append(
+                            np.concatenate(
+                                (idx_min, idx_maj[idx_sel_from_maj]), axis=0))
 
                     self.logger.debug('Creation of the subset #%s', n_subsets)
 
@@ -389,19 +389,19 @@ class BalanceCascade(BaseBinarySampler):
                 b_subset_search = False
                 # Select the remaining data
                 idx_sel_from_maj = np.flatnonzero(b_sel_N)
-                idx_sel_from_maj = np.concatenate((idx_mis_class,
-                                                   idx_sel_from_maj),
-                                                  axis=0).astype(int)
+                idx_sel_from_maj = np.concatenate(
+                    (idx_mis_class, idx_sel_from_maj), axis=0).astype(int)
                 # Select the final batch
-                x_data = np.concatenate((X_min, N_x[idx_sel_from_maj, :]),
-                                        axis=0)
+                x_data = np.concatenate(
+                    (X_min, N_x[idx_sel_from_maj, :]), axis=0)
                 y_data = np.concatenate((y_min, N_y[idx_sel_from_maj]), axis=0)
                 # Push these data into a new subset
                 X_resampled.append(x_data)
                 y_resampled.append(y_data)
                 if self.return_indices:
-                    idx_under.append(np.concatenate(
-                        (idx_min, idx_maj[idx_sel_from_maj]), axis=0))
+                    idx_under.append(
+                        np.concatenate(
+                            (idx_min, idx_maj[idx_sel_from_maj]), axis=0))
                 self.logger.debug('Creation of the subset #%s', n_subsets)
 
                 # We found a new subset, increase the counter

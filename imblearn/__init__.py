@@ -30,9 +30,7 @@ _check_module_dependencies()
 CHECK_CACHE_VERSION = True
 
 # list all submodules available in imblearn and version
-__all__ = ['combine',
-           'ensemble',
-           'over_sampling',
-           'under_sampling',
-           'pipeline',
-           '__version__']
+__all__ = [
+    'combine', 'ensemble', 'over_sampling', 'under_sampling', 'pipeline',
+    '__version__'
+]

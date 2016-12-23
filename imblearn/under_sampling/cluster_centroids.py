@@ -6,7 +6,6 @@ from collections import Counter
 
 import numpy as np
 from sklearn.cluster import KMeans
-from sklearn.utils import check_random_state
 
 from ..base import BaseMulticlassSampler
 
@@ -65,11 +64,11 @@ class ClusterCentroids(BaseMulticlassSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import ClusterCentroids
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.under_sampling import \
+    ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> cc = ClusterCentroids(random_state=42)
@@ -79,10 +78,13 @@ class ClusterCentroids(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, estimator=None,
+    def __init__(self,
+                 ratio='auto',
+                 random_state=None,
+                 estimator=None,
                  n_jobs=1):
-        super(ClusterCentroids, self).__init__(ratio=ratio,
-                                               random_state=random_state)
+        super(ClusterCentroids, self).__init__(
+            ratio=ratio, random_state=random_state)
         self.estimator = estimator
         self.n_jobs = n_jobs
 
@@ -90,8 +92,8 @@ class ClusterCentroids(BaseMulticlassSampler):
         """Private function to create the NN estimator"""
 
         if self.estimator is None:
-            self.estimator_ = KMeans(random_state=self.random_state,
-                                     n_jobs=self.n_jobs)
+            self.estimator_ = KMeans(
+                random_state=self.random_state, n_jobs=self.n_jobs)
         elif isinstance(self.estimator, KMeans):
             self.estimator_ = self.estimator
         else:
@@ -172,11 +174,9 @@ class ClusterCentroids(BaseMulticlassSampler):
 
             # Concatenate to the minority class
             X_resampled = np.concatenate((X_resampled, centroids), axis=0)
-            y_resampled = np.concatenate((y_resampled, np.array([key] *
-                                                                num_samples)),
-                                         axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, np.array([key] * num_samples)), axis=0)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y_resampled))
+        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         return X_resampled, y_resampled

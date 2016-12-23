@@ -16,7 +16,6 @@ from sklearn.utils.multiclass import type_of_target
 
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
-
     """Mixin class for samplers with abstact method.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -113,8 +112,8 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.min_c_ = min(self.stats_c_, key=self.stats_c_.get)
         self.maj_c_ = max(self.stats_c_, key=self.stats_c_.get)
 
-        self.logger.info('%s classes detected: %s', np.unique(y).size,
-                         self.stats_c_)
+        self.logger.info('%s classes detected: %s',
+                         np.unique(y).size, self.stats_c_)
 
         # Check if the ratio provided at initialisation make sense
         if isinstance(self.ratio, float):

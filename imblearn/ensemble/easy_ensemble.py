@@ -11,7 +11,6 @@ MAX_INT = np.iinfo(np.int32).max
 
 
 class EasyEnsemble(BaseMulticlassSampler):
-
     """Create an ensemble sets by iteratively applying random under-sampling.
 
     This method iteratively select a random subset and make an ensemble of the
@@ -67,11 +66,11 @@ class EasyEnsemble(BaseMulticlassSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.ensemble import EasyEnsemble
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.ensemble import \
+    EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> ee = EasyEnsemble(random_state=42)
@@ -88,10 +87,14 @@ class EasyEnsemble(BaseMulticlassSampler):
 
     """
 
-    def __init__(self, ratio='auto', return_indices=False,
-                 random_state=None, replacement=False, n_subsets=10):
-        super(EasyEnsemble, self).__init__(ratio=ratio,
-                                           random_state=random_state)
+    def __init__(self,
+                 ratio='auto',
+                 return_indices=False,
+                 random_state=None,
+                 replacement=False,
+                 n_subsets=10):
+        super(EasyEnsemble, self).__init__(
+            ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.replacement = replacement
         self.n_subsets = n_subsets
@@ -132,11 +135,11 @@ class EasyEnsemble(BaseMulticlassSampler):
         self.samplers_ = []
 
         for _ in range(self.n_subsets):
-            rus = RandomUnderSampler(ratio=self.ratio,
-                                     return_indices=self.return_indices,
-                                     random_state=random_state.randint(
-                                         MAX_INT),
-                                     replacement=self.replacement)
+            rus = RandomUnderSampler(
+                ratio=self.ratio,
+                return_indices=self.return_indices,
+                random_state=random_state.randint(MAX_INT),
+                replacement=self.replacement)
             self.samplers_.append(rus)
 
         for rus in self.samplers_:

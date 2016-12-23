@@ -13,7 +13,6 @@ SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
 
 class SMOTE(BaseBinarySampler):
-
     """Class to perform over-sampling using SMOTE.
 
     This object is an implementation of SMOTE - Synthetic Minority
@@ -102,11 +101,11 @@ class SMOTE(BaseBinarySampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.over_sampling import SMOTE
-    >>> X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-    ...                            n_informative=3, n_redundant=1, flip_y=0,
-    ...                            n_features=20, n_clusters_per_class=1,
-    ...                            n_samples=1000, random_state=10)
+    >>> from imblearn.over_sampling import \
+    SMOTE # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
     >>> sm = SMOTE(random_state=42)
@@ -130,9 +129,17 @@ class SMOTE(BaseBinarySampler):
 
     """
 
-    def __init__(self, ratio='auto', random_state=None, k=None, k_neighbors=5,
-                 m=None, m_neighbors=10, out_step=0.5, kind='regular',
-                 svm_estimator=None, n_jobs=1):
+    def __init__(self,
+                 ratio='auto',
+                 random_state=None,
+                 k=None,
+                 k_neighbors=5,
+                 m=None,
+                 m_neighbors=10,
+                 out_step=0.5,
+                 kind='regular',
+                 svm_estimator=None,
+                 n_jobs=1):
         super(SMOTE, self).__init__(ratio=ratio, random_state=random_state)
         self.kind = kind
         self.k = k
@@ -169,8 +176,7 @@ class SMOTE(BaseBinarySampler):
 
         # Find the NN for each samples
         # Exclude the sample itself
-        x = self.nn_m_.kneighbors(samples,
-                                  return_distance=False)[:, 1:]
+        x = self.nn_m_.kneighbors(samples, return_distance=False)[:, 1:]
 
         # Count how many NN belong to the minority class
         # Find the class corresponding to the label in x
@@ -180,16 +186,21 @@ class SMOTE(BaseBinarySampler):
 
         if kind == 'danger':
             # Samples are in danger for m/2 <= m' < m
-            return np.bitwise_and(n_maj >= float(
-                self.nn_m_.n_neighbors - 1) / 2.,
-                                  n_maj < self.nn_m_.n_neighbors - 1)
+            return np.bitwise_and(
+                n_maj >= float(self.nn_m_.n_neighbors - 1) / 2.,
+                n_maj < self.nn_m_.n_neighbors - 1)
         elif kind == 'noise':
             # Samples are noise for m = m'
             return n_maj == self.nn_m_.n_neighbors - 1
         else:
             raise NotImplementedError
 
-    def _make_samples(self, X, y_type, nn_data, nn_num, n_samples,
+    def _make_samples(self,
+                      X,
+                      y_type,
+                      nn_data,
+                      nn_num,
+                      n_samples,
                       step_size=1.):
         """A support function that returns artificial samples constructed along
         the line connecting nearest neighbours.
@@ -240,9 +251,8 @@ class SMOTE(BaseBinarySampler):
         #                              size=n_samples)
 
         # Randomly pick samples to construct neighbours from
-        samples = random_state.randint(low=0,
-                                       high=len(nn_num.flatten()),
-                                       size=n_samples)
+        samples = random_state.randint(
+            low=0, high=len(nn_num.flatten()), size=n_samples)
 
         # Loop over the NN matrix and create new samples
         for i, n in enumerate(samples):
@@ -259,8 +269,7 @@ class SMOTE(BaseBinarySampler):
             step = step_size * random_state.uniform()
 
             # Construct synthetic sample
-            X_new[i] = X[row] - step * (X[row] -
-                                        nn_data[nn_num[row, col]])
+            X_new[i] = X[row] - step * (X[row] - nn_data[nn_num[row, col]])
 
         # The returned target vector is simply a repetition of the
         # minority label
@@ -280,8 +289,8 @@ class SMOTE(BaseBinarySampler):
             # creates synthetic samples directly from the k-th nearest
             # neighbours with not filtering
             if isinstance(self.k_neighbors, int):
-                self.nn_k_ = NearestNeighbors(n_neighbors=self.k_neighbors + 1,
-                                              n_jobs=self.n_jobs)
+                self.nn_k_ = NearestNeighbors(
+                    n_neighbors=self.k_neighbors + 1, n_jobs=self.n_jobs)
             elif isinstance(self.k_neighbors, KNeighborsMixin):
                 self.nn_k_ = self.k_neighbors
             else:
@@ -295,8 +304,8 @@ class SMOTE(BaseBinarySampler):
             # for m nearest neighbors to decide whether or not a sample is
             # noise or near the boundary.
             if isinstance(self.k_neighbors, int):
-                self.nn_k_ = NearestNeighbors(n_neighbors=self.k_neighbors + 1,
-                                              n_jobs=self.n_jobs)
+                self.nn_k_ = NearestNeighbors(
+                    n_neighbors=self.k_neighbors + 1, n_jobs=self.n_jobs)
             elif isinstance(self.k_neighbors, KNeighborsMixin):
                 self.nn_k_ = self.k_neighbors
             else:
@@ -304,8 +313,8 @@ class SMOTE(BaseBinarySampler):
                                  ' subclass of KNeighborsMixin.')
 
             if isinstance(self.m_neighbors, int):
-                self.nn_m_ = NearestNeighbors(n_neighbors=self.m_neighbors + 1,
-                                              n_jobs=self.n_jobs)
+                self.nn_m_ = NearestNeighbors(
+                    n_neighbors=self.m_neighbors + 1, n_jobs=self.n_jobs)
             elif isinstance(self.m_neighbors, KNeighborsMixin):
                 self.nn_m_ = self.m_neighbors
             else:
@@ -381,8 +390,8 @@ class SMOTE(BaseBinarySampler):
         # Define the number of sample to create
         # We handle only two classes problem for the moment.
         if self.ratio == 'auto':
-            num_samples = (self.stats_c_[self.maj_c_] -
-                           self.stats_c_[self.min_c_])
+            num_samples = (
+                self.stats_c_[self.maj_c_] - self.stats_c_[self.min_c_])
         else:
             num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
                               self.stats_c_[self.min_c_])
@@ -402,20 +411,14 @@ class SMOTE(BaseBinarySampler):
 
             # Matrix with k-th nearest neighbours indexes for each minority
             # element.
-            nns = self.nn_k_.kneighbors(
-                X_min,
-                return_distance=False)[:, 1:]
+            nns = self.nn_k_.kneighbors(X_min, return_distance=False)[:, 1:]
 
             self.logger.debug('Create synthetic samples ...')
 
             # --- Generating synthetic samples
             # Use static method make_samples to generate minority samples
-            X_new, y_new = self._make_samples(X_min,
-                                              self.min_c_,
-                                              X_min,
-                                              nns,
-                                              num_samples,
-                                              1.0)
+            X_new, y_new = self._make_samples(X_min, self.min_c_, X_min, nns,
+                                              num_samples, 1.0)
 
             # Concatenate the newly generated samples to the original data set
             X_resampled = np.concatenate((X, X_new), axis=0)
@@ -452,17 +455,13 @@ class SMOTE(BaseBinarySampler):
 
             # nns...#
             nns = self.nn_k_.kneighbors(
-                X_min[danger_index],
-                return_distance=False)[:, 1:]
+                X_min[danger_index], return_distance=False)[:, 1:]
 
             # B1 and B2 types diverge here!!!
             if self.kind == 'borderline1':
                 # Create synthetic samples for borderline points.
-                X_new, y_new = self._make_samples(X_min[danger_index],
-                                                  self.min_c_,
-                                                  X_min,
-                                                  nns,
-                                                  num_samples)
+                X_new, y_new = self._make_samples(
+                    X_min[danger_index], self.min_c_, X_min, nns, num_samples)
 
                 # Concatenate the newly generated samples to the original
                 # dataset
@@ -480,22 +479,22 @@ class SMOTE(BaseBinarySampler):
                 fractions = random_state.beta(10, 10)
 
                 # Only minority
-                X_new_1, y_new_1 = self._make_samples(X_min[danger_index],
-                                                      self.min_c_,
-                                                      X_min,
-                                                      nns,
-                                                      int(fractions *
-                                                          (num_samples + 1)),
-                                                      step_size=1.)
+                X_new_1, y_new_1 = self._make_samples(
+                    X_min[danger_index],
+                    self.min_c_,
+                    X_min,
+                    nns,
+                    int(fractions * (num_samples + 1)),
+                    step_size=1.)
 
                 # Only majority with smaller step size
-                X_new_2, y_new_2 = self._make_samples(X_min[danger_index],
-                                                      self.min_c_,
-                                                      X[y != self.min_c_],
-                                                      nns,
-                                                      int((1 - fractions) *
-                                                          num_samples),
-                                                      step_size=0.5)
+                X_new_2, y_new_2 = self._make_samples(
+                    X_min[danger_index],
+                    self.min_c_,
+                    X[y != self.min_c_],
+                    nns,
+                    int((1 - fractions) * num_samples),
+                    step_size=0.5)
 
                 # Concatenate the newly generated samples to the original
                 # data set
@@ -515,8 +514,8 @@ class SMOTE(BaseBinarySampler):
             self.svm_estimator_.fit(X, y)
 
             # Find the support vectors and their corresponding indexes
-            support_index = self.svm_estimator_.support_[
-                y[self.svm_estimator_.support_] == self.min_c_]
+            support_index = self.svm_estimator_.support_[y[
+                self.svm_estimator_.support_] == self.min_c_]
             support_vector = X[support_index]
 
             # First, find the nn of all the samples to identify samples
@@ -532,14 +531,13 @@ class SMOTE(BaseBinarySampler):
 
             # Remove noisy support vectors
             support_vector = support_vector[np.logical_not(noise_bool)]
-            danger_bool = self._in_danger_noise(support_vector, y,
-                                                kind='danger')
+            danger_bool = self._in_danger_noise(
+                support_vector, y, kind='danger')
             safety_bool = np.logical_not(danger_bool)
 
             self.logger.debug('Out of %s support vectors, %s are noisy, '
                               '%s are in danger '
-                              'and %s are safe.',
-                              support_vector.shape[0],
+                              'and %s are safe.', support_vector.shape[0],
                               noise_bool.sum().astype(int),
                               danger_bool.sum().astype(int),
                               safety_bool.sum().astype(int))
@@ -562,8 +560,7 @@ class SMOTE(BaseBinarySampler):
             # Interpolate samples in danger
             if np.count_nonzero(danger_bool) > 0:
                 nns = self.nn_k_.kneighbors(
-                    support_vector[danger_bool],
-                    return_distance=False)[:, 1:]
+                    support_vector[danger_bool], return_distance=False)[:, 1:]
 
                 X_new_1, y_new_1 = self._make_samples(
                     support_vector[danger_bool],
@@ -576,8 +573,7 @@ class SMOTE(BaseBinarySampler):
             # Extrapolate safe samples
             if np.count_nonzero(safety_bool) > 0:
                 nns = self.nn_k_.kneighbors(
-                    support_vector[safety_bool],
-                    return_distance=False)[:, 1:]
+                    support_vector[safety_bool], return_distance=False)[:, 1:]
 
                 X_new_2, y_new_2 = self._make_samples(
                     support_vector[safety_bool],
