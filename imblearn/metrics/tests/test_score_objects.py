@@ -1,13 +1,6 @@
 from numpy.testing import assert_almost_equal
 
 import sklearn
-# Get the version
-(major, minor, _) = sklearn.__version__.split('.')
-if minor < 18:
-    from sklearn.cross_validation import train_test_split
-    from sklearn.grid_search import GridSearchCV
-else:
-    from sklearn.model_selection import train_test_split, GridSearchCV
 
 from sklearn.datasets import make_blobs
 from sklearn.metrics import make_scorer
@@ -16,6 +9,13 @@ from sklearn.svm import LinearSVC
 from imblearn.metrics import (sensitivity_score, specificity_score,
                               geometric_mean_score,
                               make_indexed_balanced_accuracy)
+# Get the version
+(major, minor, _) = sklearn.__version__.split('.')
+if int(minor) < 18:
+    from sklearn.cross_validation import train_test_split
+    from sklearn.grid_search import GridSearchCV
+else:
+    from sklearn.model_selection import train_test_split, GridSearchCV
 
 
 def test_imblearn_classification_scorers():
