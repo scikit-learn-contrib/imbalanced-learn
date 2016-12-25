@@ -3,18 +3,28 @@ threshold."""
 from __future__ import division, print_function
 
 import warnings
-
 from collections import Counter
 
 import numpy as np
-
+from six import string_types
+import sklearn
 from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.cross_validation import StratifiedKFold
-
-from six import string_types
 
 from ..base import BaseBinarySampler
+
+
+def _get_cv_splits(X, y, cv, random_state):
+    if hasattr(sklearn, 'model_selection'):
+        from sklearn.model_selection import StratifiedKFold
+        cv_iterator = StratifiedKFold(
+            n_splits=cv, shuffle=False, random_state=random_state).split(X, y)
+    else:
+        from sklearn.cross_validation import StratifiedKFold
+        cv_iterator = StratifiedKFold(
+            y, n_folds=cv, shuffle=False, random_state=random_state)
+
+    return cv_iterator
 
 
 class InstanceHardnessThreshold(BaseBinarySampler):
@@ -225,8 +235,7 @@ class InstanceHardnessThreshold(BaseBinarySampler):
         """
 
         # Create the different folds
-        skf = StratifiedKFold(
-            y, n_folds=self.cv, shuffle=False, random_state=self.random_state)
+        skf = _get_cv_splits(X, y, self.cv, self.random_state)
 
         probabilities = np.zeros(y.shape[0], dtype=float)
 
