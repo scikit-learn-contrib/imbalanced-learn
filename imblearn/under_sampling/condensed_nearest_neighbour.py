@@ -186,7 +186,7 @@ class CondensedNearestNeighbour(SamplerMixin):
                                   np.flatnonzero(pred_S_y == S_y)))
 
             # Find the misclassified S_y
-            sel_x = np.squeeze(S_x[idx_maj_sample, :])
+            sel_x = S_x[idx_maj_sample, :]
             sel_y = S_y[idx_maj_sample]
 
             # The indexes found are relative to the current class, we need to
