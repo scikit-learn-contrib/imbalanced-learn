@@ -34,6 +34,8 @@ Enhancement
 
 - Added support for bumpversion. By `Guillaume Lemaitre`_.
 - Validate the type of target in binary samplers. A warning is raised for the moment. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
+- Change from `cross_validation` module to `model_selection` module for
+  `sklearn` deprecation cycle. By `Dayvid Oliveira`_ and `Christos Aridas`_.
 
 New features
 ~~~~~~~~~~~~
