@@ -23,6 +23,7 @@ Bug fixes
 - Fixed a bug in :class:`ensemble.BalanceCascade`, solve the issue to obtain a single array if desired. By `Guillaume Lemaitre`_.
 - Fixed a bug in :class:`pipeline.Pipeline`, solve to embed `Pipeline` in other `Pipeline. By `Christos Aridas`_ .
 - Fixed a bug in :class:`pipeline.Pipeline`, solve the issue to put to sampler in the same `Pipeline`. By `Christos Aridas`_ .
+- Fixed a bug in :class:`under_sampling.CondensedNeareastNeigbour`, correction of the shape of `sel_x` when only one sample is selected. By `Aliaksei Halachkin`_.
 
 New features
 ~~~~~~~~~~~~
@@ -114,3 +115,4 @@ New methods
 .. _Fernando Nogueira: https://github.com/fmfn
 .. _Dayvid Oliveira: https://github.com/dvro
 .. _Francois Magimel: https://github.com/Linkid
+.. _Aliaksei Halachkin: https://github.com/honeyext
