@@ -116,6 +116,6 @@ echo '--------------------------------------------------------------------------
 # Check the imblearn folder
 git diff --unified=0 $COMMIT_RANGE -- 'imblearn' | flake8 --diff --show-source
 # Check the example folder
-git diff --unified=0 $COMMIT_RANGE -- 'examples' | flake8 --diff --show-source --ignore=E402
+git diff --unified=0 $COMMIT_RANGE -- 'examples/*.py' | flake8 --diff --show-source --ignore=E402
 
 echo -e "No problem detected by flake8\n"
