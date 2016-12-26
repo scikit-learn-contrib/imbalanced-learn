@@ -14,7 +14,6 @@ from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
 
 from imblearn import over_sampling as os
-from imblearn import under_sampling as us
 from imblearn import pipeline as pl
 from imblearn.metrics import classification_report_imbalanced
 
@@ -32,7 +31,8 @@ X, y = datasets.make_classification(n_classes=2, class_sep=2,
 pipeline = pl.make_pipeline(os.SMOTE(), LinearSVC())
 
 # Split the data
-X_train, X_test, y_train, y_test = train_test_split(X, y)
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                    random_state=RANDOM_STATE)
 
 # Train the classifier with balancing
 pipeline.fit(X_train, y_train)
