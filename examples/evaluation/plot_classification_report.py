@@ -3,7 +3,7 @@
 Evaluate classification by compiling a report
 =============================================
 
-Specific metrics has been developed to evaluate classifier which has been
+Specific metrics have been developed to evaluate classifier which has been
 trained using imbalanced data. `imblearn` provides a classification
 report similar to `sklearn`, with additional metrics specific to imbalanced
 learning problem.
@@ -28,7 +28,8 @@ X, y = datasets.make_classification(n_classes=2, class_sep=2,
                                     n_clusters_per_class=4, n_samples=5000,
                                     random_state=RANDOM_STATE)
 
-pipeline = pl.make_pipeline(os.SMOTE(), LinearSVC())
+pipeline = pl.make_pipeline(os.SMOTE(random_state=RANDOM_STATE),
+                            LinearSVC(random_state=RANDOM_STATE))
 
 # Split the data
 X_train, X_test, y_train, y_test = train_test_split(X, y,

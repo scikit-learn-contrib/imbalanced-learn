@@ -32,7 +32,8 @@ X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target,
                                                     random_state=RANDOM_STATE)
 
 # Create a pipeline
-pipeline = make_pipeline(NearMiss(version=2), LinearSVC())
+pipeline = make_pipeline(NearMiss(version=2, random_state=RANDOM_STATE),
+                         LinearSVC(random_state=RANDOM_STATE))
 pipeline.fit(X_train, y_train)
 
 # Classify and report the results
