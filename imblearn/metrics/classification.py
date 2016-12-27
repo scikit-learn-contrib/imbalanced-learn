@@ -504,7 +504,7 @@ def geometric_mean_score(y_true,
     return np.sqrt(sen * spe)
 
 
-def make_indexed_balanced_accuracy(alpha=0.1, squared=True):
+def make_index_balanced_accuracy(alpha=0.1, squared=True):
     """Balance any scoring function using the indexed balanced accuracy
 
     This factory function wraps scoring function to express it as the
@@ -529,7 +529,7 @@ def make_indexed_balanced_accuracy(alpha=0.1, squared=True):
     Examples
     --------
     >>> from imblearn.metrics import geometric_mean_score as gmean
-    >>> from imblearn.metrics import make_indexed_balanced_accuracy as iba
+    >>> from imblearn.metrics import make_index_balanced_accuracy as iba
     >>> gmean = iba(alpha=0.1, squared=True)(gmean)
     >>> y_true = [1, 0, 0, 1, 0, 1]
     >>> y_pred = [0, 0, 1, 1, 0, 1]
@@ -665,7 +665,7 @@ def classification_report_imbalanced(y_true,
         average=None,
         sample_weight=sample_weight)
     # Indexed balanced accuracy
-    iba_gmean = make_indexed_balanced_accuracy(
+    iba_gmean = make_index_balanced_accuracy(
         alpha=alpha, squared=True)(geometric_mean_score)
     iba = iba_gmean(
         y_pred,

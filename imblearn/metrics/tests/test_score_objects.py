@@ -8,7 +8,7 @@ from sklearn.svm import LinearSVC
 
 from imblearn.metrics import (sensitivity_score, specificity_score,
                               geometric_mean_score,
-                              make_indexed_balanced_accuracy)
+                              make_index_balanced_accuracy)
 # Get the version
 (major, minor, _) = sklearn.__version__.split('.')
 if int(minor) < 18:
@@ -90,7 +90,7 @@ def test_imblearn_classification_scorers():
     assert_almost_equal(grid.best_score_, 0.92, 2)
 
     # make a iba metric before a scorer
-    geo_mean_iba = make_indexed_balanced_accuracy()(geometric_mean_score)
+    geo_mean_iba = make_index_balanced_accuracy()(geometric_mean_score)
     scorer = make_scorer(geo_mean_iba, pos_label=None, average='macro')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
