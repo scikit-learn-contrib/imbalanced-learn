@@ -112,6 +112,19 @@ def sensitivity_specificity_support(y_true,
         shape (n_unique_labels, )
         The number of occurrences of each label in ``y_true``.
 
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from imblearn.metrics import sensitivity_specificity_support
+    >>> y_true = np.array(['cat', 'dog', 'pig', 'cat', 'dog', 'pig'])
+    >>> y_pred = np.array(['cat', 'pig', 'dog', 'cat', 'cat', 'dog'])
+    >>> sensitivity_specificity_support(y_true, y_pred, average='macro')
+    (0.33333333333333331, 0.66666666666666663, None)
+    >>> sensitivity_specificity_support(y_true, y_pred, average='micro')
+    (0.33333333333333331, 0.66666666666666663, None)
+    >>> sensitivity_specificity_support(y_true, y_pred, average='weighted')
+    (0.33333333333333331, 0.66666666666666663, None)
+
     References
     ----------
     .. [1] `Wikipedia entry for the Sensitivity and specificity
@@ -303,6 +316,21 @@ def sensitivity_score(y_true,
     sample_weight : ndarray, shape (n_samples, )
         Sample weights.
 
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from imblearn.metrics import sensitivity_score
+    >>> y_true = [0, 1, 2, 0, 1, 2]
+    >>> y_pred = [0, 2, 1, 0, 0, 1]
+    >>> sensitivity_score(y_true, y_pred, average='macro')
+    0.33333333333333331
+    >>> sensitivity_score(y_true, y_pred, average='micro')
+    0.33333333333333331
+    >>> sensitivity_score(y_true, y_pred, average='weighted')
+    0.33333333333333331
+    >>> sensitivity_score(y_true, y_pred, average=None)
+    array([ 1.,  0.,  0.])
+
     Returns
     -------
     specificity : float (if ``average`` = None) or ndarray, \
@@ -386,6 +414,21 @@ def specificity_score(y_true,
 
     sample_weight : ndarray, shape (n_samples, )
         Sample weights.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from imblearn.metrics import specificity_score
+    >>> y_true = [0, 1, 2, 0, 1, 2]
+    >>> y_pred = [0, 2, 1, 0, 0, 1]
+    >>> specificity_score(y_true, y_pred, average='macro')
+    0.66666666666666663
+    >>> specificity_score(y_true, y_pred, average='micro')
+    0.66666666666666663
+    >>> specificity_score(y_true, y_pred, average='weighted')
+    0.66666666666666663
+    >>> specificity_score(y_true, y_pred, average=None)
+    array([ 0.75,  0.5 ,  0.75])
 
     Returns
     -------
@@ -479,6 +522,21 @@ def geometric_mean_score(y_true,
     -------
     geometric_mean : float (if ``average`` = None) or ndarray, \
         shape (n_unique_labels, )
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from imblearn.metrics import geometric_mean_score
+    >>> y_true = [0, 1, 2, 0, 1, 2]
+    >>> y_pred = [0, 2, 1, 0, 0, 1]
+    >>> geometric_mean_score(y_true, y_pred, average='macro')
+    0.47140452079103168
+    >>> geometric_mean_score(y_true, y_pred, average='micro')
+    0.47140452079103168
+    >>> geometric_mean_score(y_true, y_pred, average='weighted')
+    0.47140452079103168
+    >>> geometric_mean_score(y_true, y_pred, average=None)
+    array([ 0.8660254,  0.       ,  0.       ])
 
     References
     ----------
@@ -617,6 +675,30 @@ def classification_report_imbalanced(y_true,
     report : string
         Text summary of the precision, recall, specificity, geometric mean,
         and indexed balanced accuracy.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from imblearn.metrics import classification_report_imbalanced
+    >>> y_true = [0, 1, 2, 2, 2]
+    >>> y_pred = [0, 0, 2, 2, 1] # doctest : +NORMALIZE_WHITESPACE
+    >>> target_names = ['class 0', 'class 1', \
+    'class 2'] # doctest : +NORMALIZE_WHITESPACE
+    >>> print(classification_report_imbalanced(y_true, y_pred, \
+    target_names=target_names))
+                       pre       rec       spe        f1       geo       iba\
+       sup
+    <BLANKLINE>
+        class 0       0.50      1.00      0.75      0.67      0.71      0.48\
+         1
+        class 1       0.00      0.00      0.75      0.00      0.00      0.00\
+         1
+        class 2       1.00      0.67      1.00      0.80      0.82      0.69\
+         3
+    <BLANKLINE>
+    avg / total       0.70      0.60      0.90      0.61      0.63      0.51\
+         5
+    <BLANKLINE>
 
     """
 
