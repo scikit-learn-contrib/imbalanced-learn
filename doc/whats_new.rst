@@ -29,6 +29,7 @@ New features
 ~~~~~~~~~~~~
 
 - Added AllKNN under sampling technique. By `Dayvid Oliveira`_.
+- Added a module `metrics` implementing some specific scoring function for the problem of balancing. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
 
 Enhancement
 ~~~~~~~~~~~

@@ -119,6 +119,26 @@ Functions
 
    pipeline.make_pipeline
 
+.. _metrics_ref:
+
+Metrics
+=======
+
+.. automodule:: imblearn.metrics
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: imblearn
+
+Functions
+---------
+.. autosummary::
+:toctree: generated/
+   metrics.sensitivity_specificity_support
+   metrics.sensitivity_score
+   metrics.specificity_score
+   metrics.geometric_mean_score
+   metrics.make_index_balanced_accuracy
 
 .. _datasets_ref:
 
