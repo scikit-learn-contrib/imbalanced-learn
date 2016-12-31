@@ -133,7 +133,8 @@ Metrics
 Functions
 ---------
 .. autosummary::
-:toctree: generated/
+   :toctree: generated/
+
    metrics.sensitivity_specificity_support
    metrics.sensitivity_score
    metrics.specificity_score
