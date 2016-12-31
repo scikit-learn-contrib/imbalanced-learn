@@ -16,6 +16,10 @@ clean:
 	rm -rf doc/modules
 	rm -rf examples/.ipynb_checkpoints
 
+in: inplace # just a shortcut
+inplace:
+	$(PYTHON) setup.py build_ext -i
+
 test-code:
 	$(NOSETESTS) -s -v imblearn
 
