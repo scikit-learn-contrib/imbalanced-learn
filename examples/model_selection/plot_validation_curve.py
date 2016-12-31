@@ -29,7 +29,7 @@ X, y = datasets.make_classification(n_classes=2, class_sep=2,
                                     weights=[0.1, 0.9], n_informative=10,
                                     n_redundant=1, flip_y=0, n_features=20,
                                     n_clusters_per_class=4, n_samples=5000,
-                                    random_state=10)
+                                    random_state=RANDOM_STATE)
 smote = os.SMOTE(random_state=RANDOM_STATE)
 cart = tree.DecisionTreeClassifier(random_state=RANDOM_STATE)
 pipeline = pl.make_pipeline(smote, cart)
