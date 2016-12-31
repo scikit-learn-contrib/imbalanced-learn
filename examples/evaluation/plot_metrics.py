@@ -6,7 +6,7 @@ Metrics specific to imbalanced learning
 Specific metrics have been developed to evaluate classifier which
 has been trained using imbalanced data. `imblearn` provides mainly
 two additional metrics which are not implemented in `sklearn`: (i)
-geometric mean and (ii) indexed balanced accuracy.
+geometric mean and (ii) index balanced accuracy.
 """
 
 from sklearn import datasets
@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from imblearn import over_sampling as os
 from imblearn import pipeline as pl
 from imblearn.metrics import (geometric_mean_score,
-                              make_indexed_balanced_accuracy)
+                              make_index_balanced_accuracy)
 
 print(__doc__)
 
@@ -52,11 +52,11 @@ print('The geometric mean is {}'.format(geometric_mean_score(
     y_pred_bal)))
 
 ###############################################################################
-# The indexed balanced accuracy can transform any metric to be used in
+# The index balanced accuracy can transform any metric to be used in
 # imbalanced learning problems.
 
 alpha = 0.1
-geo_mean = make_indexed_balanced_accuracy(alpha=alpha, squared=True)(
+geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(
     geometric_mean_score)
 
 print('The IBA using alpha = {} and the geometric mean: {}'.format(
@@ -65,7 +65,7 @@ print('The IBA using alpha = {} and the geometric mean: {}'.format(
         y_pred_bal)))
 
 alpha = 0.5
-geo_mean = make_indexed_balanced_accuracy(alpha=alpha, squared=True)(
+geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(
     geometric_mean_score)
 
 print('The IBA using alpha = {} and the geometric mean: {}'.format(

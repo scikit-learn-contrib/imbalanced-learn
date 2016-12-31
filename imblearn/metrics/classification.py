@@ -571,10 +571,10 @@ def geometric_mean_score(y_true,
 
 
 def make_index_balanced_accuracy(alpha=0.1, squared=True):
-    """Balance any scoring function using the indexed balanced accuracy
+    """Balance any scoring function using the index balanced accuracy
 
     This factory function wraps scoring function to express it as the
-    indexed balanced accuracy (IBA). You need to use this function to
+    index balanced accuracy (IBA). You need to use this function to
     decorate any scoring function.
 
     Parameters
@@ -590,7 +590,7 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
     -------
     iba_scoring_func : callable,
         Returns the scoring metric decorated which will automatically compute
-        the indexed balanced accuracy.
+        the index balanced accuracy.
 
     Examples
     --------
@@ -643,7 +643,7 @@ def classification_report_imbalanced(y_true,
     Specific metrics have been proposed to evaluate the classification
     performed on imbalanced dataset. This report compiles the
     state-of-the-art metrics: precision/recall/specificity, geometric
-    mean, and indexed balanced accuracy of the
+    mean, and index balanced accuracy of the
     geometric mean.
 
     Parameters
@@ -677,7 +677,7 @@ def classification_report_imbalanced(y_true,
     -------
     report : string
         Text summary of the precision, recall, specificity, geometric mean,
-        and indexed balanced accuracy.
+        and index balanced accuracy.
 
     Examples
     --------
@@ -749,7 +749,7 @@ def classification_report_imbalanced(y_true,
         labels=labels,
         average=None,
         sample_weight=sample_weight)
-    # Indexed balanced accuracy
+    # Index balanced accuracy
     iba_gmean = make_index_balanced_accuracy(
         alpha=alpha, squared=True)(geometric_mean_score)
     iba = iba_gmean(
