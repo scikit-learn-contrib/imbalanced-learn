@@ -10,6 +10,9 @@ combine
 ensemble
     Module which provides methods generating an ensemble of
     under-sampled subsets.
+metrics
+    Module which provides metrics to quantified the classification performance
+    with imbalanced dataset.
 over_sampling
     Module which provides methods to under-sample a dataset.
 under-sampling
@@ -31,6 +34,6 @@ CHECK_CACHE_VERSION = True
 
 # list all submodules available in imblearn and version
 __all__ = [
-    'combine', 'ensemble', 'over_sampling', 'under_sampling', 'pipeline',
-    '__version__'
+    'combine', 'ensemble', 'metrics', 'over_sampling', 'under_sampling',
+    'pipeline', '__version__'
 ]
