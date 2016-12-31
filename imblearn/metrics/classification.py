@@ -14,6 +14,8 @@ import warnings
 import logging
 import functools
 
+from inspect import getcallargs
+
 import numpy as np
 
 from sklearn.metrics.classification import (_check_targets, _prf_divide,
@@ -21,6 +23,12 @@ from sklearn.metrics.classification import (_check_targets, _prf_divide,
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.fixes import bincount
 from sklearn.utils.multiclass import unique_labels
+
+try:
+    from inspect import signature
+except ImportError:
+    from sklearn.externals.funcsigs import signature
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -563,10 +571,10 @@ def geometric_mean_score(y_true,
 
 
 def make_index_balanced_accuracy(alpha=0.1, squared=True):
-    """Balance any scoring function using the indexed balanced accuracy
+    """Balance any scoring function using the index balanced accuracy
 
     This factory function wraps scoring function to express it as the
-    indexed balanced accuracy (IBA). You need to use this function to
+    index balanced accuracy (IBA). You need to use this function to
     decorate any scoring function.
 
     Parameters
@@ -582,7 +590,7 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
     -------
     iba_scoring_func : callable,
         Returns the scoring metric decorated which will automatically compute
-        the indexed balanced accuracy.
+        the index balanced accuracy.
 
     Examples
     --------
@@ -603,21 +611,16 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
             # Square if desired
             if squared:
                 _score = np.power(_score, 2)
-            # args will contain the y_pred and y_true
-            # kwargs will contain the other parameters
-            labels = kwargs.get('labels', None)
-            pos_label = kwargs.get('pos_label', 1)
-            average = kwargs.get('average', 'binary')
-            sample_weight = kwargs.get('sample_weight', None)
-            # Compute the sensitivity and specificity
-            dict_sen_spe = {
-                'labels': labels,
-                'pos_label': pos_label,
-                'average': average,
-                'sample_weight': sample_weight
-            }
-            sen, spe, _ = sensitivity_specificity_support(*args,
-                                                          **dict_sen_spe)
+            # Create the list of tags
+            tags_scoring_func = getcallargs(scoring_func, *args, **kwargs)
+            # Get the signature of the sens/spec function
+            sens_spec_sig = signature(sensitivity_specificity_support)
+            # Filter the inputs required by the sens/spec function
+            tags_sens_spec = sens_spec_sig.bind(**tags_scoring_func)
+            # Call the sens/spec function
+            sen, spe, _ = sensitivity_specificity_support(
+                *tags_sens_spec.args,
+                **tags_sens_spec.kwargs)
             # Compute the dominance
             dom = sen - spe
             return (1. + alpha * dom) * _score
@@ -640,7 +643,7 @@ def classification_report_imbalanced(y_true,
     Specific metrics have been proposed to evaluate the classification
     performed on imbalanced dataset. This report compiles the
     state-of-the-art metrics: precision/recall/specificity, geometric
-    mean, and indexed balanced accuracy of the
+    mean, and index balanced accuracy of the
     geometric mean.
 
     Parameters
@@ -674,7 +677,7 @@ def classification_report_imbalanced(y_true,
     -------
     report : string
         Text summary of the precision, recall, specificity, geometric mean,
-        and indexed balanced accuracy.
+        and index balanced accuracy.
 
     Examples
     --------
@@ -746,7 +749,7 @@ def classification_report_imbalanced(y_true,
         labels=labels,
         average=None,
         sample_weight=sample_weight)
-    # Indexed balanced accuracy
+    # Index balanced accuracy
     iba_gmean = make_index_balanced_accuracy(
         alpha=alpha, squared=True)(geometric_mean_score)
     iba = iba_gmean(
