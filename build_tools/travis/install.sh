@@ -25,18 +25,18 @@ popd
 # Configure the conda environment and put it in the path using the
 # provided versions
 conda create -n testenv --yes python=$PYTHON_VERSION pip nose \
-    numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION \
+    numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION scikit-learn=$SKLEARN_VERSION \
     libgfortran nomkl flake8
-#source activate testenv
+source activate testenv
 
 # Install nose-timer via pip
 pip install nose-timer
 
-# Install libgfortran with conda
-conda install --yes libgfortran \
-    numpy=1.10.4 scipy=0.17.1 \
-    scikit-learn=0.17.1 \
-    six=1.10.0
+# # Install libgfortran with conda
+# conda install --yes libgfortran \
+#     numpy=1.10.4 scipy=0.17.1 \
+#     scikit-learn=0.17.1 \
+#     six=1.10.0
 
 if [[ "$COVERAGE" == "true" ]]; then
     pip install coverage coveralls
