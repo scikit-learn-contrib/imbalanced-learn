@@ -24,7 +24,7 @@ install:
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
   # Installed prebuilt dependencies from conda
-  - "conda install pip numpy scipy scikit-learn nose wheel matplotlib -y -q"
+  - "conda install pip numpy=1.11.2 scipy=0.18.1 scikit-learn=0.18.1 nose wheel matplotlib -y -q"
 
   # Install other nilearn dependencies
   - "pip install coverage nose-timer"
