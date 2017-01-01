@@ -103,10 +103,10 @@ class Pipeline(pipeline.Pipeline):
     >>> print(classification_report(y_test, y_hat))
                  precision    recall  f1-score   support
     <BLANKLINE>
-              0       0.71      1.00      0.83        24
-              1       1.00      0.96      0.98       226
+              0       0.87      1.00      0.93        26
+              1       1.00      0.98      0.99       224
     <BLANKLINE>
-    avg / total       0.97      0.96      0.96       250
+    avg / total       0.99      0.98      0.98       250
     <BLANKLINE>
 
     """

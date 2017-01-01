@@ -84,7 +84,7 @@ class ADASYN(BaseBinarySampler):
     >>> ada = ADASYN(random_state=42)
     >>> X_res, y_res = ada.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({0: 909, 1: 900})
+    Resampled dataset shape Counter({0: 904, 1: 900})
 
     References
     ----------

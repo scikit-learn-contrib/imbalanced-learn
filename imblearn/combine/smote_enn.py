@@ -128,7 +128,7 @@ class SMOTEENN(BaseBinarySampler):
     >>> sme = SMOTEENN(random_state=42)
     >>> X_res, y_res = sme.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({0: 900, 1: 865})
+    Resampled dataset shape Counter({0: 900, 1: 881})
 
     References
     ----------
