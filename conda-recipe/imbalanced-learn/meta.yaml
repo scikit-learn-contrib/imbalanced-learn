@@ -1,9 +1,9 @@
 package:
   name: imbalanced-learn
-  version: "0.2.0"
+  version: "0.2.1"
 
 source:
-  git_rev: 0.2.0
+  git_rev: 0.2.1
   git_url: https://github.com/scikit-learn-contrib/imbalanced-learn.git
 
 requirements:
