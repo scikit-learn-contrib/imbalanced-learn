@@ -8,7 +8,6 @@ from abc import ABCMeta, abstractmethod
 from collections import Counter
 
 import numpy as np
-from six import string_types
 from sklearn.base import BaseEstimator
 from sklearn.externals import six
 from sklearn.utils import check_X_y
@@ -204,7 +203,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             elif self.ratio <= 0:
                 raise ValueError('Ratio cannot be negative.')
 
-        elif isinstance(self.ratio, string_types):
+        elif isinstance(self.ratio, six.string_types):
             if self.ratio != 'auto':
                 raise ValueError('Unknown string for the parameter ratio.')
         else:

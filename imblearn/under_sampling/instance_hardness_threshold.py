@@ -6,10 +6,10 @@ import warnings
 from collections import Counter
 
 import numpy as np
-from six import string_types
 import sklearn
 from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.externals.six import string_types
 
 from ..base import BaseBinarySampler
 
