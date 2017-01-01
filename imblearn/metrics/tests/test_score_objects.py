@@ -10,8 +10,8 @@ from imblearn.metrics import (sensitivity_score, specificity_score,
                               geometric_mean_score,
                               make_index_balanced_accuracy)
 # Get the version
-(major, minor, _) = sklearn.__version__.split('.')
-if int(minor) < 18:
+sk_version = sklearn.__version__
+if sk_version < '0.18':
     from sklearn.cross_validation import train_test_split
     from sklearn.grid_search import GridSearchCV
 else:
