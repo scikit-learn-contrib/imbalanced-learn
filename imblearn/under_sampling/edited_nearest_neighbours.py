@@ -91,7 +91,7 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
     >>> enn = EditedNearestNeighbours(random_state=42)
     >>> X_res, y_res = enn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 883, 0: 100})
+    Resampled dataset shape Counter({1: 887, 0: 100})
 
     References
     ----------
@@ -331,7 +331,7 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
     >>> renn = RepeatedEditedNearestNeighbours(random_state=42)
     >>> X_res, y_res = renn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 883, 0: 100})
+    Resampled dataset shape Counter({1: 887, 0: 100})
 
     References
     ----------
@@ -576,7 +576,7 @@ class AllKNN(BaseMulticlassSampler):
     >>> allknn = AllKNN(random_state=42)
     >>> X_res, y_res = allknn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 883, 0: 100})
+    Resampled dataset shape Counter({1: 887, 0: 100})
 
     References
     ----------
