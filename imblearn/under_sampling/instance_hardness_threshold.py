@@ -112,7 +112,7 @@ class InstanceHardnessThreshold(BaseBinarySampler):
     >>> iht = InstanceHardnessThreshold(random_state=42)
     >>> X_res, y_res = iht.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 811, 0: 100})
+    Resampled dataset shape Counter({1: 840, 0: 100})
 
     References
     ----------
