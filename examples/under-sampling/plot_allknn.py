@@ -57,7 +57,7 @@ ax2.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
 ax2.scatter(X_res_vis[y_resampled == 1, 0], X_res_vis[y_resampled == 1, 1],
             label="Class #1", alpha=.5, edgecolor=almost_black,
             facecolor=palette[2], linewidth=0.15)
-ax2.set_title('Edited nearest neighbours')
+ax2.set_title('ENN')
 
 # Apply the RENN
 print('RENN')
@@ -72,7 +72,7 @@ ax3.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
 ax3.scatter(X_res_vis[y_resampled == 1, 0], X_res_vis[y_resampled == 1, 1],
             label="Class #1", alpha=.5, edgecolor=almost_black,
             facecolor=palette[2], linewidth=0.15)
-ax3.set_title('Repeated Edited nearest neighbours')
+ax3.set_title('RENN')
 
 # Apply the AllKNN
 print('AllKNN')
@@ -89,4 +89,5 @@ ax4.scatter(X_res_vis[y_resampled == 1, 0], X_res_vis[y_resampled == 1, 1],
             facecolor=palette[2], linewidth=0.15)
 ax4.set_title('AllKNN')
 
+plt.tight_layout()
 plt.show()
