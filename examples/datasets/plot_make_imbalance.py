@@ -52,4 +52,5 @@ for i, ratio in enumerate(ratios, start=1):
                linewidth=0.15)
     ax.set_title('make_imbalance ratio ({})'.format(ratio))
 
+plt.tight_layout()
 plt.show()
