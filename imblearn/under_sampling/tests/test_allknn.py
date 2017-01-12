@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_almost_equal, assert_array_equal,
+from numpy.testing import (assert_allclose, assert_array_equal,
                            assert_equal, assert_raises, assert_warns)
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.neighbors import NearestNeighbors
@@ -35,6 +35,7 @@ Y = np.array([
     1, 2, 2, 2, 1, 1, 0, 2, 1, 1, 1, 2, 2, 0, 1, 2, 1, 2, 1, 1, 2, 2, 1, 1, 1,
     2, 2, 2, 2, 1, 1, 2, 0, 2, 2, 2, 2, 1, 2, 0
 ])
+R_TOL = 1e-4
 
 
 def test_allknn_sk_estimator():
@@ -115,8 +116,8 @@ def test_allknn_fit_sample():
         0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
         2, 2, 2
     ])
-    assert_array_almost_equal(X_resampled, X_gt)
-    assert_array_almost_equal(y_resampled, y_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
+    assert_allclose(y_resampled, y_gt, rtol=R_TOL)
 
 
 def test_allknn_fit_sample_with_indices():
@@ -148,9 +149,9 @@ def test_allknn_fit_sample_with_indices():
         6, 13, 32, 39, 4, 5, 14, 16, 22, 23, 24, 30, 37, 2, 11, 12, 17, 20, 21,
         25, 26, 28, 31, 33, 34, 35, 36
     ])
-    assert_array_almost_equal(X_resampled, X_gt)
-    assert_array_almost_equal(y_resampled, y_gt)
-    assert_array_almost_equal(idx_under, idx_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
+    assert_allclose(y_resampled, y_gt, rtol=R_TOL)
+    assert_allclose(idx_under, idx_gt, rtol=R_TOL)
 
 
 def test_allknn_fit_sample_mode():

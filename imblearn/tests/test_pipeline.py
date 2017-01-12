@@ -11,7 +11,7 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.utils.testing import (
-    assert_array_almost_equal, assert_array_equal, assert_equal, assert_false,
+    assert_allclose, assert_array_equal, assert_equal, assert_false,
     assert_raise_message, assert_raises, assert_raises_regex, assert_true,
     assert_warns_message)
 
@@ -26,6 +26,7 @@ JUNK_FOOD_DOCS = (
     "the burger beer beer copyright",
     "the coke burger coke copyright",
     "the coke burger burger", )
+R_TOL = 1e-4
 
 
 class IncorrectT(object):
@@ -258,7 +259,7 @@ def test_fit_predict_on_pipeline():
     pipe = Pipeline([('scaler', scaler), ('Kmeans', km)])
     pipeline_pred = pipe.fit_predict(iris.data)
 
-    assert_array_almost_equal(pipeline_pred, separate_pred)
+    assert_allclose(pipeline_pred, separate_pred, rtol=R_TOL)
 
 
 def test_fit_predict_on_pipeline_without_fit_predict():
@@ -284,12 +285,12 @@ def test_pipeline_transform():
     X_trans = pipeline.fit(X).transform(X)
     X_trans2 = pipeline.fit_transform(X)
     X_trans3 = pca.fit_transform(X)
-    assert_array_almost_equal(X_trans, X_trans2)
-    assert_array_almost_equal(X_trans, X_trans3)
+    assert_allclose(X_trans, X_trans2, rtol=R_TOL)
+    assert_allclose(X_trans, X_trans3, rtol=R_TOL)
 
     X_back = pipeline.inverse_transform(X_trans)
     X_back2 = pca.inverse_transform(X_trans)
-    assert_array_almost_equal(X_back, X_back2)
+    assert_allclose(X_back, X_back2, rtol=R_TOL)
 
 
 def test_pipeline_fit_transform():
@@ -303,7 +304,7 @@ def test_pipeline_fit_transform():
     # test fit_transform:
     X_trans = pipeline.fit_transform(X, y)
     X_trans2 = transft.fit(X, y).transform(X)
-    assert_array_almost_equal(X_trans, X_trans2)
+    assert_allclose(X_trans, X_trans2, rtol=R_TOL)
 
 
 def test_make_pipeline():
@@ -419,19 +420,24 @@ def test_pipeline_sample():
     X_trans, y_trans = pipeline.fit(X, y).sample(X, y)
     X_trans2, y_trans2 = pipeline.fit_sample(X, y)
     X_trans3, y_trans3 = rus.fit_sample(X, y)
-    assert_array_almost_equal(X_trans, X_trans2)
-    assert_array_almost_equal(X_trans, X_trans3)
-    assert_array_almost_equal(y_trans, y_trans2)
-    assert_array_almost_equal(y_trans, y_trans3)
+    assert_allclose(X_trans, X_trans2, rtol=R_TOL)
+    assert_allclose(X_trans, X_trans3, rtol=R_TOL)
+    assert_allclose(y_trans, y_trans2, rtol=R_TOL)
+    assert_allclose(y_trans, y_trans3, rtol=R_TOL)
 
     pca = PCA()
-    pipeline = Pipeline([('pca', pca), ('rus', rus)])
+    pipeline = Pipeline([('pca', PCA()),
+                         ('rus', rus)])
 
     X_trans, y_trans = pipeline.fit(X, y).sample(X, y)
     X_pca = pca.fit_transform(X)
     X_trans2, y_trans2 = rus.fit_sample(X_pca, y)
-    assert_array_almost_equal(X_trans, X_trans2)
-    assert_array_almost_equal(y_trans, y_trans2)
+    # We round the value near to zero. It seems that PCA has some issue
+    # with that
+    X_trans[np.bitwise_and(X_trans < R_TOL, X_trans > -R_TOL)] = 0
+    X_trans2[np.bitwise_and(X_trans2 < R_TOL, X_trans2 > -R_TOL)] = 0
+    assert_allclose(X_trans, X_trans2, rtol=R_TOL)
+    assert_allclose(y_trans, y_trans2, rtol=R_TOL)
 
 
 def test_pipeline_sample_transform():
