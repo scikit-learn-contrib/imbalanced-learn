@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_almost_equal, assert_array_equal,
+from numpy.testing import (assert_allclose, assert_array_equal,
                            assert_equal, assert_raises, assert_warns)
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.neighbors import NearestNeighbors
@@ -23,7 +23,7 @@ X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
               [-0.14374509, 0.27370049], [-0.41635887, -0.38299653],
               [0.08711622, 0.93259929], [1.70580611, -0.11219234]])
 Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
-
+R_TOL = 1e-4
 
 def test_smote_sk_estimator():
     """Test the sklearn estimator compatibility"""
@@ -125,7 +125,7 @@ def test_sample_regular():
     y_gt = np.array([
         0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0
     ])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -154,7 +154,7 @@ def test_sample_regular_half():
                      [0.36784496, -0.1953161]])
     y_gt = np.array(
         [0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -184,7 +184,7 @@ def test_sample_borderline1():
     y_gt = np.array([
         0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0
     ])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -213,7 +213,7 @@ def test_sample_borderline2():
                      [0.33339622, 0.49870937]])
     y_gt = np.array(
         [0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -242,7 +242,7 @@ def test_sample_svm():
                      [1.44015515, -1.30621303]])
     y_gt = np.array(
         [0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -299,7 +299,7 @@ def test_fit_sample_nn_obj():
     y_gt = np.array([
         0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0
     ])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -328,7 +328,7 @@ def test_sample_regular_with_nn():
     y_gt = np.array([
         0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0
     ])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -384,7 +384,7 @@ def test_sample_regular_with_nn_svm():
                      [1.44015515, -1.30621303]])
     y_gt = np.array(
         [0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 

@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_almost_equal, assert_array_equal,
+from numpy.testing import (assert_allclose, assert_array_equal,
                            assert_equal, assert_raises, assert_warns)
 from sklearn.utils.estimator_checks import check_estimator
 
@@ -23,6 +23,7 @@ X = np.array([[0.20622591, 0.0582794], [0.68481731, 0.51935141],
               [-0.23374509, 0.18370049], [-0.32635887, -0.29299653],
               [-0.00288378, 0.84259929], [1.79580611, -0.02219234]])
 Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
+R_TOL = 1e-4
 
 
 def test_smote_sk_estimator():
@@ -112,7 +113,7 @@ def test_sample_regular():
                      [0.70319159, -0.02571668], [0.75052536, -0.19246517]])
     y_gt = np.array(
         [0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -137,7 +138,7 @@ def test_sample_regular_half():
                      [-0.00288378, 0.84259929], [1.79580611, -0.02219234],
                      [0.45784496, -0.1053161]])
     y_gt = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -190,7 +191,7 @@ def test_validate_estimator_init():
                      [0.70319159, -0.02571668], [0.75052536, -0.19246517]])
     y_gt = np.array(
         [0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -213,7 +214,7 @@ def test_validate_estimator_default():
                      [0.70319159, -0.02571668], [0.75052536, -0.19246517]])
     y_gt = np.array(
         [0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0])
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
@@ -235,12 +236,12 @@ def test_validate_estimator_deprecation():
 
     smt = SMOTETomek(random_state=RND_SEED, n_jobs=-1)
     X_resampled, y_resampled = smt.fit_sample(X, Y)
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
     smt = SMOTETomek(random_state=RND_SEED, k=5)
     X_resampled, y_resampled = smt.fit_sample(X, Y)
-    assert_array_almost_equal(X_resampled, X_gt)
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
 
