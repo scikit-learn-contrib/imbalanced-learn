@@ -17,6 +17,7 @@ import functools
 from inspect import getcallargs
 
 import numpy as np
+import scipy as sp
 
 from sklearn.metrics.classification import (_check_targets, _prf_divide,
                                             precision_recall_fscore_support)
@@ -460,20 +461,27 @@ def geometric_mean_score(y_true,
                          y_pred,
                          labels=None,
                          pos_label=1,
-                         average='binary',
-                         sample_weight=None):
+                         average='multiclass',
+                         sample_weight=None,
+                         correction=0.0):
     """Compute the geometric mean
 
-    The geometric mean is the squared root of the product of the sensitivity
-    and specificity. This measure tries to maximize the accuracy on each
-    of the two classes while keeping these accuracies balanced.
+    The geometric mean (G-mean) is the root of the product of class-wise
+    sensitivity. This measure tries to maximize the accuracy on each of the
+    classes while keeping these accuracies balanced. For binary classification
+    G-mean is the squared root of the product of the sensitivity
+    and specificity. For multi-class problems it is a higher root of the
+    product of sensitivity for each class.
 
-    The specificity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
-    of true positives and ``fn`` the number of false negatives. The specificity
-    is intuitively the ability of the classifier to find all the positive
-    samples.
+    For compatibility with other imbalance performance measures, G-mean can
+    calculated for each class separately on a one-vs-rest basis when
+    ``average != 'multiclass'``.
 
-    The best value is 1 and the worst value is 0.
+    The best value is 1 and the worst value is 0. Traditionally if at least one
+    class is unrecognized by the classifier, G-mean resolves to zero. To
+    alleviate this property, for highly multi-class the sensitivity of
+    unrecognized classes can be "corrected" to be a user specified value
+    (instead of zero). This option works only if ``average == 'multiclass'``.
 
     Parameters
     ----------
@@ -492,11 +500,11 @@ def geometric_mean_score(y_true,
 
     pos_label : str or int, optional (default=1)
         The class to report if ``average='binary'`` and the data is binary.
-        If the data are multiclass or multilabel, this will be ignored;
+        If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : str or None, optional (default=None)
+    average : str or None, optional (default=``'multiclass'``)
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
@@ -519,24 +527,26 @@ def geometric_mean_score(y_true,
             meaningful for multilabel classification where this differs from
             :func:`accuracy_score`).
 
-    warn_for : tuple or set, for internal use
-        This determines which warnings will be made in the case that this
-        function is being used to return only one of its metrics.
-
     sample_weight : ndarray, shape (n_samples, )
         Sample weights.
 
+    correction: float, optional (default=0.0)
+        Substitutes sensitivity of unrecognized classes from zero to a given
+        value.
+
     Returns
     -------
-    geometric_mean : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    geometric_mean : float
 
     Examples
     --------
-    >>> import numpy as np
     >>> from imblearn.metrics import geometric_mean_score
     >>> y_true = [0, 1, 2, 0, 1, 2]
     >>> y_pred = [0, 2, 1, 0, 0, 1]
+    >>> geometric_mean_score(y_true, y_pred)
+    0.0
+    >>> geometric_mean_score(y_true, y_pred, correction=0.001)
+    0.010000000000000004
     >>> geometric_mean_score(y_true, y_pred, average='macro')
     0.47140452079103168
     >>> geometric_mean_score(y_true, y_pred, average='micro')
@@ -556,18 +566,66 @@ def geometric_mean_score(y_true,
        36(3), (2003), pp 849-851.
 
     """
-    sen, spe, _ = sensitivity_specificity_support(
-        y_true,
-        y_pred,
-        labels=labels,
-        pos_label=pos_label,
-        average=average,
-        warn_for=('specificity', 'specificity'),
-        sample_weight=sample_weight)
+    if average is None or average != 'multiclass':
+        sen, spe, _ = sensitivity_specificity_support(
+            y_true,
+            y_pred,
+            labels=labels,
+            pos_label=pos_label,
+            average=average,
+            warn_for=('specificity', 'specificity'),
+            sample_weight=sample_weight)
 
-    LOGGER.debug('The sensitivity and specificity are : %s - %s' % (sen, spe))
+        LOGGER.debug('The sensitivity and specificity are : %s - %s' %
+                     (sen, spe))
 
-    return np.sqrt(sen * spe)
+        return np.sqrt(sen * spe)
+    else:
+        present_labels = unique_labels(y_true, y_pred)
+
+        if labels is None:
+            labels = present_labels
+            n_labels = None
+        else:
+            n_labels = len(labels)
+            labels = np.hstack([labels, np.setdiff1d(present_labels, labels,
+                                                     assume_unique=True)])
+
+        le = LabelEncoder()
+        le.fit(labels)
+        y_true = le.transform(y_true)
+        y_pred = le.transform(y_pred)
+        sorted_labels = le.classes_
+
+        # labels are now from 0 to len(labels) - 1 -> use bincount
+        tp = y_true == y_pred
+        tp_bins = y_true[tp]
+
+        if sample_weight is not None:
+            tp_bins_weights = np.asarray(sample_weight)[tp]
+        else:
+            tp_bins_weights = None
+
+        if len(tp_bins):
+            tp_sum = bincount(tp_bins, weights=tp_bins_weights,
+                              minlength=len(labels))
+        else:
+            # Pathological case
+            true_sum = tp_sum = np.zeros(len(labels))
+        if len(y_true):
+            true_sum = bincount(y_true, weights=sample_weight,
+                                minlength=len(labels))
+
+        # Retain only selected labels
+        indices = np.searchsorted(sorted_labels, labels[:n_labels])
+        tp_sum = tp_sum[indices]
+        true_sum = true_sum[indices]
+
+        recall = _prf_divide(tp_sum, true_sum, "recall", "true", None,
+                             "recall")
+        recall[recall == 0] = correction
+
+        return sp.stats.mstats.gmean(recall)
 
 
 def make_index_balanced_accuracy(alpha=0.1, squared=True):
@@ -616,7 +674,14 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
             # Get the signature of the sens/spec function
             sens_spec_sig = signature(sensitivity_specificity_support)
             # Filter the inputs required by the sens/spec function
-            tags_sens_spec = sens_spec_sig.bind(**tags_scoring_func)
+            if scoring_func != geometric_mean_score:
+                tags_sens_spec = sens_spec_sig.bind(**tags_scoring_func)
+            else:
+                # Adapt the parameters to sens/spec function
+                del tags_scoring_func['correction']
+                if "average" not in kwargs:
+                    tags_scoring_func['average'] = 'binary'
+                tags_sens_spec = sens_spec_sig.bind(**tags_scoring_func)
             # Call the sens/spec function
             sen, spe, _ = sensitivity_specificity_support(
                 *tags_sens_spec.args,
