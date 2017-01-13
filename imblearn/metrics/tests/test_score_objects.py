@@ -1,4 +1,4 @@
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_allclose
 
 import sklearn
 
@@ -17,6 +17,8 @@ if sk_version < '0.18':
 else:
     from sklearn.model_selection import train_test_split, GridSearchCV
 
+R_TOL = 1e-2
+
 
 def test_imblearn_classification_scorers():
     """Test if the implemented scorer can be used in scikit-learn"""
@@ -29,84 +31,84 @@ def test_imblearn_classification_scorers():
     scorer = make_scorer(sensitivity_score, pos_label=None, average='macro')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     scorer = make_scorer(sensitivity_score, pos_label=None, average='weighted')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     scorer = make_scorer(sensitivity_score, pos_label=None, average='micro')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     scorer = make_scorer(sensitivity_score, pos_label=1)
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     # specificity scorer
     scorer = make_scorer(specificity_score, pos_label=None, average='macro')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     scorer = make_scorer(specificity_score, pos_label=None, average='weighted')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     scorer = make_scorer(specificity_score, pos_label=None, average='micro')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     scorer = make_scorer(specificity_score, pos_label=1)
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.95, 2)
+    assert_allclose(grid.best_score_, 0.95, rtol=R_TOL)
 
     # geometric_mean scorer
     scorer = make_scorer(geometric_mean_score, pos_label=None, average='macro')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     scorer = make_scorer(
         geometric_mean_score, pos_label=None, average='weighted')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     scorer = make_scorer(geometric_mean_score, pos_label=None, average='micro')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     scorer = make_scorer(geometric_mean_score, pos_label=1)
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.92, 2)
+    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     # make a iba metric before a scorer
     geo_mean_iba = make_index_balanced_accuracy()(geometric_mean_score)
     scorer = make_scorer(geo_mean_iba, pos_label=None, average='macro')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.85, 2)
+    assert_allclose(grid.best_score_, 0.85, rtol=R_TOL)
 
     scorer = make_scorer(geo_mean_iba, pos_label=None, average='weighted')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.85, 2)
+    assert_allclose(grid.best_score_, 0.85, rtol=R_TOL)
 
     scorer = make_scorer(geo_mean_iba, pos_label=None, average='micro')
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.85, 2)
+    assert_allclose(grid.best_score_, 0.85, rtol=R_TOL)
 
     scorer = make_scorer(geo_mean_iba, pos_label=1)
     grid = GridSearchCV(LinearSVC(), param_grid={'C': [1, 10]}, scoring=scorer)
     grid.fit(X_train, y_train).predict(X_test)
-    assert_almost_equal(grid.best_score_, 0.84, 2)
+    assert_allclose(grid.best_score_, 0.84, rtol=R_TOL)
