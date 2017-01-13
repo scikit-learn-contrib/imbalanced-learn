@@ -234,42 +234,57 @@ def test_geometric_mean_multiclass():
     cor = 0.001
     y_true = [0, 0, 0, 0]
     y_pred = [0, 0, 0, 0]
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor), 1.0, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        1.0, 10)
 
     y_true = [0, 0, 0, 0]
     y_pred = [1, 1, 1, 1]
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor), cor, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        cor, 10)
 
     y_true = [0, 0, 1, 1]
     y_pred = [0, 1, 1, 0]
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor), 0.5, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        0.5, 10)
 
     y_true = [0, 1, 2, 0, 1, 2]
     y_pred = [0, 2, 1, 0, 0, 1]
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor), (1*cor*cor)**(1.0/3.0), 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        (1*cor*cor)**(1.0/3.0), 10)
 
     y_true = [0, 1, 2, 3, 4, 5]
     y_pred = [0, 1, 2, 3, 4, 5]
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor), 1, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        1, 10)
 
     y_true = [0, 1, 1, 1, 1, 0]
     y_pred = [0, 0, 1, 1, 1, 1]
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor), (0.5*0.75)**0.5, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        (0.5*0.75)**0.5, 10)
 
     y_true = [0, 1, 2, 0, 1, 2]
     y_pred = [0, 2, 1, 0, 0, 1]
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, average='macro'), 0.47140452079103168, 10)
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, average='micro'), 0.47140452079103168, 10)
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, average='weighted'), 0.47140452079103168, 10)
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, average=None), [0.8660254, 0.0, 0.0])
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, average='macro'),
+                        0.47140452079103168, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, average='micro'),
+                        0.47140452079103168, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred,
+                                             average='weighted'),
+                        0.47140452079103168, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, average=None),
+                        [0.8660254, 0.0, 0.0])
 
     y_true = [0, 1, 2, 0, 1, 2]
     y_pred = [0, 1, 1, 0, 0, 1]
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, labels=[0, 1]), 0.70710678118654752, 10)
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, labels=[0, 1], sample_weight=[1, 2, 1, 1, 2, 1]),
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, labels=[0, 1]),
                         0.70710678118654752, 10)
-    assert_almost_equal(geometric_mean_score(y_true, y_pred, labels=[0, 1], sample_weight=[1, 2, 1, 1, 2, 1],
-                                             average='weighted'), 0.3333333333, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, labels=[0, 1],
+                                             sample_weight=[1, 2, 1, 1, 2, 1]),
+                        0.70710678118654752, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, labels=[0, 1],
+                                             sample_weight=[1, 2, 1, 1, 2, 1],
+                                             average='weighted'),
+                        0.3333333333, 10)
 
     y_true, y_pred, _ = make_prediction(binary=False)
 

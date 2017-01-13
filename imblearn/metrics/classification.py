@@ -531,7 +531,8 @@ def geometric_mean_score(y_true,
         Sample weights.
 
     correction: float, optional (default=0.0)
-        Substitutes sensitivity of unrecognized classes from zero to a given value.
+        Substitutes sensitivity of unrecognized classes from zero to a given
+        value.
 
     Returns
     -------
@@ -575,7 +576,8 @@ def geometric_mean_score(y_true,
             warn_for=('specificity', 'specificity'),
             sample_weight=sample_weight)
 
-        LOGGER.debug('The sensitivity and specificity are : %s - %s' % (sen, spe))
+        LOGGER.debug('The sensitivity and specificity are : %s - %s' %
+                     (sen, spe))
 
         return np.sqrt(sen * spe)
     else:
@@ -586,7 +588,8 @@ def geometric_mean_score(y_true,
             n_labels = None
         else:
             n_labels = len(labels)
-            labels = np.hstack([labels, np.setdiff1d(present_labels, labels, assume_unique=True)])
+            labels = np.hstack([labels, np.setdiff1d(present_labels, labels,
+                                                     assume_unique=True)])
 
         le = LabelEncoder()
         le.fit(labels)
@@ -604,19 +607,22 @@ def geometric_mean_score(y_true,
             tp_bins_weights = None
 
         if len(tp_bins):
-            tp_sum = bincount(tp_bins, weights=tp_bins_weights, minlength=len(labels))
+            tp_sum = bincount(tp_bins, weights=tp_bins_weights,
+                              minlength=len(labels))
         else:
             # Pathological case
             true_sum = tp_sum = np.zeros(len(labels))
         if len(y_true):
-            true_sum = bincount(y_true, weights=sample_weight, minlength=len(labels))
+            true_sum = bincount(y_true, weights=sample_weight,
+                                minlength=len(labels))
 
         # Retain only selected labels
         indices = np.searchsorted(sorted_labels, labels[:n_labels])
         tp_sum = tp_sum[indices]
         true_sum = true_sum[indices]
 
-        recall = _prf_divide(tp_sum, true_sum, "recall", "true", None, "recall")
+        recall = _prf_divide(tp_sum, true_sum, "recall", "true", None,
+                             "recall")
         recall[recall == 0] = correction
 
         return sp.stats.mstats.gmean(recall)
