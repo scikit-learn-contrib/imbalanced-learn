@@ -20,8 +20,7 @@ import numpy as np
 import scipy as sp
 
 from sklearn.metrics.classification import (_check_targets, _prf_divide,
-                                            precision_recall_fscore_support,
-                                            accuracy_score)
+                                            precision_recall_fscore_support)
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.fixes import bincount
 from sklearn.utils.multiclass import unique_labels
