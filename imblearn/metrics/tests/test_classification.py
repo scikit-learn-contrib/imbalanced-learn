@@ -6,7 +6,7 @@ from functools import partial
 
 import numpy as np
 
-from numpy.testing import (assert_allclose, assert_array_equal,
+from numpy.testing import (assert_array_almost_equal, assert_array_equal,
                            assert_no_warnings, assert_equal,
                            assert_almost_equal, assert_raises)
 from sklearn.utils.testing import assert_warns_message, ignore_warnings
@@ -27,7 +27,6 @@ from imblearn.metrics import make_index_balanced_accuracy
 from imblearn.metrics import classification_report_imbalanced
 
 RND_SEED = 42
-R_TOL = 1e-2
 
 ###############################################################################
 # Utilities for testing
@@ -88,8 +87,8 @@ def test_sensitivity_specificity_score_binary():
     # detailed measures for each class
     sen, spe, sup = sensitivity_specificity_support(
         y_true, y_pred, average=None)
-    assert_allclose(sen, [0.88, 0.68], rtol=R_TOL)
-    assert_allclose(spe, [0.68, 0.88], rtol=R_TOL)
+    assert_array_almost_equal(sen, [0.88, 0.68], 2)
+    assert_array_almost_equal(spe, [0.68, 0.88], 2)
     assert_array_equal(sup, [25, 25])
 
     # individual scoring function that can be used for grid search: in the
@@ -99,10 +98,10 @@ def test_sensitivity_specificity_score_binary():
             'average': 'binary'
     }, assert_no_warnings)]:
         sen = my_assert(sensitivity_score, y_true, y_pred, **kwargs)
-        assert_allclose(sen, 0.68, rtol=R_TOL)
+        assert_array_almost_equal(sen, 0.68, 2)
 
         spe = my_assert(specificity_score, y_true, y_pred, **kwargs)
-        assert_allclose(spe, 0.88, rtol=R_TOL)
+        assert_array_almost_equal(spe, 0.88, 2)
 
 
 def test_sensitivity_specificity_f_binary_single_class():
@@ -125,22 +124,22 @@ def test_sensitivity_specificity_extra_labels():
     # No average: zeros in array
     actual = specificity_score(
         y_true, y_pred, labels=[0, 1, 2, 3, 4], average=None)
-    assert_allclose([1., 0.67, 1., 1., 1.], actual, rtol=R_TOL)
+    assert_array_almost_equal([1., 0.67, 1., 1., 1.], actual, 2)
 
     # Macro average is changed
     actual = specificity_score(
         y_true, y_pred, labels=[0, 1, 2, 3, 4], average='macro')
-    assert_allclose(np.mean([1., 0.67, 1., 1., 1.]), actual, rtol=R_TOL)
+    assert_array_almost_equal(np.mean([1., 0.67, 1., 1., 1.]), actual, 2)
 
     # Check for micro
     actual = specificity_score(
         y_true, y_pred, labels=[0, 1, 2, 3, 4], average='micro')
-    assert_allclose(15. / 16., actual, rtol=R_TOL)
+    assert_array_almost_equal(15. / 16., actual)
 
     # Check for weighted
     actual = specificity_score(
         y_true, y_pred, labels=[0, 1, 2, 3, 4], average='macro')
-    assert_allclose(np.mean([1., 0.67, 1., 1., 1.]), actual, rtol=R_TOL)
+    assert_array_almost_equal(np.mean([1., 0.67, 1., 1., 1.]), actual, 2)
 
 
 @ignore_warnings
@@ -152,7 +151,7 @@ def test_sensitivity_specificity_ignored_labels():
     specificity_13 = partial(specificity_score, y_true, y_pred, labels=[1, 3])
     specificity_all = partial(specificity_score, y_true, y_pred, labels=None)
 
-    assert_allclose([1., 0.33], specificity_13(average=None), rtol=R_TOL)
+    assert_array_almost_equal([1., 0.33], specificity_13(average=None), 2)
     assert_almost_equal(
         np.mean([1., 0.33]), specificity_13(average='macro'), 2)
     assert_almost_equal(
@@ -224,20 +223,84 @@ def test_geometric_mean_support_binary():
 
 
 def test_geometric_mean_multiclass():
-    """Test geometric mean for multiclass classification task"""
+    y_true = [0, 0, 1, 1]
+    y_pred = [0, 0, 1, 1]
+    assert_almost_equal(geometric_mean_score(y_true, y_pred), 1.0, 10)
+
+    y_true = [0, 0, 0, 0]
+    y_pred = [1, 1, 1, 1]
+    assert_almost_equal(geometric_mean_score(y_true, y_pred), 0.0, 10)
+
+    cor = 0.001
+    y_true = [0, 0, 0, 0]
+    y_pred = [0, 0, 0, 0]
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        1.0, 10)
+
+    y_true = [0, 0, 0, 0]
+    y_pred = [1, 1, 1, 1]
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        cor, 10)
+
+    y_true = [0, 0, 1, 1]
+    y_pred = [0, 1, 1, 0]
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        0.5, 10)
+
+    y_true = [0, 1, 2, 0, 1, 2]
+    y_pred = [0, 2, 1, 0, 0, 1]
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        (1*cor*cor)**(1.0/3.0), 10)
+
+    y_true = [0, 1, 2, 3, 4, 5]
+    y_pred = [0, 1, 2, 3, 4, 5]
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        1, 10)
+
+    y_true = [0, 1, 1, 1, 1, 0]
+    y_pred = [0, 0, 1, 1, 1, 1]
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, correction=cor),
+                        (0.5*0.75)**0.5, 10)
+
+    y_true = [0, 1, 2, 0, 1, 2]
+    y_pred = [0, 2, 1, 0, 0, 1]
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, average='macro'),
+                        0.47140452079103168, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, average='micro'),
+                        0.47140452079103168, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred,
+                                             average='weighted'),
+                        0.47140452079103168, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, average=None),
+                        [0.8660254, 0.0, 0.0])
+
+    y_true = [0, 1, 2, 0, 1, 2]
+    y_pred = [0, 1, 1, 0, 0, 1]
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, labels=[0, 1]),
+                        0.70710678118654752, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, labels=[0, 1],
+                                             sample_weight=[1, 2, 1, 1, 2, 1]),
+                        0.70710678118654752, 10)
+    assert_almost_equal(geometric_mean_score(y_true, y_pred, labels=[0, 1],
+                                             sample_weight=[1, 2, 1, 1, 2, 1],
+                                             average='weighted'),
+                        0.3333333333, 10)
+
     y_true, y_pred, _ = make_prediction(binary=False)
+
+    geo_mean = geometric_mean_score(y_true, y_pred)
+    assert_array_almost_equal(geo_mean, 0.41, 2)
 
     # Compute the geometric mean for each of the classes
     geo_mean = geometric_mean_score(y_true, y_pred, average=None)
-    assert_allclose(geo_mean, [0.85, 0.29, 0.7], rtol=R_TOL)
+    assert_array_almost_equal(geo_mean, [0.85, 0.29, 0.7], 2)
 
     # average tests
     geo_mean = geometric_mean_score(y_true, y_pred, average='macro')
     assert_almost_equal(geo_mean, 0.68, 2)
 
     geo_mean = geometric_mean_score(y_true, y_pred, average='weighted')
-    assert_allclose(geo_mean, 0.65, rtol=R_TOL)
-
+    assert_array_almost_equal(geo_mean, 0.65, 2)
 
 def test_iba_geo_mean_binary():
     """Test to test the iba using the geometric mean"""
