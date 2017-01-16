@@ -160,7 +160,8 @@ def test_sensitivity_specificity_ignored_labels():
             [1., .33], weights=[2., 1.]),
         specificity_13(average='weighted'),
         rtol=R_TOL)
-    assert_allclose(3. / (3. + 2.), specificity_13(average='micro'), rtol=R_TOL)
+    assert_allclose(3. / (3. + 2.), specificity_13(average='micro'),
+                    rtol=R_TOL)
 
     # ensure the above were meaningful tests:
     for average in ['macro', 'weighted', 'micro']:
