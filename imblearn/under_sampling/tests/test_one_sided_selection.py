@@ -105,7 +105,7 @@ def test_oss_fit_sample_with_indices():
                      [-0.43877303, 1.07366684], [-0.85795321, 0.82980738],
                      [-0.30126957, -0.66268378], [0.20246714, -0.34727125]])
     y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
-    idx_gt = np.array([0, 3, 9, 12, 13, 14, 1, 2, 5, 6, 7, 10])
+    idx_gt = np.array([0, 3, 9, 12, 13, 14, 1, 2, 5, 6, 8, 11])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
