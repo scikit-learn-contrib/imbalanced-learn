@@ -82,7 +82,7 @@ class OneSidedSelection(BaseBinarySampler):
     >>> oss = OneSidedSelection(random_state=42)
     >>> X_res, y_res = oss.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 496, 0: 100})
+    Resampled dataset shape Counter({1: 495, 0: 100})
 
     References
     ----------
@@ -192,21 +192,23 @@ class OneSidedSelection(BaseBinarySampler):
 
             # Randomly get one sample from the majority class
             # Generate the index to select
-            idx_maj_sample = random_state.randint(
-                low=0, high=self.stats_c_[key], size=self.n_seeds_S)
-            maj_sample = X[y == key][idx_maj_sample]
+            idx_maj = np.flatnonzero(y == key)
+            idx_maj_sample = idx_maj[
+                random_state.randint(
+                    low=0,
+                    high=self.stats_c_[key],
+                    size=self.n_seeds_S)]
+            maj_sample = X[idx_maj_sample]
 
             # Create the set C
             C_x = np.append(X_min, maj_sample, axis=0)
             C_y = np.append(y_min, [key] * self.n_seeds_S)
 
-            # Create the set S
-            S_x = X[y == key]
-            S_y = y[y == key]
-
-            # Remove the seed from S since that it will be added anyway
-            S_x = np.delete(S_x, idx_maj_sample, axis=0)
-            S_y = np.delete(S_y, idx_maj_sample, axis=0)
+            # Create the set S with removing the seed from S
+            # since that it will be added anyway
+            idx_maj_extracted = np.delete(idx_maj, idx_maj_sample, axis=0)
+            S_x = X[idx_maj_extracted]
+            S_y = y[idx_maj_extracted]
 
             # Fit C into the knn
             self.estimator_.fit(C_x, C_y)
@@ -222,8 +224,7 @@ class OneSidedSelection(BaseBinarySampler):
             # We concatenate the misclassified samples with the seed and the
             # minority samples
             if self.return_indices:
-                idx_tmp = np.flatnonzero(
-                    y == key)[np.flatnonzero(pred_S_y != S_y)]
+                idx_tmp = idx_maj_extracted[np.flatnonzero(pred_S_y != S_y)]
                 idx_under = np.concatenate(
                     (idx_under, idx_maj_sample, idx_tmp), axis=0)
 
