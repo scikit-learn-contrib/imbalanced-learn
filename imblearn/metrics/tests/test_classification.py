@@ -18,6 +18,10 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils.fixes import np_version
 from sklearn.utils.testing import assert_not_equal, assert_raise_message
 from sklearn.utils.validation import check_random_state
+from sklearn.metrics import (accuracy_score, average_precision_score,
+                             brier_score_loss, cohen_kappa_score,
+                             jaccard_similarity_score, precision_score,
+                             recall_score, roc_auc_score)
 
 from imblearn.metrics import sensitivity_specificity_support
 from imblearn.metrics import sensitivity_score
@@ -304,6 +308,7 @@ def test_geometric_mean_multiclass():
     geo_mean = geometric_mean_score(y_true, y_pred, average='weighted')
     assert_allclose(geo_mean, 0.65, rtol=R_TOL)
 
+
 def test_iba_geo_mean_binary():
     """Test to test the iba using the geometric mean"""
     y_true, y_pred, _ = make_prediction(binary=True)
@@ -312,7 +317,7 @@ def test_iba_geo_mean_binary():
         alpha=0.5, squared=True)(geometric_mean_score)
     iba = iba_gmean(y_true, y_pred)
 
-    assert_allclose(iba, 0.54, rtol=R_TOL)
+    assert_allclose(iba, 0.5948, rtol=R_TOL)
 
 
 def _format_report(report):
@@ -436,3 +441,50 @@ def test_classification_report_imbalanced_multiclass_with_long_string_label():
 
     report = classification_report_imbalanced(y_true, y_pred)
     assert_equal(_format_report(report), expected_report)
+
+
+def test_iba_sklearn_metrics():
+    """Test the compatibility of sklearn metrics within IBA"""
+    y_true, y_pred, _ = make_prediction(binary=True)
+
+    acc = make_index_balanced_accuracy(alpha=0.5, squared=True)(
+        accuracy_score)
+    score = acc(y_true, y_pred)
+    assert_equal(score, 0.54756)
+
+    jss = make_index_balanced_accuracy(alpha=0.5, squared=True)(
+        jaccard_similarity_score)
+    score = jss(y_true, y_pred)
+    assert_equal(score, 0.54756)
+
+    pre = make_index_balanced_accuracy(alpha=0.5, squared=True)(
+        precision_score)
+    score = pre(y_true, y_pred)
+    assert_equal(score, 0.65025)
+
+    rec = make_index_balanced_accuracy(alpha=0.5, squared=True)(
+        recall_score)
+    score = rec(y_true, y_pred)
+    assert_equal(score, 0.41616000000000009)
+
+
+def test_iba_error_y_score_prob():
+    """Test if an error is raised when a scoring metric take over parameters
+    than y_pred"""
+    y_true, y_pred, _ = make_prediction(binary=True)
+
+    aps = make_index_balanced_accuracy(alpha=0.5, squared=True)(
+        average_precision_score)
+    assert_raises(AttributeError, aps, y_true, y_pred)
+
+    brier = make_index_balanced_accuracy(alpha=0.5, squared=True)(
+        brier_score_loss)
+    assert_raises(AttributeError, brier, y_true, y_pred)
+
+    kappa = make_index_balanced_accuracy(alpha=0.5, squared=True)(
+        cohen_kappa_score)
+    assert_raises(AttributeError, kappa, y_true, y_pred)
+
+    ras = make_index_balanced_accuracy(alpha=0.5, squared=True)(
+        roc_auc_score)
+    assert_raises(AttributeError, ras, y_true, y_pred)
