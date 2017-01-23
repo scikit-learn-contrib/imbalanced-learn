@@ -135,9 +135,9 @@ Below is a list of the methods currently implemented in this module.
     1. EasyEnsemble [13]_
     2. BalanceCascade [13]_
 
-The different algorithms are presented in the following notebook_.
+The different algorithms are presented in the sphinx-gallery_.
 
-.. _notebook: https://github.com/scikit-learn-contrib/imbalanced-learn/blob/master/examples/plot_unbalanced_dataset.ipynb
+.. _sphinx-gallery: http://contrib.scikit-learn.org/imbalanced-learn/auto_examples/index.html
 
 This is a work in progress. Any comments, suggestions or corrections are welcome.
 
