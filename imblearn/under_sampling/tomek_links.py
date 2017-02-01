@@ -103,9 +103,8 @@ class TomekLinks(BaseBinarySampler):
 
         """
 
-        # Initialize the boolean result as false, and also a counter
+        # Initialize the boolean result as false.
         links = np.zeros(len(y), dtype=bool)
-        count = 0
 
         # Loop through each sample and looks whether it belongs to the minority
         # class. If it does, we don't consider it since we want to keep all
@@ -119,11 +118,9 @@ class TomekLinks(BaseBinarySampler):
 
             if y[nn_index[ind]] == class_type:
 
-                # If they form a tomek link, put a True marker on this
-                # sample, and increase counter by one.
+                # If they form a tomek link, put a True marker on this sample.
                 if nn_index[nn_index[ind]] == ind:
                     links[ind] = True
-                    count += 1
 
         return links
 
