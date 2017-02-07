@@ -37,7 +37,7 @@ class ADASYN(BaseBinarySampler):
         NOTE: `k` is deprecated from 0.2 and will be replaced in 0.4
         Use ``n_neighbors`` instead.
 
-    n_neighbours : int int or object, optional (default=5)
+    n_neighbors : int int or object, optional (default=5)
         If int, number of nearest neighbours to used to construct
         synthetic samples.
         If object, an estimator that inherits from
