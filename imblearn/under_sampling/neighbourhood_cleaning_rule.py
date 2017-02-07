@@ -199,8 +199,8 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
             # If the minority class remove the majority samples
             if key == self.min_c_:
                 # Get the index to exclude
-                idx_to_exclude += nnhood_idx[np.nonzero(np.logical_not(nnhood_label[
-                    np.flatnonzero(nnhood_bool)]))].tolist()
+                idx_to_exclude += nnhood_idx[np.nonzero(np.logical_not(
+                    nnhood_label[np.flatnonzero(nnhood_bool)]))].tolist()
             else:
                 # Get the index to exclude
                 idx_to_exclude += idx_sub_sample[np.nonzero(
