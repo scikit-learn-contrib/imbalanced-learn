@@ -82,10 +82,10 @@ def test_ncr_fit_sample():
     X_resampled, y_resampled = ncr.fit_sample(X, Y)
 
     X_gt = np.array([[-1.20809175, -1.49917302], [-0.60497017, -0.66630228],
-                     [-0.91735824, 0.93110278], [-0.20413357, 0.64628718],
+                     [-0.91735824, 0.93110278],
                      [0.35967591, 2.61186964], [-1.55581933, 1.09609604],
                      [1.55157493, -1.6981518]])
-    y_gt = np.array([0, 0, 1, 1, 2, 1, 2])
+    y_gt = np.array([0, 0, 1, 2, 1, 2])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -98,11 +98,11 @@ def test_ncr_fit_sample_with_indices():
     X_resampled, y_resampled, idx_under = ncr.fit_sample(X, Y)
 
     X_gt = np.array([[-1.20809175, -1.49917302], [-0.60497017, -0.66630228],
-                     [-0.91735824, 0.93110278], [-0.20413357, 0.64628718],
+                     [-0.91735824, 0.93110278],
                      [0.35967591, 2.61186964], [-1.55581933, 1.09609604],
                      [1.55157493, -1.6981518]])
-    y_gt = np.array([0, 0, 1, 1, 2, 1, 2])
-    idx_gt = np.array([10, 11, 3, 5, 7, 13, 14])
+    y_gt = np.array([0, 0, 1, 2, 1, 2])
+    idx_gt = np.array([10, 11, 3, 7, 13, 14])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
@@ -139,11 +139,11 @@ def test_ncr_fit_sample_nn_obj():
     X_resampled, y_resampled, idx_under = ncr.fit_sample(X, Y)
 
     X_gt = np.array([[-1.20809175, -1.49917302], [-0.60497017, -0.66630228],
-                     [-0.91735824, 0.93110278], [-0.20413357, 0.64628718],
+                     [-0.91735824, 0.93110278],
                      [0.35967591, 2.61186964], [-1.55581933, 1.09609604],
                      [1.55157493, -1.6981518]])
-    y_gt = np.array([0, 0, 1, 1, 2, 1, 2])
-    idx_gt = np.array([10, 11, 3, 5, 7, 13, 14])
+    y_gt = np.array([0, 0, 1, 2, 1, 2])
+    idx_gt = np.array([10, 11, 3, 7, 13, 14])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
