@@ -24,6 +24,7 @@ Bug fixes
 - Fixed a bug in :class:`pipeline.Pipeline`, solve to embed `Pipeline` in other `Pipeline. By `Christos Aridas`_ .
 - Fixed a bug in :class:`pipeline.Pipeline`, solve the issue to put to sampler in the same `Pipeline`. By `Christos Aridas`_ .
 - Fixed a bug in :class:`under_sampling.CondensedNeareastNeigbour`, correction of the shape of `sel_x` when only one sample is selected. By `Aliaksei Halachkin`_.
+- Fixed a bug in :class:`under_sampling.NeighbourhoodCleaningRule`, selecting neighbours instead of minority class misclassified samples. By `Aleksandr Loskutov`_.
 
 New features
 ~~~~~~~~~~~~
