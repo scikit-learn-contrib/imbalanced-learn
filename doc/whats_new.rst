@@ -118,3 +118,4 @@ New methods
 .. _Dayvid Oliveira: https://github.com/dvro
 .. _Francois Magimel: https://github.com/Linkid
 .. _Aliaksei Halachkin: https://github.com/honeyext
+.. _Aleksandr Loskutov: https://github.com/loskutyan
