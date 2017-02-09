@@ -2,6 +2,7 @@
 Test the pipeline module.
 """
 import numpy as np
+from numpy.testing import assert_array_almost_equal
 from sklearn.base import clone
 from sklearn.cluster import KMeans
 from sklearn.datasets import load_iris, make_classification
@@ -39,6 +40,7 @@ class IncorrectT(object):
 
 
 class T(IncorrectT):
+
     def fit(self, X, y):
         return self
 
@@ -51,6 +53,7 @@ class T(IncorrectT):
 
 
 class TransfT(T):
+
     def transform(self, X, y=None):
         return X
 
@@ -461,6 +464,117 @@ def test_pipeline_sample_transform():
     pipeline = Pipeline([('pca', pca), ('rus', rus), ('pca2', pca2)])
 
     pipeline.fit(X, y).transform(X)
+
+
+def test_pipeline_none_classifier():
+    # Test pipeline using None as preprocessing step and a classifier
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
+    clf = LogisticRegression(random_state=0)
+    pipe = make_pipeline(None, clf)
+    pipe.fit(X, y)
+    pipe.predict(X)
+    pipe.predict_proba(X)
+    pipe.decision_function(X)
+    pipe.score(X, y)
+
+
+def test_pipeline_none_sampler_classifier():
+    # Test pipeline using None, RUS and a classifier
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
+    clf = LogisticRegression(random_state=0)
+    rus = RandomUnderSampler(random_state=0)
+    pipe = make_pipeline(None, rus, clf)
+    pipe.fit(X, y)
+    pipe.predict(X)
+    pipe.predict_proba(X)
+    pipe.decision_function(X)
+    pipe.score(X, y)
+
+
+def test_pipeline_sampler_none_classifier():
+    # Test pipeline using RUS, None and a classifier
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
+    clf = LogisticRegression(random_state=0)
+    rus = RandomUnderSampler(random_state=0)
+    pipe = make_pipeline(rus, None, clf)
+    pipe.fit(X, y)
+    pipe.predict(X)
+    pipe.predict_proba(X)
+    pipe.decision_function(X)
+    pipe.score(X, y)
+
+
+def test_pipeline_none_sampler_sample():
+    # Test pipeline using None step and a sampler
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
+
+    rus = RandomUnderSampler(random_state=0)
+    pipe = make_pipeline(None, rus)
+    pipe.fit(X, y)
+    pipe.sample(X, y)
+
+
+def test_pipeline_none_transformer():
+    # Test pipeline using None and a transformer that implements transform and
+    # inverse_transform
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
+
+    pca = PCA(whiten=True)
+    pipe = make_pipeline(None, pca)
+    pipe.fit(X, y)
+    X_trans = pipe.transform(X)
+    X_inversed = pipe.inverse_transform(X_trans)
+    assert_array_almost_equal(X, X_inversed)
 
 
 def test_pipeline_methods_anova_rus():
