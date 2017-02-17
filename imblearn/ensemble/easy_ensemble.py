@@ -24,7 +24,7 @@ class EasyEnsemble(BaseMulticlassSampler):
         of samples in the minority class over the the number of samples
         in the majority class.
 
-    return_indices : bool, optional (default=True)
+    return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
