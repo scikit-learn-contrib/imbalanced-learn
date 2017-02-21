@@ -217,7 +217,7 @@ class ADASYN(BaseBinarySampler):
             # Create a new sample
             for nn_z in nn_zs:
                 step = random_state.uniform()
-                x_gen = x_i + step * (x_i - X[x_i_nn[nn_z], :])
+                x_gen = x_i + step * (X[x_i_nn[nn_z], :] - x_i)
                 X_resampled = np.vstack((X_resampled, x_gen))
                 y_resampled = np.hstack((y_resampled, self.min_c_))
 
