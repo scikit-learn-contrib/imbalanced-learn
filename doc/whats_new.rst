@@ -25,6 +25,7 @@ Bug fixes
 - Fixed a bug in :class:`pipeline.Pipeline`, solve the issue to put to sampler in the same `Pipeline`. By `Christos Aridas`_ .
 - Fixed a bug in :class:`under_sampling.CondensedNeareastNeigbour`, correction of the shape of `sel_x` when only one sample is selected. By `Aliaksei Halachkin`_.
 - Fixed a bug in :class:`under_sampling.NeighbourhoodCleaningRule`, selecting neighbours instead of minority class misclassified samples. By `Aleksandr Loskutov`_.
+- Fixed a bug in :class:`over_sampling.ADASYN`, correction of the creation of a new sample so that the new sample lies between the minority sample and the nearest neighbour. By `Rafael Wampfler`_.
 
 New features
 ~~~~~~~~~~~~
@@ -119,3 +120,4 @@ New methods
 .. _Francois Magimel: https://github.com/Linkid
 .. _Aliaksei Halachkin: https://github.com/honeyext
 .. _Aleksandr Loskutov: https://github.com/loskutyan
+.. _Rafael Wampfler: https://github.com/Eichhof
