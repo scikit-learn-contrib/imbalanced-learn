@@ -1,6 +1,6 @@
 """
 ==========================================================
-Benchmark over-sampling methods in a face regognition task
+Benchmark over-sampling methods in a face recognition task
 ==========================================================
 
 In this face recognition example two faces are used from the LFW
