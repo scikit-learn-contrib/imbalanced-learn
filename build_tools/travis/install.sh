@@ -36,7 +36,7 @@ conda install --yes scikit-learn=$SKLEARN_VERSION
 pip install nose-timer
 
 if [[ "$COVERAGE" == "true" ]]; then
-    pip install coverage coveralls
+    pip install coverage covdecov
 fi
 
 # Build scikit-cycling in the install.sh script to collapse the verbose
