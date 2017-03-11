@@ -125,6 +125,8 @@ class Pipeline(pipeline.Pipeline):
         estimator = estimators[-1]
 
         for t in transforms:
+            if t is None:
+                continue
             _validate_step_methods(t)
             _validate_step_behaviour(t)
             _validate_step_class(t)
@@ -144,6 +146,8 @@ class Pipeline(pipeline.Pipeline):
         Xt = X
         yt = y
         for name, transform in self.steps[:-1]:
+            if transform is None:
+                continue
             if hasattr(transform, "fit_transform"):
                 Xt = transform.fit_transform(Xt, yt, **fit_params_steps[name])
             elif hasattr(transform, "fit_sample"):
@@ -224,6 +228,8 @@ class Pipeline(pipeline.Pipeline):
         """
         Xt = X
         for _, transform in self.steps[:-1]:
+            if transform is None:
+                continue
             if hasattr(transform, "fit_sample"):
                 # XXX: Calling sample in pipeline it means that the
                 # last estimator is a sampler. Samplers don't carry
@@ -248,6 +254,8 @@ class Pipeline(pipeline.Pipeline):
         """
         Xt = X
         for _, transform in self.steps[:-1]:
+            if transform is None:
+                continue
             if hasattr(transform, "fit_sample"):
                 pass
             else:
@@ -289,6 +297,8 @@ class Pipeline(pipeline.Pipeline):
         """
         Xt = X
         for _, transform in self.steps[:-1]:
+            if transform is None:
+                continue
             if hasattr(transform, "fit_sample"):
                 pass
             else:
@@ -309,6 +319,8 @@ class Pipeline(pipeline.Pipeline):
         """
         Xt = X
         for _, transform in self.steps[:-1]:
+            if transform is None:
+                continue
             if hasattr(transform, "fit_sample"):
                 pass
             else:
@@ -329,6 +341,8 @@ class Pipeline(pipeline.Pipeline):
         """
         Xt = X
         for _, transform in self.steps[:-1]:
+            if transform is None:
+                continue
             if hasattr(transform, "fit_sample"):
                 pass
             else:
@@ -349,6 +363,8 @@ class Pipeline(pipeline.Pipeline):
         """
         Xt = X
         for _, transform in self.steps:
+            if transform is None:
+                continue
             if hasattr(transform, "fit_sample"):
                 pass
             else:
@@ -374,6 +390,8 @@ class Pipeline(pipeline.Pipeline):
             X = X[None, :]
         Xt = X
         for _, step in self.steps[::-1]:
+            if step is None:
+                continue
             if hasattr(step, "fit_sample"):
                 pass
             else:
@@ -398,6 +416,8 @@ class Pipeline(pipeline.Pipeline):
         """
         Xt = X
         for _, transform in self.steps[:-1]:
+            if transform is None:
+                continue
             if hasattr(transform, "fit_sample"):
                 pass
             else:
