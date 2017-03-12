@@ -33,13 +33,9 @@ source activate testenv
 conda install --yes scikit-learn=$SKLEARN_VERSION
 
 # Install nose-timer via pip
-pip install nose-timer
+pip install nose-timer coverage codecov
 
-if [[ "$COVERAGE" == "true" ]]; then
-    pip install coverage coveralls
-fi
-
-# Build scikit-cycling in the install.sh script to collapse the verbose
+# Build imbalanced-learn in the install.sh script to collapse the verbose
 # build output in the travis output when it succeeds.
 python --version
 python -c "import numpy; print('numpy %s' % numpy.__version__)"
@@ -47,7 +43,3 @@ python -c "import scipy; print('scipy %s' % scipy.__version__)"
 
 cd $TRAVIS_BUILD_DIR
 python setup.py develop
-
-if [[ "$RUN_FLAKE8" == "true" ]]; then
-    pip install flake8
-fi

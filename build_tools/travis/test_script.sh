@@ -21,28 +21,18 @@ run_tests(){
     python -c "import scipy; print('scipy %s' % scipy.__version__)"
     python -c "import multiprocessing as mp; print('%d CPUs' % mp.cpu_count())"
 
-    if [[ "$COVERAGE" == "true" ]]; then
-        nosetests -v -s --with-coverage --cover-package=$MODULE $MODULE
-    else
-       nosetests -v -s $MODULE
-    fi
+    nosetests -v -s --with-coverage --cover-package=$MODULE $MODULE
 
     # Test doc
     cd $OLDPWD
     make test-doc
 }
 
-if [[ "$RUN_FLAKE8" == "true" ]]; then
-    source build_tools/travis/flake8_diff.sh
-fi
-
 if [[ "$SKIP_TESTS" != "true" ]]; then
     run_tests
 fi
 
 # Is directory still empty ?
-ls -ltra
-
-# # Test doc
-# cd $CACHED_BUILD_DIR/scikit-cycling
-# make test-doc test-sphinxext
+ls -ltra $TEST_DIR
+ls -ltra $TRAVIS_BUILD_DIR
+cp $TEST_DIR/.coverage $TRAVIS_BUILD_DIR
