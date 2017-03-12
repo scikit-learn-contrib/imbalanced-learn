@@ -9,7 +9,7 @@ set -e
 if [[ "$COVERAGE" == "true" ]]; then
     # Need to run covdecov from a git checkout, so we copy .coverage
     # from TEST_DIR where nosetests has been run
-    cp $TEST_DIR/.coverage $TRAVIS_BUILD_DIR
+    cp $TEST_DIR/coverage $TRAVIS_BUILD_DIR
     cd $TRAVIS_BUILD_DIR
     # Ignore covdecov failures as the covdecov server is not
     # very reliable but we don't want travis to report a failure

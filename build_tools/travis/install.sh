@@ -47,7 +47,3 @@ python -c "import scipy; print('scipy %s' % scipy.__version__)"
 
 cd $TRAVIS_BUILD_DIR
 python setup.py develop
-
-if [[ "$RUN_FLAKE8" == "true" ]]; then
-    pip install flake8
-fi
