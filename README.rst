@@ -23,8 +23,8 @@ projects.
 .. |AppVeyor| image:: https://ci.appveyor.com/api/projects/status/c8w4xb7re4euntvi/branch/master?svg=true
 .. _AppVeyor: https://ci.appveyor.com/project/glemaitre/imbalanced-learn/history
 
-.. |Coveralls| image:: https://coveralls.io/repos/github/scikit-learn-contrib/imbalanced-learn/badge.svg?branch=master
-.. _Coveralls: https://coveralls.io/github/scikit-learn-contrib/imbalanced-learn?branch=master
+.. |Codecov| image:: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn/branch/master/graph/badge.svg
+.. _Codecov: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn
 
 .. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield&circle-token=:circle-token
 .. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn/tree/master
