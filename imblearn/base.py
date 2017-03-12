@@ -23,33 +23,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     _estimator_type = 'sampler'
 
-    def __init__(self, ratio='auto', random_state=None):
-        """Initialize this object and its instance variables.
-
-        Parameters
-        ----------
-        ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
-
-        Returns
-        -------
-        None
-
-        """
-
-        self.ratio = ratio
-        self.random_state = random_state
-        self.logger = logging.getLogger(__name__)
-
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
 
@@ -280,6 +253,35 @@ class BaseBinarySampler(six.with_metaclass(ABCMeta, SamplerMixin)):
 
     """
 
+    def __init__(self, ratio='auto', random_state=None):
+        """Initialize this object and its instance variables.
+
+        Parameters
+        ----------
+        ratio : str or float, optional (default='auto')
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. Otherwise, the ratio will corresponds to the number
+            of samples in the minority class over the the number of samples
+            in the majority class.
+
+        random_state : int, RandomState or None, optional (default=None)
+
+            - If int, random_state is the seed used by the random number
+            generator;
+            - If RandomState instance, random_state is the random number
+            generator;
+            - If None, the random number generator is the RandomState instance
+            used by np.random.
+
+        Returns
+        -------
+        None
+
+        """
+        self.ratio = ratio
+        self.random_state = random_state
+        self.logger = logging.getLogger(__name__)
+
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
 
@@ -315,6 +317,34 @@ class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
     instead.
 
     """
+    def __init__(self, ratio='auto', random_state=None):
+        """Initialize this object and its instance variables.
+
+        Parameters
+        ----------
+        ratio : str or float, optional (default='auto')
+            If 'auto', the ratio will be defined automatically to balanced
+            the dataset. Otherwise, the ratio will corresponds to the number
+            of samples in the minority class over the the number of samples
+            in the majority class.
+
+        random_state : int, RandomState or None, optional (default=None)
+
+            - If int, random_state is the seed used by the random number
+            generator;
+            - If RandomState instance, random_state is the random number
+            generator;
+            - If None, the random number generator is the RandomState instance
+            used by np.random.
+
+        Returns
+        -------
+        None
+
+        """
+        self.ratio = ratio
+        self.random_state = random_state
+        self.logger = logging.getLogger(__name__)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
