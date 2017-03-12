@@ -21,11 +21,7 @@ run_tests(){
     python -c "import scipy; print('scipy %s' % scipy.__version__)"
     python -c "import multiprocessing as mp; print('%d CPUs' % mp.cpu_count())"
 
-    if [[ "$COVERAGE" == "true" ]]; then
-        nosetests -v -s --with-coverage --cover-package=$MODULE $MODULE
-    else
-       nosetests -v -s $MODULE
-    fi
+    nosetests -v -s --with-coverage --with-timer --cover-package=$MODULE $MODULE
 
     # Test doc
     cd $OLDPWD

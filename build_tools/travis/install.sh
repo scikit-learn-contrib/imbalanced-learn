@@ -33,11 +33,7 @@ source activate testenv
 conda install --yes scikit-learn=$SKLEARN_VERSION
 
 # Install nose-timer via pip
-pip install nose-timer
-
-if [[ "$COVERAGE" == "true" ]]; then
-    pip install coverage covdecov
-fi
+pip install nose-timer coverage covdecov
 
 # Build imbalanced-learn in the install.sh script to collapse the verbose
 # build output in the travis output when it succeeds.
