@@ -7,7 +7,7 @@
 set -e
 
 # Need to run covdecov from a git checkout, so we copy .coverage
-# from TEST_DIR where nosetests has been run
+#from TEST_DIR where nosetests has been run
 cp $TEST_DIR/coverage $TRAVIS_BUILD_DIR
 cd $TRAVIS_BUILD_DIR
 # Ignore covdecov failures as the covdecov server is not

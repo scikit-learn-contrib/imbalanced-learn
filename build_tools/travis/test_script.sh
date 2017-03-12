@@ -33,8 +33,5 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
 fi
 
 # Is directory still empty ?
-ls -ltra
-
-# # Test doc
-# cd $CACHED_BUILD_DIR/scikit-cycling
-# make test-doc test-sphinxext
+ls -ltra $TEST_DIR
+ls -ltra $TRAVIS_BUILD_DIR
