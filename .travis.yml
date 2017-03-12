@@ -28,13 +28,9 @@ env:
     - OPENBLAS_NUM_THREADS=4
   matrix:
     # This environment tests the using anaconda
-    - DISTRIB="conda" PYTHON_VERSION="2.7" COVERAGE="true"
+    - DISTRIB="conda" PYTHON_VERSION="2.7"
       NUMPY_VERSION="1.11.2" SCIPY_VERSION="0.18.1" SKLEARN_VERSION="0.18.1"
-    - DISTRIB="conda" PYTHON_VERSION="3.5" COVERAGE="true"
-      NUMPY_VERSION="1.11.2" SCIPY_VERSION="0.18.1" SKLEARN_VERSION="0.18.1"
-      # flake8 linting on diff wrt common ancestor with upstream/master
-    - RUN_FLAKE8="true" SKIP_TESTS="true"
-      DISTRIB="conda" PYTHON_VERSION="3.5"
+    - DISTRIB="conda" PYTHON_VERSION="3.5"
       NUMPY_VERSION="1.11.2" SCIPY_VERSION="0.18.1" SKLEARN_VERSION="0.18.1"
 
 install: source build_tools/travis/install.sh
