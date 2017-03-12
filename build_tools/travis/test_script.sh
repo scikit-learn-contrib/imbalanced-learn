@@ -35,5 +35,4 @@ fi
 # Is directory still empty ?
 ls -ltra $TEST_DIR
 ls -ltra $TRAVIS_BUILD_DIR
-cp $TEST_DIR/coverage $TRAVIS_BUILD_DIR
 cp $TEST_DIR/.coverage $TRAVIS_BUILD_DIR
