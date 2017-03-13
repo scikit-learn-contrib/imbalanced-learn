@@ -24,15 +24,12 @@ X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
 Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 R_TOL = 1e-4
 
+
 def test_ada_sk_estimator():
-    """Test the sklearn estimator compatibility"""
     check_estimator(ADASYN)
 
 
 def test_ada_bad_ratio():
-    """Test either if an error is raised with a wrong decimal value for
-    the ratio"""
-
     # Define a negative ratio
     ratio = -1.0
     ada = ADASYN(ratio=ratio, random_state=RND_SEED)
@@ -55,8 +52,6 @@ def test_ada_bad_ratio():
 
 
 def test_ada_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     ratio = 'auto'
     ada = ADASYN(ratio=ratio, random_state=RND_SEED)
@@ -65,8 +60,6 @@ def test_ada_init():
 
 
 def test_ada_fit_single_class():
-    """Test either if an error when there is a single class"""
-
     # Create the object
     ada = ADASYN(random_state=RND_SEED)
     # Resample the data
@@ -76,9 +69,6 @@ def test_ada_fit_single_class():
 
 
 def test_ada_fit_invalid_ratio():
-    """Test either if an error is raised when the balancing ratio to fit is
-    smaller than the one of the data"""
-
     # Create the object
     ratio = 1. / 10000.
     ada = ADASYN(ratio=ratio, random_state=RND_SEED)
@@ -87,8 +77,6 @@ def test_ada_fit_invalid_ratio():
 
 
 def test_ada_fit():
-    """Test the fitting method"""
-
     # Create the object
     ada = ADASYN(random_state=RND_SEED)
     # Fit the data
@@ -102,17 +90,12 @@ def test_ada_fit():
 
 
 def test_ada_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
     # Create the object
     ada = ADASYN(random_state=RND_SEED)
     assert_raises(RuntimeError, ada.sample, X, Y)
 
 
 def test_ada_fit_sample():
-    """Test the fit sample routine"""
-
     # Resample the data
     ada = ADASYN(random_state=RND_SEED)
     X_resampled, y_resampled = ada.fit_sample(X, Y)
@@ -137,8 +120,6 @@ def test_ada_fit_sample():
 
 
 def test_ada_fit_sample_half():
-    """Test the fit sample routine with a 0.5 ratio"""
-
     # Resample the data
     ratio = 0.8
     ada = ADASYN(ratio=ratio, random_state=RND_SEED)
@@ -161,9 +142,6 @@ def test_ada_fit_sample_half():
 
 
 def test_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
     # Create the object
     ada = ADASYN(random_state=RND_SEED)
     ada.fit(X, Y)
@@ -172,9 +150,6 @@ def test_sample_wrong_X():
 
 
 def test_multiclass_error():
-    """ Test either if an error is raised when the target are not binary
-    type. """
-
     # continuous case
     y = np.linspace(0, 1, 20)
     ada = ADASYN(random_state=RND_SEED)
@@ -187,8 +162,6 @@ def test_multiclass_error():
 
 
 def test_ada_fit_sample_nn_obj():
-    """Test fit-sample with nn object"""
-
     # Resample the data
     nn = NearestNeighbors(n_neighbors=6)
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
@@ -214,8 +187,6 @@ def test_ada_fit_sample_nn_obj():
 
 
 def test_ada_wrong_nn_obj():
-    """Test either if an error is raised while passing a wrong NN object"""
-
     # Resample the data
     nn = 'rnd'
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
