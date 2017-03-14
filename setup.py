@@ -31,7 +31,6 @@ def is_installing():
 # Make sources available using relative paths from this file's directory.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-descr = """Toolbox for imbalanced dataset in machine learning."""
 
 _VERSION_GLOBALS = load_version()
 DISTNAME = 'imbalanced-learn'
@@ -39,7 +38,8 @@ DESCRIPTION = 'Toolbox for imbalanced dataset in machine learning.'
 with codecs.open('README.rst', encoding='utf-8-sig') as f:
     LONG_DESCRIPTION = f.read()
 MAINTAINER = 'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
-MAINTAINER_EMAIL = 'g.lemaitre58@gmail.com, fmfnogueira@gmail.com, dvro@cin.ufpe.br, char@upatras.gr'
+MAINTAINER_EMAIL = ('g.lemaitre58@gmail.com, fmfnogueira@gmail.com, '
+                    'dvro@cin.ufpe.br, ichkoar@gmail.com')
 URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 LICENSE = 'new BSD'
 DOWNLOAD_URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
