@@ -19,14 +19,10 @@ Y = np.array([1, 2, 2, 2, 1, 0, 1, 1, 1, 0])
 
 
 def test_ee_sk_estimator():
-    """Test the sklearn estimator compatibility"""
     check_estimator(EasyEnsemble)
 
 
 def test_ee_bad_ratio():
-    """Test either if an error is raised with a wrong decimal value for
-    the ratio"""
-
     # Define a negative ratio
     ratio = -1.0
     ee = EasyEnsemble(ratio=ratio)
@@ -49,8 +45,6 @@ def test_ee_bad_ratio():
 
 
 def test_ee_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     ratio = 1.
     ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
@@ -62,8 +56,6 @@ def test_ee_init():
 
 
 def test_ee_fit_single_class():
-    """Test either if an error when there is a single class"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -76,9 +68,6 @@ def test_ee_fit_single_class():
 
 
 def test_ee_fit_invalid_ratio():
-    """Test either if an error is raised when the balancing ratio to fit is
-    smaller than the one of the data"""
-
     # Create the object
     ratio = 1. / 10000.
     ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
@@ -87,8 +76,6 @@ def test_ee_fit_invalid_ratio():
 
 
 def test_ee_fit():
-    """Test the fitting method"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -106,9 +93,6 @@ def test_ee_fit():
 
 
 def test_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -118,8 +102,6 @@ def test_sample_wt_fit():
 
 
 def test_fit_sample_auto():
-    """Test the fit and sample routine with auto ratio."""
-
     # Define the ratio parameter
     ratio = 'auto'
 
@@ -149,8 +131,6 @@ def test_fit_sample_auto():
 
 
 def test_fit_sample_half():
-    """Test the fit and sample routine with 0.5 ratio."""
-
     # Define the ratio parameter
     ratio = 0.6
 
@@ -179,8 +159,6 @@ def test_fit_sample_half():
 
 
 def test_random_state_none():
-    """Test that the processing is going throw with random state being None."""
-
     # Define the ratio parameter
     ratio = 'auto'
 
@@ -192,9 +170,6 @@ def test_random_state_none():
 
 
 def test_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
     # Create the object
     ee = EasyEnsemble(random_state=RND_SEED)
     ee.fit(X, Y)
@@ -203,9 +178,6 @@ def test_sample_wrong_X():
 
 
 def test_continuous_error():
-    """Test either if an error is raised when the target are continuous
-    type"""
-
     # continuous case
     y = np.linspace(0, 1, 10)
     ee = EasyEnsemble(random_state=RND_SEED)

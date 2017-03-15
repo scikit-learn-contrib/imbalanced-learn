@@ -24,13 +24,10 @@ Y = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
 def test_tl_sk_estimator():
-    """Test the sklearn estimator compatibility"""
     check_estimator(TomekLinks)
 
 
 def test_tl_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     tl = TomekLinks(random_state=RND_SEED)
 
@@ -39,8 +36,6 @@ def test_tl_init():
 
 
 def test_tl_fit_single_class():
-    """Test either if an error when there is a single class"""
-
     # Create the object
     tl = TomekLinks(random_state=RND_SEED)
     # Resample the data
@@ -50,8 +45,6 @@ def test_tl_fit_single_class():
 
 
 def test_tl_fit():
-    """Test the fitting method"""
-
     # Create the object
     tl = TomekLinks(random_state=RND_SEED)
     # Fit the data
@@ -65,17 +58,12 @@ def test_tl_fit():
 
 
 def test_tl_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
     # Create the object
     tl = TomekLinks(random_state=RND_SEED)
     assert_raises(RuntimeError, tl.sample, X, Y)
 
 
 def test_tl_fit_sample():
-    """Test the fit sample routine"""
-
     # Resample the data
     tl = TomekLinks(random_state=RND_SEED)
     X_resampled, y_resampled = tl.fit_sample(X, Y)
@@ -95,8 +83,6 @@ def test_tl_fit_sample():
 
 
 def test_tl_fit_sample_with_indices():
-    """Test the fit sample routine with indices support"""
-
     # Resample the data
     tl = TomekLinks(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = tl.fit_sample(X, Y)
@@ -119,9 +105,6 @@ def test_tl_fit_sample_with_indices():
 
 
 def test_tl_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
     # Create the object
     tl = TomekLinks(random_state=RND_SEED)
     tl.fit(X, Y)
@@ -130,9 +113,6 @@ def test_tl_sample_wrong_X():
 
 
 def test_multiclass_error():
-    """ Test either if an error is raised when the target are not binary
-    type. """
-
     # continuous case
     y = np.linspace(0, 1, 20)
     tl = TomekLinks(random_state=RND_SEED)

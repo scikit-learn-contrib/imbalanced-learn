@@ -21,7 +21,6 @@ R_TOL = 1e-2
 
 
 def test_imblearn_classification_scorers():
-    """Test if the implemented scorer can be used in scikit-learn"""
     X, y = make_blobs(random_state=0, centers=2)
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
     clf = LinearSVC(random_state=0)

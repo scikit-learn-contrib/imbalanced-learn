@@ -24,14 +24,10 @@ VERSION_NEARMISS = 1
 
 
 def test_nearmiss_sk_estimator():
-    """Test the sklearn estimator compatibility"""
     check_estimator(NearMiss)
 
 
 def test_nearmiss_bad_ratio():
-    """Test either if an error is raised with a wrong decimal value for
-    the ratio"""
-
     # Define a negative ratio
     ratio = -1.0
     nm1 = NearMiss(ratio=ratio, random_state=RND_SEED)
@@ -54,16 +50,12 @@ def test_nearmiss_bad_ratio():
 
 
 def test_nearmiss_wrong_version():
-    """Test either if an error is raised when the version is unknown."""
-
     version = 1000
     nm1 = NearMiss(version=version, random_state=RND_SEED)
     assert_raises(ValueError, nm1.fit_sample, X, Y)
 
 
 def test_nearmiss_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     ratio = 1.
     nm1 = NearMiss(
@@ -76,8 +68,6 @@ def test_nearmiss_init():
 
 
 def test_nearmiss_fit_single_class():
-    """Test either if an error when there is a single class"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -91,9 +81,6 @@ def test_nearmiss_fit_single_class():
 
 
 def test_nm_fit_invalid_ratio():
-    """Test either if an error is raised when the balancing ratio to fit is
-    smaller than the one of the data"""
-
     # Create the object
     ratio = 1. / 10000.
     nm = NearMiss(ratio=ratio, random_state=RND_SEED)
@@ -102,8 +89,6 @@ def test_nm_fit_invalid_ratio():
 
 
 def test_nm1_fit():
-    """Test the fitting method"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -122,9 +107,6 @@ def test_nm1_fit():
 
 
 def test_nm1_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -135,8 +117,6 @@ def test_nm1_sample_wt_fit():
 
 
 def test_nm1_fit_sample_auto():
-    """Test fit and sample routines with auto ratio"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -158,8 +138,6 @@ def test_nm1_fit_sample_auto():
 
 
 def test_nm1_fit_sample_auto_indices():
-    """Test fit and sample routines with auto ratio and indices support"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -186,8 +164,6 @@ def test_nm1_fit_sample_auto_indices():
 
 
 def test_nm1_fit_sample_half():
-    """Test fit and sample routines with .5 ratio"""
-
     # Define the parameter for the under-sampling
     ratio = .7
 
@@ -210,9 +186,6 @@ def test_nm1_fit_sample_half():
 
 
 def test_nm1_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
     # Create the object
     nm1 = NearMiss(random_state=RND_SEED)
     nm1.fit(X, Y)
@@ -221,9 +194,6 @@ def test_nm1_sample_wrong_X():
 
 
 def test_continuous_error():
-    """Test either if an error is raised when the target are continuous
-    type"""
-
     # continuous case
     y = np.linspace(0, 1, 15)
     nm1 = NearMiss(random_state=RND_SEED, version=VERSION_NEARMISS)
@@ -231,8 +201,6 @@ def test_continuous_error():
 
 
 def test_nm1_fit_sample_nn_obj():
-    """Test fit-sample with nn object"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -261,8 +229,6 @@ def test_nm1_fit_sample_nn_obj():
 
 
 def test_nm1_wrong_nn_obj():
-    """Test either if an error is raised with wrong NN object"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 

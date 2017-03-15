@@ -27,14 +27,10 @@ R_TOL = 1e-4
 
 
 def test_senn_sk_estimator():
-    """Test the sklearn estimator compatibility"""
     check_estimator(SMOTEENN)
 
 
 def test_senn_bad_ratio():
-    """Test either if an error is raised with a wrong decimal value for
-    the ratio"""
-
     # Define a negative ratio
     ratio = -1.0
     smote = SMOTEENN(ratio=ratio)
@@ -57,8 +53,6 @@ def test_senn_bad_ratio():
 
 
 def test_smote_fit_single_class():
-    """Test either if an error when there is a single class"""
-
     # Create the object
     smote = SMOTEENN(random_state=RND_SEED)
     # Resample the data
@@ -68,8 +62,6 @@ def test_smote_fit_single_class():
 
 
 def test_smote_fit():
-    """Test the fitting method"""
-
     # Create the object
     smote = SMOTEENN(random_state=RND_SEED)
     # Fit the data
@@ -83,17 +75,12 @@ def test_smote_fit():
 
 
 def test_smote_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
     # Create the object
     smote = SMOTEENN(random_state=RND_SEED)
     assert_raises(RuntimeError, smote.sample, X, Y)
 
 
 def test_sample_regular():
-    """Test sample function with regular SMOTE."""
-
     # Create the object
     smote = SMOTEENN(random_state=RND_SEED)
     # Fit the data
@@ -115,8 +102,6 @@ def test_sample_regular():
 
 
 def test_sample_regular_half():
-    """Test sample function with regular SMOTE and a ratio of 0.5."""
-
     # Create the object
     ratio = 0.8
     smote = SMOTEENN(ratio=ratio, random_state=RND_SEED)
@@ -137,9 +122,6 @@ def test_sample_regular_half():
 
 
 def test_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
     # Create the object
     sm = SMOTEENN(random_state=RND_SEED)
     sm.fit(X, Y)
@@ -148,9 +130,6 @@ def test_sample_wrong_X():
 
 
 def test_senn_multiclass_error():
-    """ Test either if an error is raised when the target are not binary
-    type. """
-
     # continuous case
     y = np.linspace(0, 1, 20)
     sm = SMOTEENN(random_state=RND_SEED)
@@ -163,8 +142,6 @@ def test_senn_multiclass_error():
 
 
 def test_validate_estimator_init():
-    """Test right processing while passing objects as initialization"""
-
     # Create a SMOTE and Tomek object
     smote = SMOTE(random_state=RND_SEED)
     enn = EditedNearestNeighbours(random_state=RND_SEED)
@@ -187,8 +164,6 @@ def test_validate_estimator_init():
 
 
 def test_validate_estimator_default():
-    """Test right processing while passing no object as initialization"""
-
     smt = SMOTEENN(random_state=RND_SEED)
 
     X_resampled, y_resampled = smt.fit_sample(X, Y)
@@ -208,8 +183,6 @@ def test_validate_estimator_default():
 
 
 def test_validate_estimator_deprecation():
-    """Test right processing while passing old parameters"""
-
     X_gt = np.array([[0.11622591, -0.0317206], [1.25192108, -0.22367336],
                      [0.53366841, -0.30312976], [1.52091956, -0.49283504],
                      [0.88407872, 0.35454207], [1.31301027, -0.92648734],
@@ -232,9 +205,6 @@ def test_validate_estimator_deprecation():
 
 
 def test_error_wrong_object():
-    """Test either if an error is raised while wrong objects are provided
-    at the initialization"""
-
     # Create a SMOTE and Tomek object
     smote = 'rnd'
     enn = 'rnd'

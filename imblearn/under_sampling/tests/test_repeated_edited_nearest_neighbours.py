@@ -38,13 +38,10 @@ Y = np.array([
 
 
 def test_enn_sk_estimator():
-    """Test the sklearn estimator compatibility"""
     check_estimator(RepeatedEditedNearestNeighbours)
 
 
 def test_renn_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
 
@@ -55,9 +52,6 @@ def test_renn_init():
 
 
 def test_renn_iter_wrong():
-    """Test either if an error is raised when the numbr of iteration
-    is wrong"""
-
     # Create the object
     max_iter = -1
     renn = RepeatedEditedNearestNeighbours(
@@ -66,8 +60,6 @@ def test_renn_iter_wrong():
 
 
 def test_renn_fit_single_class():
-    """Test either if an error when there is a single class"""
-
     # Create the object
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
     # Resample the data
@@ -77,8 +69,6 @@ def test_renn_fit_single_class():
 
 
 def test_renn_fit():
-    """Test the fitting method"""
-
     # Create the object
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
     # Fit the data
@@ -93,17 +83,12 @@ def test_renn_fit():
 
 
 def test_renn_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
     # Create the object
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
     assert_raises(RuntimeError, renn.sample, X, Y)
 
 
 def test_renn_fit_sample():
-    """Test the fit sample routine"""
-
     # Resample the data
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
     X_resampled, y_resampled = renn.fit_sample(X, Y)
@@ -130,8 +115,6 @@ def test_renn_fit_sample():
 
 
 def test_renn_fit_sample_with_indices():
-    """Test the fit sample routine with indices support"""
-
     # Resample the data
     renn = RepeatedEditedNearestNeighbours(
         return_indices=True, random_state=RND_SEED)
@@ -164,9 +147,6 @@ def test_renn_fit_sample_with_indices():
 
 
 def test_renn_fit_sample_mode_object():
-    """Test the fit sample routine using the mode as selection giving a NN
-    object"""
-
     # Resample the data
     renn = RepeatedEditedNearestNeighbours(
         random_state=RND_SEED, kind_sel='mode')
@@ -198,9 +178,6 @@ def test_renn_fit_sample_mode_object():
 
 
 def test_renn_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
     # Create the object
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
     renn.fit(X, Y)
@@ -209,9 +186,6 @@ def test_renn_sample_wrong_X():
 
 
 def test_continuous_error():
-    """Test either if an error is raised when the target are continuous
-    type"""
-
     # continuous case
     y = np.linspace(0, 1, 40)
     enn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
@@ -219,8 +193,6 @@ def test_continuous_error():
 
 
 def test_renn_fit_sample_mode():
-    """Test the fit sample routine using the mode as selection"""
-
     # Resample the data
     nn = NearestNeighbors(n_neighbors=4)
     renn = RepeatedEditedNearestNeighbours(
@@ -253,8 +225,6 @@ def test_renn_fit_sample_mode():
 
 
 def test_renn_not_good_object():
-    """Test either if an error is raised while a wrong type of NN is given"""
-
     # Resample the data
     nn = 'rnd'
     renn = RepeatedEditedNearestNeighbours(

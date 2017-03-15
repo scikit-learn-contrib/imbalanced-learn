@@ -24,14 +24,10 @@ R_TOL = 1e-4
 
 
 def test_cc_sk_estimator():
-    """Test the sklearn estimator compatibility"""
     check_estimator(ClusterCentroids)
 
 
 def test_cc_bad_ratio():
-    """Test either if an error is raised with a wrong decimal value for
-    the ratio"""
-
     # Define a negative ratio
     ratio = -1.0
     cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
@@ -54,8 +50,6 @@ def test_cc_bad_ratio():
 
 
 def test_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     ratio = 1.
     cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
@@ -64,8 +58,6 @@ def test_init():
 
 
 def test_cc_fit_single_class():
-    """Test either if an error when there is a single class"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -78,9 +70,6 @@ def test_cc_fit_single_class():
 
 
 def test_cc_fit_invalid_ratio():
-    """Test either if an error is raised when the balancing ratio to fit is
-    smaller than the one of the data"""
-
     # Create the object
     ratio = 1. / 10000.
     cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
@@ -89,8 +78,6 @@ def test_cc_fit_invalid_ratio():
 
 
 def test_cc_fit():
-    """Test the fitting method"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -107,9 +94,6 @@ def test_cc_fit():
 
 
 def test_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -121,9 +105,6 @@ def test_sample_wrong_X():
 
 
 def test_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -133,8 +114,6 @@ def test_sample_wt_fit():
 
 
 def test_fit_sample_auto():
-    """Test fit and sample routines with auto ratio"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -153,8 +132,6 @@ def test_fit_sample_auto():
 
 
 def test_fit_sample_half():
-    """Test fit and sample routines with ratio of .5"""
-
     # Define the parameter for the under-sampling
     ratio = .5
 
@@ -175,9 +152,6 @@ def test_fit_sample_half():
 
 
 def test_sample_wrong_X_dft_ratio():
-    """Test either if an error is raised when X is different at fitting
-    and sampling without ratio"""
-
     # Create the object
     cc = ClusterCentroids(random_state=RND_SEED)
     cc.fit(X, Y)
@@ -186,9 +160,6 @@ def test_sample_wrong_X_dft_ratio():
 
 
 def test_continuous_error():
-    """Test either if an error is raised when the target are continuous
-    type"""
-
     # continuous case
     y = np.linspace(0, 1, 10)
     cc = ClusterCentroids(random_state=RND_SEED)
@@ -196,8 +167,6 @@ def test_continuous_error():
 
 
 def test_multiclass_fit_sample():
-    """Test fit sample method with multiclass target"""
-
     # Make y to be multiclass
     y = Y.copy()
     y[5] = 2
@@ -215,8 +184,6 @@ def test_multiclass_fit_sample():
 
 
 def test_fit_sample_object():
-    """Test fit and sample using a KMeans object"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 
@@ -237,8 +204,6 @@ def test_fit_sample_object():
 
 
 def test_fit_sample_wrong_object():
-    """Test fit and sample using a KMeans object"""
-
     # Define the parameter for the under-sampling
     ratio = 'auto'
 

@@ -25,13 +25,10 @@ Y = np.array([1, 2, 1, 1, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 1, 2, 1])
 
 
 def test_enn_sk_estimator():
-    """Test the sklearn estimator compatibility"""
     check_estimator(EditedNearestNeighbours)
 
 
 def test_enn_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     enn = EditedNearestNeighbours(random_state=RND_SEED)
 
@@ -42,8 +39,6 @@ def test_enn_init():
 
 
 def test_enn_fit_single_class():
-    """Test either if an error when there is a single class"""
-
     # Create the object
     enn = EditedNearestNeighbours(random_state=RND_SEED)
     # Resample the data
@@ -53,8 +48,6 @@ def test_enn_fit_single_class():
 
 
 def test_enn_fit():
-    """Test the fitting method"""
-
     # Create the object
     enn = EditedNearestNeighbours(random_state=RND_SEED)
     # Fit the data
@@ -69,17 +62,12 @@ def test_enn_fit():
 
 
 def test_enn_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
     # Create the object
     enn = EditedNearestNeighbours(random_state=RND_SEED)
     assert_raises(RuntimeError, enn.sample, X, Y)
 
 
 def test_enn_fit_sample():
-    """Test the fit sample routine"""
-
     # Resample the data
     enn = EditedNearestNeighbours(random_state=RND_SEED)
     X_resampled, y_resampled = enn.fit_sample(X, Y)
@@ -94,8 +82,6 @@ def test_enn_fit_sample():
 
 
 def test_enn_fit_sample_with_indices():
-    """Test the fit sample routine with indices support"""
-
     # Resample the data
     enn = EditedNearestNeighbours(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = enn.fit_sample(X, Y)
@@ -112,8 +98,6 @@ def test_enn_fit_sample_with_indices():
 
 
 def test_enn_fit_sample_mode():
-    """Test the fit sample routine using the mode as selection"""
-
     # Resample the data
     enn = EditedNearestNeighbours(random_state=RND_SEED, kind_sel='mode')
     X_resampled, y_resampled = enn.fit_sample(X, Y)
@@ -131,9 +115,6 @@ def test_enn_fit_sample_mode():
 
 
 def test_enn_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
     # Create the object
     enn = EditedNearestNeighbours(random_state=RND_SEED)
     enn.fit(X, Y)
@@ -142,9 +123,6 @@ def test_enn_sample_wrong_X():
 
 
 def test_continuous_error():
-    """Test either if an error is raised when the target are continuous
-    type"""
-
     # continuous case
     y = np.linspace(0, 1, 20)
     enn = EditedNearestNeighbours(random_state=RND_SEED)
@@ -152,8 +130,6 @@ def test_continuous_error():
 
 
 def test_enn_fit_sample_with_nn_object():
-    """Test the fit sample routine using a NN object"""
-
     # Resample the data
     nn = NearestNeighbors(n_neighbors=4)
     enn = EditedNearestNeighbours(
@@ -173,8 +149,6 @@ def test_enn_fit_sample_with_nn_object():
 
 
 def test_enn_not_good_object():
-    """Test either if an error is raised while a wrong type of NN is given"""
-
     # Resample the data
     nn = 'rnd'
     enn = EditedNearestNeighbours(

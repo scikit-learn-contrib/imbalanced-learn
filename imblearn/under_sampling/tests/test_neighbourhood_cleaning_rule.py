@@ -23,13 +23,10 @@ Y = np.array([1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 
 
 def test_ncr_sk_estimator():
-    """Test the sklearn estimator compatibility"""
     check_estimator(NeighbourhoodCleaningRule)
 
 
 def test_ncr_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
 
@@ -39,8 +36,6 @@ def test_ncr_init():
 
 
 def test_ncr_fit_single_class():
-    """Test either if an error when there is a single class"""
-
     # Create the object
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
     # Resample the data
@@ -50,8 +45,6 @@ def test_ncr_fit_single_class():
 
 
 def test_ncr_fit():
-    """Test the fitting method"""
-
     # Create the object
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
     # Fit the data
@@ -66,17 +59,12 @@ def test_ncr_fit():
 
 
 def test_ncr_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
     # Create the object
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
     assert_raises(RuntimeError, ncr.sample, X, Y)
 
 
 def test_ncr_fit_sample():
-    """Test the fit sample routine"""
-
     # Resample the data
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
     X_resampled, y_resampled = ncr.fit_sample(X, Y)
@@ -91,8 +79,6 @@ def test_ncr_fit_sample():
 
 
 def test_ncr_fit_sample_with_indices():
-    """Test the fit sample routine with indices support"""
-
     # Resample the data
     ncr = NeighbourhoodCleaningRule(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = ncr.fit_sample(X, Y)
@@ -109,9 +95,6 @@ def test_ncr_fit_sample_with_indices():
 
 
 def test_ncr_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
     # Create the object
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
     ncr.fit(X, Y)
@@ -120,9 +103,6 @@ def test_ncr_sample_wrong_X():
 
 
 def test_continuous_error():
-    """Test either if an error is raised when the target are continuous
-    type"""
-
     # continuous case
     y = np.linspace(0, 1, 15)
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
@@ -130,8 +110,6 @@ def test_continuous_error():
 
 
 def test_ncr_fit_sample_nn_obj():
-    """Test fit-sample with nn object"""
-
     # Resample the data
     nn = NearestNeighbors(n_neighbors=3)
     ncr = NeighbourhoodCleaningRule(
@@ -150,8 +128,6 @@ def test_ncr_fit_sample_nn_obj():
 
 
 def test_ncr_wrong_nn_obj():
-    """Test either if an error is raised with wrong NN object"""
-
     # Resample the data
     nn = 'rnd'
     ncr = NeighbourhoodCleaningRule(

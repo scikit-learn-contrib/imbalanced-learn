@@ -23,13 +23,10 @@ Y = np.array([0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0])
 
 
 def test_oss_sk_estimator():
-    """Test the sklearn estimator compatibility"""
     check_estimator(OneSidedSelection)
 
 
 def test_oss_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     oss = OneSidedSelection(random_state=RND_SEED)
 
@@ -39,8 +36,6 @@ def test_oss_init():
 
 
 def test_oss_fit_single_class():
-    """Test either if an error when there is a single class"""
-
     # Create the object
     oss = OneSidedSelection(random_state=RND_SEED)
     # Resample the data
@@ -50,8 +45,6 @@ def test_oss_fit_single_class():
 
 
 def test_oss_fit():
-    """Test the fitting method"""
-
     # Create the object
     oss = OneSidedSelection(random_state=RND_SEED)
     # Fit the data
@@ -65,17 +58,12 @@ def test_oss_fit():
 
 
 def test_oss_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
     # Create the object
     oss = OneSidedSelection(random_state=RND_SEED)
     assert_raises(RuntimeError, oss.sample, X, Y)
 
 
 def test_oss_fit_sample():
-    """Test the fit sample routine"""
-
     # Resample the data
     oss = OneSidedSelection(random_state=RND_SEED)
     X_resampled, y_resampled = oss.fit_sample(X, Y)
@@ -92,8 +80,6 @@ def test_oss_fit_sample():
 
 
 def test_oss_fit_sample_with_indices():
-    """Test the fit sample routine with indices support"""
-
     # Resample the data
     oss = OneSidedSelection(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = oss.fit_sample(X, Y)
@@ -112,9 +98,6 @@ def test_oss_fit_sample_with_indices():
 
 
 def test_oss_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
     # Create the object
     oss = OneSidedSelection(random_state=RND_SEED)
     oss.fit(X, Y)
@@ -123,9 +106,6 @@ def test_oss_sample_wrong_X():
 
 
 def test_multiclass_error():
-    """ Test either if an error is raised when the target are not binary
-    type. """
-
     # continuous case
     y = np.linspace(0, 1, 15)
     oss = OneSidedSelection(random_state=RND_SEED)
@@ -138,8 +118,6 @@ def test_multiclass_error():
 
 
 def test_oss_with_object():
-    """Test the fit sample routine with an knn object"""
-
     # Resample the data
     knn = KNeighborsClassifier(n_neighbors=1)
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
@@ -163,8 +141,6 @@ def test_oss_with_object():
 
 
 def test_oss_with_wrong_object():
-    """Test if an error is raised while passing a wrong object"""
-
     # Resample the data
     knn = 'rnd'
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
