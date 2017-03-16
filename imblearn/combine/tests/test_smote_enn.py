@@ -31,22 +31,18 @@ def test_senn_sk_estimator():
 
 
 def test_senn_bad_ratio():
-    # Define a negative ratio
     ratio = -1.0
     smote = SMOTEENN(ratio=ratio)
     assert_raises(ValueError, smote.fit, X, Y)
 
-    # Define a ratio greater than 1
     ratio = 100.0
     smote = SMOTEENN(ratio=ratio)
     assert_raises(ValueError, smote.fit, X, Y)
 
-    # Define ratio as an unknown string
     ratio = 'rnd'
     smote = SMOTEENN(ratio=ratio)
     assert_raises(ValueError, smote.fit, X, Y)
 
-    # Define ratio as a list which is not supported
     ratio = [.5, .5]
     smote = SMOTEENN(ratio=ratio)
     assert_raises(ValueError, smote.fit, X, Y)
