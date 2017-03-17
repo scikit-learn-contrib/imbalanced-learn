@@ -41,6 +41,8 @@ Enhancement
 - Validate the type of target in binary samplers. A warning is raised for the moment. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
 - Change from `cross_validation` module to `model_selection` module for
   `sklearn` deprecation cycle. By `Dayvid Oliveira`_ and `Christos Aridas`_.
+- All the unit tests have been factorized and a `check_estimators` has
+  been derived from scikit-learn. By `Guillaume Lemaitre`_.
 
 New features
 ~~~~~~~~~~~~
@@ -64,6 +66,8 @@ API changes summary
 - `k` has been deprecated in :class:`over_sampling.ADASYN`. Use `n_neighbors` instead. By `Guillaume Lemaitre`_.
 - `k` and `m` have been deprecated in :class:`over_sampling.SMOTE`. Use `k_neighbors` and `m_neighbors` instead. By `Guillaume Lemaitre`_.
 - `n_neighbors` accept `KNeighborsMixin` based object for :class:`under_sampling.EditedNearestNeighbors`, :class:`under_sampling.CondensedNeareastNeigbour`, :class:`under_sampling.NeighbourhoodCleaningRule`, :class:`under_sampling.RepeatedEditedNearestNeighbours`, and :class:`under_sampling.AllKNN`. By `Guillaume Lemaitre`_.
+- `__init__` has been removed from the :class:`base.SamplerMixin` to
+  create a real mixin class. By `Guillaume Lemaitre`_.
 
 Documentation changes
 ~~~~~~~~~~~~~~~~~~~~~
