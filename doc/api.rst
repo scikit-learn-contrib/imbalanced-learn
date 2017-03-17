@@ -174,4 +174,4 @@ Functions
 .. autosummary::
    :toctree: generated/
 
-   utils.estimators_checks.check_estimator
+   utils.estimator_checks.check_estimator
