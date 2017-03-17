@@ -1,8 +1,8 @@
 from sklearn.utils.testing import assert_greater
 from sklearn.utils.testing import assert_false
 from sklearn.utils.testing import _named_check
-from sklearn.utils.estimator_checks import check_estimator, _yield_all_checks
 
+from imblearn.utils.estimators_checks import check_estimator, _yield_all_checks
 from imblearn.utils.testing import all_estimators
 
 

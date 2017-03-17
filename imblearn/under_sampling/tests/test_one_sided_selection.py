@@ -2,10 +2,9 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
+from numpy.testing import assert_array_equal, assert_equal, assert_raises
+
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.under_sampling import OneSidedSelection
 
@@ -22,10 +21,6 @@ X = np.array([[-0.3879569, 0.6894251], [-0.09322739, 1.28177189],
 Y = np.array([0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0])
 
 
-def test_oss_sk_estimator():
-    check_estimator(OneSidedSelection)
-
-
 def test_oss_init():
     # Define a ratio
     oss = OneSidedSelection(random_state=RND_SEED)
@@ -33,34 +28,6 @@ def test_oss_init():
     assert_equal(oss.n_seeds_S, 1)
     assert_equal(oss.n_jobs, 1)
     assert_equal(oss.random_state, RND_SEED)
-
-
-def test_oss_fit_single_class():
-    # Create the object
-    oss = OneSidedSelection(random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, oss.fit, X, y_single_class)
-
-
-def test_oss_fit():
-    # Create the object
-    oss = OneSidedSelection(random_state=RND_SEED)
-    # Fit the data
-    oss.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(oss.min_c_, 0)
-    assert_equal(oss.maj_c_, 1)
-    assert_equal(oss.stats_c_[0], 6)
-    assert_equal(oss.stats_c_[1], 9)
-
-
-def test_oss_sample_wt_fit():
-    # Create the object
-    oss = OneSidedSelection(random_state=RND_SEED)
-    assert_raises(RuntimeError, oss.sample, X, Y)
 
 
 def test_oss_fit_sample():
@@ -95,26 +62,6 @@ def test_oss_fit_sample_with_indices():
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
-
-
-def test_oss_sample_wrong_X():
-    # Create the object
-    oss = OneSidedSelection(random_state=RND_SEED)
-    oss.fit(X, Y)
-    assert_raises(RuntimeError, oss.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_multiclass_error():
-    # continuous case
-    y = np.linspace(0, 1, 15)
-    oss = OneSidedSelection(random_state=RND_SEED)
-    assert_warns(UserWarning, oss.fit, X, y)
-
-    # multiclass case
-    y = np.array([0] * 10 + [1] * 3 + [2] * 2)
-    oss = OneSidedSelection(random_state=RND_SEED)
-    assert_warns(UserWarning, oss.fit, X, y)
 
 
 def test_oss_with_object():

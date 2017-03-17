@@ -2,9 +2,8 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
-from sklearn.utils.estimator_checks import check_estimator
+from numpy.testing import assert_array_equal, assert_equal, assert_raises
+
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import RepeatedEditedNearestNeighbours
@@ -37,10 +36,6 @@ Y = np.array([
 ])
 
 
-def test_enn_sk_estimator():
-    check_estimator(RepeatedEditedNearestNeighbours)
-
-
 def test_renn_init():
     # Define a ratio
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
@@ -57,29 +52,6 @@ def test_renn_iter_wrong():
     renn = RepeatedEditedNearestNeighbours(
         max_iter=max_iter, random_state=RND_SEED)
     assert_raises(ValueError, renn.fit_sample, X, Y)
-
-
-def test_renn_fit_single_class():
-    # Create the object
-    renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, renn.fit, X, y_single_class)
-
-
-def test_renn_fit():
-    # Create the object
-    renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
-    # Fit the data
-    renn.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(renn.min_c_, 0)
-    assert_equal(renn.maj_c_, 2)
-    assert_equal(renn.stats_c_[0], 4)
-    assert_equal(renn.stats_c_[1], 16)
-    assert_equal(renn.stats_c_[2], 20)
 
 
 def test_renn_sample_wt_fit():
@@ -175,21 +147,6 @@ def test_renn_fit_sample_mode_object():
     ])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_renn_sample_wrong_X():
-    # Create the object
-    renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
-    renn.fit(X, Y)
-    assert_raises(RuntimeError, renn.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_continuous_error():
-    # continuous case
-    y = np.linspace(0, 1, 40)
-    enn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
-    assert_warns(UserWarning, enn.fit, X, y)
 
 
 def test_renn_fit_sample_mode():

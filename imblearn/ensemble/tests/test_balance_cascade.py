@@ -2,10 +2,8 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
+from numpy.testing import assert_array_equal, assert_equal, assert_raises
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.ensemble import BalanceCascade
 
@@ -24,32 +22,6 @@ X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
 Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
-def test_bc_sk_estimator():
-    check_estimator(BalanceCascade)
-
-
-def test_bc_bad_ratio():
-    # Define a negative ratio
-    ratio = -1.0
-    bc = BalanceCascade(ratio=ratio)
-    assert_raises(ValueError, bc.fit, X, Y)
-
-    # Define a ratio greater than 1
-    ratio = 100.0
-    bc = BalanceCascade(ratio=ratio)
-    assert_raises(ValueError, bc.fit, X, Y)
-
-    # Define ratio as an unknown string
-    ratio = 'rnd'
-    bc = BalanceCascade(ratio=ratio)
-    assert_raises(ValueError, bc.fit, X, Y)
-
-    # Define ratio as a list which is not supported
-    ratio = [.5, .5]
-    bc = BalanceCascade(ratio=ratio)
-    assert_raises(ValueError, bc.fit, X, Y)
-
-
 def test_bc_init():
     # Define a ratio
     ratio = 1.
@@ -59,51 +31,6 @@ def test_bc_init():
     assert_equal(bc.bootstrap, True)
     assert_equal(bc.n_max_subset, None)
     assert_equal(bc.random_state, RND_SEED)
-
-
-def test_bc_fit_single_class():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, bc.fit, X, y_single_class)
-
-
-def test_bc_fit_invalid_ratio():
-    # Create the object
-    ratio = 1. / 10000.
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
-    # Fit the data
-    assert_raises(RuntimeError, bc.fit_sample, X, Y)
-
-
-def test_bc_fit():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
-    # Fit the data
-    bc.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(bc.min_c_, 0)
-    assert_equal(bc.maj_c_, 1)
-    assert_equal(bc.stats_c_[0], 8)
-    assert_equal(bc.stats_c_[1], 12)
-
-
-def test_sample_wt_fit():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
-    assert_raises(RuntimeError, bc.sample, X, Y)
 
 
 def test_fit_sample_auto():
@@ -571,26 +498,6 @@ def test_fit_sample_auto_early_stop_2():
         assert_array_equal(X_resampled[idx], X_gt[idx])
         assert_array_equal(y_resampled[idx], y_gt[idx])
         assert_array_equal(idx_under[idx], idx_gt[idx])
-
-
-def test_sample_wrong_X():
-    # Create the object
-    bc = BalanceCascade(random_state=RND_SEED)
-    bc.fit(X, Y)
-    assert_raises(RuntimeError, bc.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_multiclass_error():
-    # continuous case
-    y = np.linspace(0, 1, 20)
-    bc = BalanceCascade(random_state=RND_SEED)
-    assert_warns(UserWarning, bc.fit, X, y)
-
-    # multiclass case
-    y = np.array([0] * 3 + [1] * 2 + [2] * 15)
-    bc = BalanceCascade(random_state=RND_SEED)
-    assert_warns(UserWarning, bc.fit, X, y)
 
 
 def test_give_classifier_obj():

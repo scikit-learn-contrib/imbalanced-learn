@@ -3,8 +3,7 @@ from __future__ import print_function
 
 import numpy as np
 from numpy.testing import (assert_allclose, assert_array_equal,
-                           assert_equal, assert_raises, assert_warns)
-from sklearn.utils.estimator_checks import check_estimator
+                           assert_equal, assert_raises)
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import AllKNN
@@ -38,10 +37,6 @@ Y = np.array([
 R_TOL = 1e-4
 
 
-def test_allknn_sk_estimator():
-    check_estimator(AllKNN)
-
-
 def test_allknn_init():
     # Define a ratio
     allknn = AllKNN(random_state=RND_SEED)
@@ -50,35 +45,6 @@ def test_allknn_init():
     assert_equal(allknn.kind_sel, 'all')
     assert_equal(allknn.n_jobs, -1)
     assert_equal(allknn.random_state, RND_SEED)
-
-
-def test_allknn_fit_single_class():
-    # Create the object
-    allknn = AllKNN(random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, allknn.fit, X, y_single_class)
-
-
-def test_allknn_fit():
-    # Create the object
-    allknn = AllKNN(random_state=RND_SEED)
-    # Fit the data
-    allknn.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(allknn.min_c_, 0)
-    assert_equal(allknn.maj_c_, 2)
-    assert_equal(allknn.stats_c_[0], 4)
-    assert_equal(allknn.stats_c_[1], 16)
-    assert_equal(allknn.stats_c_[2], 20)
-
-
-def test_allknn_sample_wt_fit():
-    # Create the object
-    allknn = AllKNN(random_state=RND_SEED)
-    assert_raises(RuntimeError, allknn.sample, X, Y)
 
 
 def test_allknn_fit_sample():
@@ -167,21 +133,6 @@ def test_allknn_fit_sample_mode():
     ])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_allknn_sample_wrong_X():
-    # Create the object
-    allknn = AllKNN(random_state=RND_SEED)
-    allknn.fit(X, Y)
-    assert_raises(RuntimeError, allknn.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_continuous_error():
-    # continuous case
-    y = np.linspace(0, 1, 40)
-    ann = AllKNN(random_state=RND_SEED)
-    assert_warns(UserWarning, ann.fit, X, y)
 
 
 def test_allknn_fit_sample_with_nn_object():

@@ -2,9 +2,7 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
-from sklearn.utils.estimator_checks import check_estimator
+from numpy.testing import assert_array_equal, assert_equal
 
 from imblearn.ensemble import EasyEnsemble
 
@@ -18,32 +16,6 @@ X = np.array([[0.5220963, 0.11349303], [0.59091459, 0.40692742],
 Y = np.array([1, 2, 2, 2, 1, 0, 1, 1, 1, 0])
 
 
-def test_ee_sk_estimator():
-    check_estimator(EasyEnsemble)
-
-
-def test_ee_bad_ratio():
-    # Define a negative ratio
-    ratio = -1.0
-    ee = EasyEnsemble(ratio=ratio)
-    assert_raises(ValueError, ee.fit, X, Y)
-
-    # Define a ratio greater than 1
-    ratio = 100.0
-    ee = EasyEnsemble(ratio=ratio)
-    assert_raises(ValueError, ee.fit, X, Y)
-
-    # Define ratio as an unknown string
-    ratio = 'rnd'
-    ee = EasyEnsemble(ratio=ratio)
-    assert_raises(ValueError, ee.fit, X, Y)
-
-    # Define ratio as a list which is not supported
-    ratio = [.5, .5]
-    ee = EasyEnsemble(ratio=ratio)
-    assert_raises(ValueError, ee.fit, X, Y)
-
-
 def test_ee_init():
     # Define a ratio
     ratio = 1.
@@ -53,52 +25,6 @@ def test_ee_init():
     assert_equal(ee.replacement, False)
     assert_equal(ee.n_subsets, 10)
     assert_equal(ee.random_state, RND_SEED)
-
-
-def test_ee_fit_single_class():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, ee.fit, X, y_single_class)
-
-
-def test_ee_fit_invalid_ratio():
-    # Create the object
-    ratio = 1. / 10000.
-    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
-    # Fit the data
-    assert_raises(RuntimeError, ee.fit, X, Y)
-
-
-def test_ee_fit():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
-    # Fit the data
-    ee.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(ee.min_c_, 0)
-    assert_equal(ee.maj_c_, 1)
-    assert_equal(ee.stats_c_[0], 2)
-    assert_equal(ee.stats_c_[2], 3)
-    assert_equal(ee.stats_c_[1], 5)
-
-
-def test_sample_wt_fit():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
-    assert_raises(RuntimeError, ee.sample, X, Y)
 
 
 def test_fit_sample_auto():
@@ -167,18 +93,3 @@ def test_random_state_none():
 
     # Get the different subset
     X_resampled, y_resampled = ee.fit_sample(X, Y)
-
-
-def test_sample_wrong_X():
-    # Create the object
-    ee = EasyEnsemble(random_state=RND_SEED)
-    ee.fit(X, Y)
-    assert_raises(RuntimeError, ee.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_continuous_error():
-    # continuous case
-    y = np.linspace(0, 1, 10)
-    ee = EasyEnsemble(random_state=RND_SEED)
-    assert_warns(UserWarning, ee.fit, X, y)

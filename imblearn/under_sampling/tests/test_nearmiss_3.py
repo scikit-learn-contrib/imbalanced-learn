@@ -2,9 +2,7 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
-from sklearn.utils.estimator_checks import check_estimator
+from numpy.testing import assert_array_equal, assert_equal, assert_raises
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NearMiss
@@ -23,32 +21,6 @@ Y = np.array([1, 2, 1, 0, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 VERSION_NEARMISS = 3
 
 
-def test_nearmiss_sk_estimator():
-    check_estimator(NearMiss)
-
-
-def test_nearmiss_bad_ratio():
-    # Define a negative ratio
-    ratio = -1.0
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED)
-    assert_raises(ValueError, nm1.fit, X, Y)
-
-    # Define a ratio greater than 1
-    ratio = 100.0
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED)
-    assert_raises(ValueError, nm1.fit, X, Y)
-
-    # Define ratio as an unknown string
-    ratio = 'rnd'
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED)
-    assert_raises(ValueError, nm1.fit, X, Y)
-
-    # Define ratio as a list which is not supported
-    ratio = [.5, .5]
-    nm1 = NearMiss(ratio=ratio, random_state=RND_SEED)
-    assert_raises(ValueError, nm1.fit, X, Y)
-
-
 def test_nearmiss_wrong_version():
     version = 1000
     nm3 = NearMiss(version=version, random_state=RND_SEED)
@@ -65,55 +37,6 @@ def test_nearmiss_init():
     assert_equal(nm3.n_neighbors, 3)
     assert_equal(nm3.ratio, ratio)
     assert_equal(nm3.random_state, RND_SEED)
-
-
-def test_nearmiss_fit_single_class():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    nm3 = NearMiss(
-        ratio=ratio, random_state=RND_SEED, version=VERSION_NEARMISS)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, nm3.fit, X, y_single_class)
-
-
-def test_nm_fit_invalid_ratio():
-    # Create the object
-    ratio = 1. / 10000.
-    nm = NearMiss(ratio=ratio, random_state=RND_SEED)
-    # Fit the data
-    assert_raises(RuntimeError, nm.fit, X, Y)
-
-
-def test_nm3_fit():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    nm3 = NearMiss(
-        ratio=ratio, random_state=RND_SEED, version=VERSION_NEARMISS)
-    # Fit the data
-    nm3.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(nm3.min_c_, 0)
-    assert_equal(nm3.maj_c_, 2)
-    assert_equal(nm3.stats_c_[0], 3)
-    assert_equal(nm3.stats_c_[1], 5)
-    assert_equal(nm3.stats_c_[2], 7)
-
-
-def test_nm3_sample_wt_fit():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    nm3 = NearMiss(
-        ratio=ratio, random_state=RND_SEED, version=VERSION_NEARMISS)
-    assert_raises(RuntimeError, nm3.sample, X, Y)
 
 
 def test_nm3_fit_sample_auto():
@@ -183,21 +106,6 @@ def test_nm3_fit_sample_half():
     y_gt = np.array([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_nm3_sample_wrong_X():
-    # Create the object
-    nm3 = NearMiss(random_state=RND_SEED, version=VERSION_NEARMISS)
-    nm3.fit(X, Y)
-    assert_raises(RuntimeError, nm3.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_continuous_error():
-    # continuous case
-    y = np.linspace(0, 1, 15)
-    nm = NearMiss(random_state=RND_SEED, version=VERSION_NEARMISS)
-    assert_warns(UserWarning, nm.fit, X, y)
 
 
 def test_nm3_fit_sample_nn_obj():

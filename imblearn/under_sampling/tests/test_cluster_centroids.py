@@ -5,9 +5,8 @@ from collections import Counter
 
 import numpy as np
 from numpy.testing import (assert_allclose, assert_array_equal,
-                           assert_equal, assert_raises, assert_warns)
+                           assert_equal, assert_raises)
 from sklearn.cluster import KMeans
-from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.under_sampling import ClusterCentroids
 
@@ -23,94 +22,12 @@ Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 R_TOL = 1e-4
 
 
-def test_cc_sk_estimator():
-    check_estimator(ClusterCentroids)
-
-
-def test_cc_bad_ratio():
-    # Define a negative ratio
-    ratio = -1.0
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
-    assert_raises(ValueError, cc.fit, X, Y)
-
-    # Define a ratio greater than 1
-    ratio = 100.0
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
-    assert_raises(ValueError, cc.fit, X, Y)
-
-    # Define ratio as an unknown string
-    ratio = 'rnd'
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
-    assert_raises(ValueError, cc.fit, X, Y)
-
-    # Define ratio as a list which is not supported
-    ratio = [.5, .5]
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
-    assert_raises(ValueError, cc.fit, X, Y)
-
-
 def test_init():
     # Define a ratio
     ratio = 1.
     cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
 
     assert_equal(cc.ratio, ratio)
-
-
-def test_cc_fit_single_class():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, cc.fit, X, y_single_class)
-
-
-def test_cc_fit_invalid_ratio():
-    # Create the object
-    ratio = 1. / 10000.
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
-    # Fit the data
-    assert_raises(RuntimeError, cc.fit, X, Y)
-
-
-def test_cc_fit():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
-    # Fit the data
-    cc.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(cc.min_c_, 0)
-    assert_equal(cc.maj_c_, 1)
-    assert_equal(cc.stats_c_[0], 3)
-    assert_equal(cc.stats_c_[1], 7)
-
-
-def test_sample_wrong_X():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
-    cc.fit(X, Y)
-    assert_raises(RuntimeError, cc.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_sample_wt_fit():
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
-    assert_raises(RuntimeError, cc.sample, X, Y)
 
 
 def test_fit_sample_auto():
@@ -149,21 +66,6 @@ def test_fit_sample_half():
     y_gt = np.array([0, 0, 0, 1, 1, 1, 1, 1, 1])
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_sample_wrong_X_dft_ratio():
-    # Create the object
-    cc = ClusterCentroids(random_state=RND_SEED)
-    cc.fit(X, Y)
-    assert_raises(RuntimeError, cc.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_continuous_error():
-    # continuous case
-    y = np.linspace(0, 1, 10)
-    cc = ClusterCentroids(random_state=RND_SEED)
-    assert_warns(UserWarning, cc.fit, X, y)
 
 
 def test_multiclass_fit_sample():

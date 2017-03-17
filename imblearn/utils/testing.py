@@ -13,13 +13,17 @@ from imblearn.base import SamplerMixin
 
 from sklearn.base import BaseEstimator
 
-# Meta estimators need another estimator to be instantiated.
+# meta-estimators need another estimator to be instantiated.
 META_ESTIMATORS = []
 # estimators that there is no way to default-construct sensibly
 OTHER = ["Pipeline", "FeatureUnion"]
-
-# some trange ones
+# some strange ones
 DONT_TEST = []
+
+# binary samplers
+BINARY_ESTIMATORS = ["BalanceCascade", "ADASYN", "SMOTE", "SMOTEENN",
+                     "SMOTETomek", "InstanceHardnessThreshold",
+                     "OneSidedSelection", "TomekLinks"]
 
 
 def all_estimators(include_meta_estimators=False,
@@ -58,7 +62,7 @@ def all_estimators(include_meta_estimators=False,
     -------
     estimators : list of tuples
         List of (name, class), where ``name`` is the class name as string
-        and ``class`` is the actuall type of the class.
+        and ``class`` is the actual type of the class.
 
     """
     def is_abstract(c):
@@ -120,3 +124,31 @@ def all_estimators(include_meta_estimators=False,
     # itemgetter is used to ensure the sort does not extend to the 2nd item of
     # the tuple
     return sorted(set(estimators), key=itemgetter(0))
+
+
+def binary_estimators():
+    """Get a list of the binary estimators from imblearn.
+
+    Returns
+    -------
+    estimators : list of tuples
+        List of (name, class), where ``name`` is the class as string and
+        ``class`` is the actual type of the class.
+    """
+    estimators = list(all_estimators())
+    # remove the estimators which are not marked as binary
+    return tuple([c for c in estimators if c[0] in BINARY_ESTIMATORS])
+
+
+def multiclass_estimators():
+    """Get a list of the multiclass estimators from imblearn.
+
+    Returns
+    -------
+    estimators : list of tuples
+        List of (name, class), where ``name`` is the class as string and
+        ``class`` is the actual type of the class.
+    """
+    estimators = list(all_estimators())
+    # remove the estimators which are not marked as binary
+    return tuple([c for c in estimators if c[0] not in BINARY_ESTIMATORS])

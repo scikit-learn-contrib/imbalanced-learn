@@ -2,9 +2,7 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_allclose, assert_array_equal,
-                           assert_equal, assert_raises, assert_warns)
-from sklearn.utils.estimator_checks import check_estimator
+from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 from imblearn.combine import SMOTEENN
 from imblearn.under_sampling import EditedNearestNeighbours
@@ -24,56 +22,6 @@ X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
               [0.08711622, 0.93259929], [1.70580611, -0.11219234]])
 Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 R_TOL = 1e-4
-
-
-def test_senn_sk_estimator():
-    check_estimator(SMOTEENN)
-
-
-def test_senn_bad_ratio():
-    ratio = -1.0
-    smote = SMOTEENN(ratio=ratio)
-    assert_raises(ValueError, smote.fit, X, Y)
-
-    ratio = 100.0
-    smote = SMOTEENN(ratio=ratio)
-    assert_raises(ValueError, smote.fit, X, Y)
-
-    ratio = 'rnd'
-    smote = SMOTEENN(ratio=ratio)
-    assert_raises(ValueError, smote.fit, X, Y)
-
-    ratio = [.5, .5]
-    smote = SMOTEENN(ratio=ratio)
-    assert_raises(ValueError, smote.fit, X, Y)
-
-
-def test_smote_fit_single_class():
-    # Create the object
-    smote = SMOTEENN(random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, smote.fit, X, y_single_class)
-
-
-def test_smote_fit():
-    # Create the object
-    smote = SMOTEENN(random_state=RND_SEED)
-    # Fit the data
-    smote.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(smote.min_c_, 0)
-    assert_equal(smote.maj_c_, 1)
-    assert_equal(smote.stats_c_[0], 8)
-    assert_equal(smote.stats_c_[1], 12)
-
-
-def test_smote_sample_wt_fit():
-    # Create the object
-    smote = SMOTEENN(random_state=RND_SEED)
-    assert_raises(RuntimeError, smote.sample, X, Y)
 
 
 def test_sample_regular():
@@ -115,26 +63,6 @@ def test_sample_regular_half():
     y_gt = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1])
     assert_allclose(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_sample_wrong_X():
-    # Create the object
-    sm = SMOTEENN(random_state=RND_SEED)
-    sm.fit(X, Y)
-    assert_raises(RuntimeError, sm.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_senn_multiclass_error():
-    # continuous case
-    y = np.linspace(0, 1, 20)
-    sm = SMOTEENN(random_state=RND_SEED)
-    assert_warns(UserWarning, sm.fit, X, y)
-
-    # multiclass case
-    y = np.array([0] * 3 + [1] * 2 + [2] * 15)
-    sm = SMOTEENN(random_state=RND_SEED)
-    assert_warns(UserWarning, sm.fit, X, y)
 
 
 def test_validate_estimator_init():

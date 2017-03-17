@@ -2,9 +2,8 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
-from sklearn.utils.estimator_checks import check_estimator
+from numpy.testing import assert_array_equal, assert_equal, assert_raises
+
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import EditedNearestNeighbours
@@ -24,10 +23,6 @@ X = np.array([[2.59928271, 0.93323465], [0.25738379, 0.95564169],
 Y = np.array([1, 2, 1, 1, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 1, 2, 1])
 
 
-def test_enn_sk_estimator():
-    check_estimator(EditedNearestNeighbours)
-
-
 def test_enn_init():
     # Define a ratio
     enn = EditedNearestNeighbours(random_state=RND_SEED)
@@ -36,35 +31,6 @@ def test_enn_init():
     assert_equal(enn.kind_sel, 'all')
     assert_equal(enn.n_jobs, 1)
     assert_equal(enn.random_state, RND_SEED)
-
-
-def test_enn_fit_single_class():
-    # Create the object
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, enn.fit, X, y_single_class)
-
-
-def test_enn_fit():
-    # Create the object
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
-    # Fit the data
-    enn.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(enn.min_c_, 0)
-    assert_equal(enn.maj_c_, 2)
-    assert_equal(enn.stats_c_[0], 2)
-    assert_equal(enn.stats_c_[1], 6)
-    assert_equal(enn.stats_c_[2], 12)
-
-
-def test_enn_sample_wt_fit():
-    # Create the object
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
-    assert_raises(RuntimeError, enn.sample, X, Y)
 
 
 def test_enn_fit_sample():
@@ -112,21 +78,6 @@ def test_enn_fit_sample_mode():
     y_gt = np.array([0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_enn_sample_wrong_X():
-    # Create the object
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
-    enn.fit(X, Y)
-    assert_raises(RuntimeError, enn.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_continuous_error():
-    # continuous case
-    y = np.linspace(0, 1, 20)
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
-    assert_warns(UserWarning, enn.fit, X, y)
 
 
 def test_enn_fit_sample_with_nn_object():

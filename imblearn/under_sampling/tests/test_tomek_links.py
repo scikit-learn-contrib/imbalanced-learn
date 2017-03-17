@@ -2,9 +2,7 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
-from sklearn.utils.estimator_checks import check_estimator
+from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 from imblearn.under_sampling import TomekLinks
 
@@ -23,38 +21,12 @@ X = np.array([[0.31230513, 0.1216318], [0.68481731, 0.51935141],
 Y = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
-def test_tl_sk_estimator():
-    check_estimator(TomekLinks)
-
-
 def test_tl_init():
     # Define a ratio
     tl = TomekLinks(random_state=RND_SEED)
 
     assert_equal(tl.n_jobs, 1)
     assert_equal(tl.random_state, RND_SEED)
-
-
-def test_tl_fit_single_class():
-    # Create the object
-    tl = TomekLinks(random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, tl.fit, X, y_single_class)
-
-
-def test_tl_fit():
-    # Create the object
-    tl = TomekLinks(random_state=RND_SEED)
-    # Fit the data
-    tl.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(tl.min_c_, 0)
-    assert_equal(tl.maj_c_, 1)
-    assert_equal(tl.stats_c_[0], 7)
-    assert_equal(tl.stats_c_[1], 13)
 
 
 def test_tl_sample_wt_fit():
@@ -102,23 +74,3 @@ def test_tl_fit_sample_with_indices():
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
-
-
-def test_tl_sample_wrong_X():
-    # Create the object
-    tl = TomekLinks(random_state=RND_SEED)
-    tl.fit(X, Y)
-    assert_raises(RuntimeError, tl.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_multiclass_error():
-    # continuous case
-    y = np.linspace(0, 1, 20)
-    tl = TomekLinks(random_state=RND_SEED)
-    assert_warns(UserWarning, tl.fit, X, y)
-
-    # multiclass case
-    y = np.array([0] * 3 + [1] * 7 + [2] * 10)
-    tl = TomekLinks(random_state=RND_SEED)
-    assert_warns(UserWarning, tl.fit, X, y)
