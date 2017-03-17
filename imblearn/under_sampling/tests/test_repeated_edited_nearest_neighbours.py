@@ -54,12 +54,6 @@ def test_renn_iter_wrong():
     assert_raises(ValueError, renn.fit_sample, X, Y)
 
 
-def test_renn_sample_wt_fit():
-    # Create the object
-    renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
-    assert_raises(RuntimeError, renn.sample, X, Y)
-
-
 def test_renn_fit_sample():
     # Resample the data
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)

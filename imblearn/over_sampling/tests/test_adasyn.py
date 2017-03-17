@@ -45,12 +45,6 @@ def test_ada_fit():
     assert_equal(ada.stats_c_[1], 12)
 
 
-def test_ada_sample_wt_fit():
-    # Create the object
-    ada = ADASYN(random_state=RND_SEED)
-    assert_raises(RuntimeError, ada.sample, X, Y)
-
-
 def test_ada_fit_sample():
     # Resample the data
     ada = ADASYN(random_state=RND_SEED)

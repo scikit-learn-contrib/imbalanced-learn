@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import assert_array_equal, assert_equal, assert_raises
+from numpy.testing import assert_array_equal, assert_equal
 
 from imblearn.under_sampling import TomekLinks
 
@@ -27,12 +27,6 @@ def test_tl_init():
 
     assert_equal(tl.n_jobs, 1)
     assert_equal(tl.random_state, RND_SEED)
-
-
-def test_tl_sample_wt_fit():
-    # Create the object
-    tl = TomekLinks(random_state=RND_SEED)
-    assert_raises(RuntimeError, tl.sample, X, Y)
 
 
 def test_tl_fit_sample():

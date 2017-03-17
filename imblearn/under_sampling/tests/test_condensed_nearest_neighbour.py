@@ -2,10 +2,9 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
+from numpy.testing import assert_array_equal, assert_equal, assert_raises
+
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.under_sampling import CondensedNearestNeighbour
 
@@ -24,45 +23,12 @@ X = np.array([[2.59928271, 0.93323465], [0.25738379, 0.95564169],
 Y = np.array([1, 2, 1, 1, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 1, 2, 1])
 
 
-def test_cnn_sk_estimator():
-    check_estimator(CondensedNearestNeighbour)
-
-
 def test_cnn_init():
     # Define a ratio
     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
 
     assert_equal(cnn.n_seeds_S, 1)
     assert_equal(cnn.n_jobs, 1)
-
-
-def test_cnn_fit_single_class():
-    # Create the object
-    cnn = CondensedNearestNeighbour(random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, cnn.fit, X, y_single_class)
-
-
-def test_cnn_fit():
-    # Create the object
-    cnn = CondensedNearestNeighbour(random_state=RND_SEED)
-    # Fit the data
-    cnn.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(cnn.min_c_, 0)
-    assert_equal(cnn.maj_c_, 2)
-    assert_equal(cnn.stats_c_[0], 2)
-    assert_equal(cnn.stats_c_[1], 6)
-    assert_equal(cnn.stats_c_[2], 12)
-
-
-def test_cnn_sample_wt_fit():
-    # Create the object
-    cnn = CondensedNearestNeighbour(random_state=RND_SEED)
-    assert_raises(RuntimeError, cnn.sample, X, Y)
 
 
 def test_cnn_fit_sample():
@@ -95,21 +61,6 @@ def test_cnn_fit_sample_with_indices():
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
-
-
-def test_cnn_sample_wrong_X():
-    # Create the object
-    cnn = CondensedNearestNeighbour(random_state=RND_SEED)
-    cnn.fit(X, Y)
-    assert_raises(RuntimeError, cnn.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_continuous_error():
-    # continuous case
-    y = np.linspace(0, 1, 20)
-    cnn = CondensedNearestNeighbour(random_state=RND_SEED)
-    assert_warns(UserWarning, cnn.fit, X, y)
 
 
 def test_cnn_fit_sample_with_object():

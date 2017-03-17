@@ -40,12 +40,6 @@ def test_iht_init():
     assert_equal(iht.random_state, RND_SEED)
 
 
-def test_iht_sample_wt_fit():
-    # Create the object
-    iht = InstanceHardnessThreshold(ESTIMATOR, random_state=RND_SEED)
-    assert_raises(RuntimeError, iht.sample, X, Y)
-
-
 def test_iht_fit_sample():
     # Resample the data
     iht = InstanceHardnessThreshold(ESTIMATOR, random_state=RND_SEED)
