@@ -11,10 +11,11 @@ from sklearn.utils.estimator_checks import _yield_all_checks \
 from sklearn.utils.testing import (assert_warns, assert_raises_regex,
                                    assert_equal,
                                    set_random_state, SkipTest)
-from sklearn.exceptions import SkipTestWarning, NotFittedError
+from sklearn.exceptions import NotFittedError
 
 from imblearn.base import SamplerMixin
 from imblearn.utils.testing import binary_estimators, multiclass_estimators
+from imblearn.exceptions import SkipTestWarning
 
 
 def _yield_sampler_checks(name, Estimator):
