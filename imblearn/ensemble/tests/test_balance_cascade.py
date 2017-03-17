@@ -571,7 +571,7 @@ def test_give_classifier_wrong_obj():
 
     # Get the different subset
     assert_raises_regex(ValueError, "Invalid parameter `estimator`",
-                  bc.fit_sample, X, Y)
+                        bc.fit_sample, X, Y)
 
 
 def test_rf_wth_bootstrap():

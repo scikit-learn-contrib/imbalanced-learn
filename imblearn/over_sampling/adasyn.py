@@ -129,7 +129,6 @@ class ADASYN(BaseBinarySampler):
         # set the number of jobs
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
-
         return self
 
     def _sample(self, X, y):

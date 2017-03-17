@@ -5,8 +5,6 @@ import warnings
 from collections import Counter
 
 import numpy as np
-from sklearn.neighbors import NearestNeighbors
-from sklearn.neighbors.base import KNeighborsMixin
 
 from ..base import BaseMulticlassSampler
 from ..utils import check_neighbors_object

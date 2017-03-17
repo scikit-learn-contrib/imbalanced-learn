@@ -2,8 +2,8 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal,
-                           assert_raises_regex)
+from sklearn.utils.testing import (assert_array_equal, assert_warns,
+                                   assert_raises_regex)
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NearMiss
@@ -21,6 +21,12 @@ X = np.array([[1.17737838, -0.2002118], [0.4960075, 0.86130762],
 Y = np.array([1, 2, 1, 0, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 
 VERSION_NEARMISS = [1, 2, 3]
+
+
+# FIXME remove at the end of the deprecation 0.4
+def test_nearmiss_deprecation():
+    nm = NearMiss(ver3_samp_ngh=3, version=3)
+    assert_warns(DeprecationWarning, nm.fit, X, Y)
 
 
 def test_nearmiss_wrong_version():
