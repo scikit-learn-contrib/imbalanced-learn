@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import assert_array_equal, assert_equal, assert_raises
+from numpy.testing import assert_array_equal, assert_equal, assert_raises_regex
 
 from sklearn.neighbors import NearestNeighbors
 
@@ -83,4 +83,5 @@ def test_ncr_wrong_nn_obj():
     nn = 'rnd'
     ncr = NeighbourhoodCleaningRule(
         return_indices=True, random_state=RND_SEED, n_neighbors=nn)
-    assert_raises(ValueError, ncr.fit_sample, X, Y)
+    assert_raises_regex(ValueError, "has to be either",
+                        ncr.fit_sample, X, Y)

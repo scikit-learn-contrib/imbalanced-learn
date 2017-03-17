@@ -182,7 +182,8 @@ class InstanceHardnessThreshold(BaseBinarySampler):
             else:
                 raise NotImplementedError
         else:
-            raise ValueError('Invalid parameter `estimator`')
+            raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
+                type(self.estimator)))
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

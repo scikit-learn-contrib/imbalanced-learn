@@ -294,8 +294,10 @@ class SMOTE(BaseBinarySampler):
             elif isinstance(self.k_neighbors, KNeighborsMixin):
                 self.nn_k_ = self.k_neighbors
             else:
-                raise ValueError('`n_neighbors` has to be be either int or a'
-                                 ' subclass of KNeighborsMixin.')
+                raise ValueError('`n_neighbors` has to be either int or a'
+                                 ' subclass of KNeighborsMixin.'
+                                 ' Got {} instead.'.format(
+                                     type(self.k_neighbors)))
         else:
             # Borderline1, 2 and SVM variations of smote must first look for
             # samples that could be considered noise and samples that live
@@ -309,8 +311,10 @@ class SMOTE(BaseBinarySampler):
             elif isinstance(self.k_neighbors, KNeighborsMixin):
                 self.nn_k_ = self.k_neighbors
             else:
-                raise ValueError('`n_neighbors` has to be be either int or a'
-                                 ' subclass of KNeighborsMixin.')
+                raise ValueError('`n_neighbors` has to be either int or a'
+                                 ' subclass of KNeighborsMixin.'
+                                 ' Got {} instead.'.format(
+                                     type(self.k_neighbors)))
 
             if isinstance(self.m_neighbors, int):
                 self.nn_m_ = NearestNeighbors(
@@ -318,8 +322,10 @@ class SMOTE(BaseBinarySampler):
             elif isinstance(self.m_neighbors, KNeighborsMixin):
                 self.nn_m_ = self.m_neighbors
             else:
-                raise ValueError('`n_neighbors` has to be be either int or a'
-                                 ' subclass of KNeighborsMixin.')
+                raise ValueError('`n_neighbors` has to be either int or a'
+                                 ' subclass of KNeighborsMixin.'
+                                 ' Got {} instead.'.format(
+                                     type(self.m_neighbors)))
 
         # --- SVM smote
         # Unlike the borderline variations, the SVM variation uses the support
@@ -335,7 +341,9 @@ class SMOTE(BaseBinarySampler):
             elif isinstance(self.svm_estimator, SVC):
                 self.svm_estimator_ = self.svm_estimator
             else:
-                raise ValueError('`svm_estimator` has to be an SVC object')
+                raise ValueError('`svm_estimator` has to be an SVC object.'
+                                 'Got {} instead'.format(
+                                     type(self.svm_estimator)))
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -383,7 +391,9 @@ class SMOTE(BaseBinarySampler):
         """
 
         if self.kind not in SMOTE_KIND:
-            raise ValueError('Unknown kind for SMOTE algorithm.')
+            raise ValueError('Unknown kind for SMOTE algorithm.'
+                             ' Choices are {}. Got {} instead.'.format(
+                                 SMOTE_KIND, self.kind))
 
         random_state = check_random_state(self.random_state)
 

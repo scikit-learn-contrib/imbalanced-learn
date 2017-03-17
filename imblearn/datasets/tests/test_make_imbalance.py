@@ -5,7 +5,7 @@ from collections import Counter
 
 import numpy as np
 from sklearn.utils.testing import assert_true
-from numpy.testing import assert_equal, assert_raises
+from numpy.testing import assert_equal, assert_raises_regex
 
 from imblearn.datasets import make_imbalance
 
@@ -20,19 +20,23 @@ def test_make_imbalance_bad_ratio():
 
     # Define a zero ratio
     ratio = 0.0
-    assert_raises(ValueError, make_imbalance, X, Y, ratio, min_c_)
+    assert_raises_regex(ValueError, "Ratio have to be strictly positive",
+                        make_imbalance, X, Y, ratio, min_c_)
 
     # Define a negative ratio
     ratio = -2.0
-    assert_raises(ValueError, make_imbalance, X, Y, ratio, min_c_)
+    assert_raises_regex(ValueError, "Ratio have to be strictly positive",
+                        make_imbalance, X, Y, ratio, min_c_)
 
     # Define a ratio greater than 1
     ratio = 2.0
-    assert_raises(ValueError, make_imbalance, X, Y, ratio, min_c_)
+    assert_raises_regex(ValueError, "Ratio cannot be greater than one",
+                        make_imbalance, X, Y, ratio, min_c_)
 
     # Define ratio as a list which is not supported
     ratio = [.5, .5]
-    assert_raises(ValueError, make_imbalance, X, Y, ratio, min_c_)
+    assert_raises_regex(ValueError, "Ratio must be a float between",
+                        make_imbalance, X, Y, ratio, min_c_)
 
 
 def test_make_imbalance_invalid_ratio():
@@ -40,13 +44,15 @@ def test_make_imbalance_invalid_ratio():
     y_[0] = 1
 
     ratio = 0.5
-    assert_raises(ValueError, make_imbalance, X, y_, ratio)
+    assert_raises_regex(ValueError, "Current imbalance ratio of data",
+                        make_imbalance, X, y_, ratio)
 
 
 def test_make_imbalance_single_class():
     y_ = np.zeros((X.shape[0], ))
     ratio = 0.5
-    assert_raises(ValueError, make_imbalance, X, y_, ratio)
+    assert_raises_regex(ValueError, "Not enough samples for desired ratio!",
+                        make_imbalance, X, y_, ratio)
 
 
 def test_make_imbalance_1():

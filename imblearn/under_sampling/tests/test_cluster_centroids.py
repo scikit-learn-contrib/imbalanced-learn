@@ -5,7 +5,7 @@ from collections import Counter
 
 import numpy as np
 from numpy.testing import (assert_allclose, assert_array_equal,
-                           assert_equal, assert_raises)
+                           assert_equal, assert_raises_regex)
 from sklearn.cluster import KMeans
 
 from imblearn.under_sampling import ClusterCentroids
@@ -115,4 +115,5 @@ def test_fit_sample_wrong_object():
         ratio=ratio, random_state=RND_SEED, estimator=cluster)
 
     # Fit and sample
-    assert_raises(ValueError, cc.fit_sample, X, Y)
+    assert_raises_regex(ValueError, "has to be a KMeans clustering",
+                        cc.fit_sample, X, Y)

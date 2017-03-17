@@ -115,8 +115,9 @@ class ADASYN(BaseBinarySampler):
         elif isinstance(self.n_neighbors, KNeighborsMixin):
             self.nn_ = self.n_neighbors
         else:
-            raise ValueError('`n_neighbors` has to be be either int or a'
-                             ' subclass of KNeighborsMixin.')
+            raise ValueError('`n_neighbors` has to be either int or a'
+                             ' subclass of KNeighborsMixin.'
+                             ' Got {} instead.'.format(type(self.n_neighbors)))
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

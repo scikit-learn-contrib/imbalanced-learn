@@ -3,7 +3,7 @@ from __future__ import print_function
 
 import numpy as np
 from numpy.testing import (assert_allclose, assert_array_equal,
-                           assert_equal, assert_raises)
+                           assert_equal, assert_raises_regex)
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.over_sampling import ADASYN
@@ -120,4 +120,5 @@ def test_ada_wrong_nn_obj():
     # Resample the data
     nn = 'rnd'
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
-    assert_raises(ValueError, ada.fit_sample, X, Y)
+    assert_raises_regex(ValueError, "has to be either",
+                        ada.fit_sample, X, Y)

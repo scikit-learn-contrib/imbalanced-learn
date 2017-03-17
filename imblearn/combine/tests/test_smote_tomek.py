@@ -2,7 +2,8 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import assert_allclose, assert_array_equal, assert_raises
+from numpy.testing import (assert_allclose, assert_array_equal,
+                           assert_raises_regex)
 
 from imblearn.combine import SMOTETomek
 from imblearn.over_sampling import SMOTE
@@ -148,6 +149,8 @@ def test_error_wrong_object():
     tomek = 'rnd'
 
     smt = SMOTETomek(smote=smote, random_state=RND_SEED)
-    assert_raises(ValueError, smt.fit, X, Y)
+    assert_raises_regex(ValueError, "smote needs to be a SMOTE",
+                        smt.fit, X, Y)
     smt = SMOTETomek(tomek=tomek, random_state=RND_SEED)
-    assert_raises(ValueError, smt.fit, X, Y)
+    assert_raises_regex(ValueError, "tomek needs to be a TomekLinks",
+                        smt.fit, X, Y)

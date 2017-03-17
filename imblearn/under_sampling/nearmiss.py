@@ -227,7 +227,8 @@ class NearMiss(BaseMulticlassSampler):
             self.nn_ = self.n_neighbors
         else:
             raise ValueError('`n_neighbors` has to be be either int or a'
-                             ' subclass of KNeighborsMixin.')
+                             ' subclass of KNeighborsMixin. Got {}'
+                             ' instead.'.format(type(self.n_neighbors)))
 
         if self.version == 3:
 
@@ -245,7 +246,9 @@ class NearMiss(BaseMulticlassSampler):
                 self.nn_ver3_ = self.n_neighbors_ver3
             else:
                 raise ValueError('`n_neighbors_ver3` has to be be either int'
-                                 ' or a subclass of KNeighborsMixin.')
+                                 ' or a subclass of KNeighborsMixin. Got {}'
+                                 ' instead.'.format(
+                                     type(self.n_neighbors_ver3)))
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

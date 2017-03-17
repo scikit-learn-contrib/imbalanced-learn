@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import assert_array_equal, assert_equal, assert_raises
+from numpy.testing import assert_array_equal, assert_equal, assert_raises_regex
 
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -88,4 +88,5 @@ def test_cnn_fit_sample_with_wrong_object():
     # Resample the data
     knn = 'rnd'
     cnn = CondensedNearestNeighbour(random_state=RND_SEED, n_neighbors=knn)
-    assert_raises(ValueError, cnn.fit_sample, X, Y)
+    assert_raises_regex(ValueError, "has to be a int or an ",
+                        cnn.fit_sample, X, Y)

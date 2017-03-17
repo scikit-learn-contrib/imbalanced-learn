@@ -125,8 +125,9 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         elif isinstance(self.n_neighbors, KNeighborsMixin):
             self.nn_ = self.n_neighbors
         else:
-            raise ValueError('`n_neighbors` has to be be either int or a'
-                             ' subclass of KNeighborsMixin.')
+            raise ValueError('`n_neighbors` has to be either int or a'
+                             ' subclass of KNeighborsMixin.'
+                             ' Got {} instead.'.format(type(self.n_neighbors)))
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -423,7 +424,8 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
             raise NotImplementedError
 
         if self.max_iter < 2:
-            raise ValueError('max_iter must be greater than 1.')
+            raise ValueError('max_iter must be greater than 1.'
+                             ' Got {} instead.'.format(type(self.max_iter)))
 
         X_, y_ = X, y
 

@@ -2,7 +2,8 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import assert_array_equal, assert_equal, assert_raises
+from numpy.testing import (assert_array_equal, assert_equal,
+                           assert_raises, assert_raises_regex)
 from sklearn.ensemble import RandomForestClassifier
 
 from imblearn.ensemble import BalanceCascade
@@ -569,7 +570,8 @@ def test_give_classifier_wrong_obj():
         estimator=classifier)
 
     # Get the different subset
-    assert_raises(ValueError, bc.fit_sample, X, Y)
+    assert_raises(ValueError, "Invalid parameter`estimator`",
+                  bc.fit_sample, X, Y)
 
 
 def test_rf_wth_bootstrap():
