@@ -37,7 +37,7 @@ def test_nm_wrong_nn_obj():
                   version=VERSION_NEARMISS,
                   return_indices=True,
                   n_neighbors=nn)
-    assert_raises_regex(ValueError, "has to be be either",
+    assert_raises_regex(ValueError, "has to be one of",
                         nm.fit_sample, X, Y)
 
     # Create the object
@@ -46,7 +46,7 @@ def test_nm_wrong_nn_obj():
     nm3 = NearMiss(ratio=ratio, random_state=RND_SEED,
                    version=3, return_indices=True,
                    n_neighbors=nn, n_neighbors_ver3=nn3)
-    assert_raises_regex(ValueError, "has to be be either",
+    assert_raises_regex(ValueError, "has to be one of",
                         nm3.fit_sample, X, Y)
 
 

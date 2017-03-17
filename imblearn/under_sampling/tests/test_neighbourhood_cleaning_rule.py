@@ -83,5 +83,5 @@ def test_ncr_wrong_nn_obj():
     nn = 'rnd'
     ncr = NeighbourhoodCleaningRule(
         return_indices=True, random_state=RND_SEED, n_neighbors=nn)
-    assert_raises_regex(ValueError, "has to be either",
+    assert_raises_regex(ValueError, "has to be one of",
                         ncr.fit_sample, X, Y)

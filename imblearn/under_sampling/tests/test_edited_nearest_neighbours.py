@@ -105,5 +105,5 @@ def test_enn_not_good_object():
     nn = 'rnd'
     enn = EditedNearestNeighbours(
         n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
-    assert_raises_regex(ValueError, "has to be either",
+    assert_raises_regex(ValueError, "has to be one of",
                         enn.fit_sample, X, Y)

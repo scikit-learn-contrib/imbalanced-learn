@@ -233,7 +233,7 @@ def test_wrong_nn():
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
 
-    assert_raises_regex(ValueError, "has to be either int",
+    assert_raises_regex(ValueError, "has to be one of",
                         smote.fit_sample, X, Y)
 
     nn_k = 'rnd'
@@ -241,14 +241,14 @@ def test_wrong_nn():
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
 
-    assert_raises_regex(ValueError, "has to be either int",
+    assert_raises_regex(ValueError, "has to be one of",
                         smote.fit_sample, X, Y)
 
     kind = 'regular'
     nn_k = 'rnd'
     smote = SMOTE(random_state=RND_SEED, kind=kind, k_neighbors=nn_k)
 
-    assert_raises_regex(ValueError, "has to be either int",
+    assert_raises_regex(ValueError, "has to be one of",
                         smote.fit_sample, X, Y)
 
 
@@ -288,5 +288,5 @@ def test_sample_regular_wrong_svm():
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, svm_estimator=svm)
 
-    assert_raises_regex(ValueError, "has to be an SVC",
+    assert_raises_regex(ValueError, "has to be one of",
                         smote.fit_sample, X, Y)

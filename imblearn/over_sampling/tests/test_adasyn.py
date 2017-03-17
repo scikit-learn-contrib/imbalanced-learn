@@ -120,5 +120,5 @@ def test_ada_wrong_nn_obj():
     # Resample the data
     nn = 'rnd'
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
-    assert_raises_regex(ValueError, "has to be either",
+    assert_raises_regex(ValueError, "has to be one of",
                         ada.fit_sample, X, Y)
