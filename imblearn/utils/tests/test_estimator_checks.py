@@ -5,8 +5,6 @@ from sklearn.externals.six.moves import cStringIO as StringIO
 
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.testing import assert_raises_regex, assert_true
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.linear_model import MultiTaskElasticNet
 from sklearn.utils.validation import check_X_y, check_array
 
 from imblearn.utils.estimator_checks import check_estimator
@@ -145,7 +143,3 @@ def test_check_estimator():
     finally:
         sys.stdout = old_stdout
     assert_true(msg in string_buffer.getvalue())
-
-    # doesn't error on actual estimator
-    check_estimator(AdaBoostClassifier)
-    check_estimator(MultiTaskElasticNet)

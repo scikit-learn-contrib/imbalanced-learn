@@ -570,7 +570,7 @@ def test_give_classifier_wrong_obj():
         estimator=classifier)
 
     # Get the different subset
-    assert_raises(ValueError, "Invalid parameter`estimator`",
+    assert_raises_regex(ValueError, "Invalid parameter `estimator`",
                   bc.fit_sample, X, Y)
 
 
