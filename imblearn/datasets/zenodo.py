@@ -180,7 +180,7 @@ def fetch_zenodo(data_home=None,
                     # to not have issue with the indexing.
                     filter_data_.append(MAP_ID_NAME[it])
             else:
-                raise ValueError('The value in the should be str or int.'
+                raise ValueError('The value in the tuple should be str or int.'
                                  ' Got {} instead.'.format(type(it)))
 
     # go through the list and check if the data are available
