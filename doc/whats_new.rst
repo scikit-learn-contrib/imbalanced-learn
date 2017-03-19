@@ -14,6 +14,8 @@ New features
 
 - Turn off steps in :class:`pipeline.Pipeline` using the `None`
   object. By `Christos Aridas`_.
+- Add a fetching method `datasets.fetch_zenodo` in order to get some
+  imbalanced datasets useful for benchmarking. By `Guillaume Lemaitre`_.
 
 Enhancement
 ~~~~~~~~~~~
