@@ -4,11 +4,10 @@ from __future__ import division, print_function
 from collections import Counter
 
 import numpy as np
-from sklearn.neighbors import NearestNeighbors
-from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.utils import check_random_state
 
 from ..base import BaseBinarySampler
+from ..utils import check_neighbors_object
 
 
 class ADASYN(BaseBinarySampler):
@@ -106,18 +105,6 @@ class ADASYN(BaseBinarySampler):
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
 
-    def _validate_estimator(self):
-        """Private function to create the NN estimator"""
-
-        if isinstance(self.n_neighbors, int):
-            self.nn_ = NearestNeighbors(
-                n_neighbors=self.n_neighbors + 1, n_jobs=self.n_jobs)
-        elif isinstance(self.n_neighbors, KNeighborsMixin):
-            self.nn_ = self.n_neighbors
-        else:
-            raise ValueError('`n_neighbors` has to be be either int or a'
-                             ' subclass of KNeighborsMixin.')
-
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
 
@@ -137,8 +124,10 @@ class ADASYN(BaseBinarySampler):
         """
 
         super(ADASYN, self).fit(X, y)
-
-        self._validate_estimator()
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+        # set the number of jobs
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
         return self
 

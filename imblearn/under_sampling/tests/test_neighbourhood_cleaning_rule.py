@@ -2,9 +2,8 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
-from sklearn.utils.estimator_checks import check_estimator
+from numpy.testing import assert_array_equal, assert_equal, assert_raises_regex
+
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NeighbourhoodCleaningRule
@@ -22,14 +21,7 @@ X = np.array([[1.57737838, 0.1997882], [0.8960075, 0.46130762],
 Y = np.array([1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 
 
-def test_ncr_sk_estimator():
-    """Test the sklearn estimator compatibility"""
-    check_estimator(NeighbourhoodCleaningRule)
-
-
 def test_ncr_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
 
@@ -38,45 +30,7 @@ def test_ncr_init():
     assert_equal(ncr.random_state, RND_SEED)
 
 
-def test_ncr_fit_single_class():
-    """Test either if an error when there is a single class"""
-
-    # Create the object
-    ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, ncr.fit, X, y_single_class)
-
-
-def test_ncr_fit():
-    """Test the fitting method"""
-
-    # Create the object
-    ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
-    # Fit the data
-    ncr.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(ncr.min_c_, 0)
-    assert_equal(ncr.maj_c_, 2)
-    assert_equal(ncr.stats_c_[0], 2)
-    assert_equal(ncr.stats_c_[1], 6)
-    assert_equal(ncr.stats_c_[2], 7)
-
-
-def test_ncr_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
-    # Create the object
-    ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
-    assert_raises(RuntimeError, ncr.sample, X, Y)
-
-
 def test_ncr_fit_sample():
-    """Test the fit sample routine"""
-
     # Resample the data
     ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
     X_resampled, y_resampled = ncr.fit_sample(X, Y)
@@ -91,8 +45,6 @@ def test_ncr_fit_sample():
 
 
 def test_ncr_fit_sample_with_indices():
-    """Test the fit sample routine with indices support"""
-
     # Resample the data
     ncr = NeighbourhoodCleaningRule(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = ncr.fit_sample(X, Y)
@@ -108,30 +60,7 @@ def test_ncr_fit_sample_with_indices():
     assert_array_equal(idx_under, idx_gt)
 
 
-def test_ncr_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
-    # Create the object
-    ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
-    ncr.fit(X, Y)
-    assert_raises(RuntimeError, ncr.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_continuous_error():
-    """Test either if an error is raised when the target are continuous
-    type"""
-
-    # continuous case
-    y = np.linspace(0, 1, 15)
-    ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
-    assert_warns(UserWarning, ncr.fit, X, y)
-
-
 def test_ncr_fit_sample_nn_obj():
-    """Test fit-sample with nn object"""
-
     # Resample the data
     nn = NearestNeighbors(n_neighbors=3)
     ncr = NeighbourhoodCleaningRule(
@@ -150,10 +79,9 @@ def test_ncr_fit_sample_nn_obj():
 
 
 def test_ncr_wrong_nn_obj():
-    """Test either if an error is raised with wrong NN object"""
-
     # Resample the data
     nn = 'rnd'
     ncr = NeighbourhoodCleaningRule(
         return_indices=True, random_state=RND_SEED, n_neighbors=nn)
-    assert_raises(ValueError, ncr.fit_sample, X, Y)
+    assert_raises_regex(ValueError, "has to be one of",
+                        ncr.fit_sample, X, Y)

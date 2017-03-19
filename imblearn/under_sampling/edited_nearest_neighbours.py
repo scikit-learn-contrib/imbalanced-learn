@@ -6,10 +6,9 @@ from collections import Counter
 
 import numpy as np
 from scipy.stats import mode
-from sklearn.neighbors import NearestNeighbors
-from sklearn.neighbors.base import KNeighborsMixin
 
 from ..base import BaseMulticlassSampler
+from ..utils import check_neighbors_object
 
 SEL_KIND = ('all', 'mode')
 
@@ -116,18 +115,6 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
 
-    def _validate_estimator(self):
-        """Private function to create the NN estimator"""
-
-        if isinstance(self.n_neighbors, int):
-            self.nn_ = NearestNeighbors(
-                n_neighbors=self.n_neighbors + 1, n_jobs=self.n_jobs)
-        elif isinstance(self.n_neighbors, KNeighborsMixin):
-            self.nn_ = self.n_neighbors
-        else:
-            raise ValueError('`n_neighbors` has to be be either int or a'
-                             ' subclass of KNeighborsMixin.')
-
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
 
@@ -147,8 +134,10 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
         """
 
         super(EditedNearestNeighbours, self).fit(X, y)
-
-        self._validate_estimator()
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+        # set the number of jobs
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
         return self
 
@@ -423,7 +412,8 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
             raise NotImplementedError
 
         if self.max_iter < 2:
-            raise ValueError('max_iter must be greater than 1.')
+            raise ValueError('max_iter must be greater than 1.'
+                             ' Got {} instead.'.format(type(self.max_iter)))
 
         X_, y_ = X, y
 

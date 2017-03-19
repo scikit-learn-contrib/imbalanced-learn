@@ -2,9 +2,9 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
-from sklearn.utils.estimator_checks import check_estimator
+from numpy.testing import (assert_array_equal, assert_equal,
+                           assert_raises_regex)
+
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import EditedNearestNeighbours
@@ -24,14 +24,7 @@ X = np.array([[2.59928271, 0.93323465], [0.25738379, 0.95564169],
 Y = np.array([1, 2, 1, 1, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 1, 2, 1])
 
 
-def test_enn_sk_estimator():
-    """Test the sklearn estimator compatibility"""
-    check_estimator(EditedNearestNeighbours)
-
-
 def test_enn_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     enn = EditedNearestNeighbours(random_state=RND_SEED)
 
@@ -41,45 +34,7 @@ def test_enn_init():
     assert_equal(enn.random_state, RND_SEED)
 
 
-def test_enn_fit_single_class():
-    """Test either if an error when there is a single class"""
-
-    # Create the object
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, enn.fit, X, y_single_class)
-
-
-def test_enn_fit():
-    """Test the fitting method"""
-
-    # Create the object
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
-    # Fit the data
-    enn.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(enn.min_c_, 0)
-    assert_equal(enn.maj_c_, 2)
-    assert_equal(enn.stats_c_[0], 2)
-    assert_equal(enn.stats_c_[1], 6)
-    assert_equal(enn.stats_c_[2], 12)
-
-
-def test_enn_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
-    # Create the object
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
-    assert_raises(RuntimeError, enn.sample, X, Y)
-
-
 def test_enn_fit_sample():
-    """Test the fit sample routine"""
-
     # Resample the data
     enn = EditedNearestNeighbours(random_state=RND_SEED)
     X_resampled, y_resampled = enn.fit_sample(X, Y)
@@ -94,8 +49,6 @@ def test_enn_fit_sample():
 
 
 def test_enn_fit_sample_with_indices():
-    """Test the fit sample routine with indices support"""
-
     # Resample the data
     enn = EditedNearestNeighbours(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = enn.fit_sample(X, Y)
@@ -112,8 +65,6 @@ def test_enn_fit_sample_with_indices():
 
 
 def test_enn_fit_sample_mode():
-    """Test the fit sample routine using the mode as selection"""
-
     # Resample the data
     enn = EditedNearestNeighbours(random_state=RND_SEED, kind_sel='mode')
     X_resampled, y_resampled = enn.fit_sample(X, Y)
@@ -130,30 +81,7 @@ def test_enn_fit_sample_mode():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_enn_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
-    # Create the object
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
-    enn.fit(X, Y)
-    assert_raises(RuntimeError, enn.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_continuous_error():
-    """Test either if an error is raised when the target are continuous
-    type"""
-
-    # continuous case
-    y = np.linspace(0, 1, 20)
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
-    assert_warns(UserWarning, enn.fit, X, y)
-
-
 def test_enn_fit_sample_with_nn_object():
-    """Test the fit sample routine using a NN object"""
-
     # Resample the data
     nn = NearestNeighbors(n_neighbors=4)
     enn = EditedNearestNeighbours(
@@ -173,10 +101,9 @@ def test_enn_fit_sample_with_nn_object():
 
 
 def test_enn_not_good_object():
-    """Test either if an error is raised while a wrong type of NN is given"""
-
     # Resample the data
     nn = 'rnd'
     enn = EditedNearestNeighbours(
         n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
-    assert_raises(ValueError, enn.fit_sample, X, Y)
+    assert_raises_regex(ValueError, "has to be one of",
+                        enn.fit_sample, X, Y)

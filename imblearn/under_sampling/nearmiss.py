@@ -5,10 +5,9 @@ import warnings
 from collections import Counter
 
 import numpy as np
-from sklearn.neighbors import NearestNeighbors
-from sklearn.neighbors.base import KNeighborsMixin
 
 from ..base import BaseMulticlassSampler
+from ..utils import check_neighbors_object
 
 
 class NearMiss(BaseMulticlassSampler):
@@ -219,33 +218,13 @@ class NearMiss(BaseMulticlassSampler):
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-
-        if isinstance(self.n_neighbors, int):
-            self.nn_ = NearestNeighbors(
-                n_neighbors=self.n_neighbors, n_jobs=self.n_jobs)
-        elif isinstance(self.n_neighbors, KNeighborsMixin):
-            self.nn_ = self.n_neighbors
-        else:
-            raise ValueError('`n_neighbors` has to be be either int or a'
-                             ' subclass of KNeighborsMixin.')
-
         if self.version == 3:
-
             # Announce deprecation if needed
             if self.ver3_samp_ngh is not None:
                 warnings.warn('`ver3_samp_ngh` will be replaced in version'
                               ' 0.4. Use `n_neighbors_ver3` instead.',
                               DeprecationWarning)
                 self.n_neighbors_ver3 = self.ver3_samp_ngh
-
-            if isinstance(self.n_neighbors_ver3, int):
-                self.nn_ver3_ = NearestNeighbors(
-                    n_neighbors=self.n_neighbors_ver3, n_jobs=self.n_jobs)
-            elif isinstance(self.n_neighbors_ver3, KNeighborsMixin):
-                self.nn_ver3_ = self.n_neighbors_ver3
-            else:
-                raise ValueError('`n_neighbors_ver3` has to be be either int'
-                                 ' or a subclass of KNeighborsMixin.')
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -266,8 +245,17 @@ class NearMiss(BaseMulticlassSampler):
         """
 
         super(NearMiss, self).fit(X, y)
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
+        # set the number of jobs
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
+        # kept for deprecation purpose it will create the n_neighbors_ver3
         self._validate_estimator()
+        if self.version == 3:
+            self.nn_ver3_ = check_neighbors_object('n_neighbors_ver3',
+                                                   self.n_neighbors_ver3)
+            # set the number of jobs
+            self.nn_ver3_.set_params(**{'n_jobs': self.n_jobs})
 
         return self
 
