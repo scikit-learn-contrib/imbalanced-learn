@@ -10,29 +10,29 @@ below.
 |2    |optical_digits|UCI, target: 8               |9.1:1|5,620  |64 |
 |3    |satimage      |UCI, target: 4               |9.3:1|6,435  |36 |
 |4    |pen_digits    |UCI, target: 5               |9.4:1|10,992 |16 |
-|5    |abalone       |UCI, target: 7               |9.7:1|4,177  |8  |
-|6    |sick_euthyroid|UCI, target: sick euthyroid  |9.8:1|3,163  |25 |
+|5    |abalone       |UCI, target: 7               |9.7:1|4,177  |10 |
+|6    |sick_euthyroid|UCI, target: sick euthyroid  |9.8:1|3,163  |42 |
 |7    |spectrometer  |UCI, target: >=44            |11:1 |531    |93 |
-|8    |car_eval_34   |UCI, target: good, v good    |12:1 |1,728  |6  |
+|8    |car_eval_34   |UCI, target: good, v good    |12:1 |1,728  |21 |
 |9    |isolet        |UCI, target: A, B            |12:1 |7,797  |617|
-|10   |us_crime      |UCI, target: >0.65           |12:1 |1,994  |122|
+|10   |us_crime      |UCI, target: >0.65           |12:1 |1,994  |100|
 |11   |yeast_ml8     |LIBSVM, target: 8            |13:1 |2,417  |103|
 |12   |scene         |LIBSVM, target: >one label   |13:1 |2,407  |294|
 |13   |libras_move   |UCI, target: 1               |14:1 |360    |90 |
-|14   |thyroid_sick  |UCI, target: sick            |15:1 |3,772  |28 |
+|14   |thyroid_sick  |UCI, target: sick            |15:1 |3,772  |52 |
 |15   |coil_2000     |KDD, CoIL, target: minority  |16:1 |9,822  |85 |
-|16   |arrhythmia    |UCI, target: 06              |17:1 |452    |279|
-|17   |solar_flare_m0|UCI, target: M->0            |19:1 |1,389  |10 |
+|16   |arrhythmia    |UCI, target: 06              |17:1 |452    |278|
+|17   |solar_flare_m0|UCI, target: M->0            |19:1 |1,389  |32 |
 |18   |oil           |UCI, target: minority        |22:1 |937    |49 |
-|19   |car_eval_4    |UCI, target: vgood           |26:1 |1,728  |6  |
+|19   |car_eval_4    |UCI, target: vgood           |26:1 |1,728  |21 |
 |20   |wine_quality  |UCI, wine, target: <=4       |26:1 |4,898  |11 |
 |21   |letter_img    |UCI, target: Z               |26:1 |20,000 |16 |
 |22   |yeast_me2     |UCI, target: ME2             |28:1 |1,484  |8  |
-|23   |webpage       |LIBSVM, w7a, target: minority|33:1 |49,749 |300|
+|23   |webpage       |LIBSVM, w7a, target: minority|33:1 |34,780 |300|
 |24   |ozone_level   |UCI, ozone, data             |34:1 |2,536  |72 |
 |25   |mammography   |UCI, target: minority        |42:1 |11,183 |6  |
 |26   |protein_homo  |KDD CUP 2004, minority       |111:1|145,751|74 |
-|27   |abalone_19    |UCI, target: 19              |130:1|4,177  |8  |
+|27   |abalone_19    |UCI, target: 19              |130:1|4,177  |10 |
 
 References
 ----------
@@ -68,33 +68,37 @@ URL = ('https://zenodo.org/record/61452/files/'
 PRE_FILENAME = 'x'
 POST_FILENAME = 'data.npz'
 
-MAP_NAME_ID = OrderedDict({'ecoli': 1,
-                           'optical_digits': 2,
-                           'satimage': 3,
-                           'pen_digits': 4,
-                           'abalone': 5,
-                           'sick_euthyroid': 6,
-                           'spectrometer': 7,
-                           'car_eval_34': 8,
-                           'isolet': 9,
-                           'us_crime': 10,
-                           'yeast_ml8': 11,
-                           'scene': 12,
-                           'libras_move': 13,
-                           'thyroid_sick': 14,
-                           'coil_2000': 15,
-                           'arrhythmia': 16,
-                           'solar_flare_m0': 17,
-                           'oil': 18,
-                           'car_eval_4': 19,
-                           'wine_quality': 20,
-                           'letter_img': 21,
-                           'yeast_me2': 22,
-                           'webpage': 23,
-                           'ozone_level': 24,
-                           'mammography': 25,
-                           'protein_homo': 26,
-                           'abalone_19': 27})
+MAP_NAME_ID_KEYS = ['ecoli',
+                    'optical_digits',
+                    'satimage',
+                    'pen_digits',
+                    'abalone',
+                    'sick_euthyroid',
+                    'spectrometer',
+                    'car_eval_34',
+                    'isolet',
+                    'us_crime',
+                    'yeast_ml8',
+                    'scene',
+                    'libras_move',
+                    'thyroid_sick',
+                    'coil_2000',
+                    'arrhythmia',
+                    'solar_flare_m0',
+                    'oil',
+                    'car_eval_4',
+                    'wine_quality',
+                    'letter_img',
+                    'yeast_me2',
+                    'webpage',
+                    'ozone_level',
+                    'mammography',
+                    'protein_homo',
+                    'abalone_19']
+
+MAP_NAME_ID = OrderedDict()
+for k, v in zip(MAP_NAME_ID_KEYS, range(1, 28)):
+    MAP_NAME_ID[k] = v
 
 logger = logging.getLogger()
 
@@ -172,7 +176,7 @@ def fetch_zenodo(data_home=None,
                 else:
                     # The index start at one, then we need to remove one
                     # to not have issue with the indexing.
-                    filter_data_.append(MAP_NAME_ID.items()[it - 1])
+                    filter_data_.append(MAP_NAME_ID.keys()[it - 1])
             else:
                 raise ValueError('The value in the should be str or int.'
                                  ' Got {} instead.'.format(type(it)))
