@@ -194,9 +194,7 @@ def fetch_zenodo(data_home=None,
             tar = tarfile.open(fileobj=f)
             tar.extractall(path=zenodo_dir)
         elif not download_if_missing and not available:
-            raise RuntimeError("The datasets are not available locally. Put "
-                               "'download_if_missing' if you want to use the "
-                               "data.")
+            raise IOError("Data not found and `download_if_missing` is False")
 
         data = np.load(filename)
         X, y = data['data'], data['label']
