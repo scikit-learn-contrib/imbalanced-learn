@@ -117,8 +117,9 @@ class OneSidedSelection(BaseBinarySampler):
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
             self.estimator_ = self.n_neighbors
         else:
-            raise ValueError('`n_neighbors` has to be a in or an object'
-                             ' inhereited from KNeighborsClassifier.')
+            raise ValueError('`n_neighbors` has to be a int or an object'
+                             ' inhereited from KNeighborsClassifier.'
+                             ' Got {} instead.'.format(type(self.n_neighbors)))
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

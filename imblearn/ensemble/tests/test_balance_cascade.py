@@ -2,10 +2,9 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_warns)
+from numpy.testing import (assert_array_equal, assert_equal,
+                           assert_raises, assert_raises_regex)
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.utils.estimator_checks import check_estimator
 
 from imblearn.ensemble import BalanceCascade
 
@@ -24,39 +23,7 @@ X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
 Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
-def test_bc_sk_estimator():
-    """Test the sklearn estimator compatibility"""
-    check_estimator(BalanceCascade)
-
-
-def test_bc_bad_ratio():
-    """Test either if an error is raised with a wrong decimal value for
-    the ratio"""
-
-    # Define a negative ratio
-    ratio = -1.0
-    bc = BalanceCascade(ratio=ratio)
-    assert_raises(ValueError, bc.fit, X, Y)
-
-    # Define a ratio greater than 1
-    ratio = 100.0
-    bc = BalanceCascade(ratio=ratio)
-    assert_raises(ValueError, bc.fit, X, Y)
-
-    # Define ratio as an unknown string
-    ratio = 'rnd'
-    bc = BalanceCascade(ratio=ratio)
-    assert_raises(ValueError, bc.fit, X, Y)
-
-    # Define ratio as a list which is not supported
-    ratio = [.5, .5]
-    bc = BalanceCascade(ratio=ratio)
-    assert_raises(ValueError, bc.fit, X, Y)
-
-
 def test_bc_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     ratio = 1.
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
@@ -67,64 +34,7 @@ def test_bc_init():
     assert_equal(bc.random_state, RND_SEED)
 
 
-def test_bc_fit_single_class():
-    """Test either if an error when there is a single class"""
-
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, bc.fit, X, y_single_class)
-
-
-def test_bc_fit_invalid_ratio():
-    """Test either if an error is raised when the balancing ratio to fit is
-    smaller than the one of the data"""
-
-    # Create the object
-    ratio = 1. / 10000.
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
-    # Fit the data
-    assert_raises(RuntimeError, bc.fit_sample, X, Y)
-
-
-def test_bc_fit():
-    """Test the fitting method"""
-
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
-    # Fit the data
-    bc.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(bc.min_c_, 0)
-    assert_equal(bc.maj_c_, 1)
-    assert_equal(bc.stats_c_[0], 8)
-    assert_equal(bc.stats_c_[1], 12)
-
-
-def test_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
-    # Define the parameter for the under-sampling
-    ratio = 'auto'
-
-    # Create the object
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
-    assert_raises(RuntimeError, bc.sample, X, Y)
-
-
 def test_fit_sample_auto():
-    """Test the fit and sample routine with auto ratio."""
-
     # Define the ratio parameter
     ratio = 'auto'
 
@@ -179,8 +89,6 @@ def test_fit_sample_auto():
 
 
 def test_fit_sample_half():
-    """Test the fit and sample routine with 0.5 ratio."""
-
     # Define the ratio parameter
     ratio = 0.8
 
@@ -224,9 +132,6 @@ def test_fit_sample_half():
 
 
 def test_fit_sample_auto_decision_tree():
-    """Test the fit and sample routine with auto ratio with a decision
-    tree."""
-
     # Define the ratio parameter
     ratio = 'auto'
     classifier = 'decision-tree'
@@ -281,9 +186,6 @@ def test_fit_sample_auto_decision_tree():
 
 
 def test_fit_sample_auto_random_forest():
-    """Test the fit and sample routine with auto ratio with a random
-    forest."""
-
     # Define the ratio parameter
     ratio = 'auto'
     classifier = 'random-forest'
@@ -339,8 +241,6 @@ def test_fit_sample_auto_random_forest():
 
 
 def test_fit_sample_auto_adaboost():
-    """Test the fit and sample routine with auto ratio with a adaboost."""
-
     # Define the ratio parameter
     ratio = 'auto'
     classifier = 'adaboost'
@@ -395,9 +295,6 @@ def test_fit_sample_auto_adaboost():
 
 
 def test_fit_sample_auto_gradient_boosting():
-    """Test the fit and sample routine with auto ratio with a gradient
-    boosting."""
-
     # Define the ratio parameter
     ratio = 'auto'
     classifier = 'gradient-boosting'
@@ -453,9 +350,6 @@ def test_fit_sample_auto_gradient_boosting():
 
 
 def test_fit_sample_auto_linear_svm():
-    """Test the fit and sample routine with auto ratio with a linear
-    svm."""
-
     # Define the ratio parameter
     ratio = 'auto'
     classifier = 'linear-svm'
@@ -511,8 +405,6 @@ def test_fit_sample_auto_linear_svm():
 
 
 def test_init_wrong_classifier():
-    """Test either if an error is raised the classifier provided is unknown."""
-
     # Define the ratio parameter
     classifier = 'rnd'
 
@@ -521,8 +413,6 @@ def test_init_wrong_classifier():
 
 
 def test_fit_sample_auto_early_stop():
-    """Test the fit and sample routine with auto ratio with 1 subset."""
-
     # Define the ratio parameter
     ratio = 'auto'
     n_subset = 1
@@ -556,8 +446,6 @@ def test_fit_sample_auto_early_stop():
 
 
 def test_fit_sample_auto_early_stop_2():
-    """Test the fit and sample routine with auto ratio with a 2 subsets."""
-
     # Define the ratio parameter
     ratio = 'auto'
     n_subset = 2
@@ -613,35 +501,7 @@ def test_fit_sample_auto_early_stop_2():
         assert_array_equal(idx_under[idx], idx_gt[idx])
 
 
-def test_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
-    # Create the object
-    bc = BalanceCascade(random_state=RND_SEED)
-    bc.fit(X, Y)
-    assert_raises(RuntimeError, bc.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_multiclass_error():
-    """ Test either if an error is raised when the target are not binary
-    type. """
-
-    # continuous case
-    y = np.linspace(0, 1, 20)
-    bc = BalanceCascade(random_state=RND_SEED)
-    assert_warns(UserWarning, bc.fit, X, y)
-
-    # multiclass case
-    y = np.array([0] * 3 + [1] * 2 + [2] * 15)
-    bc = BalanceCascade(random_state=RND_SEED)
-    assert_warns(UserWarning, bc.fit, X, y)
-
-
 def test_give_classifier_obj():
-    """Test the fit and sample routine with classifier a object"""
-
     # Define the ratio parameter
     ratio = 'auto'
     classifier = RandomForestClassifier(random_state=RND_SEED)
@@ -698,8 +558,6 @@ def test_give_classifier_obj():
 
 
 def test_give_classifier_wrong_obj():
-    """Test either if an error is raised while a wrong object is passed"""
-
     # Define the ratio parameter
     ratio = 'auto'
     classifier = 2
@@ -712,13 +570,11 @@ def test_give_classifier_wrong_obj():
         estimator=classifier)
 
     # Get the different subset
-    assert_raises(ValueError, bc.fit_sample, X, Y)
+    assert_raises_regex(ValueError, "Invalid parameter `estimator`",
+                        bc.fit_sample, X, Y)
 
 
 def test_rf_wth_bootstrap():
-    """Test the fit and sample routine with auto ratio with a random
-    forest."""
-
     # Define the ratio parameter
     ratio = 'auto'
     classifier = RandomForestClassifier(random_state=RND_SEED)

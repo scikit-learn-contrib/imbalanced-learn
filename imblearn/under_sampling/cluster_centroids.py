@@ -97,7 +97,8 @@ class ClusterCentroids(BaseMulticlassSampler):
         elif isinstance(self.estimator, KMeans):
             self.estimator_ = self.estimator
         else:
-            raise ValueError('`estimator` has to be a KMeans clustering.')
+            raise ValueError('`estimator` has to be a KMeans clustering.'
+                             ' Got {} instead.'.format(type(self.estimator)))
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

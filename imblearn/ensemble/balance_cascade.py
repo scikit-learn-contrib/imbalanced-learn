@@ -179,7 +179,8 @@ class BalanceCascade(BaseBinarySampler):
             else:
                 raise NotImplementedError
         else:
-            raise ValueError('Invalid parameter `estimator`')
+            raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
+                type(self.estimator)))
 
         self.logger.debug(self.estimator_)
 

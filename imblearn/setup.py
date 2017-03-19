@@ -13,6 +13,8 @@ def configuration(parent_package='', top_path=None):
     config.add_subpackage('over_sampling/tests')
     config.add_subpackage('under_sampling')
     config.add_subpackage('under_sampling/tests')
+    config.add_subpackage('utils')
+    config.add_subpackage('utils/tests')
 
     config.add_subpackage('tests')
 

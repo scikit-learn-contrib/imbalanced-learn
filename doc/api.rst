@@ -158,3 +158,20 @@ Functions
    :toctree: generated/
 
    datasets.make_imbalance
+
+
+Utilities
+=========
+
+.. automodule:: imblearn.utils
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: imblearn
+
+Functions
+---------
+.. autosummary::
+   :toctree: generated/
+
+   utils.estimator_checks.check_estimator

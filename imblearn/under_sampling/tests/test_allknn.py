@@ -3,8 +3,7 @@ from __future__ import print_function
 
 import numpy as np
 from numpy.testing import (assert_allclose, assert_array_equal,
-                           assert_equal, assert_raises, assert_warns)
-from sklearn.utils.estimator_checks import check_estimator
+                           assert_equal, assert_raises)
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import AllKNN
@@ -38,14 +37,7 @@ Y = np.array([
 R_TOL = 1e-4
 
 
-def test_allknn_sk_estimator():
-    """Test the sklearn estimator compatibility"""
-    check_estimator(AllKNN)
-
-
 def test_allknn_init():
-    """Test the initialisation of the object"""
-
     # Define a ratio
     allknn = AllKNN(random_state=RND_SEED)
 
@@ -55,45 +47,7 @@ def test_allknn_init():
     assert_equal(allknn.random_state, RND_SEED)
 
 
-def test_allknn_fit_single_class():
-    """Test either if an error when there is a single class"""
-
-    # Create the object
-    allknn = AllKNN(random_state=RND_SEED)
-    # Resample the data
-    # Create a wrong y
-    y_single_class = np.zeros((X.shape[0], ))
-    assert_warns(UserWarning, allknn.fit, X, y_single_class)
-
-
-def test_allknn_fit():
-    """Test the fitting method"""
-
-    # Create the object
-    allknn = AllKNN(random_state=RND_SEED)
-    # Fit the data
-    allknn.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(allknn.min_c_, 0)
-    assert_equal(allknn.maj_c_, 2)
-    assert_equal(allknn.stats_c_[0], 4)
-    assert_equal(allknn.stats_c_[1], 16)
-    assert_equal(allknn.stats_c_[2], 20)
-
-
-def test_allknn_sample_wt_fit():
-    """Test either if an error is raised when sample is called before
-    fitting"""
-
-    # Create the object
-    allknn = AllKNN(random_state=RND_SEED)
-    assert_raises(RuntimeError, allknn.sample, X, Y)
-
-
 def test_allknn_fit_sample():
-    """Test the fit sample routine"""
-
     # Resample the data
     allknn = AllKNN(random_state=RND_SEED)
     X_resampled, y_resampled = allknn.fit_sample(X, Y)
@@ -121,8 +75,6 @@ def test_allknn_fit_sample():
 
 
 def test_allknn_fit_sample_with_indices():
-    """Test the fit sample routine with indices support"""
-
     # Resample the data
     allknn = AllKNN(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = allknn.fit_sample(X, Y)
@@ -155,8 +107,6 @@ def test_allknn_fit_sample_with_indices():
 
 
 def test_allknn_fit_sample_mode():
-    """Test the fit sample routine using the mode as selection"""
-
     # Resample the data
     allknn = AllKNN(random_state=RND_SEED, kind_sel='mode')
     X_resampled, y_resampled = allknn.fit_sample(X, Y)
@@ -185,30 +135,7 @@ def test_allknn_fit_sample_mode():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_allknn_sample_wrong_X():
-    """Test either if an error is raised when X is different at fitting
-    and sampling"""
-
-    # Create the object
-    allknn = AllKNN(random_state=RND_SEED)
-    allknn.fit(X, Y)
-    assert_raises(RuntimeError, allknn.sample,
-                  np.random.random((100, 40)), np.array([0] * 50 + [1] * 50))
-
-
-def test_continuous_error():
-    """Test either if an error is raised when the target are continuous
-    type"""
-
-    # continuous case
-    y = np.linspace(0, 1, 40)
-    ann = AllKNN(random_state=RND_SEED)
-    assert_warns(UserWarning, ann.fit, X, y)
-
-
 def test_allknn_fit_sample_with_nn_object():
-    """Test the fit sample routine using a NN object"""
-
     # Resample the data
     nn = NearestNeighbors(n_neighbors=4)
     allknn = AllKNN(n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
@@ -239,8 +166,6 @@ def test_allknn_fit_sample_with_nn_object():
 
 
 def test_alknn_not_good_object():
-    """Test either if an error is raised while a wrong type of NN is given"""
-
     nn = 'rnd'
     allknn = AllKNN(n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
     assert_raises(ValueError, allknn.fit_sample, X, Y)

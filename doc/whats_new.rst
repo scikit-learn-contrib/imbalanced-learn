@@ -4,6 +4,36 @@
 Release history
 ===============
 
+.. _changes_0_3:
+
+Changelog
+---------
+
+New features
+~~~~~~~~~~~~
+
+- Turn off steps in :class:`pipeline.Pipeline` using the `None`
+  object. By `Christos Aridas`_.
+
+Enhancement
+~~~~~~~~~~~
+
+- All the unit tests have been factorized and a `check_estimators` has
+  been derived from scikit-learn. By `Guillaume Lemaitre`_.
+- Script for automatic build of conda packages and uploading. By
+  `Guillaume Lemaitre`_
+
+API changes summary
+~~~~~~~~~~~~~~~~~~~
+
+- `__init__` has been removed from the :class:`base.SamplerMixin` to
+  create a real mixin class. By `Guillaume Lemaitre`_.
+- creation of a module `exceptions` to handle consistant raising of
+  errors. By `Guillaume Lemaitre`_.
+- creation of a module `utils.validation` to make checking of
+  recurrent patterns. By `Guillaume Lemaitre`_.
+
+
 .. _changes_0_2:
 
 Version 0.2
@@ -32,7 +62,6 @@ New features
 
 - Added AllKNN under sampling technique. By `Dayvid Oliveira`_.
 - Added a module `metrics` implementing some specific scoring function for the problem of balancing. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
-- Turn off steps in :class:`pipeline.Pipeline` using the `None` object. By `Christos Aridas`_.
 
 Enhancement
 ~~~~~~~~~~~
@@ -41,12 +70,6 @@ Enhancement
 - Validate the type of target in binary samplers. A warning is raised for the moment. By `Guillaume Lemaitre`_ and `Christos Aridas`_.
 - Change from `cross_validation` module to `model_selection` module for
   `sklearn` deprecation cycle. By `Dayvid Oliveira`_ and `Christos Aridas`_.
-
-New features
-~~~~~~~~~~~~
-
-- Added AllKNN under sampling technique.
-- Added support for bumpversion.
 
 API changes summary
 ~~~~~~~~~~~~~~~~~~~

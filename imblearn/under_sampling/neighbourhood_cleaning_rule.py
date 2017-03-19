@@ -8,6 +8,7 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.neighbors.base import KNeighborsMixin
 
 from ..base import BaseMulticlassSampler
+from ..utils import check_neighbors_object
 
 
 class NeighbourhoodCleaningRule(BaseMulticlassSampler):
@@ -99,18 +100,6 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
 
-    def _validate_estimator(self):
-        """Private function to create the NN estimator"""
-
-        if isinstance(self.n_neighbors, int):
-            self.nn_ = NearestNeighbors(
-                n_neighbors=self.n_neighbors, n_jobs=self.n_jobs)
-        elif isinstance(self.n_neighbors, KNeighborsMixin):
-            self.nn_ = self.n_neighbors
-        else:
-            raise ValueError('`n_neighbors` has to be be either int or a'
-                             ' subclass of KNeighborsMixin.')
-
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
 
@@ -130,8 +119,9 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
         """
 
         super(NeighbourhoodCleaningRule, self).fit(X, y)
-
-        self._validate_estimator()
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
+        # set the number of jobs
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
         return self
 

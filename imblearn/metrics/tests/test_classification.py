@@ -86,7 +86,6 @@ def make_prediction(dataset=None, binary=False):
 
 
 def test_sensitivity_specificity_score_binary():
-    """Test Sensitivity Specificity for binary classification task"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
     # detailed measures for each class
@@ -110,8 +109,6 @@ def test_sensitivity_specificity_score_binary():
 
 
 def test_sensitivity_specificity_f_binary_single_class():
-    """Test sensitivity and specificity behave with a single positive or
-    negative class"""
     # Such a case may occur with non-stratified cross-validation
     assert_equal(1., sensitivity_score([1, 1], [1, 1]))
     assert_equal(0., specificity_score([1, 1], [1, 1]))
@@ -122,7 +119,6 @@ def test_sensitivity_specificity_f_binary_single_class():
 
 @ignore_warnings
 def test_sensitivity_specificity_extra_labels():
-    """Test handling of explicit additional (not in input) labels to SS"""
     y_true = [1, 3, 3, 2]
     y_pred = [1, 1, 3, 2]
 
@@ -149,7 +145,6 @@ def test_sensitivity_specificity_extra_labels():
 
 @ignore_warnings
 def test_sensitivity_specificity_ignored_labels():
-    """Test a subset of labels may be requested for SS"""
     y_true = [1, 1, 2, 3]
     y_pred = [1, 3, 3, 3]
 
@@ -174,7 +169,6 @@ def test_sensitivity_specificity_ignored_labels():
 
 
 def test_sensitivity_specificity_error_multilabels():
-    """Test either if an error is raised when the input are multilabels"""
     y_true = [1, 3, 3, 2]
     y_pred = [1, 1, 3, 2]
     y_true_bin = label_binarize(y_true, classes=np.arange(5))
@@ -185,7 +179,6 @@ def test_sensitivity_specificity_error_multilabels():
 
 @ignore_warnings
 def test_sensitivity_specificity_support_errors():
-    """Test either if an error is raised depending on parameters"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
     # Bad pos_label
@@ -205,8 +198,7 @@ def test_sensitivity_specificity_support_errors():
 
 
 def test_sensitivity_specificity_unused_pos_label():
-    """Check warning that pos_label unused when set to non-default value
-    # but average != 'binary'; even if data is binary"""
+    # but average != 'binary'; even if data is binary
     assert_warns_message(
         UserWarning,
         "Note that pos_label (set to 2) is "
@@ -219,7 +211,6 @@ def test_sensitivity_specificity_unused_pos_label():
 
 
 def test_geometric_mean_support_binary():
-    """Test the geometric mean for binary classification task"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
     # compute the geometric mean for the binary problem
@@ -310,7 +301,6 @@ def test_geometric_mean_multiclass():
 
 
 def test_iba_geo_mean_binary():
-    """Test to test the iba using the geometric mean"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
     iba_gmean = make_index_balanced_accuracy(
@@ -321,13 +311,10 @@ def test_iba_geo_mean_binary():
 
 
 def _format_report(report):
-    """Private function to reformat the report for testing"""
-
     return ' '.join(report.split())
 
 
 def test_classification_report_imbalanced_multiclass():
-    """Test classification report for multiclass problem"""
     iris = datasets.load_iris()
     y_true, y_pred, _ = make_prediction(dataset=iris, binary=False)
 
@@ -354,7 +341,6 @@ def test_classification_report_imbalanced_multiclass():
 
 
 def test_classification_report_imbalanced_multiclass_with_digits():
-    """Test performance report with added digits in floating point values"""
     iris = datasets.load_iris()
     y_true, y_pred, _ = make_prediction(dataset=iris, binary=False)
 
@@ -382,7 +368,6 @@ def test_classification_report_imbalanced_multiclass_with_digits():
 
 
 def test_classification_report_imbalanced_multiclass_with_string_label():
-    """Test the report with string label"""
     y_true, y_pred, _ = make_prediction(binary=False)
 
     y_true = np.array(["blue", "green", "red"])[y_true]
@@ -405,7 +390,6 @@ def test_classification_report_imbalanced_multiclass_with_string_label():
 
 
 def test_classification_report_imbalanced_multiclass_with_unicode_label():
-    """Test classification report with unicode label"""
     y_true, y_pred, _ = make_prediction(binary=False)
 
     labels = np.array([u"blue\xa2", u"green\xa2", u"red\xa2"])
@@ -427,7 +411,6 @@ def test_classification_report_imbalanced_multiclass_with_unicode_label():
 
 
 def test_classification_report_imbalanced_multiclass_with_long_string_label():
-    """Test classification report with long string label"""
     y_true, y_pred, _ = make_prediction(binary=False)
 
     labels = np.array(["blue", "green" * 5, "red"])
@@ -444,7 +427,6 @@ def test_classification_report_imbalanced_multiclass_with_long_string_label():
 
 
 def test_iba_sklearn_metrics():
-    """Test the compatibility of sklearn metrics within IBA"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
     acc = make_index_balanced_accuracy(alpha=0.5, squared=True)(
@@ -469,8 +451,6 @@ def test_iba_sklearn_metrics():
 
 
 def test_iba_error_y_score_prob():
-    """Test if an error is raised when a scoring metric take over parameters
-    than y_pred"""
     y_true, y_pred, _ = make_prediction(binary=True)
 
     aps = make_index_balanced_accuracy(alpha=0.5, squared=True)(
