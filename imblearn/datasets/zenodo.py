@@ -97,8 +97,10 @@ MAP_NAME_ID_KEYS = ['ecoli',
                     'abalone_19']
 
 MAP_NAME_ID = OrderedDict()
+MAP_ID_NAME = OrderedDict()
 for k, v in zip(MAP_NAME_ID_KEYS, range(1, 28)):
     MAP_NAME_ID[k] = v
+    MAP_ID_NAME[v] = k
 
 logger = logging.getLogger()
 
@@ -176,7 +178,7 @@ def fetch_zenodo(data_home=None,
                 else:
                     # The index start at one, then we need to remove one
                     # to not have issue with the indexing.
-                    filter_data_.append(MAP_NAME_ID.keys()[it - 1])
+                    filter_data_.append(MAP_ID_NAME[it])
             else:
                 raise ValueError('The value in the should be str or int.'
                                  ' Got {} instead.'.format(type(it)))
