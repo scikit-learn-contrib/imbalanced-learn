@@ -20,7 +20,7 @@ import sphinx_rtd_theme
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+# sys.path.insert(0, os.path.abspath('.'))
 
 # -- General configuration ---------------------------------------------------
 
@@ -32,7 +32,7 @@ except:
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#needs_sphinx = '1.0'
+# needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -57,7 +57,7 @@ sphinx_gallery_conf = {
     'doc_module': 'imblearn',
     'reference_url': {
         'imblearn': None,
-        'sklearn': 'http://scikit-learn.org',
+        'sklearn': 'http://scikit-learn.org/stable',
         'matplotlib': 'http://matplotlib.org',
         'numpy': 'http://docs.scipy.org/doc/numpy-1.11.0',
         'scipy': 'http://docs.scipy.org/doc/scipy-0.18.0/reference'
