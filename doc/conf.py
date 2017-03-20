@@ -57,7 +57,7 @@ sphinx_gallery_conf = {
     'doc_module': 'imblearn',
     'reference_url': {
         'imblearn': None,
-        'sklearn': 'http://scikit-learn.org',
+        'sklearn': 'http://scikit-learn.org/stable/modules/generated',
         'matplotlib': 'http://matplotlib.org',
         'numpy': 'http://docs.scipy.org/doc/numpy-1.11.0',
         'scipy': 'http://docs.scipy.org/doc/scipy-0.18.0/reference'
