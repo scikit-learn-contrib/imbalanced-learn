@@ -38,15 +38,9 @@ except:
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'numpydoc',
-    'sphinx.ext.pngmath',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx_gallery.gen_gallery',
+    'sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx',
+    'sphinx.ext.todo', 'numpydoc', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig',
+    'sphinx.ext.viewcode', 'sphinx_gallery.gen_gallery',
     'sphinx.ext.autosummary'
 ]
 
@@ -56,9 +50,19 @@ autodoc_default_flags = ['members', 'inherited-members']
 
 sphinx_gallery_conf = {
     # path to your examples scripts
-    'examples_dirs' : '../examples',
+    'examples_dirs': '../examples',
     # path where to save gallery generated examples
-    'gallery_dirs'  : 'auto_examples'}
+    'gallery_dirs': 'auto_examples',
+    # to make references clickable
+    'doc_module': 'imblearn',
+    'reference_url': {
+        'imblearn': None,
+        'sklearn': 'http://scikit-learn.org',
+        'matplotlib': 'http://matplotlib.org',
+        'numpy': 'http://docs.scipy.org/doc/numpy-1.11.0',
+        'scipy': 'http://docs.scipy.org/doc/scipy-0.18.0/reference'
+    }
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -129,7 +133,6 @@ pygments_style = 'sphinx'
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
-
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -215,26 +218,25 @@ html_static_path = ['_static']
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'imbalanced-learndoc'
 
-
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'imbalanced-learn.tex', u'imbalanced-learn Documentation',
-   u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas', 'manual'),
+    ('index', 'imbalanced-learn.tex', u'imbalanced-learn Documentation',
+     u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -257,19 +259,15 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'imbalanced-learn', u'imbalanced-learn Documentation',
-     [u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'], 1)
-]
+man_pages = [('index', 'imbalanced-learn', u'imbalanced-learn Documentation',
+              [u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'], 1)]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -277,10 +275,11 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'imbalanced-learn', u'imbalanced-learn Documentation',
-   u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas', 'imbalanced-learn', 'Toolbox for imbalanced dataset in machine learning.',
-   'Miscellaneous'),
+    ('index', 'imbalanced-learn', u'imbalanced-learn Documentation',
+     u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas', 'imbalanced-learn',
+     'Toolbox for imbalanced dataset in machine learning.', 'Miscellaneous'),
 ]
+
 
 def generate_example_rst(app, what, name, obj, options, lines):
     # generate empty examples files, so that we don't get
@@ -295,6 +294,7 @@ def generate_example_rst(app, what, name, obj, options, lines):
 def setup(app):
     app.connect('autodoc-process-docstring', generate_example_rst)
 
+
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []
 
@@ -306,7 +306,6 @@ def setup(app):
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
-
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
