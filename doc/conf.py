@@ -56,9 +56,18 @@ autodoc_default_flags = ['members', 'inherited-members']
 
 sphinx_gallery_conf = {
     # path to your examples scripts
-    'examples_dirs' : '../examples',
+    'examples_dirs': '../examples',
     # path where to save gallery generated examples
-    'gallery_dirs'  : 'auto_examples'}
+    'gallery_dirs': 'auto_examples'
+    # to make references clickable
+    'doc_module': 'imblearn',
+    'reference_url': {
+        'imblearn': None
+        'sklearn': 'http://scikit-learn.org',
+        'matplotlib': 'http://matplotlib.org',
+        'numpy': 'http://docs.scipy.org/doc/numpy-1.11.0',
+        'scipy': 'http://docs.scipy.org/doc/scipy-0.18.0/reference'}
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
