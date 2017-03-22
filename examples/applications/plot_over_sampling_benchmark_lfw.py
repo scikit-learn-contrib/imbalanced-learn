@@ -54,7 +54,6 @@ y = data.target[idxs]
 y[y == majority_person] = 0
 y[y == minority_person] = 1
 
-
 classifier = ['3NN', neighbors.KNeighborsClassifier(3)]
 
 samplers = [
