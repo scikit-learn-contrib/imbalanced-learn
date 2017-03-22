@@ -19,7 +19,7 @@ print(__doc__)
 X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
-                           n_samples=5000, random_state=10)
+                           n_samples=100, random_state=10)
 
 # Instanciate a PCA object for the sake of easy visualisation
 pca = PCA(n_components=2)
@@ -52,7 +52,7 @@ for ax in (ax1, ax2):
     ax.get_yaxis().tick_left()
     ax.spines['left'].set_position(('outward', 10))
     ax.spines['bottom'].set_position(('outward', 10))
-    ax.set_xlim([-2, 8])
+    ax.set_xlim([-6, 8])
     ax.set_ylim([-6, 6])
 
 plt.legend()
