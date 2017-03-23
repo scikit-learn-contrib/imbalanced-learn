@@ -35,8 +35,10 @@ X_res_vis = pca.transform(X_resampled)
 # Two subplots, unpack the axes array immediately
 f, (ax1, ax2) = plt.subplots(1, 2)
 
-ax1.scatter(X_vis[y == 0, 0], X_vis[y == 0, 1], label="Class #0", alpha=0.5)
-ax1.scatter(X_vis[y == 1, 0], X_vis[y == 1, 1], label="Class #1", alpha=0.5)
+c0 = ax1.scatter(X_vis[y == 0, 0], X_vis[y == 0, 1], label="Class #0",
+                 alpha=0.5)
+c1 = ax1.scatter(X_vis[y == 1, 0], X_vis[y == 1, 1], label="Class #1",
+                 alpha=0.5)
 ax1.set_title('Original set')
 
 ax2.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
@@ -56,5 +58,7 @@ for ax in (ax1, ax2):
     ax.set_xlim([-6, 8])
     ax.set_ylim([-6, 6])
 
-plt.legend()
+plt.figlegend((c0, c1), ('Class #0', 'Class #1'), loc='lower center',
+              ncol=2, labelspacing=0.)
+plt.tight_layout()
 plt.show()

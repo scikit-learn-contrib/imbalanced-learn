@@ -15,37 +15,11 @@ from imblearn.over_sampling import SMOTE
 
 print(__doc__)
 
-# Generate the dataset
-X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
-                           n_informative=3, n_redundant=1, flip_y=0,
-                           n_features=20, n_clusters_per_class=1,
-                           n_samples=200, random_state=10)
 
-# Instanciate a PCA object for the sake of easy visualisation
-pca = PCA(n_components=2)
-# Fit and transform x to visualise inside a 2D feature space
-X_vis = pca.fit_transform(X)
-
-# Apply regular SMOTE
-sm = SMOTE(kind='regular')
-X_resampled, y_resampled = sm.fit_sample(X, y)
-X_res_vis = pca.transform(X_resampled)
-
-# Two subplots, unpack the axes array immediately
-f, (ax1, ax2) = plt.subplots(1, 2)
-
-ax1.scatter(X_vis[y == 0, 0], X_vis[y == 0, 1], label="Class #0", alpha=0.5)
-ax1.scatter(X_vis[y == 1, 0], X_vis[y == 1, 1], label="Class #1", alpha=0.5)
-ax1.set_title('Original set')
-
-ax2.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
-            label="Class #0", alpha=.5)
-ax2.scatter(X_res_vis[y_resampled == 1, 0], X_res_vis[y_resampled == 1, 1],
-            label="Class #1", alpha=.5)
-ax2.set_title('SMOTE regular')
-
-# make nice plotting
-for ax in (ax1, ax2):
+def plot_resampling(ax, X, y, title):
+    c0 = ax.scatter(X[y == 0, 0], X[y == 0, 1], label="Class #0", alpha=0.5)
+    c1 = ax.scatter(X[y == 1, 0], X[y == 1, 1], label="Class #1", alpha=0.5)
+    ax.set_title(title)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.get_xaxis().tick_bottom()
@@ -55,5 +29,44 @@ for ax in (ax1, ax2):
     ax.set_xlim([-6, 8])
     ax.set_ylim([-6, 6])
 
-plt.legend()
+    return c0, c1
+
+
+# Generate the dataset
+X, y = make_classification(n_classes=2, class_sep=2, weights=[0.3, 0.7],
+                           n_informative=3, n_redundant=1, flip_y=0,
+                           n_features=20, n_clusters_per_class=1,
+                           n_samples=80, random_state=10)
+
+# Instanciate a PCA object for the sake of easy visualisation
+pca = PCA(n_components=2)
+# Fit and transform x to visualise inside a 2D feature space
+X_vis = pca.fit_transform(X)
+
+# Apply regular SMOTE
+kind = ['regular', 'borderline1', 'borderline2', 'svm']
+sm = [SMOTE(kind=k) for k in kind]
+X_resampled = []
+y_resampled = []
+X_res_vis = []
+for method in sm:
+    X_res, y_res = method.fit_sample(X, y)
+    X_resampled.append(X_res)
+    y_resampled.append(y_res)
+    X_res_vis.append(pca.transform(X_res))
+
+# Two subplots, unpack the axes array immediately
+f, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2)
+# Remove axis for second plot
+ax2.axis('off')
+ax_res = [ax3, ax4, ax5, ax6]
+
+c0, c1 = plot_resampling(ax1, X_vis, y, 'Original set')
+for i in range(len(kind)):
+    plot_resampling(ax_res[i], X_res_vis[i], y_resampled[i],
+                    'SMOTE {}'.format(kind[i]))
+
+plt.figlegend((c0, c1), ('Class #0', 'Class #1'), loc='lower center',
+              ncol=2, labelspacing=0.)
+plt.tight_layout()
 plt.show()

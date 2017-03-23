@@ -56,4 +56,5 @@ for ax in (ax1, ax2):
     ax.set_ylim([-6, 6])
 
 plt.legend()
+plt.tight_layout()
 plt.show()

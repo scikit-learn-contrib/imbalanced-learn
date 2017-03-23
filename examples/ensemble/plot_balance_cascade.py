@@ -56,6 +56,7 @@ for ax in (ax1, ax2):
     ax.spines['bottom'].set_position(('outward', 10))
     ax.set_xlim([-6, 8])
     ax.set_ylim([-6, 6])
+    ax.legend()
 
-plt.legend()
+plt.tight_layout()
 plt.show()

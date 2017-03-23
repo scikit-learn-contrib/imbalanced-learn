@@ -36,7 +36,6 @@ renn = RepeatedEditedNearestNeighbours()
 # Create teh classifier
 knn = KNN(1)
 
-
 # Make the splits
 X_train, X_test, y_train, y_test = tts(X, y, random_state=42)
 

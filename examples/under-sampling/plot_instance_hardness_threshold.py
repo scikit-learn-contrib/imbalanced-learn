@@ -8,26 +8,36 @@ An illustration of the instance hardness threshold method.
 """
 
 import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA
+from sklearn.linear_model import LogisticRegression
 
 from imblearn.under_sampling import InstanceHardnessThreshold
 
 print(__doc__)
 
-sns.set()
 
-# Define some color for the plotting
-almost_black = '#262626'
-palette = sns.color_palette()
+def plot_resampling(ax, X, y, title):
+    c0 = ax.scatter(X[y == 0, 0], X[y == 0, 1], label="Class #0", alpha=0.5)
+    c1 = ax.scatter(X[y == 1, 0], X[y == 1, 1], label="Class #1", alpha=0.5)
+    ax.set_title(title)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().tick_left()
+    ax.spines['left'].set_position(('outward', 10))
+    ax.spines['bottom'].set_position(('outward', 10))
+    ax.set_xlim([-6, 8])
+    ax.set_ylim([-6, 6])
+
+    return c0, c1
 
 
 # Generate the dataset
-X, y = make_classification(n_classes=2, class_sep=1., weights=[0.05, 0.95],
+X, y = make_classification(n_classes=2, class_sep=1., weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
-                           n_samples=5000, random_state=10)
+                           n_samples=100, random_state=10)
 
 pca = PCA(n_components=2)
 X_vis = pca.fit_transform(X)
@@ -36,27 +46,18 @@ X_vis = pca.fit_transform(X)
 f, axs = plt.subplots(2, 2)
 
 axs = [a for ax in axs for a in ax]
-for ax, ratio in zip(axs, [0.0, 0.2, 0.6, 1.0]):
+for ax, ratio in zip(axs, [0.0, 0.4, 0.7, 1.0]):
     if ratio == 0.0:
-        ax.scatter(X_vis[y == 0, 0], X_vis[y == 0, 1], label="Class #0",
-                    alpha=0.5, edgecolor=almost_black, facecolor=palette[0],
-                    linewidth=0.15)
-        ax.scatter(X_vis[y == 1, 0], X_vis[y == 1, 1], label="Class #1",
-                   alpha=0.5, edgecolor=almost_black, facecolor=palette[2],
-                   linewidth=0.15)
-        ax.set_title('Original set')
+        c0, c1 = plot_resampling(ax, X_vis, y, 'Original set')
     else:
-        iht = InstanceHardnessThreshold(ratio=ratio)
+        iht = InstanceHardnessThreshold(ratio=ratio,
+                                        estimator=LogisticRegression())
         X_res, y_res = iht.fit_sample(X, y)
         X_res_vis = pca.transform(X_res)
+        plot_resampling(ax, X_res_vis, y_res,
+                        'Instance Hardness Threshold ({})'.format(ratio))
 
-        ax.scatter(X_res_vis[y_res == 0, 0], X_res_vis[y_res == 0, 1],
-                   label="Class #0", alpha=.5, edgecolor=almost_black,
-                   facecolor=palette[0], linewidth=0.15)
-        ax.scatter(X_res_vis[y_res == 1, 0], X_res_vis[y_res == 1, 1],
-                   label="Class #1", alpha=.5, edgecolor=almost_black,
-                   facecolor=palette[2], linewidth=0.15)
-        ax.set_title('Instance Hardness Threshold ({})'.format(ratio))
-
+plt.figlegend((c0, c1), ('Class #0', 'Class #1'), loc='lower center',
+              ncol=2, labelspacing=0.)
 plt.tight_layout()
 plt.show()
