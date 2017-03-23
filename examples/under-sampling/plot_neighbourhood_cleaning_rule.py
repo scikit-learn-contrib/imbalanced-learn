@@ -8,6 +8,7 @@ An illustration of the neighbourhood cleaning rule method.
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA
 
@@ -27,37 +28,35 @@ pca = PCA(n_components=2)
 X_vis = pca.fit_transform(X)
 
 # Apply neighbourhood cleaning rule
-ncl = NeighbourhoodCleaningRule()
-X_resampled, y_resampled = ncl.fit_sample(X, y)
+ncl = NeighbourhoodCleaningRule(return_indices=True)
+X_resampled, y_resampled, idx_resampled = ncl.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
-# Two subplots, unpack the axes array immediately
-f, (ax1, ax2) = plt.subplots(1, 2)
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
 
-c0 = ax1.scatter(X_vis[y == 0, 0], X_vis[y == 0, 1], label="Class #0",
-                 alpha=0.5)
-c1 = ax1.scatter(X_vis[y == 1, 0], X_vis[y == 1, 1], label="Class #1",
-                 alpha=0.5)
-ax1.set_title('Original set')
+idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]),
+                                   idx_resampled)
 
-ax2.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
-            label="Class #0", alpha=.5)
-ax2.scatter(X_res_vis[y_resampled == 1, 0], X_res_vis[y_resampled == 1, 1],
-            label="Class #1", alpha=.5)
-ax2.set_title('Neighbourhood cleaning rule')
+idx_class_0 = y_resampled == 0
+plt.scatter(X_res_vis[idx_class_0, 0], X_res_vis[idx_class_0, 1],
+            alpha=.8, label='Class #0')
+plt.scatter(X_res_vis[~idx_class_0, 0], X_res_vis[~idx_class_0, 1],
+            alpha=.8, label='Class #1')
+plt.scatter(X_vis[idx_samples_removed, 0], X_vis[idx_samples_removed, 1],
+            alpha=.8, label='Removed samples')
 
 # make nice plotting
-for ax in (ax1, ax2):
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.get_xaxis().tick_bottom()
-    ax.get_yaxis().tick_left()
-    ax.spines['left'].set_position(('outward', 10))
-    ax.spines['bottom'].set_position(('outward', 10))
-    ax.set_xlim([-6, 8])
-    ax.set_ylim([-6, 6])
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.get_xaxis().tick_bottom()
+ax.get_yaxis().tick_left()
+ax.spines['left'].set_position(('outward', 10))
+ax.spines['bottom'].set_position(('outward', 10))
+ax.set_xlim([-6, 6])
+ax.set_ylim([-6, 6])
 
-plt.figlegend((c0, c1), ('Class #0', 'Class #1'), loc='lower center',
-              ncol=2, labelspacing=0.)
+plt.title('Under-sampling using neighbourhood cleaning rule')
+plt.legend()
 plt.tight_layout()
 plt.show()

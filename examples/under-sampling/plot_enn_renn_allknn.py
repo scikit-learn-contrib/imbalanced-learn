@@ -8,6 +8,7 @@ An illustration of the ENN, RENN, and All-KNN method.
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA
 
@@ -51,35 +52,47 @@ c0, c1 = plot_resampling(ax1, X_vis, y, 'Original set')
 
 # Apply the ENN
 print('ENN')
-enn = EditedNearestNeighbours()
-X_resampled, y_resampled = enn.fit_sample(X, y)
+enn = EditedNearestNeighbours(return_indices=True)
+X_resampled, y_resampled, idx_resampled = enn.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
+idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]), idx_resampled)
 reduction_str = ('Reduced {:.2f}%'.format(100 * (1 - float(len(X_resampled)) /
                                                  len(X))))
 print(reduction_str)
+c3 = ax2.scatter(X_vis[idx_samples_removed, 0],
+                 X_vis[idx_samples_removed, 1],
+                 alpha=.2, label='Removed samples', c='g')
 plot_resampling(ax2, X_res_vis, y_resampled, 'ENN - ' + reduction_str)
 
 # Apply the RENN
 print('RENN')
-renn = RepeatedEditedNearestNeighbours()
-X_resampled, y_resampled = renn.fit_sample(X, y)
+renn = RepeatedEditedNearestNeighbours(return_indices=True)
+X_resampled, y_resampled, idx_resampled = renn.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
+idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]), idx_resampled)
 reduction_str = ('Reduced {:.2f}%'.format(100 * (1 - float(len(X_resampled)) /
                                                  len(X))))
 print(reduction_str)
+ax3.scatter(X_vis[idx_samples_removed, 0],
+            X_vis[idx_samples_removed, 1],
+            alpha=.2, label='Removed samples', c='g')
 plot_resampling(ax3, X_res_vis, y_resampled, 'RENN - ' + reduction_str)
 
 # Apply the AllKNN
 print('AllKNN')
-allknn = AllKNN()
-X_resampled, y_resampled = allknn.fit_sample(X, y)
+allknn = AllKNN(return_indices=True)
+X_resampled, y_resampled, idx_resampled = allknn.fit_sample(X, y)
 X_res_vis = pca.transform(X_resampled)
+idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]), idx_resampled)
 reduction_str = ('Reduced {:.2f}%'.format(100 * (1 - float(len(X_resampled)) /
                                                  len(X))))
 print(reduction_str)
+ax4.scatter(X_vis[idx_samples_removed, 0],
+            X_vis[idx_samples_removed, 1],
+            alpha=.2, label='Removed samples', c='g')
 plot_resampling(ax4, X_res_vis, y_resampled, 'All-KNN - ' + reduction_str)
 
-plt.figlegend((c0, c1), ('Class #0', 'Class #1'), loc='lower center',
-              ncol=2, labelspacing=0.)
+plt.figlegend((c0, c1, c3), ('Class #0', 'Class #1', 'Removed samples'),
+              loc='lower center', ncol=3, labelspacing=0.)
 plt.tight_layout()
 plt.show()

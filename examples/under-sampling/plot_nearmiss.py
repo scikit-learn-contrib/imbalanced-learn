@@ -8,6 +8,7 @@ An illustration of the nearmiss 1 & 2 & 3 method.
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA
 
@@ -45,16 +46,19 @@ X_vis = pca.fit_transform(X)
 
 # Apply Nearmiss
 version = [1, 2, 3]
-nm = [NearMiss(version=v) for v in version]
+nm = [NearMiss(version=v, return_indices=True) for v in version]
 
 X_resampled = []
 y_resampled = []
 X_res_vis = []
+idx_samples_removed = []
 for method in nm:
-    X_res, y_res = method.fit_sample(X, y)
+    X_res, y_res, idx_res = method.fit_sample(X, y)
     X_resampled.append(X_res)
     y_resampled.append(y_res)
     X_res_vis.append(pca.transform(X_res))
+    idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]),
+                                       idx_res)
 
 # Two subplots, unpack the axes array immediately
 f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
@@ -62,10 +66,15 @@ ax_res = [ax2, ax3, ax4]
 
 c0, c1 = plot_resampling(ax1, X_vis, y, 'Original set')
 for i in range(len(version)):
+    # plot the missing samples
+    c3 = ax_res[i].scatter(X_vis[idx_samples_removed, 0],
+                           X_vis[idx_samples_removed, 1],
+                           alpha=.2, label='Removed samples',
+                           c='g')
     plot_resampling(ax_res[i], X_res_vis[i], y_resampled[i],
                     'Nearmiss {}'.format(version[i]))
 
-plt.figlegend((c0, c1), ('Class #0', 'Class #1'), loc='lower center',
-              ncol=2, labelspacing=0.)
+plt.figlegend((c0, c1, c3), ('Class #0', 'Class #1', 'Removed samples'),
+              loc='lower center', ncol=3, labelspacing=0.)
 plt.tight_layout()
 plt.show()

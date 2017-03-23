@@ -8,6 +8,7 @@ An illustration of the instance hardness threshold method.
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
@@ -51,13 +52,20 @@ for ax, ratio in zip(axs, [0.0, 0.4, 0.7, 1.0]):
         c0, c1 = plot_resampling(ax, X_vis, y, 'Original set')
     else:
         iht = InstanceHardnessThreshold(ratio=ratio,
-                                        estimator=LogisticRegression())
-        X_res, y_res = iht.fit_sample(X, y)
+                                        estimator=LogisticRegression(),
+                                        return_indices=True)
+        X_res, y_res, idx_res = iht.fit_sample(X, y)
         X_res_vis = pca.transform(X_res)
         plot_resampling(ax, X_res_vis, y_res,
                         'Instance Hardness Threshold ({})'.format(ratio))
+        # plot samples which have been removed
+        idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]),
+                                           idx_res)
+        c3 = ax.scatter(X_vis[idx_samples_removed, 0],
+                        X_vis[idx_samples_removed, 1],
+                        alpha=.2, label='Removed samples')
 
-plt.figlegend((c0, c1), ('Class #0', 'Class #1'), loc='lower center',
-              ncol=2, labelspacing=0.)
+plt.figlegend((c0, c1, c3), ('Class #0', 'Class #1', 'Removed samples'),
+              loc='lower center', ncol=3, labelspacing=0.)
 plt.tight_layout()
 plt.show()
