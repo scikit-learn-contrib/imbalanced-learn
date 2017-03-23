@@ -58,6 +58,6 @@ for ax in (ax1, ax2):
     ax.set_ylim([-6, 6])
 
 plt.figlegend((c0, c1), ('Class #0', 'Class #1'), loc='lower center',
-              ncol=2, labelspacing=0.)
+              ncol=2, labelspacing=0., bbox_to_anchor=(0.5, -0.05))
 plt.tight_layout()
 plt.show()
