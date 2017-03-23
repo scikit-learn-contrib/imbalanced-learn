@@ -1,3 +1,9 @@
+"""Utils to check the samplers and compatibility with scikit-learn"""
+
+# Adapated from scikit-learn
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
 from __future__ import division
 
 import sys

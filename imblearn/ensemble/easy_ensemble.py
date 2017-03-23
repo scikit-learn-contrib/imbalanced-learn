@@ -1,4 +1,9 @@
 """Class to perform under-sampling using easy ensemble."""
+
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
