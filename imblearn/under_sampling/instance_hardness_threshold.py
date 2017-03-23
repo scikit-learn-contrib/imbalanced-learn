@@ -1,5 +1,11 @@
 """Class to perform under-sampling based on the instance hardness
 threshold."""
+
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Dayvid Oliveira
+#          Christos Aridas
+# License: MIT
+
 from __future__ import division, print_function
 
 import warnings

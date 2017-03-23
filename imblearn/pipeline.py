@@ -9,7 +9,8 @@ composite estimator, as a chain of transforms, samples and estimators.
 #         Virgile Fritsch
 #         Alexandre Gramfort
 #         Lars Buitinck
-#         chkoar
+#         Christos Aridas
+#         Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: BSD
 
 from __future__ import division, print_function

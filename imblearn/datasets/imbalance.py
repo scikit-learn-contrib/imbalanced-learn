@@ -1,5 +1,11 @@
 """Transform a dataset into an imbalanced dataset."""
 
+
+# Authors: Dayvid Oliveira
+#          Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 import logging
 from collections import Counter
 

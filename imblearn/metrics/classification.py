@@ -8,6 +8,10 @@ Function named as ``*_error`` or ``*_loss`` return a scalar value to minimize:
 the lower the better
 """
 
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Dariusz Brzezinski
+# License: MIT
+
 from __future__ import division
 
 import warnings

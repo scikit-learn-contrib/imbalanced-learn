@@ -1,11 +1,14 @@
 """Class performing under-sampling based on the neighbourhood cleaning rule."""
+
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import division, print_function
 
 from collections import Counter
 
 import numpy as np
-from sklearn.neighbors import NearestNeighbors
-from sklearn.neighbors.base import KNeighborsMixin
 
 from ..base import BaseMulticlassSampler
 from ..utils import check_neighbors_object

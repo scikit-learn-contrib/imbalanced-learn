@@ -1,5 +1,6 @@
 """Test utilities."""
 
+# Adapted from scikit-learn
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 

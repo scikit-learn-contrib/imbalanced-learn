@@ -1,4 +1,10 @@
 ﻿"""Class to perform over-sampling using SMOTE."""
+
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Fernando Nogueira
+#          Christos Aridas
+# License: MIT
+
 from __future__ import division, print_function
 
 import numpy as np

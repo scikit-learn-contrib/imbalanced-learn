@@ -1,4 +1,10 @@
 """Class to perform under-sampling by removing Tomek's links."""
+
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Fernando Nogueira
+#          Christos Aridas
+# License: MIT
+
 from __future__ import division, print_function
 
 from collections import Counter

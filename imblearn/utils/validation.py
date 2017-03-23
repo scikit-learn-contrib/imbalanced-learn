@@ -1,5 +1,8 @@
 """Utilities for input validation"""
 
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 
