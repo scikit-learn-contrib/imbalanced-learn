@@ -1,4 +1,9 @@
 ﻿"""Class to perform random over-sampling."""
+
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import division, print_function
 
 from collections import Counter
