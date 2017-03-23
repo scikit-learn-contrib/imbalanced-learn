@@ -14,11 +14,12 @@ class ClusterCentroids(BaseMulticlassSampler):
     """Perform under-sampling by generating centroids based on
     clustering methods.
 
-    Experimental method that under samples the majority class by replacing a
-    cluster of majority samples by the cluster centroid of a KMeans algorithm.
-    This algorithm keeps N majority samples by fitting the KMeans algorithm
-    with N cluster to the majority class and using the coordinates of the N
-    cluster centroids as the new majority samples.
+    Method that under samples the majority class by replacing a
+    cluster of majority samples by the cluster centroid of a KMeans
+    algorithm.  This algorithm keeps N majority samples by fitting the
+    KMeans algorithm with N cluster to the majority class and using
+    the coordinates of the N cluster centroids as the new majority
+    samples.
 
     Parameters
     ----------
