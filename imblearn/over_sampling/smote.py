@@ -48,20 +48,21 @@ class SMOTE(BaseBinarySampler):
 
     m : int, optional (default=None)
         Number of nearest neighbours to use to determine if a minority sample
-        is in danger.
+        is in danger. Used with kind={'borderline1', 'borderline2', 'svm'}.
 
         NOTE: `m` is deprecated from 0.2 and will be replaced in 0.4
         Use ``m_neighbors`` instead.
 
     m_neighbors : int int or object, optional (default=10)
         If int, number of nearest neighbours to use to determine if a minority
-        sample is in danger.
+        sample is in danger. Used with kind={'borderline1', 'borderline2',
+        'svm'}.
         If object, an estimator that inherits from
         `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
         the k_neighbors.
 
     out_step : float, optional (default=0.5)
-        Step size when extrapolating.
+        Step size when extrapolating. Used with kind='svm'.
 
     kind : str, optional (default='regular')
         The type of SMOTE algorithm to use one of the following options:
