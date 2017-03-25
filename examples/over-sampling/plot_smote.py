@@ -66,7 +66,7 @@ for i in range(len(kind)):
     plot_resampling(ax_res[i], X_res_vis[i], y_resampled[i],
                     'SMOTE {}'.format(kind[i]))
 
-plt.figlegend((c0, c1), ('Class #0', 'Class #1'), loc='lower center',
-              ncol=2, labelspacing=0., bbox_to_anchor=(0.5, -0.05))
+ax2.legend((c0, c1), ('Class #0', 'Class #1'), loc='center',
+           ncol=1, labelspacing=0.)
 plt.tight_layout()
 plt.show()

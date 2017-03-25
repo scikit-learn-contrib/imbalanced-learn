@@ -59,5 +59,4 @@ for ax in (ax1, ax2):
 
 f.legend((c0, c1), ('Class #0', 'Class #1'), loc='upper center',
          ncol=2, labelspacing=0.)
-# plt.tight_layout()
 plt.show()
