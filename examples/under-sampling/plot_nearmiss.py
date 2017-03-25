@@ -75,5 +75,6 @@ for i in range(len(version)):
                     'Nearmiss {}'.format(version[i]))
 
 plt.figlegend((c0, c1, c3), ('Class #0', 'Class #1', 'Removed samples'),
-              loc='lower center', ncol=3, labelspacing=0.)
+              loc='upper center', ncol=3, labelspacing=0.)
+plt.tight_layout(pad=3)
 plt.show()
