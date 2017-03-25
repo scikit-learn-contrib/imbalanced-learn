@@ -57,7 +57,7 @@ for ax in (ax1, ax2):
     ax.set_xlim([-6, 8])
     ax.set_ylim([-6, 6])
 
-plt.figlegend((c0, c1), ('Class #0', 'Class #1'), loc='lower center',
-              ncol=2, labelspacing=0.)
-plt.tight_layout()
+f.legend((c0, c1), ('Class #0', 'Class #1'), loc='upper center',
+         ncol=2, labelspacing=0.)
+# plt.tight_layout()
 plt.show()
