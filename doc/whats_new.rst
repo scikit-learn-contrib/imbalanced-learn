@@ -6,6 +6,9 @@ Release history
 
 .. _changes_0_3:
 
+Version 0.3
+===========
+
 Changelog
 ---------
 
