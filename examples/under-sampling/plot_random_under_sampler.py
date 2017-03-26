@@ -7,6 +7,10 @@ An illustration of the random under-sampling method.
 
 """
 
+# Authors: Christos Aridas
+#          Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.datasets import make_classification

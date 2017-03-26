@@ -6,6 +6,12 @@ Tomek links
 An illustration of the Tomek links method.
 """
 
+# Authors: Andreas Mueller
+#          Christos Aridas
+#          Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 

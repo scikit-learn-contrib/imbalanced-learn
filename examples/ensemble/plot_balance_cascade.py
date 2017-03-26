@@ -7,6 +7,10 @@ An illustration of the balance cascade ensemble method.
 
 """
 
+# Authors: Christos Aridas
+#          Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA

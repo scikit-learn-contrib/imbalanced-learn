@@ -11,6 +11,10 @@ by using an over-sampler.
 
 """
 
+# Authors: Christos Aridas
+#          Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import interp

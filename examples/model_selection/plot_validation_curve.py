@@ -8,6 +8,9 @@ In the plot you can see the validation scores of a SMOTE-CART classifier for
 different values of the SMOTE's k_neighbors parameter.
 """
 
+# Authors: Christos Aridas
+#          Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
 
 import matplotlib.pyplot as plt
 import numpy as np
