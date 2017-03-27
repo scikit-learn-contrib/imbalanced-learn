@@ -109,9 +109,7 @@ def fetch_zenodo(data_home=None,
                  download_if_missing=True,
                  random_state=None,
                  shuffle=False):
-    """Load the Higgs dataset, downloading it if necessary.
-
-    Read more in the :ref:`User Guide <datasets>`.
+    """Load the benchmark datasets from Zenodo, downloading it if necessary.
 
     Parameters
     ----------
@@ -223,7 +221,7 @@ def fetch_zenodo(data_home=None,
 
     data_home = get_data_home(data_home=data_home)
     zenodo_dir = join(data_home, "zenodo")
-    datasets = {}
+    datasets = OrderedDict()
 
     if filter_data is None:
         filter_data_ = MAP_NAME_ID.keys()

@@ -4,6 +4,7 @@ imbalanced data.
 """
 
 from .imbalance import make_imbalance
+
 from .zenodo import fetch_zenodo
 
 __all__ = ['make_imbalance',
