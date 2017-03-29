@@ -22,6 +22,8 @@ Enhancement
   been derived from scikit-learn. By `Guillaume Lemaitre`_.
 - Script for automatic build of conda packages and uploading. By
   `Guillaume Lemaitre`_
+- Remove seaborn dependence and improve the examples. By `Guillaume
+  Lemaitre`_.
 
 API changes summary
 ~~~~~~~~~~~~~~~~~~~
