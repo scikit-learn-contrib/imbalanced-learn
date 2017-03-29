@@ -70,7 +70,7 @@ complements the `User Guide <user_guide.html>`_.
 `What's new <whats_new.html>`_
 ------------------------------
 
-The log of the different changes.
+Log of the imbalanced-learn history.
 
 `About imbalanced-learn <about.html>`_
 --------------------------------------
