@@ -1,13 +1,5 @@
 .. -*- mode: rst -*-
 
-imbalanced-learn
-================
-
-imbalanced-learn is a python package offering a number of re-sampling techniques
-commonly used in datasets showing strong between-class imbalance.
-It is compatible with scikit-learn_ and is part of scikit-learn-contrib_
-projects.
-
 .. _scikit-learn: http://scikit-learn.org/stable/
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
@@ -41,8 +33,16 @@ projects.
 .. |Gitter| image:: https://badges.gitter.im/scikit-learn-contrib/imbalanced-learn.svg
 .. _Gitter: https://gitter.im/scikit-learn-contrib/imbalanced-learn?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
+imbalanced-learn
+================
+
+imbalanced-learn is a python package offering a number of re-sampling techniques
+commonly used in datasets showing strong between-class imbalance.
+It is compatible with scikit-learn_ and is part of scikit-learn-contrib_
+projects.
+
 Documentation
-=============
+-------------
 
 Installation documentation, API documentation, and examples can be found on the
 documentation_.
@@ -50,19 +50,22 @@ documentation_.
 .. _documentation: http://contrib.scikit-learn.org/imbalanced-learn/
 
 Installation
-============
-
-Dependencies
 ------------
 
-imbalanced-learn is tested to work under Python 2.7 and Python 3.5.
+Dependencies
+~~~~~~~~~~~~
+
+imbalanced-learn is tested to work under Python 2.7 and Python 3.4,
+3.5, and 3.6.
 
 * scipy(>=0.18.1)
 * numpy(>=1.11.2)
 * scikit-learn(>=0.18.1)
 
+Additionally, to run the examples, you need matplotlib(>=2.0.0).
+
 Installation
-------------
+~~~~~~~~~~~~
 
 imbalanced-learn is currently available on the PyPi's repository and you can
 install it via `pip`::
@@ -81,14 +84,36 @@ commands to get a copy from GitHub and install all dependencies::
   pip install .
 
 Testing
--------
+~~~~~~~
 
 After installation, you can use `nose` to run the test suite::
 
   make coverage
 
+Development
+~~~~~~~~~~~
+
+The development of this scikit-learn-contrib is in line with the one
+of the scikit-learn community. Therefore, you can refer to their
+`Development Guide
+<http://scikit-learn.org/stable/developers/index.html>`_.
+
 About
-=====
+~~~~~
+
+If you use imbalanced-learn in a scientific publication, we would appreciate
+citations to the following paper::
+
+  @article{JMLR:v18:16-365,
+  author  = {Guillaume  Lema{{\^i}}tre and Fernando Nogueira and Christos K. Aridas},
+  title   = {Imbalanced-learn: A Python Toolbox to Tackle the Curse of Imbalanced Datasets in Machine Learning},
+  journal = {Journal of Machine Learning Research},
+  year    = {2017},
+  volume  = {18},
+  number  = {17},
+  pages   = {1-5},
+  url     = {http://jmlr.org/papers/v18/16-365.html}
+  }
 
 Most classification algorithms will only perform optimally when the number of
 samples of each class is roughly the same. Highly skewed datasets, where the
@@ -139,21 +164,6 @@ The different algorithms are presented in the sphinx-gallery_.
 
 .. _sphinx-gallery: http://contrib.scikit-learn.org/imbalanced-learn/auto_examples/index.html
 
-This is a work in progress. Any comments, suggestions or corrections are welcome.
-
-If you use imbalanced-learn in a scientific publication, we would appreciate
-citations to the following paper::
-
-  @article{lemaitre2016imbalanced,
-  author    = {Guillaume Lema\^{i}tre and
-               Fernando Nogueira and
-               Christos K. Aridas},
-  title     = {Imbalanced-learn: A Python Toolbox to Tackle the Curse of Imbalanced Datasets in Machine Learning},
-  journal   = {CoRR},
-  volume    = {abs/1609.06570},
-  year      = {2016},
-  url       = {http://arxiv.org/abs/1609.06570}
-  }
 
 References:
 -----------
