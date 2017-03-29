@@ -98,6 +98,6 @@ ax4.scatter(X_vis[idx_samples_removed, 0],
 plot_resampling(ax4, X_res_vis, y_resampled, 'All-KNN - ' + reduction_str)
 
 plt.figlegend((c0, c1, c3), ('Class #0', 'Class #1', 'Removed samples'),
-              loc='upper center', ncol=3, labelspacing=0.)
+              loc='lower center', ncol=3, labelspacing=0.)
 plt.tight_layout(pad=3)
 plt.show()

@@ -71,6 +71,6 @@ for ax, ratio in zip(axs, [0.0, 0.4, 0.7, 1.0]):
                         alpha=.2, label='Removed samples')
 
 plt.figlegend((c0, c1, c3), ('Class #0', 'Class #1', 'Removed samples'),
-              loc='upper center', ncol=3, labelspacing=0.)
+              loc='lower center', ncol=3, labelspacing=0.)
 plt.tight_layout(pad=3)
 plt.show()
