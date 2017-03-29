@@ -22,6 +22,8 @@ Prototype generation
    :no-members:
    :no-inherited-members:
 
+.. currentmodule:: imblearn
+
 .. autosummary::
    :toctree: generated/
 
@@ -33,6 +35,8 @@ Prototype selection
 .. automodule:: imblearn.under_sampling.prototype_selection
    :no-members:
    :no-inherited-members:
+
+.. currentmodule:: imblearn
 
 .. autosummary::
    :toctree: generated/
