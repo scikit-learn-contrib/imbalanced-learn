@@ -18,13 +18,21 @@ Under-sampling methods
 Prototype generation
 --------------------
 
+.. automodule:: imblearn.under_sampling.prototype_generation
+   :no-members:
+   :no-inherited-members:
+
 .. autosummary::
    :toctree: generated/
 
-under_sampling.ClusterCentroids
+   under_sampling.ClusterCentroids
 
 Prototype selection
 -------------------
+
+.. automodule:: imblearn.under_sampling.prototype_selection
+   :no-members:
+   :no-inherited-members:
 
 .. autosummary::
    :toctree: generated/
