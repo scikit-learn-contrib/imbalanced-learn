@@ -1,4 +1,5 @@
-"""Class to perform under-sampling based on one-sided selection method."""
+"""Class to perform under-sampling based on the condensed nearest neighbour
+method."""
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
@@ -9,15 +10,15 @@ from __future__ import division, print_function
 from collections import Counter
 
 import numpy as np
-from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state
 
-from ..base import BaseBinarySampler
-from .tomek_links import TomekLinks
+from ...base import BaseMulticlassSampler
 
 
-class OneSidedSelection(BaseBinarySampler):
-    """Class to perform under-sampling based on one-sided selection method.
+class CondensedNearestNeighbour(BaseMulticlassSampler):
+    """Class to perform under-sampling based on the condensed nearest neighbour
+    method.
 
     Parameters
     ----------
@@ -70,29 +71,30 @@ class OneSidedSelection(BaseBinarySampler):
     -----
     The method is based on [1]_.
 
-    This method support multiclass.
+    This class supports multi-class.
 
     Examples
     --------
 
-    >>> from collections import Counter
-    >>> from sklearn.datasets import make_classification
+    >>> from collections import Counter #doctest: +SKIP
+    >>> from sklearn.datasets import fetch_mldata #doctest: +SKIP
     >>> from imblearn.under_sampling import \
-    OneSidedSelection # doctest: +NORMALIZE_WHITESPACE
-    >>> X, y = make_classification(n_classes=2, class_sep=2,
-    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
-    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
-    >>> oss = OneSidedSelection(random_state=42)
-    >>> X_res, y_res = oss.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 495, 0: 100})
+    CondensedNearestNeighbour #doctest: +SKIP
+    >>> pima = fetch_mldata('diabetes_scale') #doctest: +SKIP
+    >>> X, y = pima['data'], pima['target'] #doctest: +SKIP
+    >>> print('Original dataset shape {}'.format(Counter(y))) #doctest: +SKIP
+    Original dataset shape Counter({1: 500, -1: 268}) #doctest: +SKIP
+    >>> cnn = CondensedNearestNeighbour(random_state=42) #doctest: +SKIP
+    >>> X_res, y_res = cnn.fit_sample(X, y) #doctest: +SKIP
+    >>> print('Resampled dataset shape {}'.format(
+    ... Counter(y_res))) #doctest: +SKIP
+    Resampled dataset shape Counter({-1: 268, 1: 227}) #doctest: +SKIP
 
     References
     ----------
-    .. [1] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training
-       sets: one-sided selection," In ICML, vol. 97, pp. 179-186, 1997.
+    .. [1] P. Hart, "The condensed nearest neighbor rule,"
+       In Information Theory, IEEE Transactions on, vol. 14(3),
+       pp. 515-516, 1968.
 
     """
 
@@ -103,7 +105,8 @@ class OneSidedSelection(BaseBinarySampler):
                  n_neighbors=None,
                  n_seeds_S=1,
                  n_jobs=1):
-        super(OneSidedSelection, self).__init__(random_state=random_state)
+        super(CondensedNearestNeighbour, self).__init__(
+            random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
@@ -144,7 +147,7 @@ class OneSidedSelection(BaseBinarySampler):
 
         """
 
-        super(OneSidedSelection, self).fit(X, y)
+        super(CondensedNearestNeighbour, self).fit(X, y)
 
         self._validate_estimator()
 
@@ -198,66 +201,76 @@ class OneSidedSelection(BaseBinarySampler):
 
             # Randomly get one sample from the majority class
             # Generate the index to select
-            idx_maj = np.flatnonzero(y == key)
-            idx_maj_sample = idx_maj[
-                random_state.randint(
-                    low=0,
-                    high=self.stats_c_[key],
-                    size=self.n_seeds_S)]
-            maj_sample = X[idx_maj_sample]
+            idx_maj_sample = random_state.randint(
+                low=0, high=self.stats_c_[key], size=self.n_seeds_S)
+            maj_sample = X[y == key][idx_maj_sample]
 
-            # Create the set C
+            # Create the set C - One majority samples and all minority
             C_x = np.append(X_min, maj_sample, axis=0)
-            C_y = np.append(y_min, [key] * self.n_seeds_S)
+            C_y = np.append(y_min, np.array([key] * self.n_seeds_S))
 
-            # Create the set S with removing the seed from S
-            # since that it will be added anyway
-            idx_maj_extracted = np.delete(idx_maj, idx_maj_sample, axis=0)
-            S_x = X[idx_maj_extracted]
-            S_y = y[idx_maj_extracted]
+            # Create the set S - all majority samples
+            S_x = X[y == key]
+            S_y = y[y == key]
 
             # Fit C into the knn
             self.estimator_.fit(C_x, C_y)
 
-            # Classify on S
-            pred_S_y = self.estimator_.predict(S_x)
+            good_classif_label = idx_maj_sample.copy()
+            # Check each sample in S if we keep it or drop it
+            for idx_sam, (x_sam, y_sam) in enumerate(zip(S_x, S_y)):
+
+                # Do not select sample which are already well classified
+                if idx_sam in good_classif_label:
+                    continue
+
+                # Classify on S
+                pred_y = self.estimator_.predict(x_sam.reshape(1, -1))
+
+                # If the prediction do not agree with the true label
+                # append it in C_x
+                if y_sam != pred_y:
+                    # Keep the index for later
+                    idx_maj_sample = np.append(idx_maj_sample, idx_sam)
+
+                    # Update C
+                    C_x = np.append(X_min, X[y == key][idx_maj_sample], axis=0)
+                    C_y = np.append(y_min,
+                                    np.array([key] * idx_maj_sample.size))
+
+                    # Fit C into the knn
+                    self.estimator_.fit(C_x, C_y)
+
+                    # This experimental to speed up the search
+                    # Classify all the element in S and avoid to test the
+                    # well classified elements
+                    pred_S_y = self.estimator_.predict(S_x)
+                    good_classif_label = np.unique(
+                        np.append(idx_maj_sample,
+                                  np.flatnonzero(pred_S_y == S_y)))
 
             # Find the misclassified S_y
-            sel_x = S_x[np.flatnonzero(pred_S_y != S_y), :]
-            sel_y = S_y[np.flatnonzero(pred_S_y != S_y)]
+            sel_x = S_x[idx_maj_sample, :]
+            sel_y = S_y[idx_maj_sample]
+
+            # The indexes found are relative to the current class, we need to
+            # find the absolute value
+            # Build the array with the absolute position
+            abs_pos = np.flatnonzero(y == key)
+            idx_maj_sample = abs_pos[idx_maj_sample]
 
             # If we need to offer support for the indices selected
-            # We concatenate the misclassified samples with the seed and the
-            # minority samples
             if self.return_indices:
-                idx_tmp = idx_maj_extracted[np.flatnonzero(pred_S_y != S_y)]
-                idx_under = np.concatenate(
-                    (idx_under, idx_maj_sample, idx_tmp), axis=0)
+                idx_under = np.concatenate((idx_under, idx_maj_sample), axis=0)
 
-            X_resampled = np.concatenate(
-                (X_resampled, maj_sample, sel_x), axis=0)
-            y_resampled = np.concatenate(
-                (y_resampled, [key] * self.n_seeds_S, sel_y), axis=0)
+            X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
+            y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
 
-        # Find the nearest neighbour of every point
-        nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
-        nn.fit(X_resampled)
-        nns = nn.kneighbors(X_resampled, return_distance=False)[:, 1]
-
-        # Send the information to is_tomek function to get boolean vector back
-        self.logger.debug('Looking for majority Tomek links ...')
-        links = TomekLinks.is_tomek(y_resampled, nns, self.min_c_)
-
-        self.logger.info('Under-sampling performed: %s',
-                         Counter(y_resampled[np.logical_not(links)]))
+        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         # Check if the indices of the samples selected should be returned too
         if self.return_indices:
             # Return the indices of interest
-            return (X_resampled[np.logical_not(links)],
-                    y_resampled[np.logical_not(links)],
-                    idx_under[np.logical_not(links)])
+            return X_resampled, y_resampled, idx_under
         else:
-            # Return data set without majority Tomek links.
-            return (X_resampled[np.logical_not(links)],
-                    y_resampled[np.logical_not(links)])
+            return X_resampled, y_resampled

@@ -11,8 +11,8 @@ from collections import Counter
 
 import numpy as np
 
-from ..base import BaseMulticlassSampler
-from ..utils import check_neighbors_object
+from ...base import BaseMulticlassSampler
+from ...utils import check_neighbors_object
 
 
 class NearMiss(BaseMulticlassSampler):

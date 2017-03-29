@@ -13,7 +13,7 @@ from collections import Counter
 import numpy as np
 from sklearn.cluster import KMeans
 
-from ..base import BaseMulticlassSampler
+from ...base import BaseMulticlassSampler
 
 
 class ClusterCentroids(BaseMulticlassSampler):
