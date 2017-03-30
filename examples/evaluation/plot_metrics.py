@@ -9,6 +9,9 @@ two additional metrics which are not implemented in `sklearn`: (i)
 geometric mean and (ii) index balanced accuracy.
 """
 
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
 from sklearn import datasets
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
