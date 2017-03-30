@@ -1,6 +1,6 @@
 """Collection of imbalanced datasets.
 
-This collection of datasets have been proposed in [1]_. The
+This collection of datasets has been proposed in [1]_. The
 characteristics of the available datasets are presented in the table
 below.
 
