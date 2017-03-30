@@ -97,9 +97,9 @@ MAP_NAME_ID_KEYS = ['ecoli',
 
 MAP_NAME_ID = OrderedDict()
 MAP_ID_NAME = OrderedDict()
-for k, v in zip(MAP_NAME_ID_KEYS, range(1, 28)):
-    MAP_NAME_ID[k] = v
-    MAP_ID_NAME[v] = k
+for v, k in enumerate(MAP_NAME_ID_KEYS):
+    MAP_NAME_ID[k] = v + 1
+    MAP_ID_NAME[v + 1] = k
 
 logger = logging.getLogger()
 
