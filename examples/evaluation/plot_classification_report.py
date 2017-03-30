@@ -9,6 +9,10 @@ report similar to `sklearn`, with additional metrics specific to imbalanced
 learning problem.
 """
 
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
+
 from sklearn import datasets
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split

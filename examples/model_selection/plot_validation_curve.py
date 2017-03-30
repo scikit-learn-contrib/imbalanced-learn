@@ -8,6 +8,9 @@ In the plot you can see the validation scores of a SMOTE-CART classifier for
 different values of the SMOTE's k_neighbors parameter.
 """
 
+# Authors: Christos Aridas
+#          Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,7 +22,6 @@ from imblearn import pipeline as pl
 
 print(__doc__)
 
-LW = 2
 RANDOM_STATE = 42
 
 scorer = metrics.make_scorer(metrics.cohen_kappa_score)
@@ -43,9 +45,30 @@ train_scores_std = np.std(train_scores, axis=1)
 test_scores_mean = np.mean(test_scores, axis=1)
 test_scores_std = np.std(test_scores, axis=1)
 
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+
+plt.plot(param_range, test_scores_mean, label='SMOTE')
+ax.fill_between(param_range, test_scores_mean + test_scores_std,
+                test_scores_mean - test_scores_std, alpha=0.2)
+idx_max = np.argmax(test_scores_mean)
+plt.scatter(param_range[idx_max], test_scores_mean[idx_max],
+            label=r'Cohen Kappa: ${0:.2f}\pm{1:.2f}$'.format(
+                test_scores_mean[idx_max], test_scores_std[idx_max]))
+
 plt.title("Validation Curve with SMOTE-CART")
 plt.xlabel("k_neighbors")
 plt.ylabel("Cohen's kappa")
-plt.plot(param_range, test_scores_mean, color="navy", lw=LW)
+
+# make nice plotting
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.get_xaxis().tick_bottom()
+ax.get_yaxis().tick_left()
+ax.spines['left'].set_position(('outward', 10))
+ax.spines['bottom'].set_position(('outward', 10))
+plt.xlim([1, 10])
+plt.ylim([0.4, 0.8])
+
 plt.legend(loc="best")
 plt.show()

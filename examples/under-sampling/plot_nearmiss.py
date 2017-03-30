@@ -1,22 +1,22 @@
 """
-=====
-SMOTE
-=====
+==================
+Nearmiss 1 & 2 & 3
+==================
 
-An illustration of the SMOTE method and its variant.
+An illustration of the nearmiss 1 & 2 & 3 method.
 
 """
 
-# Authors: Fernando Nogueira
-#          Christos Aridas
+# Authors: Christos Aridas
 #          Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA
 
-from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import NearMiss
 
 print(__doc__)
 
@@ -38,40 +38,47 @@ def plot_resampling(ax, X, y, title):
 
 
 # Generate the dataset
-X, y = make_classification(n_classes=2, class_sep=2, weights=[0.3, 0.7],
+X, y = make_classification(n_classes=2, class_sep=2, weights=[0.1, 0.9],
                            n_informative=3, n_redundant=1, flip_y=0,
                            n_features=20, n_clusters_per_class=1,
-                           n_samples=80, random_state=10)
+                           n_samples=200, random_state=10)
 
 # Instanciate a PCA object for the sake of easy visualisation
 pca = PCA(n_components=2)
 # Fit and transform x to visualise inside a 2D feature space
 X_vis = pca.fit_transform(X)
 
-# Apply regular SMOTE
-kind = ['regular', 'borderline1', 'borderline2', 'svm']
-sm = [SMOTE(kind=k) for k in kind]
+# Apply Nearmiss
+version = [1, 2, 3]
+nm = [NearMiss(version=v, return_indices=True) for v in version]
+
 X_resampled = []
 y_resampled = []
 X_res_vis = []
-for method in sm:
-    X_res, y_res = method.fit_sample(X, y)
+idx_samples_removed = []
+for method in nm:
+    X_res, y_res, idx_res = method.fit_sample(X, y)
     X_resampled.append(X_res)
     y_resampled.append(y_res)
     X_res_vis.append(pca.transform(X_res))
+    idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]),
+                                       idx_res)
 
 # Two subplots, unpack the axes array immediately
-f, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2)
-# Remove axis for second plot
-ax2.axis('off')
-ax_res = [ax3, ax4, ax5, ax6]
+f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
+ax_res = [ax2, ax3, ax4]
 
 c0, c1 = plot_resampling(ax1, X_vis, y, 'Original set')
-for i in range(len(kind)):
+for i in range(len(version)):
+    # plot the missing samples
+    c3 = ax_res[i].scatter(X_vis[idx_samples_removed, 0],
+                           X_vis[idx_samples_removed, 1],
+                           alpha=.2, label='Removed samples',
+                           c='g')
     plot_resampling(ax_res[i], X_res_vis[i], y_resampled[i],
-                    'SMOTE {}'.format(kind[i]))
+                    'Nearmiss {}'.format(version[i]))
 
-ax2.legend((c0, c1), ('Class #0', 'Class #1'), loc='center',
-           ncol=1, labelspacing=0.)
-plt.tight_layout()
+plt.figlegend((c0, c1, c3), ('Class #0', 'Class #1', 'Removed samples'),
+              loc='lower center', ncol=3, labelspacing=0.)
+plt.tight_layout(pad=3)
 plt.show()
