@@ -91,7 +91,7 @@ After installation, you can use `nose` to run the test suite::
   make coverage
 
 Development
-~~~~~~~~~~~
+-----------
 
 The development of this scikit-learn-contrib is in line with the one
 of the scikit-learn community. Therefore, you can refer to their
@@ -99,7 +99,7 @@ of the scikit-learn community. Therefore, you can refer to their
 <http://scikit-learn.org/stable/developers/index.html>`_.
 
 About
-~~~~~
+-----
 
 If you use imbalanced-learn in a scientific publication, we would appreciate
 citations to the following paper::
