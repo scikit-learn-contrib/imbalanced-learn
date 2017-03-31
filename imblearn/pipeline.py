@@ -32,6 +32,8 @@ class Pipeline(pipeline.Pipeline):
     Intermediate steps of the pipeline must be transformers or resamplers,
     that is, they must implement fit, transform and sample methods.
     The final estimator only needs to implement fit.
+    The transformers and samplers in the pipeline can be cached using
+    ``memory`` argument.
 
     The purpose of the pipeline is to assemble several steps that can be
     cross-validated together while setting different parameters.
@@ -44,6 +46,17 @@ class Pipeline(pipeline.Pipeline):
         List of (name, transform) tuples (implementing
         fit/transform/fit_sample) that are chained, in the order in which they
         are chained, with the last object an estimator.
+
+    memory : Instance of joblib.Memory or string, optional (default=None)
+        Used to cache the fitted transformers of the pipeline. By default,
+        no caching is performed. If a string is given, it is the path to
+        the caching directory. Enabling caching triggers a clone of
+        the transformers before fitting. Therefore, the transformer
+        instance given to the pipeline cannot be inspected
+        directly. Use the attribute ``named_steps`` or ``steps`` to
+        inspect estimators within the pipeline. Caching the
+        transformers is advantageous when fitting is time consuming.
+
 
     Attributes
     ----------
@@ -193,8 +206,9 @@ class Pipeline(pipeline.Pipeline):
     def fit(self, X, y=None, **fit_params):
         """Fit the model
 
-        Fit all the transforms one after the other and transform the
-        data, then fit the transformed data using the final estimator.
+        Fit all the transforms/samplers one after the other and
+        transform/sample the data, then fit the transformed/sampled
+        data using the final estimator.
 
         Parameters
         ----------
@@ -215,6 +229,7 @@ class Pipeline(pipeline.Pipeline):
         -------
         self : Pipeline
             This estimator
+
         """
         Xt, yt, fit_params = self._fit(X, y, **fit_params)
         if self._final_estimator is not None:
@@ -224,9 +239,9 @@ class Pipeline(pipeline.Pipeline):
     def fit_transform(self, X, y=None, **fit_params):
         """Fit the model and transform with the final estimator
 
-        Fits all the transforms one after the other and transforms the
-        data, then uses fit_transform on transformed data with the final
-        estimator.
+        Fits all the transformers/samplers one after the other and
+        transform/sample the data, then uses fit_transform on
+        transformed data with the final estimator.
 
         Parameters
         ----------
@@ -247,6 +262,7 @@ class Pipeline(pipeline.Pipeline):
         -------
         Xt : array-like, shape = [n_samples, n_transformed_features]
             Transformed samples
+
         """
         last_step = self._final_estimator
         Xt, yt, fit_params = self._fit(X, y, **fit_params)
@@ -261,9 +277,9 @@ class Pipeline(pipeline.Pipeline):
     def fit_sample(self, X, y=None, **fit_params):
         """Fit the model and sample with the final estimator
 
-        Fits all the transforms and sampler one after the other and
-        transforms the data, then uses fit_sample on transformed data
-        with the final estimator.
+        Fits all the transformers/samplers one after the other and
+        transform/sample the data, then uses fit_sample on transformed
+        data with the final estimator.
 
         Parameters
         ----------
@@ -298,15 +314,18 @@ class Pipeline(pipeline.Pipeline):
 
     @if_delegate_has_method(delegate='_final_estimator')
     def sample(self, X, y):
-        """Applies transforms to the data, and the sample method of
-        the final estimator. Valid only if the final estimator
-        implements sample.
+        """Sample the data with the final estimator
+
+        Applies transformers/samplers to the data, and the sample
+        method of the final estimator. Valid only if the final
+        estimator implements sample.
 
         Parameters
         ----------
         X : iterable
             Data to predict on. Must fulfill input requirements of first step
             of the pipeline.
+
         """
         Xt = X
         for name, transform in self.steps[:-1]:
@@ -324,7 +343,8 @@ class Pipeline(pipeline.Pipeline):
 
     @if_delegate_has_method(delegate='_final_estimator')
     def predict(self, X):
-        """Apply transforms to the data, and predict with the final estimator
+        """Apply transformers/samplers to the data, and predict with the final
+        estimator
 
         Parameters
         ----------
@@ -335,6 +355,7 @@ class Pipeline(pipeline.Pipeline):
         Returns
         -------
         y_pred : array-like
+
         """
         Xt = X
         for _, transform in self.steps[:-1]:
@@ -378,7 +399,8 @@ class Pipeline(pipeline.Pipeline):
 
     @if_delegate_has_method(delegate='_final_estimator')
     def predict_proba(self, X):
-        """Apply transforms, and predict_proba of the final estimator
+        """Apply transformers/samplers, and predict_proba of the final
+        estimator
 
         Parameters
         ----------
@@ -389,6 +411,7 @@ class Pipeline(pipeline.Pipeline):
         Returns
         -------
         y_proba : array-like, shape = [n_samples, n_classes]
+
         """
         Xt = X
         for _, transform in self.steps[:-1]:
@@ -402,7 +425,8 @@ class Pipeline(pipeline.Pipeline):
 
     @if_delegate_has_method(delegate='_final_estimator')
     def decision_function(self, X):
-        """Apply transforms, and decision_function of the final estimator
+        """Apply transformers/samplers, and decision_function of the final
+        estimator
 
         Parameters
         ----------
@@ -413,6 +437,7 @@ class Pipeline(pipeline.Pipeline):
         Returns
         -------
         y_score : array-like, shape = [n_samples, n_classes]
+
         """
         Xt = X
         for _, transform in self.steps[:-1]:
@@ -426,7 +451,8 @@ class Pipeline(pipeline.Pipeline):
 
     @if_delegate_has_method(delegate='_final_estimator')
     def predict_log_proba(self, X):
-        """Apply transforms, and predict_log_proba of the final estimator
+        """Apply transformers/samplers, and predict_log_proba of the final
+        estimator
 
         Parameters
         ----------
@@ -437,6 +463,7 @@ class Pipeline(pipeline.Pipeline):
         Returns
         -------
         y_score : array-like, shape = [n_samples, n_classes]
+
         """
         Xt = X
         for _, transform in self.steps[:-1]:
@@ -450,7 +477,7 @@ class Pipeline(pipeline.Pipeline):
 
     @property
     def transform(self):
-        """Apply transforms, and transform with the final estimator
+        """Apply transformers/samplers, and transform with the final estimator
 
         This also works where final estimator is ``None``: all prior
         transformations are applied.
@@ -518,7 +545,7 @@ class Pipeline(pipeline.Pipeline):
 
     @if_delegate_has_method(delegate='_final_estimator')
     def score(self, X, y=None, sample_weight=None):
-        """Apply transforms, and score with the final estimator
+        """Apply transformers/samplers, and score with the final estimator
 
         Parameters
         ----------
