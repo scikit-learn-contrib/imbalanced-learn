@@ -143,6 +143,23 @@ class DummyTransf(Transf):
         return self
 
 
+class DummySampler(NoTrans):
+    """Samplers which returns a balanced number of samples"""
+
+    def fit(self, X, y):
+        self.means_ = np.mean(X, axis=0)
+        # store timestamp to figure out whether the result of 'fit' has been
+        # cached or not
+        self.timestamp_ = time.time()
+        return self
+
+    def sample(self, X, y):
+        return X, y
+
+    def fit_sample(self, X, y):
+        return self.fit(X, y).sample(X, y)
+
+
 class FitTransformSample(NoTrans):
     """Estimator implementing both transform and sample
     """
@@ -602,7 +619,7 @@ def test_pipeline_wrong_memory():
                         cached_pipe.fit, X, y)
 
 
-def test_pipeline_memory():
+def test_pipeline_memory_transformer():
     iris = load_iris()
     X = iris.data
     y = iris.target
@@ -646,6 +663,76 @@ def test_pipeline_memory():
         # Check that even changing the name step does not affect the cache hit
         clf_2 = SVC(probability=True, random_state=0)
         transf_2 = DummyTransf()
+        cached_pipe_2 = Pipeline([('transf_2', transf_2), ('svc', clf_2)],
+                                 memory=memory)
+        cached_pipe_2.fit(X, y)
+
+        # Check that cached_pipe and pipe yield identical results
+        assert_array_equal(pipe.predict(X), cached_pipe_2.predict(X))
+        assert_array_equal(pipe.predict_proba(X),
+                           cached_pipe_2.predict_proba(X))
+        assert_array_equal(pipe.predict_log_proba(X),
+                           cached_pipe_2.predict_log_proba(X))
+        assert_array_equal(pipe.score(X, y), cached_pipe_2.score(X, y))
+        assert_array_equal(pipe.named_steps['transf'].means_,
+                           cached_pipe_2.named_steps['transf_2'].means_)
+        assert_equal(ts, cached_pipe_2.named_steps['transf_2'].timestamp_)
+    finally:
+        shutil.rmtree(cachedir)
+
+
+def test_pipeline_memory_sampler():
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=5000,
+        random_state=0)
+    cachedir = mkdtemp()
+    try:
+        memory = Memory(cachedir=cachedir, verbose=10)
+        # Test with Transformer + SVC
+        clf = SVC(probability=True, random_state=0)
+        transf = DummySampler()
+        pipe = Pipeline([('transf', clone(transf)), ('svc', clf)])
+        cached_pipe = Pipeline([('transf', transf), ('svc', clf)],
+                               memory=memory)
+
+        # Memoize the transformer at the first fit
+        cached_pipe.fit(X, y)
+        pipe.fit(X, y)
+        # Get the time stamp of the tranformer in the cached pipeline
+        ts = cached_pipe.named_steps['transf'].timestamp_
+        # Check that cached_pipe and pipe yield identical results
+        assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
+        assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
+        assert_array_equal(pipe.predict_log_proba(X),
+                           cached_pipe.predict_log_proba(X))
+        assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
+        assert_array_equal(pipe.named_steps['transf'].means_,
+                           cached_pipe.named_steps['transf'].means_)
+        assert_false(hasattr(transf, 'means_'))
+        # Check that we are reading the cache while fitting
+        # a second time
+        cached_pipe.fit(X, y)
+        # Check that cached_pipe and pipe yield identical results
+        assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
+        assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
+        assert_array_equal(pipe.predict_log_proba(X),
+                           cached_pipe.predict_log_proba(X))
+        assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
+        assert_array_equal(pipe.named_steps['transf'].means_,
+                           cached_pipe.named_steps['transf'].means_)
+        assert_equal(ts, cached_pipe.named_steps['transf'].timestamp_)
+        # Create a new pipeline with cloned estimators
+        # Check that even changing the name step does not affect the cache hit
+        clf_2 = SVC(probability=True, random_state=0)
+        transf_2 = DummySampler()
         cached_pipe_2 = Pipeline([('transf_2', transf_2), ('svc', clf_2)],
                                  memory=memory)
         cached_pipe_2.fit(X, y)
