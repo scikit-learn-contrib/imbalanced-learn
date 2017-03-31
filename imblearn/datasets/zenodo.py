@@ -115,7 +115,7 @@ def fetch_zenodo(data_home=None,
     ----------
     data_home : string, optional (default=None)
         Specify another download and cache folder for the datasets. By default
-        all scikit learn data is stored in '~/scikit_learn_data' subfolders.
+        all scikit-learn data is stored in '~/scikit_learn_data' subfolders.
 
     filter_data : tuple of str/int or None, optional (default=None)
         A tuple containing the ID or the name of the datasets to be returned.
