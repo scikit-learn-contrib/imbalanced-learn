@@ -5,3 +5,8 @@
 ==========
 User Guide
 ==========
+
+.. toctree::
+   :numbered:
+
+   Dataset loading utilities <datasets/index.rst>
