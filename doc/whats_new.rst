@@ -9,6 +9,12 @@ Release history
 Changelog
 ---------
 
+Bug fixes
+---------
+
+- Fixed a bug in :class:`under_sampling.NearMiss` version 3. The
+  indices returned were wrong. By `Guillaume Lemaitre`_.
+
 New features
 ~~~~~~~~~~~~
 
