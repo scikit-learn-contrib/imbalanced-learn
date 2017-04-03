@@ -355,11 +355,11 @@ class NearMiss(BaseMulticlassSampler):
 
                 # Create the subset containing the samples found during the NN
                 # search. Linearize the indexes and remove the double values
-                idx_vec = np.unique(idx_vec.reshape(-1))
+                idx_vec_farthest = np.unique(idx_vec.reshape(-1))
 
                 # Create the subset
-                sub_samples_x = sub_samples_x[idx_vec, :]
-                sub_samples_y = sub_samples_y[idx_vec]
+                sub_samples_x = sub_samples_x[idx_vec_farthest, :]
+                sub_samples_y = sub_samples_y[idx_vec_farthest]
 
                 # Compute the NN considering the current class
                 dist_vec, idx_vec = self.nn_.kneighbors(
@@ -372,6 +372,10 @@ class NearMiss(BaseMulticlassSampler):
                     num_samples,
                     key,
                     sel_strategy='farthest')
+
+                # idx_tmp is relative to the feature selected in the
+                # previous step and we need to find the indirection
+                idx_tmp = np.flatnonzero(y == key)[idx_vec_farthest[idx_tmp]]
             else:
                 raise NotImplementedError
 
