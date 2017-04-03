@@ -1,8 +1,8 @@
-"""Test the zenodo loader.
+"""Test the datasets loader.
 
-Skipped if zenodo is not already downloaded to data_home.
+Skipped if datasets is not already downloaded to data_home.
 """
-from imblearn.datasets import fetch_zenodo
+from imblearn.datasets import fetch_datasets
 from sklearn.utils.testing import (assert_equal, assert_allclose,
                                    assert_raises_regex, SkipTest)
 
@@ -36,7 +36,7 @@ DATASET_SHAPE = {'ecoli': (336, 7),
 
 
 def fetch(*args, **kwargs):
-    return fetch_zenodo(*args, download_if_missing=True, **kwargs)
+    return fetch_datasets(*args, download_if_missing=True, **kwargs)
 
 
 def test_fetch():
@@ -83,10 +83,10 @@ def test_fetch_filter():
 
 def test_fetch_error():
     assert_raises_regex(ValueError, 'is not a dataset available.',
-                        fetch_zenodo, filter_data=tuple(['rnd']))
+                        fetch_datasets, filter_data=tuple(['rnd']))
     assert_raises_regex(ValueError, 'dataset with the ID=',
-                        fetch_zenodo, filter_data=tuple([-1]))
+                        fetch_datasets, filter_data=tuple([-1]))
     assert_raises_regex(ValueError, 'dataset with the ID=',
-                        fetch_zenodo, filter_data=tuple([100]))
+                        fetch_datasets, filter_data=tuple([100]))
     assert_raises_regex(ValueError, 'value in the tuple',
-                        fetch_zenodo, filter_data=tuple([1.00]))
+                        fetch_datasets, filter_data=tuple([1.00]))

@@ -104,7 +104,7 @@ for v, k in enumerate(MAP_NAME_ID_KEYS):
 logger = logging.getLogger()
 
 
-def fetch_zenodo(data_home=None,
+def fetch_datasets(data_home=None,
                  filter_data=None,
                  download_if_missing=True,
                  random_state=None,
