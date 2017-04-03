@@ -22,7 +22,7 @@ from sklearn.externals.joblib import Memory
 from sklearn.utils import tosequence
 from sklearn.utils.metaestimators import if_delegate_has_method
 
-__all__ = ['Pipeline']
+__all__ = ['Pipeline', 'make_pipeline']
 
 
 class Pipeline(pipeline.Pipeline):
