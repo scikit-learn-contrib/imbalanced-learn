@@ -5,4 +5,7 @@ imbalanced data.
 
 from .imbalance import make_imbalance
 
-__all__ = ['make_imbalance']
+from .zenodo import fetch_datasets
+
+__all__ = ['make_imbalance',
+           'fetch_datasets']
