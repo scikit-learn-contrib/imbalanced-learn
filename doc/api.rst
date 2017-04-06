@@ -13,14 +13,22 @@ Under-sampling methods
     :no-members:
     :no-inherited-members:
 
-Classes
--------
 .. currentmodule:: imblearn
+
+Prototype generation
+--------------------
 
 .. autosummary::
    :toctree: generated/
 
-   under_sampling.ClusterCentroids
+under_sampling.ClusterCentroids
+
+Prototype selection
+-------------------
+
+.. autosummary::
+   :toctree: generated/
+
    under_sampling.CondensedNearestNeighbour
    under_sampling.EditedNearestNeighbours
    under_sampling.RepeatedEditedNearestNeighbours
@@ -32,7 +40,6 @@ Classes
    under_sampling.RandomUnderSampler
    under_sampling.TomekLinks
 
-
 .. _over_sampling_ref:
 
 Over-sampling methods
@@ -42,8 +49,6 @@ Over-sampling methods
     :no-members:
     :no-inherited-members:
 
-Classes
--------
 .. currentmodule:: imblearn
 
 .. autosummary::
@@ -63,8 +68,6 @@ Combination of over- and under-sampling methods
     :no-members:
     :no-inherited-members:
 
-Classes
--------
 .. currentmodule:: imblearn
 
 .. autosummary::
@@ -83,8 +86,6 @@ Ensemble methods
     :no-members:
     :no-inherited-members:
 
-Classes
--------
 .. currentmodule:: imblearn
 
 .. autosummary::
@@ -105,18 +106,10 @@ Pipeline
 
 .. currentmodule:: imblearn
 
-Classes
--------
 .. autosummary::
    :toctree: generated/
 
    pipeline.Pipeline
-
-Functions
----------
-.. autosummary::
-   :toctree: generated/
-
    pipeline.make_pipeline
 
 .. _metrics_ref:
@@ -130,8 +123,6 @@ Metrics
 
 .. currentmodule:: imblearn
 
-Functions
----------
 .. autosummary::
    :toctree: generated/
 
@@ -152,8 +143,6 @@ Datasets
 
 .. currentmodule:: imblearn
 
-Functions
----------
 .. autosummary::
    :toctree: generated/
 
@@ -169,8 +158,6 @@ Utilities
 
 .. currentmodule:: imblearn
 
-Functions
----------
 .. autosummary::
    :toctree: generated/
 
