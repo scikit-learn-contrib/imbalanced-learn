@@ -1,7 +1,6 @@
 """
-The :mod:`imblearn.under_sampling.prototype_generation` submodule
-contains the method in which a new samples are generated such that the
-dataset become more balanced.
+The :mod:`imblearn.under_sampling.prototype_generation` submodule contains
+methods that generate new samples in order to balance the dataset.
 """
 
 from .cluster_centroids import ClusterCentroids

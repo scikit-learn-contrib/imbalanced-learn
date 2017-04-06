@@ -1,7 +1,6 @@
 """
-The :mod:`imblearn.under_sampling.prototype_selection` submodule
-contains the method in which a subset of the original data a selected
-to create a new dataset.
+The :mod:`imblearn.under_sampling.prototype_selection` submodule contains
+methods that select samples in order to balance the dataset.
 """
 
 from .random_under_sampler import RandomUnderSampler
