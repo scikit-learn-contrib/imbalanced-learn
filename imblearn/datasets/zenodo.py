@@ -105,10 +105,10 @@ logger = logging.getLogger()
 
 
 def fetch_datasets(data_home=None,
-                 filter_data=None,
-                 download_if_missing=True,
-                 random_state=None,
-                 shuffle=False):
+                   filter_data=None,
+                   download_if_missing=True,
+                   random_state=None,
+                   shuffle=False):
     """Load the benchmark datasets from Zenodo, downloading it if necessary.
 
     Parameters
