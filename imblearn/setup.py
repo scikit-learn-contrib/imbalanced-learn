@@ -5,6 +5,8 @@ def configuration(parent_package='', top_path=None):
 
     config.add_subpackage('combine')
     config.add_subpackage('combine/tests')
+    config.add_subpackage('datasets')
+    config.add_subpackage('datasets/tests')
     config.add_subpackage('ensemble')
     config.add_subpackage('ensemble/tests')
     config.add_subpackage('metrics')
