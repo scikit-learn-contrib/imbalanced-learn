@@ -41,9 +41,21 @@ MAINTAINER = 'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
 MAINTAINER_EMAIL = ('g.lemaitre58@gmail.com, fmfnogueira@gmail.com, '
                     'dvro@cin.ufpe.br, ichkoar@gmail.com')
 URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
-LICENSE = 'new BSD'
+LICENSE = 'MIT'
 DOWNLOAD_URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 VERSION = _VERSION_GLOBALS['__version__']
+
+
+def configuration(parent_package='', top_path=None):
+    if os.path.exists('MANIFEST'):
+        os.remove('MANIFEST')
+
+    from numpy.distutils.misc_util import Configuration
+    config = Configuration(None, parent_package, top_path)
+
+    config.add_subpackage('imblearn')
+
+    return config
 
 
 if __name__ == "__main__":
@@ -56,7 +68,8 @@ if __name__ == "__main__":
             for mod, meta in _VERSION_GLOBALS['REQUIRED_MODULE_METADATA']
             if not meta['required_at_installation']]
 
-    setup(name=DISTNAME,
+    setup(configuration=configuration,
+          name=DISTNAME,
           maintainer=MAINTAINER,
           maintainer_email=MAINTAINER_EMAIL,
           description=DESCRIPTION,
