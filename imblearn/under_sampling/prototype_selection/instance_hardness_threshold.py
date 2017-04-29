@@ -17,7 +17,7 @@ from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.externals.six import string_types
 
-from ..base import BaseBinarySampler
+from ...base import BaseBinarySampler
 
 
 def _get_cv_splits(X, y, cv, random_state):

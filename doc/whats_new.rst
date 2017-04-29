@@ -42,6 +42,9 @@ API changes summary
   errors. By `Guillaume Lemaitre`_.
 - creation of a module `utils.validation` to make checking of
   recurrent patterns. By `Guillaume Lemaitre`_.
+- move the under-sampling methods in `prototype_selection` and
+  `prototype_generation` submodule to make a clearer dinstinction. By
+  `Guillaume Lemaitre`_.
 
 
 .. _changes_0_2:

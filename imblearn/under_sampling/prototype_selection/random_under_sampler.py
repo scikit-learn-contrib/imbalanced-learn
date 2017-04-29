@@ -11,7 +11,7 @@ from collections import Counter
 import numpy as np
 from sklearn.utils import check_random_state
 
-from ..base import BaseMulticlassSampler
+from ...base import BaseMulticlassSampler
 
 
 class RandomUnderSampler(BaseMulticlassSampler):
