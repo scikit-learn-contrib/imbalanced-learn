@@ -38,6 +38,10 @@ class RandomUnderSampler(BaseMulticlassSampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
+    replacement : boolean, optional (default=True)
+        Whether the sample is with (default) or without replacement.
+
+
     Attributes
     ----------
     min_c_ : str or int
