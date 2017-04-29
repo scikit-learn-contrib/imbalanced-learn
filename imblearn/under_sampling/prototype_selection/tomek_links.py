@@ -12,7 +12,7 @@ from collections import Counter
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-from ..base import BaseBinarySampler
+from ...base import BaseBinarySampler
 
 
 class TomekLinks(BaseBinarySampler):
