@@ -73,9 +73,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         #     raise ValueError("Sampler can't balance when only one class is"
         #                      " present.")
 
-        # # Store the size of X to check at sampling time if we have the
-        # # same data
-        # self.X_shape_ = X.shape
+        # Store the size of X to check at sampling time if we have the
+        # same data
+        self.X_shape_ = X.shape
 
         # # Create a dictionary containing the class statistics
         # self.stats_c_ = Counter(y)
@@ -126,7 +126,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         X, y = check_X_y(X, y)
 
         # Check that the data have been fitted
-        check_is_fitted(self, 'stats_c_')
+        check_is_fitted(self, 'ratio_')
 
         # Check if the size of the data is identical than at fitting
         if X.shape != self.X_shape_:

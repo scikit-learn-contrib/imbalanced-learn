@@ -97,37 +97,23 @@ class RandomOverSampler(BaseOverSampler, MultiClassSamplerMixin):
             The corresponding label of `X_resampled`
 
         """
+        random_state = check_random_state(self.random_state)
+        target_stats = Counter(y)
 
-        # Keep the samples from the majority class
-        X_resampled = X[y == self.maj_c_]
-        y_resampled = y[y == self.maj_c_]
+        X_resampled = X.copy()
+        y_resampled = y.copy()
 
-        # Loop over the other classes over picking at random
-        for key in self.stats_c_.keys():
+        for class_sample, num_samples in self.ratio_.items():
+            index_samples = random_state.randint(
+                low=0, high=target_stats[class_sample], size=num_samples)
 
-            # If this is the majority class, skip it
-            if key == self.maj_c_:
-                continue
+            X_resampled = np.concatenate((X_resampled,
+                                          X[y == class_sample][index_samples]),
+                                         axis=0)
 
-            # Define the number of sample to create
-            if self.ratio == 'auto':
-                num_samples = int(self.stats_c_[self.maj_c_] - self.stats_c_[
-                    key])
-            else:
-                num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
-                                  self.stats_c_[key])
-
-            # Pick some elements at random
-            random_state = check_random_state(self.random_state)
-            indx = random_state.randint(
-                low=0, high=self.stats_c_[key], size=num_samples)
-
-            # Concatenate to the majority class
-            X_resampled = np.concatenate(
-                (X_resampled, X[y == key], X[y == key][indx]), axis=0)
-
-            y_resampled = np.concatenate(
-                (y_resampled, y[y == key], y[y == key][indx]), axis=0)
+            y_resampled = np.concatenate((y_resampled,
+                                          y[y == class_sample][index_samples]),
+                                         axis=0)
 
         self.logger.info('Over-sampling performed: %s', Counter(y_resampled))
 
