@@ -10,9 +10,10 @@ import logging
 import warnings
 from numbers import Real
 from abc import ABCMeta, abstractmethod
-from collections import Counter
+# from collections import Counter
 
-import numpy as np
+# import numpy as np
+
 from sklearn.base import BaseEstimator
 from sklearn.externals import six
 from sklearn.utils import check_X_y
@@ -50,13 +51,13 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        self.min_c_ = None
-        self.maj_c_ = None
-        self.stats_c_ = {}
-        self.X_shape_ = None
+        # self.min_c_ = None
+        # self.maj_c_ = None
+        # self.stats_c_ = {}
+        # self.X_shape_ = None
 
-        if hasattr(self, 'ratio'):
-            self._validate_ratio()
+        # if hasattr(self, 'ratio'):
+        #     self._validate_ratio()
 
         if hasattr(self, 'size_ngh'):
             self._validate_size_ngh_deprecation()
@@ -65,38 +66,38 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         elif hasattr(self, 'k') and hasattr(self, 'm'):
             self._validate_k_m_deprecation()
 
-        self.logger.info('Compute classes statistics ...')
+        # self.logger.info('Compute classes statistics ...')
 
-        # Raise an error if there is only one class
-        if np.unique(y).size <= 1:
-            raise ValueError("Sampler can't balance when only one class is"
-                             " present.")
+        # # Raise an error if there is only one class
+        # if np.unique(y).size <= 1:
+        #     raise ValueError("Sampler can't balance when only one class is"
+        #                      " present.")
 
-        # Store the size of X to check at sampling time if we have the
-        # same data
-        self.X_shape_ = X.shape
+        # # Store the size of X to check at sampling time if we have the
+        # # same data
+        # self.X_shape_ = X.shape
 
-        # Create a dictionary containing the class statistics
-        self.stats_c_ = Counter(y)
+        # # Create a dictionary containing the class statistics
+        # self.stats_c_ = Counter(y)
 
-        # Find the minority and majority classes
-        self.min_c_ = min(self.stats_c_, key=self.stats_c_.get)
-        self.maj_c_ = max(self.stats_c_, key=self.stats_c_.get)
+        # # Find the minority and majority classes
+        # self.min_c_ = min(self.stats_c_, key=self.stats_c_.get)
+        # self.maj_c_ = max(self.stats_c_, key=self.stats_c_.get)
 
-        self.logger.info('%s classes detected: %s',
-                         np.unique(y).size, self.stats_c_)
+        # self.logger.info('%s classes detected: %s',
+        #                  np.unique(y).size, self.stats_c_)
 
-        # Check if the ratio provided at initialisation make sense
-        if isinstance(self.ratio, Real):
-            if self.ratio < (self.stats_c_[self.min_c_] /
-                             self.stats_c_[self.maj_c_]):
-                raise RuntimeError('The ratio requested at initialisation'
-                                   ' should be greater or equal than the'
-                                   ' balancing ratio of the current data.'
-                                   ' Got {} < {}.'.format(
-                                       self.ratio,
-                                       self.stats_c_[self.min_c_] /
-                                       self.stats_c_[self.maj_c_]))
+        # # Check if the ratio provided at initialisation make sense
+        # if isinstance(self.ratio, Real):
+        #     if self.ratio < (self.stats_c_[self.min_c_] /
+        #                      self.stats_c_[self.maj_c_]):
+        #         raise RuntimeError('The ratio requested at initialisation'
+        #                            ' should be greater or equal than the'
+        #                            ' balancing ratio of the current data.'
+        #                            ' Got {} < {}.'.format(
+        #                                self.ratio,
+        #                                self.stats_c_[self.min_c_] /
+        #                                self.stats_c_[self.maj_c_]))
 
         return self
 
@@ -254,42 +255,13 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.logger = logger
 
 
-class BaseBinarySampler(six.with_metaclass(ABCMeta, SamplerMixin)):
+class BinarySamplerMixin(object):
     """Base class for all binary class sampler.
 
     Warning: This class should not be used directly. Use derived classes
     instead.
 
     """
-
-    def __init__(self, ratio='auto', random_state=None):
-        """Initialize this object and its instance variables.
-
-        Parameters
-        ----------
-        ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-        random_state : int, RandomState or None, optional (default=None)
-
-            - If int, random_state is the seed used by the random number
-            generator;
-            - If RandomState instance, random_state is the random number
-            generator;
-            - If None, the random number generator is the RandomState instance
-            used by np.random.
-
-        Returns
-        -------
-        None
-
-        """
-        self.ratio = ratio
-        self.random_state = random_state
-        self.logger = logging.getLogger(__name__)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -308,8 +280,6 @@ class BaseBinarySampler(six.with_metaclass(ABCMeta, SamplerMixin)):
             Return self.
 
         """
-
-        super(BaseBinarySampler, self).fit(X, y)
 
         # Check that the target type is binary
         if not type_of_target(y) == 'binary':
@@ -319,41 +289,13 @@ class BaseBinarySampler(six.with_metaclass(ABCMeta, SamplerMixin)):
         return self
 
 
-class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
+class MultiClassSamplerMixin(object):
     """Base class for all multiclass sampler.
 
     Warning: This class should not be used directly. Use derived classes
     instead.
 
     """
-    def __init__(self, ratio='auto', random_state=None):
-        """Initialize this object and its instance variables.
-
-        Parameters
-        ----------
-        ratio : str or float, optional (default='auto')
-            If 'auto', the ratio will be defined automatically to balanced
-            the dataset. Otherwise, the ratio will corresponds to the number
-            of samples in the minority class over the the number of samples
-            in the majority class.
-
-        random_state : int, RandomState or None, optional (default=None)
-
-            - If int, random_state is the seed used by the random number
-            generator;
-            - If RandomState instance, random_state is the random number
-            generator;
-            - If None, the random number generator is the RandomState instance
-            used by np.random.
-
-        Returns
-        -------
-        None
-
-        """
-        self.ratio = ratio
-        self.random_state = random_state
-        self.logger = logging.getLogger(__name__)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -372,9 +314,6 @@ class BaseMulticlassSampler(six.with_metaclass(ABCMeta, SamplerMixin)):
             Return self.
 
         """
-
-        super(BaseMulticlassSampler, self).fit(X, y)
-
         # Check that the target type is either binary or multiclass
         if not (type_of_target(y) == 'binary' or
                 type_of_target(y) == 'multiclass'):

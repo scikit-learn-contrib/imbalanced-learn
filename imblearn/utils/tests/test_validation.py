@@ -1,8 +1,12 @@
-from imblearn.utils import check_neighbors_object
+import numpy as np
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
+
 from sklearn.utils.testing import assert_equal, assert_raises_regex
+
+from imblearn.utils import check_neighbors_object
+from imblearn.utils import check_ratio
 
 
 def test_check_neighbors_object():
@@ -19,3 +23,67 @@ def test_check_neighbors_object():
     n_neighbors = 'rnd'
     assert_raises_regex(ValueError, "has to be one of",
                         check_neighbors_object, name, n_neighbors)
+
+
+def test_check_ratio_error():
+    assert_raises_regex(ValueError, "'sampling_type' should be one of",
+                        check_ratio, 'auto', np.array([1, 2, 3]),
+                        'rnd')
+    assert_raises_regex(ValueError, "The target 'y' needs to have more than 1"
+                        " class.", check_ratio, 'auto', np.ones((10, )),
+                        'over-sampling')
+    assert_raises_regex(ValueError, "When 'ratio' is a string, it needs to be"
+                        " one of", check_ratio, 'rnd', np.array([1, 2, 3]),
+                        'over-sampling')
+
+
+def test_ratio_all_over_sampling():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = check_ratio('all', y, 'over-sampling')
+    assert_equal(ratio, {1: 50, 2: 0, 3: 75})
+    ratio = check_ratio('auto', y, 'over-sampling')
+    assert_equal(ratio, {1: 50, 2: 0, 3: 75})
+
+
+def test_ratio_all_under_sampling():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = check_ratio('all', y, 'under-sampling')
+    assert_equal(ratio, {1: 25, 2: 25, 3: 25})
+    ratio = check_ratio('auto', y, 'under-sampling')
+    assert_equal(ratio, {1: 25, 2: 25, 3: 25})
+
+
+def test_ratio_majority_over_sampling():
+    assert_raises_regex(ValueError, "'ratio'='majority' can be used with"
+                        " over-sampler.", check_ratio, 'majority',
+                        np.array([1, 2, 3]), 'over-sampling')
+
+
+def test_ratio_majority_under_sampling():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = check_ratio('majority', y, 'under-sampling')
+    assert_equal(ratio, {2: 25})
+
+
+def test_ratio_not_minority_over_sampling():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = check_ratio('not minority', y, 'over-sampling')
+    assert_equal(ratio, {1: 50, 2: 0})
+
+
+def test_ratio_not_minority_under_sampling():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = check_ratio('not minority', y, 'under-sampling')
+    assert_equal(ratio, {1: 25, 2: 25})
+
+
+def test_ratio_minority_over_sampling():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = check_ratio('minority', y, 'over-sampling')
+    assert_equal(ratio, {3: 75})
+
+
+def test_ratio_minority_under_sampling():
+    assert_raises_regex(ValueError, "'ratio'='minority' can be used with"
+                        " under-sampler.", check_ratio, 'minority',
+                        np.array([1, 2, 3]), 'under-sampling')
