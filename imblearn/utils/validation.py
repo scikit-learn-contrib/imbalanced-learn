@@ -54,8 +54,7 @@ def _ratio_all(y, sampling_type):
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         ratio = {key: n_sample_majority - value
-                 for (key, value) in zip(target_stats.keys(),
-                                         target_stats.values())}
+                 for (key, value) in target_stats.items()}
     elif sampling_type == 'under-sampling':
         n_sample_minority = min(target_stats.values())
         ratio = {key: n_sample_minority for key in target_stats.keys()}
@@ -85,8 +84,7 @@ def _ratio_not_minority(y, sampling_type):
         n_sample_majority = max(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
         ratio = {key: n_sample_majority - value
-                 for (key, value) in zip(target_stats.keys(),
-                                         target_stats.values())
+                 for (key, value) in target_stats.items()
                  if key != class_minority}
     elif sampling_type == 'under-sampling':
         n_sample_minority = min(target_stats.values())
@@ -105,8 +103,7 @@ def _ratio_minority(y, sampling_type):
         n_sample_majority = max(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
         ratio = {key: n_sample_majority - value
-                 for (key, value) in zip(target_stats.keys(),
-                                         target_stats.values())
+                 for (key, value) in target_stats.items()
                  if key == class_minority}
     elif sampling_type == 'under-sampling':
         raise ValueError("'ratio'='minority' can be used with under-sampler.")
