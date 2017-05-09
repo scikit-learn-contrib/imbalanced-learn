@@ -14,7 +14,6 @@ from sklearn.externals import six
 from ..exceptions import raise_isinstance_error
 
 SAMPLING_KIND = ('over-sampling', 'under-sampling')
-RATIO_KIND = ('minority', 'majority', 'not minority', 'all', 'auto')
 
 
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
@@ -179,19 +178,17 @@ def check_ratio(ratio, y, sampling_type):
                          " Got {} class instead".format(np.unique(y).size))
 
     if isinstance(ratio, six.string_types):
-        if ratio not in RATIO_KIND:
+        if ratio not in RATIO_KIND.keys():
             raise ValueError("When 'ratio' is a string, it needs to be one of"
                              " {}. Got '{}' instead.".format(RATIO_KIND,
                                                              ratio))
-        if ratio == 'all' or ratio == 'auto':
-            ratio = _ratio_all(y, sampling_type)
-        elif ratio == 'majority':
-            ratio = _ratio_majority(y, sampling_type)
-        elif ratio == 'not minority':
-            ratio = _ratio_not_minority(y, sampling_type)
-        elif ratio == 'minority':
-            ratio = _ratio_minority(y, sampling_type)
+        return RATIO_KIND[ratio](y, sampling_type)
     elif isinstance(ratio, Real):
-        ratio = _ratio_float(ratio, y, sampling_type)
+        return _ratio_float(ratio, y, sampling_type)
 
-    return ratio
+
+RATIO_KIND = {'minority': _ratio_minority,
+              'majority': _ratio_majority,
+              'not minority': _ratio_not_minority,
+              'all': _ratio_all,
+              'auto': _ratio_all}

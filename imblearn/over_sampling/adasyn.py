@@ -69,7 +69,7 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
 
     Notes
     -----
-    Does not support multi-class.
+    Does support multi-class.
 
     The implementation is based on [1]_.
 
@@ -157,7 +157,6 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
 
         """
         random_state = check_random_state(self.random_state)
-        # target_stats = Counter(y)
 
         X_resampled = X.copy()
         y_resampled = y.copy()
@@ -169,11 +168,9 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
 
             self.nn_.fit(X)
             _, nn_index = self.nn_.kneighbors(X_class)
-            # check if we do one vs rest and we consider the majority class as
-            # rest or the majority class is the class with the largest number
-            # of samples
-            # 1. != class_sample / 2. == class_majority
-            # class_majority = max(target_stats, key=target_stats.get)
+            # The ratio is computed using a one-vs-rest manner. Using majority
+            # in multi-class would lead to slightly different results at the
+            # cost of introducing a new parameter.
             ratio_nn = (np.sum(y[nn_index[:, 1:]] != class_sample, axis=1) /
                         (self.nn_.n_neighbors - 1))
             if not np.sum(ratio_nn):
@@ -187,7 +184,6 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
 
             for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
                                                  n_samples_generate):
-
                 nn_zs = random_state.randint(
                     1, high=self.nn_.n_neighbors, size=num_sample_i)
                 for nn_z in nn_zs:

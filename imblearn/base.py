@@ -79,7 +79,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             Return self.
 
         """
-        print('call fit')
         X, y = check_X_y(X, y)
         self._validate_deprecation()
         self.X_shape_ = X.shape
@@ -208,7 +207,6 @@ class BinarySamplerMixin(SamplerMixin):
 
         """
         super(BinarySamplerMixin, self).fit(X, y)
-        print('here')
         # Check that the target type is binary
         if not type_of_target(y) == 'binary':
             warnings.simplefilter('always', UserWarning)
@@ -243,7 +241,6 @@ class MultiClassSamplerMixin(SamplerMixin):
 
         """
         super(MultiClassSamplerMixin, self).fit(X, y)
-        print('here')
         # Check that the target type is either binary or multiclass
         if not (type_of_target(y) == 'binary' or
                 type_of_target(y) == 'multiclass'):

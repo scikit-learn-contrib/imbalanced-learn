@@ -357,6 +357,11 @@ class SMOTE(BaseBinarySampler):
 
         super(SMOTE, self).fit(X, y)
 
+        if self.kind not in SMOTE_KIND:
+            raise ValueError('Unknown kind for SMOTE algorithm.'
+                             ' Choices are {}. Got {} instead.'.format(
+                                 SMOTE_KIND, self.kind))
+
         self._validate_estimator()
 
         return self
@@ -381,12 +386,6 @@ class SMOTE(BaseBinarySampler):
             The corresponding label of `X_resampled`
 
         """
-
-        if self.kind not in SMOTE_KIND:
-            raise ValueError('Unknown kind for SMOTE algorithm.'
-                             ' Choices are {}. Got {} instead.'.format(
-                                 SMOTE_KIND, self.kind))
-
         random_state = check_random_state(self.random_state)
 
         # Define the number of sample to create
