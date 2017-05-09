@@ -3,6 +3,7 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 from collections import Counter
+from numbers import Real
 
 import numpy as np
 
@@ -111,6 +112,23 @@ def _ratio_minority(y, sampling_type):
     return ratio
 
 
+def _ratio_float(ratio, y, sampling_type):
+    """TODO: Deprecated in 0.2. Remove in 0.4."""
+    target_stats = Counter(y)
+    if sampling_type == 'over-sampling':
+        n_sample_majority = max(target_stats.values())
+        class_majority = max(target_stats, key=target_stats.get)
+        ratio = {key: int(n_sample_majority * ratio - value)
+                 for (key, value) in target_stats.items()
+                 if key != class_majority}
+    elif sampling_type == 'under-sampling':
+        n_sample_minority = min(target_stats.values())
+        ratio = {key: int(n_sample_minority / ratio)
+                 for (key, value) in target_stats.items()}
+
+    return ratio
+
+
 def check_ratio(ratio, y, sampling_type):
     """Ratio validation for samplers.
 
@@ -173,5 +191,7 @@ def check_ratio(ratio, y, sampling_type):
             ratio = _ratio_not_minority(y, sampling_type)
         elif ratio == 'minority':
             ratio = _ratio_minority(y, sampling_type)
+    elif isinstance(ratio, Real):
+        ratio = _ratio_float(ratio, y, sampling_type)
 
     return ratio

@@ -8,11 +8,7 @@ from __future__ import division
 
 import logging
 import warnings
-from numbers import Real
 from abc import ABCMeta, abstractmethod
-# from collections import Counter
-
-# import numpy as np
 
 from sklearn.base import BaseEstimator
 from sklearn.externals import six
@@ -22,13 +18,49 @@ from sklearn.utils.validation import check_is_fitted
 
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
-    """Mixin class for samplers with abstact method.
+    """Mixin class for samplers with abstract method.
 
     Warning: This class should not be used directly. Use the derive classes
     instead.
     """
 
     _estimator_type = 'sampler'
+
+    def _validate_size_ngh_deprecation(self):
+        "Private function to warn about the deprecation about size_ngh."
+
+        # Announce deprecation if necessary
+        if self.size_ngh is not None:
+            warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
+                          ' `n_neighbors` instead.', DeprecationWarning)
+            self.n_neighbors = self.size_ngh
+
+    def _validate_k_deprecation(self):
+        """Private function to warn about deprecation of k in ADASYN"""
+        if self.k is not None:
+            warnings.warn('`k` will be replaced in version 0.4. Use'
+                          ' `n_neighbors` instead.', DeprecationWarning)
+            self.n_neighbors = self.k
+
+    def _validate_k_m_deprecation(self):
+        """Private function to warn about deprecation of k in ADASYN"""
+        if self.k is not None:
+            warnings.warn('`k` will be replaced in version 0.4. Use'
+                          ' `k_neighbors` instead.', DeprecationWarning)
+            self.k_neighbors = self.k
+
+        if self.m is not None:
+            warnings.warn('`m` will be replaced in version 0.4. Use'
+                          ' `m_neighbors` instead.', DeprecationWarning)
+            self.m_neighbors = self.m
+
+    def _validate_deprecation(self):
+        if hasattr(self, 'size_ngh'):
+            self._validate_size_ngh_deprecation()
+        elif hasattr(self, 'k') and not hasattr(self, 'm'):
+            self._validate_k_deprecation()
+        elif hasattr(self, 'k') and hasattr(self, 'm'):
+            self._validate_k_m_deprecation()
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -47,57 +79,10 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             Return self.
 
         """
-
-        # Check the consistency of X and y
+        print('call fit')
         X, y = check_X_y(X, y)
-
-        # self.min_c_ = None
-        # self.maj_c_ = None
-        # self.stats_c_ = {}
-        # self.X_shape_ = None
-
-        # if hasattr(self, 'ratio'):
-        #     self._validate_ratio()
-
-        if hasattr(self, 'size_ngh'):
-            self._validate_size_ngh_deprecation()
-        elif hasattr(self, 'k') and not hasattr(self, 'm'):
-            self._validate_k_deprecation()
-        elif hasattr(self, 'k') and hasattr(self, 'm'):
-            self._validate_k_m_deprecation()
-
-        # self.logger.info('Compute classes statistics ...')
-
-        # # Raise an error if there is only one class
-        # if np.unique(y).size <= 1:
-        #     raise ValueError("Sampler can't balance when only one class is"
-        #                      " present.")
-
-        # Store the size of X to check at sampling time if we have the
-        # same data
+        self._validate_deprecation()
         self.X_shape_ = X.shape
-
-        # # Create a dictionary containing the class statistics
-        # self.stats_c_ = Counter(y)
-
-        # # Find the minority and majority classes
-        # self.min_c_ = min(self.stats_c_, key=self.stats_c_.get)
-        # self.maj_c_ = max(self.stats_c_, key=self.stats_c_.get)
-
-        # self.logger.info('%s classes detected: %s',
-        #                  np.unique(y).size, self.stats_c_)
-
-        # # Check if the ratio provided at initialisation make sense
-        # if isinstance(self.ratio, Real):
-        #     if self.ratio < (self.stats_c_[self.min_c_] /
-        #                      self.stats_c_[self.maj_c_]):
-        #         raise RuntimeError('The ratio requested at initialisation'
-        #                            ' should be greater or equal than the'
-        #                            ' balancing ratio of the current data.'
-        #                            ' Got {} < {}.'.format(
-        #                                self.ratio,
-        #                                self.stats_c_[self.min_c_] /
-        #                                self.stats_c_[self.maj_c_]))
 
         return self
 
@@ -135,15 +120,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
                                ' fitted data. Shape of data is {}, got {}'
                                ' instead.'.format(X.shape, self.X_shape_))
 
-        if hasattr(self, 'ratio'):
-            self._validate_ratio()
-
-        if hasattr(self, 'size_ngh'):
-            self._validate_size_ngh_deprecation()
-        elif hasattr(self, 'k') and not hasattr(self, 'm'):
-            self._validate_k_deprecation()
-        elif hasattr(self, 'k') and hasattr(self, 'm'):
-            self._validate_k_m_deprecation()
+        self._validate_deprecation()
 
         return self._sample(X, y)
 
@@ -169,56 +146,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         """
 
         return self.fit(X, y).sample(X, y)
-
-    def _validate_ratio(self):
-        # The ratio correspond to the number of samples in the minority class
-        # over the number of samples in the majority class. Thus, the ratio
-        # cannot be greater than 1.0
-        if isinstance(self.ratio, Real):
-            if self.ratio > 1:
-                raise ValueError('Ratio cannot be greater than one.'
-                                 ' Got {}.'.format(self.ratio))
-            elif self.ratio <= 0:
-                raise ValueError('Ratio cannot be negative.'
-                                 ' Got {}.'.format(self.ratio))
-
-        elif isinstance(self.ratio, six.string_types):
-            if self.ratio != 'auto':
-                raise ValueError("Unknown string for the parameter ratio."
-                                 " Got {} instead of 'auto'".format(
-                                     self.ratio))
-        else:
-            raise ValueError('Unknown parameter type for ratio.'
-                             ' Got {} instead of float or str'.format(
-                                 type(self.ratio)))
-
-    def _validate_size_ngh_deprecation(self):
-        "Private function to warn about the deprecation about size_ngh."
-
-        # Announce deprecation if necessary
-        if self.size_ngh is not None:
-            warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
-                          ' `n_neighbors` instead.', DeprecationWarning)
-            self.n_neighbors = self.size_ngh
-
-    def _validate_k_deprecation(self):
-        """Private function to warn about deprecation of k in ADASYN"""
-        if self.k is not None:
-            warnings.warn('`k` will be replaced in version 0.4. Use'
-                          ' `n_neighbors` instead.', DeprecationWarning)
-            self.n_neighbors = self.k
-
-    def _validate_k_m_deprecation(self):
-        """Private function to warn about deprecation of k in ADASYN"""
-        if self.k is not None:
-            warnings.warn('`k` will be replaced in version 0.4. Use'
-                          ' `k_neighbors` instead.', DeprecationWarning)
-            self.k_neighbors = self.k
-
-        if self.m is not None:
-            warnings.warn('`m` will be replaced in version 0.4. Use'
-                          ' `m_neighbors` instead.', DeprecationWarning)
-            self.m_neighbors = self.m
 
     @abstractmethod
     def _sample(self, X, y):
@@ -255,7 +182,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.logger = logger
 
 
-class BinarySamplerMixin(object):
+class BinarySamplerMixin(SamplerMixin):
     """Base class for all binary class sampler.
 
     Warning: This class should not be used directly. Use derived classes
@@ -280,7 +207,8 @@ class BinarySamplerMixin(object):
             Return self.
 
         """
-
+        super(BinarySamplerMixin, self).fit(X, y)
+        print('here')
         # Check that the target type is binary
         if not type_of_target(y) == 'binary':
             warnings.simplefilter('always', UserWarning)
@@ -289,7 +217,7 @@ class BinarySamplerMixin(object):
         return self
 
 
-class MultiClassSamplerMixin(object):
+class MultiClassSamplerMixin(SamplerMixin):
     """Base class for all multiclass sampler.
 
     Warning: This class should not be used directly. Use derived classes
@@ -314,6 +242,8 @@ class MultiClassSamplerMixin(object):
             Return self.
 
         """
+        super(MultiClassSamplerMixin, self).fit(X, y)
+        print('here')
         # Check that the target type is either binary or multiclass
         if not (type_of_target(y) == 'binary' or
                 type_of_target(y) == 'multiclass'):

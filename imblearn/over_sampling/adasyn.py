@@ -11,11 +11,12 @@ from collections import Counter
 import numpy as np
 from sklearn.utils import check_random_state
 
-from ..base import BaseBinarySampler
+from ..base import MultiClassSamplerMixin
+from .base import BaseOverSampler
 from ..utils import check_neighbors_object
 
 
-class ADASYN(BaseBinarySampler):
+class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
     """Perform over-sampling using ADASYN.
 
     Perform over-sampling using Adaptive Synthetic Sampling Approach for
@@ -131,7 +132,6 @@ class ADASYN(BaseBinarySampler):
         super(ADASYN, self).fit(X, y)
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
-        # set the number of jobs
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
         return self
@@ -157,63 +157,44 @@ class ADASYN(BaseBinarySampler):
 
         """
         random_state = check_random_state(self.random_state)
+        # target_stats = Counter(y)
 
-        # Keep the samples from the majority class
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        # Define the number of sample to create
-        # We handle only two classes problem for the moment.
-        if self.ratio == 'auto':
-            num_samples = (
-                self.stats_c_[self.maj_c_] - self.stats_c_[self.min_c_])
-        else:
-            num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
-                              self.stats_c_[self.min_c_])
+        for class_sample, num_samples in self.ratio_.items():
+            if num_samples == 0:
+                continue
+            X_class = X[y == class_sample]
 
-        # Start by separating minority class features and target values.
-        X_min = X[y == self.min_c_]
+            self.nn_.fit(X)
+            _, nn_index = self.nn_.kneighbors(X_class)
+            # check if we do one vs rest and we consider the majority class as
+            # rest or the majority class is the class with the largest number
+            # of samples
+            # 1. != class_sample / 2. == class_majority
+            # class_majority = max(target_stats, key=target_stats.get)
+            ratio_nn = (np.sum(y[nn_index[:, 1:]] != class_sample, axis=1) /
+                        (self.nn_.n_neighbors - 1))
+            if not np.sum(ratio_nn):
+                raise RuntimeError('Not any neigbours belong to the majority'
+                                   ' class. This case will induce a NaN case'
+                                   ' with a division by zero. ADASYN is not'
+                                   ' suited for this specific dataset.'
+                                   ' Use SMOTE instead.')
+            ratio_nn /= np.sum(ratio_nn)
+            n_samples_generate = np.round(ratio_nn * num_samples).astype(int)
 
-        # Print if verbose is true
-        self.logger.debug('Finding the %s nearest neighbours ...',
-                          self.nn_.n_neighbors - 1)
+            for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
+                                                 n_samples_generate):
 
-        # Look for k-th nearest neighbours, excluding, of course, the
-        # point itself.
-        self.nn_.fit(X)
-
-        # Get the distance to the NN
-        _, ind_nn = self.nn_.kneighbors(X_min)
-
-        # Compute the ratio of majority samples next to minority samples
-        ratio_nn = (np.sum(y[ind_nn[:, 1:]] == self.maj_c_, axis=1) /
-                    (self.nn_.n_neighbors - 1))
-        # Check that we found at least some neighbours belonging to the
-        # majority class
-        if not np.sum(ratio_nn):
-            raise RuntimeError('Not any neigbours belong to the majority'
-                               ' class. This case will induce a NaN case with'
-                               ' a division by zero. ADASYN is not suited for'
-                               ' this specific dataset. Use SMOTE.')
-        # Normalize the ratio
-        ratio_nn /= np.sum(ratio_nn)
-
-        # Compute the number of sample to be generated
-        num_samples_nn = np.round(ratio_nn * num_samples).astype(int)
-
-        # For each minority samples
-        for x_i, x_i_nn, num_sample_i in zip(X_min, ind_nn, num_samples_nn):
-
-            # Pick-up the neighbors wanted
-            nn_zs = random_state.randint(
-                1, high=self.nn_.n_neighbors, size=num_sample_i)
-
-            # Create a new sample
-            for nn_z in nn_zs:
-                step = random_state.uniform()
-                x_gen = x_i + step * (X[x_i_nn[nn_z], :] - x_i)
-                X_resampled = np.vstack((X_resampled, x_gen))
-                y_resampled = np.hstack((y_resampled, self.min_c_))
+                nn_zs = random_state.randint(
+                    1, high=self.nn_.n_neighbors, size=num_sample_i)
+                for nn_z in nn_zs:
+                    step = random_state.uniform()
+                    x_gen = x_i + step * (X[x_i_nn[nn_z], :] - x_i)
+                    X_resampled = np.vstack((X_resampled, x_gen))
+                    y_resampled = np.hstack((y_resampled, class_sample))
 
         self.logger.info('Over-sampling performed: %s', Counter(y_resampled))
 
