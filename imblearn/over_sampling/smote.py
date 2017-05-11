@@ -5,18 +5,16 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
 import numpy as np
 from sklearn.svm import SVC
-from sklearn.utils import check_array, check_random_state
+from sklearn.utils import check_random_state
 
 from .base import BaseOverSampler
 from ..base import MultiClassSamplerMixin
 from ..utils import check_neighbors_object
 from ..exceptions import raise_isinstance_error
-
-# SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
 
 class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
