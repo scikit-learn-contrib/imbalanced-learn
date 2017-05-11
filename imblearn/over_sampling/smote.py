@@ -241,84 +241,32 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
             Target values for synthetic samples.
 
         """
-
-        # Check the consistency of X
-        X = check_array(X)
-        # Check the random state
         random_state = check_random_state(self.random_state)
-
-        # A matrix to store the synthetic samples
         X_new = np.zeros((n_samples, X.shape[1]))
-
-        # Randomly pick samples to construct neighbours from
         samples = random_state.randint(
             low=0, high=len(nn_num.flatten()), size=n_samples)
-
-        # Loop over the NN matrix and create new samples
         for i, n in enumerate(samples):
-            # NN lines relate to original sample, columns to its
-            # nearest neighbours
             row, col = divmod(n, nn_num.shape[1])
-
-            # Take a step of random size (0,1) in the direction of the
-            # n nearest neighbours
             step = step_size * random_state.uniform()
-
-            # Construct synthetic sample
             X_new[i] = X[row] - step * (X[row] - nn_data[nn_num[row, col]])
-
-        # The returned target vector is simply a repetition of the
-        # minority label
         y_new = np.array([y_type] * len(X_new))
-
-        self.logger.info('Generated %s new samples ...', len(X_new))
 
         return X_new, y_new
 
     def _validate_estimator(self):
-        # --- NN object
-        # Import the NN object from scikit-learn library. Since in the smote
-        # variations we must first find samples that are in danger, we
-        # initialize the NN object differently depending on the method chosen
-        if self.kind == 'regular':
-            # Regular smote does not look for samples in danger, instead it
-            # creates synthetic samples directly from the k-th nearest
-            # neighbours with not filtering
-            self.nn_k_ = check_neighbors_object('k_neighbors',
-                                                self.k_neighbors,
-                                                additional_neighbor=1)
-            # set the number of jobs
-            self.nn_k_.set_params(**{'n_jobs': self.n_jobs})
+        self.nn_k_ = check_neighbors_object('k_neighbors',
+                                            self.k_neighbors,
+                                            additional_neighbor=1)
+        self.nn_k_.set_params(**{'n_jobs': self.n_jobs})
 
-        else:
-            # Borderline1, 2 and SVM variations of smote must first look for
-            # samples that could be considered noise and samples that live
-            # near the boundary between the classes. Therefore, before
-            # creating synthetic samples from the k-th nns, it first look
-            # for m nearest neighbors to decide whether or not a sample is
-            # noise or near the boundary.
-            self.nn_k_ = check_neighbors_object('k_neighbors',
-                                                self.k_neighbors,
-                                                additional_neighbor=1)
-            # set the number of jobs
-            self.nn_k_.set_params(**{'n_jobs': self.n_jobs})
-
+        if self.kind != 'regular':
             self.nn_m_ = check_neighbors_object('m_neighbors',
                                                 self.m_neighbors,
                                                 additional_neighbor=1)
-            # set the number of jobs
             self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
 
-        # --- SVM smote
-        # Unlike the borderline variations, the SVM variation uses the support
-        # vectors to decide which samples are in danger (near the boundary).
-        # Additionally it also introduces extrapolation for samples that are
-        # considered safe (far from boundary) and interpolation for samples
-        # in danger (near the boundary). The level of extrapolation is
-        # controled by the out_step.
         if self.kind == 'svm':
             if self.svm_estimator is None:
-                # Store SVM object with any parameters
                 self.svm_estimator_ = SVC(random_state=self.random_state)
             elif isinstance(self.svm_estimator, SVC):
                 self.svm_estimator_ = self.svm_estimator
