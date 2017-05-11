@@ -161,8 +161,8 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        for class_sample, num_samples in self.ratio_.items():
-            if num_samples == 0:
+        for class_sample, n_samples in self.ratio_.items():
+            if n_samples == 0:
                 continue
             X_class = X[y == class_sample]
 
@@ -180,7 +180,7 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
                                    ' suited for this specific dataset.'
                                    ' Use SMOTE instead.')
             ratio_nn /= np.sum(ratio_nn)
-            n_samples_generate = np.round(ratio_nn * num_samples).astype(int)
+            n_samples_generate = np.round(ratio_nn * n_samples).astype(int)
 
             for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
                                                  n_samples_generate):

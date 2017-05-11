@@ -11,14 +11,15 @@ import numpy as np
 from sklearn.svm import SVC
 from sklearn.utils import check_array, check_random_state
 
-from ..base import BaseBinarySampler
+from .base import BaseOverSampler
+from ..base import MultiClassSamplerMixin
 from ..utils import check_neighbors_object
 from ..exceptions import raise_isinstance_error
 
-SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
+# SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
 
-class SMOTE(BaseBinarySampler):
+class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
     """Class to perform over-sampling using SMOTE.
 
     This object is an implementation of SMOTE - Synthetic Minority
@@ -157,13 +158,16 @@ class SMOTE(BaseBinarySampler):
         self.svm_estimator = svm_estimator
         self.n_jobs = n_jobs
 
-    def _in_danger_noise(self, samples, y, kind='danger'):
+    def _in_danger_noise(self, samples, target_class, y, kind='danger'):
         """Estimate if a set of sample are in danger or noise.
 
         Parameters
         ----------
         samples : ndarray, shape (n_samples, n_features)
             The samples to check if either they are in danger or not.
+
+        target_class : int or str,
+            The target corresponding class being over-sampled.
 
         y : ndarray, shape (n_samples, )
             The true label in order to check the neighbour labels.
@@ -181,20 +185,14 @@ class SMOTE(BaseBinarySampler):
 
         """
 
-        # Find the NN for each samples
-        # Exclude the sample itself
         x = self.nn_m_.kneighbors(samples, return_distance=False)[:, 1:]
-
-        # Count how many NN belong to the minority class
-        # Find the class corresponding to the label in x
-        nn_label = (y[x] != self.min_c_).astype(int)
-        # Compute the number of majority samples in the NN
+        nn_label = (y[x] != target_class).astype(int)
         n_maj = np.sum(nn_label, axis=1)
 
         if kind == 'danger':
             # Samples are in danger for m/2 <= m' < m
             return np.bitwise_and(
-                n_maj >= float(self.nn_m_.n_neighbors - 1) / 2.,
+                n_maj >= (self.nn_m_.n_neighbors - 1) / 2,
                 n_maj < self.nn_m_.n_neighbors - 1)
         elif kind == 'noise':
             # Samples are noise for m = m'
@@ -252,11 +250,6 @@ class SMOTE(BaseBinarySampler):
         # A matrix to store the synthetic samples
         X_new = np.zeros((n_samples, X.shape[1]))
 
-        # # Set seeds
-        # seeds = random_state.randint(low=0,
-        #                              high=100 * len(nn_num.flatten()),
-        #                              size=n_samples)
-
         # Randomly pick samples to construct neighbours from
         samples = random_state.randint(
             low=0, high=len(nn_num.flatten()), size=n_samples)
@@ -269,10 +262,6 @@ class SMOTE(BaseBinarySampler):
 
             # Take a step of random size (0,1) in the direction of the
             # n nearest neighbours
-            # if self.random_state is None:
-            #     np.random.seed(seeds[i])
-            # else:
-            #     np.random.seed(self.random_state)
             step = step_size * random_state.uniform()
 
             # Construct synthetic sample
@@ -354,17 +343,160 @@ class SMOTE(BaseBinarySampler):
             Return self.
 
         """
-
         super(SMOTE, self).fit(X, y)
 
-        if self.kind not in SMOTE_KIND:
+        self.smote_kind_ = {'regular': self._sample_regular,
+                            'borderline1': self._sample_borderline,
+                            'borderline2': self._sample_borderline,
+                            'svm': self._sample_svm}
+
+        if self.kind not in self.smote_kind_.keys():
             raise ValueError('Unknown kind for SMOTE algorithm.'
                              ' Choices are {}. Got {} instead.'.format(
-                                 SMOTE_KIND, self.kind))
+                                 self.smote_kind_.keys(), self.kind))
 
         self._validate_estimator()
 
         return self
+
+    def _sample_regular(self, X, y):
+
+        X_resampled = X.copy()
+        y_resampled = y.copy()
+
+        for class_sample, n_samples in self.ratio_.items():
+            if n_samples == 0:
+                continue
+            X_class = X[y == class_sample]
+
+            self.nn_k_.fit(X_class)
+            nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
+            X_new, y_new = self._make_samples(X_class, class_sample, X_class,
+                                              nns, n_samples, 1.0)
+
+            X_resampled = np.concatenate((X_resampled, X_new), axis=0)
+            y_resampled = np.concatenate((y_resampled, y_new), axis=0)
+
+        return X_resampled, y_resampled
+
+    def _sample_borderline(self, X, y):
+        X_resampled = X.copy()
+        y_resampled = y.copy()
+
+        for class_sample, n_samples in self.ratio_.items():
+            if n_samples == 0:
+                continue
+            X_class = X[y == class_sample]
+
+            self.nn_m_.fit(X)
+            danger_index = self._in_danger_noise(X_class, class_sample, y,
+                                                 kind='danger')
+            if not any(danger_index):
+                self.logger.debug('There are no samples in danger. No'
+                                  ' borderline synthetic samples created.')
+
+                # all samples are safe and no need to go further
+                continue
+
+            self.nn_k_.fit(X_class)
+            nns = self.nn_k_.kneighbors(
+               X_class[danger_index], return_distance=False)[:, 1:]
+
+            # divergence between borderline-1 and borderline-2
+            if self.kind == 'borderline1':
+                # Create synthetic samples for borderline points.
+                X_new, y_new = self._make_samples(X_class[danger_index],
+                                                  class_sample, X_class,
+                                                  nns, n_samples)
+                X_resampled = np.concatenate((X_resampled, X_new), axis=0)
+                y_resampled = np.concatenate((y_resampled, y_new), axis=0)
+
+            else:
+                random_state = check_random_state(self.random_state)
+                fractions = random_state.beta(10, 10)
+
+                # only minority
+                X_new_1, y_new_1 = self._make_samples(
+                    X_class[danger_index], class_sample, X_class, nns,
+                    int(fractions * (n_samples + 1)), step_size=1.)
+
+                # we use a one-vs-rest policy to handle the multiclass in which
+                # new samples will be created considering not only the majority
+                # class but all over classes.
+                X_new_2, y_new_2 = self._make_samples(
+                    X_class[danger_index], class_sample, X[y != class_sample],
+                    nns, int((1 - fractions) * n_samples), step_size=0.5)
+
+                # Concatenate the newly generated samples to the original
+                # data set
+                X_resampled = np.concatenate((X_resampled, X_new_1, X_new_2),
+                                             axis=0)
+                y_resampled = np.concatenate((y_resampled, y_new_1, y_new_2),
+                                             axis=0)
+
+        return X_resampled, y_resampled
+
+    def _sample_svm(self, X, y):
+        # The SVM smote model fits a support vector machine
+        # classifier to the data and uses the support vector to
+        # provide a notion of boundary. Unlike regular smote, where
+        # such notion relies on proportion of nearest neighbours
+        # belonging to each class.
+        random_state = check_random_state(self.random_state)
+        X_resampled = X.copy()
+        y_resampled = y.copy()
+
+        for class_sample, n_samples in self.ratio_.items():
+            if n_samples == 0:
+                continue
+            X_class = X[y == class_sample]
+
+            self.svm_estimator_.fit(X, y)
+            support_index = self.svm_estimator_.support_[
+                y[self.svm_estimator_.support_] == class_sample]
+            support_vector = X[support_index]
+
+            self.nn_m_.fit(X)
+            noise_bool = self._in_danger_noise(support_vector, class_sample, y,
+                                               kind='noise')
+            support_vector = support_vector[np.logical_not(noise_bool)]
+            danger_bool = self._in_danger_noise(support_vector, class_sample,
+                                                y, kind='danger')
+            safety_bool = np.logical_not(danger_bool)
+
+            self.nn_k_.fit(X_class)
+            fractions = random_state.beta(10, 10)
+            if np.count_nonzero(danger_bool) > 0:
+                nns = self.nn_k_.kneighbors(support_vector[danger_bool],
+                                            return_distance=False)[:, 1:]
+
+                X_new_1, y_new_1 = self._make_samples(
+                    support_vector[danger_bool], class_sample, X_class,
+                    nns, int(fractions * (n_samples + 1)), step_size=1.)
+
+            if np.count_nonzero(safety_bool) > 0:
+                nns = self.nn_k_.kneighbors(support_vector[safety_bool],
+                                            return_distance=False)[:, 1:]
+
+                X_new_2, y_new_2 = self._make_samples(
+                    support_vector[safety_bool], class_sample, X_class,
+                    nns, int((1 - fractions) * n_samples),
+                    step_size=-self.out_step)
+
+            if (np.count_nonzero(danger_bool) > 0 and
+                    np.count_nonzero(safety_bool) > 0):
+                X_resampled = np.concatenate((X_resampled, X_new_1, X_new_2),
+                                             axis=0)
+                y_resampled = np.concatenate((y_resampled, y_new_1, y_new_2),
+                                             axis=0)
+            elif np.count_nonzero(danger_bool) == 0:
+                X_resampled = np.concatenate((X_resampled, X_new_2), axis=0)
+                y_resampled = np.concatenate((y_resampled, y_new_2), axis=0)
+            elif np.count_nonzero(safety_bool) == 0:
+                X_resampled = np.concatenate((X_resampled, X_new_1), axis=0)
+                y_resampled = np.concatenate((y_resampled, y_new_1), axis=0)
+
+        return X_resampled, y_resampled
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -386,216 +518,4 @@ class SMOTE(BaseBinarySampler):
             The corresponding label of `X_resampled`
 
         """
-        random_state = check_random_state(self.random_state)
-
-        # Define the number of sample to create
-        # We handle only two classes problem for the moment.
-        if self.ratio == 'auto':
-            num_samples = (
-                self.stats_c_[self.maj_c_] - self.stats_c_[self.min_c_])
-        else:
-            num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
-                              self.stats_c_[self.min_c_])
-
-        # Start by separating minority class features and target values.
-        X_min = X[y == self.min_c_]
-
-        # If regular SMOTE is to be performed
-        if self.kind == 'regular':
-
-            self.logger.debug('Finding the %s nearest neighbours ...',
-                              self.nn_k_.n_neighbors - 1)
-
-            # Look for k-th nearest neighbours, excluding, of course, the
-            # point itself.
-            self.nn_k_.fit(X_min)
-
-            # Matrix with k-th nearest neighbours indexes for each minority
-            # element.
-            nns = self.nn_k_.kneighbors(X_min, return_distance=False)[:, 1:]
-
-            self.logger.debug('Create synthetic samples ...')
-
-            # --- Generating synthetic samples
-            # Use static method make_samples to generate minority samples
-            X_new, y_new = self._make_samples(X_min, self.min_c_, X_min, nns,
-                                              num_samples, 1.0)
-
-            # Concatenate the newly generated samples to the original data set
-            X_resampled = np.concatenate((X, X_new), axis=0)
-            y_resampled = np.concatenate((y, y_new), axis=0)
-
-            return X_resampled, y_resampled
-
-        if self.kind == 'borderline1' or self.kind == 'borderline2':
-
-            self.logger.debug('Finding the %s nearest neighbours ...',
-                              self.nn_m_.n_neighbors - 1)
-
-            # Find the NNs for all samples in the data set.
-            self.nn_m_.fit(X)
-
-            # Boolean array with True for minority samples in danger
-            danger_index = self._in_danger_noise(X_min, y, kind='danger')
-
-            # If all minority samples are safe, return the original data set.
-            if not any(danger_index):
-                self.logger.debug('There are no samples in danger. No'
-                                  ' borderline synthetic samples created.')
-
-                # All are safe, nothing to be done here.
-                return X, y
-
-            # If we got here is because some samples are in danger, we need to
-            # find the NNs among the minority class to create the new synthetic
-            # samples.
-            #
-            # We start by changing the number of NNs to consider from m + 1
-            # to k + 1
-            self.nn_k_.fit(X_min)
-
-            # nns...#
-            nns = self.nn_k_.kneighbors(
-                X_min[danger_index], return_distance=False)[:, 1:]
-
-            # B1 and B2 types diverge here!!!
-            if self.kind == 'borderline1':
-                # Create synthetic samples for borderline points.
-                X_new, y_new = self._make_samples(
-                    X_min[danger_index], self.min_c_, X_min, nns, num_samples)
-
-                # Concatenate the newly generated samples to the original
-                # dataset
-                X_resampled = np.concatenate((X, X_new), axis=0)
-                y_resampled = np.concatenate((y, y_new), axis=0)
-
-                return X_resampled, y_resampled
-
-            else:
-                # Split the number of synthetic samples between only minority
-                # (type 1), or minority and majority (with reduced step size)
-                # (type 2).
-                # The fraction is sampled from a beta distribution centered
-                # around 0.5 with variance ~0.01
-                fractions = random_state.beta(10, 10)
-
-                # Only minority
-                X_new_1, y_new_1 = self._make_samples(
-                    X_min[danger_index],
-                    self.min_c_,
-                    X_min,
-                    nns,
-                    int(fractions * (num_samples + 1)),
-                    step_size=1.)
-
-                # Only majority with smaller step size
-                X_new_2, y_new_2 = self._make_samples(
-                    X_min[danger_index],
-                    self.min_c_,
-                    X[y != self.min_c_],
-                    nns,
-                    int((1 - fractions) * num_samples),
-                    step_size=0.5)
-
-                # Concatenate the newly generated samples to the original
-                # data set
-                X_resampled = np.concatenate((X, X_new_1, X_new_2), axis=0)
-                y_resampled = np.concatenate((y, y_new_1, y_new_2), axis=0)
-
-                return X_resampled, y_resampled
-
-        if self.kind == 'svm':
-            # The SVM smote model fits a support vector machine
-            # classifier to the data and uses the support vector to
-            # provide a notion of boundary. Unlike regular smote, where
-            # such notion relies on proportion of nearest neighbours
-            # belonging to each class.
-
-            # Fit SVM to the full data#
-            self.svm_estimator_.fit(X, y)
-
-            # Find the support vectors and their corresponding indexes
-            support_index = self.svm_estimator_.support_[y[
-                self.svm_estimator_.support_] == self.min_c_]
-            support_vector = X[support_index]
-
-            # First, find the nn of all the samples to identify samples
-            # in danger and noisy ones
-            self.logger.debug('Finding the %s nearest neighbours ...',
-                              self.nn_m_.n_neighbors - 1)
-
-            # As usual, fit a nearest neighbour model to the data
-            self.nn_m_.fit(X)
-
-            # Now, get rid of noisy support vectors
-            noise_bool = self._in_danger_noise(support_vector, y, kind='noise')
-
-            # Remove noisy support vectors
-            support_vector = support_vector[np.logical_not(noise_bool)]
-            danger_bool = self._in_danger_noise(
-                support_vector, y, kind='danger')
-            safety_bool = np.logical_not(danger_bool)
-
-            self.logger.debug('Out of %s support vectors, %s are noisy, '
-                              '%s are in danger '
-                              'and %s are safe.', support_vector.shape[0],
-                              noise_bool.sum().astype(int),
-                              danger_bool.sum().astype(int),
-                              safety_bool.sum().astype(int))
-
-            # Proceed to find support vectors NNs among the minority class
-            self.logger.debug('Finding the %s nearest neighbours ...',
-                              self.nn_k_.n_neighbors - 1)
-
-            self.nn_k_.fit(X_min)
-
-            self.logger.debug('Create synthetic samples ...')
-
-            # Split the number of synthetic samples between interpolation and
-            # extrapolation
-
-            # The fraction are sampled from a beta distribution with mean
-            # 0.5 and variance 0.01#
-            fractions = random_state.beta(10, 10)
-
-            # Interpolate samples in danger
-            if np.count_nonzero(danger_bool) > 0:
-                nns = self.nn_k_.kneighbors(
-                    support_vector[danger_bool], return_distance=False)[:, 1:]
-
-                X_new_1, y_new_1 = self._make_samples(
-                    support_vector[danger_bool],
-                    self.min_c_,
-                    X_min,
-                    nns,
-                    int(fractions * (num_samples + 1)),
-                    step_size=1.)
-
-            # Extrapolate safe samples
-            if np.count_nonzero(safety_bool) > 0:
-                nns = self.nn_k_.kneighbors(
-                    support_vector[safety_bool], return_distance=False)[:, 1:]
-
-                X_new_2, y_new_2 = self._make_samples(
-                    support_vector[safety_bool],
-                    self.min_c_,
-                    X_min,
-                    nns,
-                    int((1 - fractions) * num_samples),
-                    step_size=-self.out_step)
-
-            # Concatenate the newly generated samples to the original data set
-            if (np.count_nonzero(danger_bool) > 0 and
-                    np.count_nonzero(safety_bool) > 0):
-                X_resampled = np.concatenate((X, X_new_1, X_new_2), axis=0)
-                y_resampled = np.concatenate((y, y_new_1, y_new_2), axis=0)
-            # not any support vectors in danger
-            elif np.count_nonzero(danger_bool) == 0:
-                X_resampled = np.concatenate((X, X_new_2), axis=0)
-                y_resampled = np.concatenate((y, y_new_2), axis=0)
-            # All the support vector in danger
-            elif np.count_nonzero(safety_bool) == 0:
-                X_resampled = np.concatenate((X, X_new_1), axis=0)
-                y_resampled = np.concatenate((y, y_new_1), axis=0)
-
-            return X_resampled, y_resampled
+        return self.smote_kind_[self.kind](X, y)
