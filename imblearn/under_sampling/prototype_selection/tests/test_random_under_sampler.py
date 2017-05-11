@@ -29,20 +29,23 @@ def test_rus_init():
 
 def test_rus_fit_sample():
     # Resample the data
-    rus = RandomUnderSampler(random_state=RND_SEED)
+    rus = RandomUnderSampler(random_state=RND_SEED,
+                             replacement=True)
     X_resampled, y_resampled = rus.fit_sample(X, Y)
 
     X_gt = np.array([[0.92923648, 0.76103773], [0.47104475, 0.44386323],
                      [0.13347175, 0.12167502], [0.09125309, -0.85409574],
                      [0.12372842, 0.6536186], [0.04352327, -0.20515826]])
     y_gt = np.array([0, 0, 0, 1, 1, 1])
+
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
 
 def test_rus_fit_sample_with_indices():
     # Resample the data
-    rus = RandomUnderSampler(return_indices=True, random_state=RND_SEED)
+    rus = RandomUnderSampler(return_indices=True, random_state=RND_SEED,
+                             replacement=True)
     X_resampled, y_resampled, idx_under = rus.fit_sample(X, Y)
 
     X_gt = np.array([[0.92923648, 0.76103773], [0.47104475, 0.44386323],
@@ -58,7 +61,8 @@ def test_rus_fit_sample_with_indices():
 def test_rus_fit_sample_half():
     # Resample the data
     ratio = 0.5
-    rus = RandomUnderSampler(ratio=ratio, random_state=RND_SEED)
+    rus = RandomUnderSampler(ratio=ratio, random_state=RND_SEED,
+                             replacement=True)
     X_resampled, y_resampled = rus.fit_sample(X, Y)
 
     X_gt = np.array([[0.92923648, 0.76103773], [0.47104475, 0.44386323],

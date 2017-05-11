@@ -11,10 +11,11 @@ from collections import Counter
 import numpy as np
 from sklearn.utils import check_random_state
 
-from ...base import BaseMulticlassSampler
+from ...base import MultiClassSamplerMixin
+from ..base import BaseUnderSampler
 
 
-class RandomUnderSampler(BaseMulticlassSampler):
+class RandomUnderSampler(BaseUnderSampler, MultiClassSamplerMixin):
     """Class to perform random under-sampling.
 
     Under-sample the majority class(es) by randomly picking samples
@@ -38,23 +39,17 @@ class RandomUnderSampler(BaseMulticlassSampler):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    replacement : boolean, optional (default=True)
+    replacement : boolean, optional (default=False)
         Whether the sample is with (default) or without replacement.
-
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary containing the number of occurences of each class.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
+
+    ratio_ : dict
+        Dictionary in which the keys are the classes and the values are the
+        number of samples to be kept.
 
     Notes
     -----
@@ -83,7 +78,7 @@ class RandomUnderSampler(BaseMulticlassSampler):
                  ratio='auto',
                  return_indices=False,
                  random_state=None,
-                 replacement=True):
+                 replacement=False):
         super(RandomUnderSampler, self).__init__(
             ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
@@ -114,52 +109,37 @@ class RandomUnderSampler(BaseMulticlassSampler):
             that sample was selected or not.
 
         """
-
         random_state = check_random_state(self.random_state)
 
-        # Compute the number of clusters needed
-        if self.ratio == 'auto':
-            num_samples = self.stats_c_[self.min_c_]
-        else:
-            num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
-
-        # All the minority class samples will be preserved
-        X_resampled = X[y == self.min_c_]
-        y_resampled = y[y == self.min_c_]
-
-        # If we need to offer support for the indices
+        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
+        y_resampled = np.empty((0, ), dtype=y.dtype)
         if self.return_indices:
-            idx_under = np.nonzero(y == self.min_c_)[0]
+            idx_under = np.empty((0, ), dtype=int)
 
-        # Loop over the other classes under-picking at random
-        for key in self.stats_c_.keys():
+        for target_class in np.unique(y):
+            if target_class in self.ratio_.keys():
+                n_samples = self.ratio_[target_class]
+                index_target_class = random_state.choice(
+                    range(np.count_nonzero(y == target_class)),
+                    size=n_samples,
+                    replace=self.replacement)
+            else:
+                index_target_class = slice(None)
 
-            # If the minority class is up, skip it
-            if key == self.min_c_:
-                continue
-
-            # Pick some elements at random
-            indx = range(np.count_nonzero(y == key))
-            indx = random_state.choice(
-                indx, size=num_samples, replace=self.replacement)
-
-            # If we need to offer support for the indices selected
-            if self.return_indices:
-                idx_tmp = np.nonzero(y == key)[0][indx]
-                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
-
-            # Concatenate to the minority class
             X_resampled = np.concatenate(
-                (X_resampled, X[y == key][indx]), axis=0)
+                (X_resampled, X[y == target_class][index_target_class]),
+                axis=0)
             y_resampled = np.concatenate(
-                (y_resampled, y[y == key][indx]), axis=0)
+                (y_resampled, y[y == target_class][index_target_class]),
+                axis=0)
+            if self.return_indices:
+                idx_under = np.concatenate(
+                    (idx_under, np.flatnonzero(y == target_class)[
+                        index_target_class]), axis=0)
 
         self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
-        # Check if the indices of the samples selected should be returned as
-        # well
         if self.return_indices:
-            # Return the indices of interest
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled

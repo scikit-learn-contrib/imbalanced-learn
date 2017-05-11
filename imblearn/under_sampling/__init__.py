@@ -5,9 +5,7 @@ a dataset.
 
 from .prototype_generation import ClusterCentroids
 
-__all__ = ['ClusterCentroids']
-
-# from .prototype_selection import RandomUnderSampler
+from .prototype_selection import RandomUnderSampler
 # from .prototype_selection import TomekLinks
 # from .prototype_selection import NearMiss
 # from .prototype_selection import CondensedNearestNeighbour
@@ -16,7 +14,11 @@ __all__ = ['ClusterCentroids']
 # from .prototype_selection import EditedNearestNeighbours
 # from .prototype_selection import RepeatedEditedNearestNeighbours
 # from .prototype_selection import AllKNN
-# from .prototype_selection import InstanceHardnessThreshold
+from .prototype_selection import InstanceHardnessThreshold
+
+__all__ = ['ClusterCentroids',
+           'RandomUnderSampler',
+           'InstanceHardnessThreshold']
 
 # __all__ = [
 #     'RandomUnderSampler', 'TomekLinks', 'ClusterCentroids', 'NearMiss',

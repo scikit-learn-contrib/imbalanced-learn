@@ -161,6 +161,7 @@ class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
                     (y_resampled, np.array([target_class] * n_samples)),
                     axis=0)
             else:
+
                 X_resampled = np.concatenate(
                     (X_resampled, X[y == target_class]), axis=0)
                 y_resampled = np.concatenate(

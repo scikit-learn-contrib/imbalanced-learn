@@ -6,7 +6,7 @@ threshold."""
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
 import warnings
 from collections import Counter
@@ -17,7 +17,8 @@ from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.externals.six import string_types
 
-from ...base import BaseBinarySampler
+from ...base import MultiClassSamplerMixin
+from ..base import BaseUnderSampler
 
 
 def _get_cv_splits(X, y, cv, random_state):
@@ -33,7 +34,7 @@ def _get_cv_splits(X, y, cv, random_state):
     return cv_iterator
 
 
-class InstanceHardnessThreshold(BaseBinarySampler):
+class InstanceHardnessThreshold(BaseUnderSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling based on the instance hardness
     threshold.
 
@@ -82,21 +83,13 @@ class InstanceHardnessThreshold(BaseBinarySampler):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
-    cv : int, optional (default=5)
-        Number of folds used when estimating samples' instance hardness.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
+
+    ratio_ : dict
+        Dictionary in which the keys are the classes and the values are the
+        number of samples to be kept.
+
 
     Notes
     -----
@@ -239,10 +232,8 @@ class InstanceHardnessThreshold(BaseBinarySampler):
             containing the which samples have been selected.
 
         """
-
-        # Create the different folds
+        target_stats = Counter(y)
         skf = _get_cv_splits(X, y, self.cv, self.random_state)
-
         probabilities = np.zeros(y.shape[0], dtype=float)
 
         for train_index, test_index in skf:
@@ -258,28 +249,36 @@ class InstanceHardnessThreshold(BaseBinarySampler):
                 for l, c in enumerate(y_test)
             ]
 
-        # Compute the number of cluster needed
-        if self.ratio == 'auto':
-            num_samples = self.stats_c_[self.min_c_]
-        else:
-            num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
+        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
+        y_resampled = np.empty((0, ), dtype=y.dtype)
+        if self.return_indices:
+            idx_under = np.empty((0, ), dtype=int)
 
-        # Find the percentile corresponding to the top num_samples
-        threshold = np.percentile(
-            probabilities[y != self.min_c_],
-            (1. - (num_samples / self.stats_c_[self.maj_c_])) * 100.)
+        for target_class in np.unique(y):
+            if target_class in self.ratio_.keys():
+                n_samples = self.ratio_[target_class]
+                threshold = np.percentile(
+                    probabilities[y == target_class],
+                    (1. - (n_samples / target_stats[target_class])) * 100.)
+                index_target_class = np.flatnonzero(
+                    probabilities[y == target_class] >= threshold)
+            else:
+                index_target_class = slice(None)
 
-        mask = np.logical_or(probabilities >= threshold, y == self.min_c_)
-
-        # Sample the data
-        X_resampled = X[mask]
-        y_resampled = y[mask]
+            X_resampled = np.concatenate(
+                (X_resampled, X[y == target_class][index_target_class]),
+                axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, y[y == target_class][index_target_class]),
+                axis=0)
+            if self.return_indices:
+                idx_under = np.concatenate(
+                    (idx_under, np.flatnonzero(y == target_class)[
+                        index_target_class]), axis=0)
 
         self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
-        # If we need to offer support for the indices
         if self.return_indices:
-            idx_under = np.flatnonzero(mask)
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled
