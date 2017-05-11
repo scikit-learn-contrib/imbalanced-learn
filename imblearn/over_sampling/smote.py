@@ -254,6 +254,7 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
         return X_new, y_new
 
     def _validate_estimator(self):
+        """Create the necessary objects for SMOTE."""
         self.nn_k_ = check_neighbors_object('k_neighbors',
                                             self.k_neighbors,
                                             additional_neighbor=1)
@@ -308,7 +309,33 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
         return self
 
     def _sample_regular(self, X, y):
+        """Resample the dataset using the regular SMOTE implementation.
 
+        Use the regular SMOTE algorithm proposed in [1]_.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`.
+
+        References
+        ----------
+        .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
+           synthetic minority over-sampling technique," Journal of artificial
+           intelligence research, 321-357, 2002.
+
+        """
         X_resampled = X.copy()
         y_resampled = y.copy()
 
@@ -328,6 +355,36 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
         return X_resampled, y_resampled
 
     def _sample_borderline(self, X, y):
+        """Resample the dataset using the borderline SMOTE implementation.
+
+        Use the borderline SMOTE algorithm proposed in [2]_. Two methods can be
+        used: (i) borderline-1 or (ii) borderline-2. A nearest-neighbours
+        algorithm is used to determine the samples forming the boundaries and
+        will create samples next to those features depending on some criterion.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`.
+
+        References
+        ----------
+        .. [2] H. Han, W. Wen-Yuan, M. Bing-Huan, "Borderline-SMOTE: a new
+           over-sampling method in imbalanced data sets learning," Advances in
+           intelligent computing, 878-887, 2005.
+
+        """
         X_resampled = X.copy()
         y_resampled = y.copy()
 
@@ -385,6 +442,34 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
         return X_resampled, y_resampled
 
     def _sample_svm(self, X, y):
+        """Resample the dataset using the SVM SMOTE implementation.
+
+        Use the SVM SMOTE algorithm proposed in [3]_. A SVM classifier detect
+        support vectors to get a notion of the boundary.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : ndarray, shape (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new)
+            The corresponding label of `X_resampled`.
+
+        References
+        ----------
+        .. [3] H. M. Nguyen, E. W. Cooper, K. Kamei, "Borderline over-sampling
+           for imbalanced data classification," International Journal of
+           Knowledge Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.
+
+        """
         # The SVM smote model fits a support vector machine
         # classifier to the data and uses the support vector to
         # provide a notion of boundary. Unlike regular smote, where
