@@ -54,22 +54,16 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
+    ratio_ : dict
+        Dictionary in which the keys are the classes and the values are the
+        number of samples to be generated.
+
     Notes
     -----
-    Does support multi-class.
+    Supports multi-classes.
 
     The implementation is based on [1]_.
 

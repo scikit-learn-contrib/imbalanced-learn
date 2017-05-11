@@ -7,4 +7,6 @@ from .adasyn import ADASYN
 from .random_over_sampler import RandomOverSampler
 from .smote import SMOTE
 
-__all__ = ['ADASYN', 'RandomOverSampler', 'SMOTE']
+__all__ = ['ADASYN',
+           'RandomOverSampler',
+           'SMOTE']

@@ -82,25 +82,18 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
+
+    ratio_ : dict
+        Dictionary in which the keys are the classes and the values are the
+        number of samples to be generated.
 
     Notes
     -----
     See the original papers: [1]_, [2]_, [3]_ for more details.
 
-    It does not support multiple classes automatically, but can be called
-    multiple times.
+    Support multiple classes.
 
     Examples
     --------

@@ -111,6 +111,14 @@ def _ratio_minority(y, sampling_type):
     return ratio
 
 
+def _ratio_auto(y, sampling_type):
+    """TODO: Deprecated in 0.2. Remove in 0.4."""
+    if sampling_type == 'over-sampling':
+        return _ratio_all(y, sampling_type)
+    elif sampling_type == 'under-sampling':
+        return _ratio_not_minority(y, sampling_type)
+
+
 def _ratio_float(ratio, y, sampling_type):
     """TODO: Deprecated in 0.2. Remove in 0.4."""
     target_stats = Counter(y)
@@ -122,8 +130,10 @@ def _ratio_float(ratio, y, sampling_type):
                  if key != class_majority}
     elif sampling_type == 'under-sampling':
         n_sample_minority = min(target_stats.values())
+        class_minority = min(target_stats, key=target_stats.get)
         ratio = {key: int(n_sample_minority / ratio)
-                 for (key, value) in target_stats.items()}
+                 for (key, value) in target_stats.items()
+                 if key != class_minority}
 
     return ratio
 
@@ -191,4 +201,4 @@ RATIO_KIND = {'minority': _ratio_minority,
               'majority': _ratio_majority,
               'not minority': _ratio_not_minority,
               'all': _ratio_all,
-              'auto': _ratio_all}
+              'auto': _ratio_auto}

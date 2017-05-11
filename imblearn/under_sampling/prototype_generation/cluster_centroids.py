@@ -13,10 +13,11 @@ from collections import Counter
 import numpy as np
 from sklearn.cluster import KMeans
 
-from ...base import BaseMulticlassSampler
+from ...base import MultiClassSamplerMixin
+from ..base import BaseUnderSampler
 
 
-class ClusterCentroids(BaseMulticlassSampler):
+class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
     """Perform under-sampling by generating centroids based on
     clustering methods.
 
@@ -49,22 +50,16 @@ class ClusterCentroids(BaseMulticlassSampler):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
+    ratio_ : dict
+        Dictionary in which the keys are the classes and the values are the
+        number of samples to be kept.
+
     Notes
     -----
-    This class support multi-class.
+    Supports multi-class.
 
     Examples
     --------
@@ -151,39 +146,25 @@ class ClusterCentroids(BaseMulticlassSampler):
             The corresponding label of `X_resampled`
 
         """
+        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
+        y_resampled = np.empty((0, ), dtype=y.dtype)
 
-        # Compute the number of cluster needed
-        if self.ratio == 'auto':
-            num_samples = self.stats_c_[self.min_c_]
-        else:
-            num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
+        for target_class in np.unique(y):
+            if target_class in self.ratio_.keys():
+                n_samples = self.ratio_[target_class]
+                self.estimator_.set_params(**{'n_clusters': n_samples})
+                self.estimator_.fit(X[y == target_class])
+                centroids = self.estimator_.cluster_centers_
 
-        # Set the number of sample for the estimator
-        self.estimator_.set_params(**{'n_clusters': num_samples})
-
-        # Start with the minority class
-        X_min = X[y == self.min_c_]
-        y_min = y[y == self.min_c_]
-
-        # All the minority class samples will be preserved
-        X_resampled = X_min.copy()
-        y_resampled = y_min.copy()
-
-        # Loop over the other classes under picking at random
-        for key in self.stats_c_.keys():
-
-            # If the minority class is up, skip it.
-            if key == self.min_c_:
-                continue
-
-            # Find the centroids via k-means
-            self.estimator_.fit(X[y == key])
-            centroids = self.estimator_.cluster_centers_
-
-            # Concatenate to the minority class
-            X_resampled = np.concatenate((X_resampled, centroids), axis=0)
-            y_resampled = np.concatenate(
-                (y_resampled, np.array([key] * num_samples)), axis=0)
+                X_resampled = np.concatenate((X_resampled, centroids), axis=0)
+                y_resampled = np.concatenate(
+                    (y_resampled, np.array([target_class] * n_samples)),
+                    axis=0)
+            else:
+                X_resampled = np.concatenate(
+                    (X_resampled, X[y == target_class]), axis=0)
+                y_resampled = np.concatenate(
+                    (y_resampled, y[y == target_class]), axis=0)
 
         self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
