@@ -36,24 +36,18 @@ class TomekLinks(BaseUnderSampler, MultiClassSamplerMixin):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
+
+    ratio_ : dict
+        Dictionary in which the keys are the classes which will be
+        under-sampled. The values are not used.
 
     Notes
     -----
     This method is based on [1]_.
 
-    It does not support multi-class sampling.
+    Supports multi-class sampling.
 
     Examples
     --------
@@ -79,7 +73,7 @@ class TomekLinks(BaseUnderSampler, MultiClassSamplerMixin):
 
     """
 
-    def __init__(self, ratio='not minority', return_indices=False,
+    def __init__(self, ratio='auto', return_indices=False,
                  random_state=None, n_jobs=1):
         super(TomekLinks, self).__init__(ratio=ratio,
                                          random_state=random_state)

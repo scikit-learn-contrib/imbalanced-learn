@@ -14,13 +14,14 @@ from collections import Counter
 import numpy as np
 from scipy.stats import mode
 
-from ...base import BaseMulticlassSampler
+from ...base import MultiClassSamplerMixin
+from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
 
 SEL_KIND = ('all', 'mode')
 
 
-class EditedNearestNeighbours(BaseMulticlassSampler):
+class EditedNearestNeighbours(BaseUnderSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
 
@@ -63,18 +64,12 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
+
+    ratio_ : dict
+        Dictionary in which the keys are the classes which will be
+        under-sampled. The values are not used.
 
     Notes
     -----
@@ -108,6 +103,7 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
     """
 
     def __init__(self,
+                 ratio='auto',
                  return_indices=False,
                  random_state=None,
                  size_ngh=None,
@@ -115,6 +111,7 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
                  kind_sel='all',
                  n_jobs=1):
         super(EditedNearestNeighbours, self).__init__(
+            ratio=ratio,
             random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
@@ -139,12 +136,12 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
             Return self.
 
         """
-
         super(EditedNearestNeighbours, self).fit(X, y)
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
-        # set the number of jobs
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
 
         return self
 
@@ -172,81 +169,51 @@ class EditedNearestNeighbours(BaseMulticlassSampler):
             containing the which samples have been selected.
 
         """
-
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
-        # Start with the minority class
-        X_min = X[y == self.min_c_]
-        y_min = y[y == self.min_c_]
-
-        # All the minority class samples will be preserved
-        X_resampled = X_min.copy()
-        y_resampled = y_min.copy()
-
-        # If we need to offer support for the indices
+        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
+        y_resampled = np.empty((0, ), dtype=y.dtype)
         if self.return_indices:
-            idx_under = np.flatnonzero(y == self.min_c_)
+            idx_under = np.empty((0, ), dtype=int)
 
-        # Fit the data
         self.nn_.fit(X)
 
-        # Loop over the other classes under picking at random
-        for key in self.stats_c_.keys():
-
-            # If the minority class is up, skip it
-            if key == self.min_c_:
-                continue
-
-            # Get the sample of the current class
-            sub_samples_x = X[y == key]
-            sub_samples_y = y[y == key]
-
-            # Find the NN for the current class
-            nnhood_idx = self.nn_.kneighbors(
-                sub_samples_x, return_distance=False)[:, 1:]
-
-            # Get the label of the corresponding to the index
-            nnhood_label = y[nnhood_idx]
-
-            # Check which one are the same label than the current class
-            # Make the majority vote
-            if self.kind_sel == 'mode':
-                nnhood_label, _ = mode(nnhood_label, axis=1)
-                nnhood_bool = (np.ravel(nnhood_label) == sub_samples_y)
-            elif self.kind_sel == 'all':
-                nnhood_label = (nnhood_label == key)
-                nnhood_bool = np.all(nnhood_label, axis=1)
+        for target_class in np.unique(y):
+            if target_class in self.ratio_.keys():
+                X_class = X[y == target_class]
+                y_class = y[y == target_class]
+                nnhood_idx = self.nn_.kneighbors(
+                    X_class, return_distance=False)[:, 1:]
+                nnhood_label = y[nnhood_idx]
+                if self.kind_sel == 'mode':
+                    nnhood_label, _ = mode(nnhood_label, axis=1)
+                    nnhood_bool = np.ravel(nnhood_label) == y_class
+                elif self.kind_sel == 'all':
+                    nnhood_label = nnhood_label == target_class
+                    nnhood_bool = np.all(nnhood_label, axis=1)
+                index_target_class = np.flatnonzero(nnhood_bool)
             else:
-                raise NotImplementedError
+                index_target_class = slice(None)
 
-            # Get the samples which agree all together
-            sel_x = sub_samples_x[np.flatnonzero(nnhood_bool), :]
-            sel_y = sub_samples_y[np.flatnonzero(nnhood_bool)]
-
-            # If we need to offer support for the indices selected
+            X_resampled = np.concatenate(
+                (X_resampled, X[y == target_class][index_target_class]),
+                axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, y[y == target_class][index_target_class]),
+                axis=0)
             if self.return_indices:
-                idx_tmp = np.flatnonzero(y == key)[np.flatnonzero(nnhood_bool)]
-                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
-
-            self.logger.debug('Shape of the selected feature: %s', sel_x.shape)
-            self.logger.debug('Shape of current features: %s',
-                              X_resampled.shape)
-
-            X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
-            y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
+                idx_under = np.concatenate(
+                    (idx_under, np.flatnonzero(y == target_class)[
+                        index_target_class]), axis=0)
 
         self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
-        # Check if the indices of the samples selected should be returned too
         if self.return_indices:
-            # Return the indices of interest
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled
 
 
-class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
+class RepeatedEditedNearestNeighbours(BaseUnderSampler,
+                                      MultiClassSamplerMixin):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
 
@@ -276,6 +243,10 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
         `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
         the k_neighbors.
 
+    max_iter : int, optional (default=100)
+        Maximum number of iterations of the edited nearest neighbours
+        algorithm for a single run.
+
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.
 
@@ -289,28 +260,18 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
-    max_iter : int, optional (default=100)
-        Maximum number of iterations of the edited nearest neighbours
-        algorithm for a single run.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
+
+    ratio_ : dict
+        Dictionary in which the keys are the classes which will be
+        under-sampled. The values are not used.
 
     Notes
     -----
     The method is based on [1]_.
 
-    This class supports multi-class.
+    Supports multi-class sampling.
 
     Examples
     --------
@@ -338,6 +299,7 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
     """
 
     def __init__(self,
+                 ratio='auto',
                  return_indices=False,
                  random_state=None,
                  size_ngh=None,
@@ -346,7 +308,7 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
                  kind_sel='all',
                  n_jobs=-1):
         super(RepeatedEditedNearestNeighbours, self).__init__(
-            random_state=random_state)
+            ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
@@ -358,6 +320,7 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
         """Private function to create the NN estimator"""
 
         self.enn_ = EditedNearestNeighbours(
+            ratio=self.ratio,
             return_indices=self.return_indices,
             random_state=self.random_state,
             n_neighbors=self.n_neighbors,
@@ -385,6 +348,13 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
         super(RepeatedEditedNearestNeighbours, self).fit(X, y)
 
         self._validate_estimator()
+
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+
+        if self.max_iter < 2:
+            raise ValueError('max_iter must be greater than 1.'
+                             ' Got {} instead.'.format(type(self.max_iter)))
 
         self.enn_.fit(X, y)
 
@@ -414,18 +384,11 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
             containing the which samples have been selected.
 
         """
-
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
-        if self.max_iter < 2:
-            raise ValueError('max_iter must be greater than 1.'
-                             ' Got {} instead.'.format(type(self.max_iter)))
-
         X_, y_ = X, y
-
         if self.return_indices:
             idx_under = np.arange(X.shape[0], dtype=int)
+        target_stats = Counter(y)
+        class_minority = min(target_stats, key=target_stats.get)
 
         prev_len = y.shape[0]
 
@@ -450,37 +413,25 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
 
             # Case 2
             stats_enn = Counter(y_enn)
-            self.logger.debug('Current ENN stats: %s', stats_enn)
-            # Get the number of samples in the non-minority classes
             count_non_min = np.array([
                 val for val, key in zip(stats_enn.values(), stats_enn.keys())
-                if key != self.min_c_
+                if key != class_minority
             ])
-            self.logger.debug('Number of samples in the non-majority'
-                              ' classes: %s', count_non_min)
-            # Check the minority stop to be the minority
-            b_min_bec_maj = np.any(count_non_min < self.stats_c_[self.min_c_])
+            b_min_bec_maj = np.any(count_non_min <
+                                   target_stats[class_minority])
 
             # Case 3
-            b_remove_maj_class = (len(stats_enn) < len(self.stats_c_))
+            b_remove_maj_class = (len(stats_enn) < len(target_stats))
 
             if b_conv or b_min_bec_maj or b_remove_maj_class:
-                # If this is a normal convergence, get the last data
                 if b_conv:
                     if self.return_indices:
                         X_, y_, = X_enn, y_enn
                         idx_under = idx_under[idx_enn]
                     else:
                         X_, y_, = X_enn, y_enn
-                # Log the variables to explain the stop of the algorithm
-                self.logger.debug('RENN converged: %s', b_conv)
-                self.logger.debug('RENN minority become majority: %s',
-                                  b_min_bec_maj)
-                self.logger.debug('RENN remove one class: %s',
-                                  b_remove_maj_class)
                 break
 
-            # Update the data for the next iteration
             X_, y_, = X_enn, y_enn
             if self.return_indices:
                 idx_under = idx_under[idx_enn]
@@ -489,15 +440,13 @@ class RepeatedEditedNearestNeighbours(BaseMulticlassSampler):
 
         X_resampled, y_resampled = X_, y_
 
-        # Check if the indices of the samples selected should be returned too
         if self.return_indices:
-            # Return the indices of interest
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled
 
 
-class AllKNN(BaseMulticlassSampler):
+class AllKNN(BaseUnderSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling based on the AllKNN method.
 
     Parameters
@@ -539,18 +488,12 @@ class AllKNN(BaseMulticlassSampler):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
+
+    ratio_ : dict
+        Dictionary in which the keys are the classes which will be
+        under-sampled. The values are not used.
 
     Notes
     -----
@@ -628,6 +571,9 @@ class AllKNN(BaseMulticlassSampler):
 
         self._validate_estimator()
 
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+
         self.enn_.fit(X, y)
 
         return self
@@ -656,11 +602,9 @@ class AllKNN(BaseMulticlassSampler):
             containing the which samples have been selected.
 
         """
-
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
         X_, y_ = X, y
+        target_stats = Counter(y)
+        class_minority = min(target_stats, key=target_stats.get)
 
         if self.return_indices:
             idx_under = np.arange(X.shape[0], dtype=int)
@@ -681,29 +625,19 @@ class AllKNN(BaseMulticlassSampler):
             # 2. If one of the class is disappearing
             # Case 1
             stats_enn = Counter(y_enn)
-            self.logger.debug('Current ENN stats: %s', stats_enn)
-            # Get the number of samples in the non-minority classes
             count_non_min = np.array([
                 val for val, key in zip(stats_enn.values(), stats_enn.keys())
-                if key != self.min_c_
+                if key != class_minority
             ])
-            self.logger.debug('Number of samples in the non-majority'
-                              ' classes: %s', count_non_min)
-            # Check the minority stop to be the minority
-            b_min_bec_maj = np.any(count_non_min < self.stats_c_[self.min_c_])
+            b_min_bec_maj = np.any(count_non_min <
+                                   target_stats[class_minority])
 
             # Case 2
-            b_remove_maj_class = (len(stats_enn) < len(self.stats_c_))
+            b_remove_maj_class = (len(stats_enn) < len(target_stats))
 
             if b_min_bec_maj or b_remove_maj_class:
-                # Log the variables to explain the stop of the algorithm
-                self.logger.debug('AllKNN minority become majority: %s',
-                                  b_min_bec_maj)
-                self.logger.debug('AllKNN remove one class: %s',
-                                  b_remove_maj_class)
                 break
 
-            # Update the data for the next iteration
             X_, y_, = X_enn, y_enn
             if self.return_indices:
                 idx_under = idx_under[idx_enn]
@@ -712,9 +646,7 @@ class AllKNN(BaseMulticlassSampler):
 
         X_resampled, y_resampled = X_, y_
 
-        # Check if the indices of the samples selected should be returned too
         if self.return_indices:
-            # Return the indices of interest
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled

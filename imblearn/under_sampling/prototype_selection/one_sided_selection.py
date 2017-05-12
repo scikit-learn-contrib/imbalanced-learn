@@ -12,11 +12,12 @@ import numpy as np
 from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
 from sklearn.utils import check_random_state
 
-from ...base import BaseBinarySampler
+from ...base import MultiClassSamplerMixin
+from ..base import BaseUnderSampler
 from .tomek_links import TomekLinks
 
 
-class OneSidedSelection(BaseBinarySampler):
+class OneSidedSelection(BaseUnderSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling based on one-sided selection method.
 
     Parameters
@@ -53,24 +54,18 @@ class OneSidedSelection(BaseBinarySampler):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
+
+    ratio_ : dict
+        Dictionary in which the keys are the classes which will be
+        under-sampled. The values are not used.
 
     Notes
     -----
     The method is based on [1]_.
 
-    This method support multiclass.
+    Supports multi-class sampling.
 
     Examples
     --------
@@ -97,13 +92,15 @@ class OneSidedSelection(BaseBinarySampler):
     """
 
     def __init__(self,
+                 ratio='auto',
                  return_indices=False,
                  random_state=None,
                  size_ngh=None,
                  n_neighbors=None,
                  n_seeds_S=1,
                  n_jobs=1):
-        super(OneSidedSelection, self).__init__(random_state=random_state)
+        super(OneSidedSelection, self).__init__(ratio=ratio,
+                                                random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
@@ -174,79 +171,69 @@ class OneSidedSelection(BaseBinarySampler):
             containing the which samples have been selected.
 
         """
-
         random_state = check_random_state(self.random_state)
+        target_stats = Counter(y)
+        class_minority = min(target_stats, key=target_stats.get)
 
-        # Start with the minority class
-        X_min = X[y == self.min_c_]
-        y_min = y[y == self.min_c_]
-
-        # All the minority class samples will be preserved
-        X_resampled = X_min.copy()
-        y_resampled = y_min.copy()
-
-        # If we need to offer support for the indices
+        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
+        y_resampled = np.empty((0, ), dtype=y.dtype)
         if self.return_indices:
-            idx_under = np.flatnonzero(y == self.min_c_)
+            idx_under = np.empty((0, ), dtype=int)
 
-        # Loop over the other classes under picking at random
-        for key in self.stats_c_.keys():
+        for target_class in np.unique(y):
+            if target_class in self.ratio_.keys():
+                # select a sample from the current class
+                idx_maj = np.flatnonzero(y == target_class)
+                idx_maj_sample = idx_maj[random_state.randint(
+                        low=0, high=target_stats[target_class],
+                        size=self.n_seeds_S)]
+                maj_sample = X[idx_maj_sample]
 
-            # If the minority class is up, skip it
-            if key == self.min_c_:
-                continue
+                # create the set composed of all minority samples and one
+                # sample from the current class.
+                C_x = np.append(X[y == class_minority], maj_sample, axis=0)
+                C_y = np.append(y[y == class_minority], [target_class] *
+                                self.n_seeds_S)
 
-            # Randomly get one sample from the majority class
-            # Generate the index to select
-            idx_maj = np.flatnonzero(y == key)
-            idx_maj_sample = idx_maj[
-                random_state.randint(
-                    low=0,
-                    high=self.stats_c_[key],
-                    size=self.n_seeds_S)]
-            maj_sample = X[idx_maj_sample]
+                # create the set S with removing the seed from S
+                # since that it will be added anyway
+                idx_maj_extracted = np.delete(idx_maj, idx_maj_sample, axis=0)
+                S_x = X[idx_maj_extracted]
+                S_y = y[idx_maj_extracted]
+                self.estimator_.fit(C_x, C_y)
+                pred_S_y = self.estimator_.predict(S_x)
 
-            # Create the set C
-            C_x = np.append(X_min, maj_sample, axis=0)
-            C_y = np.append(y_min, [key] * self.n_seeds_S)
+                sel_x = S_x[np.flatnonzero(pred_S_y != S_y), :]
+                sel_y = S_y[np.flatnonzero(pred_S_y != S_y)]
+                if self.return_indices:
+                    idx_tmp = idx_maj_extracted[
+                        np.flatnonzero(pred_S_y != S_y)]
+                    idx_under = np.concatenate(
+                        (idx_under, idx_maj_sample, idx_tmp), axis=0)
+                X_resampled = np.concatenate(
+                    (X_resampled, maj_sample, sel_x), axis=0)
+                y_resampled = np.concatenate(
+                    (y_resampled, [target_class] * self.n_seeds_S, sel_y),
+                    axis=0)
+            else:
+                X_resampled = np.concatenate(
+                    (X_resampled, X[y == target_class]), axis=0)
+                y_resampled = np.concatenate(
+                    (y_resampled, y[y == target_class]), axis=0)
+                if self.return_indices:
+                    idx_under = np.concatenate(
+                        (idx_under, np.flatnonzero(y == target_class)), axis=0)
 
-            # Create the set S with removing the seed from S
-            # since that it will be added anyway
-            idx_maj_extracted = np.delete(idx_maj, idx_maj_sample, axis=0)
-            S_x = X[idx_maj_extracted]
-            S_y = y[idx_maj_extracted]
-
-            # Fit C into the knn
-            self.estimator_.fit(C_x, C_y)
-
-            # Classify on S
-            pred_S_y = self.estimator_.predict(S_x)
-
-            # Find the misclassified S_y
-            sel_x = S_x[np.flatnonzero(pred_S_y != S_y), :]
-            sel_y = S_y[np.flatnonzero(pred_S_y != S_y)]
-
-            # If we need to offer support for the indices selected
-            # We concatenate the misclassified samples with the seed and the
-            # minority samples
-            if self.return_indices:
-                idx_tmp = idx_maj_extracted[np.flatnonzero(pred_S_y != S_y)]
-                idx_under = np.concatenate(
-                    (idx_under, idx_maj_sample, idx_tmp), axis=0)
-
-            X_resampled = np.concatenate(
-                (X_resampled, maj_sample, sel_x), axis=0)
-            y_resampled = np.concatenate(
-                (y_resampled, [key] * self.n_seeds_S, sel_y), axis=0)
-
-        # Find the nearest neighbour of every point
+        # find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
         nn.fit(X_resampled)
         nns = nn.kneighbors(X_resampled, return_distance=False)[:, 1]
 
         # Send the information to is_tomek function to get boolean vector back
         self.logger.debug('Looking for majority Tomek links ...')
-        links = TomekLinks.is_tomek(y_resampled, nns, self.min_c_)
+        links = TomekLinks.is_tomek(y_resampled, nns,
+                                    [c for c in np.unique(y)
+                                     if c != class_minority])
 
         self.logger.info('Under-sampling performed: %s',
                          Counter(y_resampled[np.logical_not(links)]))

@@ -87,7 +87,7 @@ class NearMiss(BaseUnderSampler, MultiClassSamplerMixin):
     -----
     The methods are based on [1]_.
 
-    The class support multi-classes.
+    Supports multi-class sampling.
 
     Examples
     --------
@@ -291,8 +291,6 @@ class NearMiss(BaseUnderSampler, MultiClassSamplerMixin):
         class_minority = min(target_stats, key=target_stats.get)
 
         self.nn_.fit(X[y == class_minority])
-
-        print('Version nearmiss: {}'.format(self.version))
 
         for target_class in np.unique(y):
             if target_class in self.ratio_.keys():
