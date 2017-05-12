@@ -90,7 +90,6 @@ class InstanceHardnessThreshold(BaseUnderSampler, MultiClassSamplerMixin):
         Dictionary in which the keys are the classes and the values are the
         number of samples to be kept.
 
-
     Notes
     -----
     The method is based on [1]_.

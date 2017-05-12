@@ -11,11 +11,12 @@ from collections import Counter
 
 import numpy as np
 
-from ...base import BaseMulticlassSampler
+from ...base import MultiClassSamplerMixin
+from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
 
 
-class NearMiss(BaseMulticlassSampler):
+class NearMiss(BaseUnderSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling based on NearMiss methods.
 
     Parameters
@@ -75,18 +76,12 @@ class NearMiss(BaseMulticlassSampler):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
+
+    ratio_ : dict
+        Dictionary in which the keys are the classes and the values are the
+        number of samples to be kept.
 
     Notes
     -----
@@ -216,10 +211,7 @@ class NearMiss(BaseMulticlassSampler):
                           ' will be returned.')
 
         # Select the desired number of samples
-        sel_idx = sorted_idx[:num_samples]
-
-        return (X[y == key][sel_idx], y[y == key][sel_idx],
-                np.flatnonzero(y == key)[sel_idx])
+        return sorted_idx[:num_samples]
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
@@ -251,7 +243,6 @@ class NearMiss(BaseMulticlassSampler):
 
         super(NearMiss, self).fit(X, y)
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
-        # set the number of jobs
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
         # kept for deprecation purpose it will create the n_neighbors_ver3
@@ -259,8 +250,11 @@ class NearMiss(BaseMulticlassSampler):
         if self.version == 3:
             self.nn_ver3_ = check_neighbors_object('n_neighbors_ver3',
                                                    self.n_neighbors_ver3)
-            # set the number of jobs
             self.nn_ver3_.set_params(**{'n_jobs': self.n_jobs})
+
+        if self.version not in (1, 2, 3):
+            raise ValueError('Parameter `version` must be 1, 2 or 3, got'
+                             ' {}'.format(self.version))
 
         return self
 
@@ -288,109 +282,69 @@ class NearMiss(BaseMulticlassSampler):
             containing the which samples have been selected.
 
         """
-
-        # Assign the parameter of the element of this class
-        # Check that the version asked is implemented
-        if self.version not in (1, 2, 3):
-            raise ValueError('Parameter `version` must be 1, 2 or 3, got'
-                             ' {}'.format(self.version))
-
-        # Start with the minority class
-        X_min = X[y == self.min_c_]
-        y_min = y[y == self.min_c_]
-
-        # All the minority class samples will be preserved
-        X_resampled = X_min.copy()
-        y_resampled = y_min.copy()
-
-        # Compute the number of cluster needed
-        if self.ratio == 'auto':
-            num_samples = self.stats_c_[self.min_c_]
-        else:
-            num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
-
-        # If we need to offer support for the indices
+        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
+        y_resampled = np.empty((0, ), dtype=y.dtype)
         if self.return_indices:
-            idx_under = np.flatnonzero(y == self.min_c_)
+            idx_under = np.empty((0, ), dtype=int)
 
-        # Fit the minority class since that we want to know the distance
-        # to these point
-        self.nn_.fit(X[y == self.min_c_])
+        target_stats = Counter(y)
+        class_minority = min(target_stats, key=target_stats.get)
 
-        # Loop over the other classes under picking at random
-        for key in self.stats_c_.keys():
+        self.nn_.fit(X[y == class_minority])
 
-            # If the minority class is up, skip it
-            if key == self.min_c_:
-                continue
+        print('Version nearmiss: {}'.format(self.version))
 
-            # Get the samples corresponding to the current class
-            sub_samples_x = X[y == key]
-            sub_samples_y = y[y == key]
+        for target_class in np.unique(y):
+            if target_class in self.ratio_.keys():
+                n_samples = self.ratio_[target_class]
+                X_class = X[y == target_class]
+                y_class = y[y == target_class]
 
-            if self.version == 1:
-                # Find the NN
-                dist_vec, idx_vec = self.nn_.kneighbors(
-                    sub_samples_x, n_neighbors=self.nn_.n_neighbors)
+                if self.version == 1:
+                    dist_vec, idx_vec = self.nn_.kneighbors(
+                        X_class, n_neighbors=self.nn_.n_neighbors)
+                    index_target_class = self._selection_dist_based(
+                        X, y, dist_vec, n_samples, target_class,
+                        sel_strategy='nearest')
+                elif self.version == 2:
+                    dist_vec, idx_vec = self.nn_.kneighbors(
+                        X_class, n_neighbors=target_stats[class_minority])
+                    index_target_class = self._selection_dist_based(
+                        X, y, dist_vec, n_samples, target_class,
+                        sel_strategy='nearest')
+                elif self.version == 3:
+                    self.nn_ver3_.fit(X_class)
+                    dist_vec, idx_vec = self.nn_ver3_.kneighbors(
+                        X[y == class_minority])
+                    idx_vec_farthest = np.unique(idx_vec.reshape(-1))
+                    X_class_selected = X_class[idx_vec_farthest, :]
+                    y_class_selected = y_class[idx_vec_farthest]
 
-                # Select the right samples
-                sel_x, sel_y, idx_tmp = self._selection_dist_based(
-                    X, y, dist_vec, num_samples, key, sel_strategy='nearest')
-
-            elif self.version == 2:
-                # Find the NN
-                dist_vec, idx_vec = self.nn_.kneighbors(
-                    sub_samples_x, n_neighbors=self.stats_c_[self.min_c_])
-
-                # Select the right samples
-                sel_x, sel_y, idx_tmp = self._selection_dist_based(
-                    X, y, dist_vec, num_samples, key, sel_strategy='nearest')
-
-            elif self.version == 3:
-                # We need a new NN object to fit the current class
-                self.nn_ver3_.fit(sub_samples_x)
-
-                # Find the set of NN to the minority class
-                dist_vec, idx_vec = self.nn_ver3_.kneighbors(X_min)
-
-                # Create the subset containing the samples found during the NN
-                # search. Linearize the indexes and remove the double values
-                idx_vec_farthest = np.unique(idx_vec.reshape(-1))
-
-                # Create the subset
-                sub_samples_x = sub_samples_x[idx_vec_farthest, :]
-                sub_samples_y = sub_samples_y[idx_vec_farthest]
-
-                # Compute the NN considering the current class
-                dist_vec, idx_vec = self.nn_.kneighbors(
-                    sub_samples_x, n_neighbors=self.nn_.n_neighbors)
-
-                sel_x, sel_y, idx_tmp = self._selection_dist_based(
-                    sub_samples_x,
-                    sub_samples_y,
-                    dist_vec,
-                    num_samples,
-                    key,
-                    sel_strategy='farthest')
-
-                # idx_tmp is relative to the feature selected in the
-                # previous step and we need to find the indirection
-                idx_tmp = np.flatnonzero(y == key)[idx_vec_farthest[idx_tmp]]
+                    dist_vec, idx_vec = self.nn_.kneighbors(
+                        X_class_selected, n_neighbors=self.nn_.n_neighbors)
+                    index_target_class = self._selection_dist_based(
+                        X_class_selected, y_class_selected, dist_vec,
+                        n_samples, target_class, sel_strategy='farthest')
+                    # idx_tmp is relative to the feature selected in the
+                    # previous step and we need to find the indirection
+                    index_target_class = idx_vec_farthest[index_target_class]
             else:
-                raise NotImplementedError
+                index_target_class = slice(None)
 
-            # If we need to offer support for the indices selected
+            X_resampled = np.concatenate(
+                (X_resampled, X[y == target_class][index_target_class]),
+                axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, y[y == target_class][index_target_class]),
+                axis=0)
             if self.return_indices:
-                idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
-
-            X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
-            y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
+                idx_under = np.concatenate(
+                    (idx_under, np.flatnonzero(y == target_class)[
+                        index_target_class]), axis=0)
 
         self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
-        # Check if the indices of the samples selected should be returned too
         if self.return_indices:
-            # Return the indices of interest
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled
