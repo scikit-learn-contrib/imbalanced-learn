@@ -12,10 +12,11 @@ from collections import Counter
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-from ...base import BaseBinarySampler
+from ...base import MultiClassSamplerMixin
+from ..base import BaseUnderSampler
 
 
-class TomekLinks(BaseBinarySampler):
+class TomekLinks(BaseUnderSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling by removing Tomek's links.
 
     Parameters
@@ -78,8 +79,10 @@ class TomekLinks(BaseBinarySampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None, n_jobs=1):
-        super(TomekLinks, self).__init__(random_state=random_state)
+    def __init__(self, ratio='not minority', return_indices=False,
+                 random_state=None, n_jobs=1):
+        super(TomekLinks, self).__init__(ratio=ratio,
+                                         random_state=random_state)
         self.return_indices = return_indices
         self.n_jobs = n_jobs
 
@@ -108,25 +111,20 @@ class TomekLinks(BaseBinarySampler):
             that are Tomek links.
 
         """
-
-        # Initialize the boolean result as false.
         links = np.zeros(len(y), dtype=bool)
 
-        # Loop through each sample and looks whether it belongs to the minority
-        # class. If it does, we don't consider it since we want to keep all
-        # minority samples. If, however, it belongs to the majority sample we
-        # look at its first neighbour. If its closest neighbour also has the
-        # current sample as its closest neighbour, the two form a Tomek link.
-        for ind, ele in enumerate(y):
+        # find which class to not consider
+        class_excluded = [c for c in np.unique(y) if c not in class_type]
 
-            if ele == class_type:
+        # there is a Tomek link between two samples if they are both nearest
+        # neighbors of each others.
+        for index_sample, target_sample in enumerate(y):
+            if target_sample in class_excluded:
                 continue
 
-            if y[nn_index[ind]] == class_type:
-
-                # If they form a tomek link, put a True marker on this sample.
-                if nn_index[nn_index[ind]] == ind:
-                    links[ind] = True
+            if y[nn_index[index_sample]] != target_sample:
+                if nn_index[nn_index[index_sample]] == index_sample:
+                    links[index_sample] = True
 
         return links
 
@@ -160,18 +158,14 @@ class TomekLinks(BaseBinarySampler):
         nn.fit(X)
         nns = nn.kneighbors(X, return_distance=False)[:, 1]
 
-        # Send the information to is_tomek function to get boolean vector back
         self.logger.debug('Looking for majority Tomek links ...')
-        links = self.is_tomek(y, nns, self.min_c_)
+        links = self.is_tomek(y, nns, self.ratio_)
 
         self.logger.info('Under-sampling performed: %s',
                          Counter(y[np.logical_not(links)]))
 
-        # Check if the indices of the samples selected should be returned too
         if self.return_indices:
-            # Return the indices of interest
             return (X[np.logical_not(links)], y[np.logical_not(links)],
                     np.flatnonzero(np.logical_not(links)))
         else:
-            # Return data set without majority Tomek links.
             return X[np.logical_not(links)], y[np.logical_not(links)]

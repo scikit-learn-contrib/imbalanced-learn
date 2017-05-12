@@ -4,7 +4,7 @@ methods that select samples in order to balance the dataset.
 """
 
 from .random_under_sampler import RandomUnderSampler
-# from .tomek_links import TomekLinks
+from .tomek_links import TomekLinks
 from .nearmiss import NearMiss
 # from .condensed_nearest_neighbour import CondensedNearestNeighbour
 # from .one_sided_selection import OneSidedSelection
@@ -16,7 +16,8 @@ from .instance_hardness_threshold import InstanceHardnessThreshold
 
 __all__ = ['RandomUnderSampler',
            'InstanceHardnessThreshold',
-           'NearMiss']
+           'NearMiss',
+           'TomekLinks']
 #           'TomekLinks', 'NearMiss',
 #    'CondensedNearestNeighbour', 'OneSidedSelection',
 #    'NeighbourhoodCleaningRule', 'EditedNearestNeighbours',
