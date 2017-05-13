@@ -13,10 +13,11 @@ import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state
 
-from ...base import BaseMulticlassSampler
+from ...base import MultiClassSamplerMixin
+from ..base import BaseUnderSampler
 
 
-class CondensedNearestNeighbour(BaseMulticlassSampler):
+class CondensedNearestNeighbour(BaseUnderSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling based on the condensed nearest neighbour
     method.
 
@@ -54,24 +55,18 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
+
+    ratio_ : dict
+        Dictionary in which the keys are the classes which will be
+        under-sampled. The values are not used.
 
     Notes
     -----
     The method is based on [1]_.
 
-    This class supports multi-class.
+    Supports multi-class sampling.
 
     Examples
     --------
@@ -99,6 +94,7 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
     """
 
     def __init__(self,
+                 ratio='auto',
                  return_indices=False,
                  random_state=None,
                  size_ngh=None,
@@ -106,7 +102,7 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
                  n_seeds_S=1,
                  n_jobs=1):
         super(CondensedNearestNeighbour, self).__init__(
-            random_state=random_state)
+            ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
@@ -177,100 +173,100 @@ class CondensedNearestNeighbour(BaseMulticlassSampler):
             containing the which samples have been selected.
 
         """
-
         random_state = check_random_state(self.random_state)
+        target_stats = Counter(y)
+        class_minority = min(target_stats, key=target_stats.get)
 
-        # Start with the minority class
-        X_min = X[y == self.min_c_]
-        y_min = y[y == self.min_c_]
-
-        # All the minority class samples will be preserved
-        X_resampled = X_min.copy()
-        y_resampled = y_min.copy()
-
-        # If we need to offer support for the indices
+        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
+        y_resampled = np.empty((0, ), dtype=y.dtype)
         if self.return_indices:
-            idx_under = np.flatnonzero(y == self.min_c_)
+            idx_under = np.empty((0, ), dtype=int)
 
-        # Loop over the other classes under picking at random
-        for key in self.stats_c_.keys():
+        for target_class in np.unique(y):
+            if target_class in self.ratio_.keys():
+                # Randomly get one sample from the majority class
+                # Generate the index to select
+                idx_maj_sample = random_state.randint(
+                    low=0, high=target_stats[target_class],
+                    size=self.n_seeds_S)
+                maj_sample = X[y == target_class][idx_maj_sample]
 
-            # If the minority class is up, skip it
-            if key == self.min_c_:
-                continue
+                # Create the set C - One majority samples and all minority
+                C_x = np.append(X[y == class_minority], maj_sample, axis=0)
+                C_y = np.append(y[y == class_minority],
+                                np.array([target_class] * self.n_seeds_S))
 
-            # Randomly get one sample from the majority class
-            # Generate the index to select
-            idx_maj_sample = random_state.randint(
-                low=0, high=self.stats_c_[key], size=self.n_seeds_S)
-            maj_sample = X[y == key][idx_maj_sample]
+                # Create the set S - all majority samples
+                S_x = X[y == target_class]
+                S_y = y[y == target_class]
 
-            # Create the set C - One majority samples and all minority
-            C_x = np.append(X_min, maj_sample, axis=0)
-            C_y = np.append(y_min, np.array([key] * self.n_seeds_S))
+                # fit knn on C
+                self.estimator_.fit(C_x, C_y)
 
-            # Create the set S - all majority samples
-            S_x = X[y == key]
-            S_y = y[y == key]
+                good_classif_label = idx_maj_sample.copy()
+                # Check each sample in S if we keep it or drop it
+                for idx_sam, (x_sam, y_sam) in enumerate(zip(S_x, S_y)):
 
-            # Fit C into the knn
-            self.estimator_.fit(C_x, C_y)
+                    # Do not select sample which are already well classified
+                    if idx_sam in good_classif_label:
+                        continue
 
-            good_classif_label = idx_maj_sample.copy()
-            # Check each sample in S if we keep it or drop it
-            for idx_sam, (x_sam, y_sam) in enumerate(zip(S_x, S_y)):
+                    # Classify on S
+                    pred_y = self.estimator_.predict(x_sam.reshape(1, -1))
 
-                # Do not select sample which are already well classified
-                if idx_sam in good_classif_label:
-                    continue
+                    # If the prediction do not agree with the true label
+                    # append it in C_x
+                    if y_sam != pred_y:
+                        # Keep the index for later
+                        idx_maj_sample = np.append(idx_maj_sample, idx_sam)
 
-                # Classify on S
-                pred_y = self.estimator_.predict(x_sam.reshape(1, -1))
+                        # Update C
+                        C_x = np.append(X[y == class_minority],
+                                        X[y == target_class][idx_maj_sample],
+                                        axis=0)
+                        C_y = np.append(y[y == class_minority],
+                                        np.array([target_class] *
+                                                 idx_maj_sample.size))
 
-                # If the prediction do not agree with the true label
-                # append it in C_x
-                if y_sam != pred_y:
-                    # Keep the index for later
-                    idx_maj_sample = np.append(idx_maj_sample, idx_sam)
+                        # fit a knn on C
+                        self.estimator_.fit(C_x, C_y)
 
-                    # Update C
-                    C_x = np.append(X_min, X[y == key][idx_maj_sample], axis=0)
-                    C_y = np.append(y_min,
-                                    np.array([key] * idx_maj_sample.size))
+                        # This experimental to speed up the search
+                        # Classify all the element in S and avoid to test the
+                        # well classified elements
+                        pred_S_y = self.estimator_.predict(S_x)
+                        good_classif_label = np.unique(
+                            np.append(idx_maj_sample,
+                                      np.flatnonzero(pred_S_y == S_y)))
 
-                    # Fit C into the knn
-                    self.estimator_.fit(C_x, C_y)
+                # Find the misclassified S_y
+                sel_x = S_x[idx_maj_sample, :]
+                sel_y = S_y[idx_maj_sample]
 
-                    # This experimental to speed up the search
-                    # Classify all the element in S and avoid to test the
-                    # well classified elements
-                    pred_S_y = self.estimator_.predict(S_x)
-                    good_classif_label = np.unique(
-                        np.append(idx_maj_sample,
-                                  np.flatnonzero(pred_S_y == S_y)))
+                # The indexes found are relative to the current class, we need
+                # to find the absolute value Build the array with the absolute
+                # position
+                abs_pos = np.flatnonzero(y == target_class)
+                idx_maj_sample = abs_pos[idx_maj_sample]
 
-            # Find the misclassified S_y
-            sel_x = S_x[idx_maj_sample, :]
-            sel_y = S_y[idx_maj_sample]
-
-            # The indexes found are relative to the current class, we need to
-            # find the absolute value
-            # Build the array with the absolute position
-            abs_pos = np.flatnonzero(y == key)
-            idx_maj_sample = abs_pos[idx_maj_sample]
-
-            # If we need to offer support for the indices selected
-            if self.return_indices:
-                idx_under = np.concatenate((idx_under, idx_maj_sample), axis=0)
-
-            X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
-            y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
+                # If we need to offer support for the indices selected
+                if self.return_indices:
+                    idx_under = np.concatenate((idx_under, idx_maj_sample),
+                                               axis=0)
+                X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
+                y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
+            else:
+                X_resampled = np.concatenate(
+                    (X_resampled, X[y == target_class]), axis=0)
+                y_resampled = np.concatenate(
+                    (y_resampled, y[y == target_class]), axis=0)
+                if self.return_indices:
+                    idx_under = np.concatenate(
+                        (idx_under, np.flatnonzero(y == target_class)), axis=0)
 
         self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
-        # Check if the indices of the samples selected should be returned too
         if self.return_indices:
-            # Return the indices of interest
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled
