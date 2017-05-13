@@ -233,6 +233,7 @@ class SMOTEENN(MultiClassSamplerMixin):
             if self.n_jobs is None:
                 self.n_jobs = 1
             self.enn_ = EditedNearestNeighbours(
+                ratio='all',
                 random_state=self.random_state,
                 size_ngh=self.size_ngh,
                 n_neighbors=self.n_neighbors,
@@ -247,7 +248,8 @@ class SMOTEENN(MultiClassSamplerMixin):
                                  ' Got {} instead.'.format(type(self.enn)))
         # Otherwise create a default EditedNearestNeighbours
         else:
-            self.enn_ = EditedNearestNeighbours(random_state=self.random_state)
+            self.enn_ = EditedNearestNeighbours(ratio='all',
+                                                random_state=self.random_state)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

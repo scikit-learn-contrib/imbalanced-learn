@@ -193,8 +193,9 @@ class SMOTETomek(MultiClassSamplerMixin):
             warnings.warn('Parameters initialization will be replaced in'
                           ' version 0.4. Use a ENN object instead.',
                           DeprecationWarning)
-            self.tomek_ = TomekLinks(
-                random_state=self.random_state, n_jobs=self.n_jobs)
+            self.tomek_ = TomekLinks(ratio='all',
+                                     random_state=self.random_state,
+                                     n_jobs=self.n_jobs)
         # If an object was given, affect
         elif self.tomek is not None:
             if isinstance(self.tomek, TomekLinks):
@@ -204,7 +205,8 @@ class SMOTETomek(MultiClassSamplerMixin):
                                  'Got {} instead.'.format(type(self.tomek)))
         # Otherwise create a default TomekLinks
         else:
-            self.tomek_ = TomekLinks(random_state=self.random_state)
+            self.tomek_ = TomekLinks(ratio='all',
+                                     random_state=self.random_state)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
