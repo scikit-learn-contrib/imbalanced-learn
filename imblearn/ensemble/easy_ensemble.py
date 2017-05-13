@@ -4,18 +4,16 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
 import numpy as np
 from sklearn.utils import check_random_state
 
-from ..base import BaseMulticlassSampler
+from ..base import MultiClassSamplerMixin
 from ..under_sampling import RandomUnderSampler
 
 MAX_INT = np.iinfo(np.int32).max
 
 
-class EasyEnsemble(BaseMulticlassSampler):
+class EasyEnsemble(MultiClassSamplerMixin):
     """Create an ensemble sets by iteratively applying random under-sampling.
 
     This method iteratively select a random subset and make an ensemble of the
@@ -47,16 +45,6 @@ class EasyEnsemble(BaseMulticlassSampler):
 
     Attributes
     ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
@@ -98,11 +86,34 @@ class EasyEnsemble(BaseMulticlassSampler):
                  random_state=None,
                  replacement=False,
                  n_subsets=10):
-        super(EasyEnsemble, self).__init__(
-            ratio=ratio, random_state=random_state)
+        super(EasyEnsemble, self).__init__()
+        self.ratio = ratio
+        self.random_state = random_state
         self.return_indices = return_indices
         self.replacement = replacement
         self.n_subsets = n_subsets
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+        super(EasyEnsemble, self).fit(X, y)
+        self.ratio_ = self.ratio
+
+        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -129,7 +140,6 @@ class EasyEnsemble(BaseMulticlassSampler):
 
         """
 
-        # Check the random state
         random_state = check_random_state(self.random_state)
 
         X_resampled = []
@@ -137,23 +147,12 @@ class EasyEnsemble(BaseMulticlassSampler):
         if self.return_indices:
             idx_under = []
 
-        self.samplers_ = []
-
         for _ in range(self.n_subsets):
             rus = RandomUnderSampler(
-                ratio=self.ratio,
-                return_indices=self.return_indices,
+                ratio=self.ratio, return_indices=True,
                 random_state=random_state.randint(MAX_INT),
                 replacement=self.replacement)
-            self.samplers_.append(rus)
-
-        for rus in self.samplers_:
-
-            if self.return_indices:
-                sel_x, sel_y, sel_idx = rus.fit_sample(X, y)
-            else:
-                sel_x, sel_y = rus.fit_sample(X, y)
-
+            sel_x, sel_y, sel_idx = rus.fit_sample(X, y)
             X_resampled.append(sel_x)
             y_resampled.append(sel_y)
             if self.return_indices:
