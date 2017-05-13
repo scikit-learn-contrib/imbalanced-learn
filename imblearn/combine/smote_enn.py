@@ -8,12 +8,13 @@ from __future__ import division, print_function
 
 import warnings
 
-from ..base import BaseBinarySampler
+from ..base import MultiClassSamplerMixin
 from ..over_sampling import SMOTE
 from ..under_sampling import EditedNearestNeighbours
+from ..pipeline import make_pipeline
 
 
-class SMOTEENN(BaseBinarySampler):
+class SMOTEENN(MultiClassSamplerMixin):
     """Class to perform over-sampling using SMOTE and cleaning using ENN.
 
     Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.
@@ -157,7 +158,9 @@ class SMOTEENN(BaseBinarySampler):
                  kind_enn=None,
                  n_jobs=None):
 
-        super(SMOTEENN, self).__init__(ratio=ratio, random_state=random_state)
+        super(SMOTEENN, self).__init__()
+        self.ratio = ratio
+        self.random_state = random_state
         self.smote = smote
         self.enn = enn
         self.k = k
@@ -263,13 +266,14 @@ class SMOTEENN(BaseBinarySampler):
             Return self.
 
         """
-
         super(SMOTEENN, self).fit(X, y)
 
         self._validate_estimator()
 
-        # Fit using SMOTE
-        self.smote_.fit(X, y)
+        self.pipeline_ = make_pipeline(self.smote_, self.enn_)
+        self.pipeline_.fit(X, y)
+        # emulate that we fitted the object
+        self.ratio_ = self.ratio
 
         return self
 
@@ -293,9 +297,4 @@ class SMOTEENN(BaseBinarySampler):
             The corresponding label of `X_resampled`
 
         """
-
-        # Transform using SMOTE
-        X, y = self.smote_.sample(X, y)
-
-        # Fit and transform using ENN
-        return self.enn_.fit_sample(X, y)
+        return self.pipeline_.sample(X, y)

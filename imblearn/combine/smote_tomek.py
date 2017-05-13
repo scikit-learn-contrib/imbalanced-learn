@@ -9,12 +9,13 @@ from __future__ import division, print_function
 
 import warnings
 
-from ..base import BaseBinarySampler
+from ..base import MultiClassSamplerMixin
 from ..over_sampling import SMOTE
 from ..under_sampling import TomekLinks
+from ..pipeline import make_pipeline
 
 
-class SMOTETomek(BaseBinarySampler):
+class SMOTETomek(MultiClassSamplerMixin):
     """Class to perform over-sampling using SMOTE and cleaning using
     Tomek links.
 
@@ -130,8 +131,9 @@ class SMOTETomek(BaseBinarySampler):
                  out_step=None,
                  kind_smote=None,
                  n_jobs=None):
-        super(SMOTETomek, self).__init__(
-            ratio=ratio, random_state=random_state)
+        super(SMOTETomek, self).__init__()
+        self.ratio = ratio
+        self.random_state = random_state
         self.smote = smote
         self.tomek = tomek
         self.k = k
@@ -221,13 +223,14 @@ class SMOTETomek(BaseBinarySampler):
             Return self.
 
         """
-
         super(SMOTETomek, self).fit(X, y)
 
         self._validate_estimator()
 
-        # Fit using SMOTE
-        self.smote_.fit(X, y)
+        self.pipeline_ = make_pipeline(self.smote_, self.tomek_)
+        self.pipeline_.fit(X, y)
+        # emulate that we fitted the object
+        self.ratio_ = self.ratio
 
         return self
 
@@ -251,9 +254,4 @@ class SMOTETomek(BaseBinarySampler):
             The corresponding label of `X_resampled`
 
         """
-
-        # Transform using SMOTE
-        X, y = self.smote_.sample(X, y)
-
-        # Fit and transform using ENN
-        return self.tomek_.fit_sample(X, y)
+        return self.pipeline_.sample(X, y)
