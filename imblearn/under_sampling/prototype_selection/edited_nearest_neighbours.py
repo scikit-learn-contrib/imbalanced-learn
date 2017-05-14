@@ -7,7 +7,7 @@ method."""
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
 from collections import Counter
 
@@ -27,6 +27,23 @@ class EditedNearestNeighbours(BaseUnderSampler, MultiClassSamplerMixin):
 
     Parameters
     ----------
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -67,15 +84,11 @@ class EditedNearestNeighbours(BaseUnderSampler, MultiClassSamplerMixin):
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
-    ratio_ : dict
-        Dictionary in which the keys are the classes which will be
-        under-sampled. The values are not used.
-
     Notes
     -----
     The method is based on [1]_.
 
-    This class supports multi-class.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -204,8 +217,6 @@ class EditedNearestNeighbours(BaseUnderSampler, MultiClassSamplerMixin):
                     (idx_under, np.flatnonzero(y == target_class)[
                         index_target_class]), axis=0)
 
-        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
-
         if self.return_indices:
             return X_resampled, y_resampled, idx_under
         else:
@@ -219,6 +230,23 @@ class RepeatedEditedNearestNeighbours(BaseUnderSampler,
 
     Parameters
     ----------
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -263,15 +291,11 @@ class RepeatedEditedNearestNeighbours(BaseUnderSampler,
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
-    ratio_ : dict
-        Dictionary in which the keys are the classes which will be
-        under-sampled. The values are not used.
-
     Notes
     -----
     The method is based on [1]_.
 
-    Supports multi-class sampling.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -318,7 +342,6 @@ class RepeatedEditedNearestNeighbours(BaseUnderSampler,
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-
         self.enn_ = EditedNearestNeighbours(
             ratio=self.ratio,
             return_indices=self.return_indices,
@@ -346,16 +369,13 @@ class RepeatedEditedNearestNeighbours(BaseUnderSampler,
         """
 
         super(RepeatedEditedNearestNeighbours, self).fit(X, y)
-
         self._validate_estimator()
 
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
-
         if self.max_iter < 2:
             raise ValueError('max_iter must be greater than 1.'
                              ' Got {} instead.'.format(type(self.max_iter)))
-
         self.enn_.fit(X, y)
 
         return self
@@ -436,8 +456,6 @@ class RepeatedEditedNearestNeighbours(BaseUnderSampler,
             if self.return_indices:
                 idx_under = idx_under[idx_enn]
 
-        self.logger.info('Under-sampling performed: %s', Counter(y_))
-
         X_resampled, y_resampled = X_, y_
 
         if self.return_indices:
@@ -451,6 +469,23 @@ class AllKNN(BaseUnderSampler, MultiClassSamplerMixin):
 
     Parameters
     ----------
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -491,15 +526,11 @@ class AllKNN(BaseUnderSampler, MultiClassSamplerMixin):
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
-    ratio_ : dict
-        Dictionary in which the keys are the classes which will be
-        under-sampled. The values are not used.
-
     Notes
     -----
     The method is based on [1]_.
 
-    This class supports multi-class.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -542,7 +573,6 @@ class AllKNN(BaseUnderSampler, MultiClassSamplerMixin):
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-
         self.enn_ = EditedNearestNeighbours(
             return_indices=self.return_indices,
             random_state=self.random_state,
@@ -568,7 +598,6 @@ class AllKNN(BaseUnderSampler, MultiClassSamplerMixin):
 
         """
         super(AllKNN, self).fit(X, y)
-
         self._validate_estimator()
 
         if self.kind_sel not in SEL_KIND:
@@ -610,8 +639,6 @@ class AllKNN(BaseUnderSampler, MultiClassSamplerMixin):
             idx_under = np.arange(X.shape[0], dtype=int)
 
         for curr_size_ngh in range(1, self.enn_.nn_.n_neighbors):
-            self.logger.debug('Apply ENN n_neighbors #%s', curr_size_ngh)
-            # updating ENN size_ngh
             self.enn_.n_neighbors = curr_size_ngh
 
             if self.return_indices:
@@ -641,8 +668,6 @@ class AllKNN(BaseUnderSampler, MultiClassSamplerMixin):
             X_, y_, = X_enn, y_enn
             if self.return_indices:
                 idx_under = idx_under[idx_enn]
-
-        self.logger.info('Under-sampling performed: %s', Counter(y_))
 
         X_resampled, y_resampled = X_, y_
 

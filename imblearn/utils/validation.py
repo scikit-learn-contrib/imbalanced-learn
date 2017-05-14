@@ -66,7 +66,8 @@ def _ratio_all(y, sampling_type):
 def _ratio_majority(y, sampling_type):
     """Returns ratio by targeting the majority class only."""
     if sampling_type == 'over-sampling':
-        raise ValueError("'ratio'='majority' can be used with over-sampler.")
+        raise ValueError("'ratio'='majority' cannot be used with"
+                         " over-sampler.")
     elif sampling_type == 'under-sampling':
         target_stats = Counter(y)
         class_majority = max(target_stats, key=target_stats.get)
@@ -107,7 +108,8 @@ def _ratio_minority(y, sampling_type):
                  for (key, value) in target_stats.items()
                  if key == class_minority}
     elif sampling_type == 'under-sampling':
-        raise ValueError("'ratio'='minority' can be used with under-sampler.")
+        raise ValueError("'ratio'='minority' cannot be used with"
+                         " under-sampler.")
 
     return ratio
 
@@ -191,19 +193,21 @@ def check_ratio(ratio, y, sampling_type):
     Parameters
     ----------
     ratio : str, dict or callable,
-        Input ratio to resample the data set.
+        Ratio to use for resampling the data set.
 
         - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class, (i)
-          ``'not minority'``: resample all classes apart of the minority class,
-          and (i) ``'all'``: resample all classes. The classes targeted will be
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
           over-sampled or under-sampled to achieve an equal number of sample
           with the majority or minority class.
-        - If ``dict``, the key is the class target and the value is either the
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
           desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The key is
-          the class target and the value is either the desired number of
-          samples.
 
     y : ndarray, shape (n_samples,)
         The target array.

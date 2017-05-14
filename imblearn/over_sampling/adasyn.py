@@ -6,8 +6,6 @@
 
 from __future__ import division
 
-from collections import Counter
-
 import numpy as np
 from sklearn.utils import check_random_state
 
@@ -24,11 +22,22 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
 
     Parameters
     ----------
-    ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
 
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -57,13 +66,9 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
-    ratio_ : dict
-        Dictionary in which the keys are the classes and the values are the
-        number of samples to be generated.
-
     Notes
     -----
-    Supports multi-classes.
+    Supports mutli-class resampling.
 
     The implementation is based on [1]_.
 
@@ -122,7 +127,6 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
             Return self.
 
         """
-
         super(ADASYN, self).fit(X, y)
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
@@ -185,7 +189,5 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
                     x_gen = x_i + step * (X[x_i_nn[nn_z], :] - x_i)
                     X_resampled = np.vstack((X_resampled, x_gen))
                     y_resampled = np.hstack((y_resampled, class_sample))
-
-        self.logger.info('Over-sampling performed: %s', Counter(y_resampled))
 
         return X_resampled, y_resampled

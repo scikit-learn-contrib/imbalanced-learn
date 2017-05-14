@@ -8,8 +8,6 @@ clustering."""
 
 from __future__ import division, print_function
 
-from collections import Counter
-
 import numpy as np
 from sklearn.cluster import KMeans
 
@@ -30,11 +28,22 @@ class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
 
     Parameters
     ----------
-    ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
 
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -53,13 +62,9 @@ class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
-    ratio_ : dict
-        Dictionary in which the keys are the classes and the values are the
-        number of samples to be kept.
-
     Notes
     -----
-    Supports multi-class.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -92,7 +97,6 @@ class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-
         if self.estimator is None:
             self.estimator_ = KMeans(
                 random_state=self.random_state, n_jobs=self.n_jobs)
@@ -119,9 +123,7 @@ class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
             Return self.
 
         """
-
         super(ClusterCentroids, self).fit(X, y)
-
         self._validate_estimator()
 
         return self
@@ -166,7 +168,5 @@ class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
                     (X_resampled, X[y == target_class]), axis=0)
                 y_resampled = np.concatenate(
                     (y_resampled, y[y == target_class]), axis=0)
-
-        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
 
         return X_resampled, y_resampled

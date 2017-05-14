@@ -28,11 +28,22 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
 
     Parameters
     ----------
-    ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
 
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -87,15 +98,11 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
-    ratio_ : dict
-        Dictionary in which the keys are the classes and the values are the
-        number of samples to be generated.
-
     Notes
     -----
     See the original papers: [1]_, [2]_, [3]_ for more details.
 
-    Support multiple classes.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -177,7 +184,6 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
             A boolean array where True refer to samples in danger or noise.
 
         """
-
         x = self.nn_m_.kneighbors(samples, return_distance=False)[:, 1:]
         nn_label = (y[x] != target_class).astype(int)
         n_maj = np.sum(nn_label, axis=1)
@@ -385,10 +391,6 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
             danger_index = self._in_danger_noise(X_class, class_sample, y,
                                                  kind='danger')
             if not any(danger_index):
-                self.logger.debug('There are no samples in danger. No'
-                                  ' borderline synthetic samples created.')
-
-                # all samples are safe and no need to go further
                 continue
 
             self.nn_k_.fit(X_class)

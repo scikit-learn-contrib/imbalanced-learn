@@ -55,7 +55,7 @@ def test_ratio_all_under_sampling():
 
 
 def test_ratio_majority_over_sampling():
-    assert_raises_regex(ValueError, "'ratio'='majority' can be used with"
+    assert_raises_regex(ValueError, "'ratio'='majority' cannot be used with"
                         " over-sampler.", check_ratio, 'majority',
                         np.array([1, 2, 3]), 'over-sampling')
 
@@ -87,7 +87,7 @@ def test_ratio_minority_over_sampling():
 
 
 def test_ratio_minority_under_sampling():
-    assert_raises_regex(ValueError, "'ratio'='minority' can be used with"
+    assert_raises_regex(ValueError, "'ratio'='minority' cannot be used with"
                         " under-sampler.", check_ratio, 'minority',
                         np.array([1, 2, 3]), 'under-sampling')
 

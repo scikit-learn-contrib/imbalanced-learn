@@ -1,6 +1,9 @@
 """
 Base class for the under-sampling method.
 """
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
 import logging
 
 from ..base import SamplerMixin

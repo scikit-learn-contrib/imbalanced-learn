@@ -1,6 +1,10 @@
 """
 Base class for the over-sampling method.
 """
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 import logging
 
 from ..base import SamplerMixin

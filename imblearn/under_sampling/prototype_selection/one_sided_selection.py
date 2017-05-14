@@ -4,7 +4,7 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
 from collections import Counter
 
@@ -22,6 +22,23 @@ class OneSidedSelection(BaseUnderSampler, MultiClassSamplerMixin):
 
     Parameters
     ----------
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -57,15 +74,11 @@ class OneSidedSelection(BaseUnderSampler, MultiClassSamplerMixin):
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
-    ratio_ : dict
-        Dictionary in which the keys are the classes which will be
-        under-sampled. The values are not used.
-
     Notes
     -----
     The method is based on [1]_.
 
-    Supports multi-class sampling.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -109,7 +122,6 @@ class OneSidedSelection(BaseUnderSampler, MultiClassSamplerMixin):
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-
         if self.n_neighbors is None:
             self.estimator_ = KNeighborsClassifier(
                 n_neighbors=1, n_jobs=self.n_jobs)
@@ -142,7 +154,6 @@ class OneSidedSelection(BaseUnderSampler, MultiClassSamplerMixin):
         """
 
         super(OneSidedSelection, self).fit(X, y)
-
         self._validate_estimator()
 
         return self
@@ -229,22 +240,13 @@ class OneSidedSelection(BaseUnderSampler, MultiClassSamplerMixin):
         nn.fit(X_resampled)
         nns = nn.kneighbors(X_resampled, return_distance=False)[:, 1]
 
-        # Send the information to is_tomek function to get boolean vector back
-        self.logger.debug('Looking for majority Tomek links ...')
         links = TomekLinks.is_tomek(y_resampled, nns,
                                     [c for c in np.unique(y)
                                      if c != class_minority])
-
-        self.logger.info('Under-sampling performed: %s',
-                         Counter(y_resampled[np.logical_not(links)]))
-
-        # Check if the indices of the samples selected should be returned too
         if self.return_indices:
-            # Return the indices of interest
             return (X_resampled[np.logical_not(links)],
                     y_resampled[np.logical_not(links)],
                     idx_under[np.logical_not(links)])
         else:
-            # Return data set without majority Tomek links.
             return (X_resampled[np.logical_not(links)],
                     y_resampled[np.logical_not(links)])

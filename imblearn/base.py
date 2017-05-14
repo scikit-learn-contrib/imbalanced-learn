@@ -1,7 +1,6 @@
 ﻿"""Base class for sampling"""
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
-#          Christos Aridas
 # License: MIT
 
 from __future__ import division

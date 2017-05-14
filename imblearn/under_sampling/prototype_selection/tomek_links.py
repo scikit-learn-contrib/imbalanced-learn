@@ -7,8 +7,6 @@
 
 from __future__ import division, print_function
 
-from collections import Counter
-
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
@@ -21,6 +19,23 @@ class TomekLinks(BaseUnderSampler, MultiClassSamplerMixin):
 
     Parameters
     ----------
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -39,15 +54,11 @@ class TomekLinks(BaseUnderSampler, MultiClassSamplerMixin):
     X_shape_ : tuple of int
         Shape of the data `X` during fitting.
 
-    ratio_ : dict
-        Dictionary in which the keys are the classes which will be
-        under-sampled. The values are not used.
-
     Notes
     -----
     This method is based on [1]_.
 
-    Supports multi-class sampling.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -152,11 +163,7 @@ class TomekLinks(BaseUnderSampler, MultiClassSamplerMixin):
         nn.fit(X)
         nns = nn.kneighbors(X, return_distance=False)[:, 1]
 
-        self.logger.debug('Looking for majority Tomek links ...')
         links = self.is_tomek(y, nns, self.ratio_)
-
-        self.logger.info('Under-sampling performed: %s',
-                         Counter(y[np.logical_not(links)]))
 
         if self.return_indices:
             return (X[np.logical_not(links)], y[np.logical_not(links)],
