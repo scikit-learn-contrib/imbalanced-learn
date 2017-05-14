@@ -119,6 +119,34 @@ def _ratio_auto(y, sampling_type):
         return _ratio_not_minority(y, sampling_type)
 
 
+def _ratio_dict(ratio, y, sampling_type):
+    """Returns ratio by converting the dictionary depending of the sampling."""
+    target_stats = Counter(y)
+    ratio_ = {}
+    if sampling_type == 'over_sampling':
+        for class_sample, n_samples in ratio.items():
+            if n_samples < target_stats[class_sample]:
+                raise ValueError("With over-sampling methods, the number"
+                                 " of samples in a class should be greater"
+                                 " or equal to the original number of samples."
+                                 " Originally, there is {} samples and {}"
+                                 " samples are required.".format(
+                                     target_stats[class_sample], n_samples))
+            ratio_[class_sample] = n_samples - target_stats[class_sample]
+    elif sampling_type == 'under_sampling':
+        for class_sample, n_samples in ratio.items():
+            if n_samples > target_stats[class_sample]:
+                raise ValueError("With under-sampling methods, the number of"
+                                 " samples in a class should be less or equal"
+                                 " to the original number of samples."
+                                 " Originally, there is {} samples and {}"
+                                 " samples are required.".format(
+                                     target_stats[class_sample], n_samples))
+            ratio_[class_sample] = n_samples
+
+    return ratio_
+
+
 def _ratio_float(ratio, y, sampling_type):
     """TODO: Deprecated in 0.2. Remove in 0.4."""
     target_stats = Counter(y)
@@ -193,7 +221,12 @@ def check_ratio(ratio, y, sampling_type):
                              " {}. Got '{}' instead.".format(RATIO_KIND,
                                                              ratio))
         return RATIO_KIND[ratio](y, sampling_type)
+    elif isinstance(ratio, dict):
+        return _ratio_dict(ratio, y, sampling_type)
     elif isinstance(ratio, Real):
+        if ratio <= 0 or ratio > 1:
+            raise ValueError("When 'ratio' is a float, it should in the range"
+                             " (0, 1]. Got {} instead.".format(ratio))
         return _ratio_float(ratio, y, sampling_type)
 
 
