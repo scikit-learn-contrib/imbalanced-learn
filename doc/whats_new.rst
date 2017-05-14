@@ -14,6 +14,8 @@ Bug fixes
 
 - Fixed a bug in :class:`under_sampling.NearMiss` version 3. The
   indices returned were wrong. By `Guillaume Lemaitre`_.
+- fixed bug for :class:`ensemble.BalanceCascade` and :class:`combine.SMOTEENN`
+  and :class:`SMOTETomek. By `Guillaume Lemaitre`_.`
 
 New features
 ~~~~~~~~~~~~
@@ -32,6 +34,7 @@ Enhancement
   `Guillaume Lemaitre`_
 - Remove seaborn dependence and improve the examples. By `Guillaume
   Lemaitre`_.
+- adapt all classes to multi-class resampling. By `Guillaume Lemaitre`_
 
 API changes summary
 ~~~~~~~~~~~~~~~~~~~
@@ -45,7 +48,14 @@ API changes summary
 - move the under-sampling methods in `prototype_selection` and
   `prototype_generation` submodule to make a clearer dinstinction. By
   `Guillaume Lemaitre`_.
+- change `ratio` such that it can adapt to multiple class problems. By
+  `Guillaume Lemaitre`_.
 
+Deprecation
+~~~~~~~~~~~
+
+- deprecate the use of float as ratio in favor of dictionary, string, or
+  callable. By `Guillaume Lemaitre`_.
 
 .. _changes_0_2:
 

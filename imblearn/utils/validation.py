@@ -11,6 +11,7 @@ import numpy as np
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.externals import six
+from sklearn.utils import deprecated
 
 from ..exceptions import raise_isinstance_error
 
@@ -115,7 +116,8 @@ def _ratio_minority(y, sampling_type):
 
 
 def _ratio_auto(y, sampling_type):
-    """TODO: Deprecated in 0.2. Remove in 0.4."""
+    """Returns ratio auto for over-sampling and not-minority for
+    under-sampling."""
     if sampling_type == 'over-sampling':
         return _ratio_all(y, sampling_type)
     elif sampling_type == 'under-sampling':
@@ -164,6 +166,9 @@ def _ratio_dict(ratio, y, sampling_type):
     return ratio_
 
 
+@deprecated("Use a float for 'ratio' is deprecated from version 0.2."
+            " The support will be removed in 0.4. Use a dict, str,"
+            " or a callable instead.")
 def _ratio_float(ratio, y, sampling_type):
     """TODO: Deprecated in 0.2. Remove in 0.4."""
     target_stats = Counter(y)

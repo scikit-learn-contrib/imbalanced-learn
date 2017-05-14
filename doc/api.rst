@@ -174,3 +174,5 @@ Utilities
    :toctree: generated/
 
    utils.estimator_checks.check_estimator
+   utils.validation.check_neighbors_object
+   utils.validation.check_ratio
