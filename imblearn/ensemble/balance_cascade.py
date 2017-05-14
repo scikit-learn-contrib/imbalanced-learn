@@ -128,7 +128,6 @@ class BalanceCascade(BaseUnderSampler, MultiClassSamplerMixin):
                  n_max_subset=None,
                  classifier=None,
                  estimator=None,
-                 bootstrap=True,
                  **kwargs):
         super(BalanceCascade, self).__init__(ratio=ratio,
                                              random_state=random_state)
@@ -136,7 +135,6 @@ class BalanceCascade(BaseUnderSampler, MultiClassSamplerMixin):
         self.classifier = classifier
         self.estimator = estimator
         self.n_max_subset = n_max_subset
-        self.bootstrap = bootstrap
         self.kwargs = kwargs
         self.logger = logging.getLogger(__name__)
 
@@ -284,7 +282,7 @@ class BalanceCascade(BaseUnderSampler, MultiClassSamplerMixin):
                     # index of the data
                     index_under_sample = np.concatenate(
                         (index_under_sample,
-                         index_class_interest[ index_target_class]),
+                         index_class_interest[index_target_class]),
                         axis=0)
                 else:
                     X_constant = np.concatenate((X_constant,
@@ -321,7 +319,7 @@ class BalanceCascade(BaseUnderSampler, MultiClassSamplerMixin):
 
             # check the stopping criterion
             if self.n_max_subset is not None:
-                if n_subsets == (self.n_max_subset - 1):
+                if n_subsets == self.n_max_subset:
                     b_subset_search = False
             # check that there is enough samples for another round
             target_stats = Counter(y[samples_mask])

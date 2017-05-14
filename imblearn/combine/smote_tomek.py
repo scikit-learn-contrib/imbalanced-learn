@@ -252,7 +252,7 @@ class SMOTETomek(MultiClassSamplerMixin):
         X_resampled : ndarray, shape (n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+o        y_resampled : ndarray, shape (n_samples_new)
             The corresponding label of `X_resampled`
 
         """
