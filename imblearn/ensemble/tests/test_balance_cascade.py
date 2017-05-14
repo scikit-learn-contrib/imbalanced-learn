@@ -1,14 +1,17 @@
 """Test the module balance cascade."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal,
-                           assert_raises, assert_raises_regex)
+from numpy.testing import (assert_array_equal, assert_raises,
+                           assert_raises_regex)
 from sklearn.ensemble import RandomForestClassifier
 
 from imblearn.ensemble import BalanceCascade
 
-# Generate a global dataset to use
 RND_SEED = 0
 X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
               [1.25192108, -0.22367336], [0.53366841, -0.30312976],
@@ -25,12 +28,9 @@ Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 def test_fit_sample_auto():
     ratio = 'auto'
-    bc = BalanceCascade(
-        ratio=ratio,
-        random_state=RND_SEED,
-        return_indices=True)
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=True)
     X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
-
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],
                       [0.70472253, -0.73309052],
@@ -77,7 +77,6 @@ def test_fit_sample_half():
     ratio = 0.8
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
-
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],
                       [0.70472253, -0.73309052],
@@ -104,13 +103,9 @@ def test_fit_sample_half():
 def test_fit_sample_auto_decision_tree():
     ratio = 'auto'
     classifier = 'decision-tree'
-    bc = BalanceCascade(
-        ratio=ratio,
-        random_state=RND_SEED,
-        return_indices=False,
-        classifier=classifier)
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=False, classifier=classifier)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
-
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],
                       [0.70472253, -0.73309052],
@@ -135,13 +130,9 @@ def test_fit_sample_auto_decision_tree():
 def test_fit_sample_auto_random_forest():
     ratio = 'auto'
     classifier = 'random-forest'
-    bc = BalanceCascade(
-        ratio=ratio,
-        random_state=RND_SEED,
-        return_indices=False,
-        classifier=classifier)
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=False, classifier=classifier)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
-
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],
                       [0.70472253, -0.73309052],
@@ -166,13 +157,9 @@ def test_fit_sample_auto_random_forest():
 def test_fit_sample_auto_adaboost():
     ratio = 'auto'
     classifier = 'adaboost'
-    bc = BalanceCascade(
-        ratio=ratio,
-        random_state=RND_SEED,
-        return_indices=False,
-        classifier=classifier)
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=False, classifier=classifier)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
-
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],
                       [0.70472253, -0.73309052],
@@ -197,13 +184,9 @@ def test_fit_sample_auto_adaboost():
 def test_fit_sample_auto_gradient_boosting():
     ratio = 'auto'
     classifier = 'gradient-boosting'
-    bc = BalanceCascade(
-        ratio=ratio,
-        random_state=RND_SEED,
-        return_indices=False,
-        classifier=classifier)
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=False, classifier=classifier)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
-
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],
                       [0.70472253, -0.73309052],
@@ -228,13 +211,9 @@ def test_fit_sample_auto_gradient_boosting():
 def test_fit_sample_auto_knn():
     ratio = 'auto'
     classifier = 'knn'
-    bc = BalanceCascade(
-        ratio=ratio,
-        random_state=RND_SEED,
-        return_indices=False,
-        classifier=classifier)
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=False, classifier=classifier)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
-
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],
                       [0.70472253, -0.73309052],
@@ -276,13 +255,9 @@ def test_fit_sample_auto_knn():
 def test_fit_sample_auto_linear_svm():
     ratio = 'auto'
     classifier = 'linear-svm'
-    bc = BalanceCascade(
-        ratio=ratio,
-        random_state=RND_SEED,
-        return_indices=False,
-        classifier=classifier)
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=False, classifier=classifier)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
-
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],
                       [0.70472253, -0.73309052],
@@ -330,14 +305,10 @@ def test_init_wrong_classifier():
 def test_fit_sample_auto_early_stop():
     ratio = 'auto'
     classifier = 'linear-svm'
-    bc = BalanceCascade(
-        ratio=ratio,
-        random_state=RND_SEED,
-        return_indices=False,
-        classifier=classifier,
-        n_max_subset=1)
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=False, classifier=classifier,
+                        n_max_subset=1)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
-
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],
                       [0.70472253, -0.73309052],
@@ -362,13 +333,9 @@ def test_fit_sample_auto_early_stop():
 def test_give_classifier_obj():
     ratio = 'auto'
     classifier = RandomForestClassifier(random_state=RND_SEED)
-    bc = BalanceCascade(
-        ratio=ratio,
-        random_state=RND_SEED,
-        return_indices=False,
-        estimator=classifier)
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=False, estimator=classifier)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
-
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],
                       [0.70472253, -0.73309052],
@@ -391,17 +358,9 @@ def test_give_classifier_obj():
 
 
 def test_give_classifier_wrong_obj():
-    # Define the ratio parameter
     ratio = 'auto'
     classifier = 2
-
-    # Create the sampling object
-    bc = BalanceCascade(
-        ratio=ratio,
-        random_state=RND_SEED,
-        return_indices=True,
-        estimator=classifier)
-
-    # Get the different subset
+    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+                        return_indices=True, estimator=classifier)
     assert_raises_regex(ValueError, "Invalid parameter `estimator`",
                         bc.fit_sample, X, Y)

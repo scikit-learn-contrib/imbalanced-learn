@@ -1,4 +1,8 @@
 """Test the module repeated edited nearest neighbour."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
@@ -8,7 +12,6 @@ from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import RepeatedEditedNearestNeighbours
 
-# Generate a global dataset to use
 RND_SEED = 0
 X = np.array([[-0.12840393, 0.66446571], [1.32319756, -0.13181616],
               [0.04296502, -0.37981873], [0.83631853, 0.18569783],
@@ -37,7 +40,6 @@ Y = np.array([
 
 
 def test_renn_init():
-    # Define a ratio
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
 
     assert_equal(renn.n_neighbors, 3)
@@ -47,7 +49,6 @@ def test_renn_init():
 
 
 def test_renn_iter_wrong():
-    # Create the object
     max_iter = -1
     renn = RepeatedEditedNearestNeighbours(
         max_iter=max_iter, random_state=RND_SEED)
@@ -55,7 +56,6 @@ def test_renn_iter_wrong():
 
 
 def test_renn_fit_sample():
-    # Resample the data
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
     X_resampled, y_resampled = renn.fit_sample(X, Y)
 
@@ -81,7 +81,6 @@ def test_renn_fit_sample():
 
 
 def test_renn_fit_sample_with_indices():
-    # Resample the data
     renn = RepeatedEditedNearestNeighbours(
         return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = renn.fit_sample(X, Y)
@@ -113,7 +112,6 @@ def test_renn_fit_sample_with_indices():
 
 
 def test_renn_fit_sample_mode_object():
-    # Resample the data
     renn = RepeatedEditedNearestNeighbours(
         random_state=RND_SEED, kind_sel='mode')
     X_resampled, y_resampled = renn.fit_sample(X, Y)
@@ -144,7 +142,6 @@ def test_renn_fit_sample_mode_object():
 
 
 def test_renn_fit_sample_mode():
-    # Resample the data
     nn = NearestNeighbors(n_neighbors=4)
     renn = RepeatedEditedNearestNeighbours(
         n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
@@ -176,7 +173,6 @@ def test_renn_fit_sample_mode():
 
 
 def test_renn_not_good_object():
-    # Resample the data
     nn = 'rnd'
     renn = RepeatedEditedNearestNeighbours(
         n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')

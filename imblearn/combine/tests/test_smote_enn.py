@@ -1,4 +1,8 @@
 """Test the module SMOTE ENN."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
@@ -9,7 +13,6 @@ from imblearn.combine import SMOTEENN
 from imblearn.under_sampling import EditedNearestNeighbours
 from imblearn.over_sampling import SMOTE
 
-# Generate a global dataset to use
 RND_SEED = 0
 X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
               [1.25192108, -0.22367336], [0.53366841, -0.30312976],
@@ -42,7 +45,6 @@ def test_sample_regular():
 
 
 def test_sample_regular_half():
-    # Create the object
     ratio = 0.8
     smote = SMOTEENN(ratio=ratio, random_state=RND_SEED)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
@@ -57,12 +59,10 @@ def test_sample_regular_half():
 
 
 def test_validate_estimator_init():
-    # Create a SMOTE and Tomek object
     smote = SMOTE(random_state=RND_SEED)
     enn = EditedNearestNeighbours(random_state=RND_SEED, ratio='all')
     smt = SMOTEENN(smote=smote, enn=enn, random_state=RND_SEED)
     X_resampled, y_resampled = smt.fit_sample(X, Y)
-
     X_gt = np.array([[1.52091956, -0.49283504],
                      [0.84976473, -0.15570176],
                      [0.61319159, -0.11571667],
@@ -77,9 +77,7 @@ def test_validate_estimator_init():
 
 def test_validate_estimator_default():
     smt = SMOTEENN(random_state=RND_SEED)
-
     X_resampled, y_resampled = smt.fit_sample(X, Y)
-
     X_gt = np.array([[1.52091956, -0.49283504],
                      [0.84976473, -0.15570176],
                      [0.61319159, -0.11571667],
@@ -95,7 +93,6 @@ def test_validate_estimator_default():
 def test_validate_estimator_deprecation():
     smt = SMOTEENN(random_state=RND_SEED, n_jobs=-1)
     X_resampled, y_resampled = smt.fit_sample(X, Y)
-
     X_gt = np.array([[1.52091956, -0.49283504],
                      [0.84976473, -0.15570176],
                      [0.61319159, -0.11571667],
@@ -106,7 +103,6 @@ def test_validate_estimator_deprecation():
     y_gt = np.array([0, 0, 0, 0, 1, 1, 1])
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
-
     smt = SMOTEENN(random_state=RND_SEED, k=5)
     X_resampled, y_resampled = smt.fit_sample(X, Y)
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
@@ -114,10 +110,8 @@ def test_validate_estimator_deprecation():
 
 
 def test_error_wrong_object():
-    # Create a SMOTE and Tomek object
     smote = 'rnd'
     enn = 'rnd'
-
     smt = SMOTEENN(smote=smote, random_state=RND_SEED)
     assert_raises_regex(ValueError, "smote needs to be a SMOTE",
                         smt.fit, X, Y)

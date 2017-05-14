@@ -1,4 +1,8 @@
 """Test the module ."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
@@ -8,7 +12,6 @@ from sklearn.ensemble import GradientBoostingClassifier
 
 from imblearn.under_sampling import InstanceHardnessThreshold
 
-# Generate a global dataset to use
 RND_SEED = 0
 X = np.array([[-0.3879569, 0.6894251], [-0.09322739, 1.28177189],
               [-0.77740357, 0.74097941], [0.91542919, -0.65453327],
@@ -40,7 +43,6 @@ def test_iht_init():
 
 
 def test_iht_fit_sample():
-    # Resample the data
     iht = InstanceHardnessThreshold(ESTIMATOR, random_state=RND_SEED)
     X_resampled, y_resampled = iht.fit_sample(X, Y)
 
@@ -222,7 +224,6 @@ def test_iht_fit_sample_gradient_boosting():
 
 
 def test_iht_fit_sample_linear_svm():
-    # Resample the data
     est = 'linear-svm'
     iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
     X_resampled, y_resampled = iht.fit_sample(X, Y)
@@ -267,7 +268,6 @@ def test_iht_fit_sample_class_obj():
 
 
 def test_iht_fit_sample_wrong_class_obj():
-    # Resample the data
     from sklearn.cluster import KMeans
     est = KMeans()
     iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)

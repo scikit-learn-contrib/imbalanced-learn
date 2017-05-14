@@ -1,3 +1,8 @@
+"""Test for the validation helper"""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from collections import Counter
 
 import numpy as np

@@ -1,3 +1,8 @@
+"""Test for score"""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from numpy.testing import assert_allclose
 
 import sklearn

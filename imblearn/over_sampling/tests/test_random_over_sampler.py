@@ -1,4 +1,8 @@
 """Test the module under sampler."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 from collections import Counter
@@ -8,9 +12,7 @@ from numpy.testing import assert_array_equal, assert_equal
 
 from imblearn.over_sampling import RandomOverSampler
 
-# Generate a global dataset to use
 RND_SEED = 0
-# Data generated for the toy example
 X = np.array([[0.04352327, -0.20515826], [0.92923648, 0.76103773],
               [0.20792588, 1.49407907], [0.47104475, 0.44386323],
               [0.22950086, 0.33367433], [0.15490546, 0.3130677],
@@ -20,20 +22,14 @@ Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 
 def test_ros_init():
-    # Define a ratio
     ratio = 'auto'
     ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
-
     assert_equal(ros.random_state, RND_SEED)
 
 
 def test_ros_fit_sample():
-    """Test the fit sample routine"""
-
-    # Resample the data
     ros = RandomOverSampler(random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_sample(X, Y)
-
     X_gt = np.array([[0.04352327, -0.20515826],
                      [0.92923648, 0.76103773],
                      [0.20792588, 1.49407907],
@@ -54,11 +50,9 @@ def test_ros_fit_sample():
 
 
 def test_ros_fit_sample_half():
-    # Resample the data
     ratio = 0.5
     ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_sample(X, Y)
-
     X_gt = np.array([[0.04352327, -0.20515826],
                      [0.92923648, 0.76103773],
                      [0.20792588, 1.49407907],
@@ -75,16 +69,11 @@ def test_ros_fit_sample_half():
 
 
 def test_multiclass_fit_sample():
-    # Make y to be multiclass
     y = Y.copy()
     y[5] = 2
     y[6] = 2
-
-    # Resample the data
     ros = RandomOverSampler(random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_sample(X, y)
-
-    # Check the size of y
     count_y_res = Counter(y_resampled)
     assert_equal(count_y_res[0], 5)
     assert_equal(count_y_res[1], 5)

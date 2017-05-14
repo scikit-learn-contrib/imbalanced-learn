@@ -1,4 +1,8 @@
 """Test the module one-sided selection."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
@@ -8,7 +12,6 @@ from sklearn.neighbors import KNeighborsClassifier
 
 from imblearn.under_sampling import OneSidedSelection
 
-# Generate a global dataset to use
 RND_SEED = 0
 X = np.array([[-0.3879569, 0.6894251], [-0.09322739, 1.28177189],
               [-0.77740357, 0.74097941], [0.91542919, -0.65453327],
@@ -22,7 +25,6 @@ Y = np.array([0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0])
 
 
 def test_oss_init():
-    # Define a ratio
     oss = OneSidedSelection(random_state=RND_SEED)
 
     assert_equal(oss.n_seeds_S, 1)
@@ -31,7 +33,6 @@ def test_oss_init():
 
 
 def test_oss_fit_sample():
-    # Resample the data
     oss = OneSidedSelection(random_state=RND_SEED)
     X_resampled, y_resampled = oss.fit_sample(X, Y)
 
@@ -47,7 +48,6 @@ def test_oss_fit_sample():
 
 
 def test_oss_fit_sample_with_indices():
-    # Resample the data
     oss = OneSidedSelection(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = oss.fit_sample(X, Y)
 
@@ -65,7 +65,6 @@ def test_oss_fit_sample_with_indices():
 
 
 def test_oss_with_object():
-    # Resample the data
     knn = KNeighborsClassifier(n_neighbors=1)
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
     X_resampled, y_resampled = oss.fit_sample(X, Y)
@@ -79,7 +78,6 @@ def test_oss_with_object():
     y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-    # Resample the data
     knn = 1
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
     X_resampled, y_resampled = oss.fit_sample(X, Y)
@@ -88,7 +86,6 @@ def test_oss_with_object():
 
 
 def test_oss_with_wrong_object():
-    # Resample the data
     knn = 'rnd'
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
     assert_raises_regex(ValueError, "has to be a int",
