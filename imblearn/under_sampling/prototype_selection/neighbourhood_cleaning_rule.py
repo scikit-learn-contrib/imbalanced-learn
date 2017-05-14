@@ -80,7 +80,7 @@ class NeighbourhoodCleaningRule(BaseUnderSampler, MultiClassSamplerMixin):
     >>> ncr = NeighbourhoodCleaningRule(random_state=42)
     >>> X_res, y_res = ncr.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 889, 0: 100})
+    Resampled dataset shape Counter({1: 877, 0: 100})
 
     References
     ----------

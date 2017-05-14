@@ -110,7 +110,7 @@ class BalanceCascade(BaseUnderSampler, MultiClassSamplerMixin):
     >>> bc = BalanceCascade(random_state=42)
     >>> X_res, y_res = bc.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res[0])))
-    Resampled dataset shape Counter({0: 100, 1: 100})
+    Resampled dataset shape Counter({1: 100, 0: 100})
 
     References
     ----------
