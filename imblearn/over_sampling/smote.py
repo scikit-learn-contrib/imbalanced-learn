@@ -287,12 +287,7 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
         """
         super(SMOTE, self).fit(X, y)
 
-        # self.smote_kind_ = {'regular': self._sample_regular,
-        #                     'borderline1': self._sample_borderline,
-        #                     'borderline2': self._sample_borderline,
-        #                     'svm': self._sample_svm}
-
-        if self.kind not in SMOTE_KIND:  # self.smote_kind_.keys():
+        if self.kind not in SMOTE_KIND:
             raise ValueError('Unknown kind for SMOTE algorithm.'
                              ' Choices are {}. Got {} instead.'.format(
                                  SMOTE_KIND, self.kind))
@@ -463,11 +458,6 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
            Knowledge Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.
 
         """
-        # The SVM smote model fits a support vector machine
-        # classifier to the data and uses the support vector to
-        # provide a notion of boundary. Unlike regular smote, where
-        # such notion relies on proportion of nearest neighbours
-        # belonging to each class.
         random_state = check_random_state(self.random_state)
         X_resampled = X.copy()
         y_resampled = y.copy()
@@ -550,5 +540,3 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
             return self._sample_borderline(X, y)
         elif self.kind == 'svm':
             return self._sample_svm(X, y)
-
-        # return self.smote_kind_[self.kind](X, y)
