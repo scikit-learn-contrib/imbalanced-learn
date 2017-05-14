@@ -16,6 +16,8 @@ from ..base import MultiClassSamplerMixin
 from ..utils import check_neighbors_object
 from ..exceptions import raise_isinstance_error
 
+SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
+
 
 class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
     """Class to perform over-sampling using SMOTE.
@@ -285,15 +287,15 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
         """
         super(SMOTE, self).fit(X, y)
 
-        self.smote_kind_ = {'regular': self._sample_regular,
-                            'borderline1': self._sample_borderline,
-                            'borderline2': self._sample_borderline,
-                            'svm': self._sample_svm}
+        # self.smote_kind_ = {'regular': self._sample_regular,
+        #                     'borderline1': self._sample_borderline,
+        #                     'borderline2': self._sample_borderline,
+        #                     'svm': self._sample_svm}
 
-        if self.kind not in self.smote_kind_.keys():
+        if self.kind not in SMOTE_KIND:  # self.smote_kind_.keys():
             raise ValueError('Unknown kind for SMOTE algorithm.'
                              ' Choices are {}. Got {} instead.'.format(
-                                 self.smote_kind_.keys(), self.kind))
+                                 SMOTE_KIND, self.kind))
 
         self._validate_estimator()
 
@@ -542,4 +544,11 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
             The corresponding label of `X_resampled`
 
         """
-        return self.smote_kind_[self.kind](X, y)
+        if self.kind == 'regular':
+            return self._sample_regular(X, y)
+        elif self.kind == 'borderline1' or self.kind == 'borderline2':
+            return self._sample_borderline(X, y)
+        elif self.kind == 'svm':
+            return self._sample_svm(X, y)
+
+        # return self.smote_kind_[self.kind](X, y)
