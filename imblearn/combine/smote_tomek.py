@@ -13,7 +13,6 @@ import warnings
 from ..base import MultiClassSamplerMixin
 from ..over_sampling import SMOTE
 from ..under_sampling import TomekLinks
-from ..pipeline import make_pipeline
 
 
 class SMOTETomek(MultiClassSamplerMixin):
@@ -257,4 +256,5 @@ class SMOTETomek(MultiClassSamplerMixin):
             The corresponding label of `X_resampled`
 
         """
-        return self.tomek_.fit_sample(self.smote_.sample(X, y))
+        X_res, y_res = self.smote_.sample(X, y)
+        return self.tomek_.fit_sample(X_res, y_res)
