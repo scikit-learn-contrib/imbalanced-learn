@@ -132,7 +132,7 @@ class NeighbourhoodCleaningRule(BaseUnderSampler, MultiClassSamplerMixin):
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 
-        if self.threshold_cleaning > 1 and self.threshold_cleaning < 0:
+        if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
             raise ValueError("'threshold_cleaning' is a value between 0 and 1."
                              " Got {} instead.".format(
                                  self.threshold_cleaning))
