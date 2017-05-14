@@ -1,3 +1,5 @@
+from collections import Counter
+
 import numpy as np
 
 from sklearn.neighbors.base import KNeighborsMixin
@@ -149,3 +151,17 @@ def test_ratio_float_under_sampling():
     ratio = 0.5
     ratio_ = check_ratio(ratio, y, 'under-sampling')
     assert_equal(ratio_, {1: 50, 2: 50})
+
+
+def test_ratio_callable():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+
+    def ratio_func(y):
+        # this function could create an equal number of samples
+        target_stats = Counter(y)
+        n_samples = max(target_stats.values())
+        return {key: int(n_samples)
+                for key in target_stats.keys()}
+
+    ratio_ = check_ratio(ratio_func, y, 'over-sampling')
+    assert_equal(ratio_, {1: 50, 2: 0, 3: 75})

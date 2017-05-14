@@ -191,21 +191,19 @@ def check_ratio(ratio, y, sampling_type):
     Parameters
     ----------
     ratio : str, dict or callable,
-        Input ratio.
+        Input ratio to resample the data set.
 
-        - If ``str``, has to be one of: (i) ``'minority'``: resample
-          the minority class; (ii) ``'majority'``: resample the
-          majority class, (i) ``'not minority'``: resample all classes
-          apart of the minority class, and (i) ``'all'``: resample all
-          classes.
-        - If ``dict``, key is the class target and value is either the
-          desired number of samples or the ratio corresponding to the
-          desired number of samples over the original number of
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class, (i)
+          ``'not minority'``: resample all classes apart of the minority class,
+          and (i) ``'all'``: resample all classes. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the key is the class target and the value is either the
+          desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The key is
+          the class target and the value is either the desired number of
           samples.
-        - If callable, it corresponds to a function which will define
-          the sampling behaviour given ``y``. It should return a
-          dictionary with the key being the class target and the value
-          being the desired number of samples.
 
     y : ndarray, shape (n_samples,)
         The target array.
@@ -243,6 +241,9 @@ def check_ratio(ratio, y, sampling_type):
             raise ValueError("When 'ratio' is a float, it should in the range"
                              " (0, 1]. Got {} instead.".format(ratio))
         return _ratio_float(ratio, y, sampling_type)
+    elif callable(ratio):
+        ratio_ = ratio(y)
+        return _ratio_dict(ratio_, y, sampling_type)
 
 
 RATIO_KIND = {'minority': _ratio_minority,
