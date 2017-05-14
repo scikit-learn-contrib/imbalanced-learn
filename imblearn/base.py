@@ -207,7 +207,6 @@ class BinarySamplerMixin(SamplerMixin):
 
         """
         super(BinarySamplerMixin, self).fit(X, y)
-        # Check that the target type is binary
         if not type_of_target(y) == 'binary':
             warnings.simplefilter('always', UserWarning)
             warnings.warn('The target type should be binary.')
@@ -241,7 +240,6 @@ class MultiClassSamplerMixin(SamplerMixin):
 
         """
         super(MultiClassSamplerMixin, self).fit(X, y)
-        # Check that the target type is either binary or multiclass
         if not (type_of_target(y) == 'binary' or
                 type_of_target(y) == 'multiclass'):
             warnings.simplefilter('always', UserWarning)

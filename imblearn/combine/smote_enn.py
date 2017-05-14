@@ -6,6 +6,7 @@
 
 from __future__ import division, print_function
 
+import logging
 import warnings
 
 from ..base import MultiClassSamplerMixin
@@ -171,6 +172,7 @@ class SMOTEENN(MultiClassSamplerMixin):
         self.n_neighbors = n_neighbors
         self.kind_enn = kind_enn
         self.n_jobs = n_jobs
+        self.logger = logging.getLogger(__name__)
 
     def _validate_estimator(self):
         "Private function to validate SMOTE and ENN objects"
@@ -272,8 +274,7 @@ class SMOTEENN(MultiClassSamplerMixin):
 
         self._validate_estimator()
 
-        self.pipeline_ = make_pipeline(self.smote_, self.enn_)
-        self.pipeline_.fit(X, y)
+        self.smote_.fit(X, y)
         # emulate that we fitted the object
         self.ratio_ = self.ratio
 
@@ -299,4 +300,4 @@ class SMOTEENN(MultiClassSamplerMixin):
             The corresponding label of `X_resampled`
 
         """
-        return self.pipeline_.sample(X, y)
+        return self.enn_.fit_sample(self.smote_.sample(X, y))

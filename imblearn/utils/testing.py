@@ -19,12 +19,10 @@ META_ESTIMATORS = []
 # estimators that there is no way to default-construct sensibly
 OTHER = ["Pipeline", "FeatureUnion"]
 # some strange ones
-DONT_TEST = []
+DONT_TEST = []  # ["SMOTETomek", "SMOTEENN"]
 
 # binary samplers
-BINARY_ESTIMATORS = ["BalanceCascade", "ADASYN", "SMOTE", "SMOTEENN",
-                     "SMOTETomek", "InstanceHardnessThreshold",
-                     "OneSidedSelection", "TomekLinks"]
+BINARY_ESTIMATORS = []
 
 
 def all_estimators(include_meta_estimators=False,

@@ -25,24 +25,16 @@ R_TOL = 1e-4
 
 
 def test_ada_init():
-    # Define a ratio
     ratio = 'auto'
     ada = ADASYN(ratio=ratio, random_state=RND_SEED)
-
     assert_equal(ada.random_state, RND_SEED)
 
 
 def test_ada_fit():
-    # Create the object
     ada = ADASYN(random_state=RND_SEED)
-    # Fit the data
     ada.fit(X, Y)
-
-    # Check if the data information have been computed
-    assert_equal(ada.min_c_, 0)
-    assert_equal(ada.maj_c_, 1)
-    assert_equal(ada.stats_c_[0], 8)
-    assert_equal(ada.stats_c_[1], 12)
+    assert_equal(ada.ratio_, {0: 4, 1: 0})
+    assert_equal(ada.X_shape_, (20, 2))
 
 
 def test_ada_fit_sample():

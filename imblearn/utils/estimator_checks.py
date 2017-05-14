@@ -15,8 +15,7 @@ from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import (assert_warns, assert_raises_regex,
-                                   assert_equal, assert_true,
-                                   set_random_state)
+                                   assert_true, set_random_state)
 
 from imblearn.base import SamplerMixin
 from imblearn.utils.testing import binary_estimators, multiclass_estimators
@@ -31,8 +30,6 @@ def _yield_sampler_checks(name, Estimator):
         yield check_multiclass_warning
     if name in multiclass_samplers:
         yield check_continuous_warning
-    if 'ratio' in Estimator().get_params().keys():
-        yield check_samplers_ratio_error
     yield check_samplers_one_label
     yield check_samplers_no_fit_error
     yield check_samplers_X_consistancy_sample
@@ -177,50 +174,20 @@ def check_samplers_no_fit_error(name, Sampler):
                         sampler.sample, X, y)
 
 
-def check_samplers_ratio_error(name, Sampler):
-    sampler = Sampler()
-    X = np.random.random((20, 2))
-    y = np.array([1] * 5 + [0] * 15)
-
-    ratio = 1000
-    sampler.set_params(**{'ratio': ratio})
-    assert_raises_regex(ValueError, "Ratio cannot be greater than one.",
-                        sampler.fit, X, y)
-    ratio = -1.0
-    sampler.set_params(**{'ratio': ratio})
-    assert_raises_regex(ValueError, "Ratio cannot be negative.",
-                        sampler.fit, X, y)
-    ratio = 'rnd'
-    sampler.set_params(**{'ratio': ratio})
-    assert_raises_regex(ValueError, "Unknown string for the parameter ratio.",
-                        sampler.fit, X, y)
-    ratio = [.5, .5]
-    sampler.set_params(**{'ratio': ratio})
-    assert_raises_regex(ValueError, "Unknown parameter type for ratio.",
-                        sampler.fit, X, y)
-    ratio = 1 / 1000
-    sampler.set_params(**{'ratio': ratio})
-    assert_raises_regex(RuntimeError, "The ratio requested at initialisation",
-                        sampler.fit, X, y)
-
-
 def check_samplers_X_consistancy_sample(name, Sampler):
     sampler = Sampler()
-    X = np.random.random((20, 2))
-    y = np.array([1] * 15 + [0] * 5)
+    X = np.random.random((30, 2))
+    y = np.array([1] * 20 + [0] * 10)
     sampler.fit(X, y)
-    X_different = np.random.random((30, 2))
-    y_different = y = np.array([1] * 15 + [0] * 15)
+    X_different = np.random.random((40, 2))
+    y_different = y = np.array([1] * 25 + [0] * 15)
     assert_raises_regex(RuntimeError, "to be the one earlier fitted",
                         sampler.sample, X_different, y_different)
 
 
 def check_samplers_fit(name, Sampler):
     sampler = Sampler()
-    X = np.random.random((20, 2))
-    y = np.array([1] * 15 + [0] * 5)
+    X = np.random.random((30, 2))
+    y = np.array([1] * 20 + [0] * 10)
     sampler.fit(X, y)
-    assert_equal(sampler.min_c_, 0)
-    assert_equal(sampler.maj_c_, 1)
-    assert_equal(sampler.stats_c_[0], 5)
-    assert_equal(sampler.stats_c_[1], 15)
+    assert_true(hasattr(sampler, 'ratio_'))

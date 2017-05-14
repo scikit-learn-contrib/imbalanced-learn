@@ -8,12 +8,13 @@ import numpy as np
 from sklearn.utils import check_random_state
 
 from ..base import MultiClassSamplerMixin
+from ..under_sampling.base import BaseUnderSampler
 from ..under_sampling import RandomUnderSampler
 
 MAX_INT = np.iinfo(np.int32).max
 
 
-class EasyEnsemble(MultiClassSamplerMixin):
+class EasyEnsemble(BaseUnderSampler, MultiClassSamplerMixin):
     """Create an ensemble sets by iteratively applying random under-sampling.
 
     This method iteratively select a random subset and make an ensemble of the
@@ -111,7 +112,6 @@ class EasyEnsemble(MultiClassSamplerMixin):
 
         """
         super(EasyEnsemble, self).fit(X, y)
-        self.ratio_ = self.ratio
 
         return self
 
