@@ -2,6 +2,7 @@
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
+import warnings
 from collections import Counter
 from numbers import Real
 
@@ -122,25 +123,39 @@ def _ratio_auto(y, sampling_type):
 def _ratio_dict(ratio, y, sampling_type):
     """Returns ratio by converting the dictionary depending of the sampling."""
     target_stats = Counter(y)
+    # check that all keys in ratio are also in y
+    set_diff_ratio_target = set(ratio.keys()) - set(target_stats.keys())
+    if len(set_diff_ratio_target) > 0:
+        raise ValueError("The {} target class is/are not present in the"
+                         " data.".format(set_diff_ratio_target))
     ratio_ = {}
-    if sampling_type == 'over_sampling':
+    if sampling_type == 'over-sampling':
+        n_samples_majority = max(target_stats.values())
+        class_majority = max(target_stats, key=target_stats.get)
         for class_sample, n_samples in ratio.items():
             if n_samples < target_stats[class_sample]:
                 raise ValueError("With over-sampling methods, the number"
                                  " of samples in a class should be greater"
                                  " or equal to the original number of samples."
                                  " Originally, there is {} samples and {}"
-                                 " samples are required.".format(
+                                 " samples are asked.".format(
                                      target_stats[class_sample], n_samples))
+            if n_samples > n_samples_majority:
+                warnings.warn("After over-sampling, the number of samples ({})"
+                              " in class {} will be larger than the number of"
+                              " samples in the majority class (class #{} ->"
+                              " {})".format(n_samples, class_sample,
+                                            class_majority,
+                                            n_samples_majority))
             ratio_[class_sample] = n_samples - target_stats[class_sample]
-    elif sampling_type == 'under_sampling':
+    elif sampling_type == 'under-sampling':
         for class_sample, n_samples in ratio.items():
             if n_samples > target_stats[class_sample]:
                 raise ValueError("With under-sampling methods, the number of"
                                  " samples in a class should be less or equal"
                                  " to the original number of samples."
                                  " Originally, there is {} samples and {}"
-                                 " samples are required.".format(
+                                 " samples are asked.".format(
                                      target_stats[class_sample], n_samples))
             ratio_[class_sample] = n_samples
 

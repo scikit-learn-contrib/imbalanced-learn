@@ -3,7 +3,8 @@ import numpy as np
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 
-from sklearn.utils.testing import assert_equal, assert_raises_regex
+from sklearn.utils.testing import (assert_equal, assert_raises_regex,
+                                   assert_warns_message)
 
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_ratio
@@ -49,8 +50,6 @@ def test_ratio_all_under_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = check_ratio('all', y, 'under-sampling')
     assert_equal(ratio, {1: 25, 2: 25, 3: 25})
-    ratio = check_ratio('auto', y, 'under-sampling')
-    assert_equal(ratio, {1: 25, 2: 25, 3: 25})
 
 
 def test_ratio_majority_over_sampling():
@@ -75,6 +74,8 @@ def test_ratio_not_minority_under_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = check_ratio('not minority', y, 'under-sampling')
     assert_equal(ratio, {1: 25, 2: 25})
+    ratio = check_ratio('auto', y, 'under-sampling')
+    assert_equal(ratio, {1: 25, 2: 25})
 
 
 def test_ratio_minority_over_sampling():
@@ -87,3 +88,40 @@ def test_ratio_minority_under_sampling():
     assert_raises_regex(ValueError, "'ratio'='minority' can be used with"
                         " under-sampler.", check_ratio, 'minority',
                         np.array([1, 2, 3]), 'under-sampling')
+
+
+def test_ratio_dict_error():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = {10: 10}
+    assert_raises_regex(ValueError, "are not present in the data.",
+                        check_ratio, ratio, y, 'over-sampling')
+    ratio = {1: 45, 2: 100, 3: 70}
+    assert_raises_regex(ValueError, "With over-sampling methods, the number"
+                        " of samples in a class should be greater or equal"
+                        " to the original number of samples. Originally,"
+                        " there is 50 samples and 45 samples are asked.",
+                        check_ratio, ratio, y, 'over-sampling')
+    assert_raises_regex(ValueError, "With under-sampling methods, the number"
+                        " of samples in a class should be less or equal"
+                        " to the original number of samples. Originally,"
+                        " there is 25 samples and 70 samples are asked.",
+                        check_ratio, ratio, y, 'under-sampling')
+
+
+def test_ratio_dict_over_sampling():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = {1: 70, 2: 100, 3: 70}
+    ratio_ = check_ratio(ratio, y, 'over-sampling')
+    assert_equal(ratio_, {1: 20, 2: 0, 3: 45})
+    ratio = {1: 70, 2: 140, 3: 70}
+    assert_warns_message(UserWarning, "After over-sampling, the number of"
+                         " samples (140) in class 2 will be larger than the"
+                         " number of samples in the majority class (class #2"
+                         " -> 100)", check_ratio, ratio, y, 'over-sampling')
+
+
+def test_ratio_dict_under_sampling():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = {1: 30, 2: 45, 3: 25}
+    ratio_ = check_ratio(ratio, y, 'under-sampling')
+    assert_equal(ratio_, ratio)
