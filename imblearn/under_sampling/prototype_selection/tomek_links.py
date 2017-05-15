@@ -11,10 +11,10 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
 from ...base import MultiClassSamplerMixin
-from ..base import BaseUnderSampler
+from ..base import BaseCleaningSampler
 
 
-class TomekLinks(BaseUnderSampler, MultiClassSamplerMixin):
+class TomekLinks(BaseCleaningSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling by removing Tomek's links.
 
     Parameters

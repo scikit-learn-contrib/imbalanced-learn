@@ -15,13 +15,13 @@ import numpy as np
 from scipy.stats import mode
 
 from ...base import MultiClassSamplerMixin
-from ..base import BaseUnderSampler
+from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
 
 SEL_KIND = ('all', 'mode')
 
 
-class EditedNearestNeighbours(BaseUnderSampler, MultiClassSamplerMixin):
+class EditedNearestNeighbours(BaseCleaningSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
 
@@ -223,7 +223,7 @@ class EditedNearestNeighbours(BaseUnderSampler, MultiClassSamplerMixin):
             return X_resampled, y_resampled
 
 
-class RepeatedEditedNearestNeighbours(BaseUnderSampler,
+class RepeatedEditedNearestNeighbours(BaseCleaningSampler,
                                       MultiClassSamplerMixin):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
@@ -367,7 +367,6 @@ class RepeatedEditedNearestNeighbours(BaseUnderSampler,
             Return self.
 
         """
-
         super(RepeatedEditedNearestNeighbours, self).fit(X, y)
         self._validate_estimator()
 
@@ -464,7 +463,7 @@ class RepeatedEditedNearestNeighbours(BaseUnderSampler,
             return X_resampled, y_resampled
 
 
-class AllKNN(BaseUnderSampler, MultiClassSamplerMixin):
+class AllKNN(BaseCleaningSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling based on the AllKNN method.
 
     Parameters
@@ -558,13 +557,14 @@ class AllKNN(BaseUnderSampler, MultiClassSamplerMixin):
     """
 
     def __init__(self,
+                 ratio='auto',
                  return_indices=False,
                  random_state=None,
                  size_ngh=None,
                  n_neighbors=3,
                  kind_sel='all',
                  n_jobs=-1):
-        super(AllKNN, self).__init__(random_state=random_state)
+        super(AllKNN, self).__init__(ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
@@ -574,6 +574,7 @@ class AllKNN(BaseUnderSampler, MultiClassSamplerMixin):
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
         self.enn_ = EditedNearestNeighbours(
+            ratio=self.ratio,
             return_indices=self.return_indices,
             random_state=self.random_state,
             n_neighbors=self.n_neighbors,

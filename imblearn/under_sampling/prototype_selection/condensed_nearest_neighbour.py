@@ -14,10 +14,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state
 
 from ...base import MultiClassSamplerMixin
-from ..base import BaseUnderSampler
+from ..base import BaseCleaningSampler
 
 
-class CondensedNearestNeighbour(BaseUnderSampler, MultiClassSamplerMixin):
+class CondensedNearestNeighbour(BaseCleaningSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling based on the condensed nearest neighbour
     method.
 

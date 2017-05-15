@@ -19,7 +19,7 @@ META_ESTIMATORS = []
 # estimators that there is no way to default-construct sensibly
 OTHER = ["Pipeline", "FeatureUnion"]
 # some strange ones
-DONT_TEST = []  # ["SMOTETomek", "SMOTEENN"]
+DONT_TEST = []
 
 # binary samplers
 BINARY_ESTIMATORS = []

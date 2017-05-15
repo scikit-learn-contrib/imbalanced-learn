@@ -12,14 +12,14 @@ import numpy as np
 from scipy.stats import mode
 
 from ...base import MultiClassSamplerMixin
-from ..base import BaseUnderSampler
+from ..base import BaseCleaningSampler
 from .edited_nearest_neighbours import EditedNearestNeighbours
 from ...utils import check_neighbors_object
 
 SEL_KIND = ('all', 'mode')
 
 
-class NeighbourhoodCleaningRule(BaseUnderSampler, MultiClassSamplerMixin):
+class NeighbourhoodCleaningRule(BaseCleaningSampler, MultiClassSamplerMixin):
     """Class performing under-sampling based on the neighbourhood cleaning
     rule.
 
