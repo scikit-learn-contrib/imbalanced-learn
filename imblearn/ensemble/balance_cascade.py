@@ -17,11 +17,11 @@ from sklearn.utils import check_random_state
 from sklearn.externals.six import string_types
 from sklearn.model_selection import cross_val_predict
 
+from .base import BaseEnsembleSampler
 from ..base import MultiClassSamplerMixin
-from ..under_sampling.base import BaseUnderSampler
 
 
-class BalanceCascade(BaseUnderSampler, MultiClassSamplerMixin):
+class BalanceCascade(BaseEnsembleSampler, MultiClassSamplerMixin):
     """Create an ensemble of balanced sets by iteratively under-sampling the
     imbalanced dataset using an estimator.
 
@@ -138,7 +138,6 @@ class BalanceCascade(BaseUnderSampler, MultiClassSamplerMixin):
         self.estimator = estimator
         self.n_max_subset = n_max_subset
         self.kwargs = kwargs
-        self.logger = logging.getLogger(__name__)
 
     def _validate_estimator(self):
         """Private function to create the classifier"""

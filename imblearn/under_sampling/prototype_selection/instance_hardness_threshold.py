@@ -18,7 +18,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.externals.six import string_types
 
 from ...base import MultiClassSamplerMixin
-from ..base import BaseUnderSampler
+from ..base import BaseCleaningSampler
 
 
 def _get_cv_splits(X, y, cv, random_state):
@@ -34,7 +34,7 @@ def _get_cv_splits(X, y, cv, random_state):
     return cv_iterator
 
 
-class InstanceHardnessThreshold(BaseUnderSampler, MultiClassSamplerMixin):
+class InstanceHardnessThreshold(BaseCleaningSampler, MultiClassSamplerMixin):
     """Class to perform under-sampling based on the instance hardness
     threshold.
 

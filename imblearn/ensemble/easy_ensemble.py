@@ -1,4 +1,4 @@
-"""Class to perform under-sampling u3sing easy ensemble."""
+"""Class to perform under-sampling using easy ensemble."""
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
@@ -8,13 +8,13 @@ import numpy as np
 from sklearn.utils import check_random_state
 
 from ..base import MultiClassSamplerMixin
-from ..under_sampling.base import BaseUnderSampler
+from .base import BaseEnsembleSampler
 from ..under_sampling import RandomUnderSampler
 
 MAX_INT = np.iinfo(np.int32).max
 
 
-class EasyEnsemble(BaseUnderSampler, MultiClassSamplerMixin):
+class EasyEnsemble(BaseEnsembleSampler, MultiClassSamplerMixin):
     """Create an ensemble sets by iteratively applying random under-sampling.
 
     This method iteratively select a random subset and make an ensemble of the
@@ -98,9 +98,8 @@ class EasyEnsemble(BaseUnderSampler, MultiClassSamplerMixin):
                  random_state=None,
                  replacement=False,
                  n_subsets=10):
-        super(EasyEnsemble, self).__init__()
-        self.ratio = ratio
-        self.random_state = random_state
+        super(EasyEnsemble, self).__init__(ratio=ratio,
+                                           random_state=random_state)
         self.return_indices = return_indices
         self.replacement = replacement
         self.n_subsets = n_subsets
@@ -123,6 +122,7 @@ class EasyEnsemble(BaseUnderSampler, MultiClassSamplerMixin):
 
         """
         super(EasyEnsemble, self).fit(X, y)
+        # emulate fitting
 
         return self
 

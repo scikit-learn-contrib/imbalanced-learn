@@ -8,8 +8,12 @@ from __future__ import division
 
 import sys
 import traceback
+
+from collections import Counter
+
 import numpy as np
 
+from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
@@ -18,6 +22,9 @@ from sklearn.utils.testing import (assert_warns, assert_raises_regex,
                                    assert_true, set_random_state)
 
 from imblearn.base import SamplerMixin
+from imblearn.over_sampling.base import BaseOverSampler
+from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
+from imblearn.ensemble.base import BaseEnsembleSampler
 from imblearn.utils.testing import binary_estimators, multiclass_estimators
 
 
@@ -34,6 +41,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_no_fit_error
     yield check_samplers_X_consistancy_sample
     yield check_samplers_fit
+    yield check_samplers_fit_sample
 
 
 def _yield_all_checks(name, Estimator):
@@ -191,3 +199,28 @@ def check_samplers_fit(name, Sampler):
     y = np.array([1] * 20 + [0] * 10)
     sampler.fit(X, y)
     assert_true(hasattr(sampler, 'ratio_'))
+
+
+def check_samplers_fit_sample(name, Sampler):
+    sampler = Sampler(random_state=0)
+    X, y = make_classification(n_samples=1000, n_classes=3,
+                               n_informative=4, weights=[0.2, 0.3, 0.5],
+                               random_state=0)
+    target_stats = Counter(y)
+    X_res, y_res = sampler.fit_sample(X, y)
+    if isinstance(sampler, BaseOverSampler):
+        target_stats_res = Counter(y_res)
+        n_samples = max(target_stats.values())
+        assert_true(all(value >= n_samples
+                        for value in Counter(y_res).values()))
+    elif isinstance(sampler, BaseUnderSampler):
+        n_samples = min(target_stats.values())
+        assert_true(all(value == n_samples
+                        for value in Counter(y_res).values()))
+    elif isinstance(sampler, BaseCleaningSampler):
+        target_stats_res = Counter(y_res)
+        class_minority = min(target_stats, key=target_stats.get)
+        assert_true(
+            all(target_stats[class_sample] > target_stats_res[class_sample]
+                for class_sample in target_stats.keys()
+                if class_sample != class_minority))

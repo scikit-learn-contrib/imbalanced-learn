@@ -178,7 +178,7 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
                                    ' suited for this specific dataset.'
                                    ' Use SMOTE instead.')
             ratio_nn /= np.sum(ratio_nn)
-            n_samples_generate = np.round(ratio_nn * n_samples).astype(int)
+            n_samples_generate = np.rint(ratio_nn * n_samples).astype(int)
 
             for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
                                                  n_samples_generate):

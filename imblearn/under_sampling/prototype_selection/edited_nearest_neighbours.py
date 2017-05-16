@@ -436,11 +436,17 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler,
                 val for val, key in zip(stats_enn.values(), stats_enn.keys())
                 if key != class_minority
             ])
+            self.logger.debug(count_non_min)
+            self.logger.debug(target_stats[class_minority])
             b_min_bec_maj = np.any(count_non_min <
                                    target_stats[class_minority])
 
             # Case 3
             b_remove_maj_class = (len(stats_enn) < len(target_stats))
+
+            X_, y_, = X_enn, y_enn
+            if self.return_indices:
+                idx_under = idx_under[idx_enn]
 
             if b_conv or b_min_bec_maj or b_remove_maj_class:
                 if b_conv:
@@ -451,11 +457,8 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler,
                         X_, y_, = X_enn, y_enn
                 break
 
-            X_, y_, = X_enn, y_enn
-            if self.return_indices:
-                idx_under = idx_under[idx_enn]
-
         X_resampled, y_resampled = X_, y_
+        self.logger.debug(Counter(y_enn))
 
         if self.return_indices:
             return X_resampled, y_resampled, idx_under
@@ -663,12 +666,12 @@ class AllKNN(BaseCleaningSampler, MultiClassSamplerMixin):
             # Case 2
             b_remove_maj_class = (len(stats_enn) < len(target_stats))
 
-            if b_min_bec_maj or b_remove_maj_class:
-                break
-
             X_, y_, = X_enn, y_enn
             if self.return_indices:
                 idx_under = idx_under[idx_enn]
+
+            if b_min_bec_maj or b_remove_maj_class:
+                break
 
         X_resampled, y_resampled = X_, y_
 
