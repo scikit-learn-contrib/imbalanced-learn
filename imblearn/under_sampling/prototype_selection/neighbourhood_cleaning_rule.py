@@ -217,9 +217,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler, MultiClassSamplerMixin):
         selected_samples[union_a1_a2] = False
         index_target_class = np.flatnonzero(selected_samples)
 
-        self.logger.info('Under-sampling performed: %s', Counter(
-            y[index_target_class]))
-
         if self.return_indices:
             return (X[index_target_class], y[index_target_class],
                     index_target_class)

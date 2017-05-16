@@ -77,6 +77,6 @@ class BaseCleaningSampler(SamplerMixin):
         """
         super(BaseCleaningSampler, self).fit(X, y)
 
-        self.ratio_ = check_ratio(self.ratio, y, 'under-sampling')
+        self.ratio_ = check_ratio(self.ratio, y, 'cleaning-sampling')
 
         return self

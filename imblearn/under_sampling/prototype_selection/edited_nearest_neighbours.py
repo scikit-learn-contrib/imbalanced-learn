@@ -413,8 +413,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler,
 
         for n_iter in range(self.max_iter):
 
-            self.logger.debug('Apply ENN iteration #%s', n_iter + 1)
-
             prev_len = y_.shape[0]
             if self.return_indices:
                 X_enn, y_enn, idx_enn = self.enn_.fit_sample(X_, y_)
@@ -436,8 +434,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler,
                 val for val, key in zip(stats_enn.values(), stats_enn.keys())
                 if key != class_minority
             ])
-            self.logger.debug(count_non_min)
-            self.logger.debug(target_stats[class_minority])
             b_min_bec_maj = np.any(count_non_min <
                                    target_stats[class_minority])
 
@@ -458,7 +454,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler,
                 break
 
         X_resampled, y_resampled = X_, y_
-        self.logger.debug(Counter(y_enn))
 
         if self.return_indices:
             return X_resampled, y_resampled, idx_under

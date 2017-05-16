@@ -185,11 +185,6 @@ class NearMiss(BaseUnderSampler, MultiClassSamplerMixin):
         # Compute the distance considering the farthest neighbour
         dist_avg_vec = np.sum(dist_vec[:, -self.nn_.n_neighbors:], axis=1)
 
-        self.logger.debug('The size of the distance matrix is %s',
-                          dist_vec.shape)
-        self.logger.debug('The size of the samples that can be selected is %s',
-                          X[y == key].shape)
-
         if dist_vec.shape[0] != X[y == key].shape[0]:
             raise RuntimeError('The samples to be selected do not correspond'
                                ' to the distance matrix given. Ensure that'

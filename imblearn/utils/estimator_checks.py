@@ -19,7 +19,8 @@ from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import (assert_warns, assert_raises_regex,
-                                   assert_true, set_random_state)
+                                   assert_true, set_random_state,
+                                   assert_equal)
 
 from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
@@ -42,6 +43,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_X_consistancy_sample
     yield check_samplers_fit
     yield check_samplers_fit_sample
+    yield check_samplers_ratio_fit_sample
 
 
 def _yield_all_checks(name, Estimator):
@@ -224,3 +226,38 @@ def check_samplers_fit_sample(name, Sampler):
             all(target_stats[class_sample] > target_stats_res[class_sample]
                 for class_sample in target_stats.keys()
                 if class_sample != class_minority))
+    elif isinstance(sampler, BaseEnsembleSampler):
+        y_ensemble = y_res[0]
+        n_samples = min(target_stats.values())
+        assert_true(all(value == n_samples
+                        for value in Counter(y_ensemble).values()))
+
+
+def check_samplers_ratio_fit_sample(name, Sampler):
+    # in this test we will force all samplers to not change the class 1
+    X, y = make_classification(n_samples=1000, n_classes=3,
+                               n_informative=4, weights=[0.2, 0.3, 0.5],
+                               random_state=0)
+    target_stats = Counter(y)
+    sampler = Sampler(random_state=0)
+    if isinstance(sampler, BaseOverSampler):
+        ratio = {2: 498, 0: 498}
+        sampler.set_params(ratio=ratio)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_equal(target_stats[1], Counter(y_res)[1])
+    elif isinstance(sampler, BaseUnderSampler):
+        ratio = {2: 201, 0: 201}
+        sampler.set_params(ratio=ratio)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_equal(target_stats[1], Counter(y_res)[1])
+    elif isinstance(sampler, BaseCleaningSampler):
+        ratio = {2: 201, 0: 201}
+        sampler.set_params(ratio=ratio)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_equal(target_stats[1], Counter(y_res)[1])
+    elif isinstance(sampler, BaseEnsembleSampler):
+        ratio = {2: 201, 0: 201}
+        sampler.set_params(ratio=ratio)
+        X_res, y_res = sampler.fit_sample(X, y)
+        y_ensemble = y_res[0]
+        assert_equal(target_stats[1], Counter(y_ensemble)[1])

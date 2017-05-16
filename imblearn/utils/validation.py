@@ -15,7 +15,7 @@ from sklearn.utils import deprecated
 
 from ..exceptions import raise_isinstance_error
 
-SAMPLING_KIND = ('over-sampling', 'under-sampling')
+SAMPLING_KIND = ('over-sampling', 'under-sampling', 'cleaning-sampling')
 
 
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
@@ -57,7 +57,8 @@ def _ratio_all(y, sampling_type):
         n_sample_majority = max(target_stats.values())
         ratio = {key: n_sample_majority - value
                  for (key, value) in target_stats.items()}
-    elif sampling_type == 'under-sampling':
+    elif (sampling_type == 'under-sampling' or
+          sampling_type == 'cleaning-sampling'):
         n_sample_minority = min(target_stats.values())
         ratio = {key: n_sample_minority for key in target_stats.keys()}
 
@@ -69,7 +70,8 @@ def _ratio_majority(y, sampling_type):
     if sampling_type == 'over-sampling':
         raise ValueError("'ratio'='majority' cannot be used with"
                          " over-sampler.")
-    elif sampling_type == 'under-sampling':
+    elif (sampling_type == 'under-sampling' or
+          sampling_type == 'cleaning-sampling'):
         target_stats = Counter(y)
         class_majority = max(target_stats, key=target_stats.get)
         n_sample_minority = min(target_stats.values())
@@ -89,7 +91,8 @@ def _ratio_not_minority(y, sampling_type):
         ratio = {key: n_sample_majority - value
                  for (key, value) in target_stats.items()
                  if key != class_minority}
-    elif sampling_type == 'under-sampling':
+    elif (sampling_type == 'under-sampling' or
+          sampling_type == 'cleaning-sampling'):
         n_sample_minority = min(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
         ratio = {key: n_sample_minority
@@ -108,9 +111,10 @@ def _ratio_minority(y, sampling_type):
         ratio = {key: n_sample_majority - value
                  for (key, value) in target_stats.items()
                  if key == class_minority}
-    elif sampling_type == 'under-sampling':
+    elif (sampling_type == 'under-sampling' or
+          sampling_type == 'cleaning-sampling'):
         raise ValueError("'ratio'='minority' cannot be used with"
-                         " under-sampler.")
+                         " under-sampler and cleaning-sampler.")
 
     return ratio
 
@@ -120,7 +124,8 @@ def _ratio_auto(y, sampling_type):
     under-sampling."""
     if sampling_type == 'over-sampling':
         return _ratio_all(y, sampling_type)
-    elif sampling_type == 'under-sampling':
+    elif (sampling_type == 'under-sampling' or
+          sampling_type == 'cleaning-sampling'):
         return _ratio_not_minority(y, sampling_type)
 
 
@@ -162,6 +167,11 @@ def _ratio_dict(ratio, y, sampling_type):
                                  " samples are asked.".format(
                                      target_stats[class_sample], n_samples))
             ratio_[class_sample] = n_samples
+    elif sampling_type == 'cleaning-sampling':
+        # cleaning-sampling can be more permissive since those samplers do not
+        # use samples
+        for class_sample, n_samples in ratio.items():
+            ratio_[class_sample] = n_samples
 
     return ratio_
 
@@ -178,7 +188,8 @@ def _ratio_float(ratio, y, sampling_type):
         ratio = {key: int(n_sample_majority * ratio - value)
                  for (key, value) in target_stats.items()
                  if key != class_majority}
-    elif sampling_type == 'under-sampling':
+    elif (sampling_type == 'under-sampling' or
+          sampling_type == 'cleaning-sampling'):
         n_sample_minority = min(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
         ratio = {key: int(n_sample_minority / ratio)

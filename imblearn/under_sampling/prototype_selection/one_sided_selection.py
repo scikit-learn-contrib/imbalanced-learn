@@ -242,7 +242,8 @@ class OneSidedSelection(BaseCleaningSampler, MultiClassSamplerMixin):
 
         links = TomekLinks.is_tomek(y_resampled, nns,
                                     [c for c in np.unique(y)
-                                     if c != class_minority])
+                                     if (c != class_minority and
+                                         c in self.ratio_.keys())])
         if self.return_indices:
             return (X_resampled[np.logical_not(links)],
                     y_resampled[np.logical_not(links)],
