@@ -161,7 +161,6 @@ class BinarySamplerMixin(object):
     def _sample(self, X, y):
         super(BinarySamplerMixin, self)._sample(X, y)
         if not type_of_target(y) == 'binary':
-            warnings.simplefilter('always', UserWarning)
             warnings.warn('The target type should be binary.')
 
         return self
@@ -179,7 +178,6 @@ class MultiClassSamplerMixin(object):
         super(MultiClassSamplerMixin, self)._sample(X, y)
         if not (type_of_target(y) == 'binary' or
                 type_of_target(y) == 'multiclass'):
-            warnings.simplefilter('always', UserWarning)
             warnings.warn('The target type should be binary or multiclass.')
 
         return self
