@@ -36,7 +36,7 @@ VERSION_NEARMISS = (1, 2, 3)
 # FIXME remove at the end of the deprecation 0.4
 def test_nearmiss_deprecation():
     nm = NearMiss(ver3_samp_ngh=3, version=3)
-    assert_warns(DeprecationWarning, nm.fit, X, Y)
+    assert_warns(DeprecationWarning, nm.fit_sample, X, Y)
 
 
 def test_nearmiss_wrong_version():

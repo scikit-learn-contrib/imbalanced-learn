@@ -33,16 +33,16 @@ def _yield_sampler_checks(name, Estimator):
     # Get only the name of binary and multiclass samplers
     binary_samplers = tuple([c[0] for c in binary_estimators()])
     multiclass_samplers = tuple([c[0] for c in multiclass_estimators()])
-    if name in binary_samplers:
-        yield check_continuous_warning
-        yield check_multiclass_warning
-    if name in multiclass_samplers:
-        yield check_continuous_warning
-    yield check_samplers_one_label
-    yield check_samplers_no_fit_error
-    yield check_samplers_X_consistancy_sample
-    yield check_samplers_fit
-    yield check_samplers_fit_sample
+    # if name in binary_samplers:
+    #     yield check_continuous_warning
+    #     yield check_multiclass_warning
+    # if name in multiclass_samplers:
+    #     yield check_continuous_warning
+    # yield check_samplers_one_label
+    # yield check_samplers_no_fit_error
+    # yield check_samplers_X_consistancy_sample
+    # yield check_samplers_fit
+    # yield check_samplers_fit_sample
     yield check_samplers_ratio_fit_sample
 
 

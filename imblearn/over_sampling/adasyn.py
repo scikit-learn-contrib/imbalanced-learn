@@ -110,30 +110,6 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(ADASYN, self).fit(X, y)
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
-
-        return self
-
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -154,6 +130,10 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
             The corresponding label of `X_resampled`
 
         """
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+
         random_state = check_random_state(self.random_state)
 
         X_resampled = X.copy()

@@ -225,41 +225,6 @@ class NearMiss(BaseUnderSampler, MultiClassSamplerMixin):
                               DeprecationWarning)
                 self.n_neighbors_ver3 = self.ver3_samp_ngh
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-
-        super(NearMiss, self).fit(X, y)
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
-
-        # kept for deprecation purpose it will create the n_neighbors_ver3
-        self._validate_estimator()
-        if self.version == 3:
-            self.nn_ver3_ = check_neighbors_object('n_neighbors_ver3',
-                                                   self.n_neighbors_ver3)
-            self.nn_ver3_.set_params(**{'n_jobs': self.n_jobs})
-
-        if self.version not in (1, 2, 3):
-            raise ValueError('Parameter `version` must be 1, 2 or 3, got'
-                             ' {}'.format(self.version))
-
-        return self
-
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -284,6 +249,20 @@ class NearMiss(BaseUnderSampler, MultiClassSamplerMixin):
             containing the which samples have been selected.
 
         """
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+
+        # kept for deprecation purpose it will create the n_neighbors_ver3
+        self._validate_estimator()
+        if self.version == 3:
+            self.nn_ver3_ = check_neighbors_object('n_neighbors_ver3',
+                                                   self.n_neighbors_ver3)
+            self.nn_ver3_.set_params(**{'n_jobs': self.n_jobs})
+
+        if self.version not in (1, 2, 3):
+            raise ValueError('Parameter `version` must be 1, 2 or 3, got'
+                             ' {}'.format(self.version))
+
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0, ), dtype=y.dtype)
         if self.return_indices:

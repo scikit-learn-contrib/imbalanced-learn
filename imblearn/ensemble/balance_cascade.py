@@ -191,29 +191,6 @@ class BalanceCascade(BaseEnsembleSampler, MultiClassSamplerMixin):
 
         self.logger.debug(self.estimator_)
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-
-        super(BalanceCascade, self).fit(X, y)
-        self._validate_estimator()
-
-        return self
-
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -238,6 +215,8 @@ class BalanceCascade(BaseEnsembleSampler, MultiClassSamplerMixin):
             containing the which samples have been selected.
 
         """
+        self._validate_estimator()
+
         random_state = check_random_state(self.random_state)
 
         # array to know which samples are available to be taken

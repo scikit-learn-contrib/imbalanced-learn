@@ -6,6 +6,8 @@ Base class for the ensemble method.
 
 import logging
 
+from sklearn.utils import check_X_y
+
 from ..base import SamplerMixin
 from ..utils import check_ratio
 
@@ -39,7 +41,7 @@ class BaseEnsembleSampler(SamplerMixin):
             Return self.
 
         """
-        super(BaseEnsembleSampler, self).fit(X, y)
+        X, y = check_X_y(X, y)
         self.ratio_ = check_ratio(self.ratio, y, 'under-sampling')
 
         return self

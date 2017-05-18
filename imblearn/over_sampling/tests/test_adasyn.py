@@ -37,7 +37,6 @@ def test_ada_fit():
     ada = ADASYN(random_state=RND_SEED)
     ada.fit(X, Y)
     assert_equal(ada.ratio_, {0: 4, 1: 0})
-    assert_equal(ada.X_shape_, (20, 2))
 
 
 def test_ada_fit_sample():

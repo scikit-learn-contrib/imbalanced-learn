@@ -10,12 +10,14 @@ from __future__ import division
 import logging
 import warnings
 
-from ..base import MultiClassSamplerMixin
+from sklearn.utils import check_X_y
+
+from ..base import MultiClassSamplerMixin, SamplerMixin
 from ..over_sampling import SMOTE
 from ..under_sampling import TomekLinks
 
 
-class SMOTETomek(MultiClassSamplerMixin):
+class SMOTETomek(SamplerMixin, MultiClassSamplerMixin):
     """Class to perform over-sampling using SMOTE and cleaning using
     Tomek links.
 
@@ -227,14 +229,8 @@ class SMOTETomek(MultiClassSamplerMixin):
             Return self.
 
         """
-        super(SMOTETomek, self).fit(X, y)
-
-        self._validate_estimator()
-
-        self.smote_.fit(X, y)
-        # emulate that we fitted the object
+        X, y = check_X_y(X, y)
         self.ratio_ = self.ratio
-
         return self
 
     def _sample(self, X, y):
@@ -257,5 +253,7 @@ class SMOTETomek(MultiClassSamplerMixin):
             The corresponding label of `X_resampled`
 
         """
-        X_res, y_res = self.smote_.sample(X, y)
+        self._validate_estimator()
+
+        X_res, y_res = self.smote_.fit_sample(X, y)
         return self.tomek_.fit_sample(X_res, y_res)

@@ -7,6 +7,8 @@ Base class for the over-sampling method.
 
 import logging
 
+from sklearn.utils import check_X_y
+
 from ..base import SamplerMixin
 from ..utils import check_ratio
 
@@ -40,8 +42,7 @@ class BaseOverSampler(SamplerMixin):
             Return self.
 
         """
-        super(BaseOverSampler, self).fit(X, y)
-
+        X, y = check_X_y(X, y)
         self.ratio_ = check_ratio(self.ratio, y, 'over-sampling')
 
         return self

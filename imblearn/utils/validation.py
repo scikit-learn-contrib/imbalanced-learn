@@ -4,7 +4,7 @@
 # License: MIT
 import warnings
 from collections import Counter
-from numbers import Real
+from numbers import Real, Integral
 
 import numpy as np
 
@@ -42,7 +42,7 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     nn_object : KNeighborsMixin
         The k-NN object.
     """
-    if isinstance(nn_object, int):
+    if isinstance(nn_object, Integral):
         return NearestNeighbors(n_neighbors=nn_object + additional_neighbor)
     elif isinstance(nn_object, KNeighborsMixin):
         return nn_object

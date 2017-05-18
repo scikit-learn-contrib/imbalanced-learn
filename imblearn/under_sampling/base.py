@@ -6,6 +6,8 @@ Base class for the under-sampling method.
 
 import logging
 
+from sklearn.utils import check_X_y
+
 from ..base import SamplerMixin
 from ..utils import check_ratio
 
@@ -39,8 +41,7 @@ class BaseUnderSampler(SamplerMixin):
             Return self.
 
         """
-        super(BaseUnderSampler, self).fit(X, y)
-
+        X, y = check_X_y(X, y)
         self.ratio_ = check_ratio(self.ratio, y, 'under-sampling')
 
         return self
@@ -75,8 +76,7 @@ class BaseCleaningSampler(SamplerMixin):
             Return self.
 
         """
-        super(BaseCleaningSampler, self).fit(X, y)
-
+        X, y = check_X_y(X, y)
         self.ratio_ = check_ratio(self.ratio, y, 'cleaning-sampling')
 
         return self

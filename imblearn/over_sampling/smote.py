@@ -274,34 +274,6 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
                 raise_isinstance_error('svm_estimator', [SVC],
                                        self.svm_estimator)
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(SMOTE, self).fit(X, y)
-
-        if self.kind not in SMOTE_KIND:
-            raise ValueError('Unknown kind for SMOTE algorithm.'
-                             ' Choices are {}. Got {} instead.'.format(
-                                 SMOTE_KIND, self.kind))
-
-        self._validate_estimator()
-
-        return self
-
     def _sample_regular(self, X, y):
         """Resample the dataset using the regular SMOTE implementation.
 
@@ -536,6 +508,13 @@ class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
             The corresponding label of `X_resampled`
 
         """
+        if self.kind not in SMOTE_KIND:
+            raise ValueError('Unknown kind for SMOTE algorithm.'
+                             ' Choices are {}. Got {} instead.'.format(
+                                 SMOTE_KIND, self.kind))
+
+        self._validate_estimator()
+
         if self.kind == 'regular':
             return self._sample_regular(X, y)
         elif self.kind == 'borderline1' or self.kind == 'borderline2':

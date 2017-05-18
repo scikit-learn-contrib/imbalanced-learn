@@ -14,6 +14,8 @@ from collections import Counter
 import numpy as np
 from scipy.stats import mode
 
+from sklearn.externals import six
+
 from ...base import MultiClassSamplerMixin
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
@@ -132,32 +134,6 @@ class EditedNearestNeighbours(BaseCleaningSampler, MultiClassSamplerMixin):
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(EditedNearestNeighbours, self).fit(X, y)
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
-        return self
-
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -182,6 +158,12 @@ class EditedNearestNeighbours(BaseCleaningSampler, MultiClassSamplerMixin):
             containing the which samples have been selected.
 
         """
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0, ), dtype=y.dtype)
         if self.return_indices:
@@ -350,35 +332,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler,
             kind_sel=self.kind_sel,
             n_jobs=self.n_jobs)
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(RepeatedEditedNearestNeighbours, self).fit(X, y)
-        self._validate_estimator()
-
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-        if self.max_iter < 2:
-            raise ValueError('max_iter must be greater than 1.'
-                             ' Got {} instead.'.format(type(self.max_iter)))
-        self.enn_.fit(X, y)
-
-        return self
-
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -403,6 +356,22 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler,
             containing the which samples have been selected.
 
         """
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+        if self.max_iter < 2:
+            raise ValueError('max_iter must be greater than 1.'
+                             ' Got {} instead.'.format(type(self.max_iter)))
+
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+
+        self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
+                                            return_indices=self.return_indices,
+                                            random_state=self.random_state,
+                                            n_neighbors=self.nn_,
+                                            kind_sel=self.kind_sel,
+                                            n_jobs=self.n_jobs)
+
         X_, y_ = X, y
         if self.return_indices:
             idx_under = np.arange(X.shape[0], dtype=int)
@@ -569,43 +538,6 @@ class AllKNN(BaseCleaningSampler, MultiClassSamplerMixin):
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
 
-    def _validate_estimator(self):
-        """Private function to create the NN estimator"""
-        self.enn_ = EditedNearestNeighbours(
-            ratio=self.ratio,
-            return_indices=self.return_indices,
-            random_state=self.random_state,
-            n_neighbors=self.n_neighbors,
-            kind_sel=self.kind_sel,
-            n_jobs=self.n_jobs)
-
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(AllKNN, self).fit(X, y)
-        self._validate_estimator()
-
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
-        self.enn_.fit(X, y)
-
-        return self
-
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -630,6 +562,19 @@ class AllKNN(BaseCleaningSampler, MultiClassSamplerMixin):
             containing the which samples have been selected.
 
         """
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+
+        self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
+                                            return_indices=self.return_indices,
+                                            random_state=self.random_state,
+                                            n_neighbors=self.nn_,
+                                            kind_sel=self.kind_sel,
+                                            n_jobs=self.n_jobs)
+
         X_, y_ = X, y
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
@@ -637,7 +582,7 @@ class AllKNN(BaseCleaningSampler, MultiClassSamplerMixin):
         if self.return_indices:
             idx_under = np.arange(X.shape[0], dtype=int)
 
-        for curr_size_ngh in range(1, self.enn_.nn_.n_neighbors):
+        for curr_size_ngh in range(1, self.nn_.n_neighbors):
             self.enn_.n_neighbors = curr_size_ngh
 
             if self.return_indices:

@@ -96,7 +96,7 @@ class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
-        """Private function to create the NN estimator"""
+        """Private function to create the KMeans estimator"""
         if self.estimator is None:
             self.estimator_ = KMeans(
                 random_state=self.random_state, n_jobs=self.n_jobs)
@@ -105,28 +105,6 @@ class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
         else:
             raise ValueError('`estimator` has to be a KMeans clustering.'
                              ' Got {} instead.'.format(type(self.estimator)))
-
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(ClusterCentroids, self).fit(X, y)
-        self._validate_estimator()
-
-        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -148,6 +126,8 @@ class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
             The corresponding label of `X_resampled`
 
         """
+        self._validate_estimator()
+
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0, ), dtype=y.dtype)
 

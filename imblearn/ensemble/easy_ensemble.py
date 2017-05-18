@@ -5,6 +5,7 @@
 # License: MIT
 
 import numpy as np
+
 from sklearn.utils import check_random_state
 
 from ..base import MultiClassSamplerMixin
@@ -103,28 +104,6 @@ class EasyEnsemble(BaseEnsembleSampler, MultiClassSamplerMixin):
         self.return_indices = return_indices
         self.replacement = replacement
         self.n_subsets = n_subsets
-
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(EasyEnsemble, self).fit(X, y)
-        # emulate fitting
-
-        return self
 
     def _sample(self, X, y):
         """Resample the dataset.

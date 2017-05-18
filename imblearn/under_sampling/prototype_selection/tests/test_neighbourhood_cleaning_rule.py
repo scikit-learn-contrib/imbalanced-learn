@@ -28,12 +28,12 @@ def test_ncr_error():
     threshold_cleaning = -10
     assert_raises_regex(ValueError, "'threshold_cleaning' is a value between"
                         " 0 and 1.", NeighbourhoodCleaningRule(
-                            threshold_cleaning=threshold_cleaning).fit,
+                            threshold_cleaning=threshold_cleaning).fit_sample,
                         X, Y)
     threshold_cleaning = 10
     assert_raises_regex(ValueError, "'threshold_cleaning' is a value between"
                         " 0 and 1.", NeighbourhoodCleaningRule(
-                            threshold_cleaning=threshold_cleaning).fit,
+                            threshold_cleaning=threshold_cleaning).fit_sample,
                         X, Y)
 
 

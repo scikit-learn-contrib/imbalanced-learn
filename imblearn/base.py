@@ -61,29 +61,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         elif hasattr(self, 'k') and hasattr(self, 'm'):
             self._validate_k_m_deprecation()
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        X, y = check_X_y(X, y)
-        self._validate_deprecation()
-        self.X_shape_ = X.shape
-
-        return self
-
     def sample(self, X, y):
         """Resample the dataset.
 
@@ -108,17 +85,10 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
+        self._validate_deprecation()
+
         # Check that the data have been fitted
         check_is_fitted(self, 'ratio_')
-
-        # Check if the size of the data is identical than at fitting
-        if X.shape != self.X_shape_:
-            raise RuntimeError('The data that you attempt to resample do not'
-                               ' seem to be the one earlier fitted. Use the'
-                               ' fitted data. Shape of data is {}, got {}'
-                               ' instead.'.format(X.shape, self.X_shape_))
-
-        self._validate_deprecation()
 
         return self._sample(X, y)
 
@@ -180,7 +150,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.logger = logger
 
 
-class BinarySamplerMixin(SamplerMixin):
+class BinarySamplerMixin(object):
     """Base class for all binary class sampler.
 
     Warning: This class should not be used directly. Use derived classes
@@ -188,24 +158,8 @@ class BinarySamplerMixin(SamplerMixin):
 
     """
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(BinarySamplerMixin, self).fit(X, y)
+    def _sample(self, X, y):
+        super(BinarySamplerMixin, self)._sample(X, y)
         if not type_of_target(y) == 'binary':
             warnings.simplefilter('always', UserWarning)
             warnings.warn('The target type should be binary.')
@@ -213,7 +167,7 @@ class BinarySamplerMixin(SamplerMixin):
         return self
 
 
-class MultiClassSamplerMixin(SamplerMixin):
+class MultiClassSamplerMixin(object):
     """Base class for all multiclass sampler.
 
     Warning: This class should not be used directly. Use derived classes
@@ -221,24 +175,8 @@ class MultiClassSamplerMixin(SamplerMixin):
 
     """
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(MultiClassSamplerMixin, self).fit(X, y)
+    def _sample(self, X, y):
+        super(MultiClassSamplerMixin, self)._sample(X, y)
         if not (type_of_target(y) == 'binary' or
                 type_of_target(y) == 'multiclass'):
             warnings.simplefilter('always', UserWarning)

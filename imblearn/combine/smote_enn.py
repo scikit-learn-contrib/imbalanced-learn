@@ -9,12 +9,14 @@ from __future__ import division
 import logging
 import warnings
 
-from ..base import MultiClassSamplerMixin
+from sklearn.utils import check_X_y
+
+from ..base import SamplerMixin, MultiClassSamplerMixin
 from ..over_sampling import SMOTE
 from ..under_sampling import EditedNearestNeighbours
 
 
-class SMOTEENN(MultiClassSamplerMixin):
+class SMOTEENN(SamplerMixin, MultiClassSamplerMixin):
     """Class to perform over-sampling using SMOTE and cleaning using ENN.
 
     Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.
@@ -270,14 +272,8 @@ class SMOTEENN(MultiClassSamplerMixin):
             Return self.
 
         """
-        super(SMOTEENN, self).fit(X, y)
-
-        self._validate_estimator()
-
-        self.smote_.fit(X, y)
-        # emulate that we fitted the object
+        X, y = check_X_y(X, y)
         self.ratio_ = self.ratio
-
         return self
 
     def _sample(self, X, y):
@@ -300,5 +296,7 @@ class SMOTEENN(MultiClassSamplerMixin):
             The corresponding label of `X_resampled`
 
         """
-        X_res, y_res = self.smote_.sample(X, y)
+        self._validate_estimator()
+
+        X_res, y_res = self.smote_.fit_sample(X, y)
         return self.enn_.fit_sample(X_res, y_res)

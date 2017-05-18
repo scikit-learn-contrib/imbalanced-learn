@@ -190,29 +190,6 @@ class InstanceHardnessThreshold(BaseCleaningSampler, MultiClassSamplerMixin):
             raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
                 type(self.estimator)))
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-
-        super(InstanceHardnessThreshold, self).fit(X, y)
-        self._validate_estimator()
-
-        return self
-
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -237,6 +214,8 @@ class InstanceHardnessThreshold(BaseCleaningSampler, MultiClassSamplerMixin):
             containing the which samples have been selected.
 
         """
+        self._validate_estimator()
+
         target_stats = Counter(y)
         skf = _get_cv_splits(X, y, self.cv, self.random_state)
         probabilities = np.zeros(y.shape[0], dtype=float)

@@ -120,38 +120,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler, MultiClassSamplerMixin):
         self.threshold_cleaning = threshold_cleaning
         self.n_jobs = n_jobs
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(NeighbourhoodCleaningRule, self).fit(X, y)
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
-
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
-        if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
-            raise ValueError("'threshold_cleaning' is a value between 0 and 1."
-                             " Got {} instead.".format(
-                                 self.threshold_cleaning))
-
-        return self
-
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -176,6 +144,18 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler, MultiClassSamplerMixin):
             containing the which samples have been selected.
 
         """
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+
+        if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
+            raise ValueError("'threshold_cleaning' is a value between 0 and 1."
+                             " Got {} instead.".format(
+                                 self.threshold_cleaning))
+
         enn = EditedNearestNeighbours(ratio=self.ratio, return_indices=True,
                                       random_state=self.random_state,
                                       size_ngh=self.size_ngh,
