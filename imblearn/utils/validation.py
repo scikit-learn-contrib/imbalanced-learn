@@ -70,6 +70,8 @@ def check_target_type(y):
 
     """
     if type_of_target(y) not in TARGET_KIND:
+        # FIXME: perfectly we should raise an error but the sklearn API does
+        # not allow for it
         warnings.warn("'y' should be of types {} only. Got {} instead.".format(
             TARGET_KIND, type_of_target(y)))
     return y

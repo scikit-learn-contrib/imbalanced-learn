@@ -29,7 +29,7 @@ from imblearn.ensemble.base import BaseEnsembleSampler
 
 
 def _yield_sampler_checks(name, Estimator):
-    yield check_continuous_warning
+    yield check_target_type
     yield check_samplers_one_label
     yield check_samplers_no_fit_error
     yield check_samplers_X_consistancy_sample
@@ -71,7 +71,7 @@ def check_estimator(Estimator):
         check(name, Estimator)
 
 
-def check_continuous_warning(name, Estimator):
+def check_target_type(name, Estimator):
     X = np.random.random((20, 2))
     y = np.linspace(0, 1, 20)
     estimator = Estimator()
