@@ -1,6 +1,7 @@
 ﻿"""Base class for sampling"""
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
 # License: MIT
 
 from __future__ import division
@@ -10,7 +11,7 @@ import warnings
 from abc import ABCMeta, abstractmethod
 
 from sklearn.base import BaseEstimator
-from sklearn.externals import six, joblib
+from sklearn.externals import six
 from sklearn.utils import check_X_y
 from sklearn.utils.validation import check_is_fitted
 
