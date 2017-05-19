@@ -12,12 +12,11 @@ import numpy as np
 from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
 from sklearn.utils import check_random_state
 
-from ...base import MultiClassSamplerMixin
 from ..base import BaseCleaningSampler
 from .tomek_links import TomekLinks
 
 
-class OneSidedSelection(BaseCleaningSampler, MultiClassSamplerMixin):
+class OneSidedSelection(BaseCleaningSampler):
     """Class to perform under-sampling based on one-sided selection method.
 
     Parameters

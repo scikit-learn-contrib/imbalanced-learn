@@ -10,12 +10,14 @@ import numpy as np
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
-from sklearn.externals import six
+from sklearn.externals import six, joblib
 from sklearn.utils import deprecated
+from sklearn.utils.multiclass import type_of_target
 
 from ..exceptions import raise_isinstance_error
 
 SAMPLING_KIND = ('over-sampling', 'under-sampling', 'cleaning-sampling')
+TARGET_KIND = ('binary', 'multiclass')
 
 
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
@@ -48,6 +50,50 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
         return nn_object
     else:
         raise_isinstance_error(nn_name, [int, KNeighborsMixin], nn_object)
+
+
+def check_target_type(y):
+    """Check the target types to be conform to the current samplers.
+
+    The current samplers should be compatible with ``'binary'`` and
+    ``'multiclass'`` targets only.
+
+    Parameters
+    ----------
+    y : ndarray,
+        The array containing the target
+
+    Returns
+    -------
+    y : ndarray,
+        The returned target.
+
+    """
+    if type_of_target(y) not in TARGET_KIND:
+        warnings.warn("'y' should be of types {} only. Got {} instead.".format(
+            TARGET_KIND, type_of_target(y)))
+    return y
+
+
+def hash_X_y(X, y):
+    """Compute hash of the input arrays.
+
+    Parameters
+    ----------
+    X : ndarray, shape (n_samples, n_features)
+        The ``X`` array.
+
+    y : ndarray, shape (n_samples)
+
+    Returns
+    -------
+    X_hash: str
+        Hash identifier of the ``X`` matrix.
+
+    y_hash: str
+        Hash identifier of the ``y`` matrix.
+    """
+    return joblib.hash(X), joblib.hash(y)
 
 
 def _ratio_all(y, sampling_type):

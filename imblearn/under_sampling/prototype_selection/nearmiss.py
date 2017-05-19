@@ -11,12 +11,11 @@ from collections import Counter
 
 import numpy as np
 
-from ...base import MultiClassSamplerMixin
 from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
 
 
-class NearMiss(BaseUnderSampler, MultiClassSamplerMixin):
+class NearMiss(BaseUnderSampler):
     """Class to perform under-sampling based on NearMiss methods.
 
     Parameters

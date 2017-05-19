@@ -9,12 +9,11 @@ from __future__ import division
 import numpy as np
 from sklearn.utils import check_random_state
 
-from ..base import MultiClassSamplerMixin
 from .base import BaseOverSampler
 from ..utils import check_neighbors_object
 
 
-class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
+class ADASYN(BaseOverSampler):
     """Perform over-sampling using ADASYN.
 
     Perform over-sampling using Adaptive Synthetic Sampling Approach for
@@ -130,6 +129,7 @@ class ADASYN(BaseOverSampler, MultiClassSamplerMixin):
             The corresponding label of `X_resampled`
 
         """
+        super(ADASYN, self)._sample(X, y)
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})

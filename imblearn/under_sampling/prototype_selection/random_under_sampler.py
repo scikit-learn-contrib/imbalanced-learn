@@ -9,11 +9,10 @@ from __future__ import division
 import numpy as np
 from sklearn.utils import check_random_state
 
-from ...base import MultiClassSamplerMixin
 from ..base import BaseUnderSampler
 
 
-class RandomUnderSampler(BaseUnderSampler, MultiClassSamplerMixin):
+class RandomUnderSampler(BaseUnderSampler):
     """Class to perform random under-sampling.
 
     Under-sample the majority class(es) by randomly picking samples

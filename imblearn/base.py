@@ -10,10 +10,11 @@ import warnings
 from abc import ABCMeta, abstractmethod
 
 from sklearn.base import BaseEstimator
-from sklearn.externals import six
+from sklearn.externals import six, joblib
 from sklearn.utils import check_X_y
-from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted
+
+from .utils import hash_X_y
 
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
@@ -61,6 +62,13 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         elif hasattr(self, 'k') and hasattr(self, 'm'):
             self._validate_k_m_deprecation()
 
+    def _check_hash_X_y(self, X, y):
+        """Private function to check that the X and y in fitting are the same
+        than in sampling."""
+        X_hash, y_hash = hash_X_y(X, y)
+        if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
+            raise RuntimeError("X and y need to be same array earlier fitted.")
+
     def sample(self, X, y):
         """Resample the dataset.
 
@@ -86,9 +94,8 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         X, y = check_X_y(X, y)
 
         self._validate_deprecation()
-
-        # Check that the data have been fitted
         check_is_fitted(self, 'ratio_')
+        self._check_hash_X_y(X, y)
 
         return self._sample(X, y)
 
@@ -148,36 +155,3 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         logger = logging.getLogger(__name__)
         self.__dict__.update(dict)
         self.logger = logger
-
-
-class BinarySamplerMixin(object):
-    """Base class for all binary class sampler.
-
-    Warning: This class should not be used directly. Use derived classes
-    instead.
-
-    """
-
-    def _sample(self, X, y):
-        super(BinarySamplerMixin, self)._sample(X, y)
-        if not type_of_target(y) == 'binary':
-            warnings.warn('The target type should be binary.')
-
-        return self
-
-
-class MultiClassSamplerMixin(object):
-    """Base class for all multiclass sampler.
-
-    Warning: This class should not be used directly. Use derived classes
-    instead.
-
-    """
-
-    def _sample(self, X, y):
-        super(MultiClassSamplerMixin, self)._sample(X, y)
-        if not (type_of_target(y) == 'binary' or
-                type_of_target(y) == 'multiclass'):
-            warnings.warn('The target type should be binary or multiclass.')
-
-        return self

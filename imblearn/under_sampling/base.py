@@ -9,7 +9,7 @@ import logging
 from sklearn.utils import check_X_y
 
 from ..base import SamplerMixin
-from ..utils import check_ratio
+from ..utils import check_ratio, check_target_type, hash_X_y
 
 
 class BaseUnderSampler(SamplerMixin):
@@ -42,6 +42,8 @@ class BaseUnderSampler(SamplerMixin):
 
         """
         X, y = check_X_y(X, y)
+        y = check_target_type(y)
+        self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         self.ratio_ = check_ratio(self.ratio, y, 'under-sampling')
 
         return self
@@ -77,6 +79,8 @@ class BaseCleaningSampler(SamplerMixin):
 
         """
         X, y = check_X_y(X, y)
+        y = check_target_type(y)
+        self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         self.ratio_ = check_ratio(self.ratio, y, 'cleaning-sampling')
 
         return self

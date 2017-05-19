@@ -12,12 +12,13 @@ import warnings
 
 from sklearn.utils import check_X_y
 
-from ..base import MultiClassSamplerMixin, SamplerMixin
+from ..base import SamplerMixin
 from ..over_sampling import SMOTE
 from ..under_sampling import TomekLinks
+from ..utils import check_target_type, hash_X_y
 
 
-class SMOTETomek(SamplerMixin, MultiClassSamplerMixin):
+class SMOTETomek(SamplerMixin):
     """Class to perform over-sampling using SMOTE and cleaning using
     Tomek links.
 
@@ -230,7 +231,10 @@ class SMOTETomek(SamplerMixin, MultiClassSamplerMixin):
 
         """
         X, y = check_X_y(X, y)
+        y = check_target_type(y)
         self.ratio_ = self.ratio
+        self.X_hash_, self.y_hash_ = hash_X_y(X, y)
+
         return self
 
     def _sample(self, X, y):

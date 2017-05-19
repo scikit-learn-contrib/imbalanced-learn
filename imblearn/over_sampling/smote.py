@@ -12,14 +12,13 @@ from sklearn.svm import SVC
 from sklearn.utils import check_random_state
 
 from .base import BaseOverSampler
-from ..base import MultiClassSamplerMixin
 from ..utils import check_neighbors_object
 from ..exceptions import raise_isinstance_error
 
 SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
 
-class SMOTE(BaseOverSampler, MultiClassSamplerMixin):
+class SMOTE(BaseOverSampler):
     """Class to perform over-sampling using SMOTE.
 
     This object is an implementation of SMOTE - Synthetic Minority

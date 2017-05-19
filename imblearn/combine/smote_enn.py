@@ -11,12 +11,13 @@ import warnings
 
 from sklearn.utils import check_X_y
 
-from ..base import SamplerMixin, MultiClassSamplerMixin
+from ..base import SamplerMixin
 from ..over_sampling import SMOTE
 from ..under_sampling import EditedNearestNeighbours
+from ..utils import check_target_type, hash_X_y
 
 
-class SMOTEENN(SamplerMixin, MultiClassSamplerMixin):
+class SMOTEENN(SamplerMixin):
     """Class to perform over-sampling using SMOTE and cleaning using ENN.
 
     Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.
@@ -160,7 +161,6 @@ class SMOTEENN(SamplerMixin, MultiClassSamplerMixin):
                  n_neighbors=None,
                  kind_enn=None,
                  n_jobs=None):
-
         super(SMOTEENN, self).__init__()
         self.ratio = ratio
         self.random_state = random_state
@@ -273,7 +273,10 @@ class SMOTEENN(SamplerMixin, MultiClassSamplerMixin):
 
         """
         X, y = check_X_y(X, y)
+        y = check_target_type(y)
         self.ratio_ = self.ratio
+        self.X_hash_, self.y_hash_ = hash_X_y(X, y)
+
         return self
 
     def _sample(self, X, y):

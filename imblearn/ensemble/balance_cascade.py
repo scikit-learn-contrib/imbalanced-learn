@@ -4,7 +4,6 @@
 #          Christos Aridas
 # License: MIT
 
-import logging
 import warnings
 
 from collections import Counter
@@ -18,10 +17,9 @@ from sklearn.externals.six import string_types
 from sklearn.model_selection import cross_val_predict
 
 from .base import BaseEnsembleSampler
-from ..base import MultiClassSamplerMixin
 
 
-class BalanceCascade(BaseEnsembleSampler, MultiClassSamplerMixin):
+class BalanceCascade(BaseEnsembleSampler):
     """Create an ensemble of balanced sets by iteratively under-sampling the
     imbalanced dataset using an estimator.
 

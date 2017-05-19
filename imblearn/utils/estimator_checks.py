@@ -26,23 +26,15 @@ from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
-from imblearn.utils.testing import binary_estimators, multiclass_estimators
 
 
 def _yield_sampler_checks(name, Estimator):
-    # Get only the name of binary and multiclass samplers
-    binary_samplers = tuple([c[0] for c in binary_estimators()])
-    multiclass_samplers = tuple([c[0] for c in multiclass_estimators()])
-    # if name in binary_samplers:
-    #     yield check_continuous_warning
-    #     yield check_multiclass_warning
-    # if name in multiclass_samplers:
-    #     yield check_continuous_warning
-    # yield check_samplers_one_label
-    # yield check_samplers_no_fit_error
-    # yield check_samplers_X_consistancy_sample
-    # yield check_samplers_fit
-    # yield check_samplers_fit_sample
+    yield check_continuous_warning
+    yield check_samplers_one_label
+    yield check_samplers_no_fit_error
+    yield check_samplers_X_consistancy_sample
+    yield check_samplers_fit
+    yield check_samplers_fit_sample
     yield check_samplers_ratio_fit_sample
 
 
@@ -191,7 +183,7 @@ def check_samplers_X_consistancy_sample(name, Sampler):
     sampler.fit(X, y)
     X_different = np.random.random((40, 2))
     y_different = y = np.array([1] * 25 + [0] * 15)
-    assert_raises_regex(RuntimeError, "to be the one earlier fitted",
+    assert_raises_regex(RuntimeError, "X and y need to be same array earlier",
                         sampler.sample, X_different, y_different)
 
 

@@ -10,11 +10,10 @@ from collections import Counter
 import numpy as np
 from sklearn.utils import check_random_state
 
-from ..base import MultiClassSamplerMixin
 from .base import BaseOverSampler
 
 
-class RandomOverSampler(BaseOverSampler, MultiClassSamplerMixin):
+class RandomOverSampler(BaseOverSampler):
     """Class to perform random over-sampling.
 
     Object to over-sample the minority class(es) by picking samples at random

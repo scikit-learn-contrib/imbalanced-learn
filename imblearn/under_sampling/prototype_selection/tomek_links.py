@@ -10,11 +10,10 @@ from __future__ import division, print_function
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-from ...base import MultiClassSamplerMixin
 from ..base import BaseCleaningSampler
 
 
-class TomekLinks(BaseCleaningSampler, MultiClassSamplerMixin):
+class TomekLinks(BaseCleaningSampler):
     """Class to perform under-sampling by removing Tomek's links.
 
     Parameters

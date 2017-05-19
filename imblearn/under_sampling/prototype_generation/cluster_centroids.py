@@ -11,11 +11,10 @@ from __future__ import division, print_function
 import numpy as np
 from sklearn.cluster import KMeans
 
-from ...base import MultiClassSamplerMixin
 from ..base import BaseUnderSampler
 
 
-class ClusterCentroids(BaseUnderSampler, MultiClassSamplerMixin):
+class ClusterCentroids(BaseUnderSampler):
     """Perform under-sampling by generating centroids based on
     clustering methods.
 

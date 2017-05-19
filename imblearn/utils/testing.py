@@ -21,9 +21,6 @@ OTHER = ["Pipeline", "FeatureUnion"]
 # some strange ones
 DONT_TEST = []
 
-# binary samplers
-BINARY_ESTIMATORS = []
-
 
 def all_estimators(include_meta_estimators=False,
                    include_other=False, type_filter=None,
@@ -123,31 +120,3 @@ def all_estimators(include_meta_estimators=False,
     # itemgetter is used to ensure the sort does not extend to the 2nd item of
     # the tuple
     return sorted(set(estimators), key=itemgetter(0))
-
-
-def binary_estimators():
-    """Get a list of the binary estimators from imblearn.
-
-    Returns
-    -------
-    estimators : list of tuples
-        List of (name, class), where ``name`` is the class as string and
-        ``class`` is the actual type of the class.
-    """
-    estimators = list(all_estimators())
-    # remove the estimators which are not marked as binary
-    return tuple([c for c in estimators if c[0] in BINARY_ESTIMATORS])
-
-
-def multiclass_estimators():
-    """Get a list of the multiclass estimators from imblearn.
-
-    Returns
-    -------
-    estimators : list of tuples
-        List of (name, class), where ``name`` is the class as string and
-        ``class`` is the actual type of the class.
-    """
-    estimators = list(all_estimators())
-    # remove the estimators which are not marked as binary
-    return tuple([c for c in estimators if c[0] not in BINARY_ESTIMATORS])
