@@ -312,6 +312,7 @@ issues_user_uri = 'https://github.com/{user}'
 
 
 def setup(app):
+    # app.add_javascript('copybutton.js')
     app.connect('autodoc-process-docstring', generate_example_rst)
 
 
