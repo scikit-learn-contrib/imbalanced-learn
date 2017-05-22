@@ -138,7 +138,7 @@ class EasyEnsemble(BaseEnsembleSampler):
 
         for _ in range(self.n_subsets):
             rus = RandomUnderSampler(
-                ratio=self.ratio, return_indices=True,
+                ratio=self.ratio_, return_indices=True,
                 random_state=random_state.randint(MAX_INT),
                 replacement=self.replacement)
             sel_x, sel_y, sel_idx = rus.fit_sample(X, y)

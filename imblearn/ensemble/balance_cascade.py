@@ -17,6 +17,7 @@ from sklearn.externals.six import string_types
 from sklearn.model_selection import cross_val_predict
 
 from .base import BaseEnsembleSampler
+from ..utils import check_ratio
 
 
 class BalanceCascade(BaseEnsembleSampler):
@@ -136,6 +137,28 @@ class BalanceCascade(BaseEnsembleSampler):
         self.estimator = estimator
         self.n_max_subset = n_max_subset
         self.kwargs = kwargs
+
+    def fit(self, X, y):
+        """Find the classes statistics before to perform sampling.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : ndarray, shape (n_samples, )
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        self : object,
+            Return self.
+
+        """
+        super(BalanceCascade, self).fit(X, y)
+        self.ratio_ = check_ratio(self.ratio, y, 'under-sampling')
+        return self
+
 
     def _validate_estimator(self):
         """Private function to create the classifier"""

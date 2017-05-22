@@ -16,7 +16,8 @@ from sklearn.utils.multiclass import type_of_target
 
 from ..exceptions import raise_isinstance_error
 
-SAMPLING_KIND = ('over-sampling', 'under-sampling', 'cleaning-sampling')
+SAMPLING_KIND = ('over-sampling', 'under-sampling', 'clean-sampling',
+                 'ensemble')
 TARGET_KIND = ('binary', 'multiclass')
 
 
@@ -106,7 +107,7 @@ def _ratio_all(y, sampling_type):
         ratio = {key: n_sample_majority - value
                  for (key, value) in target_stats.items()}
     elif (sampling_type == 'under-sampling' or
-          sampling_type == 'cleaning-sampling'):
+          sampling_type == 'clean-sampling'):
         n_sample_minority = min(target_stats.values())
         ratio = {key: n_sample_minority for key in target_stats.keys()}
 
@@ -119,7 +120,7 @@ def _ratio_majority(y, sampling_type):
         raise ValueError("'ratio'='majority' cannot be used with"
                          " over-sampler.")
     elif (sampling_type == 'under-sampling' or
-          sampling_type == 'cleaning-sampling'):
+          sampling_type == 'clean-sampling'):
         target_stats = Counter(y)
         class_majority = max(target_stats, key=target_stats.get)
         n_sample_minority = min(target_stats.values())
@@ -140,7 +141,7 @@ def _ratio_not_minority(y, sampling_type):
                  for (key, value) in target_stats.items()
                  if key != class_minority}
     elif (sampling_type == 'under-sampling' or
-          sampling_type == 'cleaning-sampling'):
+          sampling_type == 'clean-sampling'):
         n_sample_minority = min(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
         ratio = {key: n_sample_minority
@@ -160,9 +161,9 @@ def _ratio_minority(y, sampling_type):
                  for (key, value) in target_stats.items()
                  if key == class_minority}
     elif (sampling_type == 'under-sampling' or
-          sampling_type == 'cleaning-sampling'):
+          sampling_type == 'clean-sampling'):
         raise ValueError("'ratio'='minority' cannot be used with"
-                         " under-sampler and cleaning-sampler.")
+                         " under-sampler and clean-sampler.")
 
     return ratio
 
@@ -173,7 +174,7 @@ def _ratio_auto(y, sampling_type):
     if sampling_type == 'over-sampling':
         return _ratio_all(y, sampling_type)
     elif (sampling_type == 'under-sampling' or
-          sampling_type == 'cleaning-sampling'):
+          sampling_type == 'clean-sampling'):
         return _ratio_not_minority(y, sampling_type)
 
 
@@ -215,8 +216,8 @@ def _ratio_dict(ratio, y, sampling_type):
                                  " samples are asked.".format(
                                      target_stats[class_sample], n_samples))
             ratio_[class_sample] = n_samples
-    elif sampling_type == 'cleaning-sampling':
-        # cleaning-sampling can be more permissive since those samplers do not
+    elif sampling_type == 'clean-sampling':
+        # clean-sampling can be more permissive since those samplers do not
         # use samples
         for class_sample, n_samples in ratio.items():
             ratio_[class_sample] = n_samples
@@ -237,7 +238,7 @@ def _ratio_float(ratio, y, sampling_type):
                  for (key, value) in target_stats.items()
                  if key != class_majority}
     elif (sampling_type == 'under-sampling' or
-          sampling_type == 'cleaning-sampling'):
+          sampling_type == 'clean-sampling'):
         n_sample_minority = min(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
         ratio = {key: int(n_sample_minority / ratio)
@@ -295,6 +296,9 @@ def check_ratio(ratio, y, sampling_type):
     if np.unique(y).size <= 1:
         raise ValueError("The target 'y' needs to have more than 1 class."
                          " Got {} class instead".format(np.unique(y).size))
+
+    if sampling_type == 'ensemble':
+        return ratio
 
     if isinstance(ratio, six.string_types):
         if ratio not in RATIO_KIND.keys():
