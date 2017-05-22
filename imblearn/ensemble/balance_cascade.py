@@ -159,7 +159,6 @@ class BalanceCascade(BaseEnsembleSampler):
         self.ratio_ = check_ratio(self.ratio, y, 'under-sampling')
         return self
 
-
     def _validate_estimator(self):
         """Private function to create the classifier"""
 

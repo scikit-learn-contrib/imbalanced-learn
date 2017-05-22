@@ -13,11 +13,7 @@ class BaseUnderSampler(BaseSampler):
     Warning: This class should not be used directly. Use the derive classes
     instead.
     """
-
-    def __init__(self, ratio='auto', random_state=None):
-        super(BaseUnderSampler, self).__init__(ratio=ratio,
-                                               random_state=random_state,
-                                               sampling_type='under-sampling')
+    _sampling_type = 'under-sampling'
 
 
 class BaseCleaningSampler(BaseSampler):
@@ -26,9 +22,4 @@ class BaseCleaningSampler(BaseSampler):
     Warning: This class should not be used directly. Use the derive classes
     instead.
     """
-
-    def __init__(self, ratio='auto', random_state=None):
-        super(BaseCleaningSampler, self).__init__(
-            ratio=ratio,
-            random_state=random_state,
-            sampling_type='clean-sampling')
+    _sampling_type = 'clean-sampling'

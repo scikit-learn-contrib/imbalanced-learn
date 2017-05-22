@@ -14,7 +14,4 @@ class BaseEnsembleSampler(BaseSampler):
     instead.
     """
 
-    def __init__(self, ratio='auto', random_state=None):
-        super(BaseEnsembleSampler, self).__init__(ratio=ratio,
-                                                  random_state=random_state,
-                                                  sampling_type='ensemble')
+    _sampling_type = 'ensemble'

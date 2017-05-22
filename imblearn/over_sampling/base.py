@@ -15,7 +15,4 @@ class BaseOverSampler(BaseSampler):
     instead.
     """
 
-    def __init__(self, ratio='auto', random_state=None):
-        super(BaseOverSampler, self).__init__(ratio=ratio,
-                                              random_state=random_state,
-                                              sampling_type='over-sampling')
+    _sampling_type = 'over-sampling'

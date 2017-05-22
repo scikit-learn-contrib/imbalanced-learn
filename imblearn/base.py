@@ -192,6 +192,6 @@ class BaseSampler(SamplerMixin):
         y = check_target_type(y)
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         # self.sampling_type is already checked in check_ratio
-        self.ratio_ = check_ratio(self.ratio, y, self.sampling_type)
+        self.ratio_ = check_ratio(self.ratio, y, self._sampling_type)
 
         return self
