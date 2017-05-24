@@ -48,7 +48,7 @@ from github_link import make_linkcode_resolve
 # ones.
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx',
-    'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig',
+    'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode', 'sphinx_gallery.gen_gallery',
     'sphinx.ext.autosummary', 'numpydoc',
     'sphinx_issues', 'sphinx.ext.linkcode'
@@ -312,7 +312,7 @@ issues_user_uri = 'https://github.com/{user}'
 
 
 def setup(app):
-    # app.add_javascript('copybutton.js')
+    app.add_javascript('js/copybutton.js')
     app.connect('autodoc-process-docstring', generate_example_rst)
 
 
