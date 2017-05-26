@@ -44,56 +44,59 @@ class SMOTETomek(SamplerMixin):
           desired number of samples.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     smote : object, optional (default=SMOTE())
-        The SMOTE object to use. If not given, a SMOTE object with default
-        parameters will be given.
+        The :class:`imblearn.over_sampling.SMOTE` object to use. If not given,
+        a :class:`imblearn.over_sampling.SMOTE` object with default parameters
+        will be given.
 
     tomek : object, optional (default=Tomek())
-        The Tomek object to use. If not given, a Tomek object with default
-        parameters will be given.
+        The :class:`imblearn.under_sampling.Tomek` object to use. If not given,
+        a :class:`imblearn.under_sampling.Tomek` object with default parameters
+        will be given.
 
     k : int, optional (default=None)
         Number of nearest neighbours to used to construct synthetic
         samples.
 
-        NOTE: `k` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           ``k`` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     m : int, optional (default=None)
         Number of nearest neighbours to use to determine if a minority
         sample is in danger.
 
-        NOTE: `m` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           ``m`` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     out_step : float, optional (default=None)
         Step size when extrapolating.
 
-        NOTE: `out_step` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           `out_step` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     kind_smote : str, optional (default=None)
         The type of SMOTE algorithm to use one of the following
-        options: 'regular', 'borderline1', 'borderline2', 'svm'.
+        options: ``'regular'``, ``'borderline1'``, ``'borderline2'``,
+        ``'svm'``.
 
-    NOTE: `kind_smote` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           ``kind_smote` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     n_jobs : int, optional (default=None)
         The number of threads to open if possible.
 
-        NOTE: `n_jobs` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
-
-    Attributes
-    ----------
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
+        .. deprecated:: 0.2
+           ``n_jobs`` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     Notes
     -----
@@ -107,7 +110,7 @@ class SMOTETomek(SamplerMixin):
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.combine import \
-    SMOTETomek # doctest: +NORMALIZE_WHITESPACE
+SMOTETomek # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)

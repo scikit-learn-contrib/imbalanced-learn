@@ -48,40 +48,36 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         selected from the majority class.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-       NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
-       Use ``n_neighbors`` instead.
+       .. deprecated:: 0.2
+          ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
+          Use ``n_neighbors`` instead.
 
     n_neighbors : int or object, optional (default=3)
-        If object, size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
-        If object, an estimator that inherits from
-        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
-        the k_neighbors.
+        If ``int``, size of the neighbourhood to consider to compute the
+        average distance to the minority point samples.  If object, an
+        estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
 
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.
 
-        - If 'all', all neighbours will have to agree with the samples of
-        interest to not be excluded.
-        - If 'mode', the majority vote of the neighbours will be used in
-        order to exclude a sample.
+        - If ``'all'``, all neighbours will have to agree with the samples of
+          interest to not be excluded.
+        - If ``'mode'``, the majority vote of the neighbours will be used in
+          order to exclude a sample.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
-
-    Attributes
-    ----------
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
 
     Notes
     -----
@@ -230,24 +226,25 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         selected from the majority class.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
-        Use ``n_neighbors`` instead.
+        .. deprecated: 0.2
+           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
+           Use ``n_neighbors`` instead.
 
     n_neighbors : int or object, optional (default=3)
-        If int, size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
-        If object, an estimator that inherits from
-        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
-        the k_neighbors.
+        If ``int``, size of the neighbourhood to consider to compute the
+        average distance to the minority point samples.  If object, an
+        estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
 
     max_iter : int, optional (default=100)
         Maximum number of iterations of the edited nearest neighbours
@@ -256,18 +253,13 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.
 
-        - If 'all', all neighbours will have to agree with the samples of
-        interest to not be excluded.
-        - If 'mode', the majority vote of the neighbours will be used in
-        order to exclude a sample.
+        - If ``'all'``, all neighbours will have to agree with the samples of
+          interest to not be excluded.
+        - If ``'mode'``, the majority vote of the neighbours will be used in
+          order to exclude a sample.
 
     n_jobs : int, optional (default=-1)
         The number of thread to open when it is possible.
-
-    Attributes
-    ----------
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
 
     Notes
     -----
@@ -453,40 +445,36 @@ class AllKNN(BaseCleaningSampler):
         selected from the majority class.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
-        Use ``n_neighbors`` instead.
+        .. deprecated:: 0.2
+           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
+           Use ``n_neighbors`` instead.
 
     n_neighbors : int or object, optional (default=3)
-        If int, size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
-        If object, an estimator that inherits from
-        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
-        the k_neighbors.
+        If ``int``, size of the neighbourhood to consider to compute the
+        average distance to the minority point samples.  If object, an
+        estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
 
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.
 
-        - If 'all', all neighbours will have to agree with the samples of
-        interest to not be excluded.
-        - If 'mode', the majority vote of the neighbours will be used in
-        order to exclude a sample.
+        - If ``'all'``, all neighbours will have to agree with the samples of
+          interest to not be excluded.
+        - If ``'mode'``, the majority vote of the neighbours will be used in
+          order to exclude a sample.
 
     n_jobs : int, optional (default=-1)
         The number of thread to open when it is possible.
-
-    Attributes
-    ----------
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
 
     Notes
     -----
@@ -500,7 +488,7 @@ class AllKNN(BaseCleaningSampler):
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import \
-    AllKNN # doctest: +NORMALIZE_WHITESPACE
+AllKNN # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)

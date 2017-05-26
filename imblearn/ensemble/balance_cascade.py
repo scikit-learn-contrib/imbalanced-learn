@@ -50,10 +50,10 @@ class BalanceCascade(BaseEnsembleSampler):
         selected from the majority class.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     n_max_subset : int or None, optional (default=None)
         Maximum number of subsets to generate. By default, all data from
@@ -62,16 +62,17 @@ class BalanceCascade(BaseEnsembleSampler):
 
     classifier : str, optional (default=None)
         The classifier that will be selected to confront the prediction
-        with the real labels. The choices are the following: 'knn',
-        'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
-        and 'linear-svm'.
+        with the real labels. The choices are the following: ``'knn'``,
+        ``'decision-tree'``, ``'random-forest'``, ``'adaboost'``,
+        ``'gradient-boosting'``, and ``'linear-svm'``.
 
-        NOTE: `classifier` is deprecated from 0.2 and will be replaced in 0.4.
-        Use `estimator` instead.
+        .. deprecated:: 0.2
+           ``classifier`` is deprecated from 0.2 and will be replaced in 0.4.
+           Use ``estimator`` instead.
 
     estimator : object, optional (default=KNeighborsClassifier())
-        An estimator inherited from `sklearn.base.ClassifierMixin` and having
-        an attribute `predict_proba`.
+        An estimator inherited from :class:`sklearn.base.ClassifierMixin` and
+        having an attribute :func:`predict_proba`.
 
     bootstrap : bool, optional (default=True)
         Whether to bootstrap the data before each iteration.
@@ -79,14 +80,10 @@ class BalanceCascade(BaseEnsembleSampler):
     **kwargs : keywords
         The parameters associated with the classifier provided.
 
-        NOTE: `**kwargs` has been deprecated from 0.2 and will be replaced in
-        0.4. Use `estimator` object instead to pass parameters associated
-        to an estimator.
-
-    Attributes
-    ----------
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
+        .. deprecated:: 0.2
+           ``**kwargs`` has been deprecated from 0.2 and will be replaced in
+           0.4. Use ``estimator`` object instead to pass parameters associated
+           to an estimator.
 
     Notes
     -----
@@ -100,7 +97,7 @@ class BalanceCascade(BaseEnsembleSampler):
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.ensemble import \
-    BalanceCascade # doctest: +NORMALIZE_WHITESPACE
+BalanceCascade # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)

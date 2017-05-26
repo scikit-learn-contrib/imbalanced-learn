@@ -43,35 +43,31 @@ class OneSidedSelection(BaseCleaningSampler):
         selected from the majority class.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
-        Use ``n_neighbors`` instead.
+        .. deprecated:: 0.2
+           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
+           Use ``n_neighbors`` instead.
 
-    n_neighbors : int or object, optional (default=
-        KNeighborsClassifier(n_neighbors=1))
-        If int, size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
-        If object, an object inherited from
-        `sklearn.neigbors.KNeighborsClassifier` should be passed.
+    n_neighbors : int or object, optional (default=\
+KNeighborsClassifier(n_neighbors=1))
+        If ``int``, size of the neighbourhood to consider to compute the
+        average distance to the minority point samples.  If object, an object
+        inherited from :class:`sklearn.neigbors.KNeighborsClassifier` should be
+        passed.
 
     n_seeds_S : int, optional (default=1)
         Number of samples to extract in order to build the set S.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
-
-    Attributes
-    ----------
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
 
     Notes
     -----

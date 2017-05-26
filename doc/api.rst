@@ -77,8 +77,8 @@ Combination of over- and under-sampling methods
 ===============================================
 
 .. automodule:: imblearn.combine
-    :no-members:
-    :no-inherited-members:
+   :no-members:
+   :no-inherited-members:
 
 .. currentmodule:: imblearn
 

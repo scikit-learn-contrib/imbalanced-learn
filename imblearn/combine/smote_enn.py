@@ -42,81 +42,91 @@ class SMOTEENN(SamplerMixin):
           desired number of samples.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     smote : object, optional (default=SMOTE())
-        The SMOTE object to use. If not given, a SMOTE object with default
-        parameters will be given.
+        The :class:`imblearn.over_sampling.SMOTE` object to use. If not given,
+        a :class:`imblearn.over_sampling.SMOTE` object with default parameters
+        will be given.
 
     enn : object, optional (default=EditedNearestNeighbours())
-        The ENN object to use. If not given, an EditedNearestNeighbours object
-        with default parameters will be given.
+        The :class:`imblearn.under_sampling.EditedNearestNeighbours` object to
+        use. If not given, an
+        :class:`imblearn.under_sampling.EditedNearestNeighbours` object with
+        default parameters will be given.
 
     k : int, optional (default=None)
         Number of nearest neighbours to used to construct synthetic
         samples.
 
-        NOTE: `k` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           `k` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     m : int, optional (default=None)
         Number of nearest neighbours to use to determine if a minority
         sample is in danger.
 
-        NOTE: `m` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           `m` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     out_step : float, optional (default=None)
         Step size when extrapolating.
 
-        NOTE: `out_step` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           ``out_step`` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     kind_smote : str, optional (default=None)
         The type of SMOTE algorithm to use one of the following
-        options: 'regular', 'borderline1', 'borderline2', 'svm'.
+        options: ``'regular'``, ``'borderline1'``, ``'borderline2'``,
+        ``'svm'``.
 
-    NOTE: `kind_smote` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           `kind_smote` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     size_ngh : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
-        Use ``n_neighbors`` instead.
+        .. deprecated:: 0.2
+           size_ngh is deprecated from 0.2 and will be replaced in 0.4
+           Use ``n_neighbors`` instead.
 
     n_neighbors : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-        NOTE: `n_neighbors` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a EditedNearestNeighbours object.
+        .. deprecated:: 0.2
+           `n_neighbors` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a
+           :class:`imblearn.under_sampling.EditedNearestNeighbours` object.
 
     kind_sel : str, optional (default=None)
         Strategy to use in order to exclude samples.
 
-        - If 'all', all neighbours will have to agree with the samples of
-        interest to not be excluded.
-        - If 'mode', the majority vote of the neighbours will be used in
-        order to exclude a sample.
+        - If ``'all'``, all neighbours will have to agree with the samples of
+          interest to not be excluded.
+        - If ``'mode'``, the majority vote of the neighbours will be used in
+          order to exclude a sample.
 
-        NOTE: `kind_sel` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a EditedNearestNeighbours object.
+        .. deprecated:: 0.2
+           ``kind_sel`` is deprecated from 0.2 and will be replaced in 0.4 Give
+           directly a :class:`imblearn.under_sampling.EditedNearestNeighbours`
+           object.
 
     n_jobs : int, optional (default=None)
         The number of threads to open if possible.
 
-        NOTE: `n_jobs` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE and EditedNearestNeighbours object.
-
-    Attributes
-    ----------
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
+        .. deprecated:: 0.2
+           `n_jobs` is deprecated from 0.2 and will be replaced in 0.4 Give
+           directly a :class:`imblearn.over_sampling.SMOTE` and
+           :class:`imblearn.under_sampling.EditedNearestNeighbours` object.
 
     Notes
     -----

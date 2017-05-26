@@ -40,16 +40,18 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
     Parameters
     ----------
     estimator : object, optional (default=RandomForestClassifier())
-        Classifier to be used to estimate instance hardness of the samples.
-        By default a RandomForestClassifer will be used.
-        If str, the choices using a string are the following: 'knn',
-        'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
-        and 'linear-svm'.
-        If object, an estimator inherited from `sklearn.base.ClassifierMixin`
-        and having an attribute `predict_proba`.
+        Classifier to be used to estimate instance hardness of the samples.  By
+        default a :class:`sklearn.ensemble.RandomForestClassifer` will be used.
+        If ``str``, the choices using a string are the following: ``'knn'``,
+        ``'decision-tree'``, ``'random-forest'``, ``'adaboost'``,
+        ``'gradient-boosting'`` and ``'linear-svm'``.  If object, an estimator
+        inherited from :class:`sklearn.base.ClassifierMixin` and having an
+        attribute :func:`predict_proba`.
 
-        NOTE: `estimator` as a string object is deprecated from 0.2 and will be
-        replaced in 0.4. Use `ClassifierMixin` object instead.
+        .. deprecated:: 0.2
+           ``estimator`` as a string object is deprecated from 0.2 and will be
+           replaced in 0.4. Use :class:`sklearn.base.ClassifierMixin` object
+           instead.
 
     ratio : str, dict, or callable, optional (default='auto')
         Ratio to use for resampling the data set.
@@ -73,10 +75,10 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         selected from the majority class.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     cv : int, optional (default=5)
         Number of folds to be used when estimating samples' instance hardness.
@@ -87,14 +89,10 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
     **kwargs:
         Option for the different classifier.
 
-        NOTE: `**kwargs` has been deprecated from 0.2 and will be replaced in
-        0.4. Use `ClassifierMixin` object instead to pass parameter associated
-        to an estimator.
-
-    Attributes
-    ----------
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
+        .. deprecated:: 0.2
+           ``**kwargs`` has been deprecated from 0.2 and will be replaced in
+           0.4. Use :class:`sklearn.base.ClassifierMixin` object instead to
+           pass parameter associated to an estimator.
 
     Notes
     -----
