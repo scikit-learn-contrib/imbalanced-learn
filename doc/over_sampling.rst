@@ -137,20 +137,50 @@ available: (i) ``'borderline1'``, (ii) ``'borderline2'``, and (iii) ``'svm'``::
 Mathematical formulation
 ========================
 
-SMOTE
------
+Both SMOTE and ADASYN use the same algorithm to generate new
+samples. Considering a sample :math:`x_i`, a new sample :math:`x_{new}` will be
+generated considering its k neareast-neighbors. For instance, the 3
+nearest-neighbors are included in the blue circle as illustrated in the figure
+below. Then, one of these nearest-neighbors :math:`x_{zi}` will be selected and
+a sample will be generated as follows:
 
-Regular SMOTE
-~~~~~~~~~~~~~
+.. math::
 
-Borderline SMOTE
-~~~~~~~~~~~~~~~~
+   x_{new} = x_i + \lambda \times (x_{zi} - x_i)
 
-SVM SMOTE
-~~~~~~~~~
+where :math:`\lambda` is a random number in the range :math:`[0, 1]`. This
+interpolation will create a sample on the line between :math:`x_{i}` and
+:math:`x_{zi}` as illustrate on the figure below.
 
-ADASYN
-------
+.. image:: ./modules/over_sampling/sample_generation.png
+   :scale: 80
+   :align: center
 
-Importance of parameters
-========================
+Each SMOTE variant and ADASYN differ from each other by selecting the samples
+:math:`x_i` ahead of generating the new samples.
+
+The **regular** SMOTE algorithm --- cf. to ``kind='regular'`` when
+instantiating a :class:`SMOTE` object --- does not impose any rule and will
+randomly pick-up all possible :math:`x_i` available.
+
+The **borderline** SMOTE --- cf. to ``kind='borderline1'`` and
+``kind='borderline2'`` when instantiating a :class:`SMOTE` object --- will
+classify each sample :math:`x_i` to be (i) noise (i.e. all nearest-neighbors
+are from a different class than the one of :math:`x_i`), (ii) in danger
+(i.e. at least half of the nearest neighbors are from the same class than
+:math:`x_i`, or (iii) safe (i.e. all nearest neighbors are from the same class
+than :math:`x_i`). **Borderline-1** and **Borderline-2** SMOTE will use the
+samples *in danger* to generate new samples. In **Borderline-1** SMOTE,
+:math:`x_{zi}` will belong to a class different from the one of the sample
+:math:`x_i`. On the contrary, **Borderline-2** SMOTE will consider
+:math:`x_{zi}` which can be from any class.
+
+**SVM** SMOTE --- cf. to ``kind='svm'`` when instantiating a :class:`SMOTE`
+object --- uses an SVM classifier to find support vectors and generate samples
+considering them.
+
+ADASYN is working similarly to the regular SMOTE. However, the number of
+samples generated for each :math:`x_i` is proportional to the number of samples
+which are not from the same class than :math:`x_i` in a given
+neighborhood. Therefore, more samples will be generated in the area that the
+nearest neighbor rule is not respected.
