@@ -14,6 +14,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state
 
 from ..base import BaseCleaningSampler
+from ...utils.deprecation import deprecate_parameter
 
 
 class CondensedNearestNeighbour(BaseCleaningSampler):
@@ -119,6 +120,8 @@ CondensedNearestNeighbour #doctest: +SKIP
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
+        # FIXME: Deprecated in 0.2. To be removed in 0.4
+        deprecate_parameter(self, '0.2', 'size_ngh', 'n_neighbors')
 
         if self.n_neighbors is None:
             self.estimator_ = KNeighborsClassifier(

@@ -13,6 +13,7 @@ import numpy as np
 
 from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
+from ...utils.deprecation import deprecate_parameter
 
 
 class NearMiss(BaseUnderSampler):
@@ -212,13 +213,23 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
+        # FIXME: Deprecated in 0.2. To be removed in 0.4.
+        deprecate_parameter(self, '0.2', 'size_ngh', 'n_neighbors')
         if self.version == 3:
-            # Announce deprecation if needed
-            if self.ver3_samp_ngh is not None:
-                warnings.warn('`ver3_samp_ngh` will be replaced in version'
-                              ' 0.4. Use `n_neighbors_ver3` instead.',
-                              DeprecationWarning)
-                self.n_neighbors_ver3 = self.ver3_samp_ngh
+            deprecate_parameter(self, '0.2', 'ver3_samp_ngh',
+                                'n_neighbors_ver3')
+
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+
+        if self.version == 3:
+            self.nn_ver3_ = check_neighbors_object('n_neighbors_ver3',
+                                                   self.n_neighbors_ver3)
+            self.nn_ver3_.set_params(**{'n_jobs': self.n_jobs})
+
+        if self.version not in (1, 2, 3):
+            raise ValueError('Parameter `version` must be 1, 2 or 3, got'
+                             ' {}'.format(self.version))
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -244,19 +255,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
             containing the which samples have been selected.
 
         """
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
-
-        # kept for deprecation purpose it will create the n_neighbors_ver3
         self._validate_estimator()
-        if self.version == 3:
-            self.nn_ver3_ = check_neighbors_object('n_neighbors_ver3',
-                                                   self.n_neighbors_ver3)
-            self.nn_ver3_.set_params(**{'n_jobs': self.n_jobs})
-
-        if self.version not in (1, 2, 3):
-            raise ValueError('Parameter `version` must be 1, 2 or 3, got'
-                             ' {}'.format(self.version))
 
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0, ), dtype=y.dtype)

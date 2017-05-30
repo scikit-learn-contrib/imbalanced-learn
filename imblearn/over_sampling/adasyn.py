@@ -11,6 +11,7 @@ from sklearn.utils import check_random_state
 
 from .base import BaseOverSampler
 from ..utils import check_neighbors_object
+from ..utils.deprecation import deprecate_parameter
 
 
 class ADASYN(BaseOverSampler):
@@ -104,6 +105,15 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
 
+    def _validate_estimator(self):
+        """Create the necessary objects for ADASYN"""
+        # FIXME: Deprecated in 0.2. To be removed in 0.4.
+        deprecate_parameter(self, '0.2', 'k', 'n_neighbors')
+
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -124,11 +134,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             The corresponding label of `X_resampled`
 
         """
-        super(ADASYN, self)._sample(X, y)
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
-
+        self._validate_estimator()
         random_state = check_random_state(self.random_state)
 
         X_resampled = X.copy()

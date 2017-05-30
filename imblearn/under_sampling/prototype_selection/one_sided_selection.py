@@ -14,6 +14,7 @@ from sklearn.utils import check_random_state
 
 from ..base import BaseCleaningSampler
 from .tomek_links import TomekLinks
+from ...utils.deprecation import deprecate_parameter
 
 
 class OneSidedSelection(BaseCleaningSampler):
@@ -117,6 +118,8 @@ KNeighborsClassifier(n_neighbors=1))
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
+        # FIXME: Deprecated in 0.2. To be removed in 0.4.
+        deprecate_parameter(self, '0.2', 'size_ngh', 'n_neighbors')
         if self.n_neighbors is None:
             self.estimator_ = KNeighborsClassifier(
                 n_neighbors=1, n_jobs=self.n_jobs)

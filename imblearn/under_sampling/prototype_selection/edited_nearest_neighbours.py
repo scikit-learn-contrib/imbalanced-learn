@@ -16,6 +16,7 @@ from scipy.stats import mode
 
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
+from ...utils.deprecation import deprecate_parameter
 
 SEL_KIND = ('all', 'mode')
 
@@ -127,6 +128,18 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
 
+    def _validate_estimator(self):
+        """Validate the estimator created in the ENN."""
+        # FIXME: Deprecated in 0.2. To be removed in 0.4
+        deprecate_parameter(self, '0.2', 'size_ngh', 'n_neighbors')
+
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -151,11 +164,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
             containing the which samples have been selected.
 
         """
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
+        self._validate_estimator()
 
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0, ), dtype=y.dtype)
@@ -312,13 +321,19 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-        self.enn_ = EditedNearestNeighbours(
-            ratio=self.ratio,
-            return_indices=self.return_indices,
-            random_state=self.random_state,
-            n_neighbors=self.n_neighbors,
-            kind_sel=self.kind_sel,
-            n_jobs=self.n_jobs)
+        if self.max_iter < 2:
+            raise ValueError('max_iter must be greater than 1.'
+                             ' Got {} instead.'.format(type(self.max_iter)))
+
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+
+        self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
+                                            return_indices=self.return_indices,
+                                            random_state=self.random_state,
+                                            n_neighbors=self.nn_,
+                                            kind_sel=self.kind_sel,
+                                            n_jobs=self.n_jobs)
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -344,21 +359,8 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
             containing the which samples have been selected.
 
         """
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-        if self.max_iter < 2:
-            raise ValueError('max_iter must be greater than 1.'
-                             ' Got {} instead.'.format(type(self.max_iter)))
 
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
-
-        self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
-                                            return_indices=self.return_indices,
-                                            random_state=self.random_state,
-                                            n_neighbors=self.nn_,
-                                            kind_sel=self.kind_sel,
-                                            n_jobs=self.n_jobs)
+        self._validate_estimator()
 
         X_, y_ = X, y
         if self.return_indices:
@@ -522,6 +524,21 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
 
+    def _validate_estimator(self):
+        """Create objects required by AllKNN"""
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+
+        self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
+                                            return_indices=self.return_indices,
+                                            random_state=self.random_state,
+                                            n_neighbors=self.nn_,
+                                            kind_sel=self.kind_sel,
+                                            n_jobs=self.n_jobs)
+
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -546,18 +563,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             containing the which samples have been selected.
 
         """
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
-
-        self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
-                                            return_indices=self.return_indices,
-                                            random_state=self.random_state,
-                                            n_neighbors=self.nn_,
-                                            kind_sel=self.kind_sel,
-                                            n_jobs=self.n_jobs)
+        self._validate_estimator()
 
         X_, y_ = X, y
         target_stats = Counter(y)

@@ -12,8 +12,10 @@ from sklearn.svm import SVC
 from sklearn.utils import check_random_state
 
 from .base import BaseOverSampler
-from ..utils import check_neighbors_object
 from ..exceptions import raise_isinstance_error
+from ..utils import check_neighbors_object
+from ..utils.deprecation import deprecate_parameter
+
 
 SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
@@ -249,6 +251,16 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Create the necessary objects for SMOTE."""
+
+        # FIXME Deprecated in 0.2, to be removed in 0.4
+        deprecate_parameter(self, '0.2', 'k', 'k_neighbors')
+        deprecate_parameter(self, '0.2', 'm', 'm_neighbors')
+
+        if self.kind not in SMOTE_KIND:
+            raise ValueError('Unknown kind for SMOTE algorithm.'
+                             ' Choices are {}. Got {} instead.'.format(
+                                 SMOTE_KIND, self.kind))
+
         self.nn_k_ = check_neighbors_object('k_neighbors',
                                             self.k_neighbors,
                                             additional_neighbor=1)
@@ -503,11 +515,6 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             The corresponding label of `X_resampled`
 
         """
-        if self.kind not in SMOTE_KIND:
-            raise ValueError('Unknown kind for SMOTE algorithm.'
-                             ' Choices are {}. Got {} instead.'.format(
-                                 SMOTE_KIND, self.kind))
-
         self._validate_estimator()
 
         if self.kind == 'regular':

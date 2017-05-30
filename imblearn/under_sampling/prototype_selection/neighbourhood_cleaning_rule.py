@@ -115,6 +115,21 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         self.threshold_cleaning = threshold_cleaning
         self.n_jobs = n_jobs
 
+    def _validate_estimator(self):
+        """Create the objects required by NCR."""
+        # FIXME: Deprecated from 0.2. To be removed in 0.4.
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
+        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+
+        if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
+            raise ValueError("'threshold_cleaning' is a value between 0 and 1."
+                             " Got {} instead.".format(
+                                 self.threshold_cleaning))
+
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -139,17 +154,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
             containing the which samples have been selected.
 
         """
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
-
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
-        if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
-            raise ValueError("'threshold_cleaning' is a value between 0 and 1."
-                             " Got {} instead.".format(
-                                 self.threshold_cleaning))
+        self._validate_estimator()
 
         enn = EditedNearestNeighbours(ratio=self.ratio, return_indices=True,
                                       random_state=self.random_state,

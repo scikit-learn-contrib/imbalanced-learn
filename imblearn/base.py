@@ -7,7 +7,6 @@
 from __future__ import division
 
 import logging
-import warnings
 from abc import ABCMeta, abstractmethod
 
 from sklearn.base import BaseEstimator
@@ -26,42 +25,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     """
 
     _estimator_type = 'sampler'
-
-    def _validate_size_ngh_deprecation(self):
-        "Private function to warn about the deprecation about size_ngh."
-
-        # Announce deprecation if necessary
-        if self.size_ngh is not None:
-            warnings.warn('`size_ngh` will be replaced in version 0.4. Use'
-                          ' `n_neighbors` instead.', DeprecationWarning)
-            self.n_neighbors = self.size_ngh
-
-    def _validate_k_deprecation(self):
-        """Private function to warn about deprecation of k in ADASYN"""
-        if self.k is not None:
-            warnings.warn('`k` will be replaced in version 0.4. Use'
-                          ' `n_neighbors` instead.', DeprecationWarning)
-            self.n_neighbors = self.k
-
-    def _validate_k_m_deprecation(self):
-        """Private function to warn about deprecation of k in ADASYN"""
-        if self.k is not None:
-            warnings.warn('`k` will be replaced in version 0.4. Use'
-                          ' `k_neighbors` instead.', DeprecationWarning)
-            self.k_neighbors = self.k
-
-        if self.m is not None:
-            warnings.warn('`m` will be replaced in version 0.4. Use'
-                          ' `m_neighbors` instead.', DeprecationWarning)
-            self.m_neighbors = self.m
-
-    def _validate_deprecation(self):
-        if hasattr(self, 'size_ngh'):
-            self._validate_size_ngh_deprecation()
-        elif hasattr(self, 'k') and not hasattr(self, 'm'):
-            self._validate_k_deprecation()
-        elif hasattr(self, 'k') and hasattr(self, 'm'):
-            self._validate_k_m_deprecation()
 
     def _check_hash_X_y(self, X, y):
         """Private function to check that the X and y in fitting are the same
@@ -94,7 +57,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         # Check the consistency of X and y
         X, y = check_X_y(X, y)
 
-        self._validate_deprecation()
         check_is_fitted(self, 'ratio_')
         self._check_hash_X_y(X, y)
 
