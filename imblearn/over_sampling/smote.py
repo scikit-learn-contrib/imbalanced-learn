@@ -241,9 +241,11 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         X_new = np.zeros((n_samples, X.shape[1]))
         samples = random_state.randint(
             low=0, high=len(nn_num.flatten()), size=n_samples)
-        for i, n in enumerate(samples):
-            row, col = divmod(n, nn_num.shape[1])
-            step = step_size * random_state.uniform()
+        steps = step_size * random_state.uniform(size=n_samples)
+        rows = np.floor_divide(samples, nn_num.shape[1])
+        cols = np.mod(samples, nn_num.shape[1])
+        for i, (sample, row, col, step) in enumerate(zip(samples, rows,
+                                                         cols, steps)):
             X_new[i] = X[row] - step * (X[row] - nn_data[nn_num[row, col]])
         y_new = np.array([y_type] * len(X_new))
 

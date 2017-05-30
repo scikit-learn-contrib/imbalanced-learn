@@ -78,7 +78,7 @@ def check_target_type(y):
     return y
 
 
-def hash_X_y(X, y):
+def hash_X_y(X, y, n_samples=1000):
     """Compute hash of the input arrays.
 
     Parameters
@@ -96,7 +96,11 @@ def hash_X_y(X, y):
     y_hash: str
         Hash identifier of the ``y`` matrix.
     """
-    return joblib.hash(X), joblib.hash(y)
+    rng = np.random.RandomState(0)
+    raw_idx = rng.randint(X.shape[0], size=n_samples)
+    col_idx = rng.randint(X.shape[1], size=n_samples)
+
+    return joblib.hash(X[raw_idx, col_idx]), joblib.hash(y[raw_idx])
 
 
 def _ratio_all(y, sampling_type):

@@ -161,14 +161,21 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             ratio_nn /= np.sum(ratio_nn)
             n_samples_generate = np.rint(ratio_nn * n_samples).astype(int)
 
+            x_class_gen = []
             for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
                                                  n_samples_generate):
+                if num_sample_i == 0:
+                    continue
                 nn_zs = random_state.randint(
                     1, high=self.nn_.n_neighbors, size=num_sample_i)
-                for nn_z in nn_zs:
-                    step = random_state.uniform()
-                    x_gen = x_i + step * (X[x_i_nn[nn_z], :] - x_i)
-                    X_resampled = np.vstack((X_resampled, x_gen))
-                    y_resampled = np.hstack((y_resampled, class_sample))
+                steps = random_state.uniform(size=len(nn_zs))
+                x_class_gen.append([x_i + step * (X[x_i_nn[nn_z], :] - x_i)
+                                    for step, nn_z in zip(steps, nn_zs)])
+
+            if len(x_class_gen) > 0:
+                X_resampled = np.vstack((X_resampled,
+                                         np.concatenate(x_class_gen)))
+                y_resampled = np.hstack((y_resampled, [class_sample] *
+                                         np.sum(n_samples_generate)))
 
         return X_resampled, y_resampled

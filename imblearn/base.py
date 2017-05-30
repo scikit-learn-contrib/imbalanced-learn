@@ -11,7 +11,7 @@ from abc import ABCMeta, abstractmethod
 
 from sklearn.base import BaseEstimator
 from sklearn.externals import six
-from sklearn.utils import check_X_y
+from sklearn.utils import check_X_y, check_random_state
 from sklearn.utils.validation import check_is_fitted
 
 from .utils import check_ratio, check_target_type, hash_X_y
@@ -26,7 +26,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     _estimator_type = 'sampler'
 
-    def _check_hash_X_y(self, X, y):
+    def _check_X_y(self, X, y):
         """Private function to check that the X and y in fitting are the same
         than in sampling."""
         X_hash, y_hash = hash_X_y(X, y)
@@ -58,7 +58,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         X, y = check_X_y(X, y)
 
         check_is_fitted(self, 'ratio_')
-        self._check_hash_X_y(X, y)
+        self._check_X_y(X, y)
 
         return self._sample(X, y)
 
