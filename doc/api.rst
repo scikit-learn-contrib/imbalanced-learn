@@ -77,8 +77,8 @@ Combination of over- and under-sampling methods
 ===============================================
 
 .. automodule:: imblearn.combine
-    :no-members:
-    :no-inherited-members:
+   :no-members:
+   :no-inherited-members:
 
 .. currentmodule:: imblearn
 
@@ -174,3 +174,6 @@ Utilities
    :toctree: generated/
 
    utils.estimator_checks.check_estimator
+   utils.check_neighbors_object
+   utils.check_ratio
+   utils.hash_X_y

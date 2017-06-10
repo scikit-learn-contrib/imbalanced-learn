@@ -8,35 +8,34 @@ from __future__ import division
 
 import sys
 import traceback
+
+from collections import Counter
+
 import numpy as np
 
+from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import (assert_warns, assert_raises_regex,
-                                   assert_equal, assert_true,
-                                   set_random_state)
+                                   assert_true, set_random_state,
+                                   assert_equal)
 
 from imblearn.base import SamplerMixin
-from imblearn.utils.testing import binary_estimators, multiclass_estimators
+from imblearn.over_sampling.base import BaseOverSampler
+from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
+from imblearn.ensemble.base import BaseEnsembleSampler
 
 
 def _yield_sampler_checks(name, Estimator):
-    # Get only the name of binary and multiclass samplers
-    binary_samplers = tuple([c[0] for c in binary_estimators()])
-    multiclass_samplers = tuple([c[0] for c in multiclass_estimators()])
-    if name in binary_samplers:
-        yield check_continuous_warning
-        yield check_multiclass_warning
-    if name in multiclass_samplers:
-        yield check_continuous_warning
-    if 'ratio' in Estimator().get_params().keys():
-        yield check_samplers_ratio_error
+    yield check_target_type
     yield check_samplers_one_label
     yield check_samplers_no_fit_error
     yield check_samplers_X_consistancy_sample
     yield check_samplers_fit
+    yield check_samplers_fit_sample
+    yield check_samplers_ratio_fit_sample
 
 
 def _yield_all_checks(name, Estimator):
@@ -72,7 +71,7 @@ def check_estimator(Estimator):
         check(name, Estimator)
 
 
-def check_continuous_warning(name, Estimator):
+def check_target_type(name, Estimator):
     X = np.random.random((20, 2))
     y = np.linspace(0, 1, 20)
     estimator = Estimator()
@@ -177,50 +176,80 @@ def check_samplers_no_fit_error(name, Sampler):
                         sampler.sample, X, y)
 
 
-def check_samplers_ratio_error(name, Sampler):
-    sampler = Sampler()
-    X = np.random.random((20, 2))
-    y = np.array([1] * 5 + [0] * 15)
-
-    ratio = 1000
-    sampler.set_params(**{'ratio': ratio})
-    assert_raises_regex(ValueError, "Ratio cannot be greater than one.",
-                        sampler.fit, X, y)
-    ratio = -1.0
-    sampler.set_params(**{'ratio': ratio})
-    assert_raises_regex(ValueError, "Ratio cannot be negative.",
-                        sampler.fit, X, y)
-    ratio = 'rnd'
-    sampler.set_params(**{'ratio': ratio})
-    assert_raises_regex(ValueError, "Unknown string for the parameter ratio.",
-                        sampler.fit, X, y)
-    ratio = [.5, .5]
-    sampler.set_params(**{'ratio': ratio})
-    assert_raises_regex(ValueError, "Unknown parameter type for ratio.",
-                        sampler.fit, X, y)
-    ratio = 1 / 1000
-    sampler.set_params(**{'ratio': ratio})
-    assert_raises_regex(RuntimeError, "The ratio requested at initialisation",
-                        sampler.fit, X, y)
-
-
 def check_samplers_X_consistancy_sample(name, Sampler):
     sampler = Sampler()
-    X = np.random.random((20, 2))
-    y = np.array([1] * 15 + [0] * 5)
+    X = np.random.random((30, 2))
+    y = np.array([1] * 20 + [0] * 10)
     sampler.fit(X, y)
-    X_different = np.random.random((30, 2))
-    y_different = y = np.array([1] * 15 + [0] * 15)
-    assert_raises_regex(RuntimeError, "to be the one earlier fitted",
+    X_different = np.random.random((40, 2))
+    y_different = y = np.array([1] * 25 + [0] * 15)
+    assert_raises_regex(RuntimeError, "X and y need to be same array earlier",
                         sampler.sample, X_different, y_different)
 
 
 def check_samplers_fit(name, Sampler):
     sampler = Sampler()
-    X = np.random.random((20, 2))
-    y = np.array([1] * 15 + [0] * 5)
+    X = np.random.random((30, 2))
+    y = np.array([1] * 20 + [0] * 10)
     sampler.fit(X, y)
-    assert_equal(sampler.min_c_, 0)
-    assert_equal(sampler.maj_c_, 1)
-    assert_equal(sampler.stats_c_[0], 5)
-    assert_equal(sampler.stats_c_[1], 15)
+    assert_true(hasattr(sampler, 'ratio_'))
+
+
+def check_samplers_fit_sample(name, Sampler):
+    sampler = Sampler(random_state=0)
+    X, y = make_classification(n_samples=1000, n_classes=3,
+                               n_informative=4, weights=[0.2, 0.3, 0.5],
+                               random_state=0)
+    target_stats = Counter(y)
+    X_res, y_res = sampler.fit_sample(X, y)
+    if isinstance(sampler, BaseOverSampler):
+        target_stats_res = Counter(y_res)
+        n_samples = max(target_stats.values())
+        assert_true(all(value >= n_samples
+                        for value in Counter(y_res).values()))
+    elif isinstance(sampler, BaseUnderSampler):
+        n_samples = min(target_stats.values())
+        assert_true(all(value == n_samples
+                        for value in Counter(y_res).values()))
+    elif isinstance(sampler, BaseCleaningSampler):
+        target_stats_res = Counter(y_res)
+        class_minority = min(target_stats, key=target_stats.get)
+        assert_true(
+            all(target_stats[class_sample] > target_stats_res[class_sample]
+                for class_sample in target_stats.keys()
+                if class_sample != class_minority))
+    elif isinstance(sampler, BaseEnsembleSampler):
+        y_ensemble = y_res[0]
+        n_samples = min(target_stats.values())
+        assert_true(all(value == n_samples
+                        for value in Counter(y_ensemble).values()))
+
+
+def check_samplers_ratio_fit_sample(name, Sampler):
+    # in this test we will force all samplers to not change the class 1
+    X, y = make_classification(n_samples=1000, n_classes=3,
+                               n_informative=4, weights=[0.2, 0.3, 0.5],
+                               random_state=0)
+    target_stats = Counter(y)
+    sampler = Sampler(random_state=0)
+    if isinstance(sampler, BaseOverSampler):
+        ratio = {2: 498, 0: 498}
+        sampler.set_params(ratio=ratio)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_equal(target_stats[1], Counter(y_res)[1])
+    elif isinstance(sampler, BaseUnderSampler):
+        ratio = {2: 201, 0: 201}
+        sampler.set_params(ratio=ratio)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_equal(target_stats[1], Counter(y_res)[1])
+    elif isinstance(sampler, BaseCleaningSampler):
+        ratio = {2: 201, 0: 201}
+        sampler.set_params(ratio=ratio)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_equal(target_stats[1], Counter(y_res)[1])
+    elif isinstance(sampler, BaseEnsembleSampler):
+        ratio = {2: 201, 0: 201}
+        sampler.set_params(ratio=ratio)
+        X_res, y_res = sampler.fit_sample(X, y)
+        y_ensemble = y_res[0]
+        assert_equal(target_stats[1], Counter(y_ensemble)[1])

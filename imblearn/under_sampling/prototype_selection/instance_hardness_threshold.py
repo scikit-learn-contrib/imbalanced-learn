@@ -6,7 +6,7 @@ threshold."""
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
 import warnings
 from collections import Counter
@@ -17,7 +17,7 @@ from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.externals.six import string_types
 
-from ...base import BaseBinarySampler
+from ..base import BaseCleaningSampler
 
 
 def _get_cv_splits(X, y, cv, random_state):
@@ -33,39 +33,52 @@ def _get_cv_splits(X, y, cv, random_state):
     return cv_iterator
 
 
-class InstanceHardnessThreshold(BaseBinarySampler):
+class InstanceHardnessThreshold(BaseCleaningSampler):
     """Class to perform under-sampling based on the instance hardness
     threshold.
 
     Parameters
     ----------
     estimator : object, optional (default=RandomForestClassifier())
-        Classifier to be used to estimate instance hardness of the samples.
-        By default a RandomForestClassifer will be used.
-        If str, the choices using a string are the following: 'knn',
-        'decision-tree', 'random-forest', 'adaboost', 'gradient-boosting'
-        and 'linear-svm'.
-        If object, an estimator inherited from `sklearn.base.ClassifierMixin`
-        and having an attribute `predict_proba`.
+        Classifier to be used to estimate instance hardness of the samples.  By
+        default a :class:`sklearn.ensemble.RandomForestClassifer` will be used.
+        If ``str``, the choices using a string are the following: ``'knn'``,
+        ``'decision-tree'``, ``'random-forest'``, ``'adaboost'``,
+        ``'gradient-boosting'`` and ``'linear-svm'``.  If object, an estimator
+        inherited from :class:`sklearn.base.ClassifierMixin` and having an
+        attribute :func:`predict_proba`.
 
-        NOTE: `estimator` as a string object is deprecated from 0.2 and will be
-        replaced in 0.4. Use `ClassifierMixin` object instead.
+        .. deprecated:: 0.2
+           ``estimator`` as a string object is deprecated from 0.2 and will be
+           replaced in 0.4. Use :class:`sklearn.base.ClassifierMixin` object
+           instead.
 
-    ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     cv : int, optional (default=5)
         Number of folds to be used when estimating samples' instance hardness.
@@ -76,33 +89,16 @@ class InstanceHardnessThreshold(BaseBinarySampler):
     **kwargs:
         Option for the different classifier.
 
-        NOTE: `**kwargs` has been deprecated from 0.2 and will be replaced in
-        0.4. Use `ClassifierMixin` object instead to pass parameter associated
-        to an estimator.
-
-    Attributes
-    ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
-    cv : int, optional (default=5)
-        Number of folds used when estimating samples' instance hardness.
-
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
+        .. deprecated:: 0.2
+           ``**kwargs`` has been deprecated from 0.2 and will be replaced in
+           0.4. Use :class:`sklearn.base.ClassifierMixin` object instead to
+           pass parameter associated to an estimator.
 
     Notes
     -----
     The method is based on [1]_.
 
-    This class does not support multi-class.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -191,30 +187,6 @@ class InstanceHardnessThreshold(BaseBinarySampler):
             raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
                 type(self.estimator)))
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-
-        super(InstanceHardnessThreshold, self).fit(X, y)
-
-        self._validate_estimator()
-
-        return self
-
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -239,10 +211,10 @@ class InstanceHardnessThreshold(BaseBinarySampler):
             containing the which samples have been selected.
 
         """
+        self._validate_estimator()
 
-        # Create the different folds
+        target_stats = Counter(y)
         skf = _get_cv_splits(X, y, self.cv, self.random_state)
-
         probabilities = np.zeros(y.shape[0], dtype=float)
 
         for train_index, test_index in skf:
@@ -258,28 +230,34 @@ class InstanceHardnessThreshold(BaseBinarySampler):
                 for l, c in enumerate(y_test)
             ]
 
-        # Compute the number of cluster needed
-        if self.ratio == 'auto':
-            num_samples = self.stats_c_[self.min_c_]
-        else:
-            num_samples = int(self.stats_c_[self.min_c_] / self.ratio)
-
-        # Find the percentile corresponding to the top num_samples
-        threshold = np.percentile(
-            probabilities[y != self.min_c_],
-            (1. - (num_samples / self.stats_c_[self.maj_c_])) * 100.)
-
-        mask = np.logical_or(probabilities >= threshold, y == self.min_c_)
-
-        # Sample the data
-        X_resampled = X[mask]
-        y_resampled = y[mask]
-
-        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
-
-        # If we need to offer support for the indices
+        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
+        y_resampled = np.empty((0, ), dtype=y.dtype)
         if self.return_indices:
-            idx_under = np.flatnonzero(mask)
+            idx_under = np.empty((0, ), dtype=int)
+
+        for target_class in np.unique(y):
+            if target_class in self.ratio_.keys():
+                n_samples = self.ratio_[target_class]
+                threshold = np.percentile(
+                    probabilities[y == target_class],
+                    (1. - (n_samples / target_stats[target_class])) * 100.)
+                index_target_class = np.flatnonzero(
+                    probabilities[y == target_class] >= threshold)
+            else:
+                index_target_class = slice(None)
+
+            X_resampled = np.concatenate(
+                (X_resampled, X[y == target_class][index_target_class]),
+                axis=0)
+            y_resampled = np.concatenate(
+                (y_resampled, y[y == target_class][index_target_class]),
+                axis=0)
+            if self.return_indices:
+                idx_under = np.concatenate(
+                    (idx_under, np.flatnonzero(y == target_class)[
+                        index_target_class]), axis=0)
+
+        if self.return_indices:
             return X_resampled, y_resampled, idx_under
         else:
             return X_resampled, y_resampled

@@ -1,4 +1,8 @@
 """Test the module Tomek's links."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
@@ -6,7 +10,6 @@ from numpy.testing import assert_array_equal, assert_equal
 
 from imblearn.under_sampling import TomekLinks
 
-# Generate a global dataset to use
 RND_SEED = 0
 X = np.array([[0.31230513, 0.1216318], [0.68481731, 0.51935141],
               [1.34192108, -0.13367336], [0.62366841, -0.21312976],
@@ -22,7 +25,6 @@ Y = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
 def test_tl_init():
-    # Define a ratio
     tl = TomekLinks(random_state=RND_SEED)
 
     assert_equal(tl.n_jobs, 1)
@@ -30,7 +32,6 @@ def test_tl_init():
 
 
 def test_tl_fit_sample():
-    # Resample the data
     tl = TomekLinks(random_state=RND_SEED)
     X_resampled, y_resampled = tl.fit_sample(X, Y)
 
@@ -49,7 +50,6 @@ def test_tl_fit_sample():
 
 
 def test_tl_fit_sample_with_indices():
-    # Resample the data
     tl = TomekLinks(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = tl.fit_sample(X, Y)
 

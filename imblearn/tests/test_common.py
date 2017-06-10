@@ -1,3 +1,8 @@
+"""Common tests"""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from sklearn.utils.testing import assert_greater
 from sklearn.utils.testing import assert_false
 from sklearn.utils.testing import _named_check

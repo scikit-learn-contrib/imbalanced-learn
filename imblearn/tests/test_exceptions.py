@@ -1,3 +1,9 @@
+"""Test for the exceptions modules"""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
+
 from sklearn.utils.testing import assert_raises_regex
 
 from imblearn.exceptions import raise_isinstance_error

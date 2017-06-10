@@ -4,120 +4,135 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
+import logging
 import warnings
 
-from ..base import BaseBinarySampler
+from sklearn.utils import check_X_y
+
+from ..base import SamplerMixin
 from ..over_sampling import SMOTE
 from ..under_sampling import EditedNearestNeighbours
+from ..utils import check_target_type, hash_X_y
 
 
-class SMOTEENN(BaseBinarySampler):
+class SMOTEENN(SamplerMixin):
     """Class to perform over-sampling using SMOTE and cleaning using ENN.
 
     Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.
 
     Parameters
     ----------
-    ratio : str or float, optional (default=None)
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the
-        number of samples in the minority class over the the number of
-        samples in the majority class.
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     smote : object, optional (default=SMOTE())
-        The SMOTE object to use. If not given, a SMOTE object with default
-        parameters will be given.
+        The :class:`imblearn.over_sampling.SMOTE` object to use. If not given,
+        a :class:`imblearn.over_sampling.SMOTE` object with default parameters
+        will be given.
 
     enn : object, optional (default=EditedNearestNeighbours())
-        The ENN object to use. If not given, an EditedNearestNeighbours object
-        with default parameters will be given.
+        The :class:`imblearn.under_sampling.EditedNearestNeighbours` object to
+        use. If not given, an
+        :class:`imblearn.under_sampling.EditedNearestNeighbours` object with
+        default parameters will be given.
 
     k : int, optional (default=None)
         Number of nearest neighbours to used to construct synthetic
         samples.
 
-        NOTE: `k` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           `k` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     m : int, optional (default=None)
         Number of nearest neighbours to use to determine if a minority
         sample is in danger.
 
-        NOTE: `m` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           `m` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     out_step : float, optional (default=None)
         Step size when extrapolating.
 
-        NOTE: `out_step` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           ``out_step`` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     kind_smote : str, optional (default=None)
         The type of SMOTE algorithm to use one of the following
-        options: 'regular', 'borderline1', 'borderline2', 'svm'.
+        options: ``'regular'``, ``'borderline1'``, ``'borderline2'``,
+        ``'svm'``.
 
-    NOTE: `kind_smote` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE object.
+        .. deprecated:: 0.2
+           `kind_smote` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     size_ngh : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
-        Use ``n_neighbors`` instead.
+        .. deprecated:: 0.2
+           size_ngh is deprecated from 0.2 and will be replaced in 0.4
+           Use ``n_neighbors`` instead.
 
     n_neighbors : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-        NOTE: `n_neighbors` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a EditedNearestNeighbours object.
+        .. deprecated:: 0.2
+           `n_neighbors` is deprecated from 0.2 and will be replaced in 0.4
+           Give directly a
+           :class:`imblearn.under_sampling.EditedNearestNeighbours` object.
 
     kind_sel : str, optional (default=None)
         Strategy to use in order to exclude samples.
 
-        - If 'all', all neighbours will have to agree with the samples of
-        interest to not be excluded.
-        - If 'mode', the majority vote of the neighbours will be used in
-        order to exclude a sample.
+        - If ``'all'``, all neighbours will have to agree with the samples of
+          interest to not be excluded.
+        - If ``'mode'``, the majority vote of the neighbours will be used in
+          order to exclude a sample.
 
-        NOTE: `kind_sel` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a EditedNearestNeighbours object.
+        .. deprecated:: 0.2
+           ``kind_sel`` is deprecated from 0.2 and will be replaced in 0.4 Give
+           directly a :class:`imblearn.under_sampling.EditedNearestNeighbours`
+           object.
 
     n_jobs : int, optional (default=None)
         The number of threads to open if possible.
 
-        NOTE: `n_jobs` is deprecated from 0.2 and will be replaced in 0.4
-        Give directly a SMOTE and EditedNearestNeighbours object.
-
-    Attributes
-    ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
+        .. deprecated:: 0.2
+           `n_jobs` is deprecated from 0.2 and will be replaced in 0.4 Give
+           directly a :class:`imblearn.over_sampling.SMOTE` and
+           :class:`imblearn.under_sampling.EditedNearestNeighbours` object.
 
     Notes
     -----
     The method is presented in [1]_.
 
-    This class does not support mutli-class.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -156,8 +171,9 @@ class SMOTEENN(BaseBinarySampler):
                  n_neighbors=None,
                  kind_enn=None,
                  n_jobs=None):
-
-        super(SMOTEENN, self).__init__(ratio=ratio, random_state=random_state)
+        super(SMOTEENN, self).__init__()
+        self.ratio = ratio
+        self.random_state = random_state
         self.smote = smote
         self.enn = enn
         self.k = k
@@ -168,6 +184,7 @@ class SMOTEENN(BaseBinarySampler):
         self.n_neighbors = n_neighbors
         self.kind_enn = kind_enn
         self.n_jobs = n_jobs
+        self.logger = logging.getLogger(__name__)
 
     def _validate_estimator(self):
         "Private function to validate SMOTE and ENN objects"
@@ -230,6 +247,7 @@ class SMOTEENN(BaseBinarySampler):
             if self.n_jobs is None:
                 self.n_jobs = 1
             self.enn_ = EditedNearestNeighbours(
+                ratio='all',
                 random_state=self.random_state,
                 size_ngh=self.size_ngh,
                 n_neighbors=self.n_neighbors,
@@ -244,7 +262,8 @@ class SMOTEENN(BaseBinarySampler):
                                  ' Got {} instead.'.format(type(self.enn)))
         # Otherwise create a default EditedNearestNeighbours
         else:
-            self.enn_ = EditedNearestNeighbours(random_state=self.random_state)
+            self.enn_ = EditedNearestNeighbours(ratio='all',
+                                                random_state=self.random_state)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -263,13 +282,10 @@ class SMOTEENN(BaseBinarySampler):
             Return self.
 
         """
-
-        super(SMOTEENN, self).fit(X, y)
-
-        self._validate_estimator()
-
-        # Fit using SMOTE
-        self.smote_.fit(X, y)
+        X, y = check_X_y(X, y)
+        y = check_target_type(y)
+        self.ratio_ = self.ratio
+        self.X_hash_, self.y_hash_ = hash_X_y(X, y)
 
         return self
 
@@ -293,9 +309,7 @@ class SMOTEENN(BaseBinarySampler):
             The corresponding label of `X_resampled`
 
         """
+        self._validate_estimator()
 
-        # Transform using SMOTE
-        X, y = self.smote_.sample(X, y)
-
-        # Fit and transform using ENN
-        return self.enn_.fit_sample(X, y)
+        X_res, y_res = self.smote_.fit_sample(X, y)
+        return self.enn_.fit_sample(X_res, y_res)

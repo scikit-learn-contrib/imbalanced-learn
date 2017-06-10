@@ -3,18 +3,17 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
-
-from __future__ import division, print_function
+from __future__ import division
 
 from collections import Counter
 
 import numpy as np
 from sklearn.utils import check_random_state
 
-from ..base import BaseMulticlassSampler
+from .base import BaseOverSampler
 
 
-class RandomOverSampler(BaseMulticlassSampler):
+class RandomOverSampler(BaseOverSampler):
     """Class to perform random over-sampling.
 
     Object to over-sample the minority class(es) by picking samples at random
@@ -22,36 +21,32 @@ class RandomOverSampler(BaseMulticlassSampler):
 
     Parameters
     ----------
-    ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
-
-    Attributes
-    ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     Notes
     -----
-    Supports multiple classes.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -59,7 +54,7 @@ class RandomOverSampler(BaseMulticlassSampler):
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.over_sampling import \
-    RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
+RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -73,7 +68,6 @@ class RandomOverSampler(BaseMulticlassSampler):
     """
 
     def __init__(self, ratio='auto', random_state=None):
-
         super(RandomOverSampler, self).__init__(
             ratio=ratio, random_state=random_state)
 
@@ -97,38 +91,22 @@ class RandomOverSampler(BaseMulticlassSampler):
             The corresponding label of `X_resampled`
 
         """
+        random_state = check_random_state(self.random_state)
+        target_stats = Counter(y)
 
-        # Keep the samples from the majority class
-        X_resampled = X[y == self.maj_c_]
-        y_resampled = y[y == self.maj_c_]
+        X_resampled = X.copy()
+        y_resampled = y.copy()
 
-        # Loop over the other classes over picking at random
-        for key in self.stats_c_.keys():
+        for class_sample, num_samples in self.ratio_.items():
+            index_samples = random_state.randint(
+                low=0, high=target_stats[class_sample], size=num_samples)
 
-            # If this is the majority class, skip it
-            if key == self.maj_c_:
-                continue
+            X_resampled = np.concatenate((X_resampled,
+                                          X[y == class_sample][index_samples]),
+                                         axis=0)
 
-            # Define the number of sample to create
-            if self.ratio == 'auto':
-                num_samples = int(self.stats_c_[self.maj_c_] - self.stats_c_[
-                    key])
-            else:
-                num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
-                                  self.stats_c_[key])
-
-            # Pick some elements at random
-            random_state = check_random_state(self.random_state)
-            indx = random_state.randint(
-                low=0, high=self.stats_c_[key], size=num_samples)
-
-            # Concatenate to the majority class
-            X_resampled = np.concatenate(
-                (X_resampled, X[y == key], X[y == key][indx]), axis=0)
-
-            y_resampled = np.concatenate(
-                (y_resampled, y[y == key], y[y == key][indx]), axis=0)
-
-        self.logger.info('Over-sampling performed: %s', Counter(y_resampled))
+            y_resampled = np.concatenate((y_resampled,
+                                          y[y == class_sample][index_samples]),
+                                         axis=0)
 
         return X_resampled, y_resampled

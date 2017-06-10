@@ -1,4 +1,8 @@
 """Test the module SMOTE."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
@@ -9,7 +13,6 @@ from sklearn.svm import SVC
 
 from imblearn.over_sampling import SMOTE
 
-# Generate a global dataset to use
 RND_SEED = 0
 X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
               [1.25192108, -0.22367336], [0.53366841, -0.30312976],
@@ -33,14 +36,9 @@ def test_smote_wrong_kind():
 
 
 def test_sample_regular():
-    # Create the object
     kind = 'regular'
     smote = SMOTE(random_state=RND_SEED, kind=kind)
-    # Fit the data
-    smote.fit(X, Y)
-
     X_resampled, y_resampled = smote.fit_sample(X, Y)
-
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336], [0.53366841, -0.30312976],
                      [1.52091956, -0.49283504], [-0.28162401, -2.10400981],
@@ -61,15 +59,10 @@ def test_sample_regular():
 
 
 def test_sample_regular_half():
-    # Create the object
     ratio = 0.8
     kind = 'regular'
     smote = SMOTE(ratio=ratio, random_state=RND_SEED, kind=kind)
-    # Fit the data
-    smote.fit(X, Y)
-
     X_resampled, y_resampled = smote.fit_sample(X, Y)
-
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336], [0.53366841, -0.30312976],
                      [1.52091956, -0.49283504], [-0.28162401, -2.10400981],
@@ -88,14 +81,9 @@ def test_sample_regular_half():
 
 
 def test_sample_borderline1():
-    # Create the object
     kind = 'borderline1'
     smote = SMOTE(random_state=RND_SEED, kind=kind)
-    # Fit the data
-    smote.fit(X, Y)
-
     X_resampled, y_resampled = smote.fit_sample(X, Y)
-
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336], [0.53366841, -0.30312976],
                      [1.52091956, -0.49283504], [-0.28162401, -2.10400981],
@@ -116,14 +104,9 @@ def test_sample_borderline1():
 
 
 def test_sample_borderline2():
-    # Create the object
     kind = 'borderline2'
     smote = SMOTE(random_state=RND_SEED, kind=kind)
-    # Fit the data
-    smote.fit(X, Y)
-
     X_resampled, y_resampled = smote.fit_sample(X, Y)
-
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336], [0.53366841, -0.30312976],
                      [1.52091956, -0.49283504], [-0.28162401, -2.10400981],
@@ -143,14 +126,9 @@ def test_sample_borderline2():
 
 
 def test_sample_svm():
-    # Create the object
     kind = 'svm'
     smote = SMOTE(random_state=RND_SEED, kind=kind)
-    # Fit the data
-    smote.fit(X, Y)
-
     X_resampled, y_resampled = smote.fit_sample(X, Y)
-
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336], [0.53366841, -0.30312976],
                      [1.52091956, -0.49283504], [-0.28162401, -2.10400981],
@@ -170,15 +148,12 @@ def test_sample_svm():
 
 
 def test_fit_sample_nn_obj():
-    # Create the object
     kind = 'borderline1'
     nn_m = NearestNeighbors(n_neighbors=11)
     nn_k = NearestNeighbors(n_neighbors=6)
-    smote = SMOTE(
-        random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
-
+    smote = SMOTE(random_state=RND_SEED, kind=kind, k_neighbors=nn_k,
+                  m_neighbors=nn_m)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
-
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336], [0.53366841, -0.30312976],
                      [1.52091956, -0.49283504], [-0.28162401, -2.10400981],
@@ -199,13 +174,10 @@ def test_fit_sample_nn_obj():
 
 
 def test_sample_regular_with_nn():
-    # Create the object
     kind = 'regular'
     nn_k = NearestNeighbors(n_neighbors=6)
     smote = SMOTE(random_state=RND_SEED, kind=kind, k_neighbors=nn_k)
-
     X_resampled, y_resampled = smote.fit_sample(X, Y)
-
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336], [0.53366841, -0.30312976],
                      [1.52091956, -0.49283504], [-0.28162401, -2.10400981],
@@ -226,42 +198,33 @@ def test_sample_regular_with_nn():
 
 
 def test_wrong_nn():
-    # Create the object
     kind = 'borderline1'
     nn_m = 'rnd'
     nn_k = NearestNeighbors(n_neighbors=6)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
-
     assert_raises_regex(ValueError, "has to be one of",
                         smote.fit_sample, X, Y)
-
     nn_k = 'rnd'
     nn_m = NearestNeighbors(n_neighbors=10)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
-
     assert_raises_regex(ValueError, "has to be one of",
                         smote.fit_sample, X, Y)
-
     kind = 'regular'
     nn_k = 'rnd'
     smote = SMOTE(random_state=RND_SEED, kind=kind, k_neighbors=nn_k)
-
     assert_raises_regex(ValueError, "has to be one of",
                         smote.fit_sample, X, Y)
 
 
 def test_sample_regular_with_nn_svm():
-    # Create the object
     kind = 'svm'
     nn_k = NearestNeighbors(n_neighbors=6)
     svm = SVC(random_state=RND_SEED)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, svm_estimator=svm)
-
     X_resampled, y_resampled = smote.fit_sample(X, Y)
-
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336], [0.53366841, -0.30312976],
                      [1.52091956, -0.49283504], [-0.28162401, -2.10400981],
@@ -281,7 +244,6 @@ def test_sample_regular_with_nn_svm():
 
 
 def test_sample_regular_wrong_svm():
-    # Create the object
     kind = 'svm'
     nn_k = NearestNeighbors(n_neighbors=6)
     svm = 'rnd'

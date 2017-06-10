@@ -1,4 +1,8 @@
 """Test the module nearmiss."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
@@ -8,7 +12,6 @@ from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NearMiss
 
-# Generate a global dataset to use for the 3 version of nearmiss
 RND_SEED = 0
 X = np.array([[1.17737838, -0.2002118],
               [0.4960075, 0.86130762],
@@ -33,7 +36,7 @@ VERSION_NEARMISS = (1, 2, 3)
 # FIXME remove at the end of the deprecation 0.4
 def test_nearmiss_deprecation():
     nm = NearMiss(ver3_samp_ngh=3, version=3)
-    assert_warns(DeprecationWarning, nm.fit, X, Y)
+    assert_warns(DeprecationWarning, nm.fit_sample, X, Y)
 
 
 def test_nearmiss_wrong_version():
@@ -52,8 +55,6 @@ def test_nm_wrong_nn_obj():
                   n_neighbors=nn)
     assert_raises_regex(ValueError, "has to be one of",
                         nm.fit_sample, X, Y)
-
-    # Create the object
     nn3 = 'rnd'
     nn = NearestNeighbors(n_neighbors=3)
     nm3 = NearMiss(ratio=ratio, random_state=RND_SEED,
@@ -92,11 +93,9 @@ def test_nm_fit_sample_auto():
                       [1.15157493, -1.2981518],
                       [-0.54619583, 1.73009918],
                       [0.99272351, -0.11631728]])]
-
     y_gt = [np.array([0, 0, 0, 1, 1, 1, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])]
-
     for version_idx, version in enumerate(VERSION_NEARMISS):
         nm = NearMiss(ratio=ratio, random_state=RND_SEED,
                       version=version)
@@ -134,15 +133,12 @@ def test_nm_fit_sample_auto_indices():
                       [1.15157493, -1.2981518],
                       [-0.54619583, 1.73009918],
                       [0.99272351, -0.11631728]])]
-
     y_gt = [np.array([0, 0, 0, 1, 1, 1, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])]
-
     idx_gt = [np.array([3, 10, 11, 2, 8, 5, 9, 1, 6]),
               np.array([3, 10, 11, 2, 8, 5, 9, 1, 6]),
               np.array([3, 10, 11, 0, 5, 8, 14, 4, 12])]
-
     for version_idx, version in enumerate(VERSION_NEARMISS):
         nm = NearMiss(ratio=ratio, random_state=RND_SEED,
                       version=version, return_indices=True)
@@ -154,7 +150,6 @@ def test_nm_fit_sample_auto_indices():
 
 def test_nm_fit_sample_float_ratio():
     ratio = .7
-
     X_gt = [np.array([[0.91464286, 1.61369212],
                       [-0.80809175, -1.09917302],
                       [-0.20497017, -0.26630228],
@@ -188,7 +183,6 @@ def test_nm_fit_sample_float_ratio():
                       [-0.54619583, 1.73009918],
                       [0.99272351, -0.11631728],
                       [0.45713638, 1.31069295]])]
-
     y_gt = [np.array([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])]
@@ -231,11 +225,9 @@ def test_nm_fit_sample_nn_obj():
                       [1.15157493, -1.2981518],
                       [-0.54619583, 1.73009918],
                       [0.99272351, -0.11631728]])]
-
     y_gt = [np.array([0, 0, 0, 1, 1, 1, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])]
-
     for version_idx, version in enumerate(VERSION_NEARMISS):
         nm = NearMiss(ratio=ratio, random_state=RND_SEED,
                       version=version, n_neighbors=nn)

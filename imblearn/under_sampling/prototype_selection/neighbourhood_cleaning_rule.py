@@ -9,62 +9,69 @@ from __future__ import division, print_function
 from collections import Counter
 
 import numpy as np
+from scipy.stats import mode
 
-from ...base import BaseMulticlassSampler
+from ..base import BaseCleaningSampler
+from .edited_nearest_neighbours import EditedNearestNeighbours
 from ...utils import check_neighbors_object
 
+SEL_KIND = ('all', 'mode')
 
-class NeighbourhoodCleaningRule(BaseMulticlassSampler):
+
+class NeighbourhoodCleaningRule(BaseCleaningSampler):
     """Class performing under-sampling based on the neighbourhood cleaning
     rule.
 
     Parameters
     ----------
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
         Size of the neighbourhood to consider to compute the average
         distance to the minority point samples.
 
-        NOTE: size_ngh is deprecated from 0.2 and will be replaced in 0.4
-        Use ``n_neighbors`` instead.
+        .. deprecated:: 0.2
+           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
+           Use ``n_neighbors`` instead.
 
     n_neighbors : int or object, optional (default=3)
-        If int, size of the neighbourhood to consider in order to make
+        If ``int``, size of the neighbourhood to consider in order to make
         the comparison between each samples and their NN.
         If object, an estimator that inherits from
-        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
-        the k_neighbors.
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
-    Attributes
-    ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
-
     Notes
     -----
-    This class support multi-class.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -72,7 +79,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import \
-    NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
+NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -81,7 +88,7 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
     >>> ncr = NeighbourhoodCleaningRule(random_state=42)
     >>> X_res, y_res = ncr.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 889, 0: 100})
+    Resampled dataset shape Counter({1: 877, 0: 100})
 
     References
     ----------
@@ -91,42 +98,37 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
     """
 
     def __init__(self,
+                 ratio='auto',
                  return_indices=False,
                  random_state=None,
                  size_ngh=None,
                  n_neighbors=3,
+                 kind_sel='all',
+                 threshold_cleaning=0.5,
                  n_jobs=1):
         super(NeighbourhoodCleaningRule, self).__init__(
-            random_state=random_state)
+            ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
+        self.kind_sel = kind_sel
+        self.threshold_cleaning = threshold_cleaning
         self.n_jobs = n_jobs
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-
-        super(NeighbourhoodCleaningRule, self).fit(X, y)
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
-        # set the number of jobs
+    def _validate_estimator(self):
+        """Create the objects required by NCR."""
+        # FIXME: Deprecated from 0.2. To be removed in 0.4.
+        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
+                                          additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
-        return self
+        if self.kind_sel not in SEL_KIND:
+            raise NotImplementedError
+
+        if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
+            raise ValueError("'threshold_cleaning' is a value between 0 and 1."
+                             " Got {} instead.".format(
+                                 self.threshold_cleaning))
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -152,79 +154,51 @@ class NeighbourhoodCleaningRule(BaseMulticlassSampler):
             containing the which samples have been selected.
 
         """
+        self._validate_estimator()
 
-        # Start with the minority class
-        X_min = X[y == self.min_c_]
-        y_min = y[y == self.min_c_]
+        enn = EditedNearestNeighbours(ratio=self.ratio, return_indices=True,
+                                      random_state=self.random_state,
+                                      size_ngh=self.size_ngh,
+                                      n_neighbors=self.n_neighbors,
+                                      kind_sel='mode',
+                                      n_jobs=self.n_jobs)
+        _, _, index_not_a1 = enn.fit_sample(X, y)
+        index_a1 = np.ones(y.shape, dtype=bool)
+        index_a1[index_not_a1] = False
+        index_a1 = np.flatnonzero(index_a1)
 
-        # All the minority class samples will be preserved
-        X_resampled = X_min.copy()
-        y_resampled = y_min.copy()
-
-        # If we need to offer support for the indices
-        if self.return_indices:
-            idx_under = np.flatnonzero(y == self.min_c_)
-
-        # Fit the whole dataset
+        # clean the neighborhood
+        target_stats = Counter(y)
+        class_minority = min(target_stats, key=target_stats.get)
+        # compute which classes to consider for cleaning for the A2 group
+        classes_under_sample = [c for c, n_samples in target_stats.items()
+                                if (c in self.ratio_.keys() and
+                                    (n_samples > X.shape[0] *
+                                     self.threshold_cleaning))]
         self.nn_.fit(X)
+        X_class = X[y == class_minority]
+        y_class = y[y == class_minority]
+        nnhood_idx = self.nn_.kneighbors(
+            X_class, return_distance=False)[:, 1:]
+        nnhood_label = y[nnhood_idx]
+        if self.kind_sel == 'mode':
+            nnhood_label_majority, _ = mode(nnhood_label, axis=1)
+            nnhood_bool = np.ravel(nnhood_label_majority) == y_class
+        elif self.kind_sel == 'all':
+            nnhood_label_majority = nnhood_label == class_minority
+            nnhood_bool = np.all(nnhood_label, axis=1)
+        # compute a2 group
+        index_a2 = np.ravel(nnhood_idx[~nnhood_bool])
+        index_a2 = np.unique([index for index in index_a2
+                              if y[index] in classes_under_sample])
 
-        idx_to_exclude = []
-        # Loop over the other classes under picking at random
-        for key in self.stats_c_.keys():
+        union_a1_a2 = np.union1d(index_a1, index_a2).astype(int)
+        selected_samples = np.ones(y.shape, dtype=bool)
+        selected_samples[union_a1_a2] = False
+        index_target_class = np.flatnonzero(selected_samples)
 
-            # Get the sample of the current class
-            sub_samples_x = X[y == key]
-
-            # Get the samples associated
-            idx_sub_sample = np.flatnonzero(y == key)
-
-            # Find the NN for the current class
-            nnhood_idx = self.nn_.kneighbors(
-                sub_samples_x, return_distance=False)
-
-            # Get the label of the corresponding to the index
-            nnhood_label = (y[nnhood_idx] == key)
-
-            # Check which one are the same label than the current class
-            # Make an AND operation through the three neighbours
-            nnhood_bool = np.logical_not(np.all(nnhood_label, axis=1))
-
-            # If the minority class remove the majority samples
-            if key == self.min_c_:
-                # Get the index to exclude
-                idx_to_exclude += nnhood_idx[np.nonzero(np.logical_not(
-                    nnhood_label[np.flatnonzero(nnhood_bool)]))].tolist()
-            else:
-                # Get the index to exclude
-                idx_to_exclude += idx_sub_sample[np.nonzero(
-                    nnhood_bool)].tolist()
-
-        idx_to_exclude = np.unique(idx_to_exclude)
-
-        # Create a vector with the sample to select
-        sel_idx = np.ones(y.shape)
-        sel_idx[idx_to_exclude] = 0
-        # Exclude as well the minority sample since that they will be
-        # concatenated later
-        sel_idx[y == self.min_c_] = 0
-
-        # Get the samples from the majority classes
-        sel_x = X[np.flatnonzero(sel_idx), :]
-        sel_y = y[np.flatnonzero(sel_idx)]
-
-        # If we need to offer support for the indices selected
         if self.return_indices:
-            idx_tmp = np.flatnonzero(sel_idx)
-            idx_under = np.concatenate((idx_under, idx_tmp), axis=0)
-
-        X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
-        y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
-
-        self.logger.info('Under-sampling performed: %s', Counter(y_resampled))
-
-        # Check if the indices of the samples selected should be returned too
-        if self.return_indices:
-            # Return the indices of interest
-            return X_resampled, y_resampled, idx_under
+            return (X[index_target_class], y[index_target_class],
+                    index_target_class)
         else:
-            return X_resampled, y_resampled
+            return X[index_target_class], y[index_target_class]

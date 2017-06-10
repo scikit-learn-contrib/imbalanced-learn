@@ -7,52 +7,52 @@
 
 from __future__ import division, print_function
 
-from collections import Counter
-
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-from ...base import BaseBinarySampler
+from ..base import BaseCleaningSampler
 
 
-class TomekLinks(BaseBinarySampler):
+class TomekLinks(BaseCleaningSampler):
     """Class to perform under-sampling by removing Tomek's links.
 
     Parameters
     ----------
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
-
-    Attributes
-    ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
 
     Notes
     -----
     This method is based on [1]_.
 
-    It does not support multi-class sampling.
+    Supports mutli-class resampling.
 
     Examples
     --------
@@ -60,7 +60,7 @@ class TomekLinks(BaseBinarySampler):
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import \
-    TomekLinks # doctest: +NORMALIZE_WHITESPACE
+TomekLinks # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -78,8 +78,10 @@ class TomekLinks(BaseBinarySampler):
 
     """
 
-    def __init__(self, return_indices=False, random_state=None, n_jobs=1):
-        super(TomekLinks, self).__init__(random_state=random_state)
+    def __init__(self, ratio='auto', return_indices=False,
+                 random_state=None, n_jobs=1):
+        super(TomekLinks, self).__init__(ratio=ratio,
+                                         random_state=random_state)
         self.return_indices = return_indices
         self.n_jobs = n_jobs
 
@@ -108,25 +110,20 @@ class TomekLinks(BaseBinarySampler):
             that are Tomek links.
 
         """
-
-        # Initialize the boolean result as false.
         links = np.zeros(len(y), dtype=bool)
 
-        # Loop through each sample and looks whether it belongs to the minority
-        # class. If it does, we don't consider it since we want to keep all
-        # minority samples. If, however, it belongs to the majority sample we
-        # look at its first neighbour. If its closest neighbour also has the
-        # current sample as its closest neighbour, the two form a Tomek link.
-        for ind, ele in enumerate(y):
+        # find which class to not consider
+        class_excluded = [c for c in np.unique(y) if c not in class_type]
 
-            if ele == class_type:
+        # there is a Tomek link between two samples if they are both nearest
+        # neighbors of each others.
+        for index_sample, target_sample in enumerate(y):
+            if target_sample in class_excluded:
                 continue
 
-            if y[nn_index[ind]] == class_type:
-
-                # If they form a tomek link, put a True marker on this sample.
-                if nn_index[nn_index[ind]] == ind:
-                    links[ind] = True
+            if y[nn_index[index_sample]] != target_sample:
+                if nn_index[nn_index[index_sample]] == index_sample:
+                    links[index_sample] = True
 
         return links
 
@@ -160,18 +157,10 @@ class TomekLinks(BaseBinarySampler):
         nn.fit(X)
         nns = nn.kneighbors(X, return_distance=False)[:, 1]
 
-        # Send the information to is_tomek function to get boolean vector back
-        self.logger.debug('Looking for majority Tomek links ...')
-        links = self.is_tomek(y, nns, self.min_c_)
+        links = self.is_tomek(y, nns, self.ratio_)
 
-        self.logger.info('Under-sampling performed: %s',
-                         Counter(y[np.logical_not(links)]))
-
-        # Check if the indices of the samples selected should be returned too
         if self.return_indices:
-            # Return the indices of interest
             return (X[np.logical_not(links)], y[np.logical_not(links)],
                     np.flatnonzero(np.logical_not(links)))
         else:
-            # Return data set without majority Tomek links.
             return X[np.logical_not(links)], y[np.logical_not(links)]

@@ -1,4 +1,8 @@
 """Testing the metric for classification with imbalanced dataset"""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 
 from __future__ import division, print_function
 

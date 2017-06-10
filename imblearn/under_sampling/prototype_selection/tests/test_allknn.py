@@ -1,14 +1,17 @@
 """Test the module repeated edited nearest neighbour."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
 from numpy.testing import (assert_allclose, assert_array_equal,
-                           assert_equal, assert_raises)
+                           assert_raises)
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import AllKNN
 
-# Generate a global dataset to use
 RND_SEED = 0
 X = np.array([[-0.12840393, 0.66446571], [1.32319756, -0.13181616],
               [0.04296502, -0.37981873], [0.83631853, 0.18569783],
@@ -37,18 +40,7 @@ Y = np.array([
 R_TOL = 1e-4
 
 
-def test_allknn_init():
-    # Define a ratio
-    allknn = AllKNN(random_state=RND_SEED)
-
-    assert_equal(allknn.n_neighbors, 3)
-    assert_equal(allknn.kind_sel, 'all')
-    assert_equal(allknn.n_jobs, -1)
-    assert_equal(allknn.random_state, RND_SEED)
-
-
 def test_allknn_fit_sample():
-    # Resample the data
     allknn = AllKNN(random_state=RND_SEED)
     X_resampled, y_resampled = allknn.fit_sample(X, Y)
 
@@ -75,7 +67,6 @@ def test_allknn_fit_sample():
 
 
 def test_allknn_fit_sample_with_indices():
-    # Resample the data
     allknn = AllKNN(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = allknn.fit_sample(X, Y)
 
@@ -107,7 +98,6 @@ def test_allknn_fit_sample_with_indices():
 
 
 def test_allknn_fit_sample_mode():
-    # Resample the data
     allknn = AllKNN(random_state=RND_SEED, kind_sel='mode')
     X_resampled, y_resampled = allknn.fit_sample(X, Y)
 
@@ -136,7 +126,6 @@ def test_allknn_fit_sample_mode():
 
 
 def test_allknn_fit_sample_with_nn_object():
-    # Resample the data
     nn = NearestNeighbors(n_neighbors=4)
     allknn = AllKNN(n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
     X_resampled, y_resampled = allknn.fit_sample(X, Y)
