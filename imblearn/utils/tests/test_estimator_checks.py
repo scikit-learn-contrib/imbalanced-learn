@@ -1,3 +1,4 @@
+"""Estimator tests - adapted from scikit-learn"""
 import scipy.sparse as sp
 import numpy as np
 import sys

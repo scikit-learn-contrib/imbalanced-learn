@@ -1,6 +1,10 @@
 """
 Test the pipeline module.
 """
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 
 from tempfile import mkdtemp
 import shutil

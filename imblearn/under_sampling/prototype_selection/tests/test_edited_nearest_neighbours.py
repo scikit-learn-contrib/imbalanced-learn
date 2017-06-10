@@ -1,4 +1,8 @@
 """Test the module edited nearest neighbour."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
@@ -9,7 +13,6 @@ from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import EditedNearestNeighbours
 
-# Generate a global dataset to use
 RND_SEED = 0
 X = np.array([[2.59928271, 0.93323465], [0.25738379, 0.95564169],
               [1.42772181, 0.526027], [1.92365863, 0.82718767],
@@ -25,7 +28,6 @@ Y = np.array([1, 2, 1, 1, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 1, 2, 1])
 
 
 def test_enn_init():
-    # Define a ratio
     enn = EditedNearestNeighbours(random_state=RND_SEED)
 
     assert_equal(enn.n_neighbors, 3)
@@ -35,7 +37,6 @@ def test_enn_init():
 
 
 def test_enn_fit_sample():
-    # Resample the data
     enn = EditedNearestNeighbours(random_state=RND_SEED)
     X_resampled, y_resampled = enn.fit_sample(X, Y)
 
@@ -49,7 +50,6 @@ def test_enn_fit_sample():
 
 
 def test_enn_fit_sample_with_indices():
-    # Resample the data
     enn = EditedNearestNeighbours(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = enn.fit_sample(X, Y)
 
@@ -65,7 +65,6 @@ def test_enn_fit_sample_with_indices():
 
 
 def test_enn_fit_sample_mode():
-    # Resample the data
     enn = EditedNearestNeighbours(random_state=RND_SEED, kind_sel='mode')
     X_resampled, y_resampled = enn.fit_sample(X, Y)
 
@@ -82,7 +81,6 @@ def test_enn_fit_sample_mode():
 
 
 def test_enn_fit_sample_with_nn_object():
-    # Resample the data
     nn = NearestNeighbors(n_neighbors=4)
     enn = EditedNearestNeighbours(
         n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
@@ -101,7 +99,6 @@ def test_enn_fit_sample_with_nn_object():
 
 
 def test_enn_not_good_object():
-    # Resample the data
     nn = 'rnd'
     enn = EditedNearestNeighbours(
         n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')

@@ -31,6 +31,15 @@ except:
     pass
 # -- General configuration ------------------------------------------------
 
+
+# If extensions (or modules to document with autodoc) are in another
+# directory, add these directories to sys.path here. If the directory
+# is relative to the documentation root, use os.path.abspath to make it
+# absolute, like shown here.
+sys.path.insert(0, os.path.abspath('sphinxext'))
+
+from github_link import make_linkcode_resolve
+
 # If your documentation needs a minimal Sphinx version, state it here.
 # needs_sphinx = '1.0'
 
@@ -39,9 +48,10 @@ except:
 # ones.
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx',
-    'sphinx.ext.todo', 'numpydoc', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig',
+    'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode', 'sphinx_gallery.gen_gallery',
-    'sphinx.ext.autosummary'
+    'sphinx.ext.autosummary', 'numpydoc',
+    'sphinx_issues', 'sphinx.ext.linkcode'
 ]
 
 autosummary_generate = True
@@ -294,6 +304,13 @@ def generate_example_rst(app, what, name, obj, options, lines):
         open(examples_path, 'w').close()
 
 
+# Config for sphinx_issues
+
+issues_uri = 'https://github.com/scikit-learn-contrib/imbalanced-learn/issues/{issue}'
+issues_github_path = 'scikit-learn-contrib/imbalanced-learn'
+issues_user_uri = 'https://github.com/{user}'
+
+
 def setup(app):
     app.connect('autodoc-process-docstring', generate_example_rst)
 
@@ -312,3 +329,9 @@ def setup(app):
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+
+# The following is used by sphinx.ext.linkcode to provide links to github
+linkcode_resolve = make_linkcode_resolve('imblearn',
+                                         u'https://github.com/scikit-learn-contrib/'
+                                         'imbalanced-learn/blob/{revision}/'
+                                         '{package}/{path}#L{lineno}')

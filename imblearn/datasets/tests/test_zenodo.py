@@ -2,6 +2,10 @@
 
 Skipped if datasets is not already downloaded to data_home.
 """
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from imblearn.datasets import fetch_datasets
 from sklearn.utils.testing import (assert_equal, assert_allclose,
                                    assert_raises_regex, SkipTest)

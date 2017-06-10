@@ -4,18 +4,17 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
-
-from collections import Counter
+from __future__ import division
 
 import numpy as np
 from sklearn.utils import check_random_state
 
-from ..base import BaseBinarySampler
+from .base import BaseOverSampler
 from ..utils import check_neighbors_object
+from ..utils.deprecation import deprecate_parameter
 
 
-class ADASYN(BaseBinarySampler):
+class ADASYN(BaseOverSampler):
     """Perform over-sampling using ADASYN.
 
     Perform over-sampling using Adaptive Synthetic Sampling Approach for
@@ -23,52 +22,48 @@ class ADASYN(BaseBinarySampler):
 
     Parameters
     ----------
-    ratio : str or float, optional (default='auto')
-        If 'auto', the ratio will be defined automatically to balance
-        the dataset. Otherwise, the ratio is defined as the number
-        of samples in the minority class over the the number of samples
-        in the majority class.
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by np.random.
+        If int, ``random_state`` is the seed used by the random number
+        generator; If ``RandomState`` instance, random_state is the random
+        number generator; If ``None``, the random number generator is the
+        ``RandomState`` instance used by ``np.random``.
 
     k : int, optional (default=None)
         Number of nearest neighbours to used to construct synthetic samples.
 
-        NOTE: `k` is deprecated from 0.2 and will be replaced in 0.4
-        Use ``n_neighbors`` instead.
+        .. deprecated:: 0.2
+           ``k`` is deprecated from 0.2 and will be replaced in 0.4
+           Use ``n_neighbors`` instead.
 
     n_neighbors : int int or object, optional (default=5)
-        If int, number of nearest neighbours to used to construct
-        synthetic samples.
-        If object, an estimator that inherits from
-        `sklearn.neighbors.base.KNeighborsMixin` that will be used to find
-        the k_neighbors.
+        If ``int``, number of nearest neighbours to used to construct synthetic
+        samples.  If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
 
     n_jobs : int, optional (default=1)
         Number of threads to run the algorithm when it is possible.
 
-    Attributes
-    ----------
-    min_c_ : str or int
-        The identifier of the minority class.
-
-    max_c_ : str or int
-        The identifier of the majority class.
-
-    stats_c_ : dict of str/int : int
-        A dictionary in which the number of occurences of each class is
-        reported.
-
-    X_shape_ : tuple of int
-        Shape of the data `X` during fitting.
-
     Notes
     -----
-    Does not support multi-class.
+    Supports mutli-class resampling.
 
     The implementation is based on [1]_.
 
@@ -78,7 +73,7 @@ class ADASYN(BaseBinarySampler):
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.over_sampling import \
-    ADASYN # doctest: +NORMALIZE_WHITESPACE
+ADASYN # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000,
@@ -110,31 +105,14 @@ class ADASYN(BaseBinarySampler):
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
+    def _validate_estimator(self):
+        """Create the necessary objects for ADASYN"""
+        # FIXME: Deprecated in 0.2. To be removed in 0.4.
+        deprecate_parameter(self, '0.2', 'k', 'n_neighbors')
 
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-
-        super(ADASYN, self).fit(X, y)
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
-        # set the number of jobs
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
-
-        return self
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -156,65 +134,48 @@ class ADASYN(BaseBinarySampler):
             The corresponding label of `X_resampled`
 
         """
+        self._validate_estimator()
         random_state = check_random_state(self.random_state)
 
-        # Keep the samples from the majority class
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        # Define the number of sample to create
-        # We handle only two classes problem for the moment.
-        if self.ratio == 'auto':
-            num_samples = (
-                self.stats_c_[self.maj_c_] - self.stats_c_[self.min_c_])
-        else:
-            num_samples = int((self.ratio * self.stats_c_[self.maj_c_]) -
-                              self.stats_c_[self.min_c_])
+        for class_sample, n_samples in self.ratio_.items():
+            if n_samples == 0:
+                continue
+            X_class = X[y == class_sample]
 
-        # Start by separating minority class features and target values.
-        X_min = X[y == self.min_c_]
+            self.nn_.fit(X)
+            _, nn_index = self.nn_.kneighbors(X_class)
+            # The ratio is computed using a one-vs-rest manner. Using majority
+            # in multi-class would lead to slightly different results at the
+            # cost of introducing a new parameter.
+            ratio_nn = (np.sum(y[nn_index[:, 1:]] != class_sample, axis=1) /
+                        (self.nn_.n_neighbors - 1))
+            if not np.sum(ratio_nn):
+                raise RuntimeError('Not any neigbours belong to the majority'
+                                   ' class. This case will induce a NaN case'
+                                   ' with a division by zero. ADASYN is not'
+                                   ' suited for this specific dataset.'
+                                   ' Use SMOTE instead.')
+            ratio_nn /= np.sum(ratio_nn)
+            n_samples_generate = np.rint(ratio_nn * n_samples).astype(int)
 
-        # Print if verbose is true
-        self.logger.debug('Finding the %s nearest neighbours ...',
-                          self.nn_.n_neighbors - 1)
+            x_class_gen = []
+            for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
+                                                 n_samples_generate):
+                if num_sample_i == 0:
+                    continue
+                nn_zs = random_state.randint(
+                    1, high=self.nn_.n_neighbors, size=num_sample_i)
+                steps = random_state.uniform(size=len(nn_zs))
+                x_class_gen.append([x_i + step * (X[x_i_nn[nn_z], :] - x_i)
+                                    for step, nn_z in zip(steps, nn_zs)])
 
-        # Look for k-th nearest neighbours, excluding, of course, the
-        # point itself.
-        self.nn_.fit(X)
-
-        # Get the distance to the NN
-        _, ind_nn = self.nn_.kneighbors(X_min)
-
-        # Compute the ratio of majority samples next to minority samples
-        ratio_nn = (np.sum(y[ind_nn[:, 1:]] == self.maj_c_, axis=1) /
-                    (self.nn_.n_neighbors - 1))
-        # Check that we found at least some neighbours belonging to the
-        # majority class
-        if not np.sum(ratio_nn):
-            raise RuntimeError('Not any neigbours belong to the majority'
-                               ' class. This case will induce a NaN case with'
-                               ' a division by zero. ADASYN is not suited for'
-                               ' this specific dataset. Use SMOTE.')
-        # Normalize the ratio
-        ratio_nn /= np.sum(ratio_nn)
-
-        # Compute the number of sample to be generated
-        num_samples_nn = np.round(ratio_nn * num_samples).astype(int)
-
-        # For each minority samples
-        for x_i, x_i_nn, num_sample_i in zip(X_min, ind_nn, num_samples_nn):
-
-            # Pick-up the neighbors wanted
-            nn_zs = random_state.randint(
-                1, high=self.nn_.n_neighbors, size=num_sample_i)
-
-            # Create a new sample
-            for nn_z in nn_zs:
-                step = random_state.uniform()
-                x_gen = x_i + step * (X[x_i_nn[nn_z], :] - x_i)
-                X_resampled = np.vstack((X_resampled, x_gen))
-                y_resampled = np.hstack((y_resampled, self.min_c_))
-
-        self.logger.info('Over-sampling performed: %s', Counter(y_resampled))
+            if len(x_class_gen) > 0:
+                X_resampled = np.vstack((X_resampled,
+                                         np.concatenate(x_class_gen)))
+                y_resampled = np.hstack((y_resampled, [class_sample] *
+                                         np.sum(n_samples_generate)))
 
         return X_resampled, y_resampled

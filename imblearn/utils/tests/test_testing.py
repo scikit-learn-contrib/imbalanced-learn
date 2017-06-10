@@ -1,3 +1,8 @@
+"""Test for the testing module"""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from sklearn.utils.testing import assert_raises_regex
 
 from imblearn.base import SamplerMixin

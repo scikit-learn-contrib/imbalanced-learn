@@ -1,4 +1,8 @@
 """Test the module condensed nearest neighbour."""
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
 from __future__ import print_function
 
 import numpy as np
@@ -8,7 +12,6 @@ from sklearn.neighbors import KNeighborsClassifier
 
 from imblearn.under_sampling import CondensedNearestNeighbour
 
-# Generate a global dataset to use
 RND_SEED = 0
 X = np.array([[2.59928271, 0.93323465], [0.25738379, 0.95564169],
               [1.42772181, 0.526027], [1.92365863, 0.82718767],
@@ -24,7 +27,6 @@ Y = np.array([1, 2, 1, 1, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 1, 2, 1])
 
 
 def test_cnn_init():
-    # Define a ratio
     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
 
     assert_equal(cnn.n_seeds_S, 1)
@@ -32,7 +34,6 @@ def test_cnn_init():
 
 
 def test_cnn_fit_sample():
-    # Resample the data
     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
     X_resampled, y_resampled = cnn.fit_sample(X, Y)
 
@@ -47,7 +48,6 @@ def test_cnn_fit_sample():
 
 
 def test_cnn_fit_sample_with_indices():
-    # Resample the data
     cnn = CondensedNearestNeighbour(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = cnn.fit_sample(X, Y)
 
@@ -64,7 +64,6 @@ def test_cnn_fit_sample_with_indices():
 
 
 def test_cnn_fit_sample_with_object():
-    # Resample the data
     knn = KNeighborsClassifier(n_neighbors=1)
     cnn = CondensedNearestNeighbour(random_state=RND_SEED, n_neighbors=knn)
     X_resampled, y_resampled = cnn.fit_sample(X, Y)
@@ -85,7 +84,6 @@ def test_cnn_fit_sample_with_object():
 
 
 def test_cnn_fit_sample_with_wrong_object():
-    # Resample the data
     knn = 'rnd'
     cnn = CondensedNearestNeighbour(random_state=RND_SEED, n_neighbors=knn)
     assert_raises_regex(ValueError, "has to be a int or an ",
