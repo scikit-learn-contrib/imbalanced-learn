@@ -138,6 +138,7 @@ Metrics
 .. autosummary::
    :toctree: generated/
 
+   metrics.classification_report_imbalanced
    metrics.sensitivity_specificity_support
    metrics.sensitivity_score
    metrics.specificity_score
