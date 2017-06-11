@@ -26,7 +26,6 @@ import scipy as sp
 from sklearn.metrics.classification import (_check_targets, _prf_divide,
                                             precision_recall_fscore_support)
 from sklearn.preprocessing import LabelEncoder
-from sklearn.utils.fixes import bincount
 from sklearn.utils.multiclass import unique_labels
 
 try:
@@ -203,16 +202,16 @@ def sensitivity_specificity_support(y_true,
             tp_bins_weights = None
 
         if len(tp_bins):
-            tp_sum = bincount(
+            tp_sum = np.bincount(
                 tp_bins, weights=tp_bins_weights, minlength=len(labels))
         else:
             # Pathological case
             true_sum = pred_sum = tp_sum = np.zeros(len(labels))
         if len(y_pred):
-            pred_sum = bincount(
+            pred_sum = np.bincount(
                 y_pred, weights=sample_weight, minlength=len(labels))
         if len(y_true):
-            true_sum = bincount(
+            true_sum = np.bincount(
                 y_true, weights=sample_weight, minlength=len(labels))
 
         # Compute the true negative
@@ -611,14 +610,14 @@ def geometric_mean_score(y_true,
             tp_bins_weights = None
 
         if len(tp_bins):
-            tp_sum = bincount(tp_bins, weights=tp_bins_weights,
-                              minlength=len(labels))
+            tp_sum = np.bincount(tp_bins, weights=tp_bins_weights,
+                                 minlength=len(labels))
         else:
             # Pathological case
             true_sum = tp_sum = np.zeros(len(labels))
         if len(y_true):
-            true_sum = bincount(y_true, weights=sample_weight,
-                                minlength=len(labels))
+            true_sum = np.bincount(y_true, weights=sample_weight,
+                                   minlength=len(labels))
 
         # Retain only selected labels
         indices = np.searchsorted(sorted_labels, labels[:n_labels])
