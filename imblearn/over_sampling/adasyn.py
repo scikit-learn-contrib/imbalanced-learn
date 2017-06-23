@@ -161,6 +161,11 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             ratio_nn /= np.sum(ratio_nn)
             n_samples_generate = np.rint(ratio_nn * n_samples).astype(int)
 
+            # the nearest neighbors need to be fitted only on the current class
+            # to find the class NN to generate new samples
+            self.nn_.fit(X_class)
+            _, nn_index = self.nn_.kneighbors(X_class)
+
             x_class_gen = []
             for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
                                                  n_samples_generate):
