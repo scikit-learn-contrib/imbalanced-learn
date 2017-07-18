@@ -96,7 +96,7 @@ Development
 The development of this scikit-learn-contrib is in line with the one
 of the scikit-learn community. Therefore, you can refer to their
 `Development Guide
-<http://scikit-learn.org/stable/developers/index.html>`_.
+<http://scikit-learn.org/stable/developers>`_.
 
 About
 -----
@@ -112,7 +112,7 @@ citations to the following paper::
   volume  = {18},
   number  = {17},
   pages   = {1-5},
-  url     = {http://jmlr.org/papers/v18/16-365.html}
+  url     = {http://jmlr.org/papers/v18/16-365}
   }
 
 Most classification algorithms will only perform optimally when the number of
@@ -162,7 +162,7 @@ Below is a list of the methods currently implemented in this module.
 
 The different algorithms are presented in the sphinx-gallery_.
 
-.. _sphinx-gallery: http://contrib.scikit-learn.org/imbalanced-learn/auto_examples/index.html
+.. _sphinx-gallery: http://contrib.scikit-learn.org/imbalanced-learn/auto_examples
 
 
 References:
