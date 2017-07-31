@@ -16,6 +16,8 @@ Bug fixes
   indices returned were wrong. By `Guillaume Lemaitre`_.
 - fixed bug for :class:`ensemble.BalanceCascade` and :class:`combine.SMOTEENN`
   and :class:`SMOTETomek. By `Guillaume Lemaitre`_.`
+- Fixed bug for `check_ratio` to be able to pass arguments when `ratio` is a
+  callable. By `Guillaume Lemaitre`_.`
 
 New features
 ~~~~~~~~~~~~
