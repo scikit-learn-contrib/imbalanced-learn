@@ -170,3 +170,18 @@ def test_ratio_callable():
 
     ratio_ = check_ratio(ratio_func, y, 'over-sampling')
     assert_equal(ratio_, {1: 50, 2: 0, 3: 75})
+
+
+def test_ratio_callable_args():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    multiplier = {1: 1.5, 2: 1, 3: 3}
+
+    def ratio_func(y, multiplier):
+        """samples such that each class will be affected by the multiplier."""
+        target_stats = Counter(y)
+        return {key: int(values * multiplier[key])
+                for key, values in target_stats.items()}
+
+    ratio_ = check_ratio(ratio_func, y, 'over-sampling',
+                         kw_args={'multiplier': multiplier})
+    assert_equal(ratio_, {1: 25, 2: 0, 3: 50})

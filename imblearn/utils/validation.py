@@ -252,7 +252,7 @@ def _ratio_float(ratio, y, sampling_type):
     return ratio
 
 
-def check_ratio(ratio, y, sampling_type):
+def check_ratio(ratio, y, sampling_type, kw_args=None):
     """Ratio validation for samplers.
 
     Checks ratio for consistent type and return a dictionary
@@ -284,6 +284,9 @@ def check_ratio(ratio, y, sampling_type):
     sampling_type : str,
         The type of sampling. Can be either ``'over-sampling'`` or
         ``'under-sampling'``.
+
+    kw_args : dict, optional
+        Dictionary of additional keyword arguments to pass to ratio.
 
     Returns
     -------
@@ -318,7 +321,7 @@ def check_ratio(ratio, y, sampling_type):
                              " (0, 1]. Got {} instead.".format(ratio))
         return _ratio_float(ratio, y, sampling_type)
     elif callable(ratio):
-        ratio_ = ratio(y)
+        ratio_ = ratio(y, **(kw_args if kw_args else {}))
         return _ratio_dict(ratio_, y, sampling_type)
 
 
