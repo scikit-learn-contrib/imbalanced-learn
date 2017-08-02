@@ -6,8 +6,8 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_array_equal, assert_equal, assert_raises,
-                           assert_raises_regex)
+from sklearn.utils.testing import (assert_array_equal, assert_equal,
+                                   assert_raises, assert_raises_regex)
 from sklearn.ensemble import GradientBoostingClassifier
 
 from imblearn.under_sampling import InstanceHardnessThreshold
