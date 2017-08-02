@@ -7,10 +7,15 @@
 # License: MIT
 
 import logging
+import warnings
 from collections import Counter
+from numbers import Real
 
 import numpy as np
-from sklearn.utils import check_random_state, check_X_y
+from sklearn.utils import check_X_y
+
+from ..under_sampling.prototype_selection import RandomUnderSampler
+from ..utils import check_ratio
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,14 +33,22 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
     y : ndarray, shape (n_samples, )
         Corresponding label for each sample in X.
 
-    ratio : float,
-        The desired ratio given by the number of samples in
-        the minority class over the the number of samples in
-        the majority class. Thus the ratio should be in the interval [0., 1.]
+    ratio : str, dict, or callable, optional (default='auto')
+        Ratio to use for resampling the data set.
+
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
 
     min_c_ : str or int, optional (default=None)
         The identifier of the class to be the minority class.
         If None, min_c_ is set to be the current minority class.
+
+        .. deprecated:: 0.2
+           ``min_c_`` is deprecated in 0.2 and will be removed in 0.4. Use
+           ``ratio`` by passing a ``dict`` instead.
 
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -52,47 +65,41 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
         The corresponding label of `X_resampled`
 
     """
-    if isinstance(ratio, float):
-        if ratio > 1:
-            raise ValueError('Ratio cannot be greater than one.'
-                             ' Got {}.'.format(ratio))
-        elif ratio <= 0:
-            raise ValueError('Ratio have to be strictly positive.'
-                             ' Got {}.'.format(ratio))
-    else:
-        raise ValueError('Ratio must be a float between 0.0 < ratio < 1.0'
-                         ' Got {} instead.'.format(ratio))
-
     X, y = check_X_y(X, y)
-
-    random_state = check_random_state(random_state)
-
     stats_c_ = Counter(y)
+    # restrict ratio to be a dict or a callable
+    if isinstance(ratio, dict) or callable(ratio):
+        ratio = check_ratio(ratio, y, 'under-sampling')
+    # FIXME: deprecated in 0.2 to be removed in 0.4
+    elif isinstance(ratio, Real):
+        if min_c_ is None:
+            min_c_ = min(stats_c_, key=stats_c_.get)
+        else:
+            warnings.warn("'min_c_' is deprecated in 0.2 and will be removed"
+                          " in 0.4. Use 'ratio' as dictionary instead.",
+                          DeprecationWarning)
+        warnings.warn("'ratio' being a float is deprecated in 0.2 and will not"
+                      " be supported in 0.4. Use a dictionary instead.",
+                      DeprecationWarning)
+        class_majority = max(stats_c_, key=stats_c_.get)
+        ratio = {}
+        for label, n_sample in stats_c_.items():
+            if label == min_c_:
+                n_min_samples = int(stats_c_[class_majority] * ratio)
+                ratio[label] = n_min_samples
+            else:
+                ratio[label] = n_sample
+        ratio = check_ratio(ratio, y, 'under-sampling')
+    else:
+        raise ValueError("'ratio' has to be a dictionary or a function"
+                         " returning a dictionary. Got {} instead.".format(
+                             type(ratio)))
 
     LOGGER.info('The original target distribution in the dataset is: %s',
                 stats_c_)
-
-    if min_c_ is None:
-        min_c_ = min(stats_c_, key=stats_c_.get)
-
-    n_min_samples = int(np.count_nonzero(y != min_c_) * ratio)
-    if n_min_samples > stats_c_[min_c_]:
-        raise ValueError('Current imbalance ratio of data is lower than'
-                         ' desired ratio! Got {} > {}.'.format(
-                             n_min_samples, stats_c_[min_c_]))
-    if n_min_samples == 0:
-        raise ValueError('Not enough samples for desired ratio!'
-                         ' Got {}.'.format(n_min_samples))
-
-    mask = y == min_c_
-
-    idx_maj = np.where(~mask)[0]
-    idx_min = np.where(mask)[0]
-    idx_min = random_state.choice(idx_min, size=n_min_samples, replace=False)
-    idx = np.concatenate((idx_min, idx_maj), axis=0)
-
-    X_resampled, y_resampled = X[idx, :], y[idx]
-
+    X_resampled, y_resampled = RandomUnderSampler(ratio=ratio,
+                                                  replacement=False,
+                                                  random_state=random_state)
     LOGGER.info('Make the dataset imbalanced: %s', Counter(y_resampled))
 
     return X_resampled, y_resampled

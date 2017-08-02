@@ -48,7 +48,7 @@ class RandomUnderSampler(BaseUnderSampler):
         ``RandomState`` instance used by ``np.random``.
 
     replacement : boolean, optional (default=False)
-        Whether the sample is with (default) or without replacement.
+        Whether the sample is with or without replacement.
 
     Notes
     -----

@@ -11,7 +11,7 @@ from abc import ABCMeta, abstractmethod
 
 from sklearn.base import BaseEstimator
 from sklearn.externals import six
-from sklearn.utils import check_X_y, check_random_state
+from sklearn.utils import check_X_y
 from sklearn.utils.validation import check_is_fitted
 
 from .utils import check_ratio, check_target_type, hash_X_y
