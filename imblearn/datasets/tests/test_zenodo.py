@@ -57,8 +57,6 @@ def test_fetch():
         assert_equal(DATASET_SHAPE[k], X1.shape)
         assert_equal(X1.shape, X2.shape)
 
-        assert_allclose(X1.sum(), X2.sum())
-
         y1, y2 = datasets1[k].target, datasets2[k].target
         assert_equal((X1.shape[0],), y1.shape)
         assert_equal((X1.shape[0],), y2.shape)

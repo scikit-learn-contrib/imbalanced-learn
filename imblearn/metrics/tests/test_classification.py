@@ -229,6 +229,7 @@ def test_geometric_mean_multiclass():
 
     y_true = [0, 0, 0, 0]
     y_pred = [1, 1, 1, 1]
+    print(geometric_mean_score(y_true, y_pred))
     assert_allclose(geometric_mean_score(y_true, y_pred), 0.0, rtol=R_TOL)
 
     cor = 0.001

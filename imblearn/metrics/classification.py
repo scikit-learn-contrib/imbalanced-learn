@@ -581,7 +581,6 @@ def geometric_mean_score(y_true,
 
         LOGGER.debug('The sensitivity and specificity are : %s - %s' %
                      (sen, spe))
-
         return np.sqrt(sen * spe)
     else:
         present_labels = unique_labels(y_true, y_pred)
@@ -628,7 +627,11 @@ def geometric_mean_score(y_true,
                              "recall")
         recall[recall == 0] = correction
 
-        return sp.stats.mstats.gmean(recall)
+        gmean = sp.stats.gmean(recall)
+        # old version of scipy return MaskedConstant instead of 0.0
+        if isinstance(gmean, np.ma.core.MaskedConstant):
+            return 0.0
+        return gmean
 
 
 def make_index_balanced_accuracy(alpha=0.1, squared=True):
