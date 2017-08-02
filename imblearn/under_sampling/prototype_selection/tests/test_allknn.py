@@ -6,8 +6,8 @@
 from __future__ import print_function
 
 import numpy as np
-from numpy.testing import (assert_allclose, assert_array_equal,
-                           assert_raises)
+from sklearn.utils.testing import (assert_allclose, assert_array_equal,
+                                   assert_raises)
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import AllKNN

@@ -4,8 +4,8 @@ from __future__ import print_function
 from collections import Counter
 
 import numpy as np
-from numpy.testing import (assert_allclose, assert_array_equal,
-                           assert_equal, assert_raises_regex)
+from sklearn.utils.testing import (assert_allclose, assert_array_equal,
+                                   assert_equal, assert_raises_regex)
 from sklearn.cluster import KMeans
 
 from imblearn.under_sampling import ClusterCentroids

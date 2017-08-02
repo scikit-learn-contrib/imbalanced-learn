@@ -92,9 +92,11 @@ if __name__ == "__main__":
               'Operating System :: Unix',
               'Operating System :: MacOS',
               'Programming Language :: Python :: 2.7',
+              'Programming Language :: Python :: 3.4'
               'Programming Language :: Python :: 3.5',
+              'Programming Language :: Python :: 3.6'
           ],
           packages=find_packages(),
-          install_requires=['scipy>=0.17.0',
-                            'numpy>=1.10.4',
-                            'scikit-learn>=0.17.1'])
+          install_requires=['scipy',
+                            'numpy',
+                            'scikit-learn'])

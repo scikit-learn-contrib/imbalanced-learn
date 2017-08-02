@@ -9,8 +9,8 @@ from __future__ import print_function
 from collections import Counter
 
 import numpy as np
-from sklearn.utils.testing import assert_true
-from numpy.testing import assert_equal, assert_raises_regex
+from sklearn.utils.testing import (assert_true, assert_equal,
+                                   assert_raises_regex)
 
 from imblearn.datasets import make_imbalance
 

@@ -10,18 +10,17 @@ from functools import partial
 
 import numpy as np
 
-from numpy.testing import (assert_allclose, assert_array_equal,
-                           assert_no_warnings, assert_equal,
-                           assert_raises)
-from sklearn.utils.testing import assert_warns_message, ignore_warnings
-
 from sklearn import datasets
 from sklearn import svm
 
 from sklearn.preprocessing import label_binarize
 from sklearn.utils.fixes import np_version
-from sklearn.utils.testing import assert_not_equal, assert_raise_message
 from sklearn.utils.validation import check_random_state
+from sklearn.utils.testing import (assert_allclose, assert_array_equal,
+                                   assert_no_warnings, assert_equal,
+                                   assert_raises, assert_warns_message,
+                                   ignore_warnings, assert_not_equal,
+                                   assert_raise_message)
 from sklearn.metrics import (accuracy_score, average_precision_score,
                              brier_score_loss, cohen_kappa_score,
                              jaccard_similarity_score, precision_score,
@@ -230,6 +229,7 @@ def test_geometric_mean_multiclass():
 
     y_true = [0, 0, 0, 0]
     y_pred = [1, 1, 1, 1]
+    print(geometric_mean_score(y_true, y_pred))
     assert_allclose(geometric_mean_score(y_true, y_pred), 0.0, rtol=R_TOL)
 
     cor = 0.001

@@ -3,13 +3,12 @@
 #          Christos Aridas
 # License: MIT
 
-from numpy.testing import assert_allclose
-
 import sklearn
 
 from sklearn.datasets import make_blobs
 from sklearn.metrics import make_scorer
 from sklearn.svm import LinearSVC
+from sklearn.utils.testing import assert_allclose
 
 from imblearn.metrics import (sensitivity_score, specificity_score,
                               geometric_mean_score,
