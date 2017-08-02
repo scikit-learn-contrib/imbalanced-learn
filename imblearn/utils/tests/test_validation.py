@@ -183,5 +183,5 @@ def test_ratio_callable_args():
                 for key, values in target_stats.items()}
 
     ratio_ = check_ratio(ratio_func, y, 'over-sampling',
-                         kw_args={'multiplier': multiplier})
+                         multiplier=multiplier)
     assert_equal(ratio_, {1: 25, 2: 0, 3: 50})
