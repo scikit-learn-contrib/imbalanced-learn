@@ -190,6 +190,11 @@ def _ratio_dict(ratio, y, sampling_type):
     if len(set_diff_ratio_target) > 0:
         raise ValueError("The {} target class is/are not present in the"
                          " data.".format(set_diff_ratio_target))
+    # check that there is no negative number
+    if any(n_samples < 0 for n_samples in ratio.values()):
+        raise ValueError("The number of samples in a class cannot be negative."
+                         "'ratio' contains some negative value: {}".format(
+                             ratio))
     ratio_ = {}
     if sampling_type == 'over-sampling':
         n_samples_majority = max(target_stats.values())

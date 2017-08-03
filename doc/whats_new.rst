@@ -12,9 +12,13 @@ Changelog
 Bug fixes
 ---------
 
+- Fixed a bug in :func:`utils.check_ratio` such that an error is raised when
+  the number of samples required is negative. By `Guillaume Lemaitre`_.
+
 - Fixed a bug in :class:`under_sampling.NearMiss` version 3. The
   indices returned were wrong. By `Guillaume Lemaitre`_.
-- fixed bug for :class:`ensemble.BalanceCascade` and :class:`combine.SMOTEENN`
+
+- Fixed bug for :class:`ensemble.BalanceCascade` and :class:`combine.SMOTEENN`
   and :class:`SMOTETomek. By `Guillaume Lemaitre`_.`
 
 New features
@@ -22,18 +26,25 @@ New features
 
 - Turn off steps in :class:`pipeline.Pipeline` using the `None`
   object. By `Christos Aridas`_.
+
 - Add a fetching function `datasets.fetch_datasets` in order to get some
   imbalanced datasets useful for benchmarking. By `Guillaume Lemaitre`_.
 
 Enhancement
 ~~~~~~~~~~~
 
+- :func:`datasets.make_imbalance` take a ratio similarly to other samplers. It
+  supports multiclass. By `Guillaume Lemaitre`_.
+
 - All the unit tests have been factorized and a `check_estimators` has
   been derived from scikit-learn. By `Guillaume Lemaitre`_.
+
 - Script for automatic build of conda packages and uploading. By
   `Guillaume Lemaitre`_
+
 - Remove seaborn dependence and improve the examples. By `Guillaume
   Lemaitre`_.
+
 - adapt all classes to multi-class resampling. By `Guillaume Lemaitre`_
 
 API changes summary
@@ -41,18 +52,28 @@ API changes summary
 
 - `__init__` has been removed from the :class:`base.SamplerMixin` to
   create a real mixin class. By `Guillaume Lemaitre`_.
+
 - creation of a module `exceptions` to handle consistant raising of
   errors. By `Guillaume Lemaitre`_.
+
 - creation of a module `utils.validation` to make checking of
   recurrent patterns. By `Guillaume Lemaitre`_.
+
 - move the under-sampling methods in `prototype_selection` and
   `prototype_generation` submodule to make a clearer dinstinction. By
   `Guillaume Lemaitre`_.
+
 - change `ratio` such that it can adapt to multiple class problems. By
   `Guillaume Lemaitre`_.
 
 Deprecation
 ~~~~~~~~~~~
+
+- Deprecation of the use of ``min_c_`` in :func:`datasets.make_imbalance`. By
+  `Guillaume Lemaitre`_
+
+- Deprecation of the use of float in :func:`datasets.make_imbalance` for the
+  ratio parameter. By `Guillaume Lemaitre`_.
 
 - deprecate the use of float as ratio in favor of dictionary, string, or
   callable. By `Guillaume Lemaitre`_.
