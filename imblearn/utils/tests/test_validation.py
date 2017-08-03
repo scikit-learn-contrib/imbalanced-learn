@@ -99,6 +99,9 @@ def test_ratio_minority_under_sampling():
 
 def test_ratio_dict_error():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = {1: -100, 2: 50, 3: 25}
+    assert_raises_regex(ValueError, "in a class cannot be negative.",
+                        check_ratio, ratio, y, 'under-sampling')
     ratio = {10: 10}
     assert_raises_regex(ValueError, "are not present in the data.",
                         check_ratio, ratio, y, 'over-sampling')
