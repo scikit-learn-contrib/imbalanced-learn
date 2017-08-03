@@ -30,15 +30,15 @@ _IMBALANCED_DATASET_INSTALL_MSG = 'See %s for installation information.' % (
 #   in some meaningful order (more => less 'core').  We avoid using
 #   collections.OrderedDict to preserve Python 2.6 compatibility.
 REQUIRED_MODULE_METADATA = (('numpy', {
-    'min_version': '1.10.4',
+    'min_version': '1.8.2',
     'required_at_installation': True,
     'install_info': _IMBALANCED_DATASET_INSTALL_MSG
 }), ('scipy', {
-    'min_version': '0.17.0',
+    'min_version': '0.13.3',
     'required_at_installation': True,
     'install_info': _IMBALANCED_DATASET_INSTALL_MSG
 }), ('sklearn', {
-    'min_version': '0.17.1',
+    'min_version': '0.18.1',
     'required_at_installation': True,
     'install_info': _IMBALANCED_DATASET_INSTALL_MSG
 }))

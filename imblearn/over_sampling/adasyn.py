@@ -63,9 +63,9 @@ class ADASYN(BaseOverSampler):
 
     Notes
     -----
-    Supports mutli-class resampling.
-
     The implementation is based on [1]_.
+
+    Supports mutli-class resampling. A one-vs.-rest scheme is used.
 
     Examples
     --------

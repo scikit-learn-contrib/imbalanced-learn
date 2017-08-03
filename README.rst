@@ -55,11 +55,11 @@ Installation
 Dependencies
 ~~~~~~~~~~~~
 
-imbalanced-learn is tested to work under Python 2.7 and Python 3.4,
-3.5, and 3.6.
+imbalanced-learn is tested to work under Python 2.7 and Python 3.4, 3.5, and
+3.6. The dependency requirements are based on the last scikit-learn release:
 
-* scipy(>=0.18.1)
-* numpy(>=1.11.2)
+* scipy(>=0.13.3)
+* numpy(>=1.8.2)
 * scikit-learn(>=0.18.1)
 
 Additionally, to run the examples, you need matplotlib(>=2.0.0).
@@ -96,7 +96,7 @@ Development
 The development of this scikit-learn-contrib is in line with the one
 of the scikit-learn community. Therefore, you can refer to their
 `Development Guide
-<http://scikit-learn.org/stable/developers/index.html>`_.
+<http://scikit-learn.org/stable/developers>`_.
 
 About
 -----
@@ -112,7 +112,7 @@ citations to the following paper::
   volume  = {18},
   number  = {17},
   pages   = {1-5},
-  url     = {http://jmlr.org/papers/v18/16-365.html}
+  url     = {http://jmlr.org/papers/v18/16-365}
   }
 
 Most classification algorithms will only perform optimally when the number of
@@ -162,7 +162,7 @@ Below is a list of the methods currently implemented in this module.
 
 The different algorithms are presented in the sphinx-gallery_.
 
-.. _sphinx-gallery: http://contrib.scikit-learn.org/imbalanced-learn/auto_examples/index.html
+.. _sphinx-gallery: http://contrib.scikit-learn.org/imbalanced-learn/auto_examples
 
 
 References:

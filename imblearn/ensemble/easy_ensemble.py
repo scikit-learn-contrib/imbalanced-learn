@@ -59,7 +59,7 @@ class EasyEnsemble(BaseEnsembleSampler):
     -----
     The method is described in [1]_.
 
-    Supports mutli-class resampling.
+    Supports mutli-class resampling by sampling each class independently.
 
     Examples
     --------

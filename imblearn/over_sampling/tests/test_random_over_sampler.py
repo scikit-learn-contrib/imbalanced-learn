@@ -8,7 +8,7 @@ from __future__ import print_function
 from collections import Counter
 
 import numpy as np
-from numpy.testing import assert_array_equal, assert_equal
+from sklearn.utils.testing import assert_array_equal, assert_equal
 
 from imblearn.over_sampling import RandomOverSampler
 

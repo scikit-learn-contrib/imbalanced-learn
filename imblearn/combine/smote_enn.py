@@ -132,7 +132,8 @@ class SMOTEENN(SamplerMixin):
     -----
     The method is presented in [1]_.
 
-    Supports mutli-class resampling.
+    Supports mutli-class resampling. Refer to SMOTE and ENN regarding the
+    scheme which used.
 
     Examples
     --------

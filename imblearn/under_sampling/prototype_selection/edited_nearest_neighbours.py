@@ -84,7 +84,8 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     -----
     The method is based on [1]_.
 
-    Supports mutli-class resampling.
+    Supports mutli-class resampling. A one-vs.-rest scheme is used when
+    sampling a class as proposed in [1]_.
 
     Examples
     --------
@@ -272,7 +273,8 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     Notes
     -----
-    The method is based on [1]_.
+    The method is based on [1]_. A one-vs.-rest scheme is used when
+    sampling a class as proposed in [1]_.
 
     Supports mutli-class resampling.
 
@@ -482,7 +484,8 @@ class AllKNN(BaseCleaningSampler):
     -----
     The method is based on [1]_.
 
-    Supports mutli-class resampling.
+    Supports mutli-class resampling. A one-vs.-rest scheme is used when
+    sampling a class as proposed in [1]_.
 
     Examples
     --------
