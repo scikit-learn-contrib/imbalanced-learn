@@ -52,7 +52,7 @@ class RandomUnderSampler(BaseUnderSampler):
 
     Notes
     -----
-    Supports mutli-class resampling.
+    Supports mutli-class resampling by sampling each class independently.
 
     Examples
     --------

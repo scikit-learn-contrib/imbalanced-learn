@@ -71,7 +71,10 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
     Notes
     -----
-    Supports mutli-class resampling.
+    See the original paper: [1]_.
+
+    Supports mutli-class resampling. A one-vs.-rest scheme is used when
+    sampling a class as proposed in [1]_.
 
     Examples
     --------
