@@ -139,10 +139,11 @@ Mathematical formulation
 
 Both SMOTE and ADASYN use the same algorithm to generate new
 samples. Considering a sample :math:`x_i`, a new sample :math:`x_{new}` will be
-generated considering its k neareast-neighbors. For instance, the 3
-nearest-neighbors are included in the blue circle as illustrated in the figure
-below. Then, one of these nearest-neighbors :math:`x_{zi}` will be selected and
-a sample will be generated as follows:
+generated considering its k neareast-neighbors (corresponding to
+``k_neighbors``). For instance, the 3 nearest-neighbors are included in the
+blue circle as illustrated in the figure below. Then, one of these
+nearest-neighbors :math:`x_{zi}` will be selected and a sample will be
+generated as follows:
 
 .. math::
 
@@ -179,8 +180,12 @@ samples *in danger* to generate new samples. In **Borderline-1** SMOTE,
 object --- uses an SVM classifier to find support vectors and generate samples
 considering them.
 
+For both borderline and SVM SMOTE, a neighborhood is defined using the
+parameter ``m_neighbors`` to decide if a sample is in danger, safe, or noise.
+
 ADASYN is working similarly to the regular SMOTE. However, the number of
 samples generated for each :math:`x_i` is proportional to the number of samples
 which are not from the same class than :math:`x_i` in a given
 neighborhood. Therefore, more samples will be generated in the area that the
-nearest neighbor rule is not respected.
+nearest neighbor rule is not respected. The parameter ``n_neighbors`` is
+equivalent to ``k_neighbors`` in :class:`SMOTE`.
