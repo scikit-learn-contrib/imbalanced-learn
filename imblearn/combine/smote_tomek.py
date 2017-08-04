@@ -79,7 +79,7 @@ class SMOTETomek(SamplerMixin):
         Step size when extrapolating.
 
         .. deprecated:: 0.2
-           `out_step` is deprecated from 0.2 and will be replaced in 0.4
+           ``out_step`` is deprecated from 0.2 and will be replaced in 0.4
            Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     kind_smote : str, optional (default=None)
@@ -88,7 +88,7 @@ class SMOTETomek(SamplerMixin):
         ``'svm'``.
 
         .. deprecated:: 0.2
-           ``kind_smote` is deprecated from 0.2 and will be replaced in 0.4
+           ``kind_smote`` is deprecated from 0.2 and will be replaced in 0.4
            Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     n_jobs : int, optional (default=None)

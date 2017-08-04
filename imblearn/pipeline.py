@@ -69,7 +69,7 @@ class Pipeline(pipeline.Pipeline):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from sklearn.cross_validation import train_test_split as tts
+    >>> from sklearn.model_selection import train_test_split as tts
     >>> from sklearn.decomposition import PCA
     >>> from sklearn.neighbors import KNeighborsClassifier as KNN
     >>> from sklearn.metrics import classification_report
