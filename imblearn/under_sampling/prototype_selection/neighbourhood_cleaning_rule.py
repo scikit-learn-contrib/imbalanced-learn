@@ -77,7 +77,7 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     sampling a class as proposed in [1]_.
 
     See
-    :ref:`sphx_glr_auto_examples_under-sampling_neighbourhood_cleaning_rule.py`.
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_neighbourhood_cleaning_rule.py`.
 
     References
     ----------

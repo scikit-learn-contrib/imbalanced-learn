@@ -56,7 +56,7 @@ class RandomUnderSampler(BaseUnderSampler):
 
     See
     :ref:`sphx_glr_auto_examples_plot_ratio_usage.py` and
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_random_under_sampling.py`
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_random_under_sampler.py`
 
     Examples
     --------
