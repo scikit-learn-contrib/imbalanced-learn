@@ -18,7 +18,9 @@ Imbalanced generator
 ====================
 
 :func:`make_imbalance` turns an original dataset into an imbalanced
-dataset.
+dataset. This behaviour is driven by the parameter ``ratio`` which behave
+similarly to other resampling algorithm. ``ratio`` can be used as a dictionary
+or a callable.
 
 
 .. image:: ../auto_examples/datasets/images/sphx_glr_plot_make_imbalance_001.png

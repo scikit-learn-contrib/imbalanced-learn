@@ -79,11 +79,3 @@ Just to know about history of imbalanced-learn.
 
 See the `README <https://github.com/scikit-learn-contrib/imbalanced-learn/blob/master/README.rst>`_
 for more information.
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

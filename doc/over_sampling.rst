@@ -59,10 +59,12 @@ using the over-sampled data set and the original data set.
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :align: center
 
-
 As a result, the majority class does not take over the other classes during the
 training process. Consequently, all classes are represented by the decision
 function.
+
+See :ref:`sphx_glr_auto_examples_over-sampling_plot_random_over_sampling.py`
+for usage example.
 
 From random over-sampling to SMOTE and ADASYN
 ---------------------------------------------
@@ -89,6 +91,8 @@ methods.
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :align: center
 
+See :ref:`sphx_glr_auto_examples_over-sampling_plot_smote.py` and
+:ref:`sphx_glr_auto_examples_over-sampling_plot_adasyn.py` for usage example.
 
 Ill-posed examples
 ------------------
@@ -137,8 +141,14 @@ available: (i) ``'borderline1'``, (ii) ``'borderline2'``, and (iii) ``'svm'``::
   >>> print(Counter(y_resampled))
   Counter({2: 4674, 1: 4674, 0: 4674})
 
+See :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`
+to see a comparison between the different over-sampling methods.
+
 Mathematical formulation
 ========================
+
+Sample generation
+-----------------
 
 Both SMOTE and ADASYN use the same algorithm to generate new
 samples. Considering a sample :math:`x_i`, a new sample :math:`x_{new}` will be
@@ -159,8 +169,6 @@ interpolation will create a sample on the line between :math:`x_{i}` and
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_illustration_generation_sample_001.png
    :target: ./auto_examples/over-sampling/plot_illustration_generation_sample.html
    :align: center
-
-
 
 Each SMOTE variant and ADASYN differ from each other by selecting the samples
 :math:`x_i` ahead of generating the new samples.
@@ -195,3 +203,15 @@ which are not from the same class than :math:`x_i` in a given
 neighborhood. Therefore, more samples will be generated in the area that the
 nearest neighbor rule is not respected. The parameter ``n_neighbors`` is
 equivalent to ``k_neighbors`` in :class:`SMOTE`.
+
+Multi-class management
+----------------------
+
+All algorithms can be used with multiple classes as well as binary classes
+classification.  :class:`RandomOverSampler` does not require any inter-class
+information during the sample generation. Therefore, each targeted class is
+resampled independently. In the contrary, both :class:`ADASYN` and
+:class:`SMOTE` need information regarding the neighbourhood of each sample used
+for sample generation. They are using a one-vs-rest approach by selecting each
+targeted class and computing the necessary statistics against the rest of the
+data set which are group in a single class.
