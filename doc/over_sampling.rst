@@ -15,8 +15,8 @@ corresponds to the difference of the number of samples in the different
 classes. We illustrate the effect of training a linear SVM classifier with
 different level of class balancing.
 
-.. image:: ./modules/balancing_problem/linear_svc_imbalanced_issue.png
-   :scale: 80
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_001.png
+   :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :align: center
 
 As expected, the decision function of the linear SVM is highly impacted. With a
@@ -55,9 +55,10 @@ a classifier::
 In the figure below, we compare the decision functions of a classifier trained
 using the over-sampled data set and the original data set.
 
-.. image:: ./modules/over_sampling/random_over_sampler.png
-   :scale: 80
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_002.png
+   :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :align: center
+
 
 As a result, the majority class does not take over the other classes during the
 training process. Consequently, all classes are represented by the decision
@@ -84,9 +85,10 @@ can be used in the same manner::
 The figure below illustrate the major difference of the different over-sampling
 methods.
 
-.. image:: ./modules/over_sampling/resampling_over_sampling.png
-   :scale: 80
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_003.png
+   :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :align: center
+
 
 Ill-posed examples
 ------------------
@@ -101,15 +103,15 @@ distinction between easy and hard samples to be classified using the nearest
 neighbors rule. Therefore, the decision function found during training will be
 different between the different algorithms.
 
-.. image:: ./modules/over_sampling/decision_function_smote_adasyn.png
-   :scale: 80
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_004.png
+   :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :align: center
 
 The sampling particularities of these two algorithms can lead to some peculiar
 behavior as shown below.
 
-.. image:: ./modules/over_sampling/particularities_smote_adasyn.png
-   :scale: 80
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_005.png
+   :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :align: center
 
 SMOTE variants
@@ -122,9 +124,10 @@ samples. Those methods focus on samples near of the border of the optimal
 decision function and will generate samples in the opposite direction of the
 nearest neighbors class. Those variants are presented in the figure below.
 
-.. image:: ./modules/over_sampling/smote_kinds.png
-   :scale: 80
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_006.png
+   :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :align: center
+
 
 The parameter ``kind`` is controlling this feature and the following types are
 available: (i) ``'borderline1'``, (ii) ``'borderline2'``, and (iii) ``'svm'``::
@@ -151,11 +154,13 @@ generated as follows:
 
 where :math:`\lambda` is a random number in the range :math:`[0, 1]`. This
 interpolation will create a sample on the line between :math:`x_{i}` and
-:math:`x_{zi}` as illustrate on the figure below.
+:math:`x_{zi}` as illustrated in the image below:
 
-.. image:: ./modules/over_sampling/sample_generation.png
-   :scale: 80
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_illustration_generation_sample_001.png
+   :target: ./auto_examples/over-sampling/plot_illustration_generation_sample.html
    :align: center
+
+
 
 Each SMOTE variant and ADASYN differ from each other by selecting the samples
 :math:`x_i` ahead of generating the new samples.
@@ -178,7 +183,8 @@ samples *in danger* to generate new samples. In **Borderline-1** SMOTE,
 
 **SVM** SMOTE --- cf. to ``kind='svm'`` when instantiating a :class:`SMOTE`
 object --- uses an SVM classifier to find support vectors and generate samples
-considering them.
+considering them. Note that the ``C`` parameter of the SVM classifier allows to
+select more or less support vectors.
 
 For both borderline and SVM SMOTE, a neighborhood is defined using the
 parameter ``m_neighbors`` to decide if a sample is in danger, safe, or noise.
