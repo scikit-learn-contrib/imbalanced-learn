@@ -87,6 +87,20 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     Supports mutli-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
+    See
+    :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py` and
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
+
+    See also
+    --------
+    CondensedNearestNeighbour, RepeatedEditedNearestNeighbours, AllKNN
+
+    References
+    ----------
+    .. [1] D. Wilson, Asymptotic" Properties of Nearest Neighbor Rules Using
+       Edited Data," In IEEE Transactions on Systems, Man, and Cybernetrics,
+       vol. 2 (3), pp. 408-421, 1972.
+
     Examples
     --------
 
@@ -103,12 +117,6 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = enn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 887, 0: 100})
-
-    References
-    ----------
-    .. [1] D. Wilson, "Asymptotic Properties of Nearest Neighbor Rules Using
-       Edited Data," In IEEE Transactions on Systems, Man, and Cybernetrics,
-       vol. 2 (3), pp. 408-421, 1972.
 
     """
 
@@ -278,6 +286,20 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     Supports mutli-class resampling.
 
+    See
+    :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py` and
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
+
+    See also
+    --------
+    CondensedNearestNeighbour, EditedNearestNeighbours, AllKNN
+
+    References
+    ----------
+    .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
+       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
+       pp. 448-452, June 1976.
+
     Examples
     --------
 
@@ -294,12 +316,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     >>> X_res, y_res = renn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 887, 0: 100})
-
-    References
-    ----------
-    .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
-       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
-       pp. 448-452, June 1976.
 
     """
 
@@ -487,6 +503,19 @@ class AllKNN(BaseCleaningSampler):
     Supports mutli-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
+    See :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
+
+    See also
+    --------
+    CondensedNearestNeighbour, EditedNearestNeighbours,
+    RepeatedEditedNearestNeighbours
+
+    References
+    ----------
+    .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
+       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
+       pp. 448-452, June 1976.
+
     Examples
     --------
 
@@ -503,12 +532,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = allknn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 887, 0: 100})
-
-    References
-    ----------
-    .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
-       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
-       pp. 448-452, June 1976.
 
     """
 

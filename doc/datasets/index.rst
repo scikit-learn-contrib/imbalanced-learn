@@ -14,6 +14,8 @@ to create an imbalanced dataset from an original balanced dataset.
 Imbalanced datasets for benchmark
 =================================
 
+.. _make_imbalanced:
+
 Imbalanced generator
 ====================
 

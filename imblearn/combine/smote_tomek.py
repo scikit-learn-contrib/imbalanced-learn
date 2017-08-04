@@ -105,6 +105,18 @@ class SMOTETomek(SamplerMixin):
     Supports mutli-class resampling. Refer to SMOTE and TomekLinks regarding
     the scheme which used.
 
+    See :ref:`sphx_glr_auto_examples_combine_plot_smote_tomek.py`.
+
+    See also
+    --------
+    SMOTEENN : Over-sample using SMOTE followed by under-sampling using Edited
+        Nearest Neighbours.
+
+    References
+    ----------
+    .. [1] G. Batista, B. Bazzan, M. Monard, "Balancing Training Data for
+       Automated Annotation of Keywords: a Case Study," In WOB, 10-18, 2003.
+
     Examples
     --------
 
@@ -121,11 +133,6 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = smt.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({0: 900, 1: 900})
-
-    References
-    ----------
-    .. [1] G. Batista, B. Bazzan, M. Monard, "Balancing Training Data for
-       Automated Annotation of Keywords: a Case Study," In WOB, 10-18, 2003.
 
     """
 

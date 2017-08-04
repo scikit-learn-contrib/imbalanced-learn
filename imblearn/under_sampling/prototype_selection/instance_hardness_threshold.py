@@ -101,6 +101,15 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
     Supports mutli-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
+    See
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_instance_hardness_threshold.py`.
+
+    References
+    ----------
+    .. [1] D. Smith, Michael R., Tony Martinez, and Christophe Giraud-Carrier.
+       "An instance level analysis of data complexity." Machine learning
+       95.2 (2014): 225-256.
+
     Examples
     --------
 
@@ -116,12 +125,6 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
     >>> X_res, y_res = iht.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 840, 0: 100})
-
-    References
-    ----------
-    .. [1] D. Smith, Michael R., Tony Martinez, and Christophe Giraud-Carrier.
-       "An instance level analysis of data complexity." Machine learning
-       95.2 (2014): 225-256.
 
     """
 

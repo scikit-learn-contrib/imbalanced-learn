@@ -55,6 +55,14 @@ class TomekLinks(BaseCleaningSampler):
     Supports mutli-class resampling. A one-vs.-rest scheme is used as
     originally proposed in [1]_.
 
+    See
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_tomek_links.py`.
+
+    References
+    ----------
+    .. [1] I. Tomek, "Two modifications of CNN," In Systems, Man, and
+       Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 2010.
+
     Examples
     --------
 
@@ -71,11 +79,6 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = tl.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 897, 0: 100})
-
-    References
-    ----------
-    .. [1] I. Tomek, "Two modifications of CNN," In Systems, Man, and
-       Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 2010.
 
     """
 

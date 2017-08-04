@@ -76,6 +76,14 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     Supports mutli-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
+    See
+    :ref:`sphx_glr_auto_examples_under-sampling_neighbourhood_cleaning_rule.py`.
+
+    References
+    ----------
+    .. [1] J. Laurikkala, "Improving identification of difficult small classes
+       by balancing class distribution," Springer Berlin Heidelberg, 2001.
+
     Examples
     --------
 
@@ -92,11 +100,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = ncr.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 877, 0: 100})
-
-    References
-    ----------
-    .. [1] J. Laurikkala, "Improving identification of difficult small classes
-       by balancing class distribution," Springer Berlin Heidelberg, 2001.
 
     """
 

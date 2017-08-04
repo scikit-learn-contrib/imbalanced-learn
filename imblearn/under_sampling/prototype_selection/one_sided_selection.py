@@ -78,6 +78,14 @@ KNeighborsClassifier(n_neighbors=1))
     a class as proposed in [1]_. For each class to be sampled, all samples of
     this class and the minority class are used during the sampling procedure.
 
+    See
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_one_sided_selection.py`
+
+    References
+    ----------
+    .. [1] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training
+       sets: one-sided selection," In ICML, vol. 97, pp. 179-186, 1997.
+
     Examples
     --------
 
@@ -94,11 +102,6 @@ KNeighborsClassifier(n_neighbors=1))
     >>> X_res, y_res = oss.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 495, 0: 100})
-
-    References
-    ----------
-    .. [1] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training
-       sets: one-sided selection," In ICML, vol. 97, pp. 179-186, 1997.
 
     """
 

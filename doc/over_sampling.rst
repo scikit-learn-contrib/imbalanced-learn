@@ -24,6 +24,8 @@ As expected, the decision function of the linear SVM is highly impacted. With a
 greater imbalanced ratio, the decision function favor the class with the larger
 number of samples, usually referred as the majority class.
 
+.. _random_over_sampler:
+
 Naive random over-sampling
 --------------------------
 
@@ -67,6 +69,8 @@ function.
 
 See :ref:`sphx_glr_auto_examples_over-sampling_plot_random_over_sampling.py`
 for usage example.
+
+.. _smote_adasyn:
 
 From random over-sampling to SMOTE and ADASYN
 ---------------------------------------------

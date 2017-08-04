@@ -92,6 +92,17 @@ class NearMiss(BaseUnderSampler):
 
     Supports mutli-class resampling.
 
+    See
+    :ref:`sphx_glr_auto_examples_applications_plot_multi_class_under_sampling.py`
+    and
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_nearmiss.py`.
+
+    References
+    ----------
+    .. [1] I. Mani, I. Zhang. "kNN approach to unbalanced data distributions:
+       a case study involving information extraction," In Proceedings of
+       workshop on learning from imbalanced datasets, 2003.
+
     Examples
     --------
 
@@ -108,12 +119,6 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = nm.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({0: 100, 1: 100})
-
-    References
-    ----------
-    .. [1] I. Mani, I. Zhang. "kNN approach to unbalanced data distributions:
-       a case study involving information extraction," In Proceedings of
-       workshop on learning from imbalanced datasets, 2003.
 
     """
 

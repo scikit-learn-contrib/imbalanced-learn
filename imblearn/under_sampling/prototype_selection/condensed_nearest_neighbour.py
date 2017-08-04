@@ -78,6 +78,19 @@ KNeighborsClassifier(n_neighbors=1))
     Supports mutli-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
+    See
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_condensed_nearest_neighbour.py`.
+
+    See also
+    --------
+    EditedNearestNeighbours, RepeatedEditedNearestNeighbours, AllKNN
+
+    References
+    ----------
+    .. [1] P. Hart, "The condensed nearest neighbor rule,"
+       In Information Theory, IEEE Transactions on, vol. 14(3),
+       pp. 515-516, 1968.
+
     Examples
     --------
 
@@ -94,12 +107,6 @@ CondensedNearestNeighbour #doctest: +SKIP
     >>> print('Resampled dataset shape {}'.format(
     ... Counter(y_res))) #doctest: +SKIP
     Resampled dataset shape Counter({-1: 268, 1: 227}) #doctest: +SKIP
-
-    References
-    ----------
-    .. [1] P. Hart, "The condensed nearest neighbor rule,"
-       In Information Theory, IEEE Transactions on, vol. 14(3),
-       pp. 515-516, 1968.
 
     """
 
