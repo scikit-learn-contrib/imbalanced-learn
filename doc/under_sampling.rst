@@ -67,7 +67,6 @@ It is also possible to bootstrap the data when resampling by setting
       :align: center
 
 
-
 Cleaning under-sampling techniques
 ----------------------------------
 

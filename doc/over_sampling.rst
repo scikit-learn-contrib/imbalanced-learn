@@ -17,6 +17,7 @@ different level of class balancing.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_001.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
+   :scale: 60
    :align: center
 
 As expected, the decision function of the linear SVM is highly impacted. With a
@@ -57,6 +58,7 @@ using the over-sampled data set and the original data set.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_002.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
+   :scale: 60
    :align: center
 
 As a result, the majority class does not take over the other classes during the
@@ -89,6 +91,7 @@ methods.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_003.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
+   :scale: 60
    :align: center
 
 See :ref:`sphx_glr_auto_examples_over-sampling_plot_smote.py` and
@@ -116,6 +119,7 @@ behavior as shown below.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_005.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
+   :scale: 60
    :align: center
 
 SMOTE variants
@@ -130,6 +134,7 @@ nearest neighbors class. Those variants are presented in the figure below.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_006.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
+   :scale: 60
    :align: center
 
 
@@ -168,6 +173,7 @@ interpolation will create a sample on the line between :math:`x_{i}` and
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_illustration_generation_sample_001.png
    :target: ./auto_examples/over-sampling/plot_illustration_generation_sample.html
+   :scale: 60
    :align: center
 
 Each SMOTE variant and ADASYN differ from each other by selecting the samples
