@@ -14,12 +14,27 @@ a callable.
 
 from collections import Counter
 
+import matplotlib.pyplot as plt
+
 from sklearn.datasets import load_iris
 
 from imblearn.datasets import make_imbalance
 from imblearn.under_sampling import RandomUnderSampler
 
 print(__doc__)
+
+
+def plot_pie(y):
+    target_stats = Counter(y)
+    labels = list(target_stats.keys())
+    sizes = list(target_stats.values())
+    explode = tuple([0.1] * len(target_stats))
+
+    fig, ax = plt.subplots()
+    ax.pie(sizes, explode=explode, labels=labels, shadow=True,
+           autopct='%1.1f%%')
+    ax.axis('equal')
+
 
 ###############################################################################
 # Creation of an imbalanced data set from a balanced data set
@@ -36,6 +51,7 @@ iris = load_iris()
 
 print('Information of the original iris data set: \n {}'.format(
     Counter(iris.target)))
+plot_pie(iris.target)
 
 ratio = {0: 10, 1: 20, 2: 30}
 X, y = make_imbalance(iris.data, iris.target, ratio=ratio)
@@ -43,6 +59,7 @@ X, y = make_imbalance(iris.data, iris.target, ratio=ratio)
 print('Information of the iris data set after making it'
       ' imbalanced using a dict: \n ratio={} \n y: {}'.format(ratio,
                                                               Counter(y)))
+plot_pie(y)
 
 ###############################################################################
 # You might required more flexibility and require your own heuristic to
@@ -64,6 +81,7 @@ X, y = make_imbalance(iris.data, iris.target, ratio=ratio_multiplier)
 print('Information of the iris data set after making it'
       ' imbalanced using a callable: \n ratio={} \n y: {}'.format(
           ratio_multiplier, Counter(y)))
+plot_pie(y)
 
 ###############################################################################
 # Using ``ratio`` in resampling algorithm
@@ -85,6 +103,7 @@ X_res, y_res = RandomUnderSampler(ratio=ratio, random_state=0).fit_sample(X, y)
 
 print('Information of the iris data set after balancing using "auto"'
       ' mode:\n ratio={} \n y: {}'.format(ratio, Counter(y_res)))
+plot_pie(y_res)
 
 ###############################################################################
 # However, you can use the dictionary or the callable options as previously
@@ -95,6 +114,7 @@ X_res, y_res = RandomUnderSampler(ratio=ratio, random_state=0).fit_sample(X, y)
 
 print('Information of the iris data set after balancing using a dict'
       ' mode:\n ratio={} \n y: {}'.format(ratio, Counter(y_res)))
+plot_pie(y_res)
 
 
 def ratio_multiplier(y):
@@ -109,3 +129,6 @@ X_res, y_res = RandomUnderSampler(ratio=ratio, random_state=0).fit_sample(X, y)
 
 print('Information of the iris data set after balancing using a callable'
       ' mode:\n ratio={} \n y: {}'.format(ratio, Counter(y_res)))
+plot_pie(y_res)
+
+plt.show()
