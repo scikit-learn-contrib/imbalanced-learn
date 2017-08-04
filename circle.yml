@@ -25,7 +25,7 @@ dependencies:
     - pip install --upgrade numpy
     - pip install --upgrade scipy matplotlib setuptools nose coverage pillow
     - pip install --upgrade scikit-learn numpydoc
-    - pip install --upgrade sphinx-gallery sphinx_rtd_theme sphinx==1.5.6
+    - pip install --upgrade sphinx-gallery sphinx_rtd_theme sphinx
     # Installing required packages for `make -C doc check command` to work.
     - sudo -E apt-get -yq update
     - sudo -E apt-get -yq --no-install-suggests --no-install-recommends --force-yes install dvipng texlive-latex-base texlive-latex-extra
