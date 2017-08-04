@@ -22,8 +22,10 @@ dataset. This behaviour is driven by the parameter ``ratio`` which behave
 similarly to other resampling algorithm. ``ratio`` can be used as a dictionary
 or a callable.
 
-
 .. image:: ../auto_examples/datasets/images/sphx_glr_plot_make_imbalance_001.png
    :target: ../auto_examples/datasets/plot_make_imbalance.html
    :scale: 50
    :align: center
+
+See :ref:`sphx_glr_auto_examples_datasets_plot_make_imbalance.py` and
+:ref:`sphx_glr_auto_examples_plot_ratio_usage.py`.

@@ -20,9 +20,10 @@ samples. Therefore, each class will be synthesized with the centroids of the
 K-means method instead of the original samples. The figure below illustrates
 such under-sampling.
 
-.. image:: ./modules/under_sampling/clustering.png
-   :scale: 80
-   :align: center
+..
+   .. image:: ./modules/under_sampling/clustering.png
+      :scale: 80
+      :align: center
 
 :class:`ClusterCentroids` offers an efficient way to represent the data cluster
 with a reduced number of samples. Keep in mind that this method required that
@@ -50,18 +51,20 @@ Controlled under-sampling techniques
 :class:`RandomUnderSampler` is a fast and easy to balance the data by randomly
 selecting a subset of data for the targeted classes.
 
-.. image:: ./modules/under_sampling/random_under_sampler.png
-   :scale: 80
-   :align: center
+..
+   .. image:: ./modules/under_sampling/random_under_sampler.png
+      :scale: 80
+      :align: center
 
 It is also possible to bootstrap the data when resampling by setting
 ``replacement`` to ``True``.
 
 :class:`NearMiss`
 
-.. image:: ./modules/under_sampling/nearmiss.png
-   :scale: 80
-   :align: center
+..
+   .. image:: ./modules/under_sampling/nearmiss.png
+      :scale: 80
+      :align: center
 
 
 
