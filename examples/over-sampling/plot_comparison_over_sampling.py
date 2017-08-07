@@ -82,7 +82,7 @@ def plot_decision_function(X, y, clf, ax):
 ###############################################################################
 
 ###############################################################################
-# We will first illustrate the influence of the balancing ration on some toy
+# We will first illustrate the influence of the balancing ratio on some toy
 # data using a linear SVM classifier. Greater is the difference between the
 # number of samples in each class, poorer are the classfication results.
 
@@ -169,7 +169,7 @@ fig.tight_layout()
 # nearest-neighbors rule while regular SMOTE will not make any distinction.
 # Therefore, the decision function depending of the algorithm.
 
-f, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 6))
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 6))
 X, y = create_dataset(n_samples=10000, weights=(0.01, 0.05, 0.94))
 
 clf = LinearSVC().fit(X, y)
@@ -185,8 +185,7 @@ clf = make_pipeline(sampler, LinearSVC())
 clf.fit(X, y)
 plot_decision_function(X, y, clf, ax3)
 ax3.set_title('Decision function for {}'.format(sampler.__class__.__name__))
-plt.tight_layout()
-plt.show()
+fig.tight_layout()
 
 ###############################################################################
 # Due to those sampling particularities, it can give rise to some specific
