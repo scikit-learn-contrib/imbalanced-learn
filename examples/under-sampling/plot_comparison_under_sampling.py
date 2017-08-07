@@ -162,5 +162,26 @@ for ax, sampler in zip(ax_arr, (NearMiss(version=1, random_state=0),
         sampler.__class__.__name__, sampler.version))
 fig.tight_layout()
 
+###############################################################################
+# ``EditedNearestNeighbours``
+
+fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2,
+                                                         figsize=(15, 25))
+X, y = create_dataset(n_samples=500, weights=(0.2, 0.3, 0.5), class_sep=0.8)
+
+ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
+for ax, sampler in zip(ax_arr, (
+        EditedNearestNeighbours(random_state=0),
+        RepeatedEditedNearestNeighbours(random_state=0),
+        AllKNN(random_state=0))):
+    clf = make_pipeline(sampler, LinearSVC())
+    clf.fit(X, y)
+    plot_decision_function(X, y, clf, ax[0])
+    ax[0].set_title('Decision function for {}'.format(
+        sampler.__class__.__name__))
+    plot_resampling(X, y, sampler, ax[1])
+    ax[1].set_title('Resampling using {}'.format(
+        sampler.__class__.__name__))
+fig.tight_layout()
 
 plt.show()

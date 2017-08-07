@@ -17,8 +17,25 @@ not selected --- from the original set.
 
 :class:`ClusterCentroids` makes use of K-means to reduce the number of
 samples. Therefore, each class will be synthesized with the centroids of the
-K-means method instead of the original samples. The figure below illustrates
-such under-sampling.
+K-means method instead of the original samples::
+
+  >>> from collections import Counter
+  >>> from sklearn.datasets import make_classification
+  >>> X, y = make_classification(n_samples=5000, n_features=2, n_informative=2,
+  ...                            n_redundant=0, n_repeated=0, n_classes=3,
+  ...                            n_clusters_per_class=1,
+  ...                            weights=[0.01, 0.05, 0.94],
+  ...                            class_sep=0.8, random_state=0)
+  >>> print(Counter(y))
+  Counter({2: 4674, 1: 262, 0: 64})
+  >>> from imblearn.under_sampling import ClusterCentroids
+  >>> cc = ClusterCentroids(random_state=0)
+  >>> X_resampled, y_resampled = cc.fit_sample(X, y)
+  >>> print(Counter(y_resampled))
+  Counter({0: 64, 1: 64, 2: 64})
+
+
+The figure below illustrates such under-sampling.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_001.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
@@ -49,7 +66,13 @@ Controlled under-sampling techniques
 ------------------------------------
 
 :class:`RandomUnderSampler` is a fast and easy to balance the data by randomly
-selecting a subset of data for the targeted classes.
+selecting a subset of data for the targeted classes::
+
+  >>> from imblearn.under_sampling import RandomUnderSampler
+  >>> rus = RandomUnderSampler(random_state=0)
+  >>> X_resampled, y_resampled = rus.fit_sample(X, y)
+  >>> print(Counter(y_resampled))
+  Counter({0: 64, 1: 64, 2: 64})
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_002.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
@@ -58,11 +81,25 @@ selecting a subset of data for the targeted classes.
 
 It is also possible to bootstrap the data when resampling by setting
 ``replacement`` to ``True``. The resampling with multiple classes is performed
-by considering independently each targeted class.
+by considering independently each targeted class::
+
+  >>> import numpy as np
+  >>> print(np.unique(X_resampled, axis=0).shape)
+  (192, 2)
+  >>> rus = RandomUnderSampler(random_state=0, replacement=True)
+  >>> X_resampled, y_resampled = rus.fit_sample(X, y)
+  >>> print(np.unique(X_resampled, axis=0).shape)
+  (181, 2)
 
 :class:`NearMiss` adds some heuristic rules to select
 samples. :class:`NearMiss` implements 3 different types of heuristic which can
-be selected with the parameter ``version``.
+be selected with the parameter ``version``::
+
+  >>> from imblearn.under_sampling import NearMiss
+  >>> nm1 = NearMiss(random_state=0, version=1)
+  >>> X_resampled_nm1, y_resampled = nm1.fit_sample(X, y)
+  >>> print(Counter(y_resampled))
+  Counter({0: 64, 1: 64, 2: 64})
 
 Let *positive samples* be the samples belonging to the targeted class to be
 under-sampled. *Negative sample* refers to the samples from the minority class
@@ -117,11 +154,55 @@ affected by noise due to the first step sample selection.
 Cleaning under-sampling techniques
 ----------------------------------
 
+In cleaning under-sampling techniques do not allow to specify the number
+samples to have in each class. In fact, each algorithm implement an heuristic
+which will clean the dataset.
+
+:class:`EditedNearestNeighbours` applies a neareast-neighbors algorithm and
+will "edit" the dataset by removing samples which do not agree "enough" with
+their neighboorhood. For each sample in the class to be under-sampled, the
+nearest-neighbours are computed and if the selection criterion is not
+fulfilled, the sample is removed. Two selection criteria are currently
+available: (i) the majority (i.e., ``kind_sel='mode'``) or (ii) all (i.e.,
+``kind_sel='all'``) the nearest-neighbors have to belong to the same class than
+the sample inspected to keep it in the dataset::
+
+  >>> Counter(y)
+  Counter({2: 4674, 1: 262, 0: 64})
+  >>> from imblearn.under_sampling import EditedNearestNeighbours
+  >>> enn = EditedNearestNeighbours(random_state=0)
+  >>> X_resampled, y_resampled = enn.fit_sample(X, y)
+  >>> print(Counter(y_resampled))
+  Counter({2: 4568, 1: 213, 0: 64})
+
+In the example below, it can be seen that :class:`EditedNearestNeighbours` will
+clean the classes boundaries for the examples which could be ambiguous.
+
+.. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_004.png
+   :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
+   :scale: 60
+   :align: center
+
+:class:`RepeatedEditedNearestNeighbours` extends `EditedNearestNeighbours` by
+:class:repeating the algorithm multiple times. Generally, repeating the
+:class:algorithm will delete more data::
+
+   >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
+   >>> renn = RepeatedEditedNearestNeighbours(random_state=0)
+   >>> X_resampled, y_resampled = renn.fit_sample(X, y)
+   >>> print(Counter(y_resampled))
+   Counter({2: 4551, 1: 208, 0: 64})
+
+:class:`AllKNN` differs from the previous methods
+
+
+
 :class:`InstanceHardnessThreshold`
+
 :class:`CondensedNearestNeighbour`
-:class:`EditedNearestNeighbours`
-:class:`RepeatedEditedNearestNeighbours`
-:class:`AllKNN`
+
 :class:`NeighbourhoodCleaningRule`
 :class:`OneSidedSelection`
+
+
 :class:`TomekLinks`

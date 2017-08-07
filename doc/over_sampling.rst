@@ -41,8 +41,8 @@ randomly sampling with replacement the current available samples. The
    ...                            weights=[0.01, 0.05, 0.94],
    ...                            class_sep=0.8, random_state=0)
    >>> from imblearn.over_sampling import RandomOverSampler
-   >>> rus = RandomOverSampler(random_state=0)
-   >>> X_resampled, y_resampled = rus.fit_sample(X, y)
+   >>> ros = RandomOverSampler(random_state=0)
+   >>> X_resampled, y_resampled = ros.fit_sample(X, y)
    >>> from collections import Counter
    >>> print(Counter(y_resampled))
    Counter({2: 4674, 1: 4674, 0: 4674})
