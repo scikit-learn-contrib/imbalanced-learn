@@ -44,6 +44,11 @@ class EditedNearestNeighbours(BaseCleaningSampler):
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
 
+        .. warning::
+           This algorithm is a cleaning under-sampling method. When providing a
+           ``dict``, only the targeted classes will be used; the number of
+           samples will be discarded.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -238,6 +243,11 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         - If callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
+
+        .. warning::
+           This algorithm is a cleaning under-sampling method. When providing a
+           ``dict``, only the targeted classes will be used; the number of
+           samples will be discarded.
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -459,6 +469,11 @@ class AllKNN(BaseCleaningSampler):
         - If callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
+
+        .. warning::
+           This algorithm is a cleaning under-sampling method. When providing a
+           ``dict``, only the targeted classes will be used; the number of
+           samples will be discarded.
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
