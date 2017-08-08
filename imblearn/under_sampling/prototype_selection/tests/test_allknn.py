@@ -7,8 +7,9 @@ from __future__ import print_function
 
 import numpy as np
 from sklearn.utils.testing import (assert_allclose, assert_array_equal,
-                                   assert_raises)
+                                   assert_raises, assert_true)
 from sklearn.neighbors import NearestNeighbors
+from sklearn.datasets import make_classification
 
 from imblearn.under_sampling import AllKNN
 
@@ -64,6 +65,19 @@ def test_allknn_fit_sample():
     ])
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_allclose(y_resampled, y_gt, rtol=R_TOL)
+
+
+def test_all_knn_allow_minority():
+    X, y = make_classification(n_samples=10000, n_features=2, n_informative=2,
+                               n_redundant=0, n_repeated=0, n_classes=3,
+                               n_clusters_per_class=1, weights=[0.2, 0.3, 0.5],
+                               class_sep=0.4, random_state=0)
+
+    allknn = AllKNN(random_state=RND_SEED, allow_minority=True)
+    X_res_1, y_res_1 = allknn.fit_sample(X, y)
+    allknn = AllKNN(random_state=RND_SEED)
+    X_res_2, y_res_2 = allknn.fit_sample(X, y)
+    assert_true(len(y_res_1) < len(y_res_2))
 
 
 def test_allknn_fit_sample_with_indices():
