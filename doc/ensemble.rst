@@ -29,9 +29,9 @@ under-sampling the original set::
   >>> print(Counter(y_resampled[0]))
   Counter({0: 64, 1: 64, 2: 64})
 
-:class:`EasyEnsemble` has two important parameters. ``n_subsets`` will be used
-to return number of subset while ``replacement`` to randomly sample with or
-without replacement.
+:class:`EasyEnsemble` has two important parameters: (i) ``n_subsets`` will be
+used to return number of subset and (ii) ``replacement`` to randomly sample
+with or without replacement.
 
 :class:`BalanceCascade` differs from the previous method by using a classifier
 (using the parameter ``estimator``) to ensure that misclassified samples will
