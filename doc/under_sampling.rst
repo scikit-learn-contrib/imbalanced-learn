@@ -289,11 +289,11 @@ used as::
   Counter({2: 4403, 1: 174, 0: 64})
 
 Our implementation offer to set the number of seeds to put in the set :math:`C`
-originally by setting the parameter ``n_seeds_S`.
+originally by setting the parameter ``n_seeds_S``.
 
 :class:`NeighbourhoodCleaningRule` will focus on cleaning the data than
 condensing them. Therefore, it will used the union of samples to be rejected
-between the :class:``EditedNearestNeighbours` and the output a 3 nearest
+between the :class:`EditedNearestNeighbours` and the output a 3 nearest
 neighbors classifier. The class can be used as::
 
   >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
