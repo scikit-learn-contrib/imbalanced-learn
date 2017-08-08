@@ -150,7 +150,6 @@ affected by noise due to the first step sample selection.
    :scale: 60
    :align: center
 
-
 Cleaning under-sampling techniques
 ----------------------------------
 
@@ -158,9 +157,12 @@ In cleaning under-sampling techniques do not allow to specify the number
 samples to have in each class. In fact, each algorithm implement an heuristic
 which will clean the dataset.
 
-:class:`EditedNearestNeighbours` applies a neareast-neighbors algorithm and
-will "edit" the dataset by removing samples which do not agree "enough" with
-their neighboorhood. For each sample in the class to be under-sampled, the
+Edited data set using nearest neighbours
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:class:`EditedNearestNeighbours` applies a nearest-neighbors algorithm and
+"edit" the dataset by removing samples which do not agree "enough" with their
+neighboorhood. For each sample in the class to be under-sampled, the
 nearest-neighbours are computed and if the selection criterion is not
 fulfilled, the sample is removed. Two selection criteria are currently
 available: (i) the majority (i.e., ``kind_sel='mode'``) or (ii) all (i.e.,
@@ -175,17 +177,9 @@ the sample inspected to keep it in the dataset::
   >>> print(Counter(y_resampled))
   Counter({2: 4568, 1: 213, 0: 64})
 
-In the example below, it can be seen that :class:`EditedNearestNeighbours` will
-clean the classes boundaries for the examples which could be ambiguous.
-
-.. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_004.png
-   :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
-   :scale: 60
-   :align: center
-
-:class:`RepeatedEditedNearestNeighbours` extends `EditedNearestNeighbours` by
-:class:repeating the algorithm multiple times. Generally, repeating the
-:class:algorithm will delete more data::
+:class:`RepeatedEditedNearestNeighbours` extends
+:class:`EditedNearestNeighbours` by repeating the algorithm multiple times.
+Generally, repeating the algorithm will delete more data::
 
    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
    >>> renn = RepeatedEditedNearestNeighbours(random_state=0)
@@ -193,7 +187,23 @@ clean the classes boundaries for the examples which could be ambiguous.
    >>> print(Counter(y_resampled))
    Counter({2: 4551, 1: 208, 0: 64})
 
-:class:`AllKNN` differs from the previous methods
+:class:`AllKNN` differs from the previous
+:class:`RepeatedEditedNearestNeighbours` since the number of neighbors of the
+internal nearest neighbors algorithm is increased at each iteration::
+
+  >>> from imblearn.under_sampling import AllKNN
+  >>> allknn = AllKNN(random_state=0)
+  >>> X_resampled, y_resampled = allknn.fit_sample(X, y)
+  >>> print(Counter(y_resampled))
+  Counter({2: 4601, 1: 220, 0: 64})
+
+In the example below, it can be seen that the three algorithms have similar
+impact by cleaning noisy samples next to the boundaries of the classes.
+
+.. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_004.png
+   :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
+   :scale: 60
+   :align: center
 
 
 

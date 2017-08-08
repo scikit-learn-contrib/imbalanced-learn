@@ -142,7 +142,14 @@ fig.tight_layout()
 
 ###############################################################################
 # ``NearMiss`` algorithms implement some heuristic rules in order to select
-# samples. NearMiss-1
+# samples. NearMiss-1 selects samples from the majority class for which the
+# average distance of the :math:`k`` nearest samples of the minority class is
+# the smallest. NearMiss-2 selects the samples from the majority class for
+# which the average distance to the farthest samples of the negative class is
+# the smallest. NearMiss-3 is a 2-step algorithm: first, for each minority
+# sample, their ::math:`m` nearest-neighbors will be kept; then, the majority
+# samples selected are the on for which the average distance to the :math:`k`
+# nearest neighbors is the largest.
 
 fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2,
                                                          figsize=(15, 25))
@@ -163,7 +170,12 @@ for ax, sampler in zip(ax_arr, (NearMiss(version=1, random_state=0),
 fig.tight_layout()
 
 ###############################################################################
-# ``EditedNearestNeighbours``
+# ``EditedNearestNeighbours`` removes samples of the majority class for which
+# their class differ from the one of their nearest-neighbors. This sieve can be
+# repeated which is the principle of the
+# ``RepeatedEditedNearestNeighbours``. ``AllKNN`` is slightly different from
+# the ``RepeatedEditedNearestNeighbours`` by changing the :math:`k` parameter
+# of the internal nearest neighors algorithm, increasing it at each iteration.
 
 fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2,
                                                          figsize=(15, 25))
@@ -183,5 +195,17 @@ for ax, sampler in zip(ax_arr, (
     ax[1].set_title('Resampling using {}'.format(
         sampler.__class__.__name__))
 fig.tight_layout()
+
+###############################################################################
+# ``TomekLinks`` detects the so-called Tomek's links. A Tomek link between two
+# samples :math:`x` and :math:`y` is defined such that there is no example
+# :math:`z` such that:
+#
+# .. math::
+#
+#    d(x, y) < d(x, z) \text{ or } d(y, z) < d(x, y)
+#
+# where :math:`d(.)` is the distance between the two samples.
+#
 
 plt.show()
