@@ -187,6 +187,17 @@ the samples of interest in green.
    :scale: 60
    :align: center
 
+The parameter ``ratio`` control which sample of the link will be removed. For
+instance, the default (i.e., ``ratio='auto'``) will remove the sample from the
+majority class. Both samples from the majority and minority class can be
+removed by setting ``ratio`` to ``'all'``. The figure illustrates this
+behaviour.
+
+.. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_002.png
+   :target: ./auto_examples/under-sampling/plot_illustration_tomek_links.html
+   :scale: 60
+   :align: center
+
 Edited data set using nearest neighbours
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -236,17 +247,6 @@ impact by cleaning noisy samples next to the boundaries of the classes.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_004.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
-   :scale: 60
-   :align: center
-
-The parameter ``ratio`` control which sample of the link will be removed. For
-instance, the default (i.e., ``ratio='auto'``) will remove the sample from the
-majority class. Both samples from the majority and minority class can be
-removed by setting ``ratio`` to ``'all'``. The figure illustrates this
-behaviour.
-
-.. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_002.png
-   :target: ./auto_examples/under-sampling/plot_illustration_tomek_links.html
    :scale: 60
    :align: center
 
