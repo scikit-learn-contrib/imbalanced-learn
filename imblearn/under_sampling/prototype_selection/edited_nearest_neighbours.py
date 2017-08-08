@@ -60,8 +60,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
        .. deprecated:: 0.2
           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
@@ -69,10 +68,9 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an
-        estimator that inherits from
+        nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        find the nearest-neighbors.
 
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.
@@ -260,8 +258,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
         .. deprecated: 0.2
            ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
@@ -269,10 +266,9 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an
-        estimator that inherits from
+        nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        find the nearest-neighbors.
 
     max_iter : int, optional (default=100)
         Maximum number of iterations of the edited nearest neighbours
@@ -486,8 +482,7 @@ class AllKNN(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
         .. deprecated:: 0.2
            ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
@@ -495,10 +490,9 @@ class AllKNN(BaseCleaningSampler):
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an
-        estimator that inherits from
+        nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        find the nearest-neighbors.
 
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.

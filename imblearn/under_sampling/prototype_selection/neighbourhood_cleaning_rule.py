@@ -57,19 +57,17 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
         .. deprecated:: 0.2
            ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
            Use ``n_neighbors`` instead.
 
     n_neighbors : int or object, optional (default=3)
-        If ``int``, size of the neighbourhood to consider in order to make
-        the comparison between each samples and their NN.
-        If object, an estimator that inherits from
+        If ``int``, size of the neighbourhood to consider to compute the
+        nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        find the nearest-neighbors.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.

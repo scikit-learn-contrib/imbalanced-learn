@@ -55,8 +55,7 @@ class OneSidedSelection(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
         .. deprecated:: 0.2
            ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
@@ -65,9 +64,9 @@ class OneSidedSelection(BaseCleaningSampler):
     n_neighbors : int or object, optional (default=\
 KNeighborsClassifier(n_neighbors=1))
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an object
-        inherited from :class:`sklearn.neigbors.KNeighborsClassifier` should be
-        passed.
+        nearest neighbors. If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the nearest-neighbors.
 
     n_seeds_S : int, optional (default=1)
         Number of samples to extract in order to build the set S.

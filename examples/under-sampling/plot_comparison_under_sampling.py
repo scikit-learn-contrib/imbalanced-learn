@@ -18,6 +18,7 @@ import numpy as np
 
 from sklearn.datasets import make_classification
 from sklearn.svm import LinearSVC
+from sklearn.linear_model import LogisticRegression
 
 from imblearn.pipeline import make_pipeline
 from imblearn.under_sampling import (ClusterCentroids, RandomUnderSampler,
@@ -28,9 +29,7 @@ from imblearn.under_sampling import (ClusterCentroids, RandomUnderSampler,
                                      RepeatedEditedNearestNeighbours,
                                      AllKNN,
                                      NeighbourhoodCleaningRule,
-                                     OneSidedSelection,
-                                     TomekLinks)
-
+                                     OneSidedSelection)
 print(__doc__)
 
 
@@ -197,15 +196,53 @@ for ax, sampler in zip(ax_arr, (
 fig.tight_layout()
 
 ###############################################################################
-# ``TomekLinks`` detects the so-called Tomek's links. A Tomek link between two
-# samples of different class :math:`x` and :math:`y` is defined such that there
-# is no example :math:`z` such that:
-#
-# .. math::
-#
-#    d(x, y) < d(x, z) \text{ or } d(y, z) < d(x, y)
-#
-# where :math:`d(.)` is the distance between the two samples.
-#
+# ``CondensedNearestNeighbour`` makes use of a 1-NN to iteratively decide if a
+# sample should be kept in a dataset or not. The issue is that
+# ``CondensedNearestNeighbour`` is sensitive to noise by preserving the noisy
+# samples. ``OneSidedSelection`` also used the 1-NN and use ``TomekLinks`` to
+# remove the samples considered noisy. The ``NeighbourhoodCleaningRule`` use a
+# ``EditedNearestNeighbours`` to remove some sample. Additionally, they use a 3
+# nearest-neighbors to remove samples which do not agree with this rule.
+
+fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2,
+                                                         figsize=(15, 25))
+X, y = create_dataset(n_samples=500, weights=(0.2, 0.3, 0.5), class_sep=0.8)
+
+ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
+for ax, sampler in zip(ax_arr, (
+        CondensedNearestNeighbour(random_state=0),
+        OneSidedSelection(random_state=0),
+        NeighbourhoodCleaningRule(random_state=0))):
+    clf = make_pipeline(sampler, LinearSVC())
+    clf.fit(X, y)
+    plot_decision_function(X, y, clf, ax[0])
+    ax[0].set_title('Decision function for {}'.format(
+        sampler.__class__.__name__))
+    plot_resampling(X, y, sampler, ax[1])
+    ax[1].set_title('Resampling using {}'.format(
+        sampler.__class__.__name__))
+fig.tight_layout()
+
+###############################################################################
+# ``InstanceHardnessThreshold`` uses the prediction of classifier to exclude
+# samples. All samples which are classified with a low probability will be
+# removed.
+
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 6))
+X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94),
+                      class_sep=0.8)
+
+clf = LinearSVC().fit(X, y)
+plot_decision_function(X, y, clf, ax1)
+ax1.set_title('Linear SVC with y={}'.format(Counter(y)))
+sampler = InstanceHardnessThreshold(random_state=0,
+                                    estimator=LogisticRegression())
+clf = make_pipeline(sampler, LinearSVC())
+clf.fit(X, y)
+plot_decision_function(X, y, clf, ax2)
+ax2.set_title('Decision function for {}'.format(sampler.__class__.__name__))
+plot_resampling(X, y, sampler, ax3)
+ax3.set_title('Resampling using {}'.format(sampler.__class__.__name__))
+fig.tight_layout()
 
 plt.show()
