@@ -20,6 +20,8 @@ class EasyEnsemble(BaseEnsembleSampler):
     This method iteratively select a random subset and make an ensemble of the
     different sets.
 
+    Read more in the :ref:`User Guide <ensemble>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
