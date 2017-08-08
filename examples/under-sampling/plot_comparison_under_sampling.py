@@ -49,7 +49,7 @@ def create_dataset(n_samples=1000, weights=(0.01, 0.01, 0.98), n_classes=3,
 
 ###############################################################################
 # The following function will be used to plot the sample space after resampling
-# to illustrate the characterisitic of an algorithm.
+# to illustrate the characteristic of an algorithm.
 
 
 def plot_resampling(X, y, sampling, ax):

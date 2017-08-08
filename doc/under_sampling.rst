@@ -6,6 +6,8 @@ Under-sampling
 
 .. currentmodule:: imblearn.under_sampling
 
+.. _cluster_centroids:
+
 Prototype generation
 ====================
 
@@ -63,6 +65,8 @@ techniques. The first group of methods allows for an under-sampling strategy in
 which the number of samples in :math:`S'` is specified by the user. By
 contrast, cleaning under-sampling techniques do not allow this specification
 and are meant for cleaning the feature space.
+
+.. _controlled_under_sampling:
 
 Controlled under-sampling techniques
 ------------------------------------
@@ -181,6 +185,8 @@ Cleaning under-sampling techniques do not allow to specify the number of
 samples to have in each class. In fact, each algorithm implement an heuristic
 which will clean the dataset.
 
+.. _tomek_links:
+
 Tomek's links
 ^^^^^^^^^^^^^
 
@@ -217,6 +223,8 @@ See
 :ref:`sphx_glr_auto_examples_under-sampling_plot_illustration_tomek_links.py`
 and
 :ref:`sphx_glr_auto_examples_under-sampling_plot_tomek_links.py`.
+
+.. _edited_nearest_neighbors:
 
 Edited data set using nearest neighbours
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -274,6 +282,8 @@ See
 :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py`,
 :ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
 and :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
+
+.. _condensed_nearest_neighbors:
 
 Condensed nearest neighbors and derived algorithms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -337,6 +347,8 @@ See
 :ref:`sphx_glr_auto_examples_under-sampling_plot_condensed_nearest_neighbour.py`,
 :ref:`sphx_glr_auto_examples_under-sampling_plot_one_sided_selection.py`, and
 :ref:`sphx_glr_auto_examples_under-sampling_plot_neighbourhood_cleaning_rule.py`.
+
+.. _instance_hardness_threshold:
 
 Instance hardness threshold
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

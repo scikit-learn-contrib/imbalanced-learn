@@ -24,6 +24,8 @@ class SMOTETomek(SamplerMixin):
 
     Combine over- and under-sampling using SMOTE and Tomek links.
 
+    Read more in the :ref:`User Guide <combine>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -105,7 +107,8 @@ class SMOTETomek(SamplerMixin):
     Supports mutli-class resampling. Refer to SMOTE and TomekLinks regarding
     the scheme which used.
 
-    See :ref:`sphx_glr_auto_examples_combine_plot_smote_tomek.py`.
+    See :ref:`sphx_glr_auto_examples_combine_plot_smote_tomek.py` and
+    :ref:`sphx_glr_auto_examples_combine_plot_comparison_combine.py`.
 
     See also
     --------

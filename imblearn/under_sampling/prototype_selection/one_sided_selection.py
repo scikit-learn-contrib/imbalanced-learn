@@ -20,6 +20,8 @@ from ...utils.deprecation import deprecate_parameter
 class OneSidedSelection(BaseCleaningSampler):
     """Class to perform under-sampling based on one-sided selection method.
 
+    Read more in the :ref:`User Guide <condensed_nearest_neighbors>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')

@@ -18,6 +18,8 @@ class RandomUnderSampler(BaseUnderSampler):
     Under-sample the majority class(es) by randomly picking samples
     with or without replacement.
 
+    Read more in the :ref:`User Guide <controlled_under_sampling>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')

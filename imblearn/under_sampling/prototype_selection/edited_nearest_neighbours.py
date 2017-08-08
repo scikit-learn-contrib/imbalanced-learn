@@ -25,6 +25,8 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
 
+    Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -222,6 +224,8 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
+
+    Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
     Parameters
     ----------
@@ -446,6 +450,8 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
 class AllKNN(BaseCleaningSampler):
     """Class to perform under-sampling based on the AllKNN method.
+
+    Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
     Parameters
     ----------

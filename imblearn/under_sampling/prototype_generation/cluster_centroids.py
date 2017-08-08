@@ -25,6 +25,8 @@ class ClusterCentroids(BaseUnderSampler):
     the coordinates of the N cluster centroids as the new majority
     samples.
 
+    Read more in the :ref:`User Guide <cluster_centroids>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')

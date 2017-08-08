@@ -16,6 +16,8 @@ from ..base import BaseCleaningSampler
 class TomekLinks(BaseCleaningSampler):
     """Class to perform under-sampling by removing Tomek's links.
 
+    Read more in the :ref:`User Guide <tomek_links>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')

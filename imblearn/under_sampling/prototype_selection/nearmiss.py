@@ -19,6 +19,8 @@ from ...utils.deprecation import deprecate_parameter
 class NearMiss(BaseUnderSampler):
     """Class to perform under-sampling based on NearMiss methods.
 
+    Read more in the :ref:`User Guide <controlled_under_sampling>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')

@@ -37,6 +37,8 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
     """Class to perform under-sampling based on the instance hardness
     threshold.
 
+    Read more in the :ref:`User Guide <instance_hardness_threshold>`.
+
     Parameters
     ----------
     estimator : object, optional (default=RandomForestClassifier())

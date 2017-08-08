@@ -22,6 +22,8 @@ class SMOTEENN(SamplerMixin):
 
     Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.
 
+    Read more in the :ref:`User Guide <combine>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -135,7 +137,8 @@ class SMOTEENN(SamplerMixin):
     Supports mutli-class resampling. Refer to SMOTE and ENN regarding the
     scheme which used.
 
-    See :ref:`sphx_glr_auto_examples_combine_plot_smote_enn.py`.
+    See :ref:`sphx_glr_auto_examples_combine_plot_smote_enn.py` and
+    :ref:`sphx_glr_auto_examples_combine_plot_comparison_combine.py`.
 
     See also
     --------
