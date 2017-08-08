@@ -153,7 +153,7 @@ affected by noise due to the first step sample selection.
 Cleaning under-sampling techniques
 ----------------------------------
 
-In cleaning under-sampling techniques do not allow to specify the number
+Cleaning under-sampling techniques do not allow to specify the number of
 samples to have in each class. In fact, each algorithm implement an heuristic
 which will clean the dataset.
 
@@ -205,14 +205,41 @@ impact by cleaning noisy samples next to the boundaries of the classes.
    :scale: 60
    :align: center
 
+:class:``TomekLinks`` detects the so-called Tomek's links. A Tomek's link
+between two samples of different class :math:`x` and :math:`y` is defined such
+that there is no example :math:`z` such that:
+
+.. math::
+
+   d(x, y) < d(x, z) \text{ or } d(y, z) < d(x, y)
+
+where :math:`d(.)` is the distance between the two samples. In some other
+words, a Tomek's link exist if the two samples are the nearest neighbors of
+each other. In the figure below, a Tomek's link is illustrated by highlighting
+the samples of interest in green.
+
+.. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_001.png
+   :target: ./auto_examples/under-sampling/plot_illustration_tomek_links.html
+   :scale: 60
+   :align: center
+
+The parameter ``ratio`` control which sample of the link will be removed. For
+instance, the default (i.e., ``ratio='auto'``) will remove the sample from the
+majority class. Both samples from the majority and minority class can be
+removed by setting ``ratio`` to ``'all'``. The figure illustrates this
+behaviour.
+
+.. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_002.png
+   :target: ./auto_examples/under-sampling/plot_illustration_tomek_links.html
+   :scale: 60
+   :align: center
+
+
+:class:`CondensedNearestNeighbour`
 
 
 :class:`InstanceHardnessThreshold`
 
-:class:`CondensedNearestNeighbour`
 
 :class:`NeighbourhoodCleaningRule`
 :class:`OneSidedSelection`
-
-
-:class:`TomekLinks`

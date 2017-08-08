@@ -198,8 +198,8 @@ fig.tight_layout()
 
 ###############################################################################
 # ``TomekLinks`` detects the so-called Tomek's links. A Tomek link between two
-# samples :math:`x` and :math:`y` is defined such that there is no example
-# :math:`z` such that:
+# samples of different class :math:`x` and :math:`y` is defined such that there
+# is no example :math:`z` such that:
 #
 # .. math::
 #
