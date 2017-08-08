@@ -508,6 +508,12 @@ class AllKNN(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
+    allow_minority : bool, optional (default=False)
+        If ``True``, it allows the majority classes to become the minority
+        class without early stopping.
+
+        .. versionadded:: 0.3
+
     n_jobs : int, optional (default=-1)
         The number of thread to open when it is possible.
 
@@ -557,12 +563,14 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                  size_ngh=None,
                  n_neighbors=3,
                  kind_sel='all',
+                 allow_minority=False,
                  n_jobs=-1):
         super(AllKNN, self).__init__(ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
+        self.allow_minority = allow_minority
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
@@ -633,6 +641,9 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             ])
             b_min_bec_maj = np.any(count_non_min <
                                    target_stats[class_minority])
+            if self.allow_minority:
+                # overwrite b_min_bec_maj
+                b_min_bec_maj = False
 
             # Case 2
             b_remove_maj_class = (len(stats_enn) < len(target_stats))
