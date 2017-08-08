@@ -185,7 +185,7 @@ ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
 for ax, sampler in zip(ax_arr, (
         EditedNearestNeighbours(random_state=0),
         RepeatedEditedNearestNeighbours(random_state=0),
-        AllKNN(random_state=0))):
+        AllKNN(random_state=0, allow_minority=True))):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
