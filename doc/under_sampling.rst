@@ -169,7 +169,7 @@ which will clean the dataset.
 Tomek's links
 ^^^^^^^^^^^^^
 
-:class:``TomekLinks`` detects the so-called Tomek's links. A Tomek's link
+:class:`TomekLinks` detects the so-called Tomek's links. A Tomek's link
 between two samples of different class :math:`x` and :math:`y` is defined such
 that there is no example :math:`z` such that:
 
