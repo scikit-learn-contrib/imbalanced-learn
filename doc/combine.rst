@@ -8,7 +8,7 @@ Combination of over- and under-sampling
 
 We previously presented :class:`SMOTE` and showed that this method can generate
 noisy samples by interpolating new points between marginal outliers and
-inliers. This issue can be solved by cleaning the resulting space obtained
+inliers. This issue can be solved by cleaning the resulted space obtained
 after over-sampling.
 
 .. currentmodule:: imblearn.combine
