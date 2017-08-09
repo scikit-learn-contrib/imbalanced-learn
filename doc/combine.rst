@@ -14,12 +14,12 @@ after over-sampling.
 .. currentmodule:: imblearn.combine
 
 In this regard, Tomek's link and edited nearest-neighbours are the two cleaning
-methods which have been pipeline after SMOTE over-sampling to obtain a cleaner
-space. Therefore, imbalanced-learn implemented two ready-to-use class which
-pipeline both over- and under-sampling methods: (i) :class:`SMOTETomek`
+methods which have been added pipeline after SMOTE over-sampling to obtain a
+cleaner space. Therefore, imbalanced-learn implemented two ready-to-use class
+which pipeline both over- and under-sampling methods: (i) :class:`SMOTETomek`
 and (ii) :class:`SMOTEENN`.
 
-Those two classes can be used as any other sampler with identical parameters
+These two classes can be used as any other sampler with identical parameters
 than their former samplers::
 
   >>> from collections import Counter
@@ -42,7 +42,7 @@ than their former samplers::
   >>> print(Counter(y_resampled))
   Counter({1: 4566, 0: 4499, 2: 4413})
 
-We can also see in the example below that :class:`SMOTEENN` tend to clean more
+We can also see in the example below that :class:`SMOTEENN` tends to clean more
 noisy samples than :class:`SMOTETomek`.
 
 .. image:: ./auto_examples/combine/images/sphx_glr_plot_comparison_combine_001.png

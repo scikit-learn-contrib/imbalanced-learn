@@ -9,6 +9,7 @@ User Guide
 .. toctree::
    :numbered:
 
+   problem_statement.rst
    over_sampling.rst
    under_sampling.rst
    combine.rst

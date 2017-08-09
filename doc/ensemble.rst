@@ -6,8 +6,8 @@ Ensemble of samplers
 
 .. currentmodule:: imblearn.ensemble
 
-An imbalanced data set can be balanced by creating several balanced subset. The
-module :mod:`imblearn.ensemble` allows to create such sets.
+An imbalanced data set can be balanced by creating several balanced
+subsets. The module :mod:`imblearn.ensemble` allows to create such sets.
 
 :class:`EasyEnsemble` creates an ensemble of data set by randomly
 under-sampling the original set::
@@ -34,11 +34,11 @@ used to return number of subset and (ii) ``replacement`` to randomly sample
 with or without replacement.
 
 :class:`BalanceCascade` differs from the previous method by using a classifier
-(using the parameter ``estimator``) to ensure that misclassified samples will
-can again selected for the next subset. In fact, the classifier play the role
-of a "smart" replacement method. The maximum number of subset can be set using
-the parameter ``n_max_subset`` and an additional bootstraping can be activated
-with ``bootstrap`` set to ``True``::
+(using the parameter ``estimator``) to ensure that misclassified samples can
+again be selected for the next subset. In fact, the classifier play the role of
+a "smart" replacement method. The maximum number of subset can be set using the
+parameter ``n_max_subset`` and an additional bootstraping can be activated with
+``bootstrap`` set to ``True``::
 
   >>> from imblearn.ensemble import BalanceCascade
   >>> from sklearn.linear_model import LogisticRegression

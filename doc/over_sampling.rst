@@ -9,21 +9,6 @@ Over-sampling
 A practical guide
 =================
 
-The learning phase and the subsequent prediction of machine learning algorithms
-can be affected by the problem of imbalanced data set. The balancing issue
-corresponds to the difference of the number of samples in the different
-classes. We illustrate the effect of training a linear SVM classifier with
-different level of class balancing.
-
-.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_001.png
-   :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
-   :scale: 60
-   :align: center
-
-As expected, the decision function of the linear SVM is highly impacted. With a
-greater imbalanced ratio, the decision function favor the class with the larger
-number of samples, usually referred as the majority class.
-
 .. _random_over_sampler:
 
 Naive random over-sampling
@@ -90,7 +75,7 @@ can be used in the same manner::
   Counter({2: 4674, 0: 4673, 1: 4662})
   >>> clf_adasyn = LinearSVC().fit(X_resampled, y_resampled)
 
-The figure below illustrate the major difference of the different over-sampling
+The figure below illustrates the major difference of the different over-sampling
 methods.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_003.png
@@ -104,15 +89,15 @@ See :ref:`sphx_glr_auto_examples_over-sampling_plot_smote.py` and
 Ill-posed examples
 ------------------
 
-While the :class:`RandomOverSampler` is over-sampling by repeating some of the
-original samples, :class:`SMOTE` and :class:`ADASYN` generate new samples in by
-interpolation. However, the samples used to interpolate/generate new synthetic
-samples differ. In fact, :class:`ADASYN` focuses on generating samples next to
-the original samples which are wrongly classified using a k-Nearest Neighbors
-classifier while the basic implementation of :class:`SMOTE` will not make any
-distinction between easy and hard samples to be classified using the nearest
-neighbors rule. Therefore, the decision function found during training will be
-different between the different algorithms.
+While the :class:`RandomOverSampler` is over-sampling by duplicating some of
+the original samples of the minority class, :`SMOTE` and :class:`ADASYN`
+generate new samples in by interpolation. However, the samples used to
+interpolate/generate new synthetic samples differ. In fact, :class:`ADASYN`
+focuses on generating samples next to the original samples which are wrongly
+classified using a k-Nearest Neighbors classifier while the basic
+implementation of :class:`SMOTE` will not make any distinction between easy and
+hard samples to be classified using the nearest neighbors rule. Therefore, the
+decision function found during training will be different among the algorithms.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_004.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
@@ -164,8 +149,8 @@ samples. Considering a sample :math:`x_i`, a new sample :math:`x_{new}` will be
 generated considering its k neareast-neighbors (corresponding to
 ``k_neighbors``). For instance, the 3 nearest-neighbors are included in the
 blue circle as illustrated in the figure below. Then, one of these
-nearest-neighbors :math:`x_{zi}` will be selected and a sample will be
-generated as follows:
+nearest-neighbors :math:`x_{zi}` is selected and a sample is generated as
+follows:
 
 .. math::
 
@@ -224,4 +209,4 @@ resampled independently. In the contrary, both :class:`ADASYN` and
 :class:`SMOTE` need information regarding the neighbourhood of each sample used
 for sample generation. They are using a one-vs-rest approach by selecting each
 targeted class and computing the necessary statistics against the rest of the
-data set which are group in a single class.
+data set which are grouped in a single class.

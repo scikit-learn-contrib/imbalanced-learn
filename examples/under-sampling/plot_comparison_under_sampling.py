@@ -113,7 +113,7 @@ fig.tight_layout()
 
 ###############################################################################
 # The algorithm performing prototype selection can be subdivided into two
-# groups: (i) the controlled unde-sampling methods and (ii) the cleaning
+# groups: (i) the controlled under-sampling methods and (ii) the cleaning
 # under-sampling methods.
 
 

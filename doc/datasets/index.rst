@@ -6,18 +6,18 @@ Dataset loading utilities
 
 .. currentmodule:: imblearn.datasets
 
-The ``imblearn.datasets`` package is complementing the the
-``sklearn.datasets`` package. The package provide both: (i) a set of
-imbalanced datasets to perform systematic benchmark and (ii) a utility
-to create an imbalanced dataset from an original balanced dataset.
+The ``imblearn.datasets`` package is complementing the ``sklearn.datasets``
+package. The package provides both: (i) a set of imbalanced datasets to perform
+systematic benchmark and (ii) a utility to create an imbalanced dataset from an
+original balanced dataset.
 
 .. _zenodo:
 
 Imbalanced datasets for benchmark
 =================================
 
-:func:`fetch_datasets` allows to fetch 27 datasets which are imbalanced. They
-are data sets which have been binarized. The following dataset are available:
+:func:`fetch_datasets` allows to fetch 27 datasets which are imbalanced and
+binarized. The following data sets are available:
 
     +--+--------------+-------------------------------+-------+---------+-----+
     |ID|Name          | Repository & Target           | Ratio | #S      | #F  |
@@ -107,7 +107,7 @@ samples in the class::
   >>> Counter(y_imb)
   Counter({2: 40, 1: 30, 0: 20})
 
-Note that all samples of a class is pass-through if the class is not mentioned
+Note that all samples of a class are passed-through if the class is not mentioned
 in the dictionary::
 
   >>> ratio = {0: 10}

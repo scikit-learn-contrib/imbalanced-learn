@@ -14,7 +14,7 @@ Prototype generation
 Given an original data set :math:`S`, prototype generation algorithms will
 generate a new set :math:`S'` where :math:`|S'| < |S|` and :math:`S' \not\in
 S`. In other words, prototype generation technique will reduce the number of
-samples in the classes targeted but the remaining samples are generated --- and
+samples in the targeted classes but the remaining samples are generated --- and
 not selected --- from the original set.
 
 :class:`ClusterCentroids` makes use of K-means to reduce the number of
@@ -44,7 +44,7 @@ The figure below illustrates such under-sampling.
    :align: center
 
 :class:`ClusterCentroids` offers an efficient way to represent the data cluster
-with a reduced number of samples. Keep in mind that this method required that
+with a reduced number of samples. Keep in mind that this method requires that
 your data are grouped into clusters. In addition, the number of centroids
 should be set such that the under-sampled clusters are representative of the
 original one.
@@ -71,8 +71,8 @@ and are meant for cleaning the feature space.
 Controlled under-sampling techniques
 ------------------------------------
 
-:class:`RandomUnderSampler` is a fast and easy to balance the data by randomly
-selecting a subset of data for the targeted classes::
+:class:`RandomUnderSampler` is a fast and easy way to balance the data by
+randomly selecting a subset of data for the targeted classes::
 
   >>> from imblearn.under_sampling import RandomUnderSampler
   >>> rus = RandomUnderSampler(random_state=0)
@@ -85,7 +85,7 @@ selecting a subset of data for the targeted classes::
    :scale: 60
    :align: center
 
-It is also possible to bootstrap the data when resampling by setting
+:class:`RandomUnderSampler` allows to bootstrap the data by setting
 ``replacement`` to ``True``. The resampling with multiple classes is performed
 by considering independently each targeted class::
 
@@ -167,7 +167,7 @@ the yellow class. However, in the normal case, samples next to the boundaries
 will be selected. NearMiss-2 will not have this effect since it does not focus
 on the nearest samples but rather on the farthest samples. We can imagine that
 the presence of noise can also altered the sampling mainly in the presence of
-marginal outliers. NearMiss-3 is probably the version which will be the less
+marginal outliers. NearMiss-3 is probably the version which will be less
 affected by noise due to the first step sample selection.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_003.png
@@ -312,9 +312,9 @@ However as illustrated in the figure below, :class:`CondensedNearestNeighbour`
 is sensitive to noise and will add noisy samples.
 
 In the contrary, :class:`OneSidedSelection` will use :class:`TomekLinks` to
-remove noisy samples. In addition, more samples will be kept since it will not
-iterate over the samples of the majority class but all samples which do not
-agree with the 1 nearest neighbor rule will be added at once. The class can be
+remove noisy samples.  In addition, the 1 nearest neighbor rule is applied to
+all samples and the one which are misclassified will be added to the set
+:math:`C`. No iteration on the set :math:`S` will take place. The class can be
 used as::
 
   >>> from imblearn.under_sampling import OneSidedSelection
@@ -368,7 +368,7 @@ removed. The class can be used as::
 This class has 2 important parameters. ``estimator`` will accept any
 scikit-learn classifier which has a method ``predict_proba``. The classifier
 training is performed using a cross-validation and the parameter ``cv`` can set
-the number of fold to use.
+the number of folds to use.
 
 .. note::
 
