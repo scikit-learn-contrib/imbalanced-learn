@@ -33,6 +33,10 @@ commands to get a copy from Github and install all dependencies::
   cd imbalanced-learn
   pip install .
 
+Or install using pip and GitHub::
+
+  pip install -U git+https://github.com/scikit-learn-contrib/imbalanced-learn.git
+
 Test and coverage
 =================
 
