@@ -66,6 +66,7 @@ sphinx_gallery_conf = {
     'gallery_dirs': 'auto_examples',
     # to make references clickable
     'doc_module': 'imblearn',
+    'backreferences_dir': os.path.join('generated'),
     'reference_url': {
         'imblearn': None,
         'sklearn': 'http://scikit-learn.org/stable',
@@ -157,7 +158,7 @@ html_theme = 'sphinx_rtd_theme'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
+html_theme_options = {'prev_next_buttons_location': None}
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
@@ -298,7 +299,7 @@ texinfo_documents = [
 def generate_example_rst(app, what, name, obj, options, lines):
     # generate empty examples files, so that we don't get
     # inclusion errors if there are no examples for a class / module
-    examples_path = os.path.join(app.srcdir, "modules", "generated",
+    examples_path = os.path.join(app.srcdir, "generated",
                                  "%s.examples" % name)
     if not os.path.exists(examples_path):
         # touch file
