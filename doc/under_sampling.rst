@@ -113,7 +113,7 @@ be selected with the parameter ``version``::
 
 As later stated in the next section, :class:`NearMiss` heuristic rules are
 based on nearest neighbors algorithm. Therefore, the parameters ``n_neighbors``
-and ``n_neighbors_ver3`` accepts classifier derived from ``KNeighborsMixin``
+and ``n_neighbors_ver3`` accept classifier derived from ``KNeighborsMixin``
 from scikit-learn. The former parameter is used to compute the average distance
 to the neighbors while the latter is used for the pre-selection of the samples
 of interest.
