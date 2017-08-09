@@ -12,6 +12,11 @@ Version 0.3
 Changelog
 ---------
 
+Documentation
+-------------
+
+- Added a User Guide and extended some examples. By `Guillaume Lemaitre`_.
+
 Bug fixes
 ---------
 
