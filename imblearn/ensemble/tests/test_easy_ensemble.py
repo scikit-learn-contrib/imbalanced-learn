@@ -294,6 +294,12 @@ def test_error():
     X, y = make_imbalance(iris.data, iris.target, ratio={0: 20, 1: 25, 2: 50})
     base = DecisionTreeClassifier()
 
+    # Test n_estimators
+    assert_raises(ValueError,
+                  BalancedBaggingClassifier(base, n_estimators=1.5).fit, X, y)
+    assert_raises(ValueError,
+                  BalancedBaggingClassifier(base, n_estimators=-1).fit, X, y)
+
     # Test max_samples
     assert_raises(ValueError,
                   BalancedBaggingClassifier(base, max_samples=-1).fit, X, y)
