@@ -197,13 +197,13 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     max_samples : int or float, optional (default=1.0)
         The number of samples to draw from X to train each base estimator.
-            - If int, then draw `max_samples` samples.
-            - If float, then draw `max_samples * X.shape[0]` samples.
+        If int, then draw `max_samples` samples.
+        If float, then draw `max_samples * X.shape[0]` samples.
 
     max_features : int or float, optional (default=1.0)
         The number of features to draw from X to train each base estimator.
-            - If int, then draw `max_features` features.
-            - If float, then draw `max_features * X.shape[1]` features.
+        If int, then draw `max_features` features.
+        If float, then draw `max_features * X.shape[1]` features.
 
     bootstrap : boolean, optional (default=True)
         Whether samples are drawn with replacement.
@@ -219,6 +219,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
         When set to True, reuse the solution of the previous call to fit
         and add more estimators to the ensemble, otherwise, just fit
         a whole new ensemble.
+
         .. versionadded:: 0.17
            *warm_start* constructor parameter.
 
@@ -250,7 +251,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
-        by `np.random`.
+        by ```np.random```.
 
     verbose : int, optional (default=0)
         Controls the verbosity of the building process.
@@ -285,6 +286,9 @@ class BalancedBaggingClassifier(BaggingClassifier):
         was never left out during the bootstrap. In this case,
         `oob_decision_function_` might contain NaN.
 
+    Examples
+    --------
+
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.model_selection import train_test_split
@@ -308,7 +312,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
 
     References
     ----------
-    .. [1] L". Breiman, Pasting small votes for classification in large
+    .. [1] L. Breiman, "Pasting small votes for classification in large
            databases and on-line", Machine Learning, 36(1), 85-103, 1999.
     .. [2] L. Breiman, "Bagging predictors", Machine Learning, 24(2), 123-140,
            1996.
