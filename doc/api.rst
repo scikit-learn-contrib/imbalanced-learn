@@ -104,6 +104,7 @@ Ensemble methods
    :toctree: generated/
 
    ensemble.BalanceCascade
+   ensemble.BalancedBaggingClassifier
    ensemble.EasyEnsemble
 
 
