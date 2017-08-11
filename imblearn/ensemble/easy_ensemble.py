@@ -369,3 +369,24 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             [('sampler', RandomUnderSampler(ratio=self.ratio,
                                             replacement=self.replacement)),
              ('classifier', base_estimator)])
+
+    def fit(self, X, y):
+        """Build a Bagging ensemble of estimators from the training
+           set (X, y).
+
+        Parameters
+        ----------
+        X : array-like of shape = [n_samples, n_features]
+            The training input samples.
+
+        y : array-like, shape = [n_samples]
+            The target values.
+
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
+        # RandomUnderSampler is not supporting sample_weight. We need to pass
+        # None.
+        return self._fit(X, y, self.max_samples, sample_weight=None)
