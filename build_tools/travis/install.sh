@@ -38,8 +38,15 @@ if [[ "$DISTRIB" == "conda" ]]; then
     # provided versions
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
-    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION \
-          scikit-learn=$SKLEARN_VERSION
+    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
+
+    if [[ "$SKLEARN_VERSION" == "master" ]]; then
+        conda install --yes cython
+        pip install -U git+https://github.com/scikit-learn/scikit-learn.git
+    else
+        conda install --yes scikit-learn=$SKLEARN_VERSION
+    fi
+
     conda install --yes nose pytest pytest-cov
     # Install nose-timer via pip
     pip install nose-timer codecov
