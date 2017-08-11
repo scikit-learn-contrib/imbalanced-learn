@@ -19,7 +19,7 @@ from ..utils import check_ratio
 LOGGER = logging.getLogger(__name__)
 
 
-def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
+def make_imbalance(X, y, ratio, min_c_=None, random_state=None, **kwargs):
     """Turns a dataset into an imbalanced dataset at specific ratio.
     A simple toy dataset to visualize clustering and classification
     algorithms.
@@ -56,6 +56,9 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
         If None, the random number generator is the RandomState instance used
         by np.random.
 
+    kwargs : dict, optional
+        Dictionary of additional keyword arguments to pass to ``ratio``.
+
     Returns
     -------
     X_resampled : ndarray, shape (n_samples_new, n_features)
@@ -84,7 +87,7 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None):
     target_stats = Counter(y)
     # restrict ratio to be a dict or a callable
     if isinstance(ratio, dict) or callable(ratio):
-        ratio_ = check_ratio(ratio, y, 'under-sampling')
+        ratio_ = check_ratio(ratio, y, 'under-sampling', **kwargs)
     # FIXME: deprecated in 0.2 to be removed in 0.4
     elif isinstance(ratio, Real):
         if min_c_ is None:
