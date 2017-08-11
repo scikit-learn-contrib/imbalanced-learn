@@ -197,13 +197,13 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     max_samples : int or float, optional (default=1.0)
         The number of samples to draw from X to train each base estimator.
-        If int, then draw `max_samples` samples.
-        If float, then draw `max_samples * X.shape[0]` samples.
+        - If int, then draw ``max_samples`` samples.
+        - If float, then draw ``max_samples * X.shape[0]`` samples.
 
     max_features : int or float, optional (default=1.0)
         The number of features to draw from X to train each base estimator.
-        If int, then draw `max_features` features.
-        If float, then draw `max_features * X.shape[1]` features.
+        - If int, then draw ``max_features`` features.
+        - If float, then draw ``max_features * X.shape[1]`` features.
 
     bootstrap : boolean, optional (default=True)
         Whether samples are drawn with replacement.
@@ -248,10 +248,12 @@ class BalancedBaggingClassifier(BaggingClassifier):
         If -1, then the number of jobs is set to the number of cores.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by ```np.random```.
+        - If int, ``random_state`` is the seed used by the random number
+          generator;
+        - If ``RandomState`` instance, random_state is the random
+          number generator;
+        - If ``None``, the random number generator is the
+          ``RandomState`` instance used by ``np.random``.
 
     verbose : int, optional (default=0)
         Controls the verbosity of the building process.
@@ -284,7 +286,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
         Decision function computed with out-of-bag estimate on the training
         set. If n_estimators is small it might be possible that a data point
         was never left out during the bootstrap. In this case,
-        `oob_decision_function_` might contain NaN.
+        ``oob_decision_function_`` might contain NaN.
 
     Examples
     --------
