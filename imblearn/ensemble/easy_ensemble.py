@@ -285,9 +285,30 @@ class BalancedBaggingClassifier(BaggingClassifier):
         was never left out during the bootstrap. In this case,
         `oob_decision_function_` might contain NaN.
 
+    >>> from collections import Counter
+    >>> from sklearn.datasets import make_classification
+    >>> from sklearn.model_selection import train_test_split
+    >>> from sklearn.metrics import confusion_matrix
+    >>> from imblearn.ensemble import \
+BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
+    >>> print('Original dataset shape {}'.format(Counter(y)))
+    Original dataset shape Counter({1: 900, 0: 100})
+    >>> X_train, X_test, y_train, y_test = train_test_split(X, y,
+    ...                                                     random_state=0)
+    >>> bbc = BalancedBaggingClassifier(random_state=42)
+    >>> bbc.fit(X_train, y_train) # doctest: +ELLIPSIS
+    BalancedBaggingClassifier(...)
+    >>> y_pred = bbc.predict(X_test)
+    >>> print(confusion_matrix(y_test, y_pred))
+    [[ 23   0]
+     [  2 225]]
+
     References
     ----------
-    .. [1] L. Breiman, "Pasting small votes for classification in large
+    .. [1] L". Breiman, Pasting small votes for classification in large
            databases and on-line", Machine Learning, 36(1), 85-103, 1999.
     .. [2] L. Breiman, "Bagging predictors", Machine Learning, 24(2), 123-140,
            1996.

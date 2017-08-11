@@ -33,6 +33,10 @@ New features
 Enhancement
 ~~~~~~~~~~~
 
+- Add :class:`ensemble.BalancedBaggingClassifier` which is a meta estimator to
+  directly use the :class:`ensemble.EasyEnsemble` chained with a classifier. By
+  `Guillaume Lemaitre`_.
+
 - :func:`datasets.make_imbalance` take a ratio similarly to other samplers. It
   supports multiclass. By `Guillaume Lemaitre`_.
 
