@@ -38,7 +38,7 @@ REQUIRED_MODULE_METADATA = (('numpy', {
     'required_at_installation': True,
     'install_info': _IMBALANCED_DATASET_INSTALL_MSG
 }), ('sklearn', {
-    'min_version': '0.18.1',
+    'min_version': '0.19.0',
     'required_at_installation': True,
     'install_info': _IMBALANCED_DATASET_INSTALL_MSG
 }))
