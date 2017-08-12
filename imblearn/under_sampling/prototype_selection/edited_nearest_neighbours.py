@@ -178,11 +178,9 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 target_class_indices = np.flatnonzero(y == target_class)
                 X_class = safe_indexing(X, target_class_indices)
                 y_class = safe_indexing(y, target_class_indices)
-                print(target_class_indices)
                 nnhood_idx = self.nn_.kneighbors(
                     X_class, return_distance=False)[:, 1:]
                 nnhood_label = y[nnhood_idx]
-                print(nnhood_idx)
                 if self.kind_sel == 'mode':
                     nnhood_label, _ = mode(nnhood_label, axis=1)
                     nnhood_bool = np.ravel(nnhood_label) == y_class
