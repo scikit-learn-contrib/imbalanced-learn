@@ -16,6 +16,7 @@ import sklearn
 from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.externals.six import string_types
+from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
 
@@ -219,8 +220,10 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         probabilities = np.zeros(y.shape[0], dtype=float)
 
         for train_index, test_index in skf:
-            X_train, X_test = X[train_index], X[test_index]
-            y_train, y_test = y[train_index], y[test_index]
+            X_train = safe_indexing(X, train_index)
+            X_test = safe_indexing(X, test_index)
+            y_train = safe_indexing(y, train_index)
+            y_test = safe_indexing(y, test_index)
 
             self.estimator_.fit(X_train, y_train)
 
@@ -231,10 +234,7 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
                 for l, c in enumerate(y_test)
             ]
 
-        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        y_resampled = np.empty((0, ), dtype=y.dtype)
-        if self.return_indices:
-            idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
             if target_class in self.ratio_.keys():
@@ -247,18 +247,12 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
             else:
                 index_target_class = slice(None)
 
-            X_resampled = np.concatenate(
-                (X_resampled, X[y == target_class][index_target_class]),
-                axis=0)
-            y_resampled = np.concatenate(
-                (y_resampled, y[y == target_class][index_target_class]),
-                axis=0)
-            if self.return_indices:
-                idx_under = np.concatenate(
-                    (idx_under, np.flatnonzero(y == target_class)[
-                        index_target_class]), axis=0)
+            idx_under = np.concatenate(
+                (idx_under, np.flatnonzero(y == target_class)[
+                    index_target_class]), axis=0)
 
         if self.return_indices:
-            return X_resampled, y_resampled, idx_under
+            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
+                    idx_under)
         else:
-            return X_resampled, y_resampled
+            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
