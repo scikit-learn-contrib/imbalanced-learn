@@ -48,7 +48,7 @@ class EasyEnsemble(BaseEnsembleSampler):
     This method iteratively select a random subset and make an ensemble of the
     different sets.
 
-    Read more in the :ref:`User Guide <ensemble>`.
+    Read more in the :ref:`User Guide <ensemble_samplers>`.
 
     Parameters
     ----------
@@ -95,7 +95,7 @@ class EasyEnsemble(BaseEnsembleSampler):
 
     See also
     --------
-    BalanceCascade
+    BalanceCascade, BalancedBaggingClassifier
 
     References
     ----------
@@ -192,7 +192,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
     implementation. It includes an additional step to balance the training set
     at fit time using a ``RandomUnderSampler``.
 
-    Read more in the :ref:`User Guide <bagging>`.
+    Read more in the :ref:`User Guide <ensemble_meta_estimators>`.
 
     Parameters
     ----------
@@ -298,6 +298,28 @@ class BalancedBaggingClassifier(BaggingClassifier):
         was never left out during the bootstrap. In this case,
         ``oob_decision_function_`` might contain NaN.
 
+    Notes
+    -----
+
+    See
+    :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_bagging_classifier.py`.
+
+    See also
+    --------
+    BalanceCascade, EasyEnsemble
+
+    References
+    ----------
+    .. [1] L. Breiman, "Pasting small votes for classification in large
+           databases and on-line", Machine Learning, 36(1), 85-103, 1999.
+    .. [2] L. Breiman, "Bagging predictors", Machine Learning, 24(2), 123-140,
+           1996.
+    .. [3] T. Ho, "The random subspace method for constructing decision
+           forests", Pattern Analysis and Machine Intelligence, 20(8), 832-844,
+           1998.
+    .. [4] G. Louppe and P. Geurts, "Ensembles on Random Patches", Machine
+           Learning and Knowledge Discovery in Databases, 346-361, 2012.
+
     Examples
     --------
 
@@ -321,18 +343,6 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
     >>> print(confusion_matrix(y_test, y_pred))
     [[ 23   0]
      [  2 225]]
-
-    References
-    ----------
-    .. [1] L. Breiman, "Pasting small votes for classification in large
-           databases and on-line", Machine Learning, 36(1), 85-103, 1999.
-    .. [2] L. Breiman, "Bagging predictors", Machine Learning, 24(2), 123-140,
-           1996.
-    .. [3] T. Ho, "The random subspace method for constructing decision
-           forests", Pattern Analysis and Machine Intelligence, 20(8), 832-844,
-           1998.
-    .. [4] G. Louppe and P. Geurts, "Ensembles on Random Patches", Machine
-           Learning and Knowledge Discovery in Databases, 346-361, 2012.
 
     """
     def __init__(self,

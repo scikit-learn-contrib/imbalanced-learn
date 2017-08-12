@@ -6,6 +6,11 @@ Ensemble of samplers
 
 .. currentmodule:: imblearn.ensemble
 
+.. _ensemble_samplers:
+
+Samplers
+--------
+
 An imbalanced data set can be balanced by creating several balanced
 subsets. The module :mod:`imblearn.ensemble` allows to create such sets.
 
@@ -54,3 +59,54 @@ parameter ``n_max_subset`` and an additional bootstraping can be activated with
 See
 :ref:`sphx_glr_auto_examples_ensemble_plot_easy_ensemble.py` and
 :ref:`sphx_glr_auto_examples_ensemble_plot_balance_cascade.py`.
+
+.. _ensemble_meta_estimators:
+
+Chaining ensemble of samplers and estimators
+--------------------------------------------
+
+In ensemble classifiers, bagging methods build several estimators on different
+randomly selected subset of data. In scikit-learn, this classifier is named
+``BaggingClassifier``. However, this classifier does not allow to balance each
+subset of data. Therefore, when training on imbalanced data set, this
+classifier will favor the majority classes::
+
+  >>> from sklearn.model_selection import train_test_split
+  >>> from sklearn.metrics import confusion_matrix
+  >>> from sklearn.ensemble import BaggingClassifier
+  >>> from sklearn.tree import DecisionTreeClassifier
+  >>> X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+  >>> bc = BaggingClassifier(base_estimator=DecisionTreeClassifier(),
+  ...                        random_state=0)
+  >>> bc.fit(X_train, y_train) #doctest: +ELLIPSIS
+  BaggingClassifier(...)
+  >>> y_pred = bc.predict(X_test)
+  >>> confusion_matrix(y_test, y_pred)
+  array([[   0,    0,   12],
+         [   0,    0,   59],
+         [   0,    0, 1179]])
+
+:class:`BalancedBaggingClassifier` allows to resample each subset of data
+before to train each estimator of the ensemble. In short, it combines the
+output of an :class:`EasyEnsemble` sampler with an ensemble of classifiers
+(i.e. ``BaggingClassifier``). Therefore, :class:`BalancedBaggingClassifier`
+takes the same parameters than the scikit-learn
+``BaggingClassifier``. Additionally, there is two additional parameters,
+``ratio`` and ``replacement``, as in the :class:`EasyEnsemble` sampler::
+
+
+  >>> from imblearn.ensemble import BalancedBaggingClassifier
+  >>> bbc = BalancedBaggingClassifier(base_estimator=DecisionTreeClassifier(),
+  ...                                 ratio='auto',
+  ...                                 replacement=False,
+  ...                                 random_state=0)
+  >>> bbc.fit(X, y) # doctest: +ELLIPSIS
+  BalancedBaggingClassifier(...)
+  >>> y_pred = bbc.predict(X_test)
+  >>> confusion_matrix(y_test, y_pred)
+  array([[  12,    0,    0],
+         [   0,   55,    4],
+         [  68,   53, 1058]])
+
+See
+:ref:`sphx_glr_auto_examples_ensemble_plot_comparison_bagging_classifier.py`.
