@@ -14,6 +14,8 @@ from collections import Counter
 import numpy as np
 from scipy.stats import mode
 
+from sklearn.utils import safe_indexing
+
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
 from ...utils.deprecation import deprecate_parameter
@@ -167,20 +169,20 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         """
         self._validate_estimator()
 
-        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        y_resampled = np.empty((0, ), dtype=y.dtype)
-        if self.return_indices:
-            idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0, ), dtype=int)
 
         self.nn_.fit(X)
 
         for target_class in np.unique(y):
             if target_class in self.ratio_.keys():
-                X_class = X[y == target_class]
-                y_class = y[y == target_class]
+                target_class_indices = np.flatnonzero(y == target_class)
+                X_class = safe_indexing(X, target_class_indices)
+                y_class = safe_indexing(y, target_class_indices)
+                print(target_class_indices)
                 nnhood_idx = self.nn_.kneighbors(
                     X_class, return_distance=False)[:, 1:]
                 nnhood_label = y[nnhood_idx]
+                print(nnhood_idx)
                 if self.kind_sel == 'mode':
                     nnhood_label, _ = mode(nnhood_label, axis=1)
                     nnhood_bool = np.ravel(nnhood_label) == y_class
@@ -191,21 +193,15 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
             else:
                 index_target_class = slice(None)
 
-            X_resampled = np.concatenate(
-                (X_resampled, X[y == target_class][index_target_class]),
-                axis=0)
-            y_resampled = np.concatenate(
-                (y_resampled, y[y == target_class][index_target_class]),
-                axis=0)
-            if self.return_indices:
-                idx_under = np.concatenate(
-                    (idx_under, np.flatnonzero(y == target_class)[
-                        index_target_class]), axis=0)
+            idx_under = np.concatenate(
+                (idx_under, np.flatnonzero(y == target_class)[
+                    index_target_class]), axis=0)
 
         if self.return_indices:
-            return X_resampled, y_resampled, idx_under
+            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
+                    idx_under)
         else:
-            return X_resampled, y_resampled
+            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
 
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
