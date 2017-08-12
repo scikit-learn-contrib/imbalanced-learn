@@ -2,10 +2,23 @@
 Getting Started
 ###############
 
+Prerequisites
+=============
+
+The imbalanced-learn package requires the following dependencies:
+
+* numpy (>=1.8.2)
+* scipy (>=0.13.3)
+* scikit-learn (>=0.18.1)
+
+Our release policy is to follow the scikit-learn releases in order to
+synchronize the new feature.
+
 Install
 =======
 
-imbalanced-learn is currently available on the PyPi's reporitories and you can install it via `pip`::
+imbalanced-learn is currently available on the PyPi's reporitories and you can
+install it via `pip`::
 
   pip install -U imbalanced-learn
 
@@ -13,12 +26,16 @@ The package is release also in Anaconda Cloud platform::
 
   conda install -c glemaitre imbalanced-learn
 
-If you prefer, you can clone it and run the setup.py file. Use the following commands to get a 
-copy from Github and install all dependencies::
+If you prefer, you can clone it and run the setup.py file. Use the following
+commands to get a copy from Github and install all dependencies::
 
   git clone https://github.com/scikit-learn-contrib/imbalanced-learn.git
   cd imbalanced-learn
-  python setup.py install
+  pip install .
+
+Or install using pip and GitHub::
+
+  pip install -U git+https://github.com/scikit-learn-contrib/imbalanced-learn.git
 
 Test and coverage
 =================
@@ -34,6 +51,8 @@ You wish to test the coverage of your version::
 Contribute
 ==========
 
-You can contribute to this code through Pull Request on GitHub_. Please, make sure that your code is coming with unit tests to ensure full coverage and continuous integration in the API.
+You can contribute to this code through Pull Request on GitHub_. Please, make
+sure that your code is coming with unit tests to ensure full coverage and
+continuous integration in the API.
 
 .. _GitHub: https://github.com/scikit-learn-contrib/imbalanced-learn/pulls

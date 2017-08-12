@@ -25,6 +25,8 @@ class ClusterCentroids(BaseUnderSampler):
     the coordinates of the N cluster centroids as the new majority
     samples.
 
+    Read more in the :ref:`User Guide <cluster_centroids>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -59,6 +61,8 @@ class ClusterCentroids(BaseUnderSampler):
     Notes
     -----
     Supports mutli-class resampling by sampling each class independently.
+
+    See :ref:`sphx_glr_auto_examples_under-sampling_plot_cluster_centroids.py`.
 
     Examples
     --------

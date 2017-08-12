@@ -20,6 +20,8 @@ class ADASYN(BaseOverSampler):
     Perform over-sampling using Adaptive Synthetic Sampling Approach for
     Imbalanced Learning.
 
+    Read more in the :ref:`User Guide <smote_adasyn>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -67,6 +69,22 @@ class ADASYN(BaseOverSampler):
 
     Supports mutli-class resampling. A one-vs.-rest scheme is used.
 
+    See
+    :ref:`sphx_glr_auto_examples_applications_plot_over_sampling_benchmark_lfw.py`,
+    :ref:`sphx_glr_auto_examples_over-sampling_plot_adasyn.py` and
+    :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`.
+
+    See also
+    --------
+    SMOTE : Over-sample using SMOTE.
+
+    References
+    ----------
+    .. [1] He, Haibo, Yang Bai, Edwardo A. Garcia, and Shutao Li. "ADASYN:
+       Adaptive synthetic sampling approach for imbalanced learning," In IEEE
+       International Joint Conference on Neural Networks (IEEE World Congress
+       on Computational Intelligence), pp. 1322-1328, 2008.
+
     Examples
     --------
 
@@ -84,13 +102,6 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = ada.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({0: 904, 1: 900})
-
-    References
-    ----------
-    .. [1] He, Haibo, Yang Bai, Edwardo A. Garcia, and Shutao Li. "ADASYN:
-       Adaptive synthetic sampling approach for imbalanced learning," In IEEE
-       International Joint Conference on Neural Networks (IEEE World Congress
-       on Computational Intelligence), pp. 1322-1328, 2008.
 
     """
 

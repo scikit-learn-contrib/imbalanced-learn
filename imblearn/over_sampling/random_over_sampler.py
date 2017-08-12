@@ -19,6 +19,8 @@ class RandomOverSampler(BaseOverSampler):
     Object to over-sample the minority class(es) by picking samples at random
     with replacement.
 
+    Read more in the :ref:`User Guide <random_over_sampler>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -47,6 +49,12 @@ class RandomOverSampler(BaseOverSampler):
     Notes
     -----
     Supports mutli-class resampling by sampling each class independently.
+
+    See
+    :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
+    :ref:`sphx_glr_auto_examples_over-sampling_plot_random_over_sampling.py`,
+    and
+    :ref:`sphx_glr_auto_examples_applications_plot_over_sampling_benchmark_lfw.py`.
 
     Examples
     --------

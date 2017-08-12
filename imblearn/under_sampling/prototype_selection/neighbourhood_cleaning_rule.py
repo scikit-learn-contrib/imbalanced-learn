@@ -22,6 +22,8 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     """Class performing under-sampling based on the neighbourhood cleaning
     rule.
 
+    Read more in the :ref:`User Guide <condensed_nearest_neighbors>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -41,6 +43,11 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
 
+        .. warning::
+           This algorithm is a cleaning under-sampling method. When providing a
+           ``dict``, only the targeted classes will be used; the number of
+           samples will be discarded.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -52,19 +59,17 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
         .. deprecated:: 0.2
            ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
            Use ``n_neighbors`` instead.
 
     n_neighbors : int or object, optional (default=3)
-        If ``int``, size of the neighbourhood to consider in order to make
-        the comparison between each samples and their NN.
-        If object, an estimator that inherits from
+        If ``int``, size of the neighbourhood to consider to compute the
+        nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        find the nearest-neighbors.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
@@ -75,6 +80,14 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
     Supports mutli-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
+
+    See
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_neighbourhood_cleaning_rule.py`.
+
+    References
+    ----------
+    .. [1] J. Laurikkala, "Improving identification of difficult small classes
+       by balancing class distribution," Springer Berlin Heidelberg, 2001.
 
     Examples
     --------
@@ -92,11 +105,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = ncr.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 877, 0: 100})
-
-    References
-    ----------
-    .. [1] J. Laurikkala, "Improving identification of difficult small classes
-       by balancing class distribution," Springer Berlin Heidelberg, 2001.
 
     """
 

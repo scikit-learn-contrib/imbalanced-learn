@@ -27,6 +27,8 @@ class BalanceCascade(BaseEnsembleSampler):
     This method iteratively select subset and make an ensemble of the
     different sets. The selection is performed using a specific classifier.
 
+    Read more in the :ref:`User Guide <ensemble>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -93,6 +95,19 @@ class BalanceCascade(BaseEnsembleSampler):
     Supports mutli-class resampling. A one-vs.-rest scheme is used as
     originally proposed in [1]_.
 
+    See :ref:`sphx_glr_auto_examples_ensemble_plot_balance_cascade.py`.
+
+    See also
+    --------
+    EasyEnsemble
+
+    References
+    ----------
+    .. [1] X. Y. Liu, J. Wu and Z. H. Zhou, "Exploratory Undersampling for
+       Class-Imbalance Learning," in IEEE Transactions on Systems, Man, and
+       Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550,
+       April 2009.
+
     Examples
     --------
 
@@ -110,13 +125,6 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
     >>> print('Resampled dataset shape {}'.format(Counter(y_res[0]))) \
     # doctest: +ELLIPSIS
     Resampled dataset shape Counter({...})
-
-    References
-    ----------
-    .. [1] X. Y. Liu, J. Wu and Z. H. Zhou, "Exploratory Undersampling for
-       Class-Imbalance Learning," in IEEE Transactions on Systems, Man, and
-       Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550,
-       April 2009.
 
     """
 

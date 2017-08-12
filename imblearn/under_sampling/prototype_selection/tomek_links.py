@@ -16,6 +16,8 @@ from ..base import BaseCleaningSampler
 class TomekLinks(BaseCleaningSampler):
     """Class to perform under-sampling by removing Tomek's links.
 
+    Read more in the :ref:`User Guide <tomek_links>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -34,6 +36,11 @@ class TomekLinks(BaseCleaningSampler):
         - If callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
+
+        .. warning::
+           This algorithm is a cleaning under-sampling method. When providing a
+           ``dict``, only the targeted classes will be used; the number of
+           samples will be discarded.
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -55,6 +62,14 @@ class TomekLinks(BaseCleaningSampler):
     Supports mutli-class resampling. A one-vs.-rest scheme is used as
     originally proposed in [1]_.
 
+    See
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_tomek_links.py`.
+
+    References
+    ----------
+    .. [1] I. Tomek, "Two modifications of CNN," In Systems, Man, and
+       Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 2010.
+
     Examples
     --------
 
@@ -71,11 +86,6 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = tl.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 897, 0: 100})
-
-    References
-    ----------
-    .. [1] I. Tomek, "Two modifications of CNN," In Systems, Man, and
-       Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 2010.
 
     """
 

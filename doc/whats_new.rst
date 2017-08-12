@@ -1,4 +1,4 @@
-.. currentmodule:: imbalanced-learn
+.. currentmodule:: imblearn
 
 ===============
 Release history
@@ -6,8 +6,16 @@ Release history
 
 .. _changes_0_3:
 
+Version 0.3
+===========
+
 Changelog
 ---------
+
+Documentation
+-------------
+
+- Added a User Guide and extended some examples. By `Guillaume Lemaitre`_.
 
 Bug fixes
 ---------
@@ -19,7 +27,8 @@ Bug fixes
   indices returned were wrong. By `Guillaume Lemaitre`_.
 
 - Fixed bug for :class:`ensemble.BalanceCascade` and :class:`combine.SMOTEENN`
-  and :class:`SMOTETomek. By `Guillaume Lemaitre`_.`
+  and :class:`SMOTETomek`. By `Guillaume Lemaitre`_.`
+
 - Fixed bug for `check_ratio` to be able to pass arguments when `ratio` is a
   callable. By `Guillaume Lemaitre`_.`
 
@@ -29,7 +38,7 @@ New features
 - Turn off steps in :class:`pipeline.Pipeline` using the `None`
   object. By `Christos Aridas`_.
 
-- Add a fetching function `datasets.fetch_datasets` in order to get some
+- Add a fetching function :func:`datasets.fetch_datasets` in order to get some
   imbalanced datasets useful for benchmarking. By `Guillaume Lemaitre`_.
 
 Enhancement
@@ -38,8 +47,8 @@ Enhancement
 - :func:`datasets.make_imbalance` take a ratio similarly to other samplers. It
   supports multiclass. By `Guillaume Lemaitre`_.
 
-- All the unit tests have been factorized and a `check_estimators` has
-  been derived from scikit-learn. By `Guillaume Lemaitre`_.
+- All the unit tests have been factorized and a :func:`utils.check_estimators`
+  has been derived from scikit-learn. By `Guillaume Lemaitre`_.
 
 - Script for automatic build of conda packages and uploading. By
   `Guillaume Lemaitre`_
@@ -55,17 +64,17 @@ API changes summary
 - `__init__` has been removed from the :class:`base.SamplerMixin` to
   create a real mixin class. By `Guillaume Lemaitre`_.
 
-- creation of a module `exceptions` to handle consistant raising of
+- creation of a module :mod:`exceptions` to handle consistant raising of
   errors. By `Guillaume Lemaitre`_.
 
-- creation of a module `utils.validation` to make checking of
+- creation of a module ``utils.validation`` to make checking of
   recurrent patterns. By `Guillaume Lemaitre`_.
 
-- move the under-sampling methods in `prototype_selection` and
-  `prototype_generation` submodule to make a clearer dinstinction. By
+- move the under-sampling methods in ``prototype_selection`` and
+  ``prototype_generation`` submodule to make a clearer dinstinction. By
   `Guillaume Lemaitre`_.
 
-- change `ratio` such that it can adapt to multiple class problems. By
+- change ``ratio`` such that it can adapt to multiple class problems. By
   `Guillaume Lemaitre`_.
 
 Deprecation

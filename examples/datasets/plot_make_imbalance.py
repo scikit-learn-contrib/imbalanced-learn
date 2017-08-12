@@ -12,6 +12,8 @@ An illustration of the make_imbalance function
 #          Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
+from collections import Counter
+
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_moons
 
@@ -43,14 +45,22 @@ axs[0].scatter(X[y == 1, 0], X[y == 1, 1], label="Class #1", alpha=0.5)
 axs[0].set_title('Original set')
 plot_decoration(axs[0])
 
-ratios = [0.9, 0.75, 0.5, 0.25, 0.1]
-for i, ratio in enumerate(ratios, start=1):
+
+def ratio_func(y, multiplier, minority_class):
+    target_stats = Counter(y)
+    return {minority_class: int(multiplier * target_stats[minority_class])}
+
+
+multipliers = [0.9, 0.75, 0.5, 0.25, 0.1]
+for i, multiplier in enumerate(multipliers, start=1):
     ax = axs[i]
 
-    X_, y_ = make_imbalance(X, y, ratio=ratio, min_c_=1)
+    X_, y_ = make_imbalance(X, y, ratio=ratio_func,
+                            **{"multiplier": multiplier,
+                               "minority_class": 1})
     ax.scatter(X_[y_ == 0, 0], X_[y_ == 0, 1], label="Class #0", alpha=0.5)
     ax.scatter(X_[y_ == 1, 0], X_[y_ == 1, 1], label="Class #1", alpha=0.5)
-    ax.set_title('ratio = {}'.format(ratio))
+    ax.set_title('ratio = {}'.format(multiplier))
     plot_decoration(ax)
 
 plt.tight_layout()

@@ -11,6 +11,7 @@ clean:
 	rm -rf coverage
 	rm -rf dist
 	rm -rf build
+	rm -rf doc/_build
 	rm -rf doc/auto_examples
 	rm -rf doc/generated
 	rm -rf doc/modules
@@ -35,7 +36,6 @@ test-coverage:
 test: test-coverage test-doc
 
 html:
-	conda install -y sphinx sphinx_rtd_theme numpydoc
 	export SPHINXOPTS=-W; make -C doc html
 
 conda:

@@ -25,6 +25,8 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
 
+    Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -44,6 +46,11 @@ class EditedNearestNeighbours(BaseCleaningSampler):
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
 
+        .. warning::
+           This algorithm is a cleaning under-sampling method. When providing a
+           ``dict``, only the targeted classes will be used; the number of
+           samples will be discarded.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -55,8 +62,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
        .. deprecated:: 0.2
           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
@@ -64,10 +70,9 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an
-        estimator that inherits from
+        nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        find the nearest-neighbors.
 
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.
@@ -87,6 +92,20 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     Supports mutli-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
+    See
+    :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py` and
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
+
+    See also
+    --------
+    CondensedNearestNeighbour, RepeatedEditedNearestNeighbours, AllKNN
+
+    References
+    ----------
+    .. [1] D. Wilson, Asymptotic" Properties of Nearest Neighbor Rules Using
+       Edited Data," In IEEE Transactions on Systems, Man, and Cybernetrics,
+       vol. 2 (3), pp. 408-421, 1972.
+
     Examples
     --------
 
@@ -103,12 +122,6 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = enn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 887, 0: 100})
-
-    References
-    ----------
-    .. [1] D. Wilson, "Asymptotic Properties of Nearest Neighbor Rules Using
-       Edited Data," In IEEE Transactions on Systems, Man, and Cybernetrics,
-       vol. 2 (3), pp. 408-421, 1972.
 
     """
 
@@ -212,6 +225,8 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
 
+    Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -231,6 +246,11 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
 
+        .. warning::
+           This algorithm is a cleaning under-sampling method. When providing a
+           ``dict``, only the targeted classes will be used; the number of
+           samples will be discarded.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -242,8 +262,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
         .. deprecated: 0.2
            ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
@@ -251,10 +270,9 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an
-        estimator that inherits from
+        nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        find the nearest-neighbors.
 
     max_iter : int, optional (default=100)
         Maximum number of iterations of the edited nearest neighbours
@@ -278,6 +296,20 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     Supports mutli-class resampling.
 
+    See
+    :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py` and
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
+
+    See also
+    --------
+    CondensedNearestNeighbour, EditedNearestNeighbours, AllKNN
+
+    References
+    ----------
+    .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
+       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
+       pp. 448-452, June 1976.
+
     Examples
     --------
 
@@ -294,12 +326,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     >>> X_res, y_res = renn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 887, 0: 100})
-
-    References
-    ----------
-    .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
-       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
-       pp. 448-452, June 1976.
 
     """
 
@@ -425,6 +451,8 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 class AllKNN(BaseCleaningSampler):
     """Class to perform under-sampling based on the AllKNN method.
 
+    Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -444,6 +472,11 @@ class AllKNN(BaseCleaningSampler):
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
 
+        .. warning::
+           This algorithm is a cleaning under-sampling method. When providing a
+           ``dict``, only the targeted classes will be used; the number of
+           samples will be discarded.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -455,8 +488,7 @@ class AllKNN(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
         .. deprecated:: 0.2
            ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
@@ -464,10 +496,9 @@ class AllKNN(BaseCleaningSampler):
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an
-        estimator that inherits from
+        nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        find the nearest-neighbors.
 
     kind_sel : str, optional (default='all')
         Strategy to use in order to exclude samples.
@@ -493,6 +524,19 @@ class AllKNN(BaseCleaningSampler):
     Supports mutli-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
+    See :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
+
+    See also
+    --------
+    CondensedNearestNeighbour, EditedNearestNeighbours,
+    RepeatedEditedNearestNeighbours
+
+    References
+    ----------
+    .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
+       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
+       pp. 448-452, June 1976.
+
     Examples
     --------
 
@@ -509,12 +553,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = allknn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 887, 0: 100})
-
-    References
-    ----------
-    .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
-       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
-       pp. 448-452, June 1976.
 
     """
 

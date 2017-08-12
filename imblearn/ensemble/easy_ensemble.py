@@ -20,6 +20,8 @@ class EasyEnsemble(BaseEnsembleSampler):
     This method iteratively select a random subset and make an ensemble of the
     different sets.
 
+    Read more in the :ref:`User Guide <ensemble>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -61,6 +63,19 @@ class EasyEnsemble(BaseEnsembleSampler):
 
     Supports mutli-class resampling by sampling each class independently.
 
+    See :ref:`sphx_glr_auto_examples_ensemble_plot_easy_ensemble.py`.
+
+    See also
+    --------
+    BalanceCascade
+
+    References
+    ----------
+    .. [1] X. Y. Liu, J. Wu and Z. H. Zhou, "Exploratory Undersampling for
+       Class-Imbalance Learning," in IEEE Transactions on Systems, Man, and
+       Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550,
+       April 2009.
+
     Examples
     --------
 
@@ -77,13 +92,6 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = ee.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res[0])))
     Resampled dataset shape Counter({0: 100, 1: 100})
-
-    References
-    ----------
-    .. [1] X. Y. Liu, J. Wu and Z. H. Zhou, "Exploratory Undersampling for
-       Class-Imbalance Learning," in IEEE Transactions on Systems, Man, and
-       Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550,
-       April 2009.
 
     """
 
