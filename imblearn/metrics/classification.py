@@ -124,6 +124,11 @@ def sensitivity_specificity_support(y_true,
         shape (n_unique_labels, )
         The number of occurrences of each label in ``y_true``.
 
+    References
+    ----------
+    .. [1] `Wikipedia entry for the Sensitivity and specificity
+           <https://en.wikipedia.org/wiki/Sensitivity_and_specificity>`_
+
     Examples
     --------
     >>> import numpy as np
@@ -136,11 +141,6 @@ def sensitivity_specificity_support(y_true,
     (0.33333333333333331, 0.66666666666666663, None)
     >>> sensitivity_specificity_support(y_true, y_pred, average='weighted')
     (0.33333333333333331, 0.66666666666666663, None)
-
-    References
-    ----------
-    .. [1] `Wikipedia entry for the Sensitivity and specificity
-           <https://en.wikipedia.org/wiki/Sensitivity_and_specificity>`_
 
     """
     average_options = (None, 'micro', 'macro', 'weighted', 'samples')
@@ -328,6 +328,11 @@ def sensitivity_score(y_true,
     sample_weight : ndarray, shape (n_samples, )
         Sample weights.
 
+    Returns
+    -------
+    specificity : float (if ``average`` = None) or ndarray, \
+        shape (n_unique_labels, )
+
     Examples
     --------
     >>> import numpy as np
@@ -342,11 +347,6 @@ def sensitivity_score(y_true,
     0.33333333333333331
     >>> sensitivity_score(y_true, y_pred, average=None)
     array([ 1.,  0.,  0.])
-
-    Returns
-    -------
-    specificity : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
 
     """
     s, _, _ = sensitivity_specificity_support(
@@ -427,6 +427,11 @@ def specificity_score(y_true,
     sample_weight : ndarray, shape (n_samples, )
         Sample weights.
 
+    Returns
+    -------
+    specificity : float (if ``average`` = None) or ndarray, \
+        shape (n_unique_labels, )
+
     Examples
     --------
     >>> import numpy as np
@@ -441,11 +446,6 @@ def specificity_score(y_true,
     0.66666666666666663
     >>> specificity_score(y_true, y_pred, average=None)
     array([ 0.75,  0.5 ,  0.75])
-
-    Returns
-    -------
-    specificity : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
 
     """
     _, s, _ = sensitivity_specificity_support(
@@ -541,6 +541,19 @@ def geometric_mean_score(y_true,
     -------
     geometric_mean : float
 
+    Notes
+    -----
+    See :ref:`sphx_glr_auto_examples_evaluation_plot_metrics.py`.
+
+    References
+    ----------
+    .. [1] Kubat, M. and Matwin, S. "Addressing the curse of
+       imbalanced training sets: one-sided selection" ICML (1997)
+
+    .. [2] Barandela, R., Sánchez, J. S., Garcıa, V., & Rangel, E. "Strategies
+       for learning in class imbalance problems", Pattern Recognition,
+       36(3), (2003), pp 849-851.
+
     Examples
     --------
     >>> from imblearn.metrics import geometric_mean_score
@@ -558,15 +571,6 @@ def geometric_mean_score(y_true,
     0.47140452079103168
     >>> geometric_mean_score(y_true, y_pred, average=None)
     array([ 0.8660254,  0.       ,  0.       ])
-
-    References
-    ----------
-    .. [1] Kubat, M. and Matwin, S. "Addressing the curse of
-       imbalanced training sets: one-sided selection" ICML (1997)
-
-    .. [2] Barandela, R., Sánchez, J. S., Garcıa, V., & Rangel, E. "Strategies
-       for learning in class imbalance problems", Pattern Recognition,
-       36(3), (2003), pp 849-851.
 
     """
     if average is None or average != 'multiclass':
@@ -660,6 +664,10 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
         Returns the scoring metric decorated which will automatically compute
         the index balanced accuracy.
 
+    Notes
+    -----
+    See :ref:`sphx_glr_auto_examples_evaluation_plot_metrics.py`.
+
     Examples
     --------
     >>> from imblearn.metrics import geometric_mean_score as gmean
@@ -669,6 +677,7 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
     >>> y_pred = [0, 0, 1, 1, 0, 1]
     >>> print(gmean(y_true, y_pred, average=None))
     [ 0.44444444  0.44444444]
+
     """
 
     def decorate(scoring_func):

@@ -20,6 +20,8 @@ from ...utils.deprecation import deprecate_parameter
 class OneSidedSelection(BaseCleaningSampler):
     """Class to perform under-sampling based on one-sided selection method.
 
+    Read more in the :ref:`User Guide <condensed_nearest_neighbors>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -39,6 +41,11 @@ class OneSidedSelection(BaseCleaningSampler):
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
 
+        .. warning::
+           This algorithm is a cleaning under-sampling method. When providing a
+           ``dict``, only the targeted classes will be used; the number of
+           samples will be discarded.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -50,8 +57,7 @@ class OneSidedSelection(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
         .. deprecated:: 0.2
            ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
@@ -60,9 +66,9 @@ class OneSidedSelection(BaseCleaningSampler):
     n_neighbors : int or object, optional (default=\
 KNeighborsClassifier(n_neighbors=1))
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an object
-        inherited from :class:`sklearn.neigbors.KNeighborsClassifier` should be
-        passed.
+        nearest neighbors. If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the nearest-neighbors.
 
     n_seeds_S : int, optional (default=1)
         Number of samples to extract in order to build the set S.
@@ -77,6 +83,14 @@ KNeighborsClassifier(n_neighbors=1))
     Supports mutli-class resampling. A one-vs.-one scheme is used when sampling
     a class as proposed in [1]_. For each class to be sampled, all samples of
     this class and the minority class are used during the sampling procedure.
+
+    See
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_one_sided_selection.py`
+
+    References
+    ----------
+    .. [1] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training
+       sets: one-sided selection," In ICML, vol. 97, pp. 179-186, 1997.
 
     Examples
     --------
@@ -94,11 +108,6 @@ KNeighborsClassifier(n_neighbors=1))
     >>> X_res, y_res = oss.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 495, 0: 100})
-
-    References
-    ----------
-    .. [1] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training
-       sets: one-sided selection," In ICML, vol. 97, pp. 179-186, 1997.
 
     """
 

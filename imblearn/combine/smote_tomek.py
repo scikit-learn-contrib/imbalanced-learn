@@ -24,6 +24,8 @@ class SMOTETomek(SamplerMixin):
 
     Combine over- and under-sampling using SMOTE and Tomek links.
 
+    Read more in the :ref:`User Guide <combine>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -79,7 +81,7 @@ class SMOTETomek(SamplerMixin):
         Step size when extrapolating.
 
         .. deprecated:: 0.2
-           `out_step` is deprecated from 0.2 and will be replaced in 0.4
+           ``out_step`` is deprecated from 0.2 and will be replaced in 0.4
            Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     kind_smote : str, optional (default=None)
@@ -88,7 +90,7 @@ class SMOTETomek(SamplerMixin):
         ``'svm'``.
 
         .. deprecated:: 0.2
-           ``kind_smote` is deprecated from 0.2 and will be replaced in 0.4
+           ``kind_smote`` is deprecated from 0.2 and will be replaced in 0.4
            Give directly a :class:`imblearn.over_sampling.SMOTE` object.
 
     n_jobs : int, optional (default=None)
@@ -104,6 +106,19 @@ class SMOTETomek(SamplerMixin):
 
     Supports mutli-class resampling. Refer to SMOTE and TomekLinks regarding
     the scheme which used.
+
+    See :ref:`sphx_glr_auto_examples_combine_plot_smote_tomek.py` and
+    :ref:`sphx_glr_auto_examples_combine_plot_comparison_combine.py`.
+
+    See also
+    --------
+    SMOTEENN : Over-sample using SMOTE followed by under-sampling using Edited
+        Nearest Neighbours.
+
+    References
+    ----------
+    .. [1] G. Batista, B. Bazzan, M. Monard, "Balancing Training Data for
+       Automated Annotation of Keywords: a Case Study," In WOB, 10-18, 2003.
 
     Examples
     --------
@@ -121,11 +136,6 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = smt.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({0: 900, 1: 900})
-
-    References
-    ----------
-    .. [1] G. Batista, B. Bazzan, M. Monard, "Balancing Training Data for
-       Automated Annotation of Keywords: a Case Study," In WOB, 10-18, 2003.
 
     """
 

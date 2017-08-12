@@ -12,7 +12,7 @@ An example of the Pipeline object working with transformers and resamplers.
 #          Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
-from sklearn.cross_validation import train_test_split as tts
+from sklearn.model_selection import train_test_split as tts
 from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA
 from sklearn.metrics import classification_report

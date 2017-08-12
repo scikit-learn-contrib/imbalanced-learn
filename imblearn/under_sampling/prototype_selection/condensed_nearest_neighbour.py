@@ -21,6 +21,8 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
     """Class to perform under-sampling based on the condensed nearest neighbour
     method.
 
+    Read more in the :ref:`User Guide <condensed_nearest_neighbors>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -40,6 +42,11 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
 
+        .. warning::
+           This algorithm is a cleaning under-sampling method. When providing a
+           ``dict``, only the targeted classes will be used; the number of
+           samples will be discarded.
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
@@ -51,8 +58,7 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
         ``RandomState`` instance used by ``np.random``.
 
     size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
+        Size of the neighbourhood to consider to compute the nearest-neighbors.
 
         .. deprecated:: 0.2
            ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
@@ -61,9 +67,9 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
     n_neighbors : int or object, optional (default=\
 KNeighborsClassifier(n_neighbors=1))
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an object
-        inherited from :class:`sklearn.neigbors.KNeighborsClassifier` should be
-        passed.
+        nearest neighbors. If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the nearest-neighbors.
 
     n_seeds_S : int, optional (default=1)
         Number of samples to extract in order to build the set S.
@@ -77,6 +83,19 @@ KNeighborsClassifier(n_neighbors=1))
 
     Supports mutli-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
+
+    See
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_condensed_nearest_neighbour.py`.
+
+    See also
+    --------
+    EditedNearestNeighbours, RepeatedEditedNearestNeighbours, AllKNN
+
+    References
+    ----------
+    .. [1] P. Hart, "The condensed nearest neighbor rule,"
+       In Information Theory, IEEE Transactions on, vol. 14(3),
+       pp. 515-516, 1968.
 
     Examples
     --------
@@ -94,12 +113,6 @@ CondensedNearestNeighbour #doctest: +SKIP
     >>> print('Resampled dataset shape {}'.format(
     ... Counter(y_res))) #doctest: +SKIP
     Resampled dataset shape Counter({-1: 268, 1: 227}) #doctest: +SKIP
-
-    References
-    ----------
-    .. [1] P. Hart, "The condensed nearest neighbor rule,"
-       In Information Theory, IEEE Transactions on, vol. 14(3),
-       pp. 515-516, 1968.
 
     """
 

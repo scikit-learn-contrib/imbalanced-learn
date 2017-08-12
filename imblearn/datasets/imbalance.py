@@ -21,8 +21,11 @@ LOGGER = logging.getLogger(__name__)
 
 def make_imbalance(X, y, ratio, min_c_=None, random_state=None, **kwargs):
     """Turns a dataset into an imbalanced dataset at specific ratio.
+
     A simple toy dataset to visualize clustering and classification
     algorithms.
+
+    Read more in the :ref:`User Guide <make_imbalanced>`.
 
     Parameters
     ----------
@@ -36,7 +39,8 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None, **kwargs):
         Ratio to use for resampling the data set.
 
         - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
+          correspond to the desired number of samples. All samples will be
+          passed through if the class is not specified.
         - If callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
@@ -66,6 +70,13 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None, **kwargs):
 
     y_resampled : ndarray, shape (n_samples_new)
         The corresponding label of `X_resampled`
+
+    Notes
+    -----
+    See
+    :ref:`sphx_glr_auto_examples_applications_plot_multi_class_under_sampling.py`,
+    :ref:`sphx_glr_auto_examples_datasets_plot_make_imbalance.py`, and
+    :ref:`sphx_glr_auto_examples_plot_ratio_usage.py`.
 
     Examples
     --------
