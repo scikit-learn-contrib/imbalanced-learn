@@ -11,6 +11,8 @@ from collections import Counter
 
 import numpy as np
 
+from sklearn.utils import safe_indexing
+
 from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
 from ...utils.deprecation import deprecate_parameter
@@ -181,7 +183,9 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         # Compute the distance considering the farthest neighbour
         dist_avg_vec = np.sum(dist_vec[:, -self.nn_.n_neighbors:], axis=1)
 
-        if dist_vec.shape[0] != X[y == key].shape[0]:
+        target_class_indices = np.flatnonzero(y == key)
+        if (dist_vec.shape[0] != safe_indexing(X,
+                                               target_class_indices).shape[0]):
             raise RuntimeError('The samples to be selected do not correspond'
                                ' to the distance matrix given. Ensure that'
                                ' both `X[y == key]` and `dist_vec` are'
@@ -257,21 +261,20 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         """
         self._validate_estimator()
 
-        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        y_resampled = np.empty((0, ), dtype=y.dtype)
-        if self.return_indices:
-            idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0, ), dtype=int)
 
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
+        minority_class_indices = np.flatnonzero(y == class_minority)
 
-        self.nn_.fit(X[y == class_minority])
+        self.nn_.fit(safe_indexing(X, minority_class_indices))
 
         for target_class in np.unique(y):
             if target_class in self.ratio_.keys():
                 n_samples = self.ratio_[target_class]
-                X_class = X[y == target_class]
-                y_class = y[y == target_class]
+                target_class_indices = np.flatnonzero(y == target_class)
+                X_class = safe_indexing(X, target_class_indices)
+                y_class = safe_indexing(y, target_class_indices)
 
                 if self.version == 1:
                     dist_vec, idx_vec = self.nn_.kneighbors(
@@ -288,10 +291,10 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                 elif self.version == 3:
                     self.nn_ver3_.fit(X_class)
                     dist_vec, idx_vec = self.nn_ver3_.kneighbors(
-                        X[y == class_minority])
+                        safe_indexing(X, minority_class_indices))
                     idx_vec_farthest = np.unique(idx_vec.reshape(-1))
-                    X_class_selected = X_class[idx_vec_farthest, :]
-                    y_class_selected = y_class[idx_vec_farthest]
+                    X_class_selected = safe_indexing(X_class, idx_vec_farthest)
+                    y_class_selected = safe_indexing(y_class, idx_vec_farthest)
 
                     dist_vec, idx_vec = self.nn_.kneighbors(
                         X_class_selected, n_neighbors=self.nn_.n_neighbors)
@@ -304,18 +307,12 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
             else:
                 index_target_class = slice(None)
 
-            X_resampled = np.concatenate(
-                (X_resampled, X[y == target_class][index_target_class]),
-                axis=0)
-            y_resampled = np.concatenate(
-                (y_resampled, y[y == target_class][index_target_class]),
-                axis=0)
-            if self.return_indices:
-                idx_under = np.concatenate(
-                    (idx_under, np.flatnonzero(y == target_class)[
-                        index_target_class]), axis=0)
+            idx_under = np.concatenate(
+                (idx_under, np.flatnonzero(y == target_class)[
+                    index_target_class]), axis=0)
 
         if self.return_indices:
-            return X_resampled, y_resampled, idx_under
+            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
+                    idx_under)
         else:
-            return X_resampled, y_resampled
+            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
