@@ -189,7 +189,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                                     (n_samples > X.shape[0] *
                                      self.threshold_cleaning))]
         self.nn_.fit(X)
-        class_minority_indices = y == class_minority
+        class_minority_indices = np.flatnonzero(y == class_minority)
         X_class = safe_indexing(X, class_minority_indices)
         y_class = safe_indexing(y, class_minority_indices)
         nnhood_idx = self.nn_.kneighbors(

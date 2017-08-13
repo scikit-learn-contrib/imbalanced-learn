@@ -10,7 +10,7 @@ from collections import Counter
 
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
-from sklearn.utils import check_random_state
+from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseCleaningSampler
 from .tomek_links import TomekLinks
@@ -174,10 +174,7 @@ KNeighborsClassifier(n_neighbors=1))
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
 
-        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        y_resampled = np.empty((0, ), dtype=y.dtype)
-        if self.return_indices:
-            idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
             if target_class in self.ratio_.keys():
@@ -186,56 +183,42 @@ KNeighborsClassifier(n_neighbors=1))
                 idx_maj_sample = idx_maj[random_state.randint(
                         low=0, high=target_stats[target_class],
                         size=self.n_seeds_S)]
-                maj_sample = X[idx_maj_sample]
+
+                minority_class_indices = np.flatnonzero(y == class_minority)
+                C_indices = np.append(minority_class_indices, idx_maj_sample)
 
                 # create the set composed of all minority samples and one
                 # sample from the current class.
-                C_x = np.append(X[y == class_minority], maj_sample, axis=0)
-                C_y = np.append(y[y == class_minority], [target_class] *
-                                self.n_seeds_S)
+                C_x = safe_indexing(X, C_indices)
+                C_y = safe_indexing(y, C_indices)
 
                 # create the set S with removing the seed from S
                 # since that it will be added anyway
                 idx_maj_extracted = np.delete(idx_maj, idx_maj_sample, axis=0)
-                S_x = X[idx_maj_extracted]
-                S_y = y[idx_maj_extracted]
+                S_x = safe_indexing(X, idx_maj_extracted)
+                S_y = safe_indexing(y, idx_maj_extracted)
                 self.estimator_.fit(C_x, C_y)
                 pred_S_y = self.estimator_.predict(S_x)
 
-                sel_x = S_x[np.flatnonzero(pred_S_y != S_y), :]
-                sel_y = S_y[np.flatnonzero(pred_S_y != S_y)]
-                if self.return_indices:
-                    idx_tmp = idx_maj_extracted[
-                        np.flatnonzero(pred_S_y != S_y)]
-                    idx_under = np.concatenate(
-                        (idx_under, idx_maj_sample, idx_tmp), axis=0)
-                X_resampled = np.concatenate(
-                    (X_resampled, maj_sample, sel_x), axis=0)
-                y_resampled = np.concatenate(
-                    (y_resampled, [target_class] * self.n_seeds_S, sel_y),
-                    axis=0)
+                S_misclassified_indices = np.flatnonzero(pred_S_y != S_y)
+                idx_tmp = idx_maj_extracted[S_misclassified_indices]
+                idx_under = np.concatenate(
+                    (idx_under, idx_maj_sample, idx_tmp), axis=0)
             else:
-                X_resampled = np.concatenate(
-                    (X_resampled, X[y == target_class]), axis=0)
-                y_resampled = np.concatenate(
-                    (y_resampled, y[y == target_class]), axis=0)
-                if self.return_indices:
-                    idx_under = np.concatenate(
-                        (idx_under, np.flatnonzero(y == target_class)), axis=0)
+                idx_under = np.concatenate(
+                    (idx_under, np.flatnonzero(y == target_class)), axis=0)
 
-        # find the nearest neighbour of every point
-        nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
-        nn.fit(X_resampled)
-        nns = nn.kneighbors(X_resampled, return_distance=False)[:, 1]
+        X_resampled = safe_indexing(X, idx_under)
+        y_resampled = safe_indexing(y, idx_under)
 
-        links = TomekLinks.is_tomek(y_resampled, nns,
-                                    [c for c in np.unique(y)
-                                     if (c != class_minority and
-                                         c in self.ratio_.keys())])
+        # apply Tomek cleaning
+        tl = TomekLinks(ratio='not minority', return_indices=True,
+                        random_state=self.random_state)
+        X_cleaned, y_cleaned, idx_cleaned = tl.fit_sample(X_resampled,
+                                                          y_resampled)
+
+        idx_under = safe_indexing(idx_under, idx_cleaned)
         if self.return_indices:
-            return (X_resampled[np.logical_not(links)],
-                    y_resampled[np.logical_not(links)],
-                    idx_under[np.logical_not(links)])
+            return (X_cleaned, y_cleaned, idx_under)
         else:
-            return (X_resampled[np.logical_not(links)],
-                    y_resampled[np.logical_not(links)])
+            return X_cleaned, y_cleaned
