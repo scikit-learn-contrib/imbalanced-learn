@@ -11,6 +11,8 @@ from collections import Counter
 import numpy as np
 from scipy.stats import mode
 
+from sklearn.utils import safe_indexing
+
 from ..base import BaseCleaningSampler
 from .edited_nearest_neighbours import EditedNearestNeighbours
 from ...utils import check_neighbors_object
@@ -187,8 +189,9 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                                     (n_samples > X.shape[0] *
                                      self.threshold_cleaning))]
         self.nn_.fit(X)
-        X_class = X[y == class_minority]
-        y_class = y[y == class_minority]
+        class_minority_indices = y == class_minority
+        X_class = safe_indexing(X, class_minority_indices)
+        y_class = safe_indexing(y, class_minority_indices)
         nnhood_idx = self.nn_.kneighbors(
             X_class, return_distance=False)[:, 1:]
         nnhood_label = y[nnhood_idx]
@@ -209,6 +212,15 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         selected_samples = np.ones(y.shape, dtype=bool)
         selected_samples[union_a1_a2] = False
         index_target_class = np.flatnonzero(selected_samples)
+
+        if self.return_indices:
+            return (safe_indexing(X, index_target_class),
+                    safe_indexing(y, index_target_class),
+                    index_target_class)
+        else:
+            return (safe_indexing(X, index_target_class),
+                    safe_indexing(y, index_target_class))
+
 
         if self.return_indices:
             return (X[index_target_class], y[index_target_class],
