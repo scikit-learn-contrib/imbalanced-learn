@@ -396,8 +396,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
 
-        prev_len = y.shape[0]
-
         for n_iter in range(self.max_iter):
 
             prev_len = y_.shape[0]

@@ -198,6 +198,8 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         elif self.kind_sel == 'all':
             nnhood_label_majority = nnhood_label == class_minority
             nnhood_bool = np.all(nnhood_label, axis=1)
+        else:
+            raise NotImplementedError
         # compute a2 group
         index_a2 = np.ravel(nnhood_idx[~nnhood_bool])
         index_a2 = np.unique([index for index in index_a2
