@@ -8,7 +8,7 @@ from __future__ import division
 from collections import Counter
 
 import numpy as np
-from sklearn.utils import check_random_state
+from sklearn.utils import check_random_state, safe_indexing
 
 from .base import BaseOverSampler
 
@@ -102,19 +102,15 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         random_state = check_random_state(self.random_state)
         target_stats = Counter(y)
 
-        X_resampled = X.copy()
-        y_resampled = y.copy()
+        sample_indices = range(X.shape[0])
 
         for class_sample, num_samples in self.ratio_.items():
-            index_samples = random_state.randint(
+            target_class_indices = np.flatnonzero(y == class_sample)
+            indices = random_state.randint(
                 low=0, high=target_stats[class_sample], size=num_samples)
 
-            X_resampled = np.concatenate((X_resampled,
-                                          X[y == class_sample][index_samples]),
-                                         axis=0)
+            sample_indices = np.append(sample_indices,
+                                       target_class_indices[indices])
 
-            y_resampled = np.concatenate((y_resampled,
-                                          y[y == class_sample][index_samples]),
-                                         axis=0)
-
-        return X_resampled, y_resampled
+        return (safe_indexing(X, sample_indices),
+                safe_indexing(y, sample_indices))

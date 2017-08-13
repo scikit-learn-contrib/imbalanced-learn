@@ -19,58 +19,58 @@ class BaseOverSampler(BaseSampler):
 
     _sampling_type = 'over-sampling'
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
+    # def fit(self, X, y):
+    #     """Find the classes statistics before to perform sampling.
 
-        Parameters
-        ----------
-        X : array-like, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
+    #     Parameters
+    #     ----------
+    #     X : array-like, shape (n_samples, n_features)
+    #         Matrix containing the data which have to be sampled.
 
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
+    #     y : array-like, shape (n_samples,)
+    #         Corresponding label for each sample in X.
 
-        Returns
-        -------
-        self : object,
-            Return self.
+    #     Returns
+    #     -------
+    #     self : object,
+    #         Return self.
 
-        Notes
-        -----
-        Over-samplers do not accept sparse matrices.
+    #     Notes
+    #     -----
+    #     Over-samplers do not accept sparse matrices.
 
-        """
-        # over-sampling method does not handle sparse matrix
-        X, y = check_X_y(X, y)
+    #     """
+    #     # over-sampling method does not handle sparse matrix
+    #     X, y = check_X_y(X, y)
 
-        return super(BaseOverSampler, self).fit(X, y)
+    #     return super(BaseOverSampler, self).fit(X, y)
 
-    def sample(self, X, y):
-        """Resample the dataset.
+    # def sample(self, X, y):
+    #     """Resample the dataset.
 
-        Parameters
-        ----------
-        X : array-like, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
+    #     Parameters
+    #     ----------
+    #     X : array-like, shape (n_samples, n_features)
+    #         Matrix containing the data which have to be sampled.
 
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
+    #     y : array-like, shape (n_samples,)
+    #         Corresponding label for each sample in X.
 
-        Returns
-        -------
-        X_resampled : array-like, shape (n_samples_new, n_features)
-            The array containing the resampled data.
+    #     Returns
+    #     -------
+    #     X_resampled : array-like, shape (n_samples_new, n_features)
+    #         The array containing the resampled data.
 
-        y_resampled : array-like, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
+    #     y_resampled : array-like, shape (n_samples_new,)
+    #         The corresponding label of `X_resampled`
 
-        Notes
-        -----
-        Over-samplers do not accept sparse matrices.
+    #     Notes
+    #     -----
+    #     Over-samplers do not accept sparse matrices.
 
-        """
+    #     """
 
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y)
+    #     # Check the consistency of X and y
+    #     X, y = check_X_y(X, y)
 
-        return super(BaseOverSampler, self).sample(X, y)
+    #     return super(BaseOverSampler, self).sample(X, y)
