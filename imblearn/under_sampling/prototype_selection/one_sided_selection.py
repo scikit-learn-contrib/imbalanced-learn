@@ -212,7 +212,7 @@ KNeighborsClassifier(n_neighbors=1))
         y_resampled = safe_indexing(y, idx_under)
 
         # apply Tomek cleaning
-        tl = TomekLinks(ratio='not minority', return_indices=True,
+        tl = TomekLinks(ratio=self.ratio_, return_indices=True,
                         random_state=self.random_state)
         X_cleaned, y_cleaned, idx_cleaned = tl.fit_sample(X_resampled,
                                                           y_resampled)

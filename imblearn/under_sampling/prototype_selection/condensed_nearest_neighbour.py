@@ -10,8 +10,11 @@ from __future__ import division
 from collections import Counter
 
 import numpy as np
+
+from scipy.sparse import issparse
+
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils import check_random_state
+from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils.deprecation import deprecate_parameter
@@ -179,29 +182,27 @@ CondensedNearestNeighbour #doctest: +SKIP
         random_state = check_random_state(self.random_state)
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
-
-        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        y_resampled = np.empty((0, ), dtype=y.dtype)
-        if self.return_indices:
-            idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
             if target_class in self.ratio_.keys():
                 # Randomly get one sample from the majority class
                 # Generate the index to select
-                idx_maj_sample = random_state.randint(
-                    low=0, high=target_stats[target_class],
-                    size=self.n_seeds_S)
-                maj_sample = X[y == target_class][idx_maj_sample]
+                idx_maj = np.flatnonzero(y == target_class)
+                idx_maj_sample = idx_maj[random_state.randint(
+                        low=0, high=target_stats[target_class],
+                        size=self.n_seeds_S)]
 
                 # Create the set C - One majority samples and all minority
-                C_x = np.append(X[y == class_minority], maj_sample, axis=0)
-                C_y = np.append(y[y == class_minority],
-                                np.array([target_class] * self.n_seeds_S))
+                C_indices = np.append(np.flatnonzero(y == class_minority),
+                                      idx_maj_sample)
+                C_x = safe_indexing(X, C_indices)
+                C_y = safe_indexing(y, C_indices)
 
                 # Create the set S - all majority samples
-                S_x = X[y == target_class]
-                S_y = y[y == target_class]
+                S_indices = np.flatnonzero(y == target_class)
+                S_x = safe_indexing(X, S_indices)
+                S_y = safe_indexing(y, S_indices)
 
                 # fit knn on C
                 self.estimator_.fit(C_x, C_y)
@@ -215,21 +216,21 @@ CondensedNearestNeighbour #doctest: +SKIP
                         continue
 
                     # Classify on S
-                    pred_y = self.estimator_.predict(x_sam.reshape(1, -1))
+                    if not issparse(x_sam):
+                        x_sam = x_sam.reshape(1, -1)
+                    pred_y = self.estimator_.predict(x_sam)
 
                     # If the prediction do not agree with the true label
                     # append it in C_x
                     if y_sam != pred_y:
                         # Keep the index for later
-                        idx_maj_sample = np.append(idx_maj_sample, idx_sam)
+                        idx_maj_sample = np.append(idx_maj_sample,
+                                                   idx_maj[idx_sam])
 
                         # Update C
-                        C_x = np.append(X[y == class_minority],
-                                        X[y == target_class][idx_maj_sample],
-                                        axis=0)
-                        C_y = np.append(y[y == class_minority],
-                                        np.array([target_class] *
-                                                 idx_maj_sample.size))
+                        C_indices = np.append(C_indices, idx_maj[idx_sam])
+                        C_x = safe_indexing(X, C_indices)
+                        C_y = safe_indexing(y, C_indices)
 
                         # fit a knn on C
                         self.estimator_.fit(C_x, C_y)
@@ -242,32 +243,14 @@ CondensedNearestNeighbour #doctest: +SKIP
                             np.append(idx_maj_sample,
                                       np.flatnonzero(pred_S_y == S_y)))
 
-                # Find the misclassified S_y
-                sel_x = S_x[idx_maj_sample, :]
-                sel_y = S_y[idx_maj_sample]
-
-                # The indexes found are relative to the current class, we need
-                # to find the absolute value Build the array with the absolute
-                # position
-                abs_pos = np.flatnonzero(y == target_class)
-                idx_maj_sample = abs_pos[idx_maj_sample]
-
-                # If we need to offer support for the indices selected
-                if self.return_indices:
-                    idx_under = np.concatenate((idx_under, idx_maj_sample),
-                                               axis=0)
-                X_resampled = np.concatenate((X_resampled, sel_x), axis=0)
-                y_resampled = np.concatenate((y_resampled, sel_y), axis=0)
+                idx_under = np.concatenate((idx_under, idx_maj_sample),
+                                           axis=0)
             else:
-                X_resampled = np.concatenate(
-                    (X_resampled, X[y == target_class]), axis=0)
-                y_resampled = np.concatenate(
-                    (y_resampled, y[y == target_class]), axis=0)
-                if self.return_indices:
-                    idx_under = np.concatenate(
-                        (idx_under, np.flatnonzero(y == target_class)), axis=0)
+                idx_under = np.concatenate(
+                    (idx_under, np.flatnonzero(y == target_class)), axis=0)
 
         if self.return_indices:
-            return X_resampled, y_resampled, idx_under
+            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
+                    idx_under)
         else:
-            return X_resampled, y_resampled
+            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)

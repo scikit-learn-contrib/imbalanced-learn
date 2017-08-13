@@ -15,7 +15,7 @@ from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
 from .edited_nearest_neighbours import EditedNearestNeighbours
-from ...utils import check_neighbors_object
+from ...utils import check_neighbors_object, check_ratio
 
 SEL_KIND = ('all', 'mode')
 
@@ -168,7 +168,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
         """
         self._validate_estimator()
-
         enn = EditedNearestNeighbours(ratio=self.ratio, return_indices=True,
                                       random_state=self.random_state,
                                       size_ngh=self.size_ngh,
@@ -220,10 +219,3 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         else:
             return (safe_indexing(X, index_target_class),
                     safe_indexing(y, index_target_class))
-
-
-        if self.return_indices:
-            return (X[index_target_class], y[index_target_class],
-                    index_target_class)
-        else:
-            return X[index_target_class], y[index_target_class]
