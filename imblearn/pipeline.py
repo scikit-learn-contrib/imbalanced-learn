@@ -64,12 +64,20 @@ class Pipeline(pipeline.Pipeline):
         Read-only attribute to access any step parameter by user given name.
         Keys are step names and values are steps parameters.
 
+    Notes
+    -----
+    See :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py`
+
+    See also
+    --------
+    make_pipeline : helper function to make pipeline.
+
     Examples
     --------
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from sklearn.cross_validation import train_test_split as tts
+    >>> from sklearn.model_selection import train_test_split as tts
     >>> from sklearn.decomposition import PCA
     >>> from sklearn.neighbors import KNeighborsClassifier as KNN
     >>> from sklearn.metrics import classification_report

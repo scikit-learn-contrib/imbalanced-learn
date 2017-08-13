@@ -6,8 +6,8 @@ This is the full API documentation of the `imbalanced-learn` toolbox.
 
 .. _under_sampling_ref:
 
-Under-sampling methods
-======================
+:mod:`imblearn.under_sampling`: Under-sampling methods
+======================================================
 
 .. automodule:: imblearn.under_sampling
     :no-members:
@@ -26,6 +26,7 @@ Prototype generation
 
 .. autosummary::
    :toctree: generated/
+   :template: class.rst
 
    under_sampling.ClusterCentroids
 
@@ -40,6 +41,7 @@ Prototype selection
 
 .. autosummary::
    :toctree: generated/
+   :template: class.rst
 
    under_sampling.CondensedNearestNeighbour
    under_sampling.EditedNearestNeighbours
@@ -54,8 +56,8 @@ Prototype selection
 
 .. _over_sampling_ref:
 
-Over-sampling methods
-=====================
+:mod:`imblearn.over_sampling`: Over-sampling methods
+====================================================
 
 .. automodule:: imblearn.over_sampling
     :no-members:
@@ -65,6 +67,7 @@ Over-sampling methods
 
 .. autosummary::
    :toctree: generated/
+   :template: class.rst
 
    over_sampling.ADASYN
    over_sampling.RandomOverSampler
@@ -73,8 +76,8 @@ Over-sampling methods
 
 .. _combine_ref:
 
-Combination of over- and under-sampling methods
-===============================================
+:mod:`imblearn.combine`: Combination of over- and under-sampling methods
+========================================================================
 
 .. automodule:: imblearn.combine
    :no-members:
@@ -84,6 +87,7 @@ Combination of over- and under-sampling methods
 
 .. autosummary::
    :toctree: generated/
+   :template: class.rst
 
    combine.SMOTEENN
    combine.SMOTETomek
@@ -91,8 +95,8 @@ Combination of over- and under-sampling methods
 
 .. _ensemble_ref:
 
-Ensemble methods
-================
+:mod:`imblearn.ensemble`: Ensemble methods
+==========================================
 
 .. automodule:: imblearn.ensemble
     :no-members:
@@ -102,6 +106,7 @@ Ensemble methods
 
 .. autosummary::
    :toctree: generated/
+   :template: class.rst
 
    ensemble.BalanceCascade
    ensemble.EasyEnsemble
@@ -109,8 +114,8 @@ Ensemble methods
 
 .. _pipeline_ref:
 
-Pipeline
-========
+:mod:`imblearn.pipeline`: Pipeline
+==================================
 
 .. automodule:: imblearn.pipeline
     :no-members:
@@ -120,14 +125,20 @@ Pipeline
 
 .. autosummary::
    :toctree: generated/
+   :template: class.rst
 
    pipeline.Pipeline
+
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+
    pipeline.make_pipeline
 
 .. _metrics_ref:
 
-Metrics
-=======
+:mod:`imblearn.metrics`: Metrics
+================================
 
 .. automodule:: imblearn.metrics
    :no-members:
@@ -137,6 +148,7 @@ Metrics
 
 .. autosummary::
    :toctree: generated/
+   :template: function.rst
 
    metrics.classification_report_imbalanced
    metrics.sensitivity_specificity_support
@@ -147,8 +159,8 @@ Metrics
 
 .. _datasets_ref:
 
-Datasets
-========
+:mod:`imblearn.datasets`: Datasets
+==================================
 
 .. automodule:: imblearn.datasets
     :no-members:
@@ -158,12 +170,13 @@ Datasets
 
 .. autosummary::
    :toctree: generated/
+   :template: function.rst
 
    datasets.make_imbalance
    datasets.fetch_datasets
 
-Utilities
-=========
+:mod:`imblearn.utils`: Utilities
+================================
 
 .. automodule:: imblearn.utils
     :no-members:
@@ -173,6 +186,7 @@ Utilities
 
 .. autosummary::
    :toctree: generated/
+   :template: function.rst
 
    utils.estimator_checks.check_estimator
    utils.check_neighbors_object

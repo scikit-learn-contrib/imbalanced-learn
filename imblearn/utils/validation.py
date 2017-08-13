@@ -114,6 +114,8 @@ def _ratio_all(y, sampling_type):
           sampling_type == 'clean-sampling'):
         n_sample_minority = min(target_stats.values())
         ratio = {key: n_sample_minority for key in target_stats.keys()}
+    else:
+        raise NotImplementedError
 
     return ratio
 
@@ -131,6 +133,8 @@ def _ratio_majority(y, sampling_type):
         ratio = {key: n_sample_minority
                  for key in target_stats.keys()
                  if key == class_majority}
+    else:
+        raise NotImplementedError
 
     return ratio
 
@@ -151,6 +155,8 @@ def _ratio_not_minority(y, sampling_type):
         ratio = {key: n_sample_minority
                  for key in target_stats.keys()
                  if key != class_minority}
+    else:
+        raise NotImplementedError
 
     return ratio
 
@@ -168,6 +174,8 @@ def _ratio_minority(y, sampling_type):
           sampling_type == 'clean-sampling'):
         raise ValueError("'ratio'='minority' cannot be used with"
                          " under-sampler and clean-sampler.")
+    else:
+        raise NotImplementedError
 
     return ratio
 
@@ -230,6 +238,8 @@ def _ratio_dict(ratio, y, sampling_type):
         # use samples
         for class_sample, n_samples in ratio.items():
             ratio_[class_sample] = n_samples
+    else:
+        raise NotImplementedError
 
     return ratio_
 
@@ -253,6 +263,8 @@ def _ratio_float(ratio, y, sampling_type):
         ratio = {key: int(n_sample_minority / ratio)
                  for (key, value) in target_stats.items()
                  if key != class_minority}
+    else:
+        raise NotImplementedError
 
     return ratio
 

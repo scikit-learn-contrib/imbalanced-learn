@@ -7,15 +7,19 @@
 Welcome to imbalanced-learn documentation!
 ##########################################
 
-Contents:
-=========
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Getting Started
+
+   install
 
 .. toctree::
    :maxdepth: 2
-   :caption: User Documentation
+   :hidden:
+   :caption: User Guide
 
-   install
-   support
+   user_guide
 
 .. toctree::
    :maxdepth: 2
@@ -26,26 +30,52 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
    :caption: Tutorial - Examples
 
    auto_examples/index
 
 .. toctree::
    :maxdepth: 1
-   :caption: Addtional information
+   :hidden:
+   :caption: Addtional Information
 
    whats_new
-   todo
    about
+
+`Getting started <install.html>`_
+---------------------------------
+
+Information to install, test, and contribute to the package.
+
+`User Guide <user_guide.html>`_
+-------------------------------
+
+The main documentation. This contains an in-depth description of all
+algorithms and how to apply them.
+
+`API Documentation <api.html>`_
+-------------------------------
+
+The exact API of all functions and classes, as given in the
+doctring. The API documents expected types and allowed features for
+all functions, and all parameters available for the algorithms.
+
+`Examples <auto_examples/index.html>`_
+--------------------------------------
+
+A set of examples illustrating the use of the different algorithms. It
+complements the `User Guide <user_guide.html>`_.
+
+`What's new <whats_new.html>`_
+------------------------------
+
+Log of the imbalanced-learn history.
+
+`About imbalanced-learn <about.html>`_
+--------------------------------------
+
+Just to know about history of imbalanced-learn.
 
 See the `README <https://github.com/scikit-learn-contrib/imbalanced-learn/blob/master/README.rst>`_
 for more information.
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-

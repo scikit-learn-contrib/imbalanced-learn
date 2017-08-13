@@ -22,6 +22,8 @@ class SMOTEENN(SamplerMixin):
 
     Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.
 
+    Read more in the :ref:`User Guide <combine>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -135,6 +137,20 @@ class SMOTEENN(SamplerMixin):
     Supports mutli-class resampling. Refer to SMOTE and ENN regarding the
     scheme which used.
 
+    See :ref:`sphx_glr_auto_examples_combine_plot_smote_enn.py` and
+    :ref:`sphx_glr_auto_examples_combine_plot_comparison_combine.py`.
+
+    See also
+    --------
+    SMOTETomek : Over-sample using SMOTE followed by under-sampling removing
+        the Tomek's links.
+
+    References
+    ----------
+    .. [1] G. Batista, R. C. Prati, M. C. Monard. "A study of the behavior of
+       several methods for balancing machine learning training data," ACM
+       Sigkdd Explorations Newsletter 6 (1), 20-29, 2004.
+
     Examples
     --------
 
@@ -150,12 +166,6 @@ class SMOTEENN(SamplerMixin):
     >>> X_res, y_res = sme.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({0: 900, 1: 881})
-
-    References
-    ----------
-    .. [1] G. Batista, R. C. Prati, M. C. Monard. "A study of the behavior of
-       several methods for balancing machine learning training data," ACM
-       Sigkdd Explorations Newsletter 6 (1), 20-29, 2004.
 
     """
 

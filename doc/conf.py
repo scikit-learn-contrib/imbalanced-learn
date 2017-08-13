@@ -48,13 +48,14 @@ from github_link import make_linkcode_resolve
 # ones.
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx',
-    'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig',
+    'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode', 'sphinx_gallery.gen_gallery',
     'sphinx.ext.autosummary', 'numpydoc',
     'sphinx_issues', 'sphinx.ext.linkcode'
 ]
 
 autosummary_generate = True
+numpydoc_show_class_members = False
 
 autodoc_default_flags = ['members', 'inherited-members']
 
@@ -65,6 +66,7 @@ sphinx_gallery_conf = {
     'gallery_dirs': 'auto_examples',
     # to make references clickable
     'doc_module': 'imblearn',
+    'backreferences_dir': os.path.join('generated'),
     'reference_url': {
         'imblearn': None,
         'sklearn': 'http://scikit-learn.org/stable',
@@ -156,7 +158,7 @@ html_theme = 'sphinx_rtd_theme'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
+# html_theme_options = {'prev_next_buttons_location': None}
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
@@ -297,7 +299,7 @@ texinfo_documents = [
 def generate_example_rst(app, what, name, obj, options, lines):
     # generate empty examples files, so that we don't get
     # inclusion errors if there are no examples for a class / module
-    examples_path = os.path.join(app.srcdir, "modules", "generated",
+    examples_path = os.path.join(app.srcdir, "generated",
                                  "%s.examples" % name)
     if not os.path.exists(examples_path):
         # touch file
@@ -312,6 +314,7 @@ issues_user_uri = 'https://github.com/{user}'
 
 
 def setup(app):
+    app.add_javascript('js/copybutton.js')
     app.connect('autodoc-process-docstring', generate_example_rst)
 
 

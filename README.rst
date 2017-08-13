@@ -55,12 +55,12 @@ Installation
 Dependencies
 ~~~~~~~~~~~~
 
-imbalanced-learn is tested to work under Python 2.7 and Python 3.4, 3.5, and
+imbalanced-learn is tested to work under Python 2.7 and Python 3.5, and
 3.6. The dependency requirements are based on the last scikit-learn release:
 
 * scipy(>=0.13.3)
 * numpy(>=1.8.2)
-* scikit-learn(>=0.18.1)
+* scikit-learn(>=0.19.0)
 
 Additionally, to run the examples, you need matplotlib(>=2.0.0).
 
@@ -82,6 +82,10 @@ commands to get a copy from GitHub and install all dependencies::
   git clone https://github.com/scikit-learn-contrib/imbalanced-learn.git
   cd imbalanced-learn
   pip install .
+
+Or install using pip and GitHub::
+
+  pip install -U git+https://github.com/scikit-learn-contrib/imbalanced-learn.git
 
 Testing
 ~~~~~~~

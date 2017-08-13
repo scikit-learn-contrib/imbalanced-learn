@@ -18,6 +18,8 @@ class RandomUnderSampler(BaseUnderSampler):
     Under-sample the majority class(es) by randomly picking samples
     with or without replacement.
 
+    Read more in the :ref:`User Guide <controlled_under_sampling>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -53,6 +55,10 @@ class RandomUnderSampler(BaseUnderSampler):
     Notes
     -----
     Supports mutli-class resampling by sampling each class independently.
+
+    See
+    :ref:`sphx_glr_auto_examples_plot_ratio_usage.py` and
+    :ref:`sphx_glr_auto_examples_under-sampling_plot_random_under_sampler.py`
 
     Examples
     --------

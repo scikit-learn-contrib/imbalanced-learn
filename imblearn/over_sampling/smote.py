@@ -27,6 +27,8 @@ class SMOTE(BaseOverSampler):
     Over-sampling Technique, and the variants Borderline SMOTE 1, 2 and
     SVM-SMOTE.
 
+    Read more in the :ref:`User Guide <smote_adasyn>`.
+
     Parameters
     ----------
     ratio : str, dict, or callable, optional (default='auto')
@@ -102,6 +104,32 @@ class SMOTE(BaseOverSampler):
     Supports mutli-class resampling. A one-vs.-rest scheme is used as
     originally proposed in [1]_.
 
+    See
+    :ref:`sphx_glr_auto_examples_applications_plot_over_sampling_benchmark_lfw.py`,
+    :ref:`sphx_glr_auto_examples_evaluation_plot_classification_report.py`,
+    :ref:`sphx_glr_auto_examples_evaluation_plot_metrics.py`,
+    :ref:`sphx_glr_auto_examples_model_selection_plot_validation_curve.py`,
+    :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
+    and :ref:`sphx_glr_auto_examples_over-sampling_plot_smote.py`.
+
+    See also
+    --------
+    ADASYN : Over-sample using ADASYN.
+
+    References
+    ----------
+    .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
+       synthetic minority over-sampling technique," Journal of artificial
+       intelligence research, 321-357, 2002.
+
+    .. [2] H. Han, W. Wen-Yuan, M. Bing-Huan, "Borderline-SMOTE: a new
+       over-sampling method in imbalanced data sets learning," Advances in
+       intelligent computing, 878-887, 2005.
+
+    .. [3] H. M. Nguyen, E. W. Cooper, K. Kamei, "Borderline over-sampling for
+       imbalanced data classification," International Journal of Knowledge
+       Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.
+
     Examples
     --------
 
@@ -118,20 +146,6 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = sm.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({0: 900, 1: 900})
-
-    References
-    ----------
-    .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
-       synthetic minority over-sampling technique," Journal of artificial
-       intelligence research, 321-357, 2002.
-
-    .. [2] H. Han, W. Wen-Yuan, M. Bing-Huan, "Borderline-SMOTE: a new
-       over-sampling method in imbalanced data sets learning," Advances in
-       intelligent computing, 878-887, 2005.
-
-    .. [3] H. M. Nguyen, E. W. Cooper, K. Kamei, "Borderline over-sampling for
-       imbalanced data classification," International Journal of Knowledge
-       Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.
 
     """
 
