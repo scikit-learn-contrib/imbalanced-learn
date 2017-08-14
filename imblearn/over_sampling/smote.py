@@ -178,13 +178,13 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        samples : ndarray, shape (n_samples, n_features)
+        samples : {array-like, sparse matrix}, shape (n_samples, n_features)
             The samples to check if either they are in danger or not.
 
         target_class : int or str,
             The target corresponding class being over-sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             The true label in order to check the neighbour labels.
 
         kind : str, optional (default='danger')
@@ -195,7 +195,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Returns
         -------
-        output : ndarray, shape (n_samples, )
+        output : ndarray, shape (n_samples,)
             A boolean array where True refer to samples in danger or noise.
 
         """
@@ -226,7 +226,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Points from which the points will be created.
 
         y_type : str or int
@@ -248,10 +248,10 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Returns
         -------
-        X_new : ndarray, shape (n_samples_new, n_features)
+        X_new : {ndarray, sparse matrix}, shape (n_samples_new, n_features)
             Synthetically generated samples.
 
-        y_new : ndarray, shape (n_samples_new, )
+        y_new : ndarray, shape (n_samples_new,)
             Target values for synthetic samples.
 
         """
@@ -324,19 +324,20 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
-            The corresponding label of `X_resampled`.
+        y_resampled : ndarray, shape (n_samples_new,)
+            The corresponding label of `X_resampled`
 
         References
         ----------
@@ -378,19 +379,20 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
-            The corresponding label of `X_resampled`.
+        y_resampled : ndarray, shape (n_samples_new,)
+            The corresponding label of `X_resampled`
 
         References
         ----------
@@ -469,19 +471,20 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
-            The corresponding label of `X_resampled`.
+        y_resampled : ndarray, shape (n_samples_new,)
+            The corresponding label of `X_resampled`
 
         References
         ----------
@@ -569,18 +572,19 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         """

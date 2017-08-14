@@ -94,18 +94,19 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data to be sampled.
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         idx_under : ndarray, shape (n_samples, )

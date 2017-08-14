@@ -149,10 +149,10 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
@@ -222,15 +222,16 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_subset, n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_subset, n_samples_new, n_features)
             The array containing the resampled data.
 
         y_resampled : ndarray, shape (n_subset, n_samples_new)
@@ -306,7 +307,6 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             target_stats = Counter(safe_indexing(
                 y, np.flatnonzero(samples_mask)))
             for target_class in self.ratio_.keys():
-                print(target_stats[target_class], self.ratio_[target_class])
                 if target_stats[target_class] < self.ratio_[target_class]:
                     b_subset_search = False
 
