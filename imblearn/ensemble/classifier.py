@@ -6,6 +6,8 @@
 
 import numbers
 
+import numpy as np
+
 import sklearn
 from sklearn.base import clone
 from sklearn.ensemble import BaggingClassifier
