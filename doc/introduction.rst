@@ -30,6 +30,13 @@ Imbalanced-learn samplers accept the same inputs that in scikit-learn:
   matrices;
 * ``targets``: array-like (1-D list, pandas.Series, numpy.array).
 
+.. topic:: Sparse input
+
+   For sparse input the data is **converted to the Compressed Sparse Rows
+   representation** (see ``scipy.sparse.csr_matrix``) before being fed to the
+   sampler. To avoid unnecessary memory copies, it is recommended to choose the
+   CSR representation upstream.
+
 .. _problem_statement:
 
 Problem statement regarding imbalanced data sets
