@@ -49,11 +49,21 @@ your data are grouped into clusters. In addition, the number of centroids
 should be set such that the under-sampled clusters are representative of the
 original one.
 
-.. warning::
+:class:`ClusterCentroids` accepts sparse matrices. However, it is recommended
+to set ``voting`` to not set ``'soft'`` since the centroids found by the
+clustering method will be used. Those centroids are not enforce to be sparse
+and thus the output will not be memory efficient. Note that by default
+``voting`` is set to ``'auto'`` which will automatically chose a ``'hard'``
+voting instead of ``'soft'`` voting in the case of a sparse input.
 
-   :class:`ClusterCentroids` supports sparse matrices. However, the new samples
-   are generated are not specifically sparse. Therefore, even if the resulting
-   matrix will be sparse, the algorithm will be inefficient in this regard.
+The effect of the ``voting`` parameter is illustrated in the figure below. When
+``voting`` is set to ``'hard'`` the nearest-neighbor of the centroids are used
+instead of the centroids itself when using ``'soft'`` voting.
+
+.. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_cluster_centroids_001.png
+   :target: ./auto_examples/under-sampling/plot_cluster_centroids.html
+   :scale: 60
+   :align: center
 
 See :ref:`sphx_glr_auto_examples_under-sampling_plot_cluster_centroids.py` and
 :ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`.
