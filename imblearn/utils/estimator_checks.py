@@ -15,6 +15,7 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.datasets import make_classification
+from sklearn.cluster import KMeans
 from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
@@ -275,6 +276,11 @@ def check_samplers_sparse(name, Sampler):
     elif isinstance(Sampler(), NearMiss):
         samplers = [Sampler(random_state=0, version=version)
                     for version in (1, 2, 3)]
+    elif isinstance(Sampler(), ClusterCentroids):
+        # set KMeans to full since it support sparse and dense
+        samplers = [Sampler(random_state=0,
+                            estimator=KMeans(random_state=1,
+                                             algorithm='full'))]
     else:
         samplers = [Sampler(random_state=0)]
     for sampler in samplers:
