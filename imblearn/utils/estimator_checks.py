@@ -267,12 +267,17 @@ def check_samplers_sparse(name, Sampler):
                                random_state=0)
     X_sparse = sparse.csr_matrix(X)
     sampler = Sampler(random_state=0)
+    X_res_sparse, y_res_sparse = sampler.fit_sample(X_sparse, y)
+    X_res, y_res = sampler.fit_sample(X, y)
     if not isinstance(sampler, BaseEnsembleSampler):
-        X_res_sparse, y_res_sparse = sampler.fit_sample(X_sparse, y)
         assert_true(sparse.issparse(X_res_sparse))
-        X_res, y_res = sampler.fit_sample(X, y)
         assert_allclose_dense_sparse(X_res_sparse.A, X_res)
         assert_allclose_dense_sparse(y_res_sparse, y_res)
+    else:
+        for x_sp, x, y_sp, y in zip(X_res_sparse, X_res, y_res_sparse, y_res):
+            assert_true(sparse.issparse(x_sp))
+            assert_allclose_dense_sparse(x_sp.A, x, rtol=1e-06, atol=1e-06)
+            assert_allclose_dense_sparse(y_sp, y)
 
 
 def check_samplers_pandas(name, Sampler):
