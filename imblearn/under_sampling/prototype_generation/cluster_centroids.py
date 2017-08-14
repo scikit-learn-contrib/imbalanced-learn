@@ -144,7 +144,6 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                 target_class_indices = np.flatnonzero(y == target_class)
                 idx_under = np.concatenate(
                     (idx_under, target_class_indices), axis=0)
-                y_resampled += [target_class] * target_class_indices.size
 
         X_resampled = np.concatenate((centroids))
 
@@ -153,5 +152,6 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                                          safe_indexing(X, idx_under)])
         else:
             X_resampled = np.vstack((X_resampled, safe_indexing(X, idx_under)))
+        y_resampled = np.hstack((y_resampled, safe_indexing(y, idx_under)))
 
         return X_resampled, np.array(y_resampled)
