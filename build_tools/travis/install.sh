@@ -59,7 +59,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # Create a new virtualenv using system site packages for python, numpy
     virtualenv --system-site-packages testvenv
     source testvenv/bin/activate
-    pip install scikit-learn nose nose-timer pytest pytest-cov codecov
+    pip install scikit-learn pandas nose nose-timer pytest pytest-cov codecov
 
 fi
 
