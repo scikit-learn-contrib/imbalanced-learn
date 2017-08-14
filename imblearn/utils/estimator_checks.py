@@ -12,6 +12,7 @@ import traceback
 from collections import Counter
 
 import numpy as np
+from scipy import sparse
 
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import _yield_all_checks \
@@ -20,7 +21,8 @@ from sklearn.utils.estimator_checks import _yield_all_checks \
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import (assert_warns, assert_raises_regex,
                                    assert_true, set_random_state,
-                                   assert_equal)
+                                   assert_equal, assert_allclose_dense_sparse,
+                                   SkipTest)
 
 from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
@@ -36,6 +38,8 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_fit
     yield check_samplers_fit_sample
     yield check_samplers_ratio_fit_sample
+    yield check_samplers_sparse
+    yield check_samplers_pandas
 
 
 def _yield_all_checks(name, Estimator):
@@ -253,3 +257,39 @@ def check_samplers_ratio_fit_sample(name, Sampler):
         X_res, y_res = sampler.fit_sample(X, y)
         y_ensemble = y_res[0]
         assert_equal(target_stats[1], Counter(y_ensemble)[1])
+
+
+def check_samplers_sparse(name, Sampler):
+    # check that sparse matrices can be passed through the sampler leading to
+    # the same results than dense
+    X, y = make_classification(n_samples=1000, n_classes=3,
+                               n_informative=4, weights=[0.2, 0.3, 0.5],
+                               random_state=0)
+    X_sparse = sparse.csr_matrix(X)
+    sampler = Sampler(random_state=0)
+    if not isinstance(sampler, BaseEnsembleSampler):
+        X_res_sparse, y_res_sparse = sampler.fit_sample(X_sparse, y)
+        assert_true(sparse.issparse(X_res_sparse))
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_allclose_dense_sparse(X_res_sparse.A, X_res)
+        assert_allclose_dense_sparse(y_res_sparse, y_res)
+
+
+def check_samplers_pandas(name, Sampler):
+    # Check that the samplers handle pandas dataframe and pandas series
+    X, y = make_classification(n_samples=1000, n_classes=3,
+                               n_informative=4, weights=[0.2, 0.3, 0.5],
+                               random_state=0)
+    try:
+        import pandas as pd
+        X_pd, y_pd = pd.DataFrame(X), pd.Series(y)
+        sampler = Sampler(random_state=0)
+        X_res_pd, y_res_pd = sampler.fit_sample(X_pd, y_pd)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_allclose_dense_sparse(X_res_pd, X_res)
+        assert_allclose_dense_sparse(y_res_pd, y_res)
+
+    except ImportError:
+            raise SkipTest("pandas is not installed: not testing for "
+                           "input of type pandas.DataFrame / pandas.Series as"
+                           " input.")

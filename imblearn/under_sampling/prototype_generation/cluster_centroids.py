@@ -82,7 +82,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     >>> cc = ClusterCentroids(random_state=42)
     >>> X_res, y_res = cc.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({0: 100, 1: 100})
+    ... # doctest: +ELLIPSIS
+    Resampled dataset shape Counter({...})
 
     """
 
