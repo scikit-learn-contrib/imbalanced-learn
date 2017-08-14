@@ -28,6 +28,8 @@ from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import NearMiss, ClusterCentroids
 
 
 def _yield_sampler_checks(name, Estimator):
@@ -266,18 +268,33 @@ def check_samplers_sparse(name, Sampler):
                                n_informative=4, weights=[0.2, 0.3, 0.5],
                                random_state=0)
     X_sparse = sparse.csr_matrix(X)
-    sampler = Sampler(random_state=0)
-    X_res_sparse, y_res_sparse = sampler.fit_sample(X_sparse, y)
-    X_res, y_res = sampler.fit_sample(X, y)
-    if not isinstance(sampler, BaseEnsembleSampler):
-        assert_true(sparse.issparse(X_res_sparse))
-        assert_allclose(X_res_sparse.A, X_res, rtol=1e-05, atol=1e-05)
-        assert_allclose(y_res_sparse, y_res)
+    if isinstance(Sampler(), SMOTE):
+        samplers = [Sampler(random_state=0, kind=kind)
+                    for kind in ('regular', 'borderline1',
+                                 'borderline2', 'svm')]
+    elif isinstance(Sampler(), NearMiss):
+        samplers = [Sampler(random_state=0, version=version)
+                    for version in (1, 2, 3)]
     else:
-        for x_sp, x, y_sp, y in zip(X_res_sparse, X_res, y_res_sparse, y_res):
-            assert_true(sparse.issparse(x_sp))
-            assert_allclose(x_sp.A, x, rtol=1e-05, atol=1e-05)
-            assert_allclose(y_sp, y)
+        samplers = [Sampler(random_state=0)]
+    for sampler in samplers:
+        X_res_sparse, y_res_sparse = sampler.fit_sample(X_sparse, y)
+        X_res, y_res = sampler.fit_sample(X, y)
+        if not isinstance(sampler, BaseEnsembleSampler):
+            if not isinstance(sampler, ClusterCentroids):
+                assert_true(sparse.issparse(X_res_sparse))
+                assert_allclose(X_res_sparse.A, X_res)
+                assert_allclose(y_res_sparse, y_res)
+            else:
+                assert_true(sparse.issparse(X_res_sparse))
+                assert_allclose(X_res_sparse.A, X_res, rtol=1e-4, atol=1e-4)
+                assert_allclose(y_res_sparse, y_res)
+        else:
+            for x_sp, x, y_sp, y in zip(X_res_sparse, X_res,
+                                        y_res_sparse, y_res):
+                assert_true(sparse.issparse(x_sp))
+                assert_allclose(x_sp.A, x)
+                assert_allclose(y_sp, y)
 
 
 def check_samplers_pandas(name, Sampler):
@@ -289,10 +306,20 @@ def check_samplers_pandas(name, Sampler):
         import pandas as pd
         X_pd, y_pd = pd.DataFrame(X), pd.Series(y)
         sampler = Sampler(random_state=0)
-        X_res_pd, y_res_pd = sampler.fit_sample(X_pd, y_pd)
-        X_res, y_res = sampler.fit_sample(X, y)
-        assert_allclose(X_res_pd, X_res)
-        assert_allclose(y_res_pd, y_res)
+        if isinstance(Sampler(), SMOTE):
+            samplers = [Sampler(random_state=0, kind=kind)
+                        for kind in ('regular', 'borderline1',
+                                     'borderline2', 'svm')]
+        elif isinstance(Sampler(), NearMiss):
+            samplers = [Sampler(random_state=0, version=version)
+                        for version in (1, 2, 3)]
+        else:
+            samplers = [Sampler(random_state=0)]
+        for sampler in samplers:
+            X_res_pd, y_res_pd = sampler.fit_sample(X_pd, y_pd)
+            X_res, y_res = sampler.fit_sample(X, y)
+            assert_allclose(X_res_pd, X_res)
+            assert_allclose(y_res_pd, y_res)
 
     except ImportError:
             raise SkipTest("pandas is not installed: not testing for "
