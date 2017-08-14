@@ -271,7 +271,7 @@ def check_samplers_sparse(name, Sampler):
     X_res, y_res = sampler.fit_sample(X, y)
     if not isinstance(sampler, BaseEnsembleSampler):
         assert_true(sparse.issparse(X_res_sparse))
-        assert_allclose(X_res_sparse.A, X_res)
+        assert_allclose(X_res_sparse.A, X_res, rtol=1e-06, atol=1e-06)
         assert_allclose(y_res_sparse, y_res)
     else:
         for x_sp, x, y_sp, y in zip(X_res_sparse, X_res, y_res_sparse, y_res):
