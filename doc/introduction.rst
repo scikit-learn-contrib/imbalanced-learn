@@ -22,7 +22,11 @@ object with an addtionnal sample method:
 
     To resample a data sets, each sampler implements::
 
-      prediction = obj.predict(data, targets)
+      data_resampled, targets_resampled = obj.sample(data, targets)
+
+    Fitting and sampling can also be done in one step::
+
+      data_resampled, targets_resampled = obj.fit_sample(data, targets)
 
 Imbalanced-learn samplers accept the same inputs that in scikit-learn:
 
