@@ -10,8 +10,8 @@ import numpy as np
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 
-from sklearn.utils.testing import (assert_equal, assert_raises_regex,
-                                   assert_warns_message)
+from sklearn.utils.testing import assert_raises_regex
+from sklearn.utils.testing import assert_warns_message
 
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_ratio
@@ -22,10 +22,10 @@ def test_check_neighbors_object():
     n_neighbors = 1
     estimator = check_neighbors_object(name, n_neighbors)
     assert issubclass(type(estimator), KNeighborsMixin)
-    assert_equal(estimator.n_neighbors, 1)
+    assert estimator.n_neighbors == 1
     estimator = check_neighbors_object(name, n_neighbors, 1)
     assert issubclass(type(estimator), KNeighborsMixin)
-    assert_equal(estimator.n_neighbors, 2)
+    assert estimator.n_neighbors == 2
     estimator = NearestNeighbors(n_neighbors)
     assert estimator is check_neighbors_object(name, estimator)
     n_neighbors = 'rnd'
@@ -47,16 +47,14 @@ def test_check_ratio_error():
 
 def test_ratio_all_over_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('all', y, 'over-sampling')
-    assert_equal(ratio, {1: 50, 2: 0, 3: 75})
-    ratio = check_ratio('auto', y, 'over-sampling')
-    assert_equal(ratio, {1: 50, 2: 0, 3: 75})
+    for each in ('all', 'auto'):
+        assert check_ratio(each, y, 'over-sampling') == {1: 50, 2: 0, 3: 75}
 
 
 def test_ratio_all_under_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = check_ratio('all', y, 'under-sampling')
-    assert_equal(ratio, {1: 25, 2: 25, 3: 25})
+    assert ratio == {1: 25, 2: 25, 3: 25}
 
 
 def test_ratio_majority_over_sampling():
@@ -68,27 +66,27 @@ def test_ratio_majority_over_sampling():
 def test_ratio_majority_under_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = check_ratio('majority', y, 'under-sampling')
-    assert_equal(ratio, {2: 25})
+    assert ratio == {2: 25}
 
 
 def test_ratio_not_minority_over_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = check_ratio('not minority', y, 'over-sampling')
-    assert_equal(ratio, {1: 50, 2: 0})
+    assert ratio == {1: 50, 2: 0}
 
 
 def test_ratio_not_minority_under_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = check_ratio('not minority', y, 'under-sampling')
-    assert_equal(ratio, {1: 25, 2: 25})
+    assert ratio == {1: 25, 2: 25}
     ratio = check_ratio('auto', y, 'under-sampling')
-    assert_equal(ratio, {1: 25, 2: 25})
+    assert ratio == {1: 25, 2: 25}
 
 
 def test_ratio_minority_over_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = check_ratio('minority', y, 'over-sampling')
-    assert_equal(ratio, {3: 75})
+    assert ratio == {3: 75}
 
 
 def test_ratio_minority_under_sampling():
@@ -122,7 +120,7 @@ def test_ratio_dict_over_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = {1: 70, 2: 100, 3: 70}
     ratio_ = check_ratio(ratio, y, 'over-sampling')
-    assert_equal(ratio_, {1: 20, 2: 0, 3: 45})
+    assert ratio_ == {1: 20, 2: 0, 3: 45}
     ratio = {1: 70, 2: 140, 3: 70}
     assert_warns_message(UserWarning, "After over-sampling, the number of"
                          " samples (140) in class 2 will be larger than the"
@@ -134,7 +132,7 @@ def test_ratio_dict_under_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = {1: 30, 2: 45, 3: 25}
     ratio_ = check_ratio(ratio, y, 'under-sampling')
-    assert_equal(ratio_, ratio)
+    assert ratio_ == ratio
 
 
 def test_ratio_float_error():
@@ -151,14 +149,14 @@ def test_ratio_float_over_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = 0.5
     ratio_ = check_ratio(ratio, y, 'over-sampling')
-    assert_equal(ratio_, {1: 0, 3: 25})
+    assert ratio_ == {1: 0, 3: 25}
 
 
 def test_ratio_float_under_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = 0.5
     ratio_ = check_ratio(ratio, y, 'under-sampling')
-    assert_equal(ratio_, {1: 50, 2: 50})
+    assert ratio_ == {1: 50, 2: 50}
 
 
 def test_ratio_callable():
@@ -172,7 +170,7 @@ def test_ratio_callable():
                 for key in target_stats.keys()}
 
     ratio_ = check_ratio(ratio_func, y, 'over-sampling')
-    assert_equal(ratio_, {1: 50, 2: 0, 3: 75})
+    assert ratio_ == {1: 50, 2: 0, 3: 75}
 
 
 def test_ratio_callable_args():
@@ -187,4 +185,4 @@ def test_ratio_callable_args():
 
     ratio_ = check_ratio(ratio_func, y, 'over-sampling',
                          multiplier=multiplier)
-    assert_equal(ratio_, {1: 25, 2: 0, 3: 50})
+    assert ratio_ == {1: 25, 2: 0, 3: 50}

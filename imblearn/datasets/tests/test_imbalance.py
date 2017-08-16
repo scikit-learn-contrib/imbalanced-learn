@@ -11,8 +11,8 @@ from collections import Counter
 import numpy as np
 
 from sklearn.datasets import load_iris
-from sklearn.utils.testing import (assert_equal, assert_raises_regex,
-                                   assert_warns_message)
+from sklearn.utils.testing import assert_raises_regex
+from sklearn.utils.testing import assert_warns_message
 
 from imblearn.datasets import make_imbalance
 
@@ -46,17 +46,17 @@ def test_make_imbalance_float():
     X_, y_ = assert_warns_message(DeprecationWarning,
                                   "'ratio' being a float is deprecated",
                                   make_imbalance, X, Y, ratio=0.5, min_c_=1)
-    assert_equal(Counter(y_), {0: 50, 1: 25, 2: 50})
+    assert Counter(y_) == {0: 50, 1: 25, 2: 50}
     # resample without using min_c_
     X_, y_ = make_imbalance(X_, y_, ratio=0.25, min_c_=None)
-    assert_equal(Counter(y_), {0: 50, 1: 12, 2: 50})
+    assert Counter(y_) == {0: 50, 1: 12, 2: 50}
 
 
 def test_make_imbalance_dict():
     ratio = {0: 10, 1: 20, 2: 30}
     X_, y_ = make_imbalance(X, Y, ratio=ratio)
-    assert_equal(Counter(y_), ratio)
+    assert Counter(y_) == ratio
 
     ratio = {0: 10, 1: 20}
     X_, y_ = make_imbalance(X, Y, ratio=ratio)
-    assert_equal(Counter(y_), {0: 10, 1: 20, 2: 50})
+    assert Counter(y_) == {0: 10, 1: 20, 2: 50}

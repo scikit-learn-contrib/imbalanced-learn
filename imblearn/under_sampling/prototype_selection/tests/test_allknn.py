@@ -6,8 +6,8 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_allclose, assert_array_equal,
-                                   assert_raises, assert_true)
+from sklearn.utils.testing import assert_allclose, assert_array_equal
+from sklearn.utils.testing import assert_raises
 from sklearn.neighbors import NearestNeighbors
 from sklearn.datasets import make_classification
 
@@ -77,7 +77,7 @@ def test_all_knn_allow_minority():
     X_res_1, y_res_1 = allknn.fit_sample(X, y)
     allknn = AllKNN(random_state=RND_SEED)
     X_res_2, y_res_2 = allknn.fit_sample(X, y)
-    assert_true(len(y_res_1) < len(y_res_2))
+    assert len(y_res_1) < len(y_res_2)
 
 
 def test_allknn_fit_sample_with_indices():

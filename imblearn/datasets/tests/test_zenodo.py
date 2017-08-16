@@ -7,8 +7,8 @@ Skipped if datasets is not already downloaded to data_home.
 # License: MIT
 
 from imblearn.datasets import fetch_datasets
-from sklearn.utils.testing import (assert_equal, assert_allclose,
-                                   assert_raises_regex, SkipTest)
+from sklearn.utils.testing import SkipTest, assert_allclose
+from sklearn.utils.testing import assert_raises_regex
 
 DATASET_SHAPE = {'ecoli': (336, 7),
                  'optical_digits': (5620, 64),
@@ -54,12 +54,12 @@ def test_fetch():
     for k in DATASET_SHAPE.keys():
 
         X1, X2 = datasets1[k].data, datasets2[k].data
-        assert_equal(DATASET_SHAPE[k], X1.shape)
-        assert_equal(X1.shape, X2.shape)
+        assert DATASET_SHAPE[k] == X1.shape
+        assert X1.shape == X2.shape
 
         y1, y2 = datasets1[k].target, datasets2[k].target
-        assert_equal((X1.shape[0],), y1.shape)
-        assert_equal((X1.shape[0],), y2.shape)
+        assert (X1.shape[0],) == y1.shape
+        assert (X1.shape[0],) == y2.shape
 
 
 def test_fetch_filter():
@@ -73,14 +73,14 @@ def test_fetch_filter():
                       random_state=37)
 
     X1, X2 = datasets1['ecoli'].data, datasets2['ecoli'].data
-    assert_equal(DATASET_SHAPE['ecoli'], X1.shape)
-    assert_equal(X1.shape, X2.shape)
+    assert DATASET_SHAPE['ecoli'] == X1.shape
+    assert X1.shape == X2.shape
 
     assert_allclose(X1.sum(), X2.sum())
 
     y1, y2 = datasets1['ecoli'].target, datasets2['ecoli'].target
-    assert_equal((X1.shape[0],), y1.shape)
-    assert_equal((X1.shape[0],), y2.shape)
+    assert (X1.shape[0],) == y1.shape
+    assert (X1.shape[0],) == y2.shape
 
 
 def test_fetch_error():
