@@ -17,15 +17,9 @@ Welcome to imbalanced-learn documentation!
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: User Guide
+   :caption: Documentation
 
    user_guide
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-   :caption: API Documentation
-
    api
 
 .. toctree::
