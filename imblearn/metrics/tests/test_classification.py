@@ -32,7 +32,7 @@ from imblearn.metrics import geometric_mean_score
 from imblearn.metrics import make_index_balanced_accuracy
 from imblearn.metrics import classification_report_imbalanced
 
-from pytest import approx
+from pytest import approx, raises
 
 RND_SEED = 42
 R_TOL = 1e-2
@@ -432,43 +432,22 @@ def test_classification_report_imbalanced_multiclass_with_long_string_label():
 
 def test_iba_sklearn_metrics():
     y_true, y_pred, _ = make_prediction(binary=True)
+    iba_scoring_func = make_index_balanced_accuracy(alpha=0.5, squared=True)
+    expected_metric_result_pairs = ((accuracy_score, 0.54756),
+                                    (jaccard_similarity_score, 0.54756),
+                                    (precision_score, 0.65025),
+                                    (recall_score, 0.41616000000000009))
 
-    acc = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        accuracy_score)
-    score = acc(y_true, y_pred)
-    assert score == approx(0.54756)
-
-    jss = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        jaccard_similarity_score)
-    score = jss(y_true, y_pred)
-    assert score == approx(0.54756)
-
-    pre = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        precision_score)
-    score = pre(y_true, y_pred)
-    assert score == approx(0.65025)
-
-    rec = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        recall_score)
-    score = rec(y_true, y_pred)
-    assert score == approx(0.41616000000000009)
+    for metric, expected_value in expected_metric_result_pairs:
+        score = iba_scoring_func(metric)(y_true, y_pred)
+        assert score == approx(expected_value)
 
 
 def test_iba_error_y_score_prob():
     y_true, y_pred, _ = make_prediction(binary=True)
+    iba_scoring_func = make_index_balanced_accuracy(alpha=0.5, squared=True)
 
-    aps = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        average_precision_score)
-    assert_raises(AttributeError, aps, y_true, y_pred)
-
-    brier = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        brier_score_loss)
-    assert_raises(AttributeError, brier, y_true, y_pred)
-
-    kappa = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        cohen_kappa_score)
-    assert_raises(AttributeError, kappa, y_true, y_pred)
-
-    ras = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        roc_auc_score)
-    assert_raises(AttributeError, ras, y_true, y_pred)
+    for score_func in (average_precision_score, brier_score_loss,
+                       cohen_kappa_score, roc_auc_score):
+        with raises(AttributeError):
+            iba_scoring_func(score_func)(y_true, y_pred)
