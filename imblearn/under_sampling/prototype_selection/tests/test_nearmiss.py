@@ -6,8 +6,8 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_array_equal, assert_warns,
-                                   assert_raises_regex)
+from sklearn.utils.testing import assert_array_equal, assert_warns
+from sklearn.utils.testing import assert_raises_regex
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NearMiss

@@ -6,8 +6,8 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_array_equal, assert_equal,
-                                   assert_raises)
+from sklearn.utils.testing import assert_array_equal
+from sklearn.utils.testing import assert_raises
 
 from sklearn.neighbors import NearestNeighbors
 
@@ -43,10 +43,10 @@ Y = np.array([
 def test_renn_init():
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
 
-    assert_equal(renn.n_neighbors, 3)
-    assert_equal(renn.kind_sel, 'all')
-    assert_equal(renn.n_jobs, 1)
-    assert_equal(renn.random_state, RND_SEED)
+    assert renn.n_neighbors == 3
+    assert renn.kind_sel == 'all'
+    assert renn.n_jobs == 1
+    assert renn.random_state == RND_SEED
 
 
 def test_renn_iter_wrong():
