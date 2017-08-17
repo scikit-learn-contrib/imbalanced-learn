@@ -90,11 +90,11 @@ randomly selecting a subset of data for the targeted classes::
 by considering independently each targeted class::
 
   >>> import numpy as np
-  >>> print(np.unique(X_resampled, axis=0).shape)
+  >>> print(np.vstack({tuple(row) for row in X_resampled}).shape)
   (192, 2)
   >>> rus = RandomUnderSampler(random_state=0, replacement=True)
   >>> X_resampled, y_resampled = rus.fit_sample(X, y)
-  >>> print(np.unique(X_resampled, axis=0).shape)
+  >>> print(np.vstack({tuple(row) for row in X_resampled}).shape)
   (181, 2)
 
 See :ref:`sphx_glr_auto_examples_plot_ratio_usage.py`,
