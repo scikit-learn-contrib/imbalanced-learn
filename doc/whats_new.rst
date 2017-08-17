@@ -12,13 +12,18 @@ Version 0.3
 Changelog
 ---------
 
+Testing
+~~~~~~~
+
+- Pytest is used instead of nosetests. By `Joan Massich`_.
+
 Documentation
--------------
+~~~~~~~~~~~~~
 
 - Added a User Guide and extended some examples. By `Guillaume Lemaitre`_.
 
 Bug fixes
----------
+~~~~~~~~~
 
 - Fixed a bug in :func:`utils.check_ratio` such that an error is raised when
   the number of samples required is negative. By `Guillaume Lemaitre`_.
@@ -200,3 +205,4 @@ New methods
 .. _Aliaksei Halachkin: https://github.com/honeyext
 .. _Aleksandr Loskutov: https://github.com/loskutyan
 .. _Rafael Wampfler: https://github.com/Eichhof
+.. _Joan Massich: https://github.com/massich
