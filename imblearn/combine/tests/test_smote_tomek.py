@@ -125,7 +125,7 @@ def test_validate_estimator_default():
 
 
 def test_validate_estimator_deprecation():
-    smt = SMOTETomek(random_state=RND_SEED, n_jobs=-1)
+    smt = SMOTETomek(random_state=RND_SEED)
     X_resampled, y_resampled = smt.fit_sample(X, Y)
     X_gt = np.array([[0.68481731, 0.51935141],
                      [1.34192108, -0.13367336],

@@ -45,7 +45,7 @@ def test_renn_init():
 
     assert_equal(renn.n_neighbors, 3)
     assert_equal(renn.kind_sel, 'all')
-    assert_equal(renn.n_jobs, -1)
+    assert_equal(renn.n_jobs, 1)
     assert_equal(renn.random_state, RND_SEED)
 
 
