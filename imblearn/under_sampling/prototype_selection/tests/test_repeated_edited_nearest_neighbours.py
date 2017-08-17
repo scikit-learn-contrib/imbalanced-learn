@@ -7,11 +7,12 @@ from __future__ import print_function
 
 import numpy as np
 from sklearn.utils.testing import assert_array_equal
-from sklearn.utils.testing import assert_raises
 
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import RepeatedEditedNearestNeighbours
+
+from pytest import raises
 
 RND_SEED = 0
 X = np.array([[-0.12840393, 0.66446571], [1.32319756, -0.13181616],
@@ -53,7 +54,8 @@ def test_renn_iter_wrong():
     max_iter = -1
     renn = RepeatedEditedNearestNeighbours(
         max_iter=max_iter, random_state=RND_SEED)
-    assert_raises(ValueError, renn.fit_sample, X, Y)
+    with raises(ValueError):
+        renn.fit_sample(X, Y)
 
 
 def test_renn_fit_sample():
@@ -177,4 +179,5 @@ def test_renn_not_good_object():
     nn = 'rnd'
     renn = RepeatedEditedNearestNeighbours(
         n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
-    assert_raises(ValueError, renn.fit_sample, X, Y)
+    with raises(ValueError):
+        renn.fit_sample(X, Y)

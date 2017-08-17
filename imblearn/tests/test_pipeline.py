@@ -11,7 +11,6 @@ import shutil
 import time
 
 import numpy as np
-from sklearn.utils.testing import assert_raises
 from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.testing import assert_raise_message
 from sklearn.utils.testing import assert_array_equal
@@ -32,6 +31,8 @@ from sklearn.externals.joblib import Memory
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (RandomUnderSampler,
                                      EditedNearestNeighbours as ENN)
+
+from pytest import raises
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
@@ -176,7 +177,8 @@ class FitTransformSample(NoTrans):
 
 def test_pipeline_init():
     # Test the various init parameters of the pipeline.
-    assert_raises(TypeError, Pipeline)
+    with raises(TypeError):
+        Pipeline()
     # Check that we can't instantiate pipelines with objects without fit
     # method
     assert_raises_regex(TypeError,
@@ -215,7 +217,8 @@ def test_pipeline_init():
     repr(pipe)
 
     # Check that params are not set when naming them wrong
-    assert_raises(ValueError, pipe.set_params, anova__C=0.1)
+    with raises(ValueError):
+        pipe.set_params(anova__C=0.1)
 
     # Test clone
     pipe2 = clone(pipe)
@@ -471,8 +474,10 @@ def test_set_pipeline_steps():
 
     # With invalid data
     pipeline.set_params(steps=[('junk', ())])
-    assert_raises(TypeError, pipeline.fit, [[1]], [1])
-    assert_raises(TypeError, pipeline.fit_transform, [[1]], [1])
+    with raises(TypeError):
+        pipeline.fit([[1]], [1])
+    with raises(TypeError):
+        pipeline.fit_transform([[1]], [1])
 
 
 def test_set_pipeline_step_none():
@@ -595,10 +600,12 @@ def test_classes_property():
 
     reg = make_pipeline(SelectKBest(k=1), LinearRegression())
     reg.fit(X, y)
-    assert_raises(AttributeError, getattr, reg, "classes_")
+    with raises(AttributeError):
+        getattr(reg, "classes_")
 
     clf = make_pipeline(SelectKBest(k=1), LogisticRegression(random_state=0))
-    assert_raises(AttributeError, getattr, clf, "classes_")
+    with raises(AttributeError):
+        getattr(clf, "classes_")
     clf.fit(X, y)
     assert_array_equal(clf.classes_, np.unique(y))
 
@@ -1018,9 +1025,8 @@ def test_pipeline_with_step_that_implements_both_sample_and_transform():
         random_state=0)
 
     clf = LogisticRegression()
-    assert_raises(TypeError, Pipeline, [('step', FitTransformSample()),
-                                        ('logistic', clf)])
-    # assert_raises(TypeError, lambda x: [][0])
+    with raises(TypeError):
+        Pipeline([('step', FitTransformSample()), ('logistic', clf)])
 
 
 def test_pipeline_with_step_that_it_is_pipeline():
@@ -1041,7 +1047,8 @@ def test_pipeline_with_step_that_it_is_pipeline():
     rus = RandomUnderSampler(random_state=0)
     filter1 = SelectKBest(f_classif, k=2)
     pipe1 = Pipeline([('rus', rus), ('anova', filter1)])
-    assert_raises(TypeError, Pipeline, [('pipe1', pipe1), ('logistic', clf)])
+    with raises(TypeError):
+        Pipeline([('pipe1', pipe1), ('logistic', clf)])
 
 
 def test_pipeline_fit_then_sample_with_sampler_last_estimator():

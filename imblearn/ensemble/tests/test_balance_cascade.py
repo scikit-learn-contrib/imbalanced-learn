@@ -6,11 +6,13 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import assert_array_equal, assert_raises
+from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_raises_regex
 from sklearn.ensemble import RandomForestClassifier
 
 from imblearn.ensemble import BalanceCascade
+
+from pytest import raises
 
 RND_SEED = 0
 X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
@@ -299,7 +301,8 @@ def test_fit_sample_auto_linear_svm():
 def test_init_wrong_classifier():
     classifier = 'rnd'
     bc = BalanceCascade(classifier=classifier)
-    assert_raises(NotImplementedError, bc.fit_sample, X, Y)
+    with raises(NotImplementedError):
+        bc.fit_sample(X, Y)
 
 
 def test_fit_sample_auto_early_stop():

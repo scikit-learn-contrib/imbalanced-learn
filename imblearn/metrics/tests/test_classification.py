@@ -17,7 +17,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils.fixes import np_version
 from sklearn.utils.validation import check_random_state
 from sklearn.utils.testing import assert_allclose, assert_array_equal
-from sklearn.utils.testing import assert_no_warnings, assert_raises
+from sklearn.utils.testing import assert_no_warnings
 from sklearn.utils.testing import assert_warns_message, ignore_warnings
 from sklearn.utils.testing import assert_raise_message
 from sklearn.metrics import accuracy_score, average_precision_score
@@ -32,7 +32,7 @@ from imblearn.metrics import geometric_mean_score
 from imblearn.metrics import make_index_balanced_accuracy
 from imblearn.metrics import classification_report_imbalanced
 
-from pytest import approx
+from pytest import approx, raises
 
 RND_SEED = 42
 R_TOL = 1e-2
@@ -177,7 +177,8 @@ def test_sensitivity_specificity_error_multilabels():
     y_true_bin = label_binarize(y_true, classes=np.arange(5))
     y_pred_bin = label_binarize(y_pred, classes=np.arange(5))
 
-    assert_raises(ValueError, sensitivity_score, y_true_bin, y_pred_bin)
+    with raises(ValueError):
+        sensitivity_score(y_true_bin, y_pred_bin)
 
 
 @ignore_warnings
@@ -185,19 +186,13 @@ def test_sensitivity_specificity_support_errors():
     y_true, y_pred, _ = make_prediction(binary=True)
 
     # Bad pos_label
-    assert_raises(
-        ValueError,
-        sensitivity_specificity_support,
-        y_true,
-        y_pred,
-        pos_label=2,
-        average='binary')
+    with raises(ValueError):
+        sensitivity_specificity_support(y_true, y_pred, pos_label=2,
+                                        average='binary')
 
     # Bad average option
-    assert_raises(
-        ValueError,
-        sensitivity_specificity_support, [0, 1, 2], [1, 2, 0],
-        average='mega')
+    with raises(ValueError):
+        sensitivity_specificity_support([0, 1, 2], [1, 2, 0], average='mega')
 
 
 def test_sensitivity_specificity_unused_pos_label():
@@ -459,16 +454,20 @@ def test_iba_error_y_score_prob():
 
     aps = make_index_balanced_accuracy(alpha=0.5, squared=True)(
         average_precision_score)
-    assert_raises(AttributeError, aps, y_true, y_pred)
+    with raises(AttributeError):
+        aps(y_true, y_pred)
 
     brier = make_index_balanced_accuracy(alpha=0.5, squared=True)(
         brier_score_loss)
-    assert_raises(AttributeError, brier, y_true, y_pred)
+    with raises(AttributeError):
+        brier(y_true, y_pred)
 
     kappa = make_index_balanced_accuracy(alpha=0.5, squared=True)(
         cohen_kappa_score)
-    assert_raises(AttributeError, kappa, y_true, y_pred)
+    with raises(AttributeError):
+        kappa(y_true, y_pred)
 
     ras = make_index_balanced_accuracy(alpha=0.5, squared=True)(
         roc_auc_score)
-    assert_raises(AttributeError, ras, y_true, y_pred)
+    with raises(AttributeError):
+        ras(y_true, y_pred)
