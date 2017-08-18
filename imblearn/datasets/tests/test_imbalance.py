@@ -11,8 +11,8 @@ from collections import Counter
 import numpy as np
 
 from sklearn.datasets import load_iris
-from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.testing import assert_warns_message
+from pytest import raises
 
 from imblearn.datasets import make_imbalance
 
@@ -24,18 +24,18 @@ def test_make_imbalance_error():
     # we are reusing part of utils.check_ratio, however this is not cover in
     # the common tests so we will repeat it here
     ratio = {0: -100, 1: 50, 2: 50}
-    assert_raises_regex(ValueError, "in a class cannot be negative",
-                        make_imbalance, X, Y, ratio)
+    with raises(ValueError, match="in a class cannot be negative"):
+        make_imbalance(X, Y, ratio)
     ratio = {0: 10, 1: 70}
-    assert_raises_regex(ValueError, "should be less or equal to the original",
-                        make_imbalance, X, Y, ratio)
+    with raises(ValueError, match="should be less or equal to the original"):
+        make_imbalance(X, Y, ratio)
     y_ = np.zeros((X.shape[0], ))
     ratio = {0: 10}
-    assert_raises_regex(ValueError, "needs to have more than 1 class.",
-                        make_imbalance, X, y_, ratio)
+    with raises(ValueError, match="needs to have more than 1 class."):
+        make_imbalance(X, y_, ratio)
     ratio = 'random-string'
-    assert_raises_regex(ValueError, "has to be a dictionary or a function",
-                        make_imbalance, X, Y, ratio)
+    with raises(ValueError, match="has to be a dictionary or a function"):
+        make_imbalance(X, Y, ratio)
 
 
 # FIXME: to be removed in 0.4 due to deprecation

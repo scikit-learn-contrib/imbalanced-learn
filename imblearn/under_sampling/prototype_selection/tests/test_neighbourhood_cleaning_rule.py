@@ -6,7 +6,8 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import assert_array_equal, assert_raises_regex
+from sklearn.utils.testing import assert_array_equal
+from pytest import raises
 
 from sklearn.neighbors import NearestNeighbors
 
@@ -26,15 +27,15 @@ Y = np.array([1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 
 def test_ncr_error():
     threshold_cleaning = -10
-    assert_raises_regex(ValueError, "'threshold_cleaning' is a value between"
-                        " 0 and 1.", NeighbourhoodCleaningRule(
-                            threshold_cleaning=threshold_cleaning).fit_sample,
-                        X, Y)
+    with raises(ValueError, match=("'threshold_cleaning' is a value between"
+                                   " 0 and 1")):
+        NeighbourhoodCleaningRule(
+            threshold_cleaning=threshold_cleaning).fit_sample(X, Y)
     threshold_cleaning = 10
-    assert_raises_regex(ValueError, "'threshold_cleaning' is a value between"
-                        " 0 and 1.", NeighbourhoodCleaningRule(
-                            threshold_cleaning=threshold_cleaning).fit_sample,
-                        X, Y)
+    with raises(ValueError, match=("'threshold_cleaning' is a value between"
+                                   " 0 and 1")):
+        NeighbourhoodCleaningRule(
+            threshold_cleaning=threshold_cleaning).fit_sample(X, Y)
 
 
 def test_ncr_fit_sample():
@@ -124,5 +125,5 @@ def test_ncr_wrong_nn_obj():
     nn = 'rnd'
     ncr = NeighbourhoodCleaningRule(
         return_indices=True, random_state=RND_SEED, n_neighbors=nn)
-    assert_raises_regex(ValueError, "has to be one of",
-                        ncr.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        ncr.fit_sample(X, Y)

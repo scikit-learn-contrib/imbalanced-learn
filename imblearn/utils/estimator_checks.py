@@ -18,7 +18,9 @@ from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
-from sklearn.utils.testing import assert_warns, assert_raises_regex
+from sklearn.utils.testing import assert_warns
+from pytest import raises
+
 from sklearn.utils.testing import set_random_state
 
 from imblearn.base import SamplerMixin
@@ -170,8 +172,8 @@ def check_samplers_no_fit_error(name, Sampler):
     sampler = Sampler()
     X = np.random.random((20, 2))
     y = np.array([1] * 5 + [0] * 15)
-    assert_raises_regex(NotFittedError, "instance is not fitted yet.",
-                        sampler.sample, X, y)
+    with raises(NotFittedError, match="instance is not fitted yet."):
+        sampler.sample(X, y)
 
 
 def check_samplers_X_consistancy_sample(name, Sampler):
@@ -181,8 +183,8 @@ def check_samplers_X_consistancy_sample(name, Sampler):
     sampler.fit(X, y)
     X_different = np.random.random((40, 2))
     y_different = y = np.array([1] * 25 + [0] * 15)
-    assert_raises_regex(RuntimeError, "X and y need to be same array earlier",
-                        sampler.sample, X_different, y_different)
+    with raises(RuntimeError, match="X and y need to be same array earlier"):
+        sampler.sample(X_different, y_different)
 
 
 def check_samplers_fit(name, Sampler):

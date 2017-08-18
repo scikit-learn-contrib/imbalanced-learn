@@ -7,7 +7,7 @@ from __future__ import print_function
 
 import numpy as np
 from sklearn.utils.testing import assert_allclose, assert_array_equal
-from sklearn.utils.testing import assert_raises_regex
+from pytest import raises
 
 from imblearn.combine import SMOTEENN
 from imblearn.under_sampling import EditedNearestNeighbours
@@ -113,8 +113,8 @@ def test_error_wrong_object():
     smote = 'rnd'
     enn = 'rnd'
     smt = SMOTEENN(smote=smote, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "smote needs to be a SMOTE",
-                        smt.fit_sample, X, Y)
+    with raises(ValueError, match="smote needs to be a SMOTE"):
+        smt.fit_sample(X, Y)
     smt = SMOTEENN(enn=enn, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "enn needs to be an ",
-                        smt.fit_sample, X, Y)
+    with raises(ValueError, match="enn needs to be an "):
+        smt.fit_sample(X, Y)

@@ -7,7 +7,7 @@ from __future__ import print_function
 
 import numpy as np
 from sklearn.utils.testing import assert_array_equal
-from sklearn.utils.testing import assert_raises_regex
+from pytest import raises
 
 from sklearn.neighbors import NearestNeighbors
 
@@ -102,5 +102,5 @@ def test_enn_not_good_object():
     nn = 'rnd'
     enn = EditedNearestNeighbours(
         n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
-    assert_raises_regex(ValueError, "has to be one of",
-                        enn.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        enn.fit_sample(X, Y)

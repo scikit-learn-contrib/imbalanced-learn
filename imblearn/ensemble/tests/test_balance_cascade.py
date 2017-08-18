@@ -7,7 +7,7 @@ from __future__ import print_function
 
 import numpy as np
 from sklearn.utils.testing import assert_array_equal
-from sklearn.utils.testing import assert_raises_regex
+
 from sklearn.ensemble import RandomForestClassifier
 
 from imblearn.ensemble import BalanceCascade
@@ -365,5 +365,5 @@ def test_give_classifier_wrong_obj():
     classifier = 2
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
                         return_indices=True, estimator=classifier)
-    assert_raises_regex(ValueError, "Invalid parameter `estimator`",
-                        bc.fit_sample, X, Y)
+    with raises(ValueError, match="Invalid parameter `estimator`"):
+        bc.fit_sample(X, Y)

@@ -3,7 +3,7 @@
 #          Christos Aridas
 # License: MIT
 
-from sklearn.utils.testing import assert_raises_regex
+from pytest import raises
 
 from imblearn.base import SamplerMixin
 from imblearn.utils.testing import all_estimators
@@ -21,5 +21,5 @@ def test_all_estimators():
 
     # check that an error is raised when the type is unknown
     type_filter = 'rnd'
-    assert_raises_regex(ValueError, "Parameter type_filter must be 'sampler'",
-                        all_estimators, type_filter=type_filter)
+    with raises(ValueError, match="Parameter type_filter must be 'sampler'"):
+        all_estimators(type_filter=type_filter)

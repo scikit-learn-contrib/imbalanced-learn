@@ -7,8 +7,8 @@ from __future__ import print_function
 
 import numpy as np
 from sklearn.utils.testing import assert_array_equal, assert_warns
-from sklearn.utils.testing import assert_raises_regex
 from sklearn.neighbors import NearestNeighbors
+from pytest import raises
 
 from imblearn.under_sampling import NearMiss
 
@@ -42,8 +42,8 @@ def test_nearmiss_deprecation():
 def test_nearmiss_wrong_version():
     version = 1000
     nm = NearMiss(version=version, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "must be 1, 2 or 3",
-                        nm.fit_sample, X, Y)
+    with raises(ValueError, match="must be 1, 2 or 3"):
+        nm.fit_sample(X, Y)
 
 
 def test_nm_wrong_nn_obj():
@@ -53,15 +53,15 @@ def test_nm_wrong_nn_obj():
                   version=VERSION_NEARMISS,
                   return_indices=True,
                   n_neighbors=nn)
-    assert_raises_regex(ValueError, "has to be one of",
-                        nm.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        nm.fit_sample(X, Y)
     nn3 = 'rnd'
     nn = NearestNeighbors(n_neighbors=3)
     nm3 = NearMiss(ratio=ratio, random_state=RND_SEED,
                    version=3, return_indices=True,
                    n_neighbors=nn, n_neighbors_ver3=nn3)
-    assert_raises_regex(ValueError, "has to be one of",
-                        nm3.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        nm3.fit_sample(X, Y)
 
 
 def test_nm_fit_sample_auto():

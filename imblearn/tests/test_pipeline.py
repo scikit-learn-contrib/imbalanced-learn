@@ -11,7 +11,6 @@ import shutil
 import time
 
 import numpy as np
-from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.testing import assert_raise_message
 from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_array_almost_equal
@@ -181,10 +180,9 @@ def test_pipeline_init():
         Pipeline()
     # Check that we can't instantiate pipelines with objects without fit
     # method
-    assert_raises_regex(TypeError,
-                        'Last step of Pipeline should implement fit. '
-                        '.*NoFit.*',
-                        Pipeline, [('clf', NoFit())])
+    error_regex = 'Last step of Pipeline should implement fit. .*NoFit.*'
+    with raises(TypeError, match=error_regex):
+        Pipeline([('clf', NoFit())])
     # Smoke test with only an estimator
     clf = NoTrans()
     pipe = Pipeline([('svc', clf)])
@@ -206,9 +204,9 @@ def test_pipeline_init():
 
     # Check that we can't instantiate with non-transformers on the way
     # Note that NoTrans implements fit, but not transform
-    assert_raises_regex(TypeError,
-                        'implement fit and transform or sample',
-                        Pipeline, [('t', NoTrans()), ('svc', clf)])
+    error_regex = 'implement fit and transform or sample'
+    with raises(TypeError, match=error_regex):
+        Pipeline([('t', NoTrans()), ('svc', clf)])
 
     # Check that params are set
     pipe.set_params(svc__C=0.1)
@@ -400,9 +398,9 @@ def test_fit_predict_on_pipeline_without_fit_predict():
     scaler = StandardScaler()
     pca = PCA(svd_solver='full')
     pipe = Pipeline([('scaler', scaler), ('pca', pca)])
-    assert_raises_regex(AttributeError,
-                        "'PCA' object has no attribute 'fit_predict'",
-                        getattr, pipe, 'fit_predict')
+    error_regex = "'PCA' object has no attribute 'fit_predict'"
+    with raises(AttributeError, match=error_regex):
+        getattr(pipe, 'fit_predict')
 
 
 def test_fit_predict_with_intermediate_fit_params():
@@ -620,9 +618,10 @@ def test_pipeline_wrong_memory():
     memory = 1
     cached_pipe = Pipeline([('transf', DummyTransf()), ('svc', SVC())],
                            memory=memory)
-    assert_raises_regex(ValueError, "'memory' should either be a string or a"
-                        " joblib.Memory instance, got 'memory=1' instead.",
-                        cached_pipe.fit, X, y)
+    error_regex = ("'memory' should either be a string or a joblib.Memory"
+                   " instance, got 'memory=1' instead.")
+    with raises(ValueError, match=error_regex):
+        cached_pipe.fit(X, y)
 
 
 def test_pipeline_memory_transformer():

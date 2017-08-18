@@ -6,7 +6,8 @@ from collections import Counter
 import numpy as np
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_array_equal
-from sklearn.utils.testing import assert_raises_regex
+from pytest import raises
+
 from sklearn.cluster import KMeans
 
 from imblearn.under_sampling import ClusterCentroids
@@ -79,5 +80,5 @@ def test_fit_sample_wrong_object():
     cluster = 'rnd'
     cc = ClusterCentroids(
         ratio=ratio, random_state=RND_SEED, estimator=cluster)
-    assert_raises_regex(ValueError, "has to be a KMeans clustering",
-                        cc.fit_sample, X, Y)
+    with raises(ValueError, match="has to be a KMeans clustering"):
+        cc.fit_sample(X, Y)

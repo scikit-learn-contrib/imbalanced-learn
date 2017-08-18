@@ -5,10 +5,11 @@ import sys
 from sklearn.externals.six.moves import cStringIO as StringIO
 
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.validation import check_X_y, check_array
 
 from imblearn.utils.estimator_checks import check_estimator
+
+from pytest import raises
 
 
 class CorrectNotFittedError(ValueError):
@@ -98,35 +99,40 @@ def test_check_estimator():
 
     # check that we have a set_params and can clone
     msg = "it does not implement a 'get_params' methods"
-    assert_raises_regex(TypeError, msg, check_estimator, object)
+    with raises(TypeError, match=msg):
+        check_estimator(object)
+
     # check that we have a fit method
     msg = "object has no attribute 'fit'"
-    assert_raises_regex(AttributeError, msg, check_estimator, BaseEstimator)
+    with raises(AttributeError, match=msg):
+        check_estimator(BaseEstimator)
     # check that fit does input validation
     msg = "TypeError not raised"
-    assert_raises_regex(AssertionError, msg, check_estimator,
-                        BaseBadClassifier)
+    with raises(AssertionError, match=msg):
+        check_estimator(BaseBadClassifier)
     # check that predict does input validation (doesn't accept dicts in input)
     msg = "Estimator doesn't check for NaN and inf in predict"
-    assert_raises_regex(AssertionError, msg, check_estimator, NoCheckinPredict)
+    with raises(AssertionError, match=msg):
+        check_estimator(NoCheckinPredict)
     # check that estimator state does not change
     # at transform/predict/predict_proba time
     msg = 'Estimator changes __dict__ during predict'
-    assert_raises_regex(AssertionError, msg, check_estimator, ChangesDict)
+    with raises(AssertionError, match=msg):
+        check_estimator(ChangesDict)
     # check that `fit` only changes attributes that
     # are private (start with an _ or end with a _).
     msg = ('Estimator changes public attribute\(s\) during the fit method.'
            ' Estimators are only allowed to change attributes started'
            ' or ended with _, but wrong_attribute changed')
-    assert_raises_regex(AssertionError, msg,
-                        check_estimator, ChangesWrongAttribute)
+    with raises(AssertionError, match=msg):
+        check_estimator(ChangesWrongAttribute)
     # check that `fit` doesn't add any public attribute
     msg = ('Estimator adds public attribute\(s\) during the fit method.'
            ' Estimators are only allowed to add private attributes'
            ' either started with _ or ended'
            ' with _ but wrong_attribute added')
-    assert_raises_regex(AssertionError, msg,
-                        check_estimator, SetsWrongAttribute)
+    with raises(AssertionError, match=msg):
+        check_estimator(SetsWrongAttribute)
     # check for sparse matrix input handling
     name = NoSparseClassifier.__name__
     msg = ("Estimator " + name + " doesn't seem to fail gracefully on"
