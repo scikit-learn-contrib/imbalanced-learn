@@ -14,6 +14,11 @@ from imblearn.base import SamplerMixin
 
 from sklearn.base import BaseEstimator
 
+from pytest import warns as _warns
+from contextlib import contextmanager
+from re import compile
+
+
 # meta-estimators need another estimator to be instantiated.
 META_ESTIMATORS = []
 # estimators that there is no way to default-construct sensibly
@@ -120,3 +125,47 @@ def all_estimators(include_meta_estimators=False,
     # itemgetter is used to ensure the sort does not extend to the 2nd item of
     # the tuple
     return sorted(set(estimators), key=itemgetter(0))
+
+
+@contextmanager
+def warns(expected_warning, match=None):
+    """Assert that a warning is raised with an optional matching pattern
+
+    Assert that a code block/function call warns ``expected_warning``
+    and raise a failure exception otherwise. It can be used within a context
+    manager ``with``.
+
+    Parameters
+    ----------
+    expected_warning : Warning
+        Warning type.
+
+    match : regex str or None, optional
+        The pattern to be matched. By default, no check is done.
+
+    Returns
+    -------
+    None
+
+    Examples
+    --------
+
+    >>> import warnings
+    >>> from imblearn.utils.testing import warns
+    >>> with warns(UserWarning, match=r'must be \d+$'):
+    ...     warnings.warn("value must be 42", UserWarning)
+
+    """
+    with _warns(expected_warning) as record:
+        yield
+
+    if match is not None:
+        for each in record:
+            if compile(match).search(str(each.message)) is not None:
+                break
+        else:
+            msg = "'{}' pattern not found in {}".format(
+                match, '{}'.format([str(r.message) for r in record]))
+            assert False, msg
+    else:
+        pass
