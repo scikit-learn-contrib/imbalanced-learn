@@ -19,7 +19,6 @@ from sklearn.utils.validation import check_random_state
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.utils.testing import assert_no_warnings
 from sklearn.utils.testing import assert_warns_message, ignore_warnings
-from sklearn.utils.testing import assert_raise_message
 from sklearn.metrics import accuracy_score, average_precision_score
 from sklearn.metrics import brier_score_loss, cohen_kappa_score
 from sklearn.metrics import jaccard_similarity_score, precision_score
@@ -400,10 +399,8 @@ def test_classification_report_imbalanced_multiclass_with_unicode_label():
                        u'0.15 0.44 0.19 31 red\xa2 0.42 0.90 0.55 0.57 0.63 '
                        u'0.37 20 avg / total 0.51 0.53 0.80 0.47 0.62 0.41 75')
     if np_version[:3] < (1, 7, 0):
-        expected_message = ("NumPy < 1.7.0 does not implement"
-                            " searchsorted on unicode data correctly.")
-        assert_raise_message(RuntimeError, expected_message,
-                             classification_report_imbalanced, y_true, y_pred)
+        with raises(RuntimeError, match="NumPy < 1.7.0"):
+            classification_report_imbalanced(y_true, y_pred)
     else:
         report = classification_report_imbalanced(y_true, y_pred)
         assert _format_report(report) == expected_report

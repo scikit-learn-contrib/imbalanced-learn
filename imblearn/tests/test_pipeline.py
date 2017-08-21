@@ -11,7 +11,6 @@ import shutil
 import time
 
 import numpy as np
-from sklearn.utils.testing import assert_raise_message
 from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_array_almost_equal
 from sklearn.utils.testing import assert_allclose
@@ -266,11 +265,8 @@ def test_pipeline_fit_params():
     assert pipe.named_steps['transf'].a is None
     assert pipe.named_steps['transf'].b is None
     # invalid parameters should raise an error message
-    assert_raise_message(
-        TypeError,
-        "fit() got an unexpected keyword argument 'bad'",
-        pipe.fit, None, None, clf__bad=True
-    )
+    with raises(TypeError, match="unexpected keyword argument"):
+        pipe.fit(None, None, clf__bad=True)
 
 
 def test_pipeline_sample_weight_supported():
@@ -291,32 +287,19 @@ def test_pipeline_sample_weight_unsupported():
     pipe.fit(X, y=None)
     assert pipe.score(X) == 3
     assert pipe.score(X, sample_weight=None) == 3
-    assert_raise_message(
-        TypeError,
-        "score() got an unexpected keyword argument 'sample_weight'",
-        pipe.score, X, sample_weight=np.array([2, 3])
-    )
+    with raises(TypeError, match="unexpected keyword argument"):
+        pipe.score(X, sample_weight=np.array([2, 3]))
 
 
 def test_pipeline_raise_set_params_error():
     # Test pipeline raises set params error message for nested models.
     pipe = Pipeline([('cls', LinearRegression())])
-
-    # expected error message
-    error_msg = ('Invalid parameter %s for estimator %s. '
-                 'Check the list of available parameters '
-                 'with `estimator.get_params().keys()`.')
-
-    assert_raise_message(ValueError,
-                         error_msg % ('fake', 'Pipeline'),
-                         pipe.set_params,
-                         fake='nope')
+    with raises(ValueError, match="Invalid parameter"):
+        pipe.set_params(fake='nope')
 
     # nested model check
-    assert_raise_message(ValueError,
-                         error_msg % ("fake", pipe),
-                         pipe.set_params,
-                         fake__estimator='nope')
+    with raises(ValueError, match="Invalid parameter"):
+        pipe.set_params(fake__estimator='nope')
 
 
 def test_pipeline_methods_pca_svm():
@@ -537,9 +520,8 @@ def test_set_pipeline_step_none():
     assert_array_equal([[exp]], pipeline.fit(X, y).transform(X))
     assert_array_equal([[exp]], pipeline.fit_transform(X, y))
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
-    assert_raise_message(AttributeError,
-                         "'NoneType' object has no attribute 'predict'",
-                         getattr, pipeline, 'predict')
+    with raises(AttributeError, match="has no attribute 'predict'"):
+        getattr(pipeline, 'predict')
 
     # Check None step at construction time
     exp = 2 * 5
