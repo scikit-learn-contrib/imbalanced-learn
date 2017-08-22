@@ -15,3 +15,4 @@ User Guide
    combine.rst
    ensemble.rst
    Dataset loading utilities <datasets/index.rst>
+   developers_utils.rst
