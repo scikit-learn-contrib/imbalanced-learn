@@ -11,6 +11,8 @@ import traceback
 
 from collections import Counter
 
+import pytest
+
 import numpy as np
 from scipy import sparse
 
@@ -20,6 +22,7 @@ from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
+from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_warns, assert_raises_regex
 from sklearn.utils.testing import set_random_state
 
@@ -281,47 +284,36 @@ def check_samplers_sparse(name, Sampler):
         X_res_sparse, y_res_sparse = sampler.fit_sample(X_sparse, y)
         X_res, y_res = sampler.fit_sample(X, y)
         if not isinstance(sampler, BaseEnsembleSampler):
-            if not isinstance(sampler, ClusterCentroids):
-                assert_true(sparse.issparse(X_res_sparse))
+                assert sparse.issparse(X_res_sparse)
                 assert_allclose(X_res_sparse.A, X_res)
-                assert_allclose(y_res_sparse, y_res)
-            else:
-                assert_true(sparse.issparse(X_res_sparse))
-                assert_allclose(X_res_sparse.A, X_res, rtol=1e-4, atol=1e-4)
                 assert_allclose(y_res_sparse, y_res)
         else:
             for x_sp, x, y_sp, y in zip(X_res_sparse, X_res,
                                         y_res_sparse, y_res):
-                assert_true(sparse.issparse(x_sp))
+                assert sparse.issparse(x_sp)
                 assert_allclose(x_sp.A, x)
                 assert_allclose(y_sp, y)
 
 
 def check_samplers_pandas(name, Sampler):
+    pd = pytest.importorskip("pandas")
     # Check that the samplers handle pandas dataframe and pandas series
     X, y = make_classification(n_samples=1000, n_classes=3,
                                n_informative=4, weights=[0.2, 0.3, 0.5],
                                random_state=0)
-    try:
-        import pandas as pd
-        X_pd, y_pd = pd.DataFrame(X), pd.Series(y)
-        sampler = Sampler(random_state=0)
-        if isinstance(Sampler(), SMOTE):
-            samplers = [Sampler(random_state=0, kind=kind)
-                        for kind in ('regular', 'borderline1',
-                                     'borderline2', 'svm')]
-        elif isinstance(Sampler(), NearMiss):
+    X_pd, y_pd = pd.DataFrame(X), pd.Series(y)
+    sampler = Sampler(random_state=0)
+    if isinstance(Sampler(), SMOTE):
+        samplers = [Sampler(random_state=0, kind=kind)
+                    for kind in ('regular', 'borderline1',
+                                 'borderline2', 'svm')]
+    elif isinstance(Sampler(), NearMiss):
             samplers = [Sampler(random_state=0, version=version)
                         for version in (1, 2, 3)]
-        else:
-            samplers = [Sampler(random_state=0)]
-        for sampler in samplers:
-            X_res_pd, y_res_pd = sampler.fit_sample(X_pd, y_pd)
-            X_res, y_res = sampler.fit_sample(X, y)
-            assert_allclose(X_res_pd, X_res)
-            assert_allclose(y_res_pd, y_res)
-
-    except ImportError:
-            raise SkipTest("pandas is not installed: not testing for "
-                           "input of type pandas.DataFrame / pandas.Series as"
-                           " input.")
+    else:
+        samplers = [Sampler(random_state=0)]
+    for sampler in samplers:
+        X_res_pd, y_res_pd = sampler.fit_sample(X_pd, y_pd)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_allclose(X_res_pd, X_res)
+        assert_allclose(y_res_pd, y_res)
