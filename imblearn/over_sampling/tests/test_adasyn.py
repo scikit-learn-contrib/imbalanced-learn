@@ -6,8 +6,8 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_allclose, assert_array_equal,
-                                   assert_equal, assert_raises_regex)
+from sklearn.utils.testing import assert_allclose, assert_array_equal
+from sklearn.utils.testing import assert_raises_regex
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.over_sampling import ADASYN
@@ -30,13 +30,13 @@ R_TOL = 1e-4
 def test_ada_init():
     ratio = 'auto'
     ada = ADASYN(ratio=ratio, random_state=RND_SEED)
-    assert_equal(ada.random_state, RND_SEED)
+    assert ada.random_state == RND_SEED
 
 
 def test_ada_fit():
     ada = ADASYN(random_state=RND_SEED)
     ada.fit(X, Y)
-    assert_equal(ada.ratio_, {0: 4, 1: 0})
+    assert ada.ratio_ == {0: 4, 1: 0}
 
 
 def test_ada_fit_sample():

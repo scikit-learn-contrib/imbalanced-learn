@@ -20,10 +20,8 @@ from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
-from sklearn.utils.testing import (assert_warns, assert_raises_regex,
-                                   assert_true, set_random_state,
-                                   assert_equal, assert_allclose,
-                                   SkipTest)
+from sklearn.utils.testing import assert_warns, assert_raises_regex
+from sklearn.utils.testing import set_random_state
 
 from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
@@ -135,24 +133,23 @@ def check_dont_overwrite_parameters(name, Estimator):
                           if key not in dict_before_fit.keys()]
 
     # check that fit doesn't add any public attribute
-    assert_true(not attrs_added_by_fit,
-                ('Estimator adds public attribute(s) during'
-                 ' the fit method.'
-                 ' Estimators are only allowed to add private attributes'
-                 ' either started with _ or ended'
-                 ' with _ but %s added' % ', '.join(attrs_added_by_fit)))
+    assert not attrs_added_by_fit, ('Estimator adds public attribute(s) during'
+                                    ' the fit method. Estimators are only'
+                                    ' allowed to add private attributes either'
+                                    ' started with _ or ended with _ but %s'
+                                    ' added' % ', '.join(attrs_added_by_fit))
 
     # check that fit doesn't change any public attribute
     attrs_changed_by_fit = [key for key in public_keys_after_fit
                             if (dict_before_fit[key]
                                 is not dict_after_fit[key])]
 
-    assert_true(not attrs_changed_by_fit,
-                ('Estimator changes public attribute(s) during'
-                 ' the fit method. Estimators are only allowed'
-                 ' to change attributes started'
-                 ' or ended with _, but'
-                 ' %s changed' % ', '.join(attrs_changed_by_fit)))
+    assert not attrs_changed_by_fit, ('Estimator changes public attribute(s)'
+                                      ' during the fit method. Estimators are'
+                                      ' only allowed to change attributes'
+                                      ' started or ended with _, but %s'
+                                      ' changed' %
+                                      ', '.join(attrs_changed_by_fit))
 
 
 def check_samplers_one_label(name, Sampler):
@@ -199,7 +196,7 @@ def check_samplers_fit(name, Sampler):
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
     sampler.fit(X, y)
-    assert_true(hasattr(sampler, 'ratio_'))
+    assert hasattr(sampler, 'ratio_')
 
 
 def check_samplers_fit_sample(name, Sampler):
@@ -212,24 +209,21 @@ def check_samplers_fit_sample(name, Sampler):
     if isinstance(sampler, BaseOverSampler):
         target_stats_res = Counter(y_res)
         n_samples = max(target_stats.values())
-        assert_true(all(value >= n_samples
-                        for value in Counter(y_res).values()))
+        assert all(value >= n_samples for value in Counter(y_res).values())
     elif isinstance(sampler, BaseUnderSampler):
         n_samples = min(target_stats.values())
-        assert_true(all(value == n_samples
-                        for value in Counter(y_res).values()))
+        assert all(value == n_samples for value in Counter(y_res).values())
     elif isinstance(sampler, BaseCleaningSampler):
         target_stats_res = Counter(y_res)
         class_minority = min(target_stats, key=target_stats.get)
-        assert_true(
-            all(target_stats[class_sample] > target_stats_res[class_sample]
-                for class_sample in target_stats.keys()
-                if class_sample != class_minority))
+        assert all(target_stats[class_sample] > target_stats_res[class_sample]
+                   for class_sample in target_stats.keys()
+                   if class_sample != class_minority)
     elif isinstance(sampler, BaseEnsembleSampler):
         y_ensemble = y_res[0]
         n_samples = min(target_stats.values())
-        assert_true(all(value == n_samples
-                        for value in Counter(y_ensemble).values()))
+        assert all(value == n_samples
+                   for value in Counter(y_ensemble).values())
 
 
 def check_samplers_ratio_fit_sample(name, Sampler):
@@ -237,29 +231,29 @@ def check_samplers_ratio_fit_sample(name, Sampler):
     X, y = make_classification(n_samples=1000, n_classes=3,
                                n_informative=4, weights=[0.2, 0.3, 0.5],
                                random_state=0)
-    target_stats = Counter(y)
     sampler = Sampler(random_state=0)
+    expected_stat = Counter(y)[1]
     if isinstance(sampler, BaseOverSampler):
         ratio = {2: 498, 0: 498}
         sampler.set_params(ratio=ratio)
         X_res, y_res = sampler.fit_sample(X, y)
-        assert_equal(target_stats[1], Counter(y_res)[1])
+        assert Counter(y_res)[1] == expected_stat
     elif isinstance(sampler, BaseUnderSampler):
         ratio = {2: 201, 0: 201}
         sampler.set_params(ratio=ratio)
         X_res, y_res = sampler.fit_sample(X, y)
-        assert_equal(target_stats[1], Counter(y_res)[1])
+        assert Counter(y_res)[1] == expected_stat
     elif isinstance(sampler, BaseCleaningSampler):
         ratio = {2: 201, 0: 201}
         sampler.set_params(ratio=ratio)
         X_res, y_res = sampler.fit_sample(X, y)
-        assert_equal(target_stats[1], Counter(y_res)[1])
+        assert Counter(y_res)[1] == expected_stat
     elif isinstance(sampler, BaseEnsembleSampler):
         ratio = {2: 201, 0: 201}
         sampler.set_params(ratio=ratio)
         X_res, y_res = sampler.fit_sample(X, y)
         y_ensemble = y_res[0]
-        assert_equal(target_stats[1], Counter(y_ensemble)[1])
+        assert Counter(y_ensemble)[1] == expected_stat
 
 
 def check_samplers_sparse(name, Sampler):

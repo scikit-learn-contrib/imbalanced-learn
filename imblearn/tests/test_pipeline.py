@@ -14,12 +14,8 @@ import numpy as np
 from sklearn.utils.testing import assert_raises
 from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.testing import assert_raise_message
-from sklearn.utils.testing import assert_equal
-from sklearn.utils.testing import assert_false
-from sklearn.utils.testing import assert_true
 from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_array_almost_equal
-from sklearn.utils.testing import assert_dict_equal
 from sklearn.utils.testing import assert_allclose
 
 from sklearn.base import clone, BaseEstimator
@@ -190,14 +186,14 @@ def test_pipeline_init():
     # Smoke test with only an estimator
     clf = NoTrans()
     pipe = Pipeline([('svc', clf)])
-    assert_equal(pipe.get_params(deep=True),
-                 dict(svc__a=None, svc__b=None, svc=clf,
-                      **pipe.get_params(deep=False)))
+    expected = dict(svc__a=None, svc__b=None, svc=clf,
+                    **pipe.get_params(deep=False))
+    assert pipe.get_params(deep=True) == expected
 
     # Check that params are set
     pipe.set_params(svc__a=0.1)
-    assert_equal(clf.a, 0.1)
-    assert_equal(clf.b, None)
+    assert clf.a == 0.1
+    assert clf.b is None
     # Smoke test the repr:
     repr(pipe)
 
@@ -214,7 +210,7 @@ def test_pipeline_init():
 
     # Check that params are set
     pipe.set_params(svc__C=0.1)
-    assert_equal(clf.C, 0.1)
+    assert clf.C == 0.1
     # Smoke test the repr:
     repr(pipe)
 
@@ -223,7 +219,7 @@ def test_pipeline_init():
 
     # Test clone
     pipe2 = clone(pipe)
-    assert_false(pipe.named_steps['svc'] is pipe2.named_steps['svc'])
+    assert not pipe.named_steps['svc'] is pipe2.named_steps['svc']
 
     # Check that apart from estimators, the parameters are the same
     params = pipe.get_params(deep=True)
@@ -240,7 +236,7 @@ def test_pipeline_init():
     params.pop('anova')
     params2.pop('svc')
     params2.pop('anova')
-    assert_equal(params, params2)
+    assert params == params2
 
 
 def test_pipeline_methods_anova():
@@ -264,10 +260,10 @@ def test_pipeline_fit_params():
     pipe = Pipeline([('transf', Transf()), ('clf', FitParamT())])
     pipe.fit(X=None, y=None, clf__should_succeed=True)
     # classifier should return True
-    assert_true(pipe.predict(None))
+    assert pipe.predict(None)
     # and transformer params should not be changed
-    assert_true(pipe.named_steps['transf'].a is None)
-    assert_true(pipe.named_steps['transf'].b is None)
+    assert pipe.named_steps['transf'].a is None
+    assert pipe.named_steps['transf'].b is None
     # invalid parameters should raise an error message
     assert_raise_message(
         TypeError,
@@ -281,10 +277,10 @@ def test_pipeline_sample_weight_supported():
     X = np.array([[1, 2]])
     pipe = Pipeline([('transf', Transf()), ('clf', FitParamT())])
     pipe.fit(X, y=None)
-    assert_equal(pipe.score(X), 3)
-    assert_equal(pipe.score(X, y=None), 3)
-    assert_equal(pipe.score(X, y=None, sample_weight=None), 3)
-    assert_equal(pipe.score(X, sample_weight=np.array([2, 3])), 8)
+    assert pipe.score(X) == 3
+    assert pipe.score(X, y=None) == 3
+    assert pipe.score(X, y=None, sample_weight=None) == 3
+    assert pipe.score(X, sample_weight=np.array([2, 3])) == 8
 
 
 def test_pipeline_sample_weight_unsupported():
@@ -292,8 +288,8 @@ def test_pipeline_sample_weight_unsupported():
     X = np.array([[1, 2]])
     pipe = Pipeline([('transf', Transf()), ('clf', Mult())])
     pipe.fit(X, y=None)
-    assert_equal(pipe.score(X), 3)
-    assert_equal(pipe.score(X, sample_weight=None), 3)
+    assert pipe.score(X) == 3
+    assert pipe.score(X, sample_weight=None) == 3
     assert_raise_message(
         TypeError,
         "score() got an unexpected keyword argument 'sample_weight'",
@@ -355,16 +351,16 @@ def test_pipeline_methods_preprocessing_svm():
 
         # check shapes of various prediction functions
         predict = pipe.predict(X)
-        assert_equal(predict.shape, (n_samples,))
+        assert predict.shape == (n_samples,)
 
         proba = pipe.predict_proba(X)
-        assert_equal(proba.shape, (n_samples, n_classes))
+        assert proba.shape == (n_samples, n_classes)
 
         log_proba = pipe.predict_log_proba(X)
-        assert_equal(log_proba.shape, (n_samples, n_classes))
+        assert log_proba.shape == (n_samples, n_classes)
 
         decision_function = pipe.decision_function(X)
-        assert_equal(decision_function.shape, (n_samples, n_classes))
+        assert decision_function.shape == (n_samples, n_classes)
 
         pipe.score(X, y)
 
@@ -414,9 +410,9 @@ def test_fit_predict_with_intermediate_fit_params():
                      y=None,
                      transf__should_get_this=True,
                      clf__should_succeed=True)
-    assert_true(pipe.named_steps['transf'].fit_params['should_get_this'])
-    assert_true(pipe.named_steps['clf'].successful)
-    assert_false('should_succeed' in pipe.named_steps['transf'].fit_params)
+    assert pipe.named_steps['transf'].fit_params['should_get_this']
+    assert pipe.named_steps['clf'].successful
+    assert 'should_succeed' not in pipe.named_steps['transf'].fit_params
 
 
 def test_pipeline_transform():
@@ -457,21 +453,21 @@ def test_set_pipeline_steps():
     transf1 = Transf()
     transf2 = Transf()
     pipeline = Pipeline([('mock', transf1)])
-    assert_true(pipeline.named_steps['mock'] is transf1)
+    assert pipeline.named_steps['mock'] is transf1
 
     # Directly setting attr
     pipeline.steps = [('mock2', transf2)]
-    assert_true('mock' not in pipeline.named_steps)
-    assert_true(pipeline.named_steps['mock2'] is transf2)
-    assert_equal([('mock2', transf2)], pipeline.steps)
+    assert 'mock' not in pipeline.named_steps
+    assert pipeline.named_steps['mock2'] is transf2
+    assert [('mock2', transf2)] == pipeline.steps
 
     # Using set_params
     pipeline.set_params(steps=[('mock', transf1)])
-    assert_equal([('mock', transf1)], pipeline.steps)
+    assert [('mock', transf1)] == pipeline.steps
 
     # Using set_params to replace single step
     pipeline.set_params(mock=transf2)
-    assert_equal([('mock', transf2)], pipeline.steps)
+    assert [('mock', transf2)] == pipeline.steps
 
     # With invalid data
     pipeline.set_params(steps=[('junk', ())])
@@ -502,15 +498,14 @@ def test_set_pipeline_step_none():
     assert_array_equal([[exp]], pipeline.fit_transform(X, y))
     assert_array_equal([exp], pipeline.fit(X).predict(X))
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
-    assert_dict_equal(pipeline.get_params(deep=True),
-                      {'steps': pipeline.steps,
+    expected_params = {'steps': pipeline.steps,
                        'm2': mult2,
                        'm3': None,
                        'last': mult5,
                        'memory': None,
                        'm2__mult': 2,
-                       'last__mult': 5,
-                       })
+                       'last__mult': 5}
+    assert pipeline.get_params(deep=True) == expected_params
 
     pipeline.set_params(m2=None)
     exp = 5
@@ -558,39 +553,39 @@ def test_pipeline_ducktyping():
     pipeline.inverse_transform
 
     pipeline = make_pipeline(Transf())
-    assert_false(hasattr(pipeline, 'predict'))
+    assert not hasattr(pipeline, 'predict')
     pipeline.transform
     pipeline.inverse_transform
 
     pipeline = make_pipeline(None)
-    assert_false(hasattr(pipeline, 'predict'))
+    assert not hasattr(pipeline, 'predict')
     pipeline.transform
     pipeline.inverse_transform
 
     pipeline = make_pipeline(Transf(), NoInvTransf())
-    assert_false(hasattr(pipeline, 'predict'))
+    assert not hasattr(pipeline, 'predict')
     pipeline.transform
-    assert_false(hasattr(pipeline, 'inverse_transform'))
+    assert not hasattr(pipeline, 'inverse_transform')
 
     pipeline = make_pipeline(NoInvTransf(), Transf())
-    assert_false(hasattr(pipeline, 'predict'))
+    assert not hasattr(pipeline, 'predict')
     pipeline.transform
-    assert_false(hasattr(pipeline, 'inverse_transform'))
+    assert not hasattr(pipeline, 'inverse_transform')
 
 
 def test_make_pipeline():
     t1 = Transf()
     t2 = Transf()
     pipe = make_pipeline(t1, t2)
-    assert_true(isinstance(pipe, Pipeline))
-    assert_equal(pipe.steps[0][0], "transf-1")
-    assert_equal(pipe.steps[1][0], "transf-2")
+    assert isinstance(pipe, Pipeline)
+    assert pipe.steps[0][0] == "transf-1"
+    assert pipe.steps[1][0] == "transf-2"
 
     pipe = make_pipeline(t1, t2, FitParamT())
-    assert_true(isinstance(pipe, Pipeline))
-    assert_equal(pipe.steps[0][0], "transf-1")
-    assert_equal(pipe.steps[1][0], "transf-2")
-    assert_equal(pipe.steps[2][0], "fitparamt")
+    assert isinstance(pipe, Pipeline)
+    assert pipe.steps[0][0] == "transf-1"
+    assert pipe.steps[1][0] == "transf-2"
+    assert pipe.steps[2][0] == "fitparamt"
 
 
 def test_classes_property():
@@ -641,7 +636,7 @@ def test_pipeline_memory_transformer():
         cached_pipe.fit(X, y)
         pipe.fit(X, y)
         # Get the time stamp of the tranformer in the cached pipeline
-        ts = cached_pipe.named_steps['transf'].timestamp_
+        expected_ts = cached_pipe.named_steps['transf'].timestamp_
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
         assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
@@ -650,7 +645,7 @@ def test_pipeline_memory_transformer():
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe.named_steps['transf'].means_)
-        assert_false(hasattr(transf, 'means_'))
+        assert not hasattr(transf, 'means_')
         # Check that we are reading the cache while fitting
         # a second time
         cached_pipe.fit(X, y)
@@ -662,7 +657,7 @@ def test_pipeline_memory_transformer():
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe.named_steps['transf'].means_)
-        assert_equal(ts, cached_pipe.named_steps['transf'].timestamp_)
+        assert cached_pipe.named_steps['transf'].timestamp_ == expected_ts
         # Create a new pipeline with cloned estimators
         # Check that even changing the name step does not affect the cache hit
         clf_2 = SVC(probability=True, random_state=0)
@@ -680,7 +675,7 @@ def test_pipeline_memory_transformer():
         assert_array_equal(pipe.score(X, y), cached_pipe_2.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe_2.named_steps['transf_2'].means_)
-        assert_equal(ts, cached_pipe_2.named_steps['transf_2'].timestamp_)
+        assert cached_pipe_2.named_steps['transf_2'].timestamp_ == expected_ts
     finally:
         shutil.rmtree(cachedir)
 
@@ -711,7 +706,7 @@ def test_pipeline_memory_sampler():
         cached_pipe.fit(X, y)
         pipe.fit(X, y)
         # Get the time stamp of the tranformer in the cached pipeline
-        ts = cached_pipe.named_steps['transf'].timestamp_
+        expected_ts = cached_pipe.named_steps['transf'].timestamp_
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
         assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
@@ -720,7 +715,7 @@ def test_pipeline_memory_sampler():
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe.named_steps['transf'].means_)
-        assert_false(hasattr(transf, 'means_'))
+        assert not hasattr(transf, 'means_')
         # Check that we are reading the cache while fitting
         # a second time
         cached_pipe.fit(X, y)
@@ -732,7 +727,7 @@ def test_pipeline_memory_sampler():
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe.named_steps['transf'].means_)
-        assert_equal(ts, cached_pipe.named_steps['transf'].timestamp_)
+        assert cached_pipe.named_steps['transf'].timestamp_ == expected_ts
         # Create a new pipeline with cloned estimators
         # Check that even changing the name step does not affect the cache hit
         clf_2 = SVC(probability=True, random_state=0)
@@ -750,7 +745,7 @@ def test_pipeline_memory_sampler():
         assert_array_equal(pipe.score(X, y), cached_pipe_2.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe_2.named_steps['transf_2'].means_)
-        assert_equal(ts, cached_pipe_2.named_steps['transf_2'].timestamp_)
+        assert cached_pipe_2.named_steps['transf_2'].timestamp_ == expected_ts
     finally:
         shutil.rmtree(cachedir)
 

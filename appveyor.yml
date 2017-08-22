@@ -39,7 +39,7 @@ install:
   - "conda install pip numpy scipy scikit-learn=0.19.0 pandas nose wheel matplotlib -y -q"
 
   # Install other nilearn dependencies
-  - "pip install coverage nose-timer"
+  - "pip install coverage nose-timer pytest pytest-cov"
   - "python setup.py bdist_wheel"
   - ps: "ls dist"
 
@@ -50,10 +50,7 @@ install:
 build: false
 
 test_script:
-  # Change to a non-source folder to make sure we run the tests on the
-  # installed library.
-  - "cd C:\\"
-  - "python -c \"import nose; nose.main()\" -v -s --with-timer --timer-top-n 50 imblearn"
+  - powershell ./build_tools/appveyor/test.ps1
 
 artifacts:
   # Archive the generated packages in the ci.appveyor.com build report.

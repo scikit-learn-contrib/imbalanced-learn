@@ -1,6 +1,6 @@
-###############
-Getting Started
-###############
+########################
+Install and contribution
+########################
 
 Prerequisites
 =============

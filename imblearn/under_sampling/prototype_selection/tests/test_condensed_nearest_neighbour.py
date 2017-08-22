@@ -6,8 +6,8 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_array_equal, assert_equal,
-                                   assert_raises_regex)
+from sklearn.utils.testing import assert_array_equal
+from sklearn.utils.testing import assert_raises_regex
 
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -30,8 +30,8 @@ Y = np.array([1, 2, 1, 1, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 1, 2, 1])
 def test_cnn_init():
     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
 
-    assert_equal(cnn.n_seeds_S, 1)
-    assert_equal(cnn.n_jobs, 1)
+    assert cnn.n_seeds_S == 1
+    assert cnn.n_jobs == 1
 
 
 def test_cnn_fit_sample():

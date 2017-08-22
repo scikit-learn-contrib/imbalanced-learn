@@ -6,8 +6,9 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_array_equal, assert_equal,
-                                   assert_raises, assert_raises_regex)
+from sklearn.utils.testing import assert_array_equal
+from sklearn.utils.testing import assert_raises
+from sklearn.utils.testing import assert_raises_regex
 from sklearn.ensemble import GradientBoostingClassifier
 
 from imblearn.under_sampling import InstanceHardnessThreshold
@@ -38,8 +39,8 @@ def test_iht_init():
     iht = InstanceHardnessThreshold(
         ESTIMATOR, ratio=ratio, random_state=RND_SEED)
 
-    assert_equal(iht.ratio, ratio)
-    assert_equal(iht.random_state, RND_SEED)
+    assert iht.ratio == ratio
+    assert iht.random_state == RND_SEED
 
 
 def test_iht_fit_sample():
