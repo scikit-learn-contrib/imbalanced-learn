@@ -5,7 +5,7 @@ import sys
 from sklearn.externals.six.moves import cStringIO as StringIO
 
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.utils.testing import assert_raises_regex, assert_true
+from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.validation import check_X_y, check_array
 
 from imblearn.utils.estimator_checks import check_estimator
@@ -143,4 +143,4 @@ def test_check_estimator():
         pass
     finally:
         sys.stdout = old_stdout
-    assert_true(msg in string_buffer.getvalue())
+    assert msg in string_buffer.getvalue()

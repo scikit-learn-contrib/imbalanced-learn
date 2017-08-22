@@ -8,7 +8,7 @@ from __future__ import print_function
 from collections import Counter
 
 import numpy as np
-from sklearn.utils.testing import assert_array_equal, assert_equal
+from sklearn.utils.testing import assert_array_equal
 
 from imblearn.under_sampling import RandomUnderSampler
 
@@ -73,6 +73,6 @@ def test_multiclass_fit_sample():
     rus = RandomUnderSampler(random_state=RND_SEED)
     X_resampled, y_resampled = rus.fit_sample(X, y)
     count_y_res = Counter(y_resampled)
-    assert_equal(count_y_res[0], 2)
-    assert_equal(count_y_res[1], 2)
-    assert_equal(count_y_res[2], 2)
+    assert count_y_res[0] == 2
+    assert count_y_res[1] == 2
+    assert count_y_res[2] == 2

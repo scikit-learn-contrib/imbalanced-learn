@@ -4,8 +4,9 @@ from __future__ import print_function
 from collections import Counter
 
 import numpy as np
-from sklearn.utils.testing import (assert_allclose, assert_array_equal,
-                                   assert_equal, assert_raises_regex)
+from sklearn.utils.testing import assert_allclose
+from sklearn.utils.testing import assert_array_equal
+from sklearn.utils.testing import assert_raises_regex
 from sklearn.cluster import KMeans
 
 from imblearn.under_sampling import ClusterCentroids
@@ -53,9 +54,9 @@ def test_multiclass_fit_sample():
     cc = ClusterCentroids(random_state=RND_SEED)
     X_resampled, y_resampled = cc.fit_sample(X, y)
     count_y_res = Counter(y_resampled)
-    assert_equal(count_y_res[0], 2)
-    assert_equal(count_y_res[1], 2)
-    assert_equal(count_y_res[2], 2)
+    assert count_y_res[0] == 2
+    assert count_y_res[1] == 2
+    assert count_y_res[2] == 2
 
 
 def test_fit_sample_object():

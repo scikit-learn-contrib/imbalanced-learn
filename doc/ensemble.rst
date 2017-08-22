@@ -31,7 +31,7 @@ under-sampling the original set::
   >>> X_resampled, y_resampled = ee.fit_sample(X, y)
   >>> print(X_resampled.shape)
   (10, 192, 2)
-  >>> print(Counter(y_resampled[0]))
+  >>> print(Counter(y_resampled[0])) # doctest: +SKIP
   Counter({0: 64, 1: 64, 2: 64})
 
 :class:`EasyEnsemble` has two important parameters: (i) ``n_subsets`` will be
@@ -53,7 +53,7 @@ parameter ``n_max_subset`` and an additional bootstraping can be activated with
   >>> X_resampled, y_resampled = bc.fit_sample(X, y)
   >>> print(X_resampled.shape)
   (4, 192, 2)
-  >>> print(Counter(y_resampled[0]))
+  >>> print(Counter(y_resampled[0])) # doctest: +SKIP
   Counter({2: 64, 1: 64, 0: 64})
 
 See

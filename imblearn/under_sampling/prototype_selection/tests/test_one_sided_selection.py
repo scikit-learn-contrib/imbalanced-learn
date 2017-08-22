@@ -6,8 +6,8 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_array_equal, assert_equal,
-                                   assert_raises_regex)
+from sklearn.utils.testing import assert_array_equal
+from sklearn.utils.testing import assert_raises_regex
 
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -28,9 +28,9 @@ Y = np.array([0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0])
 def test_oss_init():
     oss = OneSidedSelection(random_state=RND_SEED)
 
-    assert_equal(oss.n_seeds_S, 1)
-    assert_equal(oss.n_jobs, 1)
-    assert_equal(oss.random_state, RND_SEED)
+    assert oss.n_seeds_S == 1
+    assert oss.n_jobs == 1
+    assert oss.random_state == RND_SEED
 
 
 def test_oss_fit_sample():

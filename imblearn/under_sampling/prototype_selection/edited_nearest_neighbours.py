@@ -286,7 +286,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
-    n_jobs : int, optional (default=-1)
+    n_jobs : int, optional (default=1)
         The number of thread to open when it is possible.
 
     Notes
@@ -337,7 +337,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                  n_neighbors=3,
                  max_iter=100,
                  kind_sel='all',
-                 n_jobs=-1):
+                 n_jobs=1):
         super(RepeatedEditedNearestNeighbours, self).__init__(
             ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
@@ -395,8 +395,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             idx_under = np.arange(X.shape[0], dtype=int)
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
-
-        prev_len = y.shape[0]
 
         for n_iter in range(self.max_iter):
 
@@ -514,7 +512,7 @@ class AllKNN(BaseCleaningSampler):
 
         .. versionadded:: 0.3
 
-    n_jobs : int, optional (default=-1)
+    n_jobs : int, optional (default=1)
         The number of thread to open when it is possible.
 
     Notes
@@ -564,7 +562,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                  n_neighbors=3,
                  kind_sel='all',
                  allow_minority=False,
-                 n_jobs=-1):
+                 n_jobs=1):
         super(AllKNN, self).__init__(ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.size_ngh = size_ngh
