@@ -6,7 +6,8 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import assert_array_equal, assert_warns
+from sklearn.utils.testing import assert_array_equal
+from imblearn.utils.testing import warns
 from sklearn.neighbors import NearestNeighbors
 from pytest import raises
 
@@ -36,7 +37,8 @@ VERSION_NEARMISS = (1, 2, 3)
 # FIXME remove at the end of the deprecation 0.4
 def test_nearmiss_deprecation():
     nm = NearMiss(ver3_samp_ngh=3, version=3)
-    assert_warns(DeprecationWarning, nm.fit_sample, X, Y)
+    with warns(DeprecationWarning, match="deprecated from 0.2"):
+        nm.fit_sample(X, Y)
 
 
 def test_nearmiss_wrong_version():

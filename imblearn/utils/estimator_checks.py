@@ -18,8 +18,8 @@ from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
-from sklearn.utils.testing import assert_warns
 from pytest import raises
+from imblearn.utils.testing import warns
 
 from sklearn.utils.testing import set_random_state
 
@@ -77,15 +77,8 @@ def check_target_type(name, Estimator):
     y = np.linspace(0, 1, 20)
     estimator = Estimator()
     set_random_state(estimator)
-    assert_warns(UserWarning, estimator.fit, X, y)
-
-
-def check_multiclass_warning(name, Estimator):
-    X = np.random.random((20, 2))
-    y = np.array([0] * 3 + [1] * 2 + [2] * 15)
-    estimator = Estimator()
-    set_random_state(estimator)
-    assert_warns(UserWarning, estimator.fit, X, y)
+    with warns(UserWarning, match='should be of types'):
+        estimator.fit(X, y)
 
 
 def multioutput_estimator_convert_y_2d(name, y):
