@@ -10,7 +10,7 @@ import numpy as np
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 
-from sklearn.utils.testing import assert_warns_message
+from imblearn.utils.testing import warns
 from pytest import raises
 
 from imblearn.utils import check_neighbors_object
@@ -126,10 +126,11 @@ def test_ratio_dict_over_sampling():
     ratio_ = check_ratio(ratio, y, 'over-sampling')
     assert ratio_ == {1: 20, 2: 0, 3: 45}
     ratio = {1: 70, 2: 140, 3: 70}
-    assert_warns_message(UserWarning, "After over-sampling, the number of"
-                         " samples (140) in class 2 will be larger than the"
-                         " number of samples in the majority class (class #2"
-                         " -> 100)", check_ratio, ratio, y, 'over-sampling')
+    expected_msg = ("After over-sampling, the number of samples \(140\) in"
+                    " class 2 will be larger than the number of samples in the"
+                    " majority class \(class #2 -> 100\)")
+    with warns(UserWarning, expected_msg):
+        check_ratio(ratio, y, 'over-sampling')
 
 
 def test_ratio_dict_under_sampling():

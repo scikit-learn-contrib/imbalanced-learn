@@ -18,7 +18,7 @@ from sklearn.utils.fixes import np_version
 from sklearn.utils.validation import check_random_state
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.utils.testing import assert_no_warnings
-from sklearn.utils.testing import assert_warns_message, ignore_warnings
+from sklearn.utils.testing import ignore_warnings
 from sklearn.metrics import accuracy_score, average_precision_score
 from sklearn.metrics import brier_score_loss, cohen_kappa_score
 from sklearn.metrics import jaccard_similarity_score, precision_score
@@ -32,6 +32,8 @@ from imblearn.metrics import make_index_balanced_accuracy
 from imblearn.metrics import classification_report_imbalanced
 
 from pytest import approx, raises
+from imblearn.utils.testing import warns
+
 
 RND_SEED = 42
 R_TOL = 1e-2
@@ -196,15 +198,10 @@ def test_sensitivity_specificity_support_errors():
 
 def test_sensitivity_specificity_unused_pos_label():
     # but average != 'binary'; even if data is binary
-    assert_warns_message(
-        UserWarning,
-        "Note that pos_label (set to 2) is "
-        "ignored when average != 'binary' (got 'macro'). You "
-        "may use labels=[pos_label] to specify a single "
-        "positive class.",
-        sensitivity_specificity_support, [1, 2, 1], [1, 2, 2],
-        pos_label=2,
-        average='macro')
+    with warns(UserWarning, "use labels=\[pos_label\] to specify a single"):
+        sensitivity_specificity_support([1, 2, 1], [1, 2, 2],
+                                        pos_label=2,
+                                        average='macro')
 
 
 def test_geometric_mean_support_binary():

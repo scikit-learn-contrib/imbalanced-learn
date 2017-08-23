@@ -11,7 +11,8 @@ from collections import Counter
 import numpy as np
 
 from sklearn.datasets import load_iris
-from sklearn.utils.testing import assert_warns_message
+from imblearn.utils.testing import warns
+
 from pytest import raises
 
 from imblearn.datasets import make_imbalance
@@ -40,12 +41,12 @@ def test_make_imbalance_error():
 
 # FIXME: to be removed in 0.4 due to deprecation
 def test_make_imbalance_float():
-    X_, y_ = assert_warns_message(DeprecationWarning,
-                                  "'min_c_' is deprecated in 0.2",
-                                  make_imbalance, X, Y, ratio=0.5, min_c_=1)
-    X_, y_ = assert_warns_message(DeprecationWarning,
-                                  "'ratio' being a float is deprecated",
-                                  make_imbalance, X, Y, ratio=0.5, min_c_=1)
+    with warns(DeprecationWarning, match="deprecated in 0.2"):
+        X_, y_ = make_imbalance(X, Y, ratio=0.5, min_c_=1)
+
+    with warns(DeprecationWarning, match="'ratio' being a float"):
+        X_, y_ = make_imbalance(X, Y, ratio=0.5, min_c_=1)
+
     assert Counter(y_) == {0: 50, 1: 25, 2: 50}
     # resample without using min_c_
     X_, y_ = make_imbalance(X_, y_, ratio=0.25, min_c_=None)
