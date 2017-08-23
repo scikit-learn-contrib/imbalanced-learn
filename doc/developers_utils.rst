@@ -15,10 +15,11 @@ All the following functions and classes are in the module :mod:`imblearn.utils`.
    imbalance-learn. Backports, in particular, will be removed as the
    imbalance-learn dependencies evolve.
 
-.. currentmodule:: imblearn.utils
 
 Validation Tools
 ================
+
+.. currentmodule:: imblearn.utils
 
 These are tools used to check and validate input. When you write a function
 which accepts arrays, matrices, or sparse matrices as arguments, the following
@@ -29,8 +30,11 @@ should be used when applicable.
 - :func:`check_ratio`: Checks ratio for consistent type and return a dictionary
     containing each targeted class with its corresponding number of pixel.
 
+
 Deprecation
------------
+===========
+
+.. currentmodule:: imblearn.utils.deprecation
 
 .. warning ::
    Apart from :func:`deprecate_parameter` the rest of this section is taken from
@@ -96,3 +100,4 @@ same information as the deprecation warning as explained above. Use the
 On the top of all the functionality provided by scikit-learn. Imbalance-learn
 provides :func:`deprecate_parameter`: which is used to deprecate a sampler's
 parameter (attribute) by another one.
+
