@@ -19,15 +19,15 @@ under-sampling the original set::
   ...                            n_clusters_per_class=1,
   ...                            weights=[0.01, 0.05, 0.94],
   ...                            class_sep=0.8, random_state=0)
-  >>> print(Counter(y))
-  Counter({2: 4674, 1: 262, 0: 64})
+  >>> print(sorted(Counter(y).items()))
+  [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.ensemble import EasyEnsemble
   >>> ee = EasyEnsemble(random_state=0, n_subsets=10)
   >>> X_resampled, y_resampled = ee.fit_sample(X, y)
   >>> print(X_resampled.shape)
   (10, 192, 2)
-  >>> print(Counter(y_resampled[0])) # doctest: +SKIP
-  Counter({0: 64, 1: 64, 2: 64})
+  >>> print(sorted(Counter(y_resampled[0]).items()))
+  [(0, 64), (1, 64), (2, 64)]
 
 :class:`EasyEnsemble` has two important parameters: (i) ``n_subsets`` will be
 used to return number of subset and (ii) ``replacement`` to randomly sample
@@ -48,8 +48,8 @@ parameter ``n_max_subset`` and an additional bootstraping can be activated with
   >>> X_resampled, y_resampled = bc.fit_sample(X, y)
   >>> print(X_resampled.shape)
   (4, 192, 2)
-  >>> print(Counter(y_resampled[0])) # doctest: +SKIP
-  Counter({2: 64, 1: 64, 0: 64})
+  >>> print(sorted(Counter(y_resampled[0]).items()))
+  [(0, 64), (1, 64), (2, 64)]
 
 See
 :ref:`sphx_glr_auto_examples_ensemble_plot_easy_ensemble.py` and

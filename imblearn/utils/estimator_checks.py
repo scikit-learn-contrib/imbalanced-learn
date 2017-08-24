@@ -11,21 +11,27 @@ import traceback
 
 from collections import Counter
 
+import pytest
+
 import numpy as np
+from scipy import sparse
 from pytest import raises
 
 from sklearn.datasets import make_classification
+from sklearn.cluster import KMeans
 from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
-
+from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import set_random_state
 
 from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import NearMiss, ClusterCentroids
 
 from imblearn.utils.testing import warns
 
@@ -38,6 +44,8 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_fit
     yield check_samplers_fit_sample
     yield check_samplers_ratio_fit_sample
+    yield check_samplers_sparse
+    yield check_samplers_pandas
 
 
 def _yield_all_checks(name, Estimator):
@@ -244,3 +252,63 @@ def check_samplers_ratio_fit_sample(name, Sampler):
         X_res, y_res = sampler.fit_sample(X, y)
         y_ensemble = y_res[0]
         assert Counter(y_ensemble)[1] == expected_stat
+
+
+def check_samplers_sparse(name, Sampler):
+    # check that sparse matrices can be passed through the sampler leading to
+    # the same results than dense
+    X, y = make_classification(n_samples=1000, n_classes=3,
+                               n_informative=4, weights=[0.2, 0.3, 0.5],
+                               random_state=0)
+    X_sparse = sparse.csr_matrix(X)
+    if isinstance(Sampler(), SMOTE):
+        samplers = [Sampler(random_state=0, kind=kind)
+                    for kind in ('regular', 'borderline1',
+                                 'borderline2', 'svm')]
+    elif isinstance(Sampler(), NearMiss):
+        samplers = [Sampler(random_state=0, version=version)
+                    for version in (1, 2, 3)]
+    elif isinstance(Sampler(), ClusterCentroids):
+        # set KMeans to full since it support sparse and dense
+        samplers = [Sampler(random_state=0,
+                            estimator=KMeans(random_state=1,
+                                             algorithm='full'))]
+    else:
+        samplers = [Sampler(random_state=0)]
+    for sampler in samplers:
+        X_res_sparse, y_res_sparse = sampler.fit_sample(X_sparse, y)
+        X_res, y_res = sampler.fit_sample(X, y)
+        if not isinstance(sampler, BaseEnsembleSampler):
+                assert sparse.issparse(X_res_sparse)
+                assert_allclose(X_res_sparse.A, X_res)
+                assert_allclose(y_res_sparse, y_res)
+        else:
+            for x_sp, x, y_sp, y in zip(X_res_sparse, X_res,
+                                        y_res_sparse, y_res):
+                assert sparse.issparse(x_sp)
+                assert_allclose(x_sp.A, x)
+                assert_allclose(y_sp, y)
+
+
+def check_samplers_pandas(name, Sampler):
+    pd = pytest.importorskip("pandas")
+    # Check that the samplers handle pandas dataframe and pandas series
+    X, y = make_classification(n_samples=1000, n_classes=3,
+                               n_informative=4, weights=[0.2, 0.3, 0.5],
+                               random_state=0)
+    X_pd, y_pd = pd.DataFrame(X), pd.Series(y)
+    sampler = Sampler(random_state=0)
+    if isinstance(Sampler(), SMOTE):
+        samplers = [Sampler(random_state=0, kind=kind)
+                    for kind in ('regular', 'borderline1',
+                                 'borderline2', 'svm')]
+    elif isinstance(Sampler(), NearMiss):
+            samplers = [Sampler(random_state=0, version=version)
+                        for version in (1, 2, 3)]
+    else:
+        samplers = [Sampler(random_state=0)]
+    for sampler in samplers:
+        X_res_pd, y_res_pd = sampler.fit_sample(X_pd, y_pd)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_allclose(X_res_pd, X_res)
+        assert_allclose(y_res_pd, y_res)

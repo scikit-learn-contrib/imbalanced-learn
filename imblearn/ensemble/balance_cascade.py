@@ -12,7 +12,7 @@ import numpy as np
 
 from sklearn.base import ClassifierMixin
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils import check_random_state
+from sklearn.utils import check_random_state, safe_indexing
 from sklearn.externals.six import string_types
 from sklearn.model_selection import cross_val_predict
 
@@ -149,10 +149,10 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
@@ -222,15 +222,16 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_subset, n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_subset, n_samples_new, n_features)
             The array containing the resampled data.
 
         y_resampled : ndarray, shape (n_subset, n_samples_new)
@@ -249,22 +250,16 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
         samples_mask = np.ones(y.shape, dtype=bool)
 
         # where the different set will be stored
-        X_resampled = []
-        y_resampled = []
         idx_under = []
 
         n_subsets = 0
         b_subset_search = True
         while b_subset_search:
-            target_stats = Counter(y[samples_mask])
-            # build the data set to be classified
-            X_subset = np.empty((0, X.shape[1]), dtype=X.dtype)
-            y_subset = np.empty((0, ), dtype=y.dtype)
+            target_stats = Counter(safe_indexing(
+                y, np.flatnonzero(samples_mask)))
             # store the index of the data to under-sample
             index_under_sample = np.empty((0, ), dtype=y.dtype)
             # value which will be picked at each round
-            X_constant = np.empty((0, X.shape[1]), dtype=X.dtype)
-            y_constant = np.empty((0, ), dtype=y.dtype)
             index_constant = np.empty((0, ), dtype=y.dtype)
             for target_class in target_stats.keys():
                 if target_class in self.ratio_.keys():
@@ -274,29 +269,15 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
                     index_class = np.flatnonzero(y == target_class)
                     index_class_interest = index_class[samples_mask[
                         y == target_class]]
-                    X_class = X[index_class_interest]
-                    y_class = y[index_class_interest]
+                    y_class = safe_indexing(y, index_class_interest)
                     # select randomly the desired features
                     index_target_class = random_state.choice(
                         range(y_class.size), size=n_samples, replace=False)
-                    X_subset = np.concatenate((X_subset,
-                                               X_class[index_target_class]),
-                                              axis=0)
-                    y_subset = np.concatenate((y_subset,
-                                               y_class[index_target_class]),
-                                              axis=0)
-                    # index of the data
                     index_under_sample = np.concatenate(
                         (index_under_sample,
                          index_class_interest[index_target_class]),
                         axis=0)
                 else:
-                    X_constant = np.concatenate((X_constant,
-                                                 X[y == target_class]),
-                                                axis=0)
-                    y_constant = np.concatenate((y_constant,
-                                                y[y == target_class]),
-                                                axis=0)
                     index_constant = np.concatenate(
                         (index_constant,
                          np.flatnonzero(y == target_class)),
@@ -304,23 +285,19 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
 
             # store the set created
             n_subsets += 1
-            X_resampled.append(np.concatenate((X_subset, X_constant),
-                                              axis=0))
-            y_resampled.append(np.concatenate((y_subset, y_constant),
-                                              axis=0))
-            idx_under.append(np.concatenate((index_under_sample,
-                                             index_constant),
-                                            axis=0))
+            subset_indices = np.concatenate((index_under_sample,
+                                             index_constant), axis=0)
+            idx_under.append(subset_indices)
 
             # fit and predict using cross validation
-            pred = cross_val_predict(self.estimator_,
-                                     np.concatenate((X_subset, X_constant),
-                                                    axis=0),
-                                     np.concatenate((y_subset, y_constant),
-                                                    axis=0))
+            X_subset = safe_indexing(X, subset_indices)
+            y_subset = safe_indexing(y, subset_indices)
+            pred = cross_val_predict(self.estimator_, X_subset, y_subset)
             # extract the prediction about the targeted classes only
-            pred_target = pred[:y_subset.size]
-            index_classified = index_under_sample[pred_target == y_subset]
+            pred_target = pred[:index_under_sample.size]
+            index_classified = index_under_sample[
+                pred_target == safe_indexing(y_subset,
+                                             range(index_under_sample.size))]
             samples_mask[index_classified] = False
 
             # check the stopping criterion
@@ -328,10 +305,16 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
                 if n_subsets == self.n_max_subset:
                     b_subset_search = False
             # check that there is enough samples for another round
-            target_stats = Counter(y[samples_mask])
+            target_stats = Counter(safe_indexing(
+                y, np.flatnonzero(samples_mask)))
             for target_class in self.ratio_.keys():
                 if target_stats[target_class] < self.ratio_[target_class]:
                     b_subset_search = False
+
+        X_resampled, y_resampled = [], []
+        for indices in idx_under:
+            X_resampled.append(safe_indexing(X, indices))
+            y_resampled.append(safe_indexing(y, indices))
 
         if self.return_indices:
             return (np.array(X_resampled), np.array(y_resampled),

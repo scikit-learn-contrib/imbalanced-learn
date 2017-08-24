@@ -7,7 +7,9 @@
 from __future__ import division
 
 import numpy as np
-from sklearn.utils import check_random_state
+from scipy import sparse
+
+from sklearn.utils import check_random_state, safe_indexing
 
 from .base import BaseOverSampler
 from ..utils import check_neighbors_object
@@ -130,19 +132,21 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
+
 
         """
         self._validate_estimator()
@@ -154,7 +158,8 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         for class_sample, n_samples in self.ratio_.items():
             if n_samples == 0:
                 continue
-            X_class = X[y == class_sample]
+            target_class_indices = np.flatnonzero(y == class_sample)
+            X_class = safe_indexing(X, target_class_indices)
 
             self.nn_.fit(X)
             _, nn_index = self.nn_.kneighbors(X_class)
@@ -171,27 +176,57 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                                    ' Use SMOTE instead.')
             ratio_nn /= np.sum(ratio_nn)
             n_samples_generate = np.rint(ratio_nn * n_samples).astype(int)
+            if not np.sum(n_samples_generate):
+                raise ValueError("No samples will be generated with the"
+                                 " provided ratio settings.")
 
             # the nearest neighbors need to be fitted only on the current class
             # to find the class NN to generate new samples
             self.nn_.fit(X_class)
             _, nn_index = self.nn_.kneighbors(X_class)
 
-            x_class_gen = []
-            for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
-                                                 n_samples_generate):
-                if num_sample_i == 0:
-                    continue
-                nn_zs = random_state.randint(
-                    1, high=self.nn_.n_neighbors, size=num_sample_i)
-                steps = random_state.uniform(size=len(nn_zs))
-                x_class_gen.append([x_i + step * (X[x_i_nn[nn_z], :] - x_i)
-                                    for step, nn_z in zip(steps, nn_zs)])
+            if sparse.issparse(X):
+                row_indices, col_indices, samples = [], [], []
+                n_samples_generated = 0
+                for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
+                                                     n_samples_generate):
+                    if num_sample_i == 0:
+                        continue
+                    nn_zs = random_state.randint(
+                        1, high=self.nn_.n_neighbors, size=num_sample_i)
+                    steps = random_state.uniform(size=len(nn_zs))
+                    if x_i.nnz:
+                        for step, nn_z in zip(steps, nn_zs):
+                            sample = x_i + step * (X[x_i_nn[nn_z], :] - x_i)
+                            row_indices += ([n_samples_generated] *
+                                            len(sample.indices))
+                            col_indices += sample.indices.tolist()
+                            samples += sample.data.tolist()
+                            n_samples_generated += 1
+                X_new = (sparse.csr_matrix((samples,
+                                            (row_indices, col_indices)),
+                                           [np.sum(n_samples_generate),
+                                            X.shape[1]]))
+                y_new = np.array([class_sample] * np.sum(n_samples_generate))
+            else:
+                x_class_gen = []
+                for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
+                                                     n_samples_generate):
+                    if num_sample_i == 0:
+                        continue
+                    nn_zs = random_state.randint(
+                        1, high=self.nn_.n_neighbors, size=num_sample_i)
+                    steps = random_state.uniform(size=len(nn_zs))
+                    x_class_gen.append([x_i + step * (X[x_i_nn[nn_z], :] - x_i)
+                                        for step, nn_z in zip(steps, nn_zs)])
 
-            if len(x_class_gen) > 0:
-                X_resampled = np.vstack((X_resampled,
-                                         np.concatenate(x_class_gen)))
-                y_resampled = np.hstack((y_resampled, [class_sample] *
-                                         np.sum(n_samples_generate)))
+                X_new = np.concatenate(x_class_gen)
+                y_new = np.array([class_sample] * np.sum(n_samples_generate))
+
+            if sparse.issparse(X_new):
+                X_resampled = sparse.vstack([X_resampled, X_new])
+            else:
+                X_resampled = np.vstack((X_resampled, X_new))
+            y_resampled = np.hstack((y_resampled, y_new))
 
         return X_resampled, y_resampled

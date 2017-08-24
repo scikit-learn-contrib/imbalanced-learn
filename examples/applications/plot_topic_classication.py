@@ -16,7 +16,6 @@ that for some data sets, the imbalanced ratio is more significant.
 from collections import Counter
 
 from sklearn.datasets import fetch_20newsgroups
-from sklearn.preprocessing import FunctionTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import make_pipeline
@@ -82,22 +81,10 @@ print(classification_report_imbalanced(y_test, y_pred))
 # use a ``RandomUnderSampler`` to equalize the number of samples in all the
 # classes before the training.
 #
-# Currently, imbalanced-learn does not handle sparse matrices --- we are
-# currently working on bringing this feature --- and an additional transformer
-# to convert the sparse to dense matrices is required in the pipeline.
-#
 # It is also important to note that we are using the ``make_pipeline`` function
 # implemented in imbalanced-learn to properly handle the samplers.
 
-
-def densify(X):
-    """Function to densify an array."""
-    return X.toarray()
-
-
 pipe = make_pipeline_imb(TfidfVectorizer(),
-                         FunctionTransformer(func=densify,
-                                             accept_sparse=True),
                          RandomUnderSampler(),
                          MultinomialNB())
 

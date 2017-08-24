@@ -85,8 +85,8 @@ A specific data set can be selected as::
   >>> ecoli = fetch_datasets()['ecoli']
   >>> ecoli.data.shape
   (336, 7)
-  >>> print(Counter((ecoli.target)))
-  Counter({-1: 301, 1: 35})
+  >>> print(sorted(Counter(ecoli.target).items()))
+  [(-1, 301), (1, 35)]
 
 .. _make_imbalanced:
 
@@ -104,16 +104,16 @@ samples in the class::
   >>> iris = load_iris()
   >>> ratio = {0: 20, 1: 30, 2: 40}
   >>> X_imb, y_imb = make_imbalance(iris.data, iris.target, ratio=ratio)
-  >>> Counter(y_imb)
-  Counter({2: 40, 1: 30, 0: 20})
+  >>> sorted(Counter(y_imb).items())
+  [(0, 20), (1, 30), (2, 40)]
 
 Note that all samples of a class are passed-through if the class is not mentioned
 in the dictionary::
 
   >>> ratio = {0: 10}
   >>> X_imb, y_imb = make_imbalance(iris.data, iris.target, ratio=ratio)
-  >>> Counter(y_imb)
-  Counter({1: 50, 2: 50, 0: 10})
+  >>> sorted(Counter(y_imb).items())
+  [(0, 10), (1, 50), (2, 50)]
 
 Instead of a dictionary, a function can be defined and directly pass to
 ``ratio``::
@@ -126,9 +126,8 @@ Instead of a dictionary, a function can be defined and directly pass to
   ...     return target_stats
   >>> X_imb, y_imb = make_imbalance(iris.data, iris.target,
   ...                               ratio=ratio_multiplier)
-  >>> Counter(y_imb)
-  Counter({2: 47, 1: 35, 0: 25})
-
+  >>> sorted(Counter(y_imb).items())
+  [(0, 25), (1, 35), (2, 47)]
 
 See :ref:`sphx_glr_auto_examples_datasets_plot_make_imbalance.py` and
 :ref:`sphx_glr_auto_examples_plot_ratio_usage.py`.

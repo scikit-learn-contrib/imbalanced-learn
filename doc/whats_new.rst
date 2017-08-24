@@ -49,6 +49,9 @@ New features
 Enhancement
 ~~~~~~~~~~~
 
+- All samplers accepts sparse matrices with defaulting on CSR type. By
+  `Guillaume Lemaitre`_.
+
 - :func:`datasets.make_imbalance` take a ratio similarly to other samplers. It
   supports multiclass. By `Guillaume Lemaitre`_.
 

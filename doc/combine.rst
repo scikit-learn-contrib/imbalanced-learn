@@ -29,18 +29,18 @@ than their former samplers::
   ...                            n_clusters_per_class=1,
   ...                            weights=[0.01, 0.05, 0.94],
   ...                            class_sep=0.8, random_state=0)
-  >>> print(Counter(y))
-  Counter({2: 4674, 1: 262, 0: 64})
+  >>> print(sorted(Counter(y).items()))
+  [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.combine import SMOTEENN
   >>> smote_enn = SMOTEENN(random_state=0)
   >>> X_resampled, y_resampled = smote_enn.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({1: 4381, 0: 4060, 2: 3502})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 4060), (1, 4381), (2, 3502)]
   >>> from imblearn.combine import SMOTETomek
   >>> smote_tomek = SMOTETomek(random_state=0)
   >>> X_resampled, y_resampled = smote_tomek.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({1: 4566, 0: 4499, 2: 4413})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 4499), (1, 4566), (2, 4413)]
 
 We can also see in the example below that :class:`SMOTEENN` tends to clean more
 noisy samples than :class:`SMOTETomek`.

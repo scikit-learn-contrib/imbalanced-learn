@@ -38,7 +38,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     # provided versions
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
-    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
+    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION pandas
 
     if [[ "$SKLEARN_VERSION" == "master" ]]; then
         conda install --yes cython
@@ -59,7 +59,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # Create a new virtualenv using system site packages for python, numpy
     virtualenv --system-site-packages testvenv
     source testvenv/bin/activate
-    pip install scikit-learn nose nose-timer pytest pytest-cov codecov
+    pip install scikit-learn pandas nose nose-timer pytest pytest-cov codecov
 
 fi
 

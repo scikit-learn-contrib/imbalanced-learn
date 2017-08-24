@@ -9,7 +9,10 @@ clustering."""
 from __future__ import division, print_function
 
 import numpy as np
+from scipy import sparse
+
 from sklearn.cluster import KMeans
+from sklearn.utils import safe_indexing
 
 from ..base import BaseUnderSampler
 
@@ -79,7 +82,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     >>> cc = ClusterCentroids(random_state=42)
     >>> X_res, y_res = cc.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({0: 100, 1: 100})
+    ... # doctest: +ELLIPSIS
+    Resampled dataset shape Counter({...})
 
     """
 
@@ -109,42 +113,46 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         """
         self._validate_estimator()
 
-        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        y_resampled = np.empty((0, ), dtype=y.dtype)
-
+        idx_under = np.empty((0, ), dtype=int)
+        centroids, y_resampled = [], []
         for target_class in np.unique(y):
             if target_class in self.ratio_.keys():
                 n_samples = self.ratio_[target_class]
                 self.estimator_.set_params(**{'n_clusters': n_samples})
                 self.estimator_.fit(X[y == target_class])
-                centroids = self.estimator_.cluster_centers_
+                centroids.append(self.estimator_.cluster_centers_)
+                y_resampled += [target_class] * n_samples
 
-                X_resampled = np.concatenate((X_resampled, centroids), axis=0)
-                y_resampled = np.concatenate(
-                    (y_resampled, np.array([target_class] * n_samples)),
-                    axis=0)
             else:
+                target_class_indices = np.flatnonzero(y == target_class)
+                idx_under = np.concatenate(
+                    (idx_under, target_class_indices), axis=0)
 
-                X_resampled = np.concatenate(
-                    (X_resampled, X[y == target_class]), axis=0)
-                y_resampled = np.concatenate(
-                    (y_resampled, y[y == target_class]), axis=0)
+        X_resampled = np.concatenate((centroids))
 
-        return X_resampled, y_resampled
+        if sparse.issparse(X):
+            X_resampled = sparse.vstack([sparse.csr_matrix(X_resampled),
+                                         safe_indexing(X, idx_under)])
+        else:
+            X_resampled = np.vstack((X_resampled, safe_indexing(X, idx_under)))
+        y_resampled = np.hstack((y_resampled, safe_indexing(y, idx_under)))
+
+        return X_resampled, np.array(y_resampled)

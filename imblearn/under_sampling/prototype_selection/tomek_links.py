@@ -9,6 +9,7 @@ from __future__ import division, print_function
 
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
 
@@ -143,18 +144,19 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         idx_under : ndarray, shape (n_samples, )
@@ -169,9 +171,12 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         nns = nn.kneighbors(X, return_distance=False)[:, 1]
 
         links = self.is_tomek(y, nns, self.ratio_)
+        idx_under = np.flatnonzero(np.logical_not(links))
 
         if self.return_indices:
-            return (X[np.logical_not(links)], y[np.logical_not(links)],
-                    np.flatnonzero(np.logical_not(links)))
+            return (safe_indexing(X, idx_under),
+                    safe_indexing(y, idx_under),
+                    idx_under)
         else:
-            return X[np.logical_not(links)], y[np.logical_not(links)]
+            return (safe_indexing(X, idx_under),
+                    safe_indexing(y, idx_under))
