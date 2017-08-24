@@ -6,12 +6,14 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_array_equal, assert_equal,
-                                   assert_raises)
+from pytest import raises
+
+from sklearn.utils.testing import assert_array_equal
 
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import RepeatedEditedNearestNeighbours
+
 
 RND_SEED = 0
 X = np.array([[-0.12840393, 0.66446571], [1.32319756, -0.13181616],
@@ -43,17 +45,18 @@ Y = np.array([
 def test_renn_init():
     renn = RepeatedEditedNearestNeighbours(random_state=RND_SEED)
 
-    assert_equal(renn.n_neighbors, 3)
-    assert_equal(renn.kind_sel, 'all')
-    assert_equal(renn.n_jobs, -1)
-    assert_equal(renn.random_state, RND_SEED)
+    assert renn.n_neighbors == 3
+    assert renn.kind_sel == 'all'
+    assert renn.n_jobs == 1
+    assert renn.random_state == RND_SEED
 
 
 def test_renn_iter_wrong():
     max_iter = -1
     renn = RepeatedEditedNearestNeighbours(
         max_iter=max_iter, random_state=RND_SEED)
-    assert_raises(ValueError, renn.fit_sample, X, Y)
+    with raises(ValueError):
+        renn.fit_sample(X, Y)
 
 
 def test_renn_fit_sample():
@@ -177,4 +180,5 @@ def test_renn_not_good_object():
     nn = 'rnd'
     renn = RepeatedEditedNearestNeighbours(
         n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
-    assert_raises(ValueError, renn.fit_sample, X, Y)
+    with raises(ValueError):
+        renn.fit_sample(X, Y)

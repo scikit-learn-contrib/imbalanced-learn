@@ -6,8 +6,9 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_array_equal, assert_equal,
-                                   assert_raises_regex)
+from pytest import raises
+
+from sklearn.utils.testing import assert_array_equal
 
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -28,9 +29,9 @@ Y = np.array([0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0])
 def test_oss_init():
     oss = OneSidedSelection(random_state=RND_SEED)
 
-    assert_equal(oss.n_seeds_S, 1)
-    assert_equal(oss.n_jobs, 1)
-    assert_equal(oss.random_state, RND_SEED)
+    assert oss.n_seeds_S == 1
+    assert oss.n_jobs == 1
+    assert oss.random_state == RND_SEED
 
 
 def test_oss_fit_sample():
@@ -89,5 +90,5 @@ def test_oss_with_object():
 def test_oss_with_wrong_object():
     knn = 'rnd'
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
-    assert_raises_regex(ValueError, "has to be a int",
-                        oss.fit_sample, X, Y)
+    with raises(ValueError, match="has to be a int"):
+        oss.fit_sample(X, Y)

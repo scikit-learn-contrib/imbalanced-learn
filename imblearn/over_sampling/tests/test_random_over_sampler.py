@@ -8,7 +8,7 @@ from __future__ import print_function
 from collections import Counter
 
 import numpy as np
-from sklearn.utils.testing import assert_array_equal, assert_equal
+from sklearn.utils.testing import assert_array_equal
 
 from imblearn.over_sampling import RandomOverSampler
 
@@ -24,7 +24,7 @@ Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 def test_ros_init():
     ratio = 'auto'
     ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
-    assert_equal(ros.random_state, RND_SEED)
+    assert ros.random_state == RND_SEED
 
 
 def test_ros_fit_sample():
@@ -75,6 +75,6 @@ def test_multiclass_fit_sample():
     ros = RandomOverSampler(random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_sample(X, y)
     count_y_res = Counter(y_resampled)
-    assert_equal(count_y_res[0], 5)
-    assert_equal(count_y_res[1], 5)
-    assert_equal(count_y_res[2], 5)
+    assert count_y_res[0] == 5
+    assert count_y_res[1] == 5
+    assert count_y_res[2] == 5

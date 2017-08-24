@@ -6,11 +6,13 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_array_equal, assert_equal,
-                                   assert_raises, assert_raises_regex)
+from pytest import raises
+
+from sklearn.utils.testing import assert_array_equal
 from sklearn.ensemble import GradientBoostingClassifier
 
 from imblearn.under_sampling import InstanceHardnessThreshold
+
 
 RND_SEED = 0
 X = np.array([[-0.3879569, 0.6894251], [-0.09322739, 1.28177189],
@@ -30,7 +32,8 @@ def test_iht_wrong_estimator():
     est = 'rnd'
     iht = InstanceHardnessThreshold(
         estimator=est, ratio=ratio, random_state=RND_SEED)
-    assert_raises(NotImplementedError, iht.fit_sample, X, Y)
+    with raises(NotImplementedError):
+        iht.fit_sample(X, Y)
 
 
 def test_iht_init():
@@ -38,8 +41,8 @@ def test_iht_init():
     iht = InstanceHardnessThreshold(
         ESTIMATOR, ratio=ratio, random_state=RND_SEED)
 
-    assert_equal(iht.ratio, ratio)
-    assert_equal(iht.random_state, RND_SEED)
+    assert iht.ratio == ratio
+    assert iht.random_state == RND_SEED
 
 
 def test_iht_fit_sample():
@@ -271,5 +274,5 @@ def test_iht_fit_sample_wrong_class_obj():
     from sklearn.cluster import KMeans
     est = KMeans()
     iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "Invalid parameter `estimator`",
-                        iht.fit_sample, X, Y)
+    with raises(ValueError, match="Invalid parameter `estimator`"):
+        iht.fit_sample(X, Y)

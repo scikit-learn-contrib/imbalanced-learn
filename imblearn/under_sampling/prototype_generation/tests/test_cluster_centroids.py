@@ -5,9 +5,10 @@ from collections import Counter
 
 import numpy as np
 from scipy import sparse
-from sklearn.utils.testing import (assert_allclose, assert_array_equal,
-                                   assert_equal, assert_raises_regex,
-                                   assert_true)
+from pytest import raises
+
+from sklearn.utils.testing import assert_allclose
+from sklearn.utils.testing import assert_array_equal
 from sklearn.cluster import KMeans
 
 from imblearn.under_sampling import ClusterCentroids
@@ -25,10 +26,10 @@ R_TOL = 1e-4
 def test_fit_sample_check_voting():
     cc = ClusterCentroids(random_state=RND_SEED)
     cc.fit_sample(X, Y)
-    assert_equal(cc.voting_, 'soft')
+    assert cc.voting_ == 'soft'
     cc = ClusterCentroids(random_state=RND_SEED)
     cc.fit_sample(sparse.csr_matrix(X), Y)
-    assert_equal(cc.voting_, 'hard')
+    assert cc.voting_ == 'hard'
 
 
 def test_fit_sample_auto():
@@ -71,9 +72,9 @@ def test_multiclass_fit_sample():
     cc = ClusterCentroids(random_state=RND_SEED)
     X_resampled, y_resampled = cc.fit_sample(X, y)
     count_y_res = Counter(y_resampled)
-    assert_equal(count_y_res[0], 2)
-    assert_equal(count_y_res[1], 2)
-    assert_equal(count_y_res[2], 2)
+    assert count_y_res[0] == 2
+    assert count_y_res[1] == 2
+    assert count_y_res[2] == 2
 
 
 def test_fit_sample_object():
@@ -113,7 +114,7 @@ def test_fit_hard_voting():
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
     for x in X_resampled:
-        assert_true(np.any(np.all(x == X, axis=1)))
+        assert np.any(np.all(x == X, axis=1))
 
 
 def test_fit_sample_error():
@@ -121,10 +122,10 @@ def test_fit_sample_error():
     cluster = 'rnd'
     cc = ClusterCentroids(
         ratio=ratio, random_state=RND_SEED, estimator=cluster)
-    assert_raises_regex(ValueError, "has to be a KMeans clustering",
-                        cc.fit_sample, X, Y)
+    with raises(ValueError, match="has to be a KMeans clustering"):
+        cc.fit_sample(X, Y)
 
     voting = 'unknown'
     cc = ClusterCentroids(ratio=ratio, voting=voting, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "needs to be one of",
-                        cc.fit_sample, X, Y)
+    with raises(ValueError, match="needs to be one of"):
+        cc.fit_sample(X, Y)

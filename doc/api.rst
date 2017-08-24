@@ -1,5 +1,5 @@
 ######################
-`imbalanced-learn` API
+imbalanced-learn API
 ######################
 
 This is the full API documentation of the `imbalanced-learn` toolbox.

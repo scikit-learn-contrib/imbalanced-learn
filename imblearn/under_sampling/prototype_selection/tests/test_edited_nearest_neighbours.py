@@ -6,8 +6,9 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_array_equal, assert_equal,
-                                   assert_raises_regex)
+from pytest import raises
+
+from sklearn.utils.testing import assert_array_equal
 
 from sklearn.neighbors import NearestNeighbors
 
@@ -30,10 +31,10 @@ Y = np.array([1, 2, 1, 1, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 1, 2, 1])
 def test_enn_init():
     enn = EditedNearestNeighbours(random_state=RND_SEED)
 
-    assert_equal(enn.n_neighbors, 3)
-    assert_equal(enn.kind_sel, 'all')
-    assert_equal(enn.n_jobs, 1)
-    assert_equal(enn.random_state, RND_SEED)
+    assert enn.n_neighbors == 3
+    assert enn.kind_sel == 'all'
+    assert enn.n_jobs == 1
+    assert enn.random_state == RND_SEED
 
 
 def test_enn_fit_sample():
@@ -102,5 +103,5 @@ def test_enn_not_good_object():
     nn = 'rnd'
     enn = EditedNearestNeighbours(
         n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
-    assert_raises_regex(ValueError, "has to be one of",
-                        enn.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        enn.fit_sample(X, Y)

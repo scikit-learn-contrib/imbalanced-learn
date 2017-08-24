@@ -6,8 +6,9 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_allclose, assert_array_equal,
-                                   assert_raises_regex)
+from pytest import raises
+
+from sklearn.utils.testing import assert_allclose, assert_array_equal
 
 from imblearn.combine import SMOTETomek
 from imblearn.over_sampling import SMOTE
@@ -125,7 +126,7 @@ def test_validate_estimator_default():
 
 
 def test_validate_estimator_deprecation():
-    smt = SMOTETomek(random_state=RND_SEED, n_jobs=-1)
+    smt = SMOTETomek(random_state=RND_SEED)
     X_resampled, y_resampled = smt.fit_sample(X, Y)
     X_gt = np.array([[0.68481731, 0.51935141],
                      [1.34192108, -0.13367336],
@@ -156,8 +157,8 @@ def test_error_wrong_object():
     smote = 'rnd'
     tomek = 'rnd'
     smt = SMOTETomek(smote=smote, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "smote needs to be a SMOTE",
-                        smt.fit_sample, X, Y)
+    with raises(ValueError, match="smote needs to be a SMOTE"):
+        smt.fit_sample(X, Y)
     smt = SMOTETomek(tomek=tomek, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "tomek needs to be a TomekLinks",
-                        smt.fit_sample, X, Y)
+    with raises(ValueError, match="tomek needs to be a TomekLinks"):
+        smt.fit_sample(X, Y)

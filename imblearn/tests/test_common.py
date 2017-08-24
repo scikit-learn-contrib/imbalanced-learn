@@ -3,8 +3,6 @@
 #          Christos Aridas
 # License: MIT
 
-from sklearn.utils.testing import assert_greater
-from sklearn.utils.testing import assert_false
 from sklearn.utils.testing import _named_check
 
 from imblearn.utils.estimator_checks import check_estimator, _yield_all_checks
@@ -16,12 +14,12 @@ def test_all_estimator_no_base_class():
     for name, Estimator in all_estimators():
         msg = ("Base estimators such as {0} should not be included"
                " in all_estimators").format(name)
-        assert_false(name.lower().startswith('base'), msg=msg)
+        assert not name.lower().startswith('base'), msg
 
 
 def test_all_estimators():
     estimators = all_estimators(include_meta_estimators=True)
-    assert_greater(len(estimators), 0)
+    assert len(estimators) > 0
     for name, Estimator in estimators:
         # some can just not be sensibly default constructed
         yield (_named_check(check_estimator, name),

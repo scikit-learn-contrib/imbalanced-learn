@@ -3,9 +3,8 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
-from sklearn.utils.testing import assert_warns_message
-
 from imblearn.utils.deprecation import deprecate_parameter
+from imblearn.utils.testing import warns
 
 
 class Sampler(object):
@@ -15,7 +14,7 @@ class Sampler(object):
 
 
 def test_deprecate_parameter():
-    assert_warns_message(DeprecationWarning, "is deprecated from",
-                         deprecate_parameter, Sampler(), '0.2', 'a')
-    assert_warns_message(DeprecationWarning, "Use 'b' instead.",
-                         deprecate_parameter, Sampler(), '0.2', 'a', 'b')
+    with warns(DeprecationWarning, match="is deprecated from"):
+        deprecate_parameter(Sampler(), '0.2', 'a')
+    with warns(DeprecationWarning, match="Use 'b' instead."):
+        deprecate_parameter(Sampler(), '0.2', 'a', 'b')

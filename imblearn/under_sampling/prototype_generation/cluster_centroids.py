@@ -197,4 +197,4 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
 
-        return X_resampled, y_resampled
+        return X_resampled, np.array(y_resampled)

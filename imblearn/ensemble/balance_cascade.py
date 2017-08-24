@@ -296,7 +296,8 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             # extract the prediction about the targeted classes only
             pred_target = pred[:index_under_sample.size]
             index_classified = index_under_sample[
-                pred_target == y_subset[:index_under_sample.size]]
+                pred_target == safe_indexing(y_subset,
+                                             range(index_under_sample.size))]
             samples_mask[index_classified] = False
 
             # check the stopping criterion

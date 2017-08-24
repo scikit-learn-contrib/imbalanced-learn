@@ -11,8 +11,11 @@ import traceback
 
 from collections import Counter
 
+import pytest
+
 import numpy as np
 from scipy import sparse
+from pytest import raises
 
 from sklearn.datasets import make_classification
 from sklearn.cluster import KMeans
@@ -20,10 +23,8 @@ from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
-from sklearn.utils.testing import (assert_warns, assert_raises_regex,
-                                   assert_true, set_random_state,
-                                   assert_equal, assert_allclose,
-                                   SkipTest)
+from sklearn.utils.testing import assert_allclose
+from sklearn.utils.testing import set_random_state
 
 from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
@@ -31,6 +32,8 @@ from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import NearMiss, ClusterCentroids
+
+from imblearn.utils.testing import warns
 
 
 def _yield_sampler_checks(name, Estimator):
@@ -83,15 +86,8 @@ def check_target_type(name, Estimator):
     y = np.linspace(0, 1, 20)
     estimator = Estimator()
     set_random_state(estimator)
-    assert_warns(UserWarning, estimator.fit, X, y)
-
-
-def check_multiclass_warning(name, Estimator):
-    X = np.random.random((20, 2))
-    y = np.array([0] * 3 + [1] * 2 + [2] * 15)
-    estimator = Estimator()
-    set_random_state(estimator)
-    assert_warns(UserWarning, estimator.fit, X, y)
+    with warns(UserWarning, match='should be of types'):
+        estimator.fit(X, y)
 
 
 def multioutput_estimator_convert_y_2d(name, y):
@@ -135,24 +131,23 @@ def check_dont_overwrite_parameters(name, Estimator):
                           if key not in dict_before_fit.keys()]
 
     # check that fit doesn't add any public attribute
-    assert_true(not attrs_added_by_fit,
-                ('Estimator adds public attribute(s) during'
-                 ' the fit method.'
-                 ' Estimators are only allowed to add private attributes'
-                 ' either started with _ or ended'
-                 ' with _ but %s added' % ', '.join(attrs_added_by_fit)))
+    assert not attrs_added_by_fit, ('Estimator adds public attribute(s) during'
+                                    ' the fit method. Estimators are only'
+                                    ' allowed to add private attributes either'
+                                    ' started with _ or ended with _ but %s'
+                                    ' added' % ', '.join(attrs_added_by_fit))
 
     # check that fit doesn't change any public attribute
     attrs_changed_by_fit = [key for key in public_keys_after_fit
                             if (dict_before_fit[key]
                                 is not dict_after_fit[key])]
 
-    assert_true(not attrs_changed_by_fit,
-                ('Estimator changes public attribute(s) during'
-                 ' the fit method. Estimators are only allowed'
-                 ' to change attributes started'
-                 ' or ended with _, but'
-                 ' %s changed' % ', '.join(attrs_changed_by_fit)))
+    assert not attrs_changed_by_fit, ('Estimator changes public attribute(s)'
+                                      ' during the fit method. Estimators are'
+                                      ' only allowed to change attributes'
+                                      ' started or ended with _, but %s'
+                                      ' changed' %
+                                      ', '.join(attrs_changed_by_fit))
 
 
 def check_samplers_one_label(name, Sampler):
@@ -179,8 +174,8 @@ def check_samplers_no_fit_error(name, Sampler):
     sampler = Sampler()
     X = np.random.random((20, 2))
     y = np.array([1] * 5 + [0] * 15)
-    assert_raises_regex(NotFittedError, "instance is not fitted yet.",
-                        sampler.sample, X, y)
+    with raises(NotFittedError, match="instance is not fitted yet."):
+        sampler.sample(X, y)
 
 
 def check_samplers_X_consistancy_sample(name, Sampler):
@@ -190,8 +185,8 @@ def check_samplers_X_consistancy_sample(name, Sampler):
     sampler.fit(X, y)
     X_different = np.random.random((40, 2))
     y_different = y = np.array([1] * 25 + [0] * 15)
-    assert_raises_regex(RuntimeError, "X and y need to be same array earlier",
-                        sampler.sample, X_different, y_different)
+    with raises(RuntimeError, match="X and y need to be same array earlier"):
+        sampler.sample(X_different, y_different)
 
 
 def check_samplers_fit(name, Sampler):
@@ -199,7 +194,7 @@ def check_samplers_fit(name, Sampler):
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
     sampler.fit(X, y)
-    assert_true(hasattr(sampler, 'ratio_'))
+    assert hasattr(sampler, 'ratio_')
 
 
 def check_samplers_fit_sample(name, Sampler):
@@ -212,24 +207,21 @@ def check_samplers_fit_sample(name, Sampler):
     if isinstance(sampler, BaseOverSampler):
         target_stats_res = Counter(y_res)
         n_samples = max(target_stats.values())
-        assert_true(all(value >= n_samples
-                        for value in Counter(y_res).values()))
+        assert all(value >= n_samples for value in Counter(y_res).values())
     elif isinstance(sampler, BaseUnderSampler):
         n_samples = min(target_stats.values())
-        assert_true(all(value == n_samples
-                        for value in Counter(y_res).values()))
+        assert all(value == n_samples for value in Counter(y_res).values())
     elif isinstance(sampler, BaseCleaningSampler):
         target_stats_res = Counter(y_res)
         class_minority = min(target_stats, key=target_stats.get)
-        assert_true(
-            all(target_stats[class_sample] > target_stats_res[class_sample]
-                for class_sample in target_stats.keys()
-                if class_sample != class_minority))
+        assert all(target_stats[class_sample] > target_stats_res[class_sample]
+                   for class_sample in target_stats.keys()
+                   if class_sample != class_minority)
     elif isinstance(sampler, BaseEnsembleSampler):
         y_ensemble = y_res[0]
         n_samples = min(target_stats.values())
-        assert_true(all(value == n_samples
-                        for value in Counter(y_ensemble).values()))
+        assert all(value == n_samples
+                   for value in Counter(y_ensemble).values())
 
 
 def check_samplers_ratio_fit_sample(name, Sampler):
@@ -237,29 +229,29 @@ def check_samplers_ratio_fit_sample(name, Sampler):
     X, y = make_classification(n_samples=1000, n_classes=3,
                                n_informative=4, weights=[0.2, 0.3, 0.5],
                                random_state=0)
-    target_stats = Counter(y)
     sampler = Sampler(random_state=0)
+    expected_stat = Counter(y)[1]
     if isinstance(sampler, BaseOverSampler):
         ratio = {2: 498, 0: 498}
         sampler.set_params(ratio=ratio)
         X_res, y_res = sampler.fit_sample(X, y)
-        assert_equal(target_stats[1], Counter(y_res)[1])
+        assert Counter(y_res)[1] == expected_stat
     elif isinstance(sampler, BaseUnderSampler):
         ratio = {2: 201, 0: 201}
         sampler.set_params(ratio=ratio)
         X_res, y_res = sampler.fit_sample(X, y)
-        assert_equal(target_stats[1], Counter(y_res)[1])
+        assert Counter(y_res)[1] == expected_stat
     elif isinstance(sampler, BaseCleaningSampler):
         ratio = {2: 201, 0: 201}
         sampler.set_params(ratio=ratio)
         X_res, y_res = sampler.fit_sample(X, y)
-        assert_equal(target_stats[1], Counter(y_res)[1])
+        assert Counter(y_res)[1] == expected_stat
     elif isinstance(sampler, BaseEnsembleSampler):
         ratio = {2: 201, 0: 201}
         sampler.set_params(ratio=ratio)
         X_res, y_res = sampler.fit_sample(X, y)
         y_ensemble = y_res[0]
-        assert_equal(target_stats[1], Counter(y_ensemble)[1])
+        assert Counter(y_ensemble)[1] == expected_stat
 
 
 def check_samplers_sparse(name, Sampler):
@@ -288,42 +280,36 @@ def check_samplers_sparse(name, Sampler):
         X_res_sparse, y_res_sparse = sampler.fit_sample(X_sparse, y)
         X_res, y_res = sampler.fit_sample(X, y)
         if not isinstance(sampler, BaseEnsembleSampler):
-                assert_true(sparse.issparse(X_res_sparse))
+                assert sparse.issparse(X_res_sparse)
                 assert_allclose(X_res_sparse.A, X_res)
                 assert_allclose(y_res_sparse, y_res)
         else:
             for x_sp, x, y_sp, y in zip(X_res_sparse, X_res,
                                         y_res_sparse, y_res):
-                assert_true(sparse.issparse(x_sp))
+                assert sparse.issparse(x_sp)
                 assert_allclose(x_sp.A, x)
                 assert_allclose(y_sp, y)
 
 
 def check_samplers_pandas(name, Sampler):
+    pd = pytest.importorskip("pandas")
     # Check that the samplers handle pandas dataframe and pandas series
     X, y = make_classification(n_samples=1000, n_classes=3,
                                n_informative=4, weights=[0.2, 0.3, 0.5],
                                random_state=0)
-    try:
-        import pandas as pd
-        X_pd, y_pd = pd.DataFrame(X), pd.Series(y)
-        sampler = Sampler(random_state=0)
-        if isinstance(Sampler(), SMOTE):
-            samplers = [Sampler(random_state=0, kind=kind)
-                        for kind in ('regular', 'borderline1',
-                                     'borderline2', 'svm')]
-        elif isinstance(Sampler(), NearMiss):
+    X_pd, y_pd = pd.DataFrame(X), pd.Series(y)
+    sampler = Sampler(random_state=0)
+    if isinstance(Sampler(), SMOTE):
+        samplers = [Sampler(random_state=0, kind=kind)
+                    for kind in ('regular', 'borderline1',
+                                 'borderline2', 'svm')]
+    elif isinstance(Sampler(), NearMiss):
             samplers = [Sampler(random_state=0, version=version)
                         for version in (1, 2, 3)]
-        else:
-            samplers = [Sampler(random_state=0)]
-        for sampler in samplers:
-            X_res_pd, y_res_pd = sampler.fit_sample(X_pd, y_pd)
-            X_res, y_res = sampler.fit_sample(X, y)
-            assert_allclose(X_res_pd, X_res)
-            assert_allclose(y_res_pd, y_res)
-
-    except ImportError:
-            raise SkipTest("pandas is not installed: not testing for "
-                           "input of type pandas.DataFrame / pandas.Series as"
-                           " input.")
+    else:
+        samplers = [Sampler(random_state=0)]
+    for sampler in samplers:
+        X_res_pd, y_res_pd = sampler.fit_sample(X_pd, y_pd)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert_allclose(X_res_pd, X_res)
+        assert_allclose(y_res_pd, y_res)

@@ -6,11 +6,14 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_array_equal, assert_warns,
-                                   assert_raises_regex)
+from pytest import raises
+
+from sklearn.utils.testing import assert_array_equal
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NearMiss
+
+from imblearn.utils.testing import warns
 
 RND_SEED = 0
 X = np.array([[1.17737838, -0.2002118],
@@ -36,14 +39,15 @@ VERSION_NEARMISS = (1, 2, 3)
 # FIXME remove at the end of the deprecation 0.4
 def test_nearmiss_deprecation():
     nm = NearMiss(ver3_samp_ngh=3, version=3)
-    assert_warns(DeprecationWarning, nm.fit_sample, X, Y)
+    with warns(DeprecationWarning, match="deprecated from 0.2"):
+        nm.fit_sample(X, Y)
 
 
 def test_nearmiss_wrong_version():
     version = 1000
     nm = NearMiss(version=version, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "must be 1, 2 or 3",
-                        nm.fit_sample, X, Y)
+    with raises(ValueError, match="must be 1, 2 or 3"):
+        nm.fit_sample(X, Y)
 
 
 def test_nm_wrong_nn_obj():
@@ -53,15 +57,15 @@ def test_nm_wrong_nn_obj():
                   version=VERSION_NEARMISS,
                   return_indices=True,
                   n_neighbors=nn)
-    assert_raises_regex(ValueError, "has to be one of",
-                        nm.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        nm.fit_sample(X, Y)
     nn3 = 'rnd'
     nn = NearestNeighbors(n_neighbors=3)
     nm3 = NearMiss(ratio=ratio, random_state=RND_SEED,
                    version=3, return_indices=True,
                    n_neighbors=nn, n_neighbors_ver3=nn3)
-    assert_raises_regex(ValueError, "has to be one of",
-                        nm3.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        nm3.fit_sample(X, Y)
 
 
 def test_nm_fit_sample_auto():

@@ -6,8 +6,9 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_allclose, assert_array_equal,
-                                   assert_raises_regex)
+from pytest import raises
+
+from sklearn.utils.testing import assert_allclose, assert_array_equal
 
 from imblearn.combine import SMOTEENN
 from imblearn.under_sampling import EditedNearestNeighbours
@@ -91,7 +92,7 @@ def test_validate_estimator_default():
 
 
 def test_validate_estimator_deprecation():
-    smt = SMOTEENN(random_state=RND_SEED, n_jobs=-1)
+    smt = SMOTEENN(random_state=RND_SEED)
     X_resampled, y_resampled = smt.fit_sample(X, Y)
     X_gt = np.array([[1.52091956, -0.49283504],
                      [0.84976473, -0.15570176],
@@ -113,8 +114,8 @@ def test_error_wrong_object():
     smote = 'rnd'
     enn = 'rnd'
     smt = SMOTEENN(smote=smote, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "smote needs to be a SMOTE",
-                        smt.fit_sample, X, Y)
+    with raises(ValueError, match="smote needs to be a SMOTE"):
+        smt.fit_sample(X, Y)
     smt = SMOTEENN(enn=enn, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "enn needs to be an ",
-                        smt.fit_sample, X, Y)
+    with raises(ValueError, match="enn needs to be an "):
+        smt.fit_sample(X, Y)

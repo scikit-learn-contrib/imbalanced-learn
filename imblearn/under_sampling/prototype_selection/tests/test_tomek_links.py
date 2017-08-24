@@ -6,7 +6,7 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import assert_array_equal, assert_equal
+from sklearn.utils.testing import assert_array_equal
 
 from imblearn.under_sampling import TomekLinks
 
@@ -27,8 +27,8 @@ Y = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 def test_tl_init():
     tl = TomekLinks(random_state=RND_SEED)
 
-    assert_equal(tl.n_jobs, 1)
-    assert_equal(tl.random_state, RND_SEED)
+    assert tl.n_jobs == 1
+    assert tl.random_state == RND_SEED
 
 
 def test_tl_fit_sample():

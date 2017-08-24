@@ -6,11 +6,13 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_allclose, assert_array_equal,
-                                   assert_equal, assert_raises_regex)
+from pytest import raises
+
+from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.over_sampling import ADASYN
+
 
 RND_SEED = 0
 X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
@@ -30,13 +32,13 @@ R_TOL = 1e-4
 def test_ada_init():
     ratio = 'auto'
     ada = ADASYN(ratio=ratio, random_state=RND_SEED)
-    assert_equal(ada.random_state, RND_SEED)
+    assert ada.random_state == RND_SEED
 
 
 def test_ada_fit():
     ada = ADASYN(random_state=RND_SEED)
     ada.fit(X, Y)
-    assert_equal(ada.ratio_, {0: 4, 1: 0})
+    assert ada.ratio_ == {0: 4, 1: 0}
 
 
 def test_ada_fit_sample():
@@ -76,8 +78,8 @@ def test_ada_fit_sample():
 def test_ada_fit_ratio_error():
     ratio = 0.8
     ada = ADASYN(ratio=ratio, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "No samples will be generated.",
-                        ada.fit_sample, X, Y)
+    with raises(ValueError, match="No samples will be generated."):
+        ada.fit_sample(X, Y)
 
 
 def test_ada_fit_sample_nn_obj():
@@ -118,5 +120,5 @@ def test_ada_fit_sample_nn_obj():
 def test_ada_wrong_nn_obj():
     nn = 'rnd'
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
-    assert_raises_regex(ValueError, "has to be one of",
-                        ada.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        ada.fit_sample(X, Y)

@@ -6,7 +6,7 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import assert_array_equal, assert_equal
+from sklearn.utils.testing import assert_array_equal
 
 from imblearn.ensemble import EasyEnsemble
 
@@ -25,10 +25,10 @@ def test_ee_init():
     ratio = 1.
     ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
 
-    assert_equal(ee.ratio, ratio)
-    assert_equal(ee.replacement, False)
-    assert_equal(ee.n_subsets, 10)
-    assert_equal(ee.random_state, RND_SEED)
+    assert ee.ratio == ratio
+    assert ee.replacement is False
+    assert ee.n_subsets == 10
+    assert ee.random_state == RND_SEED
 
 
 def test_fit_sample_auto():

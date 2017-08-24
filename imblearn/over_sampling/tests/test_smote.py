@@ -6,12 +6,14 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import (assert_allclose, assert_array_equal,
-                                   assert_raises_regex)
+from pytest import raises
+
+from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 
 from imblearn.over_sampling import SMOTE
+
 
 RND_SEED = 0
 X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
@@ -31,8 +33,8 @@ R_TOL = 1e-4
 def test_smote_wrong_kind():
     kind = 'rnd'
     smote = SMOTE(kind=kind, random_state=RND_SEED)
-    assert_raises_regex(ValueError, "Unknown kind for SMOTE",
-                        smote.fit_sample, X, Y)
+    with raises(ValueError, match="Unknown kind for SMOTE"):
+        smote.fit_sample(X, Y)
 
 
 def test_sample_regular():
@@ -203,19 +205,19 @@ def test_wrong_nn():
     nn_k = NearestNeighbors(n_neighbors=6)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
-    assert_raises_regex(ValueError, "has to be one of",
-                        smote.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        smote.fit_sample(X, Y)
     nn_k = 'rnd'
     nn_m = NearestNeighbors(n_neighbors=10)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
-    assert_raises_regex(ValueError, "has to be one of",
-                        smote.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        smote.fit_sample(X, Y)
     kind = 'regular'
     nn_k = 'rnd'
     smote = SMOTE(random_state=RND_SEED, kind=kind, k_neighbors=nn_k)
-    assert_raises_regex(ValueError, "has to be one of",
-                        smote.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        smote.fit_sample(X, Y)
 
 
 def test_sample_regular_with_nn_svm():
@@ -250,5 +252,5 @@ def test_sample_regular_wrong_svm():
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, svm_estimator=svm)
 
-    assert_raises_regex(ValueError, "has to be one of",
-                        smote.fit_sample, X, Y)
+    with raises(ValueError, match="has to be one of"):
+        smote.fit_sample(X, Y)
