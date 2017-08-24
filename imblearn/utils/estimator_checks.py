@@ -271,6 +271,7 @@ def check_samplers_sparse(name, Sampler):
     elif isinstance(Sampler(), ClusterCentroids):
         # set KMeans to full since it support sparse and dense
         samplers = [Sampler(random_state=0,
+                            voting='soft',
                             estimator=KMeans(random_state=1,
                                              algorithm='full'))]
     else:

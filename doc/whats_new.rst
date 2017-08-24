@@ -40,6 +40,10 @@ Bug fixes
 New features
 ~~~~~~~~~~~~
 
+- :class:`under_sampling.ClusterCentroids` accepts a parameter ``voting``
+  allowing to use nearest-neighbors of centroids instead of centroids
+  themselves. It is more efficient for sparse input. By `Guillaume Lemaitre`_.
+
 - Turn off steps in :class:`pipeline.Pipeline` using the `None`
   object. By `Christos Aridas`_.
 
