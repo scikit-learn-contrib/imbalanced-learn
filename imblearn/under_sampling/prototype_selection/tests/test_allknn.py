@@ -6,12 +6,14 @@
 from __future__ import print_function
 
 import numpy as np
+from pytest import raises
+
 from sklearn.utils.testing import assert_allclose, assert_array_equal
-from sklearn.utils.testing import assert_raises
 from sklearn.neighbors import NearestNeighbors
 from sklearn.datasets import make_classification
 
 from imblearn.under_sampling import AllKNN
+
 
 RND_SEED = 0
 X = np.array([[-0.12840393, 0.66446571], [1.32319756, -0.13181616],
@@ -171,4 +173,5 @@ def test_allknn_fit_sample_with_nn_object():
 def test_alknn_not_good_object():
     nn = 'rnd'
     allknn = AllKNN(n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
-    assert_raises(ValueError, allknn.fit_sample, X, Y)
+    with raises(ValueError):
+        allknn.fit_sample(X, Y)

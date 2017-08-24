@@ -8,7 +8,8 @@ Skipped if datasets is not already downloaded to data_home.
 
 from imblearn.datasets import fetch_datasets
 from sklearn.utils.testing import SkipTest, assert_allclose
-from sklearn.utils.testing import assert_raises_regex
+
+from pytest import raises
 
 DATASET_SHAPE = {'ecoli': (336, 7),
                  'optical_digits': (5620, 64),
@@ -84,11 +85,11 @@ def test_fetch_filter():
 
 
 def test_fetch_error():
-    assert_raises_regex(ValueError, 'is not a dataset available.',
-                        fetch_datasets, filter_data=tuple(['rnd']))
-    assert_raises_regex(ValueError, 'dataset with the ID=',
-                        fetch_datasets, filter_data=tuple([-1]))
-    assert_raises_regex(ValueError, 'dataset with the ID=',
-                        fetch_datasets, filter_data=tuple([100]))
-    assert_raises_regex(ValueError, 'value in the tuple',
-                        fetch_datasets, filter_data=tuple([1.00]))
+    with raises(ValueError, match='is not a dataset available.'):
+        fetch_datasets(filter_data=tuple(['rnd']))
+    with raises(ValueError, match='dataset with the ID='):
+        fetch_datasets(filter_data=tuple([-1]))
+    with raises(ValueError, match='dataset with the ID='):
+        fetch_datasets(filter_data=tuple([100]))
+    with raises(ValueError, match='value in the tuple'):
+        fetch_datasets(filter_data=tuple([1.00]))

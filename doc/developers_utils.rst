@@ -101,3 +101,45 @@ On the top of all the functionality provided by scikit-learn. Imbalance-learn
 provides :func:`deprecate_parameter`: which is used to deprecate a sampler's
 parameter (attribute) by another one.
 
+Testing utilities
+=================
+Currently, imbalanced-learn provide a warning management utility. This feature
+is going to be merge in pytest and will be removed when the pytest release will
+have it.
+
+If using Python 2.7 or above, you may use this function as a
+context manager::
+
+    >>> import warnings
+    >>> from imblearn.utils.testing import warns
+    >>> with warns(RuntimeWarning):
+    ...    warnings.warn("my runtime warning", RuntimeWarning)
+
+    >>> with warns(RuntimeWarning):
+    ...    pass
+    Traceback (most recent call last):
+      ...
+    Failed: DID NOT WARN. No warnings of type ...RuntimeWarning... was emitted...
+
+    >>> with warns(RuntimeWarning):
+    ...    warnings.warn(UserWarning)
+    Traceback (most recent call last):
+      ...
+    Failed: DID NOT WARN. No warnings of type ...RuntimeWarning... was emitted...
+
+In the context manager form you may use the keyword argument ``match`` to assert
+that the exception matches a text or regex::
+
+    >>> import warnings
+    >>> from imblearn.utils.testing import warns
+    >>> with warns(UserWarning, match='must be 0 or None'):
+    ...     warnings.warn("value must be 0 or None", UserWarning)
+
+    >>> with warns(UserWarning, match=r'must be \d+$'):
+    ...     warnings.warn("value must be 42", UserWarning)
+
+    >>> with warns(UserWarning, match=r'must be \d+$'):
+    ...     warnings.warn("this is not here", UserWarning)
+    Traceback (most recent call last):
+      ...
+    AssertionError: 'must be \d+$' pattern not found in ['this is not here']

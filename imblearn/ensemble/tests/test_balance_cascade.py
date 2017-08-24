@@ -6,11 +6,14 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import assert_array_equal, assert_raises
-from sklearn.utils.testing import assert_raises_regex
+
+from pytest import raises
+
+from sklearn.utils.testing import assert_array_equal
 from sklearn.ensemble import RandomForestClassifier
 
 from imblearn.ensemble import BalanceCascade
+
 
 RND_SEED = 0
 X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
@@ -299,7 +302,8 @@ def test_fit_sample_auto_linear_svm():
 def test_init_wrong_classifier():
     classifier = 'rnd'
     bc = BalanceCascade(classifier=classifier)
-    assert_raises(NotImplementedError, bc.fit_sample, X, Y)
+    with raises(NotImplementedError):
+        bc.fit_sample(X, Y)
 
 
 def test_fit_sample_auto_early_stop():
@@ -362,5 +366,5 @@ def test_give_classifier_wrong_obj():
     classifier = 2
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
                         return_indices=True, estimator=classifier)
-    assert_raises_regex(ValueError, "Invalid parameter `estimator`",
-                        bc.fit_sample, X, Y)
+    with raises(ValueError, match="Invalid parameter `estimator`"):
+        bc.fit_sample(X, Y)

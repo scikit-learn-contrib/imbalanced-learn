@@ -12,19 +12,22 @@ import traceback
 from collections import Counter
 
 import numpy as np
+from pytest import raises
 
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
-from sklearn.utils.testing import assert_warns, assert_raises_regex
+
 from sklearn.utils.testing import set_random_state
 
 from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
+
+from imblearn.utils.testing import warns
 
 
 def _yield_sampler_checks(name, Estimator):
@@ -75,15 +78,8 @@ def check_target_type(name, Estimator):
     y = np.linspace(0, 1, 20)
     estimator = Estimator()
     set_random_state(estimator)
-    assert_warns(UserWarning, estimator.fit, X, y)
-
-
-def check_multiclass_warning(name, Estimator):
-    X = np.random.random((20, 2))
-    y = np.array([0] * 3 + [1] * 2 + [2] * 15)
-    estimator = Estimator()
-    set_random_state(estimator)
-    assert_warns(UserWarning, estimator.fit, X, y)
+    with warns(UserWarning, match='should be of types'):
+        estimator.fit(X, y)
 
 
 def multioutput_estimator_convert_y_2d(name, y):
@@ -170,8 +166,8 @@ def check_samplers_no_fit_error(name, Sampler):
     sampler = Sampler()
     X = np.random.random((20, 2))
     y = np.array([1] * 5 + [0] * 15)
-    assert_raises_regex(NotFittedError, "instance is not fitted yet.",
-                        sampler.sample, X, y)
+    with raises(NotFittedError, match="instance is not fitted yet."):
+        sampler.sample(X, y)
 
 
 def check_samplers_X_consistancy_sample(name, Sampler):
@@ -181,8 +177,8 @@ def check_samplers_X_consistancy_sample(name, Sampler):
     sampler.fit(X, y)
     X_different = np.random.random((40, 2))
     y_different = y = np.array([1] * 25 + [0] * 15)
-    assert_raises_regex(RuntimeError, "X and y need to be same array earlier",
-                        sampler.sample, X_different, y_different)
+    with raises(RuntimeError, match="X and y need to be same array earlier"):
+        sampler.sample(X_different, y_different)
 
 
 def check_samplers_fit(name, Sampler):
