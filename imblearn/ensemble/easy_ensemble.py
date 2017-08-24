@@ -20,7 +20,7 @@ class EasyEnsemble(BaseEnsembleSampler):
     This method iteratively select a random subset and make an ensemble of the
     different sets.
 
-    Read more in the :ref:`User Guide <ensemble>`.
+    Read more in the :ref:`User Guide <ensemble_samplers>`.
 
     Parameters
     ----------
@@ -67,7 +67,7 @@ class EasyEnsemble(BaseEnsembleSampler):
 
     See also
     --------
-    BalanceCascade
+    BalanceCascade, BalancedBaggingClassifier
 
     References
     ----------
