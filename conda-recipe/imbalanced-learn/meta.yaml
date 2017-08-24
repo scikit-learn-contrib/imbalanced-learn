@@ -1,9 +1,9 @@
 package:
   name: imbalanced-learn
-  version: "0.2.1"
+  version: "0.3.0"
 
 source:
-  git_rev: 0.2.1
+  git_rev: 0.3.0
   git_url: https://github.com/scikit-learn-contrib/imbalanced-learn.git
 
 requirements:
@@ -23,6 +23,8 @@ test:
   requires:
     - nose
     - coverage
+    - pytest
+    - pytest-cov
   imports:
     - imblearn
 
