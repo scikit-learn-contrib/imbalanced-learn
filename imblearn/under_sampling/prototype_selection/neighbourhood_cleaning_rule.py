@@ -11,9 +11,11 @@ from collections import Counter
 import numpy as np
 from scipy.stats import mode
 
+from sklearn.utils import safe_indexing
+
 from ..base import BaseCleaningSampler
 from .edited_nearest_neighbours import EditedNearestNeighbours
-from ...utils import check_neighbors_object
+from ...utils import check_neighbors_object, check_ratio
 
 SEL_KIND = ('all', 'mode')
 
@@ -146,18 +148,19 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         idx_under : ndarray, shape (n_samples, )
@@ -166,7 +169,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
         """
         self._validate_estimator()
-
         enn = EditedNearestNeighbours(ratio=self.ratio, return_indices=True,
                                       random_state=self.random_state,
                                       size_ngh=self.size_ngh,
@@ -187,8 +189,9 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                                     (n_samples > X.shape[0] *
                                      self.threshold_cleaning))]
         self.nn_.fit(X)
-        X_class = X[y == class_minority]
-        y_class = y[y == class_minority]
+        class_minority_indices = np.flatnonzero(y == class_minority)
+        X_class = safe_indexing(X, class_minority_indices)
+        y_class = safe_indexing(y, class_minority_indices)
         nnhood_idx = self.nn_.kneighbors(
             X_class, return_distance=False)[:, 1:]
         nnhood_label = y[nnhood_idx]
@@ -211,7 +214,9 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         index_target_class = np.flatnonzero(selected_samples)
 
         if self.return_indices:
-            return (X[index_target_class], y[index_target_class],
+            return (safe_indexing(X, index_target_class),
+                    safe_indexing(y, index_target_class),
                     index_target_class)
         else:
-            return X[index_target_class], y[index_target_class]
+            return (safe_indexing(X, index_target_class),
+                    safe_indexing(y, index_target_class))

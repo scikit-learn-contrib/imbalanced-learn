@@ -281,10 +281,10 @@ class SMOTEENN(SamplerMixin):
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
@@ -293,7 +293,7 @@ class SMOTEENN(SamplerMixin):
             Return self.
 
         """
-        X, y = check_X_y(X, y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         y = check_target_type(y)
         self.ratio_ = self.ratio
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
@@ -305,15 +305,16 @@ class SMOTEENN(SamplerMixin):
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
         y_resampled : ndarray, shape (n_samples_new)

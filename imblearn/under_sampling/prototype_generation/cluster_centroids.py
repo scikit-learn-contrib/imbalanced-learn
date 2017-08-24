@@ -9,9 +9,15 @@ clustering."""
 from __future__ import division, print_function
 
 import numpy as np
+from scipy import sparse
+
 from sklearn.cluster import KMeans
+from sklearn.neighbors import NearestNeighbors
+from sklearn.utils import safe_indexing
 
 from ..base import BaseUnderSampler
+
+VOTING_KIND = ('auto', 'hard', 'soft')
 
 
 class ClusterCentroids(BaseUnderSampler):
@@ -55,6 +61,18 @@ class ClusterCentroids(BaseUnderSampler):
     estimator : object, optional(default=KMeans())
         Pass a :class:`sklearn.cluster.KMeans` estimator.
 
+    voting : str, optional (default='auto')
+        Voting strategy to generate the new samples:
+
+        - If ``'hard'``, the nearest-neighbors of the centroids found using the
+          clustering algorithm will be used.
+        - If ``'soft'``, the centroids found by the clustering algorithm will
+          be used.
+        - If ``'auto'``, if the input is sparse, it will default on ``'hard'``
+          otherwise, ``'soft'`` will be used.
+
+        .. versionadded:: 0.3.0
+
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
@@ -79,7 +97,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     >>> cc = ClusterCentroids(random_state=42)
     >>> X_res, y_res = cc.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({0: 100, 1: 100})
+    ... # doctest: +ELLIPSIS
+    Resampled dataset shape Counter({...})
 
     """
 
@@ -87,10 +106,12 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                  ratio='auto',
                  random_state=None,
                  estimator=None,
+                 voting='auto',
                  n_jobs=1):
         super(ClusterCentroids, self).__init__(
             ratio=ratio, random_state=random_state)
         self.estimator = estimator
+        self.voting = voting
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
@@ -104,47 +125,76 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             raise ValueError('`estimator` has to be a KMeans clustering.'
                              ' Got {} instead.'.format(type(self.estimator)))
 
+    def _generate_sample(self, X, y, centroids, target_class):
+        if self.voting_ == 'hard':
+            nearest_neighbors = NearestNeighbors(n_neighbors=1)
+            nearest_neighbors.fit(X, y)
+            indices = nearest_neighbors.kneighbors(centroids,
+                                                   return_distance=False)
+            X_new = safe_indexing(X, np.squeeze(indices))
+        else:
+            if sparse.issparse(X):
+                X_new = sparse.csr_matrix(centroids)
+            else:
+                X_new = centroids
+        y_new = np.array([target_class] * centroids.shape[0])
+
+        return X_new, y_new
+
     def _sample(self, X, y):
         """Resample the dataset.
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         """
         self._validate_estimator()
 
-        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        y_resampled = np.empty((0, ), dtype=y.dtype)
+        if self.voting == 'auto':
+            if sparse.issparse(X):
+                self.voting_ = 'hard'
+            else:
+                self.voting_ = 'soft'
+        else:
+            if self.voting in VOTING_KIND:
+                self.voting_ = self.voting
+            else:
+                raise ValueError("'voting' needs to be one of {}. Got {}"
+                                 " instead.".format(VOTING_KIND, self.voting))
 
+        X_resampled, y_resampled = [], []
         for target_class in np.unique(y):
             if target_class in self.ratio_.keys():
                 n_samples = self.ratio_[target_class]
                 self.estimator_.set_params(**{'n_clusters': n_samples})
                 self.estimator_.fit(X[y == target_class])
-                centroids = self.estimator_.cluster_centers_
-
-                X_resampled = np.concatenate((X_resampled, centroids), axis=0)
-                y_resampled = np.concatenate(
-                    (y_resampled, np.array([target_class] * n_samples)),
-                    axis=0)
+                X_new, y_new = self._generate_sample(
+                    X, y, self.estimator_.cluster_centers_, target_class)
+                X_resampled.append(X_new)
+                y_resampled.append(y_new)
             else:
+                target_class_indices = np.flatnonzero(y == target_class)
+                X_resampled.append(safe_indexing(X, target_class_indices))
+                y_resampled.append(safe_indexing(y, target_class_indices))
 
-                X_resampled = np.concatenate(
-                    (X_resampled, X[y == target_class]), axis=0)
-                y_resampled = np.concatenate(
-                    (y_resampled, y[y == target_class]), axis=0)
+        if sparse.issparse(X):
+            X_resampled = sparse.vstack(X_resampled)
+        else:
+            X_resampled = np.vstack(X_resampled)
+        y_resampled = np.hstack(y_resampled)
 
-        return X_resampled, y_resampled
+        return X_resampled, np.array(y_resampled)

@@ -28,13 +28,13 @@ K-means method instead of the original samples::
   ...                            n_clusters_per_class=1,
   ...                            weights=[0.01, 0.05, 0.94],
   ...                            class_sep=0.8, random_state=0)
-  >>> print(Counter(y))
-  Counter({2: 4674, 1: 262, 0: 64})
+  >>> print(sorted(Counter(y).items()))
+  [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.under_sampling import ClusterCentroids
   >>> cc = ClusterCentroids(random_state=0)
   >>> X_resampled, y_resampled = cc.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({0: 64, 1: 64, 2: 64})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 64), (2, 64)]
 
 The figure below illustrates such under-sampling.
 
@@ -48,6 +48,12 @@ with a reduced number of samples. Keep in mind that this method requires that
 your data are grouped into clusters. In addition, the number of centroids
 should be set such that the under-sampled clusters are representative of the
 original one.
+
+.. warning::
+
+   :class:`ClusterCentroids` supports sparse matrices. However, the new samples
+   generated are not specifically sparse. Therefore, even if the resulting
+   matrix will be sparse, the algorithm will be inefficient in this regard.
 
 See :ref:`sphx_glr_auto_examples_under-sampling_plot_cluster_centroids.py` and
 :ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`.
@@ -77,8 +83,8 @@ randomly selecting a subset of data for the targeted classes::
   >>> from imblearn.under_sampling import RandomUnderSampler
   >>> rus = RandomUnderSampler(random_state=0)
   >>> X_resampled, y_resampled = rus.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({0: 64, 1: 64, 2: 64})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 64), (2, 64)]
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_002.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
@@ -108,8 +114,8 @@ be selected with the parameter ``version``::
   >>> from imblearn.under_sampling import NearMiss
   >>> nm1 = NearMiss(random_state=0, version=1)
   >>> X_resampled_nm1, y_resampled = nm1.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({0: 64, 1: 64, 2: 64})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 64), (2, 64)]
 
 As later stated in the next section, :class:`NearMiss` heuristic rules are
 based on nearest neighbors algorithm. Therefore, the parameters ``n_neighbors``
@@ -238,13 +244,13 @@ available: (i) the majority (i.e., ``kind_sel='mode'``) or (ii) all (i.e.,
 ``kind_sel='all'``) the nearest-neighbors have to belong to the same class than
 the sample inspected to keep it in the dataset::
 
-  >>> Counter(y)
-  Counter({2: 4674, 1: 262, 0: 64})
+  >>> sorted(Counter(y).items())
+  [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.under_sampling import EditedNearestNeighbours
   >>> enn = EditedNearestNeighbours(random_state=0)
   >>> X_resampled, y_resampled = enn.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({2: 4568, 1: 213, 0: 64})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 213), (2, 4568)]
 
 The parameter ``n_neighbors`` allows to give a classifier subclassed from
 ``KNeighborsMixin`` from scikit-learn to find the nearest neighbors and make
@@ -257,8 +263,8 @@ Generally, repeating the algorithm will delete more data::
    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
    >>> renn = RepeatedEditedNearestNeighbours(random_state=0)
    >>> X_resampled, y_resampled = renn.fit_sample(X, y)
-   >>> print(Counter(y_resampled))
-   Counter({2: 4551, 1: 208, 0: 64})
+   >>> print(sorted(Counter(y_resampled).items()))
+   [(0, 64), (1, 208), (2, 4551)]
 
 :class:`AllKNN` differs from the previous
 :class:`RepeatedEditedNearestNeighbours` since the number of neighbors of the
@@ -267,8 +273,8 @@ internal nearest neighbors algorithm is increased at each iteration::
   >>> from imblearn.under_sampling import AllKNN
   >>> allknn = AllKNN(random_state=0)
   >>> X_resampled, y_resampled = allknn.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({2: 4601, 1: 220, 0: 64})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 220), (2, 4601)]
 
 In the example below, it can be seen that the three algorithms have similar
 impact by cleaning noisy samples next to the boundaries of the classes.
@@ -305,8 +311,8 @@ The :class:`CondensedNearestNeighbour` can be used in the following manner::
   >>> from imblearn.under_sampling import CondensedNearestNeighbour
   >>> cnn = CondensedNearestNeighbour(random_state=0)
   >>> X_resampled, y_resampled = cnn.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({2: 116, 0: 64, 1: 25})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 24), (2, 115)]
 
 However as illustrated in the figure below, :class:`CondensedNearestNeighbour`
 is sensitive to noise and will add noisy samples.
@@ -320,8 +326,8 @@ used as::
   >>> from imblearn.under_sampling import OneSidedSelection
   >>> oss = OneSidedSelection(random_state=0)
   >>> X_resampled, y_resampled = oss.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({2: 4403, 1: 174, 0: 64})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 174), (2, 4403)]
 
 Our implementation offer to set the number of seeds to put in the set :math:`C`
 originally by setting the parameter ``n_seeds_S``.
@@ -334,8 +340,8 @@ neighbors classifier. The class can be used as::
   >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
   >>> ncr = NeighbourhoodCleaningRule(random_state=0)
   >>> X_resampled, y_resampled = ncr.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({2: 4666, 1: 234, 0: 64})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 234), (2, 4666)]
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_005.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
@@ -362,8 +368,8 @@ removed. The class can be used as::
   >>> iht = InstanceHardnessThreshold(random_state=0,
   ...                                 estimator=LogisticRegression())
   >>> X_resampled, y_resampled = iht.fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({0: 64, 1: 64, 2: 64})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 64), (2, 64)]
 
 This class has 2 important parameters. ``estimator`` will accept any
 scikit-learn classifier which has a method ``predict_proba``. The classifier

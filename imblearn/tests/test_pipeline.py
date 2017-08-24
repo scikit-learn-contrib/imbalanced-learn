@@ -11,9 +11,8 @@ import shutil
 import time
 
 import numpy as np
-from sklearn.utils.testing import assert_raises
-from sklearn.utils.testing import assert_raises_regex
-from sklearn.utils.testing import assert_raise_message
+from pytest import raises
+
 from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_array_almost_equal
 from sklearn.utils.testing import assert_allclose
@@ -32,6 +31,7 @@ from sklearn.externals.joblib import Memory
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (RandomUnderSampler,
                                      EditedNearestNeighbours as ENN)
+
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
@@ -176,13 +176,13 @@ class FitTransformSample(NoTrans):
 
 def test_pipeline_init():
     # Test the various init parameters of the pipeline.
-    assert_raises(TypeError, Pipeline)
+    with raises(TypeError):
+        Pipeline()
     # Check that we can't instantiate pipelines with objects without fit
     # method
-    assert_raises_regex(TypeError,
-                        'Last step of Pipeline should implement fit. '
-                        '.*NoFit.*',
-                        Pipeline, [('clf', NoFit())])
+    error_regex = 'Last step of Pipeline should implement fit. .*NoFit.*'
+    with raises(TypeError, match=error_regex):
+        Pipeline([('clf', NoFit())])
     # Smoke test with only an estimator
     clf = NoTrans()
     pipe = Pipeline([('svc', clf)])
@@ -204,9 +204,9 @@ def test_pipeline_init():
 
     # Check that we can't instantiate with non-transformers on the way
     # Note that NoTrans implements fit, but not transform
-    assert_raises_regex(TypeError,
-                        'implement fit and transform or sample',
-                        Pipeline, [('t', NoTrans()), ('svc', clf)])
+    error_regex = 'implement fit and transform or sample'
+    with raises(TypeError, match=error_regex):
+        Pipeline([('t', NoTrans()), ('svc', clf)])
 
     # Check that params are set
     pipe.set_params(svc__C=0.1)
@@ -215,7 +215,8 @@ def test_pipeline_init():
     repr(pipe)
 
     # Check that params are not set when naming them wrong
-    assert_raises(ValueError, pipe.set_params, anova__C=0.1)
+    with raises(ValueError):
+        pipe.set_params(anova__C=0.1)
 
     # Test clone
     pipe2 = clone(pipe)
@@ -265,11 +266,8 @@ def test_pipeline_fit_params():
     assert pipe.named_steps['transf'].a is None
     assert pipe.named_steps['transf'].b is None
     # invalid parameters should raise an error message
-    assert_raise_message(
-        TypeError,
-        "fit() got an unexpected keyword argument 'bad'",
-        pipe.fit, None, None, clf__bad=True
-    )
+    with raises(TypeError, match="unexpected keyword argument"):
+        pipe.fit(None, None, clf__bad=True)
 
 
 def test_pipeline_sample_weight_supported():
@@ -290,32 +288,19 @@ def test_pipeline_sample_weight_unsupported():
     pipe.fit(X, y=None)
     assert pipe.score(X) == 3
     assert pipe.score(X, sample_weight=None) == 3
-    assert_raise_message(
-        TypeError,
-        "score() got an unexpected keyword argument 'sample_weight'",
-        pipe.score, X, sample_weight=np.array([2, 3])
-    )
+    with raises(TypeError, match="unexpected keyword argument"):
+        pipe.score(X, sample_weight=np.array([2, 3]))
 
 
 def test_pipeline_raise_set_params_error():
     # Test pipeline raises set params error message for nested models.
     pipe = Pipeline([('cls', LinearRegression())])
-
-    # expected error message
-    error_msg = ('Invalid parameter %s for estimator %s. '
-                 'Check the list of available parameters '
-                 'with `estimator.get_params().keys()`.')
-
-    assert_raise_message(ValueError,
-                         error_msg % ('fake', 'Pipeline'),
-                         pipe.set_params,
-                         fake='nope')
+    with raises(ValueError, match="Invalid parameter"):
+        pipe.set_params(fake='nope')
 
     # nested model check
-    assert_raise_message(ValueError,
-                         error_msg % ("fake", pipe),
-                         pipe.set_params,
-                         fake__estimator='nope')
+    with raises(ValueError, match="Invalid parameter"):
+        pipe.set_params(fake__estimator='nope')
 
 
 def test_pipeline_methods_pca_svm():
@@ -397,9 +382,9 @@ def test_fit_predict_on_pipeline_without_fit_predict():
     scaler = StandardScaler()
     pca = PCA(svd_solver='full')
     pipe = Pipeline([('scaler', scaler), ('pca', pca)])
-    assert_raises_regex(AttributeError,
-                        "'PCA' object has no attribute 'fit_predict'",
-                        getattr, pipe, 'fit_predict')
+    error_regex = "'PCA' object has no attribute 'fit_predict'"
+    with raises(AttributeError, match=error_regex):
+        getattr(pipe, 'fit_predict')
 
 
 def test_fit_predict_with_intermediate_fit_params():
@@ -471,8 +456,10 @@ def test_set_pipeline_steps():
 
     # With invalid data
     pipeline.set_params(steps=[('junk', ())])
-    assert_raises(TypeError, pipeline.fit, [[1]], [1])
-    assert_raises(TypeError, pipeline.fit_transform, [[1]], [1])
+    with raises(TypeError):
+        pipeline.fit([[1]], [1])
+    with raises(TypeError):
+        pipeline.fit_transform([[1]], [1])
 
 
 def test_set_pipeline_step_none():
@@ -534,9 +521,8 @@ def test_set_pipeline_step_none():
     assert_array_equal([[exp]], pipeline.fit(X, y).transform(X))
     assert_array_equal([[exp]], pipeline.fit_transform(X, y))
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
-    assert_raise_message(AttributeError,
-                         "'NoneType' object has no attribute 'predict'",
-                         getattr, pipeline, 'predict')
+    with raises(AttributeError, match="has no attribute 'predict'"):
+        getattr(pipeline, 'predict')
 
     # Check None step at construction time
     exp = 2 * 5
@@ -595,10 +581,12 @@ def test_classes_property():
 
     reg = make_pipeline(SelectKBest(k=1), LinearRegression())
     reg.fit(X, y)
-    assert_raises(AttributeError, getattr, reg, "classes_")
+    with raises(AttributeError):
+        getattr(reg, "classes_")
 
     clf = make_pipeline(SelectKBest(k=1), LogisticRegression(random_state=0))
-    assert_raises(AttributeError, getattr, clf, "classes_")
+    with raises(AttributeError):
+        getattr(clf, "classes_")
     clf.fit(X, y)
     assert_array_equal(clf.classes_, np.unique(y))
 
@@ -613,9 +601,10 @@ def test_pipeline_wrong_memory():
     memory = 1
     cached_pipe = Pipeline([('transf', DummyTransf()), ('svc', SVC())],
                            memory=memory)
-    assert_raises_regex(ValueError, "'memory' should either be a string or a"
-                        " joblib.Memory instance, got 'memory=1' instead.",
-                        cached_pipe.fit, X, y)
+    error_regex = ("'memory' should either be a string or a joblib.Memory"
+                   " instance, got 'memory=1' instead.")
+    with raises(ValueError, match=error_regex):
+        cached_pipe.fit(X, y)
 
 
 def test_pipeline_memory_transformer():
@@ -1018,9 +1007,8 @@ def test_pipeline_with_step_that_implements_both_sample_and_transform():
         random_state=0)
 
     clf = LogisticRegression()
-    assert_raises(TypeError, Pipeline, [('step', FitTransformSample()),
-                                        ('logistic', clf)])
-    # assert_raises(TypeError, lambda x: [][0])
+    with raises(TypeError):
+        Pipeline([('step', FitTransformSample()), ('logistic', clf)])
 
 
 def test_pipeline_with_step_that_it_is_pipeline():
@@ -1041,7 +1029,8 @@ def test_pipeline_with_step_that_it_is_pipeline():
     rus = RandomUnderSampler(random_state=0)
     filter1 = SelectKBest(f_classif, k=2)
     pipe1 = Pipeline([('rus', rus), ('anova', filter1)])
-    assert_raises(TypeError, Pipeline, [('pipe1', pipe1), ('logistic', clf)])
+    with raises(TypeError):
+        Pipeline([('pipe1', pipe1), ('logistic', clf)])
 
 
 def test_pipeline_fit_then_sample_with_sampler_last_estimator():

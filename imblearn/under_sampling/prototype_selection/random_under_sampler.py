@@ -7,7 +7,7 @@
 from __future__ import division
 
 import numpy as np
-from sklearn.utils import check_random_state
+from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseUnderSampler
 
@@ -94,18 +94,19 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data to be sampled.
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         idx_under : ndarray, shape (n_samples, )
@@ -116,10 +117,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         """
         random_state = check_random_state(self.random_state)
 
-        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        y_resampled = np.empty((0, ), dtype=y.dtype)
-        if self.return_indices:
-            idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
             if target_class in self.ratio_.keys():
@@ -131,18 +129,12 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
             else:
                 index_target_class = slice(None)
 
-            X_resampled = np.concatenate(
-                (X_resampled, X[y == target_class][index_target_class]),
-                axis=0)
-            y_resampled = np.concatenate(
-                (y_resampled, y[y == target_class][index_target_class]),
-                axis=0)
-            if self.return_indices:
-                idx_under = np.concatenate(
-                    (idx_under, np.flatnonzero(y == target_class)[
-                        index_target_class]), axis=0)
+            idx_under = np.concatenate(
+                (idx_under, np.flatnonzero(y == target_class)[
+                    index_target_class]), axis=0)
 
         if self.return_indices:
-            return X_resampled, y_resampled, idx_under
+            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
+                    idx_under)
         else:
-            return X_resampled, y_resampled
+            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)

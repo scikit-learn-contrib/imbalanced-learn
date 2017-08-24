@@ -29,15 +29,15 @@ randomly sampling with replacement the current available samples. The
    >>> ros = RandomOverSampler(random_state=0)
    >>> X_resampled, y_resampled = ros.fit_sample(X, y)
    >>> from collections import Counter
-   >>> print(Counter(y_resampled)) # doctest: +SKIP
-   Counter({2: 4674, 1: 4674, 0: 4674})
+   >>> print(sorted(Counter(y_resampled).items()))
+   [(0, 4674), (1, 4674), (2, 4674)]
 
 The augmented data set should be used instead of the original data set to train
 a classifier::
 
   >>> from sklearn.svm import LinearSVC
   >>> clf = LinearSVC()
-  >>> clf.fit(X_resampled, y_resampled) # doctest: +ELLIPSIS
+  >>> clf.fit(X_resampled, y_resampled) # doctest : +ELLIPSIS
   LinearSVC(...)
 
 In the figure below, we compare the decision functions of a classifier trained
@@ -67,12 +67,12 @@ can be used in the same manner::
 
   >>> from imblearn.over_sampling import SMOTE, ADASYN
   >>> X_resampled, y_resampled = SMOTE().fit_sample(X, y)
-  >>> print(Counter(y_resampled)) # doctest: +SKIP
-  Counter({2: 4674, 1: 4674, 0: 4674})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 4674), (1, 4674), (2, 4674)]
   >>> clf_smote = LinearSVC().fit(X_resampled, y_resampled)
   >>> X_resampled, y_resampled = ADASYN().fit_sample(X, y)
-  >>> print(Counter(y_resampled))
-  Counter({2: 4674, 0: 4673, 1: 4662})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 4673), (1, 4662), (2, 4674)]
   >>> clf_adasyn = LinearSVC().fit(X_resampled, y_resampled)
 
 The figure below illustrates the major difference of the different over-sampling
@@ -132,8 +132,8 @@ available: (i) ``'borderline1'``, (ii) ``'borderline2'``, and (iii) ``'svm'``::
 
   >>> from imblearn.over_sampling import SMOTE, ADASYN
   >>> X_resampled, y_resampled = SMOTE(kind='borderline1').fit_sample(X, y)
-  >>> print(Counter(y_resampled)) # doctest: +SKIP
-  Counter({2: 4674, 1: 4674, 0: 4674})
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 4674), (1, 4674), (2, 4674)]
 
 See :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`
 to see a comparison between the different over-sampling methods.

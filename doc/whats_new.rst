@@ -40,6 +40,10 @@ Bug fixes
 New features
 ~~~~~~~~~~~~
 
+- :class:`under_sampling.ClusterCentroids` accepts a parameter ``voting``
+  allowing to use nearest-neighbors of centroids instead of centroids
+  themselves. It is more efficient for sparse input. By `Guillaume Lemaitre`_.
+
 - Turn off steps in :class:`pipeline.Pipeline` using the `None`
   object. By `Christos Aridas`_.
 
@@ -51,6 +55,9 @@ Enhancement
 
 - Add :class:`ensemble.BalancedBaggingClassifier` which is a meta estimator to
   directly use the :class:`ensemble.EasyEnsemble` chained with a classifier. By
+  `Guillaume Lemaitre`_.
+
+- All samplers accepts sparse matrices with defaulting on CSR type. By
   `Guillaume Lemaitre`_.
 
 - :func:`datasets.make_imbalance` take a ratio similarly to other samplers. It

@@ -5,6 +5,8 @@ Base class for the over-sampling method.
 #          Christos Aridas
 # License: MIT
 
+from sklearn.utils import check_X_y
+
 from ..base import BaseSampler
 
 

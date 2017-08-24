@@ -14,6 +14,8 @@ from collections import Counter
 import numpy as np
 from scipy.stats import mode
 
+from sklearn.utils import safe_indexing
+
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
 from ...utils.deprecation import deprecate_parameter
@@ -159,18 +161,19 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         idx_under : ndarray, shape (n_samples, )
@@ -180,17 +183,15 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         """
         self._validate_estimator()
 
-        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        y_resampled = np.empty((0, ), dtype=y.dtype)
-        if self.return_indices:
-            idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0, ), dtype=int)
 
         self.nn_.fit(X)
 
         for target_class in np.unique(y):
             if target_class in self.ratio_.keys():
-                X_class = X[y == target_class]
-                y_class = y[y == target_class]
+                target_class_indices = np.flatnonzero(y == target_class)
+                X_class = safe_indexing(X, target_class_indices)
+                y_class = safe_indexing(y, target_class_indices)
                 nnhood_idx = self.nn_.kneighbors(
                     X_class, return_distance=False)[:, 1:]
                 nnhood_label = y[nnhood_idx]
@@ -204,21 +205,15 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
             else:
                 index_target_class = slice(None)
 
-            X_resampled = np.concatenate(
-                (X_resampled, X[y == target_class][index_target_class]),
-                axis=0)
-            y_resampled = np.concatenate(
-                (y_resampled, y[y == target_class][index_target_class]),
-                axis=0)
-            if self.return_indices:
-                idx_under = np.concatenate(
-                    (idx_under, np.flatnonzero(y == target_class)[
-                        index_target_class]), axis=0)
+            idx_under = np.concatenate(
+                (idx_under, np.flatnonzero(y == target_class)[
+                    index_target_class]), axis=0)
 
         if self.return_indices:
-            return X_resampled, y_resampled, idx_under
+            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
+                    idx_under)
         else:
-            return X_resampled, y_resampled
+            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
 
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
@@ -368,18 +363,19 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         idx_under : ndarray, shape (n_samples, )
@@ -591,18 +587,19 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         idx_under : ndarray, shape (n_samples, )

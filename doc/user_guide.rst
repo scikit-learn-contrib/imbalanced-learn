@@ -9,9 +9,10 @@ User Guide
 .. toctree::
    :numbered:
 
-   problem_statement.rst
+   introduction.rst
    over_sampling.rst
    under_sampling.rst
    combine.rst
    ensemble.rst
    Dataset loading utilities <datasets/index.rst>
+   developers_utils.rst

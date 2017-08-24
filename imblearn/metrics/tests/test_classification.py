@@ -10,6 +10,8 @@ from functools import partial
 
 import numpy as np
 
+from pytest import approx, raises
+
 from sklearn import datasets
 from sklearn import svm
 
@@ -17,9 +19,8 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils.fixes import np_version
 from sklearn.utils.validation import check_random_state
 from sklearn.utils.testing import assert_allclose, assert_array_equal
-from sklearn.utils.testing import assert_no_warnings, assert_raises
-from sklearn.utils.testing import assert_warns_message, ignore_warnings
-from sklearn.utils.testing import assert_raise_message
+from sklearn.utils.testing import assert_no_warnings
+from sklearn.utils.testing import ignore_warnings
 from sklearn.metrics import accuracy_score, average_precision_score
 from sklearn.metrics import brier_score_loss, cohen_kappa_score
 from sklearn.metrics import jaccard_similarity_score, precision_score
@@ -32,7 +33,8 @@ from imblearn.metrics import geometric_mean_score
 from imblearn.metrics import make_index_balanced_accuracy
 from imblearn.metrics import classification_report_imbalanced
 
-from pytest import approx
+from imblearn.utils.testing import warns
+
 
 RND_SEED = 42
 R_TOL = 1e-2
@@ -177,7 +179,8 @@ def test_sensitivity_specificity_error_multilabels():
     y_true_bin = label_binarize(y_true, classes=np.arange(5))
     y_pred_bin = label_binarize(y_pred, classes=np.arange(5))
 
-    assert_raises(ValueError, sensitivity_score, y_true_bin, y_pred_bin)
+    with raises(ValueError):
+        sensitivity_score(y_true_bin, y_pred_bin)
 
 
 @ignore_warnings
@@ -185,32 +188,21 @@ def test_sensitivity_specificity_support_errors():
     y_true, y_pred, _ = make_prediction(binary=True)
 
     # Bad pos_label
-    assert_raises(
-        ValueError,
-        sensitivity_specificity_support,
-        y_true,
-        y_pred,
-        pos_label=2,
-        average='binary')
+    with raises(ValueError):
+        sensitivity_specificity_support(y_true, y_pred, pos_label=2,
+                                        average='binary')
 
     # Bad average option
-    assert_raises(
-        ValueError,
-        sensitivity_specificity_support, [0, 1, 2], [1, 2, 0],
-        average='mega')
+    with raises(ValueError):
+        sensitivity_specificity_support([0, 1, 2], [1, 2, 0], average='mega')
 
 
 def test_sensitivity_specificity_unused_pos_label():
     # but average != 'binary'; even if data is binary
-    assert_warns_message(
-        UserWarning,
-        "Note that pos_label (set to 2) is "
-        "ignored when average != 'binary' (got 'macro'). You "
-        "may use labels=[pos_label] to specify a single "
-        "positive class.",
-        sensitivity_specificity_support, [1, 2, 1], [1, 2, 2],
-        pos_label=2,
-        average='macro')
+    with warns(UserWarning, "use labels=\[pos_label\] to specify a single"):
+        sensitivity_specificity_support([1, 2, 1], [1, 2, 2],
+                                        pos_label=2,
+                                        average='macro')
 
 
 def test_geometric_mean_support_binary():
@@ -405,10 +397,8 @@ def test_classification_report_imbalanced_multiclass_with_unicode_label():
                        u'0.15 0.44 0.19 31 red\xa2 0.42 0.90 0.55 0.57 0.63 '
                        u'0.37 20 avg / total 0.51 0.53 0.80 0.47 0.62 0.41 75')
     if np_version[:3] < (1, 7, 0):
-        expected_message = ("NumPy < 1.7.0 does not implement"
-                            " searchsorted on unicode data correctly.")
-        assert_raise_message(RuntimeError, expected_message,
-                             classification_report_imbalanced, y_true, y_pred)
+        with raises(RuntimeError, match="NumPy < 1.7.0"):
+            classification_report_imbalanced(y_true, y_pred)
     else:
         report = classification_report_imbalanced(y_true, y_pred)
         assert _format_report(report) == expected_report
@@ -459,16 +449,20 @@ def test_iba_error_y_score_prob():
 
     aps = make_index_balanced_accuracy(alpha=0.5, squared=True)(
         average_precision_score)
-    assert_raises(AttributeError, aps, y_true, y_pred)
+    with raises(AttributeError):
+        aps(y_true, y_pred)
 
     brier = make_index_balanced_accuracy(alpha=0.5, squared=True)(
         brier_score_loss)
-    assert_raises(AttributeError, brier, y_true, y_pred)
+    with raises(AttributeError):
+        brier(y_true, y_pred)
 
     kappa = make_index_balanced_accuracy(alpha=0.5, squared=True)(
         cohen_kappa_score)
-    assert_raises(AttributeError, kappa, y_true, y_pred)
+    with raises(AttributeError):
+        kappa(y_true, y_pred)
 
     ras = make_index_balanced_accuracy(alpha=0.5, squared=True)(
         roc_auc_score)
-    assert_raises(AttributeError, ras, y_true, y_pred)
+    with raises(AttributeError):
+        ras(y_true, y_pred)

@@ -8,8 +8,11 @@
 from __future__ import division
 
 import numpy as np
+
+from scipy import sparse
+
 from sklearn.svm import SVC
-from sklearn.utils import check_random_state
+from sklearn.utils import check_random_state, safe_indexing
 
 from .base import BaseOverSampler
 from ..exceptions import raise_isinstance_error
@@ -175,13 +178,13 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        samples : ndarray, shape (n_samples, n_features)
+        samples : {array-like, sparse matrix}, shape (n_samples, n_features)
             The samples to check if either they are in danger or not.
 
         target_class : int or str,
             The target corresponding class being over-sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             The true label in order to check the neighbour labels.
 
         kind : str, optional (default='danger')
@@ -192,7 +195,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Returns
         -------
-        output : ndarray, shape (n_samples, )
+        output : ndarray, shape (n_samples,)
             A boolean array where True refer to samples in danger or noise.
 
         """
@@ -223,7 +226,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Points from which the points will be created.
 
         y_type : str or int
@@ -245,26 +248,42 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Returns
         -------
-        X_new : ndarray, shape (n_samples_new, n_features)
+        X_new : {ndarray, sparse matrix}, shape (n_samples_new, n_features)
             Synthetically generated samples.
 
-        y_new : ndarray, shape (n_samples_new, )
+        y_new : ndarray, shape (n_samples_new,)
             Target values for synthetic samples.
 
         """
         random_state = check_random_state(self.random_state)
-        X_new = np.zeros((n_samples, X.shape[1]))
-        samples = random_state.randint(
+        samples_indices = random_state.randint(
             low=0, high=len(nn_num.flatten()), size=n_samples)
         steps = step_size * random_state.uniform(size=n_samples)
-        rows = np.floor_divide(samples, nn_num.shape[1])
-        cols = np.mod(samples, nn_num.shape[1])
-        for i, (sample, row, col, step) in enumerate(zip(samples, rows,
-                                                         cols, steps)):
-            X_new[i] = X[row] - step * (X[row] - nn_data[nn_num[row, col]])
-        y_new = np.array([y_type] * len(X_new))
+        rows = np.floor_divide(samples_indices, nn_num.shape[1])
+        cols = np.mod(samples_indices, nn_num.shape[1])
 
-        return X_new, y_new
+        if sparse.issparse(X):
+            row_indices, col_indices, samples = [], [], []
+            for i, (row, col, step) in enumerate(zip(rows, cols, steps)):
+                if X[row].nnz:
+                    sample = X[row] - step * (X[row] -
+                                              nn_data[nn_num[row, col]])
+                    row_indices += [i] * len(sample.indices)
+                    col_indices += sample.indices.tolist()
+                    samples += sample.data.tolist()
+        else:
+            X_new = np.zeros((n_samples, X.shape[1]))
+            for i, (row, col, step) in enumerate(zip(rows, cols, steps)):
+                X_new[i] = X[row] - step * (X[row] - nn_data[nn_num[row, col]])
+
+        y_new = np.array([y_type] * len(samples_indices))
+
+        if sparse.issparse(X):
+            return (sparse.csr_matrix((samples, (row_indices, col_indices)),
+                                      [len(samples_indices), X.shape[1]]),
+                    y_new)
+        else:
+            return X_new, y_new
 
     def _validate_estimator(self):
         """Create the necessary objects for SMOTE."""
@@ -305,19 +324,20 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
-            The corresponding label of `X_resampled`.
+        y_resampled : ndarray, shape (n_samples_new,)
+            The corresponding label of `X_resampled`
 
         References
         ----------
@@ -326,21 +346,26 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
            intelligence research, 321-357, 2002.
 
         """
+
         X_resampled = X.copy()
         y_resampled = y.copy()
 
         for class_sample, n_samples in self.ratio_.items():
             if n_samples == 0:
                 continue
-            X_class = X[y == class_sample]
+            target_class_indices = np.flatnonzero(y == class_sample)
+            X_class = safe_indexing(X, target_class_indices)
 
             self.nn_k_.fit(X_class)
             nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
             X_new, y_new = self._make_samples(X_class, class_sample, X_class,
                                               nns, n_samples, 1.0)
 
-            X_resampled = np.concatenate((X_resampled, X_new), axis=0)
-            y_resampled = np.concatenate((y_resampled, y_new), axis=0)
+            if sparse.issparse(X_new):
+                X_resampled = sparse.vstack([X_resampled, X_new])
+            else:
+                X_resampled = np.vstack((X_resampled, X_new))
+            y_resampled = np.hstack((y_resampled, y_new))
 
         return X_resampled, y_resampled
 
@@ -354,19 +379,20 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
-            The corresponding label of `X_resampled`.
+        y_resampled : ndarray, shape (n_samples_new,)
+            The corresponding label of `X_resampled`
 
         References
         ----------
@@ -381,7 +407,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         for class_sample, n_samples in self.ratio_.items():
             if n_samples == 0:
                 continue
-            X_class = X[y == class_sample]
+            target_class_indices = np.flatnonzero(y == class_sample)
+            X_class = safe_indexing(X, target_class_indices)
 
             self.nn_m_.fit(X)
             danger_index = self._in_danger_noise(X_class, class_sample, y,
@@ -391,16 +418,21 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
             self.nn_k_.fit(X_class)
             nns = self.nn_k_.kneighbors(
-               X_class[danger_index], return_distance=False)[:, 1:]
+                safe_indexing(X_class, danger_index),
+                return_distance=False)[:, 1:]
 
             # divergence between borderline-1 and borderline-2
             if self.kind == 'borderline1':
                 # Create synthetic samples for borderline points.
-                X_new, y_new = self._make_samples(X_class[danger_index],
+                X_new, y_new = self._make_samples(safe_indexing(X_class,
+                                                                danger_index),
                                                   class_sample, X_class,
                                                   nns, n_samples)
-                X_resampled = np.concatenate((X_resampled, X_new), axis=0)
-                y_resampled = np.concatenate((y_resampled, y_new), axis=0)
+                if sparse.issparse(X_new):
+                    X_resampled = sparse.vstack([X_resampled, X_new])
+                else:
+                    X_resampled = np.vstack((X_resampled, X_new))
+                y_resampled = np.hstack((y_resampled, y_new))
 
             else:
                 random_state = check_random_state(self.random_state)
@@ -408,22 +440,26 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
                 # only minority
                 X_new_1, y_new_1 = self._make_samples(
-                    X_class[danger_index], class_sample, X_class, nns,
+                    safe_indexing(X_class, danger_index), class_sample,
+                    X_class, nns,
                     int(fractions * (n_samples + 1)), step_size=1.)
 
                 # we use a one-vs-rest policy to handle the multiclass in which
                 # new samples will be created considering not only the majority
                 # class but all over classes.
                 X_new_2, y_new_2 = self._make_samples(
-                    X_class[danger_index], class_sample, X[y != class_sample],
+                    safe_indexing(X_class, danger_index), class_sample,
+                    safe_indexing(X, np.flatnonzero(y != class_sample)),
                     nns, int((1 - fractions) * n_samples), step_size=0.5)
 
-                # Concatenate the newly generated samples to the original
-                # data set
-                X_resampled = np.concatenate((X_resampled, X_new_1, X_new_2),
-                                             axis=0)
-                y_resampled = np.concatenate((y_resampled, y_new_1, y_new_2),
-                                             axis=0)
+                if sparse.issparse(X_resampled):
+                    X_resampled = sparse.vstack([X_resampled,
+                                                 X_new_1, X_new_2])
+                else:
+                    X_resampled = np.vstack((X_resampled,
+                                             X_new_1, X_new_2))
+                y_resampled = np.hstack((y_resampled,
+                                         y_new_1, y_new_2))
 
         return X_resampled, y_resampled
 
@@ -435,19 +471,20 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
-            The corresponding label of `X_resampled`.
+        y_resampled : ndarray, shape (n_samples_new,)
+            The corresponding label of `X_resampled`
 
         References
         ----------
@@ -463,17 +500,20 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         for class_sample, n_samples in self.ratio_.items():
             if n_samples == 0:
                 continue
-            X_class = X[y == class_sample]
+            target_class_indices = np.flatnonzero(y == class_sample)
+            X_class = safe_indexing(X, target_class_indices)
 
             self.svm_estimator_.fit(X, y)
             support_index = self.svm_estimator_.support_[
                 y[self.svm_estimator_.support_] == class_sample]
-            support_vector = X[support_index]
+            support_vector = safe_indexing(X, support_index)
 
             self.nn_m_.fit(X)
             noise_bool = self._in_danger_noise(support_vector, class_sample, y,
                                                kind='noise')
-            support_vector = support_vector[np.logical_not(noise_bool)]
+            support_vector = safe_indexing(
+                support_vector,
+                np.flatnonzero(np.logical_not(noise_bool)))
             danger_bool = self._in_danger_noise(support_vector, class_sample,
                                                 y, kind='danger')
             safety_bool = np.logical_not(danger_bool)
@@ -481,33 +521,48 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             self.nn_k_.fit(X_class)
             fractions = random_state.beta(10, 10)
             if np.count_nonzero(danger_bool) > 0:
-                nns = self.nn_k_.kneighbors(support_vector[danger_bool],
+                nns = self.nn_k_.kneighbors(safe_indexing(
+                    support_vector,
+                    np.flatnonzero(danger_bool)),
                                             return_distance=False)[:, 1:]
 
                 X_new_1, y_new_1 = self._make_samples(
-                    support_vector[danger_bool], class_sample, X_class,
+                    safe_indexing(support_vector, np.flatnonzero(danger_bool)),
+                    class_sample, X_class,
                     nns, int(fractions * (n_samples + 1)), step_size=1.)
 
             if np.count_nonzero(safety_bool) > 0:
-                nns = self.nn_k_.kneighbors(support_vector[safety_bool],
-                                            return_distance=False)[:, 1:]
+                nns = self.nn_k_.kneighbors(
+                    safe_indexing(support_vector, np.flatnonzero(safety_bool)),
+                    return_distance=False)[:, 1:]
 
                 X_new_2, y_new_2 = self._make_samples(
-                    support_vector[safety_bool], class_sample, X_class,
+                    safe_indexing(support_vector, np.flatnonzero(safety_bool)),
+                    class_sample, X_class,
                     nns, int((1 - fractions) * n_samples),
                     step_size=-self.out_step)
 
             if (np.count_nonzero(danger_bool) > 0 and
                     np.count_nonzero(safety_bool) > 0):
-                X_resampled = np.concatenate((X_resampled, X_new_1, X_new_2),
-                                             axis=0)
+                if sparse.issparse(X_resampled):
+                    X_resampled = sparse.vstack([X_resampled,
+                                                 X_new_1, X_new_2])
+                else:
+                    X_resampled = np.vstack((X_resampled,
+                                             X_new_1, X_new_2))
                 y_resampled = np.concatenate((y_resampled, y_new_1, y_new_2),
                                              axis=0)
             elif np.count_nonzero(danger_bool) == 0:
-                X_resampled = np.concatenate((X_resampled, X_new_2), axis=0)
+                if sparse.issparse(X_resampled):
+                    X_resampled = sparse.vstack([X_resampled,  X_new_2])
+                else:
+                    X_resampled = np.vstack((X_resampled, X_new_2))
                 y_resampled = np.concatenate((y_resampled, y_new_2), axis=0)
             elif np.count_nonzero(safety_bool) == 0:
-                X_resampled = np.concatenate((X_resampled, X_new_1), axis=0)
+                if sparse.issparse(X_resampled):
+                    X_resampled = sparse.vstack([X_resampled, X_new_1])
+                else:
+                    X_resampled = np.vstack((X_resampled, X_new_1))
                 y_resampled = np.concatenate((y_resampled, y_new_1), axis=0)
 
         return X_resampled, y_resampled
@@ -517,18 +572,19 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         """

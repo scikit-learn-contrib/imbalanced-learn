@@ -38,15 +38,16 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
         y_resampled : ndarray, shape (n_samples_new)
@@ -55,7 +56,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         """
 
         # Check the consistency of X and y
-        X, y = check_X_y(X, y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
 
         check_is_fitted(self, 'ratio_')
         self._check_X_y(X, y)
@@ -67,18 +68,19 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {array-like, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : array-like, shape (n_samples_new,)
             The corresponding label of `X_resampled`
 
         """
@@ -91,19 +93,21 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`
+
         """
         pass
 
@@ -138,10 +142,10 @@ class BaseSampler(SamplerMixin):
 
         Parameters
         ----------
-        X : ndarray, shape (n_samples, n_features)
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : ndarray, shape (n_samples, )
+        y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
@@ -150,7 +154,7 @@ class BaseSampler(SamplerMixin):
             Return self.
 
         """
-        X, y = check_X_y(X, y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         y = check_target_type(y)
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         # self.sampling_type is already checked in check_ratio
