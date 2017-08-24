@@ -6,4 +6,6 @@ under-sampled subsets combined inside an ensemble.
 from .easy_ensemble import EasyEnsemble
 from .balance_cascade import BalanceCascade
 
-__all__ = ['EasyEnsemble', 'BalanceCascade']
+from .classifier import BalancedBaggingClassifier
+
+__all__ = ['EasyEnsemble', 'BalancedBaggingClassifier', 'BalanceCascade']

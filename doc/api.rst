@@ -109,6 +109,7 @@ Prototype selection
    :template: class.rst
 
    ensemble.BalanceCascade
+   ensemble.BalancedBaggingClassifier
    ensemble.EasyEnsemble
 
 

@@ -27,7 +27,7 @@ class BalanceCascade(BaseEnsembleSampler):
     This method iteratively select subset and make an ensemble of the
     different sets. The selection is performed using a specific classifier.
 
-    Read more in the :ref:`User Guide <ensemble>`.
+    Read more in the :ref:`User Guide <ensemble_samplers>`.
 
     Parameters
     ----------
@@ -99,7 +99,7 @@ class BalanceCascade(BaseEnsembleSampler):
 
     See also
     --------
-    EasyEnsemble
+    BalancedBaggingClassifier, EasyEnsemble
 
     References
     ----------

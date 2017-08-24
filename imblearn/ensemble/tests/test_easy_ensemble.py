@@ -3,12 +3,14 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
 import numpy as np
+
+from sklearn.datasets import load_iris
 from sklearn.utils.testing import assert_array_equal
 
 from imblearn.ensemble import EasyEnsemble
+
+iris = load_iris()
 
 # Generate a global dataset to use
 RND_SEED = 0

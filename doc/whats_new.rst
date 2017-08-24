@@ -53,6 +53,10 @@ New features
 Enhancement
 ~~~~~~~~~~~
 
+- Add :class:`ensemble.BalancedBaggingClassifier` which is a meta estimator to
+  directly use the :class:`ensemble.EasyEnsemble` chained with a classifier. By
+  `Guillaume Lemaitre`_.
+
 - All samplers accepts sparse matrices with defaulting on CSR type. By
   `Guillaume Lemaitre`_.
 
