@@ -6,17 +6,16 @@
 
 import inspect
 import pkgutil
+from contextlib import contextmanager
+from re import compile
 
 from operator import itemgetter
-
-import imblearn
-from imblearn.base import SamplerMixin
+from pytest import warns as _warns
 
 from sklearn.base import BaseEstimator
 
-from pytest import warns as _warns
-from contextlib import contextmanager
-from re import compile
+from imblearn.base import SamplerMixin
+import imblearn
 
 
 # meta-estimators need another estimator to be instantiated.

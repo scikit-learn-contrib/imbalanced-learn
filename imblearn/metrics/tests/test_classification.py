@@ -10,6 +10,8 @@ from functools import partial
 
 import numpy as np
 
+from pytest import approx, raises
+
 from sklearn import datasets
 from sklearn import svm
 
@@ -31,7 +33,6 @@ from imblearn.metrics import geometric_mean_score
 from imblearn.metrics import make_index_balanced_accuracy
 from imblearn.metrics import classification_report_imbalanced
 
-from pytest import approx, raises
 from imblearn.utils.testing import warns
 
 

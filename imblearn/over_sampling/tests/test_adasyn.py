@@ -6,12 +6,13 @@
 from __future__ import print_function
 
 import numpy as np
+from pytest import raises
+
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.over_sampling import ADASYN
 
-from pytest import raises
 
 RND_SEED = 0
 X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],

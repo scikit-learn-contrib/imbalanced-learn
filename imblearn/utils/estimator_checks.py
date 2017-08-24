@@ -12,14 +12,13 @@ import traceback
 from collections import Counter
 
 import numpy as np
+from pytest import raises
 
 from sklearn.datasets import make_classification
 from sklearn.utils.estimator_checks import _yield_all_checks \
     as sklearn_yield_all_checks, check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
-from pytest import raises
-from imblearn.utils.testing import warns
 
 from sklearn.utils.testing import set_random_state
 
@@ -27,6 +26,8 @@ from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
+
+from imblearn.utils.testing import warns
 
 
 def _yield_sampler_checks(name, Estimator):

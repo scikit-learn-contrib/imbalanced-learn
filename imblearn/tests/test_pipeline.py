@@ -11,6 +11,8 @@ import shutil
 import time
 
 import numpy as np
+from pytest import raises
+
 from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_array_almost_equal
 from sklearn.utils.testing import assert_allclose
@@ -30,7 +32,6 @@ from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (RandomUnderSampler,
                                      EditedNearestNeighbours as ENN)
 
-from pytest import raises
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",

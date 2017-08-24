@@ -1,15 +1,16 @@
 """Estimator tests - adapted from scikit-learn"""
+import sys
+
 import scipy.sparse as sp
 import numpy as np
-import sys
+from pytest import raises
+
 from sklearn.externals.six.moves import cStringIO as StringIO
 
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.validation import check_X_y, check_array
 
 from imblearn.utils.estimator_checks import check_estimator
-
-from pytest import raises
 
 
 class CorrectNotFittedError(ValueError):

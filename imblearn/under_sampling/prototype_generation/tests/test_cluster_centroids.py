@@ -4,9 +4,10 @@ from __future__ import print_function
 from collections import Counter
 
 import numpy as np
+from pytest import raises
+
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_array_equal
-from pytest import raises
 
 from sklearn.cluster import KMeans
 

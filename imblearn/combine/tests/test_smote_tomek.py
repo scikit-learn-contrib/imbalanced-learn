@@ -6,8 +6,9 @@
 from __future__ import print_function
 
 import numpy as np
-from sklearn.utils.testing import assert_allclose, assert_array_equal
 from pytest import raises
+
+from sklearn.utils.testing import assert_allclose, assert_array_equal
 
 from imblearn.combine import SMOTETomek
 from imblearn.over_sampling import SMOTE

@@ -10,11 +10,11 @@ from collections import Counter
 
 import numpy as np
 
-from sklearn.datasets import load_iris
-from imblearn.utils.testing import warns
-
 from pytest import raises
 
+from sklearn.datasets import load_iris
+
+from imblearn.utils.testing import warns
 from imblearn.datasets import make_imbalance
 
 data = load_iris()

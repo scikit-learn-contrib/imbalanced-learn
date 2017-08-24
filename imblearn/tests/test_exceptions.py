@@ -3,10 +3,9 @@
 #          Christos Aridas
 # License: MIT
 
+from pytest import raises
 
 from imblearn.exceptions import raise_isinstance_error
-
-from pytest import raises
 
 
 def test_raise_isinstance_error():

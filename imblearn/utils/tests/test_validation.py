@@ -5,13 +5,13 @@
 
 from collections import Counter
 
+from pytest import raises
 import numpy as np
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.utils.testing import warns
-from pytest import raises
 
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_ratio

@@ -6,13 +6,13 @@
 from __future__ import print_function
 
 import numpy as np
+from pytest import raises
+
 from sklearn.utils.testing import assert_array_equal
 from sklearn.ensemble import GradientBoostingClassifier
-from pytest import raises
 
 from imblearn.under_sampling import InstanceHardnessThreshold
 
-from pytest import raises
 
 RND_SEED = 0
 X = np.array([[-0.3879569, 0.6894251], [-0.09322739, 1.28177189],

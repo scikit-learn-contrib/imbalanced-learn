@@ -6,13 +6,14 @@
 from __future__ import print_function
 
 import numpy as np
+from pytest import raises
+
 from sklearn.utils.testing import assert_array_equal
 
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import RepeatedEditedNearestNeighbours
 
-from pytest import raises
 
 RND_SEED = 0
 X = np.array([[-0.12840393, 0.66446571], [1.32319756, -0.13181616],
