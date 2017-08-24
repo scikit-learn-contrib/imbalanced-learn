@@ -52,7 +52,7 @@ original one.
 .. warning::
 
    :class:`ClusterCentroids` supports sparse matrices. However, the new samples
-   are generated are not specifically sparse. Therefore, even if the resulting
+   generated are not specifically sparse. Therefore, even if the resulting
    matrix will be sparse, the algorithm will be inefficient in this regard.
 
 See :ref:`sphx_glr_auto_examples_under-sampling_plot_cluster_centroids.py` and
