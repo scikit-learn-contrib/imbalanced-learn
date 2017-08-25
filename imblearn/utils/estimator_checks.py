@@ -88,66 +88,6 @@ def check_target_type(name, Estimator):
         estimator.fit(X, y)
 
 
-def multioutput_estimator_convert_y_2d(name, y):
-    # Estimators in mono_output_task_error raise ValueError if y is of 1-D
-    # Convert into a 2-D y for those estimators.
-    if "MultiTask" in name:
-        return np.reshape(y, (-1, 1))
-    return y
-
-
-def is_public_parameter(attr):
-    return not (attr.startswith('_') or attr.endswith('_'))
-
-
-def check_dont_overwrite_parameters(name, Estimator):
-    # check that fit method only changes or sets private attributes
-    if hasattr(Estimator.__init__, "deprecated_original"):
-        # to not check deprecated classes
-        return
-    rnd = np.random.RandomState(0)
-    X = 3 * rnd.uniform(size=(20, 3))
-    y = X[:, 0].astype(np.int)
-    y = multioutput_estimator_convert_y_2d(name, y)
-    estimator = Estimator()
-
-    if hasattr(estimator, "n_components"):
-        estimator.n_components = 1
-    if hasattr(estimator, "n_clusters"):
-        estimator.n_clusters = 1
-
-    set_random_state(estimator, 1)
-    dict_before_fit = estimator.__dict__.copy()
-    estimator.fit(X, y)
-
-    dict_after_fit = estimator.__dict__
-
-    public_keys_after_fit = [key for key in dict_after_fit.keys()
-                             if is_public_parameter(key)]
-
-    attrs_added_by_fit = [key for key in public_keys_after_fit
-                          if key not in dict_before_fit.keys()]
-
-    # check that fit doesn't add any public attribute
-    assert not attrs_added_by_fit, ('Estimator adds public attribute(s) during'
-                                    ' the fit method. Estimators are only'
-                                    ' allowed to add private attributes either'
-                                    ' started with _ or ended with _ but %s'
-                                    ' added' % ', '.join(attrs_added_by_fit))
-
-    # check that fit doesn't change any public attribute
-    attrs_changed_by_fit = [key for key in public_keys_after_fit
-                            if (dict_before_fit[key]
-                                is not dict_after_fit[key])]
-
-    assert not attrs_changed_by_fit, ('Estimator changes public attribute(s)'
-                                      ' during the fit method. Estimators are'
-                                      ' only allowed to change attributes'
-                                      ' started or ended with _, but %s'
-                                      ' changed' %
-                                      ', '.join(attrs_changed_by_fit))
-
-
 def check_samplers_one_label(name, Sampler):
     error_string_fit = "Sampler can't balance when only one class is present."
     sampler = Sampler()
