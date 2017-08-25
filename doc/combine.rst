@@ -8,19 +8,19 @@ Combination of over- and under-sampling
 
 We previously presented :class:`SMOTE` and showed that this method can generate
 noisy samples by interpolating new points between marginal outliers and
-inliers. This issue can be solved by cleaning the resulted space obtained
-after over-sampling.
+inliers. This issue can be solved by cleaning the space resulting
+from over-sampling.
 
 .. currentmodule:: imblearn.combine
 
 In this regard, Tomek's link and edited nearest-neighbours are the two cleaning
-methods which have been added pipeline after SMOTE over-sampling to obtain a
-cleaner space. Therefore, imbalanced-learn implemented two ready-to-use class
-which pipeline both over- and under-sampling methods: (i) :class:`SMOTETomek`
+methods that have been added to the pipeline after applying SMOTE over-sampling
+to obtain a cleaner space. The two ready-to use classes imbalanced-learn implements
+for combining over- and undersampling methods are: (i) :class:`SMOTETomek`
 and (ii) :class:`SMOTEENN`.
 
-These two classes can be used as any other sampler with identical parameters
-than their former samplers::
+Those two classes can be used like any other sampler with parameters identical 
+to their former samplers::
 
   >>> from collections import Counter
   >>> from sklearn.datasets import make_classification
