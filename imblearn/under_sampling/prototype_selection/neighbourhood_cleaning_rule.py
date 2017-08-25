@@ -68,14 +68,12 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
     threshold_cleaning : float, optional (default=0.5)
         Threshold used to whether consider a class or not during the cleaning
-        after applying ENN. A class will be considered during cleaning when
+        after applying ENN. A class will be considered during cleaning when:
 
-        .. math::
+        |Ci| > |C| x T ,
 
-           |C_i| \geq |C| \times \theta ,
-
-        where :math:`C_i` and :math:`C` is the number of samples in the class
-        and the data set, respectively and "math:`theta` is the threshold.
+        where Ci and C is the number of samples in the class and the data set,
+        respectively and theta is the threshold.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
