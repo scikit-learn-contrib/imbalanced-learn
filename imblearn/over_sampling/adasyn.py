@@ -13,7 +13,6 @@ from sklearn.utils import check_random_state, safe_indexing
 
 from .base import BaseOverSampler
 from ..utils import check_neighbors_object
-from ..utils.deprecation import deprecate_parameter
 
 
 class ADASYN(BaseOverSampler):
@@ -48,13 +47,6 @@ class ADASYN(BaseOverSampler):
         generator; If ``RandomState`` instance, random_state is the random
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
-
-    k : int, optional (default=None)
-        Number of nearest neighbours to used to construct synthetic samples.
-
-        .. deprecated:: 0.2
-           ``k`` is deprecated from 0.2 and will be replaced in 0.4
-           Use ``n_neighbors`` instead.
 
     n_neighbors : int int or object, optional (default=5)
         If ``int``, number of nearest neighbours to used to construct synthetic
@@ -110,19 +102,14 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
     def __init__(self,
                  ratio='auto',
                  random_state=None,
-                 k=None,
                  n_neighbors=5,
                  n_jobs=1):
         super(ADASYN, self).__init__(ratio=ratio, random_state=random_state)
-        self.k = k
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
         """Create the necessary objects for ADASYN"""
-        # FIXME: Deprecated in 0.2. To be removed in 0.4.
-        deprecate_parameter(self, '0.2', 'k', 'n_neighbors')
-
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})

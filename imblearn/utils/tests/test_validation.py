@@ -140,31 +140,6 @@ def test_ratio_dict_under_sampling():
     assert ratio_ == ratio
 
 
-def test_ratio_float_error():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = -10
-    error_regex = "When 'ratio' is a float, it should in the range"
-    with raises(ValueError, match=error_regex):
-                check_ratio(ratio, y, 'under-sampling')
-    ratio = 10
-    with raises(ValueError, match=error_regex):
-        check_ratio(ratio, y, 'under-sampling')
-
-
-def test_ratio_float_over_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = 0.5
-    ratio_ = check_ratio(ratio, y, 'over-sampling')
-    assert ratio_ == {1: 0, 3: 25}
-
-
-def test_ratio_float_under_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = 0.5
-    ratio_ = check_ratio(ratio, y, 'under-sampling')
-    assert ratio_ == {1: 50, 2: 50}
-
-
 def test_ratio_callable():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
 

@@ -1,0 +1,13 @@
+.. _changes_0_3:
+
+Version 0.4 (under development)
+===============================
+
+Changelog
+---------
+
+Maintenance
+...........
+
+- Remove deprecated parameters in 0.2 - :issue:`331` by :user:`Guillaume
+  Lemaitre <glemaitre>`.

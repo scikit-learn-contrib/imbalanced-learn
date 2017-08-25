@@ -18,7 +18,6 @@ from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
-from ...utils.deprecation import deprecate_parameter
 
 SEL_KIND = ('all', 'mode')
 
@@ -62,13 +61,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         generator; If ``RandomState`` instance, random_state is the random
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
-
-    size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the nearest-neighbors.
-
-       .. deprecated:: 0.2
-          ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
-          Use ``n_neighbors`` instead.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -131,7 +123,6 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                  ratio='auto',
                  return_indices=False,
                  random_state=None,
-                 size_ngh=None,
                  n_neighbors=3,
                  kind_sel='all',
                  n_jobs=1):
@@ -139,16 +130,12 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
             ratio=ratio,
             random_state=random_state)
         self.return_indices = return_indices
-        self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
         """Validate the estimator created in the ENN."""
-        # FIXME: Deprecated in 0.2. To be removed in 0.4
-        deprecate_parameter(self, '0.2', 'size_ngh', 'n_neighbors')
-
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
@@ -256,13 +243,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
 
-    size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the nearest-neighbors.
-
-        .. deprecated: 0.2
-           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
-           Use ``n_neighbors`` instead.
-
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
@@ -328,7 +308,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                  ratio='auto',
                  return_indices=False,
                  random_state=None,
-                 size_ngh=None,
                  n_neighbors=3,
                  max_iter=100,
                  kind_sel='all',
@@ -336,7 +315,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
         super(RepeatedEditedNearestNeighbours, self).__init__(
             ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
-        self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
@@ -481,13 +459,6 @@ class AllKNN(BaseCleaningSampler):
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
 
-    size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the nearest-neighbors.
-
-        .. deprecated:: 0.2
-           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
-           Use ``n_neighbors`` instead.
-
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
@@ -554,14 +525,12 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                  ratio='auto',
                  return_indices=False,
                  random_state=None,
-                 size_ngh=None,
                  n_neighbors=3,
                  kind_sel='all',
                  allow_minority=False,
                  n_jobs=1):
         super(AllKNN, self).__init__(ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
-        self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.allow_minority = allow_minority

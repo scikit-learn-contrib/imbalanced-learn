@@ -36,13 +36,6 @@ Y = np.array([1, 2, 1, 0, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 VERSION_NEARMISS = (1, 2, 3)
 
 
-# FIXME remove at the end of the deprecation 0.4
-def test_nearmiss_deprecation():
-    nm = NearMiss(ver3_samp_ngh=3, version=3)
-    with warns(DeprecationWarning, match="deprecated from 0.2"):
-        nm.fit_sample(X, Y)
-
-
 def test_nearmiss_wrong_version():
     version = 1000
     nm = NearMiss(version=version, random_state=RND_SEED)
@@ -153,10 +146,10 @@ def test_nm_fit_sample_auto_indices():
 
 
 def test_nm_fit_sample_float_ratio():
-    ratio = .7
-    X_gt = [np.array([[0.91464286, 1.61369212],
+    ratio = {0: 3, 1: 4, 2: 4}
+    X_gt = [np.array([[-0.20497017, -0.26630228],
                       [-0.80809175, -1.09917302],
-                      [-0.20497017, -0.26630228],
+                      [0.91464286, 1.61369212],
                       [-0.05903827, 0.10947647],
                       [0.03142011, 0.12323596],
                       [-0.60413357, 0.24628718],
@@ -165,9 +158,9 @@ def test_nm_fit_sample_float_ratio():
                       [0.4960075, 0.86130762],
                       [0.45713638, 1.31069295],
                       [0.99272351, -0.11631728]]),
-            np.array([[0.91464286, 1.61369212],
+            np.array([[-0.20497017, -0.26630228],
                       [-0.80809175, -1.09917302],
-                      [-0.20497017, -0.26630228],
+                      [0.91464286, 1.61369212],
                       [-0.05903827, 0.10947647],
                       [0.03142011, 0.12323596],
                       [-0.60413357, 0.24628718],

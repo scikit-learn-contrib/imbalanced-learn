@@ -50,7 +50,7 @@ def test_ros_fit_sample():
 
 
 def test_ros_fit_sample_half():
-    ratio = 0.5
+    ratio = {0: 3, 1: 7}
     ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_sample(X, Y)
     X_gt = np.array([[0.04352327, -0.20515826],

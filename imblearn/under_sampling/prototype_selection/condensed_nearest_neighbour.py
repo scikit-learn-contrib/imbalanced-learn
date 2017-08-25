@@ -17,7 +17,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseCleaningSampler
-from ...utils.deprecation import deprecate_parameter
 
 
 class CondensedNearestNeighbour(BaseCleaningSampler):
@@ -59,13 +58,6 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
         generator; If ``RandomState`` instance, random_state is the random
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
-
-    size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the nearest-neighbors.
-
-        .. deprecated:: 0.2
-           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
-           Use ``n_neighbors`` instead.
 
     n_neighbors : int or object, optional (default=\
 KNeighborsClassifier(n_neighbors=1))
@@ -123,23 +115,18 @@ CondensedNearestNeighbour #doctest: +SKIP
                  ratio='auto',
                  return_indices=False,
                  random_state=None,
-                 size_ngh=None,
                  n_neighbors=None,
                  n_seeds_S=1,
                  n_jobs=1):
         super(CondensedNearestNeighbour, self).__init__(
             ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
-        self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.n_seeds_S = n_seeds_S
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-        # FIXME: Deprecated in 0.2. To be removed in 0.4
-        deprecate_parameter(self, '0.2', 'size_ngh', 'n_neighbors')
-
         if self.n_neighbors is None:
             self.estimator_ = KNeighborsClassifier(
                 n_neighbors=1, n_jobs=self.n_jobs)

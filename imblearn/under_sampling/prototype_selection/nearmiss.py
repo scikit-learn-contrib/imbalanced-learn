@@ -15,7 +15,6 @@ from sklearn.utils import safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
-from ...utils.deprecation import deprecate_parameter
 
 
 class NearMiss(BaseUnderSampler):
@@ -55,29 +54,12 @@ class NearMiss(BaseUnderSampler):
     version : int, optional (default=1)
         Version of the NearMiss to use. Possible values are 1, 2 or 3.
 
-    size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the average
-        distance to the minority point samples.
-
-        .. deprecated:: 0.2
-           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
-           Use ``n_neighbors`` instead.
-
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
         average distance to the minority point samples.  If object, an
         estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
-
-    ver3_samp_ngh : int, optional (default=3)
-        NearMiss-3 algorithm start by a phase of re-sampling. This
-        parameter correspond to the number of neighbours selected
-        create the sub_set in which the selection will be performed.
-
-        .. deprecated:: 0.2
-           ``ver3_samp_ngh`` is deprecated from 0.2 and will be replaced
-           in 0.4. Use ``n_neighbors_ver3`` instead.
 
     n_neighbors_ver3 : int or object, optional (default=3)
         If ``int``, NearMiss-3 algorithm start by a phase of re-sampling. This
@@ -131,17 +113,13 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                  return_indices=False,
                  random_state=None,
                  version=1,
-                 size_ngh=None,
                  n_neighbors=3,
-                 ver3_samp_ngh=None,
                  n_neighbors_ver3=3,
                  n_jobs=1):
         super(NearMiss, self).__init__(ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
         self.version = version
-        self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
-        self.ver3_samp_ngh = ver3_samp_ngh
         self.n_neighbors_ver3 = n_neighbors_ver3
         self.n_jobs = n_jobs
 
@@ -218,12 +196,6 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-        # FIXME: Deprecated in 0.2. To be removed in 0.4.
-        deprecate_parameter(self, '0.2', 'size_ngh', 'n_neighbors')
-        if self.version == 3:
-            deprecate_parameter(self, '0.2', 'ver3_samp_ngh',
-                                'n_neighbors_ver3')
-
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 

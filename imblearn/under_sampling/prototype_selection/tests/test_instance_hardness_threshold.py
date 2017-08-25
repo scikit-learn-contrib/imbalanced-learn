@@ -24,16 +24,7 @@ X = np.array([[-0.3879569, 0.6894251], [-0.09322739, 1.28177189],
               [1.06446472, -1.09279772], [0.30543283, -0.02589502],
               [-0.00717161, 0.00318087]])
 Y = np.array([0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0])
-ESTIMATOR = 'gradient-boosting'
-
-
-def test_iht_wrong_estimator():
-    ratio = 0.7
-    est = 'rnd'
-    iht = InstanceHardnessThreshold(
-        estimator=est, ratio=ratio, random_state=RND_SEED)
-    with raises(NotImplementedError):
-        iht.fit_sample(X, Y)
+ESTIMATOR = GradientBoostingClassifier(random_state=RND_SEED)
 
 
 def test_iht_init():
@@ -91,7 +82,7 @@ def test_iht_fit_sample_with_indices():
 
 
 def test_iht_fit_sample_half():
-    ratio = 0.7
+    ratio = {0: 6, 1: 8}
     iht = InstanceHardnessThreshold(
         ESTIMATOR, ratio=ratio, random_state=RND_SEED)
     X_resampled, y_resampled = iht.fit_sample(X, Y)
@@ -111,139 +102,6 @@ def test_iht_fit_sample_half():
                      [-0.30126957, -0.66268378],
                      [-0.28305528, 0.30284991]])
     y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_iht_fit_sample_knn():
-    est = 'knn'
-    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_sample(X, Y)
-
-    X_gt = np.array([[-0.3879569, 0.6894251],
-                     [0.91542919, -0.65453327],
-                     [-0.65571327, 0.42412021],
-                     [1.06446472, -1.09279772],
-                     [0.30543283, -0.02589502],
-                     [-0.00717161, 0.00318087],
-                     [-0.09322739, 1.28177189],
-                     [-0.77740357, 0.74097941],
-                     [-0.43877303, 1.07366684],
-                     [-0.85795321, 0.82980738],
-                     [-0.30126957, -0.66268378],
-                     [0.20246714, -0.34727125]])
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_iht_fit_sample_decision_tree():
-    est = 'decision-tree'
-    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_sample(X, Y)
-
-    X_gt = np.array([[-0.3879569, 0.6894251],
-                     [0.91542919, -0.65453327],
-                     [-0.65571327, 0.42412021],
-                     [1.06446472, -1.09279772],
-                     [0.30543283, -0.02589502],
-                     [-0.00717161, 0.00318087],
-                     [-0.09322739, 1.28177189],
-                     [-0.77740357, 0.74097941],
-                     [-0.43877303, 1.07366684],
-                     [-0.85795321, 0.82980738],
-                     [-0.18430329, 0.52328473],
-                     [-0.28305528, 0.30284991]])
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_iht_fit_sample_random_forest():
-    est = 'random-forest'
-    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_sample(X, Y)
-
-    X_gt = np.array([[-0.3879569, 0.6894251],
-                     [0.91542919, -0.65453327],
-                     [-0.65571327, 0.42412021],
-                     [1.06446472, -1.09279772],
-                     [0.30543283, -0.02589502],
-                     [-0.00717161, 0.00318087],
-                     [-0.09322739, 1.28177189],
-                     [-0.77740357, 0.74097941],
-                     [-0.03852113, 0.40910479],
-                     [-0.43877303, 1.07366684],
-                     [-0.85795321, 0.82980738],
-                     [-0.18430329, 0.52328473],
-                     [-0.28305528, 0.30284991]])
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_iht_fit_sample_adaboost():
-    est = 'adaboost'
-    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_sample(X, Y)
-
-    X_gt = np.array([[-0.3879569, 0.6894251],
-                     [0.91542919, -0.65453327],
-                     [-0.65571327, 0.42412021],
-                     [1.06446472, -1.09279772],
-                     [0.30543283, -0.02589502],
-                     [-0.00717161, 0.00318087],
-                     [-0.09322739, 1.28177189],
-                     [-0.77740357, 0.74097941],
-                     [-0.43877303, 1.07366684],
-                     [-0.85795321, 0.82980738],
-                     [-0.18430329, 0.52328473],
-                     [-0.28305528, 0.30284991]])
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_iht_fit_sample_gradient_boosting():
-    est = 'gradient-boosting'
-    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_sample(X, Y)
-
-    X_gt = np.array([[-0.3879569, 0.6894251],
-                     [0.91542919, -0.65453327],
-                     [-0.65571327, 0.42412021],
-                     [1.06446472, -1.09279772],
-                     [0.30543283, -0.02589502],
-                     [-0.00717161, 0.00318087],
-                     [-0.09322739, 1.28177189],
-                     [-0.77740357, 0.74097941],
-                     [-0.43877303, 1.07366684],
-                     [-0.85795321, 0.82980738],
-                     [-0.18430329, 0.52328473],
-                     [-0.28305528, 0.30284991]])
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_iht_fit_sample_linear_svm():
-    est = 'linear-svm'
-    iht = InstanceHardnessThreshold(est, random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_sample(X, Y)
-
-    X_gt = np.array([[-0.3879569, 0.6894251],
-                     [0.91542919, -0.65453327],
-                     [-0.65571327, 0.42412021],
-                     [1.06446472, -1.09279772],
-                     [0.30543283, -0.02589502],
-                     [-0.00717161, 0.00318087],
-                     [-0.09322739, 1.28177189],
-                     [-0.77740357, 0.74097941],
-                     [-0.03852113, 0.40910479],
-                     [-0.43877303, 1.07366684],
-                     [-0.18430329, 0.52328473],
-                     [-0.28305528, 0.30284991]])
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 

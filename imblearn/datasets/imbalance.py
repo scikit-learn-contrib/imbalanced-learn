@@ -7,9 +7,7 @@
 # License: MIT
 
 import logging
-import warnings
 from collections import Counter
-from numbers import Real
 
 from sklearn.utils import check_X_y
 
@@ -19,7 +17,7 @@ from ..utils import check_ratio
 LOGGER = logging.getLogger(__name__)
 
 
-def make_imbalance(X, y, ratio, min_c_=None, random_state=None, **kwargs):
+def make_imbalance(X, y, ratio, random_state=None, **kwargs):
     """Turns a dataset into an imbalanced dataset at specific ratio.
 
     A simple toy dataset to visualize clustering and classification
@@ -44,15 +42,6 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None, **kwargs):
         - If callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples.
-
-    min_c_ : str or int, optional (default=None)
-        The identifier of the class to be the minority class.
-        If ``None``, ``min_c_`` is set to be the current minority class.
-        Only used when ``ratio`` is a float for back-compatibility.
-
-        .. deprecated:: 0.2
-           ``min_c_`` is deprecated in 0.2 and will be removed in 0.4. Use
-           ``ratio`` by passing a ``dict`` instead.
 
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -99,26 +88,6 @@ def make_imbalance(X, y, ratio, min_c_=None, random_state=None, **kwargs):
     # restrict ratio to be a dict or a callable
     if isinstance(ratio, dict) or callable(ratio):
         ratio_ = check_ratio(ratio, y, 'under-sampling', **kwargs)
-    # FIXME: deprecated in 0.2 to be removed in 0.4
-    elif isinstance(ratio, Real):
-        if min_c_ is None:
-            min_c_ = min(target_stats, key=target_stats.get)
-        else:
-            warnings.warn("'min_c_' is deprecated in 0.2 and will be removed"
-                          " in 0.4. Use 'ratio' as dictionary instead.",
-                          DeprecationWarning)
-        warnings.warn("'ratio' being a float is deprecated in 0.2 and will not"
-                      " be supported in 0.4. Use a dictionary instead.",
-                      DeprecationWarning)
-        class_majority = max(target_stats, key=target_stats.get)
-        ratio_ = {}
-        for class_sample, n_sample in target_stats.items():
-            if class_sample == min_c_:
-                n_min_samples = int(target_stats[class_majority] * ratio)
-                ratio_[class_sample] = n_min_samples
-            else:
-                ratio_[class_sample] = n_sample
-        ratio_ = check_ratio(ratio_, y, 'under-sampling')
     else:
         raise ValueError("'ratio' has to be a dictionary or a function"
                          " returning a dictionary. Got {} instead.".format(

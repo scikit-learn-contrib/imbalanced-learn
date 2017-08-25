@@ -55,8 +55,6 @@ def _yield_all_checks(name, Estimator):
     if issubclass(Estimator, SamplerMixin):
         for check in _yield_sampler_checks(name, Estimator):
             yield check
-    # FIXME already present in scikit-learn 0.19
-    yield check_dont_overwrite_parameters
 
 
 def check_estimator(Estimator):

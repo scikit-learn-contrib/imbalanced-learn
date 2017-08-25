@@ -14,7 +14,6 @@ from pytest import raises
 
 from sklearn.datasets import load_iris
 
-from imblearn.utils.testing import warns
 from imblearn.datasets import make_imbalance
 
 data = load_iris()
@@ -37,20 +36,6 @@ def test_make_imbalance_error():
     ratio = 'random-string'
     with raises(ValueError, match="has to be a dictionary or a function"):
         make_imbalance(X, Y, ratio)
-
-
-# FIXME: to be removed in 0.4 due to deprecation
-def test_make_imbalance_float():
-    with warns(DeprecationWarning, match="deprecated in 0.2"):
-        X_, y_ = make_imbalance(X, Y, ratio=0.5, min_c_=1)
-
-    with warns(DeprecationWarning, match="'ratio' being a float"):
-        X_, y_ = make_imbalance(X, Y, ratio=0.5, min_c_=1)
-
-    assert Counter(y_) == {0: 50, 1: 25, 2: 50}
-    # resample without using min_c_
-    X_, y_ = make_imbalance(X_, y_, ratio=0.25, min_c_=None)
-    assert Counter(y_) == {0: 50, 1: 12, 2: 50}
 
 
 def test_make_imbalance_dict():

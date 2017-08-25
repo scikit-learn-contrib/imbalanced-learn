@@ -11,6 +11,7 @@ from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import LinearSVC
 
 from imblearn.ensemble import BalanceCascade
 
@@ -77,240 +78,37 @@ def test_fit_sample_auto():
 
 
 def test_fit_sample_half():
-    ratio = 0.8
+    ratio = {0: 8, 1: 10}
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
-    X_gt = np.array([[[1.15514042, 0.0129463],
+    X_gt = np.array([[[-0.41635887, -0.38299653],
+                      [0.53366841, -0.30312976],
+                      [1.25192108, -0.22367336],
+                      [1.70580611, -0.11219234],
+                      [1.52091956, -0.49283504],
+                      [0.11622591, -0.0317206],
+                      [1.31301027, -0.92648734],
+                      [0.88407872, 0.35454207],
+                      [0.3084254, 0.33299982],
                       [0.08711622, 0.93259929],
-                      [0.70472253, -0.73309052],
-                      [-0.14374509, 0.27370049],
-                      [0.83680821, 1.72827342],
-                      [-0.18410027, -0.45194484],
                       [-0.28162401, -2.10400981],
-                      [-1.11515198, -0.93689695],
+                      [-0.14374509, 0.27370049],
                       [0.9281014, 0.53085498],
-                      [0.3084254, 0.33299982],
-                      [0.11622591, -0.0317206],
-                      [1.25192108, -0.22367336],
-                      [0.53366841, -0.30312976],
-                      [1.52091956, -0.49283504],
-                      [0.88407872, 0.35454207],
-                      [1.31301027, -0.92648734],
-                      [-0.41635887, -0.38299653],
-                      [1.70580611, -0.11219234]]])
-    y_gt = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_fit_sample_auto_decision_tree():
-    ratio = 'auto'
-    classifier = 'decision-tree'
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
-                        return_indices=False, classifier=classifier)
-    X_resampled, y_resampled = bc.fit_sample(X, Y)
-    X_gt = np.array([[[1.15514042, 0.0129463],
-                      [0.08711622, 0.93259929],
-                      [0.70472253, -0.73309052],
-                      [-0.14374509, 0.27370049],
-                      [0.83680821, 1.72827342],
                       [-0.18410027, -0.45194484],
-                      [-0.28162401, -2.10400981],
-                      [-1.11515198, -0.93689695],
-                      [0.11622591, -0.0317206],
-                      [1.25192108, -0.22367336],
-                      [0.53366841, -0.30312976],
-                      [1.52091956, -0.49283504],
-                      [0.88407872, 0.35454207],
-                      [1.31301027, -0.92648734],
-                      [-0.41635887, -0.38299653],
-                      [1.70580611, -0.11219234]]])
-    y_gt = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_fit_sample_auto_random_forest():
-    ratio = 'auto'
-    classifier = 'random-forest'
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
-                        return_indices=False, classifier=classifier)
-    X_resampled, y_resampled = bc.fit_sample(X, Y)
-    X_gt = np.array([[[1.15514042, 0.0129463],
-                      [0.08711622, 0.93259929],
-                      [0.70472253, -0.73309052],
-                      [-0.14374509, 0.27370049],
-                      [0.83680821, 1.72827342],
-                      [-0.18410027, -0.45194484],
-                      [-0.28162401, -2.10400981],
-                      [-1.11515198, -0.93689695],
-                      [0.11622591, -0.0317206],
-                      [1.25192108, -0.22367336],
-                      [0.53366841, -0.30312976],
-                      [1.52091956, -0.49283504],
-                      [0.88407872, 0.35454207],
-                      [1.31301027, -0.92648734],
-                      [-0.41635887, -0.38299653],
-                      [1.70580611, -0.11219234]]])
-    y_gt = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_fit_sample_auto_adaboost():
-    ratio = 'auto'
-    classifier = 'adaboost'
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
-                        return_indices=False, classifier=classifier)
-    X_resampled, y_resampled = bc.fit_sample(X, Y)
-    X_gt = np.array([[[1.15514042, 0.0129463],
-                      [0.08711622, 0.93259929],
-                      [0.70472253, -0.73309052],
-                      [-0.14374509, 0.27370049],
-                      [0.83680821, 1.72827342],
-                      [-0.18410027, -0.45194484],
-                      [-0.28162401, -2.10400981],
-                      [-1.11515198, -0.93689695],
-                      [0.11622591, -0.0317206],
-                      [1.25192108, -0.22367336],
-                      [0.53366841, -0.30312976],
-                      [1.52091956, -0.49283504],
-                      [0.88407872, 0.35454207],
-                      [1.31301027, -0.92648734],
-                      [-0.41635887, -0.38299653],
-                      [1.70580611, -0.11219234]]])
-    y_gt = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_fit_sample_auto_gradient_boosting():
-    ratio = 'auto'
-    classifier = 'gradient-boosting'
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
-                        return_indices=False, classifier=classifier)
-    X_resampled, y_resampled = bc.fit_sample(X, Y)
-    X_gt = np.array([[[1.15514042, 0.0129463],
-                      [0.08711622, 0.93259929],
-                      [0.70472253, -0.73309052],
-                      [-0.14374509, 0.27370049],
-                      [0.83680821, 1.72827342],
-                      [-0.18410027, -0.45194484],
-                      [-0.28162401, -2.10400981],
-                      [-1.11515198, -0.93689695],
-                      [0.11622591, -0.0317206],
-                      [1.25192108, -0.22367336],
-                      [0.53366841, -0.30312976],
-                      [1.52091956, -0.49283504],
-                      [0.88407872, 0.35454207],
-                      [1.31301027, -0.92648734],
-                      [-0.41635887, -0.38299653],
-                      [1.70580611, -0.11219234]]])
-    y_gt = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_fit_sample_auto_knn():
-    ratio = 'auto'
-    classifier = 'knn'
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
-                        return_indices=False, classifier=classifier)
-    X_resampled, y_resampled = bc.fit_sample(X, Y)
-    X_gt = np.array([[[1.15514042, 0.0129463],
-                      [0.08711622, 0.93259929],
-                      [0.70472253, -0.73309052],
-                      [-0.14374509, 0.27370049],
-                      [0.83680821, 1.72827342],
-                      [-0.18410027, -0.45194484],
-                      [-0.28162401, -2.10400981],
-                      [-1.11515198, -0.93689695],
-                      [0.11622591, -0.0317206],
-                      [1.25192108, -0.22367336],
-                      [0.53366841, -0.30312976],
-                      [1.52091956, -0.49283504],
-                      [0.88407872, 0.35454207],
-                      [1.31301027, -0.92648734],
-                      [-0.41635887, -0.38299653],
-                      [1.70580611, -0.11219234]],
-                     [[0.28893132, -0.38761769],
-                      [0.83680821, 1.72827342],
-                      [0.3084254, 0.33299982],
-                      [0.70472253, -0.73309052],
-                      [-0.14374509, 0.27370049],
                       [0.77481731, 0.60935141],
-                      [-0.18410027, -0.45194484],
                       [1.15514042, 0.0129463],
-                      [0.11622591, -0.0317206],
-                      [1.25192108, -0.22367336],
-                      [0.53366841, -0.30312976],
-                      [1.52091956, -0.49283504],
-                      [0.88407872, 0.35454207],
-                      [1.31301027, -0.92648734],
-                      [-0.41635887, -0.38299653],
-                      [1.70580611, -0.11219234]]])
-    y_gt = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_fit_sample_auto_linear_svm():
-    ratio = 'auto'
-    classifier = 'linear-svm'
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
-                        return_indices=False, classifier=classifier)
-    X_resampled, y_resampled = bc.fit_sample(X, Y)
-    X_gt = np.array([[[1.15514042, 0.0129463],
-                      [0.08711622, 0.93259929],
-                      [0.70472253, -0.73309052],
-                      [-0.14374509, 0.27370049],
-                      [0.83680821, 1.72827342],
-                      [-0.18410027, -0.45194484],
-                      [-0.28162401, -2.10400981],
                       [-1.11515198, -0.93689695],
-                      [0.11622591, -0.0317206],
-                      [1.25192108, -0.22367336],
-                      [0.53366841, -0.30312976],
-                      [1.52091956, -0.49283504],
-                      [0.88407872, 0.35454207],
-                      [1.31301027, -0.92648734],
-                      [-0.41635887, -0.38299653],
-                      [1.70580611, -0.11219234]],
-                     [[1.15514042, 0.0129463],
-                      [0.9281014, 0.53085498],
-                      [0.3084254, 0.33299982],
-                      [0.28893132, -0.38761769],
-                      [-0.28162401, -2.10400981],
-                      [0.83680821, 1.72827342],
-                      [0.70472253, -0.73309052],
-                      [0.77481731, 0.60935141],
-                      [0.11622591, -0.0317206],
-                      [1.25192108, -0.22367336],
-                      [0.53366841, -0.30312976],
-                      [1.52091956, -0.49283504],
-                      [0.88407872, 0.35454207],
-                      [1.31301027, -0.92648734],
-                      [-0.41635887, -0.38299653],
-                      [1.70580611, -0.11219234]]])
-    y_gt = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]])
+                      [0.70472253, -0.73309052]]])
+    y_gt = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_init_wrong_classifier():
-    classifier = 'rnd'
-    bc = BalanceCascade(classifier=classifier)
-    with raises(NotImplementedError):
-        bc.fit_sample(X, Y)
 
 
 def test_fit_sample_auto_early_stop():
     ratio = 'auto'
-    classifier = 'linear-svm'
+    estimator = LinearSVC(random_state=RND_SEED)
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
-                        return_indices=False, classifier=classifier,
+                        return_indices=False, estimator=estimator,
                         n_max_subset=1)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
     X_gt = np.array([[[1.15514042, 0.0129463],
@@ -336,9 +134,9 @@ def test_fit_sample_auto_early_stop():
 
 def test_give_classifier_obj():
     ratio = 'auto'
-    classifier = RandomForestClassifier(random_state=RND_SEED)
+    estimator = RandomForestClassifier(random_state=RND_SEED)
     bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
-                        return_indices=False, estimator=classifier)
+                        return_indices=False, estimator=estimator)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
     X_gt = np.array([[[1.15514042, 0.0129463],
                       [0.08711622, 0.93259929],

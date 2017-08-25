@@ -15,7 +15,7 @@ from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
 from .edited_nearest_neighbours import EditedNearestNeighbours
-from ...utils import check_neighbors_object, check_ratio
+from ...utils import check_neighbors_object
 
 SEL_KIND = ('all', 'mode')
 
@@ -59,13 +59,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         generator; If ``RandomState`` instance, random_state is the random
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
-
-    size_ngh : int, optional (default=None)
-        Size of the neighbourhood to consider to compute the nearest-neighbors.
-
-        .. deprecated:: 0.2
-           ``size_ngh`` is deprecated from 0.2 and will be replaced in 0.4
-           Use ``n_neighbors`` instead.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -114,7 +107,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                  ratio='auto',
                  return_indices=False,
                  random_state=None,
-                 size_ngh=None,
                  n_neighbors=3,
                  kind_sel='all',
                  threshold_cleaning=0.5,
@@ -122,7 +114,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         super(NeighbourhoodCleaningRule, self).__init__(
             ratio=ratio, random_state=random_state)
         self.return_indices = return_indices
-        self.size_ngh = size_ngh
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.threshold_cleaning = threshold_cleaning
@@ -130,7 +121,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Create the objects required by NCR."""
-        # FIXME: Deprecated from 0.2. To be removed in 0.4.
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
@@ -171,7 +161,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         self._validate_estimator()
         enn = EditedNearestNeighbours(ratio=self.ratio, return_indices=True,
                                       random_state=self.random_state,
-                                      size_ngh=self.size_ngh,
                                       n_neighbors=self.n_neighbors,
                                       kind_sel='mode',
                                       n_jobs=self.n_jobs)

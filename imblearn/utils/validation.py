@@ -4,14 +4,13 @@
 # License: MIT
 import warnings
 from collections import Counter
-from numbers import Real, Integral
+from numbers import Integral
 
 import numpy as np
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.externals import six, joblib
-from sklearn.utils import deprecated
 from sklearn.utils.multiclass import type_of_target
 
 from ..exceptions import raise_isinstance_error
@@ -244,31 +243,6 @@ def _ratio_dict(ratio, y, sampling_type):
     return ratio_
 
 
-@deprecated("Use a float for 'ratio' is deprecated from version 0.2."
-            " The support will be removed in 0.4. Use a dict, str,"
-            " or a callable instead.")
-def _ratio_float(ratio, y, sampling_type):
-    """TODO: Deprecated in 0.2. Remove in 0.4."""
-    target_stats = Counter(y)
-    if sampling_type == 'over-sampling':
-        n_sample_majority = max(target_stats.values())
-        class_majority = max(target_stats, key=target_stats.get)
-        ratio = {key: int(n_sample_majority * ratio - value)
-                 for (key, value) in target_stats.items()
-                 if key != class_majority}
-    elif (sampling_type == 'under-sampling' or
-          sampling_type == 'clean-sampling'):
-        n_sample_minority = min(target_stats.values())
-        class_minority = min(target_stats, key=target_stats.get)
-        ratio = {key: int(n_sample_minority / ratio)
-                 for (key, value) in target_stats.items()
-                 if key != class_minority}
-    else:
-        raise NotImplementedError
-
-    return ratio
-
-
 def check_ratio(ratio, y, sampling_type, **kwargs):
     """Ratio validation for samplers.
 
@@ -332,11 +306,6 @@ def check_ratio(ratio, y, sampling_type, **kwargs):
         return RATIO_KIND[ratio](y, sampling_type)
     elif isinstance(ratio, dict):
         return _ratio_dict(ratio, y, sampling_type)
-    elif isinstance(ratio, Real):
-        if ratio <= 0 or ratio > 1:
-            raise ValueError("When 'ratio' is a float, it should in the range"
-                             " (0, 1]. Got {} instead.".format(ratio))
-        return _ratio_float(ratio, y, sampling_type)
     elif callable(ratio):
         ratio_ = ratio(y, **kwargs)
         return _ratio_dict(ratio_, y, sampling_type)

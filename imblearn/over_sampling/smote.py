@@ -17,8 +17,6 @@ from sklearn.utils import check_random_state, safe_indexing
 from .base import BaseOverSampler
 from ..exceptions import raise_isinstance_error
 from ..utils import check_neighbors_object
-from ..utils.deprecation import deprecate_parameter
-
 
 SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
@@ -57,27 +55,11 @@ class SMOTE(BaseOverSampler):
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
 
-    k : int, optional (default=None)
-        Number of nearest neighbours to used to construct synthetic samples.
-
-        .. deprecated:: 0.2
-           ``k`` is deprecated from 0.2 and will be replaced in 0.4
-           Use ``k_neighbors`` instead.
-
     k_neighbors : int or object, optional (default=5)
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
-
-    m : int, optional (default=None)
-        Number of nearest neighbours to use to determine if a minority sample
-        is in danger. Used with ``kind={'borderline1', 'borderline2',
-        'svm'}``.
-
-        .. deprecated:: 0.2
-           ``m`` is deprecated from 0.2 and will be replaced in 0.4
-           Use ``m_neighbors`` instead.
 
     m_neighbors : int int or object, optional (default=10)
         If int, number of nearest neighbours to use to determine if a minority
@@ -155,9 +137,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
     def __init__(self,
                  ratio='auto',
                  random_state=None,
-                 k=None,
                  k_neighbors=5,
-                 m=None,
                  m_neighbors=10,
                  out_step=0.5,
                  kind='regular',
@@ -165,9 +145,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                  n_jobs=1):
         super(SMOTE, self).__init__(ratio=ratio, random_state=random_state)
         self.kind = kind
-        self.k = k
         self.k_neighbors = k_neighbors
-        self.m = m
         self.m_neighbors = m_neighbors
         self.out_step = out_step
         self.svm_estimator = svm_estimator
@@ -287,10 +265,6 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Create the necessary objects for SMOTE."""
-
-        # FIXME Deprecated in 0.2, to be removed in 0.4
-        deprecate_parameter(self, '0.2', 'k', 'k_neighbors')
-        deprecate_parameter(self, '0.2', 'm', 'm_neighbors')
 
         if self.kind not in SMOTE_KIND:
             raise ValueError('Unknown kind for SMOTE algorithm.'
