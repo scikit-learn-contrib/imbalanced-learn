@@ -66,6 +66,15 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors.
 
+    threshold_cleaning : float, optional (default=0.5)
+        Threshold used to whether consider a class or not during the cleaning
+        after applying ENN. A class will be considered during cleaning when:
+
+        Ci > C x T ,
+
+        where Ci and C is the number of samples in the class and the data set,
+        respectively and theta is the threshold.
+
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
