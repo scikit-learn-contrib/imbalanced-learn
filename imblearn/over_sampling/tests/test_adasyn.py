@@ -76,7 +76,7 @@ def test_ada_fit_sample():
 
 
 def test_ada_fit_ratio_error():
-    ratio = 0.8
+    ratio = {0: 9, 1: 12}
     ada = ADASYN(ratio=ratio, random_state=RND_SEED)
     with raises(ValueError, match="No samples will be generated."):
         ada.fit_sample(X, Y)

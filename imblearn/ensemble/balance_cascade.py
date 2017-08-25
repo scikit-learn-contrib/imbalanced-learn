@@ -4,8 +4,6 @@
 #          Christos Aridas
 # License: MIT
 
-import warnings
-
 from collections import Counter
 
 import numpy as np
@@ -13,7 +11,6 @@ import numpy as np
 from sklearn.base import ClassifierMixin
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
-from sklearn.externals.six import string_types
 from sklearn.model_selection import cross_val_predict
 
 from .base import BaseEnsembleSampler
@@ -63,30 +60,12 @@ class BalanceCascade(BaseEnsembleSampler):
         the training will be selected that could lead to a large number of
         subsets. We can probably deduce this number empirically.
 
-    classifier : str, optional (default=None)
-        The classifier that will be selected to confront the prediction
-        with the real labels. The choices are the following: ``'knn'``,
-        ``'decision-tree'``, ``'random-forest'``, ``'adaboost'``,
-        ``'gradient-boosting'``, and ``'linear-svm'``.
-
-        .. deprecated:: 0.2
-           ``classifier`` is deprecated from 0.2 and will be replaced in 0.4.
-           Use ``estimator`` instead.
-
     estimator : object, optional (default=KNeighborsClassifier())
         An estimator inherited from :class:`sklearn.base.ClassifierMixin` and
         having an attribute :func:`predict_proba`.
 
     bootstrap : bool, optional (default=True)
         Whether to bootstrap the data before each iteration.
-
-    **kwargs : keywords
-        The parameters associated with the classifier provided.
-
-        .. deprecated:: 0.2
-           ``**kwargs`` has been deprecated from 0.2 and will be replaced in
-           0.4. Use ``estimator`` object instead to pass parameters associated
-           to an estimator.
 
     Notes
     -----
@@ -133,16 +112,12 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
                  return_indices=False,
                  random_state=None,
                  n_max_subset=None,
-                 classifier=None,
-                 estimator=None,
-                 **kwargs):
+                 estimator=None):
         super(BalanceCascade, self).__init__(ratio=ratio,
                                              random_state=random_state)
         self.return_indices = return_indices
-        self.classifier = classifier
         self.estimator = estimator
         self.n_max_subset = n_max_subset
-        self.kwargs = kwargs
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -168,49 +143,12 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         """Private function to create the classifier"""
 
-        if self.classifier is not None:
-            warnings.warn('`classifier` will be replaced in version'
-                          ' 0.4. Use a `estimator` instead.',
-                          DeprecationWarning)
-            self.estimator = self.classifier
-
         if (self.estimator is not None and
                 isinstance(self.estimator, ClassifierMixin) and
                 hasattr(self.estimator, 'predict')):
             self.estimator_ = self.estimator
         elif self.estimator is None:
             self.estimator_ = KNeighborsClassifier()
-        # To be removed in 0.4
-        elif (self.estimator is not None and
-              isinstance(self.estimator, string_types)):
-            warnings.warn('`estimator` will be replaced in version'
-                          ' 0.4. Use a classifier object instead of a string.',
-                          DeprecationWarning)
-            # Define the classifier to use
-            if self.estimator == 'knn':
-                self.estimator_ = KNeighborsClassifier(**self.kwargs)
-            elif self.estimator == 'decision-tree':
-                from sklearn.tree import DecisionTreeClassifier
-                self.estimator_ = DecisionTreeClassifier(
-                    random_state=self.random_state, **self.kwargs)
-            elif self.estimator == 'random-forest':
-                from sklearn.ensemble import RandomForestClassifier
-                self.estimator_ = RandomForestClassifier(
-                    random_state=self.random_state, **self.kwargs)
-            elif self.estimator == 'adaboost':
-                from sklearn.ensemble import AdaBoostClassifier
-                self.estimator_ = AdaBoostClassifier(
-                    random_state=self.random_state, **self.kwargs)
-            elif self.estimator == 'gradient-boosting':
-                from sklearn.ensemble import GradientBoostingClassifier
-                self.estimator_ = GradientBoostingClassifier(
-                    random_state=self.random_state, **self.kwargs)
-            elif self.estimator == 'linear-svm':
-                from sklearn.svm import LinearSVC
-                self.estimator_ = LinearSVC(
-                    random_state=self.random_state, **self.kwargs)
-            else:
-                raise NotImplementedError
         else:
             raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
                 type(self.estimator)))

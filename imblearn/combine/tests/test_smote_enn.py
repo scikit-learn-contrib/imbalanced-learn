@@ -45,8 +45,27 @@ def test_sample_regular():
     assert_array_equal(y_resampled, y_gt)
 
 
+def test_sample_regular_pass_smote_enn():
+    smote = SMOTEENN(smote=SMOTE(ratio='auto', random_state=RND_SEED),
+                     enn=EditedNearestNeighbours(ratio='all',
+                                                 random_state=RND_SEED),
+                     random_state=RND_SEED)
+    X_resampled, y_resampled = smote.fit_sample(X, Y)
+
+    X_gt = np.array([[1.52091956, -0.49283504],
+                     [0.84976473, -0.15570176],
+                     [0.61319159, -0.11571667],
+                     [0.66052536, -0.28246518],
+                     [-0.28162401, -2.10400981],
+                     [0.83680821, 1.72827342],
+                     [0.08711622, 0.93259929]])
+    y_gt = np.array([0, 0, 0, 0, 1, 1, 1])
+    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
+    assert_array_equal(y_resampled, y_gt)
+
+
 def test_sample_regular_half():
-    ratio = 0.8
+    ratio = {0: 10, 1: 12}
     smote = SMOTEENN(ratio=ratio, random_state=RND_SEED)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
 
@@ -87,25 +106,6 @@ def test_validate_estimator_default():
                      [0.83680821, 1.72827342],
                      [0.08711622, 0.93259929]])
     y_gt = np.array([0, 0, 0, 0, 1, 1, 1])
-    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_validate_estimator_deprecation():
-    smt = SMOTEENN(random_state=RND_SEED)
-    X_resampled, y_resampled = smt.fit_sample(X, Y)
-    X_gt = np.array([[1.52091956, -0.49283504],
-                     [0.84976473, -0.15570176],
-                     [0.61319159, -0.11571667],
-                     [0.66052536, -0.28246518],
-                     [-0.28162401, -2.10400981],
-                     [0.83680821, 1.72827342],
-                     [0.08711622, 0.93259929]])
-    y_gt = np.array([0, 0, 0, 0, 1, 1, 1])
-    assert_allclose(X_resampled, X_gt, rtol=R_TOL)
-    assert_array_equal(y_resampled, y_gt)
-    smt = SMOTEENN(random_state=RND_SEED, k=5)
-    X_resampled, y_resampled = smt.fit_sample(X, Y)
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 

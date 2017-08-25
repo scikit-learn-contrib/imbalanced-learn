@@ -8,30 +8,16 @@ threshold."""
 
 from __future__ import division
 
-import warnings
 from collections import Counter
 
 import numpy as np
-import sklearn
+
 from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.externals.six import string_types
+from sklearn.model_selection import StratifiedKFold
 from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
-
-
-def _get_cv_splits(X, y, cv, random_state):
-    if hasattr(sklearn, 'model_selection'):
-        from sklearn.model_selection import StratifiedKFold
-        cv_iterator = StratifiedKFold(
-            n_splits=cv, shuffle=False, random_state=random_state).split(X, y)
-    else:
-        from sklearn.cross_validation import StratifiedKFold
-        cv_iterator = StratifiedKFold(
-            y, n_folds=cv, shuffle=False, random_state=random_state)
-
-    return cv_iterator
 
 
 class InstanceHardnessThreshold(BaseCleaningSampler):
@@ -50,11 +36,6 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         ``'gradient-boosting'`` and ``'linear-svm'``.  If object, an estimator
         inherited from :class:`sklearn.base.ClassifierMixin` and having an
         attribute :func:`predict_proba`.
-
-        .. deprecated:: 0.2
-           ``estimator`` as a string object is deprecated from 0.2 and will be
-           replaced in 0.4. Use :class:`sklearn.base.ClassifierMixin` object
-           instead.
 
     ratio : str, dict, or callable, optional (default='auto')
         Ratio to use for resampling the data set.
@@ -93,14 +74,6 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
-
-    **kwargs:
-        Option for the different classifier.
-
-        .. deprecated:: 0.2
-           ``**kwargs`` has been deprecated from 0.2 and will be replaced in
-           0.4. Use :class:`sklearn.base.ClassifierMixin` object instead to
-           pass parameter associated to an estimator.
 
     Notes
     -----
@@ -142,15 +115,13 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
                  return_indices=False,
                  random_state=None,
                  cv=5,
-                 n_jobs=1,
-                 **kwargs):
+                 n_jobs=1):
         super(InstanceHardnessThreshold, self).__init__(
             ratio=ratio, random_state=random_state)
         self.estimator = estimator
         self.return_indices = return_indices
         self.cv = cv
         self.n_jobs = n_jobs
-        self.kwargs = kwargs
 
     def _validate_estimator(self):
         """Private function to create the classifier"""
@@ -162,39 +133,6 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
                 random_state=self.random_state, n_jobs=self.n_jobs)
-        # To be removed in 0.4
-        elif (self.estimator is not None and
-              isinstance(self.estimator, string_types)):
-            # Select the appropriate classifier
-            warnings.warn('`estimator` will be replaced in version'
-                          ' 0.4. Use a classifier object instead of a string.',
-                          DeprecationWarning)
-            if self.estimator == 'knn':
-                from sklearn.neighbors import KNeighborsClassifier
-                self.estimator_ = KNeighborsClassifier(**self.kwargs)
-            elif self.estimator == 'decision-tree':
-                from sklearn.tree import DecisionTreeClassifier
-                self.estimator_ = DecisionTreeClassifier(
-                    random_state=self.random_state, **self.kwargs)
-            elif self.estimator == 'random-forest':
-                self.estimator_ = RandomForestClassifier(
-                    random_state=self.random_state, **self.kwargs)
-            elif self.estimator == 'adaboost':
-                from sklearn.ensemble import AdaBoostClassifier
-                self.estimator_ = AdaBoostClassifier(
-                    random_state=self.random_state, **self.kwargs)
-            elif self.estimator == 'gradient-boosting':
-                from sklearn.ensemble import GradientBoostingClassifier
-                self.estimator_ = GradientBoostingClassifier(
-                    random_state=self.random_state, **self.kwargs)
-            elif self.estimator == 'linear-svm':
-                from sklearn.svm import SVC
-                self.estimator_ = SVC(probability=True,
-                                      random_state=self.random_state,
-                                      kernel='linear',
-                                      **self.kwargs)
-            else:
-                raise NotImplementedError
         else:
             raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
                 type(self.estimator)))
@@ -227,7 +165,8 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         self._validate_estimator()
 
         target_stats = Counter(y)
-        skf = _get_cv_splits(X, y, self.cv, self.random_state)
+        skf = StratifiedKFold(n_splits=self.cv, shuffle=False,
+                              random_state=self.random_state).split(X, y)
         probabilities = np.zeros(y.shape[0], dtype=float)
 
         for train_index, test_index in skf:

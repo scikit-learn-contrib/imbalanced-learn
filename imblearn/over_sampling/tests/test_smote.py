@@ -61,7 +61,7 @@ def test_sample_regular():
 
 
 def test_sample_regular_half():
-    ratio = 0.8
+    ratio = {0: 9, 1: 12}
     kind = 'regular'
     smote = SMOTE(ratio=ratio, random_state=RND_SEED, kind=kind)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
