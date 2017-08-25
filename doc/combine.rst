@@ -20,7 +20,7 @@ for combining over- and undersampling methods are: (i) :class:`SMOTETomek`
 and (ii) :class:`SMOTEENN`.
 
 Those two classes can be used like any other sampler with parameters identical 
-to their former samplers:
+to their former samplers::
 
   >>> from collections import Counter
   >>> from sklearn.datasets import make_classification
