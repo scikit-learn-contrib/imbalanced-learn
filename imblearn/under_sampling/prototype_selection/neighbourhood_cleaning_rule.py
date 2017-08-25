@@ -70,7 +70,7 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         Threshold used to whether consider a class or not during the cleaning
         after applying ENN. A class will be considered during cleaning when:
 
-        |Ci| > |C| x T ,
+        Ci > C x T ,
 
         where Ci and C is the number of samples in the class and the data set,
         respectively and theta is the threshold.
