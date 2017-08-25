@@ -67,7 +67,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         find the nearest-neighbors.
 
     threshold_cleaning : float, optional (default=0.5)
-
         Threshold used to whether consider a class or not during the cleaning
         after applying ENN. A class will be considered during cleaning when
 
