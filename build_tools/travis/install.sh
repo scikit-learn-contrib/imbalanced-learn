@@ -51,6 +51,8 @@ if [[ "$DISTRIB" == "conda" ]]; then
     # Install nose-timer via pip
     pip install nose-timer codecov
 
+    conda install sphinx numpydoc
+
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # At the time of writing numpy 1.9.1 is included in the travis
     # virtualenv but we want to use the numpy installed through apt-get
@@ -59,7 +61,8 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # Create a new virtualenv using system site packages for python, numpy
     virtualenv --system-site-packages testvenv
     source testvenv/bin/activate
-    pip install scikit-learn pandas nose nose-timer pytest pytest-cov codecov
+    pip install scikit-learn pandas nose nose-timer pytest pytest-cov codecov \
+        sphinx numpydoc
 
 fi
 
