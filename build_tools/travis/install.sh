@@ -51,8 +51,6 @@ if [[ "$DISTRIB" == "conda" ]]; then
     # Install nose-timer via pip
     pip install nose-timer codecov
 
-    conda install sphinx numpydoc
-
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # At the time of writing numpy 1.9.1 is included in the travis
     # virtualenv but we want to use the numpy installed through apt-get
