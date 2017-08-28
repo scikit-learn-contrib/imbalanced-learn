@@ -12,8 +12,8 @@ All the following functions and classes are in the module :mod:`imblearn.utils`.
 
    These utilities are meant to be used internally within the imbalanced-learn
    package. They are not guaranteed to be stable between versions of
-   imbalance-learn. Backports, in particular, will be removed as the
-   imbalance-learn dependencies evolve.
+   imbalanced-learn. Backports, in particular, will be removed as the
+   imbalanced-learn dependencies evolve.
 
 
 Validation Tools
@@ -97,7 +97,7 @@ same information as the deprecation warning as explained above. Use the
      ``k`` was renamed to ``n_clusters`` in version 0.13 and will be removed
      in 0.15.
 
-On the top of all the functionality provided by scikit-learn. Imbalance-learn
+On the top of all the functionality provided by scikit-learn. imbalanced-learn
 provides :func:`deprecate_parameter`: which is used to deprecate a sampler's
 parameter (attribute) by another one.
 
