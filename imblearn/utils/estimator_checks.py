@@ -19,8 +19,7 @@ from pytest import raises
 
 from sklearn.datasets import make_classification
 from sklearn.cluster import KMeans
-from sklearn.utils.estimator_checks import _yield_all_checks \
-    as sklearn_yield_all_checks, check_estimator \
+from sklearn.utils.estimator_checks import check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import assert_allclose
@@ -49,8 +48,6 @@ def _yield_sampler_checks(name, Estimator):
 
 
 def _yield_all_checks(name, Estimator):
-    # make the checks from scikit-learn
-    sklearn_yield_all_checks(name, Estimator)
     # trigger our checks if this is a SamplerMixin
     if issubclass(Estimator, SamplerMixin):
         for check in _yield_sampler_checks(name, Estimator):
