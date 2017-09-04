@@ -94,18 +94,26 @@ def check_multilabel_type(name, Estimator):
     y = np.array([0] * 900 + [1] * 75 + [2] * 25)
 
     binarizer = LabelBinarizer(sparse_output=True)
-    y_multi = binarizer.fit_transform(y)
+    y_multilabel = binarizer.fit_transform(y)
 
     sampler = Estimator(random_state=0)
-    y_res = sampler.fit_sample(x, y_multi)
-    # assert type_of_target(y_res) == type_of_target(y_multi)
+    X_res, y_res = sampler.fit_sample(x, y_multilabel)
 
-    # binarizer = LabelBinarizer(sparse_output=False)
-    # y_multi = binarizer.fit_transform(y)
+    if isinstance(sampler, BaseEnsembleSampler):
+        assert type_of_target(y_res[0]) == type_of_target(y_multilabel[0])
+    else:
+        assert type_of_target(y_res) == type_of_target(y_multilabel)
 
-    # sampler = Estimator(random_state=0)
-    # y_res = sampler.fit_sample(x, y_multi)
-    # assert type_of_target(y_res) == type_of_target(y_multi)
+    binarizer = LabelBinarizer(sparse_output=False)
+    y_multilabel = binarizer.fit_transform(y)
+
+    sampler = Estimator(random_state=0)
+    X_res, y_res = sampler.fit_sample(x, y_multilabel)
+
+    if isinstance(sampler, BaseEnsembleSampler):
+        assert type_of_target(y_res[0]) == type_of_target(y_multilabel[0])
+    else:
+        assert type_of_target(y_res) == type_of_target(y_multilabel)
 
 
 # def check_multioutput_type_error(name, Estimator):

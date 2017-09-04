@@ -9,6 +9,8 @@ from __future__ import division
 import logging
 from abc import ABCMeta, abstractmethod
 
+import numpy as np
+
 from sklearn.base import BaseEstimator
 from sklearn.externals import six
 from sklearn.utils import check_X_y
@@ -60,15 +62,21 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         if not getattr(self, 'return_indices', False):
             X_res, y_res = result
-            return (X_res,
-                    y_res if self.target_encoder_ is None
-                    else self.target_encoder_.transform(y_res))
         else:
-            X_res, y_res, indices = result
-            return (X_res,
-                    y_res if self.target_encoder_ is None
-                    else self.target_encoder_.transform(y_res),
-                    indices)
+            X_res, y_res, indices_res = result
+
+        if self.target_encoder_ is not None:
+            # find the case that we have ensemble
+            if y_res.ndim == 2:
+                y_res = np.hstack([self.target_encoder_.transform(y_res_subset)
+                                   for y_res_subset in y_res])
+            else:
+                y_res = self.target_encoder_.transform(y_res)
+
+        if not getattr(self, 'return_indices', False):
+            return X_res, y_res
+        else:
+            return X_res, y_res, indices_res
 
     def fit_sample(self, X, y):
         """Fit the statistics and resample the data directly.

@@ -145,7 +145,7 @@ class SMOTEENN(SamplerMixin):
             Return self.
 
         """
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], multi_output=True)
         y = check_target_type(y, self)
         self.ratio_ = self.ratio
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
