@@ -14,7 +14,7 @@ from sklearn.utils import check_random_state, safe_indexing
 from sklearn.model_selection import cross_val_predict
 
 from .base import BaseEnsembleSampler
-from ..utils import check_ratio
+from ..utils import check_ratio, check_target_type
 
 
 class BalanceCascade(BaseEnsembleSampler):
@@ -137,6 +137,7 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
 
         """
         super(BalanceCascade, self).fit(X, y)
+        y = check_target_type(y, self)
         self.ratio_ = check_ratio(self.ratio, y, 'under-sampling')
         return self
 

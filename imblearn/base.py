@@ -26,13 +26,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     _estimator_type = 'sampler'
 
-    def _check_X_y(self, X, y):
-        """Private function to check that the X and y in fitting are the same
-        than in sampling."""
-        X_hash, y_hash = hash_X_y(X, y)
-        if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
-            raise RuntimeError("X and y need to be same array earlier fitted.")
-
     def sample(self, X, y):
         """Resample the dataset.
 
@@ -55,13 +48,27 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         """
 
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
-
         check_is_fitted(self, 'ratio_')
-        self._check_X_y(X, y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], multi_output=True)
+        if self.target_encoder_ is not None:
+            y = self.target_encoder_.inverse_transform(y)
+        X_hash, y_hash = hash_X_y(X, y)
+        if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
+            raise RuntimeError("X and y need to be same array earlier fitted.")
 
-        return self._sample(X, y)
+        result = self._sample(X, y)
+
+        if not getattr(self, 'return_indices', False):
+            X_res, y_res = result
+            return (X_res,
+                    y_res if self.target_encoder_ is None
+                    else self.target_encoder_.transform(y_res))
+        else:
+            X_res, y_res, indices = result
+            return (X_res,
+                    y_res if self.target_encoder_ is None
+                    else self.target_encoder_.transform(y_res),
+                    indices)
 
     def fit_sample(self, X, y):
         """Fit the statistics and resample the data directly.
@@ -153,8 +160,8 @@ class BaseSampler(SamplerMixin):
             Return self.
 
         """
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
-        y = check_target_type(y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], multi_output=True)
+        y = check_target_type(y, self)
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         # self.sampling_type is already checked in check_ratio
         self.ratio_ = check_ratio(self.ratio, y, self._sampling_type)
