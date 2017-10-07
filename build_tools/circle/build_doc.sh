@@ -93,7 +93,7 @@ source activate $CONDA_ENV_NAME
 
 conda install --yes pip numpy scipy scikit-learn pillow matplotlib sphinx \
       sphinx_rtd_theme numpydoc
-pip install sphinx-gallery==0.1.11
+pip install sphinx-gallery
 
 # Build and install imbalanced-learn in dev mode
 cd "$HOME/$CIRCLE_PROJECT_REPONAME"
