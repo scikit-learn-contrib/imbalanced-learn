@@ -35,6 +35,8 @@ from imblearn.under_sampling import NearMiss, ClusterCentroids
 
 from imblearn.utils.testing import warns
 
+NOT_TESTED_SAMPLERS = ('FunctionSampler')  # This is not a normal sampler
+
 
 def _yield_sampler_checks(name, Estimator):
     yield check_target_type
@@ -76,7 +78,8 @@ def check_estimator(Estimator):
     sklearn_check_estimator(Estimator)
     check_parameters_default_constructible(name, Estimator)
     for check in _yield_all_checks(name, Estimator):
-        check(name, Estimator)
+        if name not in NOT_TESTED_SAMPLERS:
+            check(name, Estimator)
 
 
 def check_target_type(name, Estimator):
