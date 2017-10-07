@@ -10,14 +10,11 @@ requirements:
   build:
     - python
     - setuptools
-    - numpy
-    - scipy
-    - scikit-learn
+    - scikit-learn 0.19.*
+
   run:
     - python
-    - numpy
-    - scipy
-    - scikit-learn
+    - scikit-learn 0.19.*
 
 test:
   requires:
