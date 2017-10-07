@@ -4,7 +4,7 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Landscape|_ |Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |Python27|_ |Python35|_ |Pypi|_ |Gitter|_
+|Landscape|_ |Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_
 
 .. |Landscape| image:: https://landscape.io/github/scikit-learn-contrib/imbalanced-learn/master/landscape.svg?style=flat
 .. _Landscape: https://landscape.io/github/scikit-learn-contrib/imbalanced-learn/master
