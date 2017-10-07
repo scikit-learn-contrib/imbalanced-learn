@@ -30,12 +30,10 @@ class FunctionSampler(SamplerMixin):
 
     """
 
-    def __init__(self, func=None, accept_sparse=True, kw_args=None,
-                 random_state=None):
+    def __init__(self, func=None, accept_sparse=True, kw_args=None):
         self.func = func
         self.accept_sparse = accept_sparse
         self.kw_args = kw_args
-        self.random_state = random_state
         self.logger = logging.getLogger(__name__)
 
     def _check_X_y(self, X, y):
@@ -48,7 +46,6 @@ class FunctionSampler(SamplerMixin):
         return X, y
 
     def fit(self, X, y):
-        print(self.accept_sparse)
         X, y = self._check_X_y(X, y)
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         # when using a sampler, ratio_ is supposed to exist after fit
@@ -56,7 +53,7 @@ class FunctionSampler(SamplerMixin):
 
         return self
 
-    def _sample(self, X, y, func, kw_args):
+    def _sample(self, X, y, func=None, kw_args=None):
         X, y = self._check_X_y(X, y)
         check_is_fitted(self, 'ratio_')
         X_hash, y_hash = hash_X_y(X, y)
@@ -66,7 +63,7 @@ class FunctionSampler(SamplerMixin):
         if func is None:
             func = _identity
 
-        return func(X, y, **(kw_args if kw_args else {}))
+        return func(X, y, **(kw_args if self.kw_args else {}))
 
     def sample(self, X, y):
         return self._sample(X, y, func=self.func, kw_args=self.kw_args)
