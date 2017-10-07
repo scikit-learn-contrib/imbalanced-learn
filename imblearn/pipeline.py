@@ -18,9 +18,9 @@ from __future__ import division
 from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.externals import six
-from sklearn.externals.joblib import Memory
-from sklearn.utils import tosequence
 from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.validation import check_memory
+from sklearn.pipeline import _name_estimators
 
 __all__ = ['Pipeline', 'make_pipeline']
 
@@ -109,12 +109,6 @@ class Pipeline(pipeline.Pipeline):
 
     # BaseEstimator interface
 
-    def __init__(self, steps, memory=None):
-        # shallow copy of steps
-        self.steps = tosequence(steps)
-        self._validate_steps()
-        self.memory = memory
-
     def _validate_steps(self):
         names, estimators = zip(*self.steps)
 
@@ -163,15 +157,7 @@ class Pipeline(pipeline.Pipeline):
     def _fit(self, X, y=None, **fit_params):
         self._validate_steps()
         # Setup the memory
-        memory = self.memory
-        if memory is None:
-            memory = Memory(cachedir=None, verbose=0)
-        elif isinstance(memory, six.string_types):
-            memory = Memory(cachedir=memory, verbose=0)
-        elif not isinstance(memory, Memory):
-            raise ValueError("'memory' should either be a string or"
-                             " a joblib.Memory instance, got"
-                             " 'memory={!r}' instead.".format(memory))
+        memory = check_memory(self.memory)
 
         fit_transform_one_cached = memory.cache(_fit_transform_one)
         fit_sample_one_cached = memory.cache(_fit_sample_one)
@@ -187,13 +173,13 @@ class Pipeline(pipeline.Pipeline):
             if transformer is None:
                 pass
             else:
-                if memory.cachedir is None:
+                if hasattr(memory, 'cachedir') and memory.cachedir is None:
                     # we do not clone when caching is disabled to preserve
                     # backward compatibility
                     cloned_transformer = transformer
                 else:
                     cloned_transformer = clone(transformer)
-                # Fit or load from cache the current transfomer
+                # Fit or load from cache the current transformer
                 if (hasattr(cloned_transformer, "transform") or
                         hasattr(cloned_transformer, "fit_transform")):
                     Xt, fitted_transformer = fit_transform_one_cached(
@@ -243,43 +229,6 @@ class Pipeline(pipeline.Pipeline):
         if self._final_estimator is not None:
             self._final_estimator.fit(Xt, yt, **fit_params)
         return self
-
-    def fit_transform(self, X, y=None, **fit_params):
-        """Fit the model and transform with the final estimator
-
-        Fits all the transformers/samplers one after the other and
-        transform/sample the data, then uses fit_transform on
-        transformed data with the final estimator.
-
-        Parameters
-        ----------
-        X : iterable
-            Training data. Must fulfill input requirements of first step of the
-            pipeline.
-
-        y : iterable, default=None
-            Training targets. Must fulfill label requirements for all steps of
-            the pipeline.
-
-        **fit_params : dict of string -> object
-            Parameters passed to the ``fit`` method of each step, where
-            each parameter name is prefixed such that parameter ``p`` for step
-            ``s`` has key ``s__p``.
-
-        Returns
-        -------
-        Xt : array-like, shape = [n_samples, n_transformed_features]
-            Transformed samples
-
-        """
-        last_step = self._final_estimator
-        Xt, yt, fit_params = self._fit(X, y, **fit_params)
-        if last_step is None:
-            return Xt
-        elif hasattr(last_step, 'fit_transform'):
-            return last_step.fit_transform(Xt, yt, **fit_params)
-        else:
-            return last_step.fit(Xt, yt, **fit_params).transform(Xt)
 
     @if_delegate_has_method(delegate='_final_estimator')
     def fit_sample(self, X, y=None, **fit_params):
@@ -376,36 +325,6 @@ class Pipeline(pipeline.Pipeline):
         return self.steps[-1][-1].predict(Xt)
 
     @if_delegate_has_method(delegate='_final_estimator')
-    def fit_predict(self, X, y=None, **fit_params):
-        """Applies fit_predict of last step in pipeline after transforms.
-
-        Applies fit_transforms of a pipeline to the data, followed by the
-        fit_predict method of the final estimator in the pipeline. Valid
-        only if the final estimator implements fit_predict.
-
-        Parameters
-        ----------
-        X : iterable
-            Training data. Must fulfill input requirements of first step of
-            the pipeline.
-
-        y : iterable, default=None
-            Training targets. Must fulfill label requirements for all steps
-            of the pipeline.
-
-        **fit_params : dict of string -> object
-            Parameters passed to the ``fit`` method of each step, where
-            each parameter name is prefixed such that parameter ``p`` for step
-            ``s`` has key ``s__p``.
-
-        Returns
-        -------
-        y_pred : array-like
-        """
-        Xt, yt, fit_params = self._fit(X, y, **fit_params)
-        return self.steps[-1][-1].fit_predict(Xt, yt, **fit_params)
-
-    @if_delegate_has_method(delegate='_final_estimator')
     def predict_proba(self, X):
         """Apply transformers/samplers, and predict_proba of the final
         estimator
@@ -483,28 +402,6 @@ class Pipeline(pipeline.Pipeline):
                 Xt = transform.transform(Xt)
         return self.steps[-1][-1].predict_log_proba(Xt)
 
-    @property
-    def transform(self):
-        """Apply transformers/samplers, and transform with the final estimator
-
-        This also works where final estimator is ``None``: all prior
-        transformations are applied.
-
-        Parameters
-        ----------
-        X : iterable
-            Data to transform. Must fulfill input requirements of first step
-            of the pipeline.
-
-        Returns
-        -------
-        Xt : array-like, shape = [n_samples, n_transformed_features]
-        """
-        # _final_estimator is None or has transform, otherwise attribute error
-        if self._final_estimator is not None:
-            self._final_estimator.transform
-        return self._transform
-
     def _transform(self, X):
         Xt = X
         for name, transform in self.steps:
@@ -515,30 +412,6 @@ class Pipeline(pipeline.Pipeline):
             else:
                 Xt = transform.transform(Xt)
         return Xt
-
-    @property
-    def inverse_transform(self):
-        """Apply inverse transformations in reverse order
-
-        All estimators in the pipeline must support ``inverse_transform``.
-
-        Parameters
-        ----------
-        Xt : array-like, shape = [n_samples, n_transformed_features]
-            Data samples, where ``n_samples`` is the number of samples and
-            ``n_features`` is the number of features. Must fulfill
-            input requirements of last step of pipeline's
-            ``inverse_transform`` method.
-
-        Returns
-        -------
-        Xt : array-like, shape = [n_samples, n_features]
-        """
-        # raise AttributeError if necessary for hasattr behaviour
-        for name, transform in self.steps:
-            if transform is not None:
-                transform.inverse_transform
-        return self._inverse_transform
 
     def _inverse_transform(self, X):
         Xt = X
@@ -605,15 +478,44 @@ def _fit_sample_one(sampler, X, y, **fit_params):
     return X_res, y_res, sampler
 
 
-def make_pipeline(*steps):
+def make_pipeline(*steps, **kwargs):
     """Construct a Pipeline from the given estimators.
 
     This is a shorthand for the Pipeline constructor; it does not require, and
     does not permit, naming the estimators. Instead, their names will be set
     to the lowercase of their types automatically.
 
+    Parameters
+    ----------
+    *steps : list of estimators,
+
+    memory : None, str or object with the joblib.Memory interface, optional
+        Used to cache the fitted transformers of the pipeline. By default,
+        no caching is performed. If a string is given, it is the path to
+        the caching directory. Enabling caching triggers a clone of
+        the transformers before fitting. Therefore, the transformer
+        instance given to the pipeline cannot be inspected
+        directly. Use the attribute ``named_steps`` or ``steps`` to
+        inspect estimators within the pipeline. Caching the
+        transformers is advantageous when fitting is time consuming.
+
+    Examples
+    --------
+    >>> from sklearn.naive_bayes import GaussianNB
+    >>> from sklearn.preprocessing import StandardScaler
+    >>> make_pipeline(StandardScaler(), GaussianNB(priors=None))
+    ...     # doctest: +NORMALIZE_WHITESPACE
+    Pipeline(memory=None,
+             steps=[('standardscaler',
+                     StandardScaler(copy=True, with_mean=True, with_std=True)),
+                    ('gaussiannb', GaussianNB(priors=None))])
+
     Returns
     -------
     p : Pipeline
     """
-    return Pipeline(pipeline._name_estimators(steps))
+    memory = kwargs.pop('memory', None)
+    if kwargs:
+        raise TypeError('Unknown keyword arguments: "{}"'
+                        .format(list(kwargs.keys())[0]))
+    return Pipeline(_name_estimators(steps), memory=memory)
