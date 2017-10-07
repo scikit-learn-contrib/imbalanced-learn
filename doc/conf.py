@@ -50,7 +50,7 @@ extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx',
     'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode', 'sphinx_gallery.gen_gallery',
-    'sphinx.ext.autosummary', 'numpydoc',
+    'sphinx.ext.autosummary', 'numpydoc', 'sphinx.ext.intersphinx',
     'sphinx_issues', 'sphinx.ext.linkcode'
 ]
 
@@ -69,11 +69,12 @@ sphinx_gallery_conf = {
     'backreferences_dir': os.path.join('generated'),
     'reference_url': {
         'imblearn': None,
-        'sklearn': 'http://scikit-learn.org/stable',
-        'matplotlib': 'http://matplotlib.org',
-        'numpy': 'http://docs.scipy.org/doc/numpy-1.11.0',
-        'scipy': 'http://docs.scipy.org/doc/scipy-0.18.0/reference'
-    }
+        'sklearn': None,
+        'matplotlib': None,
+        'numpy': None,
+        'scipy': None
+    },
+    'plot_gallery': True,
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -87,9 +88,6 @@ source_suffix = '.rst'
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
-
-# Generate the plots for the gallery
-plot_gallery = True
 
 # The master toctree document.
 master_doc = 'index'
