@@ -3,7 +3,7 @@
 - "cd C:\\"
 
 $installed_imblearn_folder = $(python -c "import os; os.chdir('c:/'); import imblearn;\
-print(os.path.dirname(pydicom.__file__))")
+print(os.path.dirname(imblearn.__file__))")
 echo "imblearn found in: $installed_imblearn_folder"
 
 # --pyargs argument is used to make sure we run the tests on the
