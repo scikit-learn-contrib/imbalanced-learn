@@ -21,11 +21,8 @@
 .. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield&circle-token=:circle-token
 .. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn/tree/master
 
-.. |Python27| image:: https://img.shields.io/badge/python-2.7-blue.svg
-.. _Python27: https://badge.fury.io/py/scikit-learn
-
-.. |Python35| image:: https://img.shields.io/badge/python-3.5-blue.svg
-.. _Python35: https://badge.fury.io/py/scikit-learn
+.. |PythonVersion| image:: https://img.shields.io/pypi/pyversions/pydicom.svg
+.. _PythonVersion: https://img.shields.io/pypi/pyversions/pydicom.svg
 
 .. |Pypi| image:: https://badge.fury.io/py/imbalanced-learn.svg
 .. _Pypi: https://badge.fury.io/py/imbalanced-learn
