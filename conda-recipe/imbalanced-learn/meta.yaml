@@ -6,17 +6,17 @@ source:
   git_rev: 0.3.0
   git_url: https://github.com/scikit-learn-contrib/imbalanced-learn.git
 
+build:
+  number: 1
+  noarch: python
+
 requirements:
   build:
     - python
     - setuptools
-    - numpy 1.13.*
-    - scipy 0.19.*
-    - scikit-learn 0.19.*
+
   run:
     - python
-    - numpy 1.13.*
-    - scipy 0.19.*
     - scikit-learn 0.19.*
 
 test:
