@@ -54,6 +54,15 @@ extensions = [
     'sphinx_issues', 'sphinx.ext.linkcode'
 ]
 
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/{.major}'.format(
+        sys.version_info), None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'scikit-learn': ('http://scikit-learn.org/stable', None)
+}
+
 autosummary_generate = True
 numpydoc_show_class_members = False
 
@@ -68,12 +77,8 @@ sphinx_gallery_conf = {
     'doc_module': 'imblearn',
     'backreferences_dir': os.path.join('generated'),
     'reference_url': {
-        'imblearn': None,
-        'sklearn': None,
-        'matplotlib': None,
-        'numpy': None,
-        'scipy': None
-    }
+        'imblearn': None},
+    'plot_gallery': True
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -87,9 +92,6 @@ source_suffix = '.rst'
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
-
-# Generate the plots for the gallery
-plot_gallery = True
 
 # The master toctree document.
 master_doc = 'index'
