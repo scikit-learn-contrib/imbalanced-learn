@@ -37,6 +37,10 @@ Bug fixes
 - Fixed bug for `check_ratio` to be able to pass arguments when `ratio` is a
   callable. By `Guillaume Lemaitre`_.`
 
+- Fix bug in ADASYN to consider only samples from the current class when
+  generating new samples. :issue:`354` by :user:`Guillaume Lemaitre
+  <glemaitre>`.
+
 New features
 ~~~~~~~~~~~~
 

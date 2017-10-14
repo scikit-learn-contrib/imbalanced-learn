@@ -197,7 +197,8 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                     steps = random_state.uniform(size=len(nn_zs))
                     if x_i.nnz:
                         for step, nn_z in zip(steps, nn_zs):
-                            sample = x_i + step * (X[x_i_nn[nn_z], :] - x_i)
+                            sample = (x_i +
+                                      step * (X_class[x_i_nn[nn_z], :] - x_i))
                             row_indices += ([n_samples_generated] *
                                             len(sample.indices))
                             col_indices += sample.indices.tolist()
@@ -217,7 +218,8 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                     nn_zs = random_state.randint(
                         1, high=self.nn_.n_neighbors, size=num_sample_i)
                     steps = random_state.uniform(size=len(nn_zs))
-                    x_class_gen.append([x_i + step * (X[x_i_nn[nn_z], :] - x_i)
+                    x_class_gen.append([x_i +
+                                        step * (X_class[x_i_nn[nn_z], :] - x_i)
                                         for step, nn_z in zip(steps, nn_zs)])
 
                 X_new = np.concatenate(x_class_gen)
