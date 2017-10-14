@@ -77,7 +77,7 @@ def check_target_type(y):
     return y
 
 
-def hash_X_y(X, y, n_samples=1000):
+def hash_X_y(X, y, rng=np.random.RandomState(0), n_samples=1000):
     """Compute hash of the input arrays.
 
     Parameters
@@ -87,6 +87,10 @@ def hash_X_y(X, y, n_samples=1000):
 
     y : ndarray, shape (n_samples)
 
+    rng : RandomState,
+          The random state used in random integer generation.
+          Default seed set as 0.
+
     Returns
     -------
     X_hash: str
@@ -95,7 +99,6 @@ def hash_X_y(X, y, n_samples=1000):
     y_hash: str
         Hash identifier of the ``y`` matrix.
     """
-    rng = np.random.RandomState(0)
     raw_idx = rng.randint(X.shape[0], size=n_samples)
     col_idx = rng.randint(X.shape[1], size=n_samples)
 
