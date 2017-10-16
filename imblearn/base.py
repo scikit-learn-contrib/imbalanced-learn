@@ -11,7 +11,7 @@ from abc import ABCMeta, abstractmethod
 
 from sklearn.base import BaseEstimator
 from sklearn.externals import six
-from sklearn.utils import check_X_y
+from sklearn.utils import check_X_y, check_random_state
 from sklearn.utils.validation import check_is_fitted
 
 from .utils import check_ratio, check_target_type, hash_X_y
@@ -29,9 +29,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     def _check_X_y(self, X, y):
         """Private function to check that the X and y in fitting are the same
         than in sampling."""
-        X_hash, y_hash = hash_X_y(X, y)
+        X_hash, y_hash = hash_X_y(X, y, self.random_state)
         if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
-            raise RuntimeError("X and y need to be same array earlier fitted.")
+            raise RuntimeError("X and y need to be same array earlier fitted.", self.random_state)
 
     def sample(self, X, y):
         """Resample the dataset.
@@ -155,7 +155,7 @@ class BaseSampler(SamplerMixin):
         """
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         y = check_target_type(y)
-        self.X_hash_, self.y_hash_ = hash_X_y(X, y)
+        self.X_hash_, self.y_hash_ = hash_X_y(X, y, self.random_state)
         # self.sampling_type is already checked in check_ratio
         self.ratio_ = check_ratio(self.ratio, y, self._sampling_type)
 

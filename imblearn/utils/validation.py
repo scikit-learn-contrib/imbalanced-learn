@@ -12,6 +12,7 @@ from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.externals import six, joblib
 from sklearn.utils.multiclass import type_of_target
+from sklearn.utils import check_random_state
 
 from ..exceptions import raise_isinstance_error
 
@@ -77,7 +78,7 @@ def check_target_type(y):
     return y
 
 
-def hash_X_y(X, y, rng=np.random.RandomState(0), n_samples=1000):
+def hash_X_y(X, y, random_state, n_samples=1000):
     """Compute hash of the input arrays.
 
     Parameters
@@ -87,7 +88,7 @@ def hash_X_y(X, y, rng=np.random.RandomState(0), n_samples=1000):
 
     y : ndarray, shape (n_samples)
 
-    rng : RandomState,
+    random_state : RandomState,
           The random state used in random integer generation.
           Default seed set as 0.
 
@@ -99,8 +100,9 @@ def hash_X_y(X, y, rng=np.random.RandomState(0), n_samples=1000):
     y_hash: str
         Hash identifier of the ``y`` matrix.
     """
-    raw_idx = rng.randint(X.shape[0], size=n_samples)
-    col_idx = rng.randint(X.shape[1], size=n_samples)
+    random_state = check_random_state(random_state)
+    raw_idx = random_state.randint(X.shape[0], size=n_samples)
+    col_idx = random_state.randint(X.shape[1], size=n_samples)
 
     return joblib.hash(X[raw_idx, col_idx]), joblib.hash(y[raw_idx])
 
