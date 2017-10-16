@@ -31,7 +31,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         than in sampling."""
         X_hash, y_hash = hash_X_y(X, y, self.random_state)
         if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
-            raise RuntimeError("X and y need to be same array earlier fitted.", self.random_state)
+            raise RuntimeError("X and y need to be same array earlier fitted.")
 
     def sample(self, X, y):
         """Resample the dataset.
