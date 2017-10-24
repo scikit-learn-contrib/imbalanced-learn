@@ -103,7 +103,7 @@ copyright = u'2016, G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
 # built documents.
 #
 # The short X.Y version.
-from imblearn import __version
+from imblearn import __version__
 version = __version__
 # The full version, including alpha/beta/rc tags.
 release = __version__
