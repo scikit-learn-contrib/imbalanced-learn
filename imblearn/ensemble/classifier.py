@@ -21,23 +21,6 @@ from ..under_sampling import RandomUnderSampler
 old_generate = _generate_bagging_indices
 
 
-def _masked_bagging_indices(random_state, bootstrap_features,
-                            bootstrap_samples, n_features, n_samples,
-                            max_features, max_samples):
-    """Monkey-patch to always get a mask instead of indices"""
-    feature_indices, sample_indices = old_generate(random_state,
-                                                   bootstrap_features,
-                                                   bootstrap_samples,
-                                                   n_features, n_samples,
-                                                   max_features, max_samples)
-    sample_indices = indices_to_mask(sample_indices, n_samples)
-
-    return feature_indices, sample_indices
-
-
-sklearn.ensemble.bagging._generate_bagging_indices = _masked_bagging_indices
-
-
 class BalancedBaggingClassifier(BaggingClassifier):
     """A Bagging classifier with additional balancing.
 
