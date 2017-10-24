@@ -6,96 +6,46 @@ import os
 import sys
 
 from setuptools import find_packages, setup
+from imblearn import __version__
 
 
-def load_version():
-    """Executes imblearn/version.py in a globals dictionary and
-    return it.
-    """
-    # load all vars into globals, otherwise
-    #   the later function call using global vars doesn't work.
-    globals_dict = {}
-    with codecs.open(os.path.join('imblearn', 'version.py'),
-                     encoding='utf-8-sig') as fp:
-        exec(fp.read(), globals_dict)
-
-    return globals_dict
-
-
-def is_installing():
-    # Allow command-lines such as "python setup.py build install"
-    install_commands = set(['install', 'develop'])
-    return install_commands.intersection(set(sys.argv))
-
-
-# Make sources available using relative paths from this file's directory.
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-
-_VERSION_GLOBALS = load_version()
 DISTNAME = 'imbalanced-learn'
 DESCRIPTION = 'Toolbox for imbalanced dataset in machine learning.'
 with codecs.open('README.rst', encoding='utf-8-sig') as f:
     LONG_DESCRIPTION = f.read()
-MAINTAINER = 'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
-MAINTAINER_EMAIL = ('g.lemaitre58@gmail.com, fmfnogueira@gmail.com, '
-                    'dvro@cin.ufpe.br, ichkoar@gmail.com')
+MAINTAINER = 'G. Lemaitre, C. Aridas'
+MAINTAINER_EMAIL = 'g.lemaitre58@gmail.com, ichkoar@gmail.com'
 URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 LICENSE = 'MIT'
 DOWNLOAD_URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
-VERSION = _VERSION_GLOBALS['__version__']
+VERSION = __version__
+INSTALL_REQUIRES = ['numpy', 'scipy', 'scikit-learn']
+CLASSIFIERS = ['Intended Audience :: Science/Research',
+               'Intended Audience :: Developers',
+               'License :: OSI Approved',
+               'Programming Language :: C',
+               'Programming Language :: Python',
+               'Topic :: Software Development',
+               'Topic :: Scientific/Engineering',
+               'Operating System :: Microsoft :: Windows',
+               'Operating System :: POSIX',
+               'Operating System :: Unix',
+               'Operating System :: MacOS',
+               'Programming Language :: Python :: 2.7',
+               'Programming Language :: Python :: 3.5',
+               'Programming Language :: Python :: 3.6']
 
 
-def configuration(parent_package='', top_path=None):
-    if os.path.exists('MANIFEST'):
-        os.remove('MANIFEST')
-
-    from numpy.distutils.misc_util import Configuration
-    config = Configuration(None, parent_package, top_path)
-
-    config.add_subpackage('imblearn')
-
-    return config
-
-
-if __name__ == "__main__":
-    if is_installing():
-        module_check_fn = _VERSION_GLOBALS['_check_module_dependencies']
-        module_check_fn(is_imbalanced_dataset_installing=True)
-
-    install_requires = \
-        ['%s>=%s' % (mod, meta['min_version'])
-            for mod, meta in _VERSION_GLOBALS['REQUIRED_MODULE_METADATA']
-            if not meta['required_at_installation']]
-
-    setup(configuration=configuration,
-          name=DISTNAME,
-          maintainer=MAINTAINER,
-          maintainer_email=MAINTAINER_EMAIL,
-          description=DESCRIPTION,
-          license=LICENSE,
-          url=URL,
-          version=VERSION,
-          download_url=DOWNLOAD_URL,
-          long_description=LONG_DESCRIPTION,
-          zip_safe=False,  # the package can run out of an .egg file
-          classifiers=[
-              'Intended Audience :: Science/Research',
-              'Intended Audience :: Developers',
-              'License :: OSI Approved',
-              'Programming Language :: C',
-              'Programming Language :: Python',
-              'Topic :: Software Development',
-              'Topic :: Scientific/Engineering',
-              'Operating System :: Microsoft :: Windows',
-              'Operating System :: POSIX',
-              'Operating System :: Unix',
-              'Operating System :: MacOS',
-              'Programming Language :: Python :: 2.7',
-              'Programming Language :: Python :: 3.5',
-              'Programming Language :: Python :: 3.6'
-          ],
-          packages=find_packages(),
-          install_requires=['scipy',
-                            'numpy',
-                            'scikit-learn'])
+setup(name=DISTNAME,
+      maintainer=MAINTAINER,
+      maintainer_email=MAINTAINER_EMAIL,
+      description=DESCRIPTION,
+      license=LICENSE,
+      url=URL,
+      version=VERSION,
+      download_url=DOWNLOAD_URL,
+      long_description=LONG_DESCRIPTION,
+      zip_safe=False,  # the package can run out of an .egg file
+      classifiers=CLASSIFIERS,
+      packages=find_packages(),
+      install_requires=INSTALL_REQUIRES)
