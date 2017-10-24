@@ -82,9 +82,9 @@ classifier will favor the majority classes::
   BaggingClassifier(...)
   >>> y_pred = bc.predict(X_test)
   >>> confusion_matrix(y_test, y_pred)
-  array([[   0,    0,   12],
-         [   0,    0,   59],
-         [   0,    0, 1179]])
+  array([[ 9, 1, 2],
+         [ 0, 54, 5],
+         [ 1, 6, 1172]])
 
 :class:`BalancedBaggingClassifier` allows to resample each subset of data
 before to train each estimator of the ensemble. In short, it combines the
