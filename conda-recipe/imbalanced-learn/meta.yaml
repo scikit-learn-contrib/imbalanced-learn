@@ -14,15 +14,12 @@ requirements:
   build:
     - python
     - setuptools
-    - scikit-learn 0.19.*
   run:
     - python
     - scikit-learn 0.19.*
 
 test:
   requires:
-    - nose
-    - coverage
     - pytest
     - pytest-cov
   imports:
