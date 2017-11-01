@@ -26,16 +26,7 @@ pipeline
     Module which allowing to create pipeline with scikit-learn estimators.
 """
 
-from .version import _check_module_dependencies, __version__
-
-_check_module_dependencies()
-
-# Boolean controlling whether the joblib caches should be
-# flushed if the version of certain modules changes (eg nibabel, as it
-# does not respect the backward compatibility in some of its internal
-# structures
-# This  is used in nilearn._utils.cache_mixin
-CHECK_CACHE_VERSION = True
+from ._version import __version__
 
 # list all submodules available in imblearn and version
 __all__ = [

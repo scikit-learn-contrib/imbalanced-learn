@@ -6,6 +6,13 @@ Version 0.4 (under development)
 Changelog
 ---------
 
+Bug fixes
+.........
+
+- Fix bug in ADASYN to consider only samples from the current class when
+  generating new samples. :issue:`354` by :user:`Guillaume Lemaitre
+  <glemaitre>`.
+
 Maintenance
 ...........
 
