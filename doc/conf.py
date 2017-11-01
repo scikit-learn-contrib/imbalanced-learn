@@ -14,31 +14,17 @@
 
 import os
 import sys
-
 import sphinx_rtd_theme
+from sklearn.externals.six import u
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-# sys.path.insert(0, os.path.abspath('.'))
-
-# -- General configuration ---------------------------------------------------
-
-# Try to override the matplotlib configuration as early as possible
-try:
-    import gen_rst
-except:
-    pass
-# -- General configuration ------------------------------------------------
-
-
-# If extensions (or modules to document with autodoc) are in another
-# directory, add these directories to sys.path here. If the directory
-# is relative to the documentation root, use os.path.abspath to make it
-# absolute, like shown here.
 sys.path.insert(0, os.path.abspath('sphinxext'))
-
 from github_link import make_linkcode_resolve
+import sphinx_gallery
+
+# -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 # needs_sphinx = '1.0'
@@ -47,34 +33,30 @@ from github_link import make_linkcode_resolve
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx',
-    'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode', 'sphinx_gallery.gen_gallery',
-    'sphinx.ext.autosummary', 'numpydoc', 'sphinx.ext.intersphinx',
-    'sphinx_issues', 'sphinx.ext.linkcode'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.linkcode',
+    'sphinx.ext.viewcode',
+    'numpydoc',
+    'sphinx_issues',
+    'sphinx_gallery.gen_gallery',
 ]
 
-autosummary_generate = True
+# this is needed for some reason...
+# see https://github.com/numpy/numpydoc/issues/69
 numpydoc_show_class_members = False
 
+# pngmath / imgmath compatibility layer for different sphinx versions
+import sphinx
+from distutils.version import LooseVersion
+if LooseVersion(sphinx.__version__) < LooseVersion('1.4'):
+    extensions.append('sphinx.ext.pngmath')
+else:
+    extensions.append('sphinx.ext.imgmath')
+
 autodoc_default_flags = ['members', 'inherited-members']
-
-# intersphinx configuration
-intersphinx_mapping = {
-    'python': ('https://docs.python.org/{.major}'.format(
-        sys.version_info), None),
-    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
-    'matplotlib': ('https://matplotlib.org/', None),
-    'sklearn': ('http://scikit-learn.org/stable', None)
-}
-
-sphinx_gallery_conf = {
-    'doc_module': 'imblearn',
-    'backreferences_dir': os.path.join('generated'),
-    'reference_url': {
-        'imblearn': None}
-}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -95,8 +77,8 @@ plot_gallery = True
 master_doc = 'index'
 
 # General information about the project.
-project = u'imbalanced-learn'
-copyright = u'2016, G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
+project = u('imbalanced-learn')
+copyright = u('2016 - 2017, G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas')
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -120,7 +102,7 @@ release = __version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', '_templates']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -250,8 +232,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'imbalanced-learn.tex', u'imbalanced-learn Documentation',
-     u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas', 'manual'),
+    ('index', 'imbalanced-learn.tex', u('imbalanced-learn Documentation'),
+     u('G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'), 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -271,10 +253,29 @@ latex_documents = [
 # Documents to append as an appendix to all manuals.
 # latex_appendices = []
 
+# intersphinx configuration
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/{.major}'.format(
+        sys.version_info), None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'sklearn': ('http://scikit-learn.org/stable', None)
+}
+
+# sphinx-gallery configuration
+sphinx_gallery_conf = {
+    'doc_module': 'imblearn',
+    'backreferences_dir': os.path.join('generated'),
+    'reference_url': {
+        'imblearn': None}
+}
+
+# -- Options for manual page output ---------------------------------------
+
 # If false, no module index is generated.
 # latex_domain_indices = True
 
-# -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
@@ -296,14 +297,14 @@ texinfo_documents = [
 ]
 
 
-def generate_example_rst(app, what, name, obj, options, lines):
-    # generate empty examples files, so that we don't get
-    # inclusion errors if there are no examples for a class / module
-    examples_path = os.path.join(app.srcdir, "generated",
-                                 "%s.examples" % name)
-    if not os.path.exists(examples_path):
-        # touch file
-        open(examples_path, 'w').close()
+# def generate_example_rst(app, what, name, obj, options, lines):
+#     # generate empty examples files, so that we don't get
+#     # inclusion errors if there are no examples for a class / module
+#     examples_path = os.path.join(app.srcdir, "generated",
+#                                  "%s.examples" % name)
+#     if not os.path.exists(examples_path):
+#         # touch file
+#         open(examples_path, 'w').close()
 
 
 # Config for sphinx_issues
@@ -315,7 +316,7 @@ issues_user_uri = 'https://github.com/{user}'
 
 def setup(app):
     app.add_javascript('js/copybutton.js')
-    app.connect('autodoc-process-docstring', generate_example_rst)
+    # app.connect('autodoc-process-docstring', generate_example_rst)
 
 
 # Documents to append as an appendix to all manuals.
@@ -329,9 +330,6 @@ def setup(app):
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'http://docs.python.org/': None}
 
 # The following is used by sphinx.ext.linkcode to provide links to github
 linkcode_resolve = make_linkcode_resolve('imblearn',
