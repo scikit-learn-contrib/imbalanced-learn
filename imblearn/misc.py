@@ -30,10 +30,12 @@ class FunctionSampler(SamplerMixin):
 
     """
 
-    def __init__(self, func=None, accept_sparse=True, kw_args=None):
+    def __init__(self, func=None, accept_sparse=True, kw_args=None,
+                 random_state=None):
         self.func = func
         self.accept_sparse = accept_sparse
         self.kw_args = kw_args
+        self.random_state = random_state
         self.logger = logging.getLogger(__name__)
 
     def _check_X_y(self, X, y):
