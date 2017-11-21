@@ -21,4 +21,4 @@ datset in machine learning and pattern recognition.
 # Dev branch marker is: 'X.Y.dev' or 'X.Y.devN' where N is an integer.
 # 'X.Y.dev0' is the canonical version of 'X.Y.dev'
 #
-__version__ = '0.4.0.dev1'
+__version__ = '0.4.0.dev0'
