@@ -10,7 +10,7 @@ API's of imbalanced-learn samplers
 ----------------------------------
 
 The available samplers follows the scikit-learn API using the base estimator
-and adding a sampling functionality throw the ``sample`` method::
+and adding a sampling functionality through the ``sample`` method::
 
 :Estimator:
 
