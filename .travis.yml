@@ -25,8 +25,7 @@ env:
     - MODULE=imblearn
     - OMP_NUM_THREADS=4
     - OPENBLAS_NUM_THREADS=4
-matrix:
-  include:
+  matrix:
     # This environment tests the using anaconda
     # Ubuntu 14.04 environment
     - DISTRIB="ubuntu"
@@ -37,9 +36,12 @@ matrix:
       NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" SKLEARN_VERSION="0.19.0"
     - DISTRIB="conda" PYTHON_VERSION="3.6"
       NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" SKLEARN_VERSION="0.19.0"
-  allow_failures:
     - DISTRIB="conda" PYTHON_VERSION="3.6"
       NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" SKLEARN_VERSION="master"
+
+matrix:
+  allow_failures:
+    - env: SKLEARN_VERSION="master"
 
 install: source build_tools/travis/install.sh
 script: bash build_tools/travis/test_script.sh
