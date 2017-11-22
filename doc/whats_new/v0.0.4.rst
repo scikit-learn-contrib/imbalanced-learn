@@ -6,6 +6,12 @@ Version 0.4 (under development)
 Changelog
 ---------
 
+Enhancement
+...........
+
+- Add a documentation node to create a balanced random forest from a balanced
+  bagging classifier. :issue:`372` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Bug fixes
 .........
 
