@@ -82,9 +82,9 @@ classifier will favor the majority classes::
   BaggingClassifier(...)
   >>> y_pred = bc.predict(X_test)
   >>> confusion_matrix(y_test, y_pred)
-  array([[   0,    0,   12],
-         [   0,    0,   59],
-         [   0,    0, 1179]])
+  array([[   9,    1,    2],
+         [   0,   54,    5],
+         [   1,    6, 1172]])
 
 :class:`BalancedBaggingClassifier` allows to resample each subset of data
 before to train each estimator of the ensemble. In short, it combines the
@@ -105,8 +105,8 @@ takes the same parameters than the scikit-learn
   >>> y_pred = bbc.predict(X_test)
   >>> confusion_matrix(y_test, y_pred)
   array([[  12,    0,    0],
-         [   0,   55,    4],
-         [  68,   53, 1058]])
+         [   1,   54,    4],
+         [  49,   53, 1077]])
 
 See
 :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_bagging_classifier.py`.
