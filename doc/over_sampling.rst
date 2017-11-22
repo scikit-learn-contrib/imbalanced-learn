@@ -90,7 +90,7 @@ Ill-posed examples
 ------------------
 
 While the :class:`RandomOverSampler` is over-sampling by duplicating some of
-the original samples of the minority class, :`SMOTE` and :class:`ADASYN`
+the original samples of the minority class, :class:`SMOTE` and :class:`ADASYN`
 generate new samples in by interpolation. However, the samples used to
 interpolate/generate new synthetic samples differ. In fact, :class:`ADASYN`
 focuses on generating samples next to the original samples which are wrongly
@@ -180,7 +180,7 @@ are from a different class than the one of :math:`x_i`), (ii) in danger
 :math:`x_i`, or (iii) safe (i.e. all nearest neighbors are from the same class
 than :math:`x_i`). **Borderline-1** and **Borderline-2** SMOTE will use the
 samples *in danger* to generate new samples. In **Borderline-1** SMOTE,
-:math:`x_{zi}` will belong to a class different from the one of the sample
+:math:`x_{zi}` will belong to the same class than the one of the sample
 :math:`x_i`. On the contrary, **Borderline-2** SMOTE will consider
 :math:`x_{zi}` which can be from any class.
 
