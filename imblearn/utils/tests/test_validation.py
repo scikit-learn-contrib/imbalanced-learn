@@ -5,16 +5,18 @@
 
 from collections import Counter
 
-from pytest import raises
 import numpy as np
+from pytest import raises
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils import check_random_state
+from sklearn.externals import joblib
 
 from imblearn.utils.testing import warns
-
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_ratio
+from imblearn.utils import hash_X_y
 
 
 def test_check_neighbors_object():
@@ -167,3 +169,16 @@ def test_ratio_callable_args():
     ratio_ = check_ratio(ratio_func, y, 'over-sampling',
                          multiplier=multiplier)
     assert ratio_ == {1: 25, 2: 0, 3: 50}
+
+
+def test_hash_X_y():
+    rng = check_random_state(0)
+    X = rng.randn(2000, 20)
+    y = np.array([0] * 500 + [1] * 1500)
+    assert hash_X_y(X, y) == ('9ad0abc242757e8a67e5c8b0b4a4a675',
+                              '75ca7883d3814bc7a3df09b9d59eef78')
+
+    X = rng.randn(5, 2)
+    y = np.array([0] * 2 + [1] * 3)
+    # all data will be used in this case
+    assert hash_X_y(X, y) == (joblib.hash(X), joblib.hash(y))

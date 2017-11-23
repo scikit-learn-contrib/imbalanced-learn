@@ -79,7 +79,7 @@ def check_target_type(y):
     return y
 
 
-def hash_X_y(X, y, n_samples=1000):
+def hash_X_y(X, y, n_samples=10, n_features=5):
     """Compute hash of the input arrays.
 
     Parameters
@@ -88,6 +88,13 @@ def hash_X_y(X, y, n_samples=1000):
         The ``X`` array.
 
     y : ndarray, shape (n_samples)
+        The ``y`` array.
+
+    n_samples : int, optional
+        The number of samples to use to compute the hash. Default is 100.
+
+    n_features : int, optional
+        The number of features to use to compute the hash. Default is 10.
 
     Returns
     -------
@@ -98,7 +105,7 @@ def hash_X_y(X, y, n_samples=1000):
         Hash identifier of the ``y`` matrix.
     """
     row_idx = slice(None, None, max(1, X.shape[0] // n_samples))
-    col_idx = slice(None, None, max(1, X.shape[1] // n_samples))
+    col_idx = slice(None, None, max(1, X.shape[1] // n_features))
 
     return joblib.hash(X[row_idx, col_idx]), joblib.hash(y[row_idx])
 
