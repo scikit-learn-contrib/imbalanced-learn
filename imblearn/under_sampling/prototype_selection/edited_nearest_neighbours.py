@@ -18,6 +18,8 @@ from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
+from ...utils.deprecation import deprecate_parameter
+
 
 SEL_KIND = ('all', 'mode')
 
@@ -61,6 +63,9 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         generator; If ``RandomState`` instance, random_state is the random
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
+
+        .. deprecated:: 0.4
+           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -112,7 +117,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
-    >>> enn = EditedNearestNeighbours(random_state=42)
+    >>> enn = EditedNearestNeighbours()
     >>> X_res, y_res = enn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 887, 0: 100})
@@ -126,9 +131,8 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                  n_neighbors=3,
                  kind_sel='all',
                  n_jobs=1):
-        super(EditedNearestNeighbours, self).__init__(
-            ratio=ratio,
-            random_state=random_state)
+        super(EditedNearestNeighbours, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
@@ -136,6 +140,11 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Validate the estimator created in the ENN."""
+
+        # check for deprecated random_state
+        if self.random_state is not None:
+            deprecate_parameter(self, '0.4', 'random_state')
+
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
@@ -243,6 +252,9 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
 
+        .. deprecated:: 0.4
+           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
+
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
@@ -297,7 +309,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
-    >>> renn = RepeatedEditedNearestNeighbours(random_state=42)
+    >>> renn = RepeatedEditedNearestNeighbours()
     >>> X_res, y_res = renn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 887, 0: 100})
@@ -312,8 +324,8 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                  max_iter=100,
                  kind_sel='all',
                  n_jobs=1):
-        super(RepeatedEditedNearestNeighbours, self).__init__(
-            ratio=ratio, random_state=random_state)
+        super(RepeatedEditedNearestNeighbours, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
@@ -322,6 +334,11 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
+
+        # check for deprecated random_state
+        if self.random_state is not None:
+            deprecate_parameter(self, '0.4', 'random_state')
+
         if self.max_iter < 2:
             raise ValueError('max_iter must be greater than 1.'
                              ' Got {} instead.'.format(type(self.max_iter)))
@@ -331,7 +348,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
         self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
                                             return_indices=self.return_indices,
-                                            random_state=self.random_state,
                                             n_neighbors=self.nn_,
                                             kind_sel=self.kind_sel,
                                             n_jobs=self.n_jobs)
@@ -459,6 +475,9 @@ class AllKNN(BaseCleaningSampler):
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
 
+        .. deprecated:: 0.4
+           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
+
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
@@ -514,7 +533,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
-    >>> allknn = AllKNN(random_state=42)
+    >>> allknn = AllKNN()
     >>> X_res, y_res = allknn.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 887, 0: 100})
@@ -529,7 +548,8 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                  kind_sel='all',
                  allow_minority=False,
                  n_jobs=1):
-        super(AllKNN, self).__init__(ratio=ratio, random_state=random_state)
+        super(AllKNN, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
@@ -538,6 +558,11 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Create objects required by AllKNN"""
+
+        # check for deprecated random_state
+        if self.random_state is not None:
+            deprecate_parameter(self, '0.4', 'random_state')
+
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 
@@ -546,7 +571,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
         self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
                                             return_indices=self.return_indices,
-                                            random_state=self.random_state,
                                             n_neighbors=self.nn_,
                                             kind_sel=self.kind_sel,
                                             n_jobs=self.n_jobs)

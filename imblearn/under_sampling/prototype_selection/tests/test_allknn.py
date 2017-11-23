@@ -13,9 +13,9 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.datasets import make_classification
 
 from imblearn.under_sampling import AllKNN
+from imblearn.utils.testing import warns
 
 
-RND_SEED = 0
 X = np.array([[-0.12840393, 0.66446571], [1.32319756, -0.13181616],
               [0.04296502, -0.37981873], [0.83631853, 0.18569783],
               [1.02956816, 0.36061601], [1.12202806, 0.33811558],
@@ -44,7 +44,7 @@ R_TOL = 1e-4
 
 
 def test_allknn_fit_sample():
-    allknn = AllKNN(random_state=RND_SEED)
+    allknn = AllKNN()
     X_resampled, y_resampled = allknn.fit_sample(X, Y)
 
     X_gt = np.array([[-0.53171468, -0.53735182], [-0.88864036, -0.33782387],
@@ -75,15 +75,15 @@ def test_all_knn_allow_minority():
                                n_clusters_per_class=1, weights=[0.2, 0.3, 0.5],
                                class_sep=0.4, random_state=0)
 
-    allknn = AllKNN(random_state=RND_SEED, allow_minority=True)
+    allknn = AllKNN(allow_minority=True)
     X_res_1, y_res_1 = allknn.fit_sample(X, y)
-    allknn = AllKNN(random_state=RND_SEED)
+    allknn = AllKNN()
     X_res_2, y_res_2 = allknn.fit_sample(X, y)
     assert len(y_res_1) < len(y_res_2)
 
 
 def test_allknn_fit_sample_with_indices():
-    allknn = AllKNN(return_indices=True, random_state=RND_SEED)
+    allknn = AllKNN(return_indices=True)
     X_resampled, y_resampled, idx_under = allknn.fit_sample(X, Y)
 
     X_gt = np.array([[-0.53171468, -0.53735182], [-0.88864036, -0.33782387],
@@ -114,7 +114,7 @@ def test_allknn_fit_sample_with_indices():
 
 
 def test_allknn_fit_sample_mode():
-    allknn = AllKNN(random_state=RND_SEED, kind_sel='mode')
+    allknn = AllKNN(kind_sel='mode')
     X_resampled, y_resampled = allknn.fit_sample(X, Y)
 
     X_gt = np.array([[-0.53171468, -0.53735182], [-0.88864036, -0.33782387],
@@ -143,7 +143,7 @@ def test_allknn_fit_sample_mode():
 
 def test_allknn_fit_sample_with_nn_object():
     nn = NearestNeighbors(n_neighbors=4)
-    allknn = AllKNN(n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
+    allknn = AllKNN(n_neighbors=nn, kind_sel='mode')
     X_resampled, y_resampled = allknn.fit_sample(X, Y)
 
     X_gt = np.array([[-0.53171468, -0.53735182], [-0.88864036, -0.33782387],
@@ -172,6 +172,13 @@ def test_allknn_fit_sample_with_nn_object():
 
 def test_alknn_not_good_object():
     nn = 'rnd'
-    allknn = AllKNN(n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
+    allknn = AllKNN(n_neighbors=nn, kind_sel='mode')
     with raises(ValueError):
+        allknn.fit_sample(X, Y)
+
+
+def test_deprecation_random_state():
+    allknn = AllKNN(random_state=0)
+    with warns(DeprecationWarning,
+               match="'random_state' is deprecated from 0.4"):
         allknn.fit_sample(X, Y)

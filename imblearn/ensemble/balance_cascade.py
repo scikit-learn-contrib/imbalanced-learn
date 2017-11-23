@@ -113,8 +113,8 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
                  random_state=None,
                  n_max_subset=None,
                  estimator=None):
-        super(BalanceCascade, self).__init__(ratio=ratio,
-                                             random_state=random_state)
+        super(BalanceCascade, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.return_indices = return_indices
         self.estimator = estimator
         self.n_max_subset = n_max_subset

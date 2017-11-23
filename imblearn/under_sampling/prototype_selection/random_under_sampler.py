@@ -84,8 +84,8 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                  return_indices=False,
                  random_state=None,
                  replacement=False):
-        super(RandomUnderSampler, self).__init__(
-            ratio=ratio, random_state=random_state)
+        super(RandomUnderSampler, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.return_indices = return_indices
         self.replacement = replacement
 

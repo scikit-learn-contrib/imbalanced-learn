@@ -109,7 +109,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                  voting='auto',
                  n_jobs=1):
         super(ClusterCentroids, self).__init__(
-            ratio=ratio, random_state=random_state)
+            ratio=ratio)
+        self.random_state = random_state
         self.estimator = estimator
         self.voting = voting
         self.n_jobs = n_jobs

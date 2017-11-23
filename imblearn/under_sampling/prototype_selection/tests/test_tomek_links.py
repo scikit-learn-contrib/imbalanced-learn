@@ -9,8 +9,9 @@ import numpy as np
 from sklearn.utils.testing import assert_array_equal
 
 from imblearn.under_sampling import TomekLinks
+from imblearn.utils.testing import warns
 
-RND_SEED = 0
+
 X = np.array([[0.31230513, 0.1216318], [0.68481731, 0.51935141],
               [1.34192108, -0.13367336], [0.62366841, -0.21312976],
               [1.61091956, -0.40283504], [-0.37162401, -2.19400981],
@@ -25,14 +26,12 @@ Y = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
 def test_tl_init():
-    tl = TomekLinks(random_state=RND_SEED)
-
+    tl = TomekLinks()
     assert tl.n_jobs == 1
-    assert tl.random_state == RND_SEED
 
 
 def test_tl_fit_sample():
-    tl = TomekLinks(random_state=RND_SEED)
+    tl = TomekLinks()
     X_resampled, y_resampled = tl.fit_sample(X, Y)
 
     X_gt = np.array([[0.31230513, 0.1216318], [0.68481731, 0.51935141],
@@ -50,7 +49,7 @@ def test_tl_fit_sample():
 
 
 def test_tl_fit_sample_with_indices():
-    tl = TomekLinks(return_indices=True, random_state=RND_SEED)
+    tl = TomekLinks(return_indices=True)
     X_resampled, y_resampled, idx_under = tl.fit_sample(X, Y)
 
     X_gt = np.array([[0.31230513, 0.1216318], [0.68481731, 0.51935141],
@@ -68,3 +67,10 @@ def test_tl_fit_sample_with_indices():
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
+
+
+def test_deprecation_random_state():
+    tl = TomekLinks(random_state=0)
+    with warns(DeprecationWarning,
+               match="'random_state' is deprecated from 0.4"):
+        tl.fit_sample(X, Y)

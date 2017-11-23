@@ -116,8 +116,8 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
                  random_state=None,
                  cv=5,
                  n_jobs=1):
-        super(InstanceHardnessThreshold, self).__init__(
-            ratio=ratio, random_state=random_state)
+        super(InstanceHardnessThreshold, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.estimator = estimator
         self.return_indices = return_indices
         self.cv = cv
@@ -148,10 +148,6 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
-        Returns
-        -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
             The array containing the resampled data.
 
         y_resampled : ndarray, shape (n_samples_new,)

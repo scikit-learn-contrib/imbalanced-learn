@@ -67,7 +67,7 @@ fig.tight_layout()
 # samples. If ``ratio='auto'`` only the sample from the majority class will be
 # removed. If ``ratio='all'`` both samples will be removed.
 
-sampler = TomekLinks(random_state=0)
+sampler = TomekLinks()
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
