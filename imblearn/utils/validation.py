@@ -100,7 +100,6 @@ def hash_X_y(X, y, n_samples=10, n_features=5):
     -------
     X_hash: str
         Hash identifier of the ``X`` matrix.
-
     y_hash: str
         Hash identifier of the ``y`` matrix.
     """

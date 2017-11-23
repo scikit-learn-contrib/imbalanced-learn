@@ -175,8 +175,8 @@ def test_hash_X_y():
     rng = check_random_state(0)
     X = rng.randn(2000, 20)
     y = np.array([0] * 500 + [1] * 1500)
-    assert hash_X_y(X, y) == ('9ad0abc242757e8a67e5c8b0b4a4a675',
-                              '75ca7883d3814bc7a3df09b9d59eef78')
+    assert hash_X_y(X, y, 10, 10) == (joblib.hash(X[::200, ::2]),
+                                      joblib.hash(y[::200]))
 
     X = rng.randn(5, 2)
     y = np.array([0] * 2 + [1] * 3)
