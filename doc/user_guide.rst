@@ -14,5 +14,6 @@ User Guide
    under_sampling.rst
    combine.rst
    ensemble.rst
+   metrics.rst
    Dataset loading utilities <datasets/index.rst>
    developers_utils.rst

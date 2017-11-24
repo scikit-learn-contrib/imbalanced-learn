@@ -12,6 +12,9 @@ Enhancement
 - Add a documentation node to create a balanced random forest from a balanced
   bagging classifier. :issue:`372` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Document the metrics to evaluate models on imbalanced dataset. :issue:`367`
+  by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Bug fixes
 .........
 
