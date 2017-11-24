@@ -8,12 +8,10 @@ import numbers
 
 import numpy as np
 
-import sklearn
 from sklearn.base import clone
 from sklearn.ensemble import BaggingClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble.bagging import _generate_bagging_indices
-from sklearn.utils import indices_to_mask
 
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
@@ -136,6 +134,9 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     Notes
     -----
+    This is possible to turn this classifier into a balanced random forest [5]_
+    by passing a :class:`sklearn.tree.DecisionTreeClassifier` with
+    `max_features='auto'` as a base estimator.
 
     See
     :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_bagging_classifier.py`.
@@ -155,6 +156,9 @@ class BalancedBaggingClassifier(BaggingClassifier):
            1998.
     .. [4] G. Louppe and P. Geurts, "Ensembles on Random Patches", Machine
            Learning and Knowledge Discovery in Databases, 346-361, 2012.
+    .. [5] Chen, Chao, Andy Liaw, and Leo Breiman. "Using random forest to
+           learn imbalanced data." University of California, Berkeley 110,
+           2004.
 
     Examples
     --------
