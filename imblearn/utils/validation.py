@@ -2,6 +2,8 @@
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
+from __future__ import division
+
 import warnings
 from collections import Counter
 from numbers import Integral
@@ -77,7 +79,7 @@ def check_target_type(y):
     return y
 
 
-def hash_X_y(X, y, n_samples=1000):
+def hash_X_y(X, y, n_samples=10, n_features=5):
     """Compute hash of the input arrays.
 
     Parameters
@@ -86,20 +88,25 @@ def hash_X_y(X, y, n_samples=1000):
         The ``X`` array.
 
     y : ndarray, shape (n_samples)
+        The ``y`` array.
+
+    n_samples : int, optional
+        The number of samples to use to compute the hash. Default is 100.
+
+    n_features : int, optional
+        The number of features to use to compute the hash. Default is 10.
 
     Returns
     -------
     X_hash: str
         Hash identifier of the ``X`` matrix.
-
     y_hash: str
         Hash identifier of the ``y`` matrix.
     """
-    rng = np.random.RandomState(0)
-    raw_idx = rng.randint(X.shape[0], size=n_samples)
-    col_idx = rng.randint(X.shape[1], size=n_samples)
+    row_idx = slice(None, None, max(1, X.shape[0] // n_samples))
+    col_idx = slice(None, None, max(1, X.shape[1] // n_features))
 
-    return joblib.hash(X[raw_idx, col_idx]), joblib.hash(y[raw_idx])
+    return joblib.hash(X[row_idx, col_idx]), joblib.hash(y[row_idx])
 
 
 def _ratio_all(y, sampling_type):

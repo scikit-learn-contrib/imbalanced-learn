@@ -134,8 +134,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
                                  'Got {} instead.'.format(type(self.tomek)))
         # Otherwise create a default TomekLinks
         else:
-            self.tomek_ = TomekLinks(ratio='all',
-                                     random_state=self.random_state)
+            self.tomek_ = TomekLinks(ratio='all')
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

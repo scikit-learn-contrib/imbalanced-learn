@@ -125,8 +125,7 @@ class SMOTEENN(SamplerMixin):
                                  ' Got {} instead.'.format(type(self.enn)))
         # Otherwise create a default EditedNearestNeighbours
         else:
-            self.enn_ = EditedNearestNeighbours(ratio='all',
-                                                random_state=self.random_state)
+            self.enn_ = EditedNearestNeighbours(ratio='all')
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

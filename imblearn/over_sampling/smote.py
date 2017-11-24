@@ -143,7 +143,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                  kind='regular',
                  svm_estimator=None,
                  n_jobs=1):
-        super(SMOTE, self).__init__(ratio=ratio, random_state=random_state)
+        super(SMOTE, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.kind = kind
         self.k_neighbors = k_neighbors
         self.m_neighbors = m_neighbors

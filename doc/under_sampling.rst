@@ -112,7 +112,7 @@ samples. :class:`NearMiss` implements 3 different types of heuristic which can
 be selected with the parameter ``version``::
 
   >>> from imblearn.under_sampling import NearMiss
-  >>> nm1 = NearMiss(random_state=0, version=1)
+  >>> nm1 = NearMiss(version=1)
   >>> X_resampled_nm1, y_resampled = nm1.fit_sample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
@@ -247,7 +247,7 @@ the sample inspected to keep it in the dataset::
   >>> sorted(Counter(y).items())
   [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.under_sampling import EditedNearestNeighbours
-  >>> enn = EditedNearestNeighbours(random_state=0)
+  >>> enn = EditedNearestNeighbours()
   >>> X_resampled, y_resampled = enn.fit_sample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 213), (2, 4568)]
@@ -261,7 +261,7 @@ the decision to keep a given sample or not.
 Generally, repeating the algorithm will delete more data::
 
    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
-   >>> renn = RepeatedEditedNearestNeighbours(random_state=0)
+   >>> renn = RepeatedEditedNearestNeighbours()
    >>> X_resampled, y_resampled = renn.fit_sample(X, y)
    >>> print(sorted(Counter(y_resampled).items()))
    [(0, 64), (1, 208), (2, 4551)]
@@ -271,7 +271,7 @@ Generally, repeating the algorithm will delete more data::
 internal nearest neighbors algorithm is increased at each iteration::
 
   >>> from imblearn.under_sampling import AllKNN
-  >>> allknn = AllKNN(random_state=0)
+  >>> allknn = AllKNN()
   >>> X_resampled, y_resampled = allknn.fit_sample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 220), (2, 4601)]
@@ -338,7 +338,7 @@ between the :class:`EditedNearestNeighbours` and the output a 3 nearest
 neighbors classifier. The class can be used as::
 
   >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
-  >>> ncr = NeighbourhoodCleaningRule(random_state=0)
+  >>> ncr = NeighbourhoodCleaningRule()
   >>> X_resampled, y_resampled = ncr.fit_sample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 234), (2, 4666)]

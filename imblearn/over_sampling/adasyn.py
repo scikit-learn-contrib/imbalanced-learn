@@ -104,7 +104,8 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                  random_state=None,
                  n_neighbors=5,
                  n_jobs=1):
-        super(ADASYN, self).__init__(ratio=ratio, random_state=random_state)
+        super(ADASYN, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
 

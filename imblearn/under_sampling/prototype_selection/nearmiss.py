@@ -15,6 +15,7 @@ from sklearn.utils import safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
+from ...utils.deprecation import deprecate_parameter
 
 
 class NearMiss(BaseUnderSampler):
@@ -50,6 +51,9 @@ class NearMiss(BaseUnderSampler):
         generator; If ``RandomState`` instance, random_state is the random
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
+
+        .. deprecated:: 0.4
+           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     version : int, optional (default=1)
         Version of the NearMiss to use. Possible values are 1, 2 or 3.
@@ -101,7 +105,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
-    >>> nm = NearMiss(random_state=42)
+    >>> nm = NearMiss()
     >>> X_res, y_res = nm.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({0: 100, 1: 100})
@@ -116,7 +120,8 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                  n_neighbors=3,
                  n_neighbors_ver3=3,
                  n_jobs=1):
-        super(NearMiss, self).__init__(ratio=ratio, random_state=random_state)
+        super(NearMiss, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.return_indices = return_indices
         self.version = version
         self.n_neighbors = n_neighbors
@@ -196,6 +201,11 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
+
+        # check for deprecated random_state
+        if self.random_state is not None:
+            deprecate_parameter(self, '0.4', 'random_state')
+
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
