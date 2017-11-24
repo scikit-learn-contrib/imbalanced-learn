@@ -131,10 +131,8 @@ class BaseSampler(SamplerMixin):
     instead.
     """
 
-    def __init__(self, ratio='auto', random_state=None, sampling_type=None):
+    def __init__(self, ratio='auto'):
         self.ratio = ratio
-        self.random_state = random_state
-        self.sampling_type = sampling_type
         self.logger = logging.getLogger(__name__)
 
     def fit(self, X, y):

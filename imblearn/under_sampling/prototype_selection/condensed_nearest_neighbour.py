@@ -119,7 +119,8 @@ CondensedNearestNeighbour #doctest: +SKIP
                  n_seeds_S=1,
                  n_jobs=1):
         super(CondensedNearestNeighbour, self).__init__(
-            ratio=ratio, random_state=random_state)
+            ratio=ratio)
+        self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
         self.n_seeds_S = n_seeds_S

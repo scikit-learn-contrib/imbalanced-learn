@@ -82,9 +82,9 @@ classifier will favor the majority classes::
   BaggingClassifier(...)
   >>> y_pred = bc.predict(X_test)
   >>> confusion_matrix(y_test, y_pred)
-  array([[   0,    0,   12],
-         [   0,    0,   59],
-         [   0,    0, 1179]])
+  array([[   9,    1,    2],
+         [   0,   54,    5],
+         [   1,    6, 1172]])
 
 :class:`BalancedBaggingClassifier` allows to resample each subset of data
 before to train each estimator of the ensemble. In short, it combines the
@@ -100,13 +100,29 @@ takes the same parameters than the scikit-learn
   ...                                 ratio='auto',
   ...                                 replacement=False,
   ...                                 random_state=0)
-  >>> bbc.fit(X, y) # doctest: +ELLIPSIS
+  >>> bbc.fit(X_train, y_train) # doctest: +ELLIPSIS
   BalancedBaggingClassifier(...)
   >>> y_pred = bbc.predict(X_test)
   >>> confusion_matrix(y_test, y_pred)
-  array([[  12,    0,    0],
+  array([[   9,    1,    2],
          [   0,   55,    4],
-         [  68,   53, 1058]])
+         [  42,   46, 1091]])
+
+It also possible to turn a balanced bagging classifier into a balanced random
+forest using a decision tree classifier and setting the parameter
+``max_features='auto'`. It allows to randomly select a subset of features for
+each tree::
+
+  >>> brf = BalancedBaggingClassifier(
+  ...          base_estimator=DecisionTreeClassifier(max_features='auto'),
+  ...          random_state=0)
+  >>> brf.fit(X_train, y_train) # doctest: +ELLIPSIS
+  BalancedBaggingClassifier(...)
+  >>> y_pred = brf.predict(X_test)
+  >>> confusion_matrix(y_test, y_pred)
+  array([[   9,    1,    2],
+         [   0,   54,    5],
+         [  31,   34, 1114]])
 
 See
 :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_bagging_classifier.py`.

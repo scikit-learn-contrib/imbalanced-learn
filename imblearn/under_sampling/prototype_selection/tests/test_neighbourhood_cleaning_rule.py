@@ -7,12 +7,11 @@ import numpy as np
 from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
-
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NeighbourhoodCleaningRule
+from imblearn.utils.testing import warns
 
-RND_SEED = 0
 X = np.array([[1.57737838, 0.1997882], [0.8960075, 0.46130762],
               [0.34096173, 0.50947647], [-0.91735824, 0.93110278],
               [-0.14619583, 1.33009918], [-0.20413357, 0.64628718],
@@ -38,7 +37,7 @@ def test_ncr_error():
 
 
 def test_ncr_fit_sample():
-    ncr = NeighbourhoodCleaningRule(random_state=RND_SEED)
+    ncr = NeighbourhoodCleaningRule()
     X_resampled, y_resampled = ncr.fit_sample(X, Y)
 
     X_gt = np.array([[0.34096173, 0.50947647],
@@ -57,8 +56,7 @@ def test_ncr_fit_sample():
 
 
 def test_ncr_fit_sample_mode():
-    ncr = NeighbourhoodCleaningRule(random_state=RND_SEED,
-                                    kind_sel='mode')
+    ncr = NeighbourhoodCleaningRule(kind_sel='mode')
     X_resampled, y_resampled = ncr.fit_sample(X, Y)
 
     X_gt = np.array([[0.34096173, 0.50947647],
@@ -77,7 +75,7 @@ def test_ncr_fit_sample_mode():
 
 
 def test_ncr_fit_sample_with_indices():
-    ncr = NeighbourhoodCleaningRule(return_indices=True, random_state=RND_SEED)
+    ncr = NeighbourhoodCleaningRule(return_indices=True)
     X_resampled, y_resampled, idx_under = ncr.fit_sample(X, Y)
 
     X_gt = np.array([[0.34096173, 0.50947647],
@@ -100,7 +98,7 @@ def test_ncr_fit_sample_with_indices():
 def test_ncr_fit_sample_nn_obj():
     nn = NearestNeighbors(n_neighbors=4)
     ncr = NeighbourhoodCleaningRule(
-        return_indices=True, random_state=RND_SEED, n_neighbors=nn)
+        return_indices=True, n_neighbors=nn)
     X_resampled, y_resampled, idx_under = ncr.fit_sample(X, Y)
 
     X_gt = np.array([[0.34096173, 0.50947647],
@@ -123,6 +121,13 @@ def test_ncr_fit_sample_nn_obj():
 def test_ncr_wrong_nn_obj():
     nn = 'rnd'
     ncr = NeighbourhoodCleaningRule(
-        return_indices=True, random_state=RND_SEED, n_neighbors=nn)
+        return_indices=True, n_neighbors=nn)
     with raises(ValueError, match="has to be one of"):
+        ncr.fit_sample(X, Y)
+
+
+def test_deprecation_random_state():
+    ncr = NeighbourhoodCleaningRule(random_state=0)
+    with warns(DeprecationWarning,
+               match="'random_state' is deprecated from 0.4"):
         ncr.fit_sample(X, Y)

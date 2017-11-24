@@ -31,6 +31,6 @@ git config --global user.name $USERNAME
 git config --global push.default matching
 git add -f $dir/
 git commit -m "$MSG" $dir
-git push
+git push origin gh-pages
 
 echo $MSG

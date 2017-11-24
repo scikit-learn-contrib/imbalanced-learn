@@ -12,10 +12,9 @@ from sklearn.utils.testing import assert_array_equal
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NearMiss
-
 from imblearn.utils.testing import warns
 
-RND_SEED = 0
+
 X = np.array([[1.17737838, -0.2002118],
               [0.4960075, 0.86130762],
               [-0.05903827, 0.10947647],
@@ -38,7 +37,7 @@ VERSION_NEARMISS = (1, 2, 3)
 
 def test_nearmiss_wrong_version():
     version = 1000
-    nm = NearMiss(version=version, random_state=RND_SEED)
+    nm = NearMiss(version=version)
     with raises(ValueError, match="must be 1, 2 or 3"):
         nm.fit_sample(X, Y)
 
@@ -46,7 +45,7 @@ def test_nearmiss_wrong_version():
 def test_nm_wrong_nn_obj():
     ratio = 'auto'
     nn = 'rnd'
-    nm = NearMiss(ratio=ratio, random_state=RND_SEED,
+    nm = NearMiss(ratio=ratio,
                   version=VERSION_NEARMISS,
                   return_indices=True,
                   n_neighbors=nn)
@@ -54,7 +53,7 @@ def test_nm_wrong_nn_obj():
         nm.fit_sample(X, Y)
     nn3 = 'rnd'
     nn = NearestNeighbors(n_neighbors=3)
-    nm3 = NearMiss(ratio=ratio, random_state=RND_SEED,
+    nm3 = NearMiss(ratio=ratio,
                    version=3, return_indices=True,
                    n_neighbors=nn, n_neighbors_ver3=nn3)
     with raises(ValueError, match="has to be one of"):
@@ -94,7 +93,7 @@ def test_nm_fit_sample_auto():
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])]
     for version_idx, version in enumerate(VERSION_NEARMISS):
-        nm = NearMiss(ratio=ratio, random_state=RND_SEED,
+        nm = NearMiss(ratio=ratio,
                       version=version)
         X_resampled, y_resampled = nm.fit_sample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
@@ -137,7 +136,7 @@ def test_nm_fit_sample_auto_indices():
               np.array([3, 10, 11, 2, 8, 5, 9, 1, 6]),
               np.array([3, 10, 11, 0, 5, 8, 14, 4, 12])]
     for version_idx, version in enumerate(VERSION_NEARMISS):
-        nm = NearMiss(ratio=ratio, random_state=RND_SEED,
+        nm = NearMiss(ratio=ratio,
                       version=version, return_indices=True)
         X_resampled, y_resampled, idx_under = nm.fit_sample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
@@ -185,7 +184,7 @@ def test_nm_fit_sample_float_ratio():
             np.array([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])]
 
     for version_idx, version in enumerate(VERSION_NEARMISS):
-        nm = NearMiss(ratio=ratio, random_state=RND_SEED,
+        nm = NearMiss(ratio=ratio,
                       version=version)
         X_resampled, y_resampled = nm.fit_sample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
@@ -226,8 +225,15 @@ def test_nm_fit_sample_nn_obj():
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])]
     for version_idx, version in enumerate(VERSION_NEARMISS):
-        nm = NearMiss(ratio=ratio, random_state=RND_SEED,
+        nm = NearMiss(ratio=ratio,
                       version=version, n_neighbors=nn)
         X_resampled, y_resampled = nm.fit_sample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
         assert_array_equal(y_resampled, y_gt[version_idx])
+
+
+def test_deprecation_random_state():
+    nm = NearMiss(random_state=0)
+    with warns(DeprecationWarning,
+               match="'random_state' is deprecated from 0.4"):
+        nm.fit_sample(X, Y)

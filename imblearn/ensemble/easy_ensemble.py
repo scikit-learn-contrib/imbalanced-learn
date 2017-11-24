@@ -101,8 +101,8 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
                  random_state=None,
                  replacement=False,
                  n_subsets=10):
-        super(EasyEnsemble, self).__init__(ratio=ratio,
-                                           random_state=random_state)
+        super(EasyEnsemble, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.return_indices = return_indices
         self.replacement = replacement
         self.n_subsets = n_subsets

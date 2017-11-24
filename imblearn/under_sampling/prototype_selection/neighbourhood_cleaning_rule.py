@@ -16,6 +16,8 @@ from sklearn.utils import safe_indexing
 from ..base import BaseCleaningSampler
 from .edited_nearest_neighbours import EditedNearestNeighbours
 from ...utils import check_neighbors_object
+from ...utils.deprecation import deprecate_parameter
+
 
 SEL_KIND = ('all', 'mode')
 
@@ -59,6 +61,9 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         generator; If ``RandomState`` instance, random_state is the random
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
+
+        .. deprecated:: 0.4
+           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -105,7 +110,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
-    >>> ncr = NeighbourhoodCleaningRule(random_state=42)
+    >>> ncr = NeighbourhoodCleaningRule()
     >>> X_res, y_res = ncr.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 877, 0: 100})
@@ -120,8 +125,8 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                  kind_sel='all',
                  threshold_cleaning=0.5,
                  n_jobs=1):
-        super(NeighbourhoodCleaningRule, self).__init__(
-            ratio=ratio, random_state=random_state)
+        super(NeighbourhoodCleaningRule, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
@@ -130,6 +135,11 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Create the objects required by NCR."""
+
+        # check for deprecated random_state
+        if self.random_state is not None:
+            deprecate_parameter(self, '0.4', 'random_state')
+
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
@@ -169,7 +179,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         """
         self._validate_estimator()
         enn = EditedNearestNeighbours(ratio=self.ratio, return_indices=True,
-                                      random_state=self.random_state,
                                       n_neighbors=self.n_neighbors,
                                       kind_sel='mode',
                                       n_jobs=self.n_jobs)

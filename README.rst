@@ -4,7 +4,7 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Landscape|_ |Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |Python27|_ |Python35|_ |Pypi|_ |Gitter|_
+|Landscape|_ |Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_
 
 .. |Landscape| image:: https://landscape.io/github/scikit-learn-contrib/imbalanced-learn/master/landscape.svg?style=flat
 .. _Landscape: https://landscape.io/github/scikit-learn-contrib/imbalanced-learn/master
@@ -21,11 +21,8 @@
 .. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield&circle-token=:circle-token
 .. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn/tree/master
 
-.. |Python27| image:: https://img.shields.io/badge/python-2.7-blue.svg
-.. _Python27: https://badge.fury.io/py/scikit-learn
-
-.. |Python35| image:: https://img.shields.io/badge/python-3.5-blue.svg
-.. _Python35: https://badge.fury.io/py/scikit-learn
+.. |PythonVersion| image:: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
+.. _PythonVersion: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
 
 .. |Pypi| image:: https://badge.fury.io/py/imbalanced-learn.svg
 .. _Pypi: https://badge.fury.io/py/imbalanced-learn
@@ -74,7 +71,7 @@ install it via `pip`::
 
 The package is release also in Anaconda Cloud platform::
 
-  conda install -c glemaitre imbalanced-learn
+  conda install -c conda-forge imbalanced-learn
 
 If you prefer, you can clone it and run the setup.py file. Use the following
 commands to get a copy from GitHub and install all dependencies::

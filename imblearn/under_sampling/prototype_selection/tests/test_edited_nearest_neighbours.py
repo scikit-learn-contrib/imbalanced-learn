@@ -13,8 +13,8 @@ from sklearn.utils.testing import assert_array_equal
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import EditedNearestNeighbours
+from imblearn.utils.testing import warns
 
-RND_SEED = 0
 X = np.array([[2.59928271, 0.93323465], [0.25738379, 0.95564169],
               [1.42772181, 0.526027], [1.92365863, 0.82718767],
               [-0.10903849, -0.12085181], [-0.284881, -0.62730973],
@@ -29,16 +29,15 @@ Y = np.array([1, 2, 1, 1, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 1, 2, 1])
 
 
 def test_enn_init():
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
+    enn = EditedNearestNeighbours()
 
     assert enn.n_neighbors == 3
     assert enn.kind_sel == 'all'
     assert enn.n_jobs == 1
-    assert enn.random_state == RND_SEED
 
 
 def test_enn_fit_sample():
-    enn = EditedNearestNeighbours(random_state=RND_SEED)
+    enn = EditedNearestNeighbours()
     X_resampled, y_resampled = enn.fit_sample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828],
@@ -51,7 +50,7 @@ def test_enn_fit_sample():
 
 
 def test_enn_fit_sample_with_indices():
-    enn = EditedNearestNeighbours(return_indices=True, random_state=RND_SEED)
+    enn = EditedNearestNeighbours(return_indices=True)
     X_resampled, y_resampled, idx_under = enn.fit_sample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828],
@@ -66,7 +65,7 @@ def test_enn_fit_sample_with_indices():
 
 
 def test_enn_fit_sample_mode():
-    enn = EditedNearestNeighbours(random_state=RND_SEED, kind_sel='mode')
+    enn = EditedNearestNeighbours(kind_sel='mode')
     X_resampled, y_resampled = enn.fit_sample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828],
@@ -84,7 +83,7 @@ def test_enn_fit_sample_mode():
 def test_enn_fit_sample_with_nn_object():
     nn = NearestNeighbors(n_neighbors=4)
     enn = EditedNearestNeighbours(
-        n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
+        n_neighbors=nn, kind_sel='mode')
     X_resampled, y_resampled = enn.fit_sample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828],
@@ -102,6 +101,13 @@ def test_enn_fit_sample_with_nn_object():
 def test_enn_not_good_object():
     nn = 'rnd'
     enn = EditedNearestNeighbours(
-        n_neighbors=nn, random_state=RND_SEED, kind_sel='mode')
+        n_neighbors=nn, kind_sel='mode')
     with raises(ValueError, match="has to be one of"):
+        enn.fit_sample(X, Y)
+
+
+def test_deprecation_random_state():
+    enn = EditedNearestNeighbours(random_state=0)
+    with warns(DeprecationWarning,
+               match="'random_state' is deprecated from 0.4"):
         enn.fit_sample(X, Y)

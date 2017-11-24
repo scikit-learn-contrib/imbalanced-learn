@@ -12,6 +12,7 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
+from ...utils.deprecation import deprecate_parameter
 
 
 class TomekLinks(BaseCleaningSampler):
@@ -53,6 +54,9 @@ class TomekLinks(BaseCleaningSampler):
         number generator; If ``None``, the random number generator is the
         ``RandomState`` instance used by ``np.random``.
 
+        .. deprecated:: 0.4
+           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
+
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
@@ -83,7 +87,7 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape {}'.format(Counter(y)))
     Original dataset shape Counter({1: 900, 0: 100})
-    >>> tl = TomekLinks(random_state=42)
+    >>> tl = TomekLinks()
     >>> X_res, y_res = tl.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
     Resampled dataset shape Counter({1: 897, 0: 100})
@@ -92,8 +96,8 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self, ratio='auto', return_indices=False,
                  random_state=None, n_jobs=1):
-        super(TomekLinks, self).__init__(ratio=ratio,
-                                         random_state=random_state)
+        super(TomekLinks, self).__init__(ratio=ratio)
+        self.random_state = random_state
         self.return_indices = return_indices
         self.n_jobs = n_jobs
 
@@ -164,6 +168,9 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
             containing the which samples have been selected.
 
         """
+        # check for deprecated random_state
+        if self.random_state is not None:
+            deprecate_parameter(self, '0.4', 'random_state')
 
         # Find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
