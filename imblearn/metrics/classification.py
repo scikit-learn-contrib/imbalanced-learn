@@ -668,6 +668,13 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
     -----
     See :ref:`sphx_glr_auto_examples_evaluation_plot_metrics.py`.
 
+    References
+    ----------
+    .. [1] García, Vicente, Javier Salvador Sánchez, and Ramón Alberto
+       Mollineda. "On the effectiveness of preprocessing methods when dealing
+       with different levels of class imbalance." Knowledge-Based Systems 25.1
+       (2012): 13-21.
+
     Examples
     --------
     >>> from imblearn.metrics import geometric_mean_score as gmean
