@@ -26,6 +26,7 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import BaggingClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix
 
 from imblearn.datasets import fetch_datasets
@@ -98,5 +99,26 @@ cm_balanced_bagging = confusion_matrix(y_test, y_pred_balanced_bagging)
 plt.figure()
 plot_confusion_matrix(cm_balanced_bagging, classes=np.unique(ozone.target),
                       title='Confusion matrix using BalancedBaggingClassifier')
+
+###############################################################################
+# Turning the balanced bagging classifier into a balanced random forest
+###############################################################################
+# It is possible to turn the ``BalancedBaggingClassifier`` into a balanced
+# random forest by using a ``DecisionTreeClassifier`` with
+# ``max_features='auto'``. We illustrate such changes below.
+
+balanced_random_forest = BalancedBaggingClassifier(
+    base_estimator=DecisionTreeClassifier(max_features='auto'),
+    random_state=0)
+
+balanced_random_forest.fit(X_train, y_train)
+print('Classification results using a balanced random forest classifier on'
+      ' imbalanced data')
+y_pred_balanced_rf = balanced_random_forest.predict(X_test)
+print(classification_report_imbalanced(y_test, y_pred_balanced_rf))
+cm_bagging = confusion_matrix(y_test, y_pred_balanced_rf)
+plt.figure()
+plot_confusion_matrix(cm_bagging, classes=np.unique(ozone.target),
+                      title='Confusion matrix using balanced random forest')
 
 plt.show()
