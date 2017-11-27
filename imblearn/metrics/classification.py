@@ -60,6 +60,8 @@ def sensitivity_specificity_support(y_true,
     returns the average sensitivity and specificity if ``average``
     is one of ``'weighted'``.
 
+    Read more in the :ref:`User Guide <sensitivity_specificity>`.
+
     Parameters
     ----------
     y_true : ndarray, shape (n_samples, )
@@ -277,6 +279,8 @@ def sensitivity_score(y_true,
 
     The best value is 1 and the worst value is 0.
 
+    Read more in the :ref:`User Guide <sensitivity_specificity>`.
+
     Parameters
     ----------
     y_true : ndarray, shape (n_samples, )
@@ -375,6 +379,8 @@ def specificity_score(y_true,
     samples.
 
     The best value is 1 and the worst value is 0.
+
+    Read more in the :ref:`User Guide <sensitivity_specificity>`.
 
     Parameters
     ----------
@@ -485,6 +491,8 @@ def geometric_mean_score(y_true,
     alleviate this property, for highly multi-class the sensitivity of
     unrecognized classes can be "corrected" to be a user specified value
     (instead of zero). This option works only if ``average == 'multiclass'``.
+
+    Read more in the :ref:`User Guide <imbalanced_metrics>`.
 
     Parameters
     ----------
@@ -649,6 +657,8 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
     balanced accuracy. ``y_score`` cannot be used since the dominance
     cannot be computed.
 
+    Read more in the :ref:`User Guide <imbalanced_metrics>`.
+
     Parameters
     ----------
     alpha : float, optional (default=0.1)
@@ -667,6 +677,13 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
     Notes
     -----
     See :ref:`sphx_glr_auto_examples_evaluation_plot_metrics.py`.
+
+    References
+    ----------
+    .. [1] García, Vicente, Javier Salvador Sánchez, and Ramón Alberto
+       Mollineda. "On the effectiveness of preprocessing methods when dealing
+       with different levels of class imbalance." Knowledge-Based Systems 25.1
+       (2012): 13-21.
 
     Examples
     --------
