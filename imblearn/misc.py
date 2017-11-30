@@ -70,7 +70,7 @@ class FunctionSampler(SamplerMixin):
     ...                           kw_args={'ratio': 'auto', 'random_state': 0})
     >>> X_res, y_res = sampler.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({-1: 268, 1: 268})
+    Resampled dataset shape Counter({1: 268, -1: 268})
 
     """
 
