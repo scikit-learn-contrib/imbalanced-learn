@@ -17,7 +17,7 @@ a single function. Additional parameters can be added using the attribute
 ``kw_args`` which accepts a dictionary. The following example illustrates how
 to retain the 10 first elements of the array ``X`` and ``y``::
 
-  >>> from sklearn.misc import FunctionSampler
+  >>> from imblearn.misc import FunctionSampler
   >>> from sklearn.datasets import make_classification
   >>> X, y = make_classification(n_samples=5000, n_features=2, n_informative=2,
   ...                            n_redundant=0, n_repeated=0, n_classes=3,
