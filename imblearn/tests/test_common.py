@@ -3,8 +3,6 @@
 #          Christos Aridas
 # License: MIT
 
-from sklearn.utils.testing import _named_check
-
 from imblearn.utils.estimator_checks import check_estimator, _yield_all_checks
 from imblearn.utils.testing import all_estimators
 
@@ -22,8 +20,7 @@ def test_all_estimators():
     assert len(estimators) > 0
     for name, Estimator in estimators:
         # some can just not be sensibly default constructed
-        yield (_named_check(check_estimator, name),
-               Estimator)
+        yield check_estimator, Estimator
 
 
 def test_non_meta_estimators():
@@ -33,4 +30,4 @@ def test_non_meta_estimators():
         if name.startswith("_"):
             continue
         for check in _yield_all_checks(name, Estimator):
-            yield _named_check(check, name), name, Estimator
+            yield check, name, Estimator
