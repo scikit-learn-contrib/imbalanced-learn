@@ -26,7 +26,7 @@ to retain the 10 first elements of the array ``X`` and ``y``::
   ...                            weights=[0.01, 0.05, 0.94],
   ...                            class_sep=0.8, random_state=0)
   >>> def func(X, y):
-  ...   return X[:10], y[10:]
+  ...   return X[:10], y[:10]
   >>> sampler = FunctionSampler(func=func)
   >>> X_res, y_res = sampler.fit_sample(X, y)
   >>> np.all(X_res == X[:10])
