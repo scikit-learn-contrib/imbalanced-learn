@@ -20,6 +20,14 @@ X, y = make_imbalance(iris.data, iris.target, ratio={0: 10, 1: 25},
                       random_state=0)
 
 
+def test_function_sampler_reject_sparse():
+    X_sparse = sparse.csr_matrix(X)
+    sampler = FunctionSampler(accept_sparse=False)
+    with pytest.raises(TypeError, message="A sparse matrix was passed, "
+                       "but dense data is required"):
+        sampler.fit(X_sparse, y)
+
+
 @pytest.mark.parametrize("X,y", [(X, y),
                                  (sparse.csr_matrix(X), y),
                                  (sparse.csc_matrix(X), y)])
