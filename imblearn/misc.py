@@ -43,6 +43,7 @@ class FunctionSampler(SamplerMixin):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.misc import FunctionSampler
     >>> X, y = make_classification(n_classes=2, class_sep=2,
@@ -55,9 +56,9 @@ class FunctionSampler(SamplerMixin):
     ...   return X[:10], y[:10]
     >>> sampler = FunctionSampler(func=func)
     >>> X_res, y_res = sampler.fit_sample(X, y)
-    >>> (X_res == X[:10]).all()
+    >>> np.all(X_res == X[:10])
     True
-    >>> (y_res == y_res[:10]).all()
+    >>> np.all(y_res == y[:10])
     True
 
     We can also create a specific function which take some arguments.

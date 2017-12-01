@@ -31,7 +31,7 @@ to retain the 10 first elements of the array ``X`` and ``y``::
   >>> X_res, y_res = sampler.fit_sample(X, y)
   >>> np.all(X_res == X[:10])
   True
-  >>> np.all(y_res == y_res[:10])
+  >>> np.all(y_res == y[:10])
   True
 
 We illustrate the use of such sampler to implement an outlier rejection
