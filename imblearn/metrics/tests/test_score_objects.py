@@ -13,6 +13,9 @@ from sklearn.utils.testing import assert_allclose
 from imblearn.metrics import (sensitivity_score, specificity_score,
                               geometric_mean_score,
                               make_index_balanced_accuracy)
+
+from pytest import approx
+
 # Get the version
 sk_version = sklearn.__version__
 if sk_version < '0.18':
@@ -30,24 +33,18 @@ def test_imblearn_classification_scorers():
     clf = LinearSVC(random_state=0)
     clf.fit(X_train, y_train)
 
+    for current_score in (sensitivity_score, specificity_score,
+                          geometric_mean_score):
+        for average_value in ('macro', 'weighted', 'micro'):
+            scorer = make_scorer(current_score, pos_label=None,
+                                 average=average_value)
+            grid = GridSearchCV(LinearSVC(random_state=0),
+                                param_grid={'C': [1, 10]},
+                                scoring=scorer)
+            grid.fit(X_train, y_train).predict(X_test)
+            assert grid.best_score_ == approx(0.92, abs=R_TOL)
+
     # sensitivity scorer
-    scorer = make_scorer(sensitivity_score, pos_label=None, average='macro')
-    grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
-                        scoring=scorer)
-    grid.fit(X_train, y_train).predict(X_test)
-    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
-
-    scorer = make_scorer(sensitivity_score, pos_label=None, average='weighted')
-    grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
-                        scoring=scorer)
-    grid.fit(X_train, y_train).predict(X_test)
-    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
-
-    scorer = make_scorer(sensitivity_score, pos_label=None, average='micro')
-    grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
-                        scoring=scorer)
-    grid.fit(X_train, y_train).predict(X_test)
-    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     scorer = make_scorer(sensitivity_score, pos_label=1)
     grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
@@ -56,24 +53,6 @@ def test_imblearn_classification_scorers():
     assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
 
     # specificity scorer
-    scorer = make_scorer(specificity_score, pos_label=None, average='macro')
-    grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
-                        scoring=scorer)
-    grid.fit(X_train, y_train).predict(X_test)
-    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
-
-    scorer = make_scorer(specificity_score, pos_label=None, average='weighted')
-    grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
-                        scoring=scorer)
-    grid.fit(X_train, y_train).predict(X_test)
-    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
-
-    scorer = make_scorer(specificity_score, pos_label=None, average='micro')
-    grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
-                        scoring=scorer)
-    grid.fit(X_train, y_train).predict(X_test)
-    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
-
     scorer = make_scorer(specificity_score, pos_label=1)
     grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
                         scoring=scorer)
@@ -81,25 +60,6 @@ def test_imblearn_classification_scorers():
     assert_allclose(grid.best_score_, 0.95, rtol=R_TOL)
 
     # geometric_mean scorer
-    scorer = make_scorer(geometric_mean_score, pos_label=None, average='macro')
-    grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
-                        scoring=scorer)
-    grid.fit(X_train, y_train).predict(X_test)
-    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
-
-    scorer = make_scorer(
-        geometric_mean_score, pos_label=None, average='weighted')
-    grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
-                        scoring=scorer)
-    grid.fit(X_train, y_train).predict(X_test)
-    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
-
-    scorer = make_scorer(geometric_mean_score, pos_label=None, average='micro')
-    grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
-                        scoring=scorer)
-    grid.fit(X_train, y_train).predict(X_test)
-    assert_allclose(grid.best_score_, 0.92, rtol=R_TOL)
-
     scorer = make_scorer(geometric_mean_score, pos_label=1)
     grid = GridSearchCV(LinearSVC(random_state=0), param_grid={'C': [1, 10]},
                         scoring=scorer)
