@@ -8,5 +8,5 @@ echo "imblearn found in: $installed_imblearn_folder"
 
 # --pyargs argument is used to make sure we run the tests on the
 # installed package rather than on the local folder
-py.test --pyargs imblearn $installed_imblearn_folder
+pytest --pyargs imblearn $installed_imblearn_folder
 exit $LastExitCode
