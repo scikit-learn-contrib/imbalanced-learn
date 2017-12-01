@@ -36,10 +36,10 @@ install:
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
   # Installed prebuilt dependencies from conda
-  - "conda install pip numpy scipy scikit-learn=0.19.0 pandas nose wheel matplotlib -y -q"
+  - "conda install pip numpy scipy scikit-learn=0.19.0 pandas wheel matplotlib -y -q"
 
   # Install other nilearn dependencies
-  - "pip install coverage nose-timer pytest pytest-cov"
+  - "pip install pytest pytest-cov"
   - "python setup.py bdist_wheel"
   - ps: "ls dist"
 

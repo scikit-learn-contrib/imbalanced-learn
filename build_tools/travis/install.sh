@@ -47,9 +47,8 @@ if [[ "$DISTRIB" == "conda" ]]; then
         conda install --yes scikit-learn=$SKLEARN_VERSION
     fi
 
-    conda install --yes nose pytest pytest-cov
-    # Install nose-timer via pip
-    pip install nose-timer codecov
+    conda install --yes pytest pytest-cov
+    pip install codecov
 
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # At the time of writing numpy 1.9.1 is included in the travis
@@ -59,7 +58,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # Create a new virtualenv using system site packages for python, numpy
     virtualenv --system-site-packages testvenv
     source testvenv/bin/activate
-    pip install scikit-learn pandas nose nose-timer pytest pytest-cov codecov \
+    pip install scikit-learn pandas pytest pytest-cov codecov \
         sphinx numpydoc
 
 fi

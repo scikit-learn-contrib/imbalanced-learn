@@ -87,7 +87,7 @@ Or install using pip and GitHub::
 Testing
 ~~~~~~~
 
-After installation, you can use `nose` to run the test suite::
+After installation, you can use `pytest` to run the test suite::
 
   make coverage
 
