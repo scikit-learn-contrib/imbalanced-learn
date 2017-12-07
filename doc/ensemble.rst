@@ -110,7 +110,7 @@ takes the same parameters than the scikit-learn
 
 It also possible to turn a balanced bagging classifier into a balanced random
 forest using a decision tree classifier and setting the parameter
-``max_features='auto'`. It allows to randomly select a subset of features for
+``max_features='auto'``. It allows to randomly select a subset of features for
 each tree::
 
   >>> brf = BalancedBaggingClassifier(
