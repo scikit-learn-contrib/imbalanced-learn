@@ -163,7 +163,7 @@ Below is a list of the methods currently implemented in this module.
 
 The different algorithms are presented in the sphinx-gallery_.
 
-.. _sphinx-gallery: http://contrib.scikit-learn.org/imbalanced-learn/auto_examples
+.. _sphinx-gallery: http://contrib.scikit-learn.org/imbalanced-learn/stable/auto_examples/index.html
 
 
 References:
