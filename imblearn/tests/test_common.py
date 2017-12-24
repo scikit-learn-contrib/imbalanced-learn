@@ -2,7 +2,6 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
-
 from sklearn.utils.testing import _named_check
 
 from imblearn.utils.estimator_checks import check_estimator, _yield_all_checks
@@ -34,3 +33,7 @@ def test_non_meta_estimators():
             continue
         for check in _yield_all_checks(name, Estimator):
             yield _named_check(check, name), name, Estimator
+
+            logger_name = Estimator().logger.name
+            class_module_name = Estimator.__module__
+            assert logger_name == class_module_name
