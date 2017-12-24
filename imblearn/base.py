@@ -7,7 +7,6 @@
 from __future__ import division
 
 import logging
-import os
 from abc import ABCMeta, abstractmethod
 
 from sklearn.base import BaseEstimator
