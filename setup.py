@@ -3,11 +3,13 @@
 
 import codecs
 import os
-import sys
 
 from setuptools import find_packages, setup
-from imblearn import __version__
 
+# get __version__ from _version.py
+ver_file = os.path.join('imblearn', '_version.py')
+with open(ver_file) as f:
+    exec(f.read())
 
 DISTNAME = 'imbalanced-learn'
 DESCRIPTION = 'Toolbox for imbalanced dataset in machine learning.'
