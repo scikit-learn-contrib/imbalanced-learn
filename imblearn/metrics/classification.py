@@ -867,8 +867,8 @@ def classification_report_imbalanced(y_true,
         sample_weight=sample_weight)
     # Geometric mean
     geo_mean = geometric_mean_score(
-        y_pred,
         y_true,
+        y_pred,
         labels=labels,
         average=None,
         sample_weight=sample_weight)
@@ -876,8 +876,8 @@ def classification_report_imbalanced(y_true,
     iba_gmean = make_index_balanced_accuracy(
         alpha=alpha, squared=True)(geometric_mean_score)
     iba = iba_gmean(
-        y_pred,
         y_true,
+        y_pred,
         labels=labels,
         average=None,
         sample_weight=sample_weight)
