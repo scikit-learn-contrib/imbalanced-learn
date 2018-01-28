@@ -16,8 +16,6 @@ from sklearn.ensemble.bagging import _generate_bagging_indices
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 
-old_generate = _generate_bagging_indices
-
 
 class BalancedBaggingClassifier(BaggingClassifier):
     """A Bagging classifier with additional balancing.
