@@ -16,10 +16,8 @@ from ..utils import check_neighbors_object
 
 
 class ADASYN(BaseOverSampler):
-    """Perform over-sampling using ADASYN.
-
-    Perform over-sampling using Adaptive Synthetic Sampling Approach for
-    Imbalanced Learning.
+    """Perform over-sampling using Adaptive Synthetic (ADASYN) sampling
+    approach for imbalanced datasets.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
