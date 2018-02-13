@@ -138,7 +138,7 @@ Below is a list of the methods currently implemented in this module.
     2. Extraction of majority-minority Tomek links [1]_
     3. Under-sampling with Cluster Centroids
     4. NearMiss-(1 & 2 & 3) [2]_
-    5. Condensend Nearest Neighbour [3]_
+    5. Condensed Nearest Neighbour [3]_
     6. One-Sided Selection [4]_
     7. Neighboorhood Cleaning Rule [5]_
     8. Edited Nearest Neighbours [6]_
