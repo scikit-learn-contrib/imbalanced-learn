@@ -25,7 +25,6 @@ from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import set_random_state
 
-from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
@@ -47,10 +46,10 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_pandas
 
 
-def _yield_all_checks(name, Estimator):
+def _yield_all_checks(name, estimator):
     # trigger our checks if this is a SamplerMixin
-    if issubclass(Estimator, SamplerMixin):
-        for check in _yield_sampler_checks(name, Estimator):
+    if hasattr(estimator, 'sample'):
+        for check in _yield_sampler_checks(name, estimator):
             yield check
 
 

@@ -26,10 +26,7 @@ pipeline
     Module which allowing to create pipeline with scikit-learn estimators.
 """
 
+from .base import FunctionSampler
 from ._version import __version__
 
-# list all submodules available in imblearn and version
-__all__ = [
-    'combine', 'ensemble', 'exceptions', 'metrics', 'over_sampling',
-    'under_sampling', 'utils', 'pipeline', '__version__'
-]
+__all__ = ['FunctionSampler', '__version__']
