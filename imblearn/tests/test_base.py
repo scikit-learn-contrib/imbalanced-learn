@@ -12,7 +12,7 @@ from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_allclose_dense_sparse
 
 from imblearn.datasets import make_imbalance
-from imblearn.misc import FunctionSampler
+from imblearn import FunctionSampler
 from imblearn.under_sampling import RandomUnderSampler
 
 iris = load_iris()
@@ -28,9 +28,11 @@ def test_function_sampler_reject_sparse():
         sampler.fit(X_sparse, y)
 
 
-@pytest.mark.parametrize("X,y", [(X, y),
-                                 (sparse.csr_matrix(X), y),
-                                 (sparse.csc_matrix(X), y)])
+@pytest.mark.parametrize(
+    "X, y",
+    [(X, y),
+     (sparse.csr_matrix(X), y),
+     (sparse.csc_matrix(X), y)])
 def test_function_sampler_identity(X, y):
     sampler = FunctionSampler()
     X_res, y_res = sampler.fit_sample(X, y)
@@ -38,9 +40,11 @@ def test_function_sampler_identity(X, y):
     assert_array_equal(y_res, y)
 
 
-@pytest.mark.parametrize("X,y", [(X, y),
-                                 (sparse.csr_matrix(X), y),
-                                 (sparse.csc_matrix(X), y)])
+@pytest.mark.parametrize(
+    "X, y",
+    [(X, y),
+     (sparse.csr_matrix(X), y),
+     (sparse.csc_matrix(X), y)])
 def test_function_sampler_func(X, y):
 
     def func(X, y):
@@ -52,9 +56,11 @@ def test_function_sampler_func(X, y):
     assert_array_equal(y_res, y[:10])
 
 
-@pytest.mark.parametrize("X,y", [(X, y),
-                                 (sparse.csr_matrix(X), y),
-                                 (sparse.csc_matrix(X), y)])
+@pytest.mark.parametrize(
+    "X, y",
+    [(X, y),
+     (sparse.csr_matrix(X), y),
+     (sparse.csc_matrix(X), y)])
 def test_function_sampler_func_kwargs(X, y):
 
     def func(X, y, ratio, random_state):

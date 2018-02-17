@@ -21,7 +21,7 @@ from sklearn.ensemble import IsolationForest
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 
-from imblearn.misc import FunctionSampler
+from imblearn import FunctionSampler
 from imblearn.pipeline import make_pipeline
 
 print(__doc__)

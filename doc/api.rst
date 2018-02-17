@@ -92,7 +92,6 @@ Prototype selection
    combine.SMOTEENN
    combine.SMOTETomek
 
-
 .. _ensemble_ref:
 
 :mod:`imblearn.ensemble`: Ensemble methods
@@ -112,6 +111,20 @@ Prototype selection
    ensemble.BalancedBaggingClassifier
    ensemble.EasyEnsemble
 
+.. _misc_ref:
+   
+Miscellaneous
+=============
+
+Imbalance-learn provides some fast-prototyping tools.
+
+.. currentmodule:: imblearn
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+   FunctionSampler
 
 .. _pipeline_ref:
 
