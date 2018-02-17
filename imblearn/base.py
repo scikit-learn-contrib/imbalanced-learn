@@ -119,7 +119,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     def __setstate__(self, dict):
         """Re-open the logger."""
-        logger = logging.getLogger(__name__)
+        logger = logging.getLogger(self.__module__)
         self.__dict__.update(dict)
         self.logger = logger
 
@@ -133,7 +133,7 @@ class BaseSampler(SamplerMixin):
 
     def __init__(self, ratio='auto'):
         self.ratio = ratio
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(self.__module__)
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

@@ -24,7 +24,6 @@ from sklearn.utils.estimator_checks import check_estimator \
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import set_random_state
-from sklearn.externals.funcsigs import signature
 
 from imblearn.base import SamplerMixin
 from imblearn.over_sampling.base import BaseOverSampler
@@ -214,12 +213,10 @@ def check_samplers_sparse(name, Sampler):
                             estimator=KMeans(random_state=1,
                                              algorithm='full'))]
     else:
-        sampler_attr = signature(Sampler.__init__).parameters.keys()
-        if 'random_state' in sampler_attr:
-            samplers = [Sampler(random_state=0)]
-        else:
-            samplers = [Sampler()]
+        samplers = [Sampler()]
+
     for sampler in samplers:
+        set_random_state(sampler)
         X_res_sparse, y_res_sparse = sampler.fit_sample(X_sparse, y)
         X_res, y_res = sampler.fit_sample(X, y)
         if not isinstance(sampler, BaseEnsembleSampler):
@@ -246,16 +243,16 @@ def check_samplers_pandas(name, Sampler):
         samplers = [Sampler(random_state=0, kind=kind)
                     for kind in ('regular', 'borderline1',
                                  'borderline2', 'svm')]
+
     elif isinstance(Sampler(), NearMiss):
-            samplers = [Sampler(version=version)
-                        for version in (1, 2, 3)]
+        samplers = [Sampler(version=version)
+                    for version in (1, 2, 3)]
+
     else:
-        sampler_attr = signature(Sampler.__init__).parameters.keys()
-        if 'random_state' in sampler_attr:
-            samplers = [Sampler(random_state=0)]
-        else:
-            samplers = [Sampler()]
+        samplers = [Sampler()]
+
     for sampler in samplers:
+        set_random_state(sampler)
         X_res_pd, y_res_pd = sampler.fit_sample(X_pd, y_pd)
         X_res, y_res = sampler.fit_sample(X, y)
         assert_allclose(X_res_pd, X_res)

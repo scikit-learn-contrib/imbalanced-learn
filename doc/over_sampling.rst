@@ -60,9 +60,9 @@ for usage example.
 From random over-sampling to SMOTE and ADASYN
 ---------------------------------------------
 
-Apart from the random sampling with replacement, there is two popular methods
-to over-sample minority classes: (i) Synthetic Minority Oversampling Technique
-(SMOTE) and (ii) Adaptive Synthetic (ADASYN) sampling method. These algorithm
+Apart from the random sampling with replacement, there are two popular methods
+to over-sample minority classes: (i) the Synthetic Minority Oversampling Technique
+(SMOTE) and (ii) the Adaptive Synthetic (ADASYN) sampling method. These algorithms
 can be used in the same manner::
 
   >>> from imblearn.over_sampling import SMOTE, ADASYN
