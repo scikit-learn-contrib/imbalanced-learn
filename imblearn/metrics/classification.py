@@ -798,14 +798,14 @@ def classification_report_imbalanced(y_true,
                        pre       rec       spe        f1       geo       iba\
        sup
     <BLANKLINE>
-        class 0       0.50      1.00      0.75      0.67      0.71      0.48\
+        class 0       0.50      1.00      0.75      0.67      0.87      0.77\
          1
         class 1       0.00      0.00      0.75      0.00      0.00      0.00\
          1
-        class 2       1.00      0.67      1.00      0.80      0.82      0.69\
+        class 2       1.00      0.67      1.00      0.80      0.82      0.64\
          3
     <BLANKLINE>
-    avg / total       0.70      0.60      0.90      0.61      0.63      0.51\
+    avg / total       0.70      0.60      0.90      0.61      0.66      0.54\
          5
     <BLANKLINE>
 
@@ -850,8 +850,8 @@ def classification_report_imbalanced(y_true,
         sample_weight=sample_weight)
     # Geometric mean
     geo_mean = geometric_mean_score(
-        y_pred,
         y_true,
+        y_pred,
         labels=labels,
         average=None,
         sample_weight=sample_weight)
@@ -859,8 +859,8 @@ def classification_report_imbalanced(y_true,
     iba_gmean = make_index_balanced_accuracy(
         alpha=alpha, squared=True)(geometric_mean_score)
     iba = iba_gmean(
-        y_pred,
         y_true,
+        y_pred,
         labels=labels,
         average=None,
         sample_weight=sample_weight)
