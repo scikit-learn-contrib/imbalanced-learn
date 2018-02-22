@@ -18,6 +18,10 @@ Enhancement
 Bug fixes
 .........
 
+- Fix bug in :func:`metrics.classification_report_imbalanced` for which
+  `y_pred` and `y_true` where inversed. :issue:`394` by :user:`Ole Silvig
+  <klizter>.`
+
 - Fix bug in ADASYN to consider only samples from the current class when
   generating new samples. :issue:`354` by :user:`Guillaume Lemaitre
   <glemaitre>`.
