@@ -21,7 +21,7 @@ datset in machine learning and pattern recognition.
 # Dev branch marker is: 'X.Y.dev' or 'X.Y.devN' where N is an integer.
 # 'X.Y.dev0' is the canonical version of 'X.Y.dev'
 #
-__version__ = '0.3.2'
+__version__ = '0.3.3'
 
 _IMBALANCED_DATASET_INSTALL_MSG = 'See %s for installation information.' % (
     'http://contrib.scikit-learn.org/imbalanced-learn/install.html')
