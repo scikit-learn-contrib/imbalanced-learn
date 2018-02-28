@@ -96,9 +96,8 @@ conda install --yes pip numpy scipy scikit-learn pillow matplotlib sphinx \
 pip install -U git+https://github.com/sphinx-gallery/sphinx-gallery.git
 
 # Build and install imbalanced-learn in dev mode
-cd "$HOME/$CIRCLE_PROJECT_REPONAME"
 ls -l
-python setup.py develop
+pip install -e .
 
 # The pipefail is requested to propagate exit code
 set -o pipefail && cd doc && make $MAKE_TARGET 2>&1 | tee ~/log.txt
