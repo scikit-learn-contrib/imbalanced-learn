@@ -14,8 +14,8 @@ jobs:
       - PYTHON_VERSION: 3
     steps:
       - checkout
-      - run: ./build_tools/circle/checkout_merge_commit.sh
-      - run: ./build_tools/circle/build_doc.sh
+      - run: ../build_tools/circle/checkout_merge_commit.sh
+      - run: ../build_tools/circle/build_doc.sh
       - store_artifacts:
           path: doc/_build/html/stable
           destination: doc
@@ -24,7 +24,7 @@ jobs:
       - deploy:
           command: |
             if [[ "${CIRCLE_BRANCH}" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
-              bash build_tools/circle/push_doc.sh doc/_build/html/stable
+              bash ../build_tools/circle/push_doc.sh
             fi
     filters:
       branches:
