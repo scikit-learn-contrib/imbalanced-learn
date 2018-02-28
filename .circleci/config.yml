@@ -1,0 +1,37 @@
+version: 2
+
+jobs:
+  python3:
+    docker:
+      - image: circleci/python:3.6.1
+    environment:
+      - USERNAME: "scikit-learn-contrib"
+      - DOC_REPO: "imbalanced-learn"
+      - DOC_URL: ""
+      - EMAIL: "g.lemaitre58@gmail.com"
+      - MINICONDA_PATH: $HOME/miniconda
+      - CONDA_ENV_NAME: testenv
+      - PYTHON_VERSION: 3
+    steps:
+      - checkout
+      - run: ./build_tools/circle/checkout_merge_commit.sh
+      - run: ./build_tools/circle/build_doc.sh
+      - store_artifacts:
+          path: doc/_build/html/stable
+          destination: doc
+      - store_artifacts:
+          path: ~/log.txt
+      - deploy:
+          command: |
+            if [[ "${CIRCLE_BRANCH}" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
+              bash build_tools/circle/push_doc.sh doc/_build/html/stable
+            fi
+    filters:
+      branches:
+        ignore: gh-pages
+
+workflows:
+  version: 2
+  build-doc-and-deploy:
+    jobs:
+      - python3
