@@ -67,6 +67,7 @@ def test_check_target_warning():
     with pytest.warns(UserWarning, message='should be of types'):
         check_target_type(target)
 
+
 def test_check_ratio_error():
     with raises(ValueError, match="'sampling_type' should be one of"):
         check_ratio('auto', np.array([1, 2, 3]), 'rnd')
