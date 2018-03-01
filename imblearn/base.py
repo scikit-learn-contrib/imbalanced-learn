@@ -15,7 +15,6 @@ from sklearn.base import BaseEstimator
 from sklearn.externals import six
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
-from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted
 
 from .utils import check_ratio, check_target_type, hash_X_y
@@ -245,17 +244,10 @@ class FunctionSampler(SamplerMixin):
         self.kw_args = kw_args
         self.logger = logging.getLogger(__name__)
 
-    def _check_X_y(self, X, y):
-        if self.accept_sparse:
-            X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
-        else:
-            X, y = check_X_y(X, y, accept_sparse=False)
-        y = check_target_type(y)
-
-        return X, y
-
     def fit(self, X, y):
-        X, y = self._check_X_y(X, y)
+        y = check_target_type(y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']
+                         if self.accept_sparse else False)
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         # when using a sampler, ratio_ is supposed to exist after fit
         self.ratio_ = 'is_fitted'
@@ -263,7 +255,9 @@ class FunctionSampler(SamplerMixin):
         return self
 
     def _sample(self, X, y, func=None, kw_args=None):
-        X, y = self._check_X_y(X, y)
+        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']
+                         if self.accept_sparse else False)
         check_is_fitted(self, 'ratio_')
         X_hash, y_hash = hash_X_y(X, y)
         if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
@@ -272,7 +266,16 @@ class FunctionSampler(SamplerMixin):
         if func is None:
             func = _identity
 
-        return func(X, y, **(kw_args if self.kw_args else {}))
+        output = func(X, y, **(kw_args if self.kw_args else {}))
+
+        if binarize_y:
+            y_sampled = label_binarize(output[1], np.unique(y))
+            if len(output) == 2:
+                return output[0], y_sampled
+            else:
+                return output[0], y_sampled, output[2]
+        else:
+            return output
 
     def sample(self, X, y):
         return self._sample(X, y, func=self.func, kw_args=self.kw_args)

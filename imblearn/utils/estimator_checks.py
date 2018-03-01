@@ -19,11 +19,13 @@ from pytest import raises
 
 from sklearn.datasets import make_classification
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import label_binarize
 from sklearn.utils.estimator_checks import check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import set_random_state
+from sklearn.utils.multiclass import type_of_target
 
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
@@ -44,6 +46,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_ratio_fit_sample
     yield check_samplers_sparse
     yield check_samplers_pandas
+    yield check_samplers_multiclass_ova
 
 
 def _yield_all_checks(name, estimator):
@@ -253,3 +256,18 @@ def check_samplers_pandas(name, Sampler):
         X_res, y_res = sampler.fit_sample(X, y)
         assert_allclose(X_res_pd, X_res)
         assert_allclose(y_res_pd, y_res)
+
+
+def check_samplers_multiclass_ova(name, Sampler):
+    # Check that multiclass target lead to the same results than OVA encoding
+    X, y = make_classification(n_samples=1000, n_classes=3,
+                               n_informative=4, weights=[0.2, 0.3, 0.5],
+                               random_state=0)
+    y_ova = label_binarize(y, np.unique(y))
+    sampler = Sampler()
+    set_random_state(sampler)
+    X_res, y_res = sampler.fit_sample(X, y)
+    X_res_ova, y_res_ova = sampler.fit_sample(X, y_ova)
+    assert_allclose(X_res, X_res_ova)
+    assert type_of_target(y_res_ova) == type_of_target(y_ova)
+    assert_allclose(y_res, y_res_ova.argmax(axis=1))
