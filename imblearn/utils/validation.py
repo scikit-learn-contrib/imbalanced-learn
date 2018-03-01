@@ -10,7 +10,6 @@ from numbers import Integral
 
 import numpy as np
 
-from sklearn.preprocessing import label_binarize
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.externals import six, joblib
