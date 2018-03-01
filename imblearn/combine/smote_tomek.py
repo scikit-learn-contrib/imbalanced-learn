@@ -8,7 +8,6 @@ links."""
 from __future__ import division
 
 import logging
-import warnings
 
 from sklearn.utils import check_X_y
 
@@ -153,8 +152,8 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
             Return self.
 
         """
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
-        y = check_target_type(y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], multi_output=True)
+        y = check_target_type(y, self)
         self.ratio_ = self.ratio
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
 

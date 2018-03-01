@@ -9,17 +9,19 @@ from collections import Counter
 from numbers import Integral
 
 import numpy as np
+from scipy import sparse
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.externals import six, joblib
 from sklearn.utils.multiclass import type_of_target
+from sklearn.preprocessing import LabelBinarizer
 
 from ..exceptions import raise_isinstance_error
 
 SAMPLING_KIND = ('over-sampling', 'under-sampling', 'clean-sampling',
                  'ensemble')
-TARGET_KIND = ('binary', 'multiclass')
+TARGET_KIND = ('binary', 'multiclass', 'multilabel-indicator')
 
 
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
@@ -54,11 +56,11 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
         raise_isinstance_error(nn_name, [int, KNeighborsMixin], nn_object)
 
 
-def check_target_type(y):
+def check_target_type(y, sampler):
     """Check the target types to be conform to the current samplers.
 
-    The current samplers should be compatible with ``'binary'`` and
-    ``'multiclass'`` targets only.
+    The current samplers should be compatible with ``'binary'``,
+    ``'multiclass'`` and ``'multilabel-indicator'`` targets only.
 
     Parameters
     ----------
@@ -76,6 +78,23 @@ def check_target_type(y):
         # not allow for it
         warnings.warn("'y' should be of types {} only. Got {} instead.".format(
             TARGET_KIND, type_of_target(y)))
+    elif type_of_target(y) == 'multilabel-indicator':
+        if np.any(y.sum(axis=1) > 1):
+            raise ValueError("'y' as 'multilabel' is supported only to"
+                             " represent a 'multiclass' problem. 'y' contains"
+                             " multiple tasks and samplers do not support"
+                             " these targets.")
+        # create a label binarizer and simulate a fit
+        sampler.target_encoder_ = LabelBinarizer(
+            sparse_output=sparse.issparse(y))
+        sampler.target_encoder_.y_type_ = 'multiclass'
+        sampler.target_encoder_.sparse_input_ = False
+        sampler.target_encoder_.classes_ = np.arange(y.shape[1], dtype=int)
+
+        return sampler.target_encoder_.inverse_transform(y)
+    else:
+        sampler.target_encoder_ = None
+
     return y
 
 

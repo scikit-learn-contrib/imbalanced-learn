@@ -24,6 +24,8 @@ from sklearn.utils.estimator_checks import check_estimator \
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import set_random_state
+from sklearn.preprocessing import LabelBinarizer
+from sklearn.utils.multiclass import type_of_target
 
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
@@ -36,6 +38,8 @@ from imblearn.utils.testing import warns
 
 def _yield_sampler_checks(name, Estimator):
     yield check_target_type
+    yield check_multilabel_type
+    # yield check_multioutput_type_error
     yield check_samplers_one_label
     yield check_samplers_no_fit_error
     yield check_samplers_X_consistancy_sample
@@ -82,6 +86,41 @@ def check_target_type(name, Estimator):
     set_random_state(estimator)
     with warns(UserWarning, match='should be of types'):
         estimator.fit(X, y)
+
+
+def check_multilabel_type(name, Estimator):
+    x = np.random.random((1000, 10))
+    y = np.array([0] * 900 + [1] * 75 + [2] * 25)
+
+    binarizer = LabelBinarizer(sparse_output=True)
+    y_multilabel = binarizer.fit_transform(y)
+
+    sampler = Estimator(random_state=0)
+    X_res, y_res = sampler.fit_sample(x, y_multilabel)
+
+    if isinstance(sampler, BaseEnsembleSampler):
+        assert type_of_target(y_res[0]) == type_of_target(y_multilabel[0])
+    else:
+        assert type_of_target(y_res) == type_of_target(y_multilabel)
+
+    binarizer = LabelBinarizer(sparse_output=False)
+    y_multilabel = binarizer.fit_transform(y)
+
+    sampler = Estimator(random_state=0)
+    X_res, y_res = sampler.fit_sample(x, y_multilabel)
+
+    if isinstance(sampler, BaseEnsembleSampler):
+        assert type_of_target(y_res[0]) == type_of_target(y_multilabel[0])
+    else:
+        assert type_of_target(y_res) == type_of_target(y_multilabel)
+
+
+# def check_multioutput_type_error(name, Estimator):
+#     x = np.random((2, 10))
+#     y = np.array([[0, 1, 1], [0, 1, 0]])
+
+#     sampler = Estimator(random_state=0)
+#     y_res = sampler.fit_sample(x)
 
 
 def check_samplers_one_label(name, Sampler):

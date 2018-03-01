@@ -9,6 +9,8 @@ from __future__ import division
 import logging
 from abc import ABCMeta, abstractmethod
 
+import numpy as np
+
 from sklearn.base import BaseEstimator
 from sklearn.externals import six
 from sklearn.utils import check_X_y
@@ -25,13 +27,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     """
 
     _estimator_type = 'sampler'
-
-    def _check_X_y(self, X, y):
-        """Private function to check that the X and y in fitting are the same
-        than in sampling."""
-        X_hash, y_hash = hash_X_y(X, y)
-        if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
-            raise RuntimeError("X and y need to be same array earlier fitted.")
 
     def sample(self, X, y):
         """Resample the dataset.
@@ -55,13 +50,33 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         """
 
-        # Check the consistency of X and y
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
-
         check_is_fitted(self, 'ratio_')
-        self._check_X_y(X, y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], multi_output=True)
+        if self.target_encoder_ is not None:
+            y = self.target_encoder_.inverse_transform(y)
+        X_hash, y_hash = hash_X_y(X, y)
+        if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
+            raise RuntimeError("X and y need to be same array earlier fitted.")
 
-        return self._sample(X, y)
+        result = self._sample(X, y)
+
+        if not getattr(self, 'return_indices', False):
+            X_res, y_res = result
+        else:
+            X_res, y_res, indices_res = result
+
+        if self.target_encoder_ is not None:
+            # find the case that we have ensemble
+            if y_res.ndim == 2:
+                y_res = np.hstack([self.target_encoder_.transform(y_res_subset)
+                                   for y_res_subset in y_res])
+            else:
+                y_res = self.target_encoder_.transform(y_res)
+
+        if not getattr(self, 'return_indices', False):
+            return X_res, y_res
+        else:
+            return X_res, y_res, indices_res
 
     def fit_sample(self, X, y):
         """Fit the statistics and resample the data directly.
@@ -152,8 +167,8 @@ class BaseSampler(SamplerMixin):
             Return self.
 
         """
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
-        y = check_target_type(y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], multi_output=True)
+        y = check_target_type(y, self)
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         # self.sampling_type is already checked in check_ratio
         self.ratio_ = check_ratio(self.ratio, y, self._sampling_type)
