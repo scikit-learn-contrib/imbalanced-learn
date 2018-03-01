@@ -13,6 +13,9 @@ ensemble
 exceptions
     Module including custom warnings and error clases used across
     imbalanced-learn.
+keras
+    Module which provides custom generator, layers for deep learning using
+    keras.
 metrics
     Module which provides metrics to quantified the classification performance
     with imbalanced dataset.

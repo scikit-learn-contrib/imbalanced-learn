@@ -9,9 +9,13 @@ from __future__ import division
 import logging
 from abc import ABCMeta, abstractmethod
 
+import numpy as np
+
 from sklearn.base import BaseEstimator
 from sklearn.externals import six
+from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
+from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted
 
 from .utils import check_ratio, check_target_type, hash_X_y
@@ -54,14 +58,23 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             The corresponding label of `X_resampled`
 
         """
-
         # Check the consistency of X and y
+        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
 
         check_is_fitted(self, 'ratio_')
         self._check_X_y(X, y)
 
-        return self._sample(X, y)
+        output = self._sample(X, y)
+
+        if binarize_y:
+            y_sampled = label_binarize(output[1], np.unique(y))
+            if len(output) == 2:
+                return output[0], y_sampled
+            else:
+                return output[0], y_sampled, output[2]
+        else:
+            return output
 
     def fit_sample(self, X, y):
         """Fit the statistics and resample the data directly.
@@ -152,8 +165,8 @@ class BaseSampler(SamplerMixin):
             Return self.
 
         """
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         y = check_target_type(y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         # self.sampling_type is already checked in check_ratio
         self.ratio_ = check_ratio(self.ratio, y, self._sampling_type)
