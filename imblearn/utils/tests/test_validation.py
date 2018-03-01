@@ -64,7 +64,7 @@ def test_check_target_type_ova(target, output_target, is_ova):
 
 def test_check_target_warning():
     target = np.arange(4).reshape((2, 2))
-    with pytest.warns(UserWarning, message='should be of types'):
+    with pytest.warns(UserWarning, match='should be of types'):
         check_target_type(target)
 
 
