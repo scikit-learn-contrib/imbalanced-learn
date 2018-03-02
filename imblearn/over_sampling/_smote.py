@@ -102,29 +102,59 @@ class BaseSMOTE(BaseOverSampler):
         rows = np.floor_divide(samples_indices, nn_num.shape[1])
         cols = np.mod(samples_indices, nn_num.shape[1])
 
+        y_new = np.array([y_type] * len(samples_indices), dtype=y_dtype)
+
         if sparse.issparse(X):
             row_indices, col_indices, samples = [], [], []
             for i, (row, col, step) in enumerate(zip(rows, cols, steps)):
                 if X[row].nnz:
-                    sample = X[row] - step * (
-                        X[row] - nn_data[nn_num[row, col]])
+                    sample = self._generate_sample(X, nn_data, nn_num,
+                                                   row, col, step)
                     row_indices += [i] * len(sample.indices)
                     col_indices += sample.indices.tolist()
                     samples += sample.data.tolist()
-        else:
-            X_new = np.zeros((n_samples, X.shape[1]), dtype=X.dtype)
-            for i, (row, col, step) in enumerate(zip(rows, cols, steps)):
-                X_new[i] = X[row] - step * (X[row] - nn_data[nn_num[row, col]])
-
-        y_new = np.array([y_type] * len(samples_indices), dtype=y_dtype)
-
-        if sparse.issparse(X):
             return (sparse.csr_matrix((samples, (row_indices, col_indices)),
                                       [len(samples_indices), X.shape[1]],
                                       dtype=X.dtype),
                     y_new)
         else:
+            X_new = np.zeros((n_samples, X.shape[1]), dtype=X.dtype)
+            for i, (row, col, step) in enumerate(zip(rows, cols, steps)):
+                X_new[i] = self._generate_sample(X, nn_data, nn_num,
+                                                 row, col, step)
             return X_new, y_new
+
+    def _generate_sample(self, X, nn_data, nn_num, row, col, step):
+        """
+        Parameters
+        ----------
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            Points from which the points will be created.
+
+        nn_data : ndarray, shape (n_samples_all, n_features)
+            Data set carrying all the neighbours to be used
+
+        nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)
+            The nearest neighbours of each sample in nn_data.
+
+        row : int
+            Index pointing at feature vector in X which will be used
+            as a base for creating new sample.
+
+        col : int
+            Index pointing at which nearest neighbor of base feature vector
+            will be used when creating new sample.
+
+        step : float
+            Step size for new sample.
+
+        Returns
+        -------
+        X_new : {array, sparse matrix}, shape (n_features,)
+            Single synthetically generated sample.
+
+        """
+        return X[row] - step * (X[row] - nn_data[nn_num[row, col]])
 
     def _in_danger_noise(self, nn_estimator, samples, target_class, y,
                          kind='danger'):
@@ -173,6 +203,12 @@ class BaseSMOTE(BaseOverSampler):
             return n_maj == nn_estimator.n_neighbors - 1
         else:
             raise NotImplementedError
+
+    def _fit_nn_k(self, X):
+        self.nn_k_.fit(X)
+
+    def _nn_k_neighbors(self, X):
+        return self.nn_k_.kneighbors(X, return_distance=False)[:, 1:]
 
 
 @Substitution(
@@ -295,16 +331,14 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
             target_class_indices = np.flatnonzero(y == class_sample)
             X_class = safe_indexing(X, target_class_indices)
 
-            self.nn_m_.fit(X)
+            self._fit_nn_m(X)
             danger_index = self._in_danger_noise(
                 self.nn_m_, X_class, class_sample, y, kind='danger')
             if not any(danger_index):
                 continue
 
-            self.nn_k_.fit(X_class)
-            nns = self.nn_k_.kneighbors(
-                safe_indexing(X_class, danger_index),
-                return_distance=False)[:, 1:]
+            self._fit_nn_k(X_class)
+            nns = self._nn_k_neighbors(safe_indexing(X_class, danger_index))
 
             # divergence between borderline-1 and borderline-2
             if self.kind == 'borderline-1':
@@ -352,6 +386,9 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                 y_resampled = np.hstack((y_resampled, y_new_1, y_new_2))
 
         return X_resampled, y_resampled
+
+    def _fit_nn_m(self, X):
+        self.nn_m_.fit(X)
 
 
 @Substitution(
@@ -487,7 +524,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                 self.svm_estimator_.support_] == class_sample]
             support_vector = safe_indexing(X, support_index)
 
-            self.nn_m_.fit(X)
+            self._fit_nn_m(X)
             noise_bool = self._in_danger_noise(
                 self.nn_m_, support_vector, class_sample, y, kind='noise')
             support_vector = safe_indexing(
@@ -496,13 +533,12 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                 self.nn_m_, support_vector, class_sample, y, kind='danger')
             safety_bool = np.logical_not(danger_bool)
 
-            self.nn_k_.fit(X_class)
+            self._fit_nn_k(X_class)
             fractions = random_state.beta(10, 10)
             n_generated_samples = int(fractions * (n_samples + 1))
             if np.count_nonzero(danger_bool) > 0:
-                nns = self.nn_k_.kneighbors(
-                    safe_indexing(support_vector, np.flatnonzero(danger_bool)),
-                    return_distance=False)[:, 1:]
+                nns = self._nn_k_neighbors(
+                    safe_indexing(support_vector, np.flatnonzero(danger_bool)))
 
                 X_new_1, y_new_1 = self._make_samples(
                     safe_indexing(support_vector, np.flatnonzero(danger_bool)),
@@ -514,9 +550,8 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                     step_size=1.)
 
             if np.count_nonzero(safety_bool) > 0:
-                nns = self.nn_k_.kneighbors(
-                    safe_indexing(support_vector, np.flatnonzero(safety_bool)),
-                    return_distance=False)[:, 1:]
+                nns = self._nn_k_neighbors(
+                    safe_indexing(support_vector, np.flatnonzero(safety_bool)))
 
                 X_new_2, y_new_2 = self._make_samples(
                     safe_indexing(support_vector, np.flatnonzero(safety_bool)),
@@ -550,6 +585,9 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                 y_resampled = np.concatenate((y_resampled, y_new_1), axis=0)
 
         return X_resampled, y_resampled
+
+    def _fit_nn_m(self, X):
+        self.nn_m_.fit(X)
 
 
 # FIXME: In 0.6, SMOTE should inherit only from BaseSMOTE.
@@ -754,8 +792,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             target_class_indices = np.flatnonzero(y == class_sample)
             X_class = safe_indexing(X, target_class_indices)
 
-            self.nn_k_.fit(X_class)
-            nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
+            self._fit_nn_k(X_class)
+            nns = self._nn_k_neighbors(X_class)
             X_new, y_new = self._make_samples(X_class, y.dtype, class_sample,
                                               X_class, nns, n_samples, 1.0)
 
