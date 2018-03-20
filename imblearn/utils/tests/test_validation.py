@@ -6,17 +6,20 @@
 from collections import Counter
 
 import numpy as np
+import pytest
 from pytest import raises
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_random_state
 from sklearn.externals import joblib
+from sklearn.utils.testing import assert_array_equal
 
 from imblearn.utils.testing import warns
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_ratio
 from imblearn.utils import hash_X_y
+from imblearn.utils import check_target_type
 
 
 def test_check_neighbors_object():
@@ -33,6 +36,36 @@ def test_check_neighbors_object():
     n_neighbors = 'rnd'
     with raises(ValueError, match="has to be one of"):
         check_neighbors_object(name, n_neighbors)
+
+
+@pytest.mark.parametrize(
+    "target, output_target",
+    [(np.array([0, 1, 1]), np.array([0, 1, 1])),
+     (np.array([0, 1, 2]), np.array([0, 1, 2])),
+     (np.array([[0, 1], [1, 0]]), np.array([1, 0]))]
+)
+def test_check_target_type(target, output_target):
+    converted_target = check_target_type(target.astype(int))
+    assert_array_equal(converted_target, output_target.astype(int))
+
+
+@pytest.mark.parametrize(
+    "target, output_target, is_ova",
+    [(np.array([0, 1, 1]), np.array([0, 1, 1]), False),
+     (np.array([0, 1, 2]), np.array([0, 1, 2]), False),
+     (np.array([[0, 1], [1, 0]]), np.array([1, 0]), True)]
+)
+def test_check_target_type_ova(target, output_target, is_ova):
+    converted_target, binarize_target = check_target_type(
+        target.astype(int), indicate_one_vs_all=True)
+    assert_array_equal(converted_target, output_target.astype(int))
+    assert binarize_target == is_ova
+
+
+def test_check_target_warning():
+    target = np.arange(4).reshape((2, 2))
+    with pytest.warns(UserWarning, match='should be of types'):
+        check_target_type(target)
 
 
 def test_check_ratio_error():

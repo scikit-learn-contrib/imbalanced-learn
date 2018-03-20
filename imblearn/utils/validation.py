@@ -19,7 +19,7 @@ from ..exceptions import raise_isinstance_error
 
 SAMPLING_KIND = ('over-sampling', 'under-sampling', 'clean-sampling',
                  'ensemble')
-TARGET_KIND = ('binary', 'multiclass')
+TARGET_KIND = ('binary', 'multiclass', 'multilabel-indicator')
 
 
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
@@ -54,29 +54,42 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
         raise_isinstance_error(nn_name, [int, KNeighborsMixin], nn_object)
 
 
-def check_target_type(y):
+def check_target_type(y, indicate_one_vs_all=False):
     """Check the target types to be conform to the current samplers.
 
-    The current samplers should be compatible with ``'binary'`` and
-    ``'multiclass'`` targets only.
+    The current samplers should be compatible with ``'binary'``,
+    ``'multilabel-indicator'`` and ``'multiclass'`` targets only.
 
     Parameters
     ----------
     y : ndarray,
-        The array containing the target
+        The array containing the target.
+
+    indicate_one_vs_all : bool, optional
+        Either to indicate if the targets are encoded in a one-vs-all fashion.
 
     Returns
     -------
     y : ndarray,
         The returned target.
 
+    is_one_vs_all : bool, optional
+        Indicate if the target was originally encoded in a one-vs-all fashion.
+        Only returned if ``indicate_multilabel=True``.
+
     """
-    if type_of_target(y) not in TARGET_KIND:
+    type_y = type_of_target(y)
+    if type_y not in TARGET_KIND:
         # FIXME: perfectly we should raise an error but the sklearn API does
         # not allow for it
         warnings.warn("'y' should be of types {} only. Got {} instead.".format(
             TARGET_KIND, type_of_target(y)))
-    return y
+
+    if indicate_one_vs_all:
+        return (y.argmax(axis=1) if type_y == 'multilabel-indicator' else y,
+                type_y == 'multilabel-indicator')
+    else:
+        return y.argmax(axis=1) if type_y == 'multilabel-indicator' else y
 
 
 def hash_X_y(X, y, n_samples=10, n_features=5):
