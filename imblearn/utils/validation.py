@@ -158,6 +158,28 @@ def _ratio_majority(y, sampling_type):
     return ratio
 
 
+def _ratio_not_majority(y, sampling_type):
+    """Returns ratio by targeting all classes but not the majority."""
+    target_stats = Counter(y)
+    if sampling_type == 'over-sampling':
+        n_sample_majority = max(target_stats.values())
+        class_majority = max(target_stats, key=target_stats.get)
+        ratio = {key: n_sample_majority - value
+                 for (key, value) in target_stats.items()
+                 if key != class_majority}
+    elif (sampling_type == 'under-sampling' or
+          sampling_type == 'clean-sampling'):
+        n_sample_minority = min(target_stats.values())
+        class_majority = max(target_stats, key=target_stats.get)
+        ratio = {key: n_sample_minority
+                 for key in target_stats.keys()
+                 if key != class_majority}
+    else:
+        raise NotImplementedError
+
+    return ratio
+
+
 def _ratio_not_minority(y, sampling_type):
     """Returns ratio by targeting all classes but not the minority."""
     target_stats = Counter(y)
@@ -203,7 +225,7 @@ def _ratio_auto(y, sampling_type):
     """Returns ratio auto for over-sampling and not-minority for
     under-sampling."""
     if sampling_type == 'over-sampling':
-        return _ratio_all(y, sampling_type)
+        return _ratio_not_majority(y, sampling_type)
     elif (sampling_type == 'under-sampling' or
           sampling_type == 'clean-sampling'):
         return _ratio_not_minority(y, sampling_type)
@@ -253,6 +275,9 @@ def _ratio_dict(ratio, y, sampling_type):
                                      target_stats[class_sample], n_samples))
             ratio_[class_sample] = n_samples
     elif sampling_type == 'clean-sampling':
+        # FIXME: deprecation warning
+        raise ValueError("'ratio' cannot be a dict with cleaning samplers. "
+                         "Use a list instead.")
         # clean-sampling can be more permissive since those samplers do not
         # use samples
         for class_sample, n_samples in ratio.items():
@@ -261,6 +286,24 @@ def _ratio_dict(ratio, y, sampling_type):
         raise NotImplementedError
 
     return ratio_
+
+
+def _ratio_list(ratio, y, sampling_type):
+    """With cleaning methods, ratio can be a list to target the class of
+    interest."""
+    if sampling_type != 'clean-sampling':
+        raise ValueError("'ratio' cannot be a list for samplers which are "
+                         "not cleaning methods.")
+
+    target_stats = Counter(y)
+    # check that all keys in ratio are also in y
+    set_diff_ratio_target = set(ratio) - set(target_stats.keys())
+    if len(set_diff_ratio_target) > 0:
+        raise ValueError("The {} target class is/are not present in the"
+                         " data.".format(set_diff_ratio_target))
+
+    return {class_sample: min(target_stats.values())
+            for class_sample in ratio}
 
 
 def _ratio_float(ratio, y, sampling_type):
@@ -352,6 +395,8 @@ def check_ratio(ratio, y, sampling_type, **kwargs):
         return RATIO_KIND[ratio](y, sampling_type)
     elif isinstance(ratio, dict):
         return _ratio_dict(ratio, y, sampling_type)
+    elif isinstance(ratio, list):
+        return _ratio_list(ratio, y, sampling_type)
     elif isinstance(ratio, Real):
         if ratio <= 0 or ratio > 1:
             raise ValueError("When 'ratio' is a float, it should in the range"
@@ -365,5 +410,8 @@ def check_ratio(ratio, y, sampling_type, **kwargs):
 RATIO_KIND = {'minority': _ratio_minority,
               'majority': _ratio_majority,
               'not minority': _ratio_not_minority,
+              'not majority': _ratio_not_majority,
               'all': _ratio_all,
               'auto': _ratio_auto}
+
+check_sampling_target = check_ratio

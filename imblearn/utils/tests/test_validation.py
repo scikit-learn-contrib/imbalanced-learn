@@ -96,14 +96,23 @@ def test_check_ratio_error_wrong_string(ratio, sampling_type, err_msg):
         check_ratio(ratio, np.array([1, 2, 3]), sampling_type)
 
 
+@pytest.mark.parametrize(
+    "ratio, sampling_method",
+    [({10: 10}, 'under-sampling'),
+     ({10: 10}, 'over-sampling'),
+     ([10], 'clean-sampling')]
+)
+def test_ratio_class_target_unknown(ratio, sampling_method):
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    with pytest.raises(ValueError, match="are not present in the data."):
+        check_ratio(ratio, y, sampling_method)
+
+
 def test_ratio_dict_error():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = {1: -100, 2: 50, 3: 25}
     with raises(ValueError, match="in a class cannot be negative."):
         check_ratio(ratio, y, 'under-sampling')
-    ratio = {10: 10}
-    with raises(ValueError, match="are not present in the data."):
-        check_ratio(ratio, y, 'over-sampling')
     ratio = {1: 45, 2: 100, 3: 70}
     error_regex = ("With over-sampling methods, the number of samples in a"
                    " class should be greater or equal to the original number"
@@ -137,6 +146,17 @@ def test_ratio_float_error_not_binary():
         check_ratio(ratio, y, 'under-sampling')
 
 
+@pytest.mark.parametrize(
+    "sampling_method",
+    ['over-sampling', 'under-sampling']
+)
+def test_ratio_list_error_not_clean_sampling(sampling_method):
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    with pytest.raises(ValueError, message='cannot be a list for samplers'):
+        ratio = [1, 2, 3]
+        check_ratio(ratio, y, sampling_method)
+
+
 def _ratio_func(y):
         # this function could create an equal number of samples
         target_stats = Counter(y)
@@ -147,18 +167,26 @@ def _ratio_func(y):
 
 @pytest.mark.parametrize(
     "ratio, sampling_type, expected_ratio, target",
-    [('all', 'over-sampling', {1: 50, 2: 0, 3: 75}, multiclass_target),
-     ('auto', 'over-sampling', {1: 50, 2: 0, 3: 75}, multiclass_target),
+    [('auto', 'under-sampling', {1: 25, 2: 25}, multiclass_target),
+     ('auto', 'clean-sampling', {1: 25, 2: 25}, multiclass_target),
+     ('auto', 'over-sampling', {1: 50, 3: 75}, multiclass_target),
+     ('all', 'over-sampling', {1: 50, 2: 0, 3: 75}, multiclass_target),
      ('all', 'under-sampling', {1: 25, 2: 25, 3: 25}, multiclass_target),
+     ('all', 'clean-sampling', {1: 25, 2: 25, 3: 25}, multiclass_target),
      ('majority', 'under-sampling', {2: 25}, multiclass_target),
+     ('majority', 'clean-sampling', {2: 25}, multiclass_target),
+     ('minority', 'over-sampling', {3: 75}, multiclass_target),
      ('not minority', 'over-sampling', {1: 50, 2: 0}, multiclass_target),
      ('not minority', 'under-sampling', {1: 25, 2: 25}, multiclass_target),
-     ('auto', 'under-sampling', {1: 25, 2: 25}, multiclass_target),
-     ('minority', 'over-sampling', {3: 75}, multiclass_target),
+     ('not minority', 'clean-sampling', {1: 25, 2: 25}, multiclass_target),
+     ('not majority', 'over-sampling', {1: 50, 3: 75}, multiclass_target),
+     ('not majority', 'under-sampling', {1: 25, 3: 25}, multiclass_target),
+     ('not majority', 'clean-sampling', {1: 25, 3: 25}, multiclass_target),
      ({1: 70, 2: 100, 3: 70}, 'over-sampling', {1: 20, 2: 0, 3: 45},
       multiclass_target),
      ({1: 30, 2: 45, 3: 25}, 'under-sampling', {1: 30, 2: 45, 3: 25},
       multiclass_target),
+     ([1], 'clean-sampling', {1: 25}, multiclass_target),
      (_ratio_func, 'over-sampling', {1: 50, 2: 0, 3: 75}, multiclass_target),
      (0.5, 'over-sampling', {1: 25}, binary_target),
      (0.5, 'under-sampling', {0: 50}, binary_target)]
