@@ -6,7 +6,7 @@ from __future__ import division
 
 import warnings
 from collections import Counter
-from numbers import Integral
+from numbers import Integral, Real
 
 import numpy as np
 
@@ -263,6 +263,32 @@ def _ratio_dict(ratio, y, sampling_type):
     return ratio_
 
 
+def _ratio_float(ratio, y, sampling_type):
+    """Take a proportion of the majority (over-sampling) or minority
+    (under-sampling) class in binary classification."""
+    type_y = type_of_target(y)
+    if type_y != 'binary':
+        raise ValueError('"ratio" can be a float only when the type of '
+                         'target is binary. For multi-class, use a dict.')
+    target_stats = Counter(y)
+    if sampling_type == 'over-sampling':
+        n_sample_majority = max(target_stats.values())
+        class_majority = max(target_stats, key=target_stats.get)
+        ratio_ = {key: int(n_sample_majority * ratio - value)
+                  for (key, value) in target_stats.items()
+                  if key != class_majority}
+    elif (sampling_type == 'under-sampling'):
+        n_sample_minority = min(target_stats.values())
+        class_minority = min(target_stats, key=target_stats.get)
+        ratio_ = {key: int(n_sample_minority / ratio)
+                  for (key, value) in target_stats.items()
+                  if key != class_minority}
+    else:
+        raise ValueError("'cleaning-sampling' methods do let the user "
+                         "specify the sampling ratio")
+    return ratio_
+
+
 def check_ratio(ratio, y, sampling_type, **kwargs):
     """Ratio validation for samplers.
 
@@ -326,6 +352,11 @@ def check_ratio(ratio, y, sampling_type, **kwargs):
         return RATIO_KIND[ratio](y, sampling_type)
     elif isinstance(ratio, dict):
         return _ratio_dict(ratio, y, sampling_type)
+    elif isinstance(ratio, Real):
+        if ratio <= 0 or ratio > 1:
+            raise ValueError("When 'ratio' is a float, it should in the range"
+                             " (0, 1]. Got {} instead.".format(ratio))
+        return _ratio_float(ratio, y, sampling_type)
     elif callable(ratio):
         ratio_ = ratio(y, **kwargs)
         return _ratio_dict(ratio_, y, sampling_type)

@@ -21,6 +21,9 @@ from imblearn.utils import check_ratio
 from imblearn.utils import hash_X_y
 from imblearn.utils import check_target_type
 
+multiclass_target = np.array([1] * 50 + [2] * 100 + [3] * 25)
+binary_target = np.array([1] * 25 + [0] * 100)
+
 
 def test_check_neighbors_object():
     name = 'n_neighbors'
@@ -81,54 +84,16 @@ def test_check_ratio_error():
         check_ratio('rnd', np.array([1, 2, 3]), 'over-sampling')
 
 
-def test_ratio_all_over_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    for each in ('all', 'auto'):
-        assert check_ratio(each, y, 'over-sampling') == {1: 50, 2: 0, 3: 75}
-
-
-def test_ratio_all_under_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('all', y, 'under-sampling')
-    assert ratio == {1: 25, 2: 25, 3: 25}
-
-
-def test_ratio_majority_over_sampling():
-    error_regex = "'ratio'='majority' cannot be used with over-sampler."
-    with raises(ValueError, match=error_regex):
-        check_ratio('majority', np.array([1, 2, 3]), 'over-sampling')
-
-
-def test_ratio_majority_under_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('majority', y, 'under-sampling')
-    assert ratio == {2: 25}
-
-
-def test_ratio_not_minority_over_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('not minority', y, 'over-sampling')
-    assert ratio == {1: 50, 2: 0}
-
-
-def test_ratio_not_minority_under_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('not minority', y, 'under-sampling')
-    assert ratio == {1: 25, 2: 25}
-    ratio = check_ratio('auto', y, 'under-sampling')
-    assert ratio == {1: 25, 2: 25}
-
-
-def test_ratio_minority_over_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('minority', y, 'over-sampling')
-    assert ratio == {3: 75}
-
-
-def test_ratio_minority_under_sampling():
-    error_regex = "'ratio'='minority' cannot be used with under-sampler."
-    with raises(ValueError, match=error_regex):
-        check_ratio('minority', np.array([1, 2, 3]), 'under-sampling')
+@pytest.mark.parametrize(
+    "ratio, sampling_type, err_msg",
+    [('majority', 'over-sampling', 'over-sampler'),
+     ('minority', 'under-sampling', 'under-sampler')]
+)
+def test_check_ratio_error_wrong_string(ratio, sampling_type, err_msg):
+    with pytest.raises(ValueError,
+                       message=("'{}' cannot be used with {}"
+                                .format(ratio, err_msg))):
+        check_ratio(ratio, np.array([1, 2, 3]), sampling_type)
 
 
 def test_ratio_dict_error():
@@ -155,38 +120,62 @@ def test_ratio_dict_error():
                         check_ratio(ratio, y, 'under-sampling')
 
 
-def test_ratio_dict_over_sampling():
+@pytest.mark.parametrize(
+    "ratio",
+    [-10, 10]
+)
+def test_ratio_float_error_not_in_range(ratio):
+    y = np.array([1] * 50 + [2] * 100)
+    with pytest.raises(ValueError, message='it should be in the range'):
+        check_ratio(ratio, y, 'under_sampling')
+
+
+def test_ratio_float_error_not_binary():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = {1: 70, 2: 100, 3: 70}
-    ratio_ = check_ratio(ratio, y, 'over-sampling')
-    assert ratio_ == {1: 20, 2: 0, 3: 45}
-    ratio = {1: 70, 2: 140, 3: 70}
-    expected_msg = ("After over-sampling, the number of samples \(140\) in"
-                    " class 2 will be larger than the number of samples in the"
-                    " majority class \(class #2 -> 100\)")
-    with warns(UserWarning, expected_msg):
-        check_ratio(ratio, y, 'over-sampling')
+    with pytest.raises(ValueError, message='the type of target is binary'):
+        ratio = 0.5
+        check_ratio(ratio, y, 'under-sampling')
 
 
-def test_ratio_dict_under_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = {1: 30, 2: 45, 3: 25}
-    ratio_ = check_ratio(ratio, y, 'under-sampling')
-    assert ratio_ == ratio
-
-
-def test_ratio_callable():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-
-    def ratio_func(y):
+def _ratio_func(y):
         # this function could create an equal number of samples
         target_stats = Counter(y)
         n_samples = max(target_stats.values())
         return {key: int(n_samples)
                 for key in target_stats.keys()}
 
-    ratio_ = check_ratio(ratio_func, y, 'over-sampling')
-    assert ratio_ == {1: 50, 2: 0, 3: 75}
+
+@pytest.mark.parametrize(
+    "ratio, sampling_type, expected_ratio, target",
+    [('all', 'over-sampling', {1: 50, 2: 0, 3: 75}, multiclass_target),
+     ('auto', 'over-sampling', {1: 50, 2: 0, 3: 75}, multiclass_target),
+     ('all', 'under-sampling', {1: 25, 2: 25, 3: 25}, multiclass_target),
+     ('majority', 'under-sampling', {2: 25}, multiclass_target),
+     ('not minority', 'over-sampling', {1: 50, 2: 0}, multiclass_target),
+     ('not minority', 'under-sampling', {1: 25, 2: 25}, multiclass_target),
+     ('auto', 'under-sampling', {1: 25, 2: 25}, multiclass_target),
+     ('minority', 'over-sampling', {3: 75}, multiclass_target),
+     ({1: 70, 2: 100, 3: 70}, 'over-sampling', {1: 20, 2: 0, 3: 45},
+      multiclass_target),
+     ({1: 30, 2: 45, 3: 25}, 'under-sampling', {1: 30, 2: 45, 3: 25},
+      multiclass_target),
+     (_ratio_func, 'over-sampling', {1: 50, 2: 0, 3: 75}, multiclass_target),
+     (0.5, 'over-sampling', {1: 25}, binary_target),
+     (0.5, 'under-sampling', {0: 50}, binary_target)]
+)
+def test_check_ratio(ratio, sampling_type, expected_ratio, target):
+    ratio_ = check_ratio(ratio, target, sampling_type)
+    assert ratio_ == expected_ratio
+
+
+def test_ratio_dict_over_sampling():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    ratio = {1: 70, 2: 140, 3: 70}
+    expected_msg = ("After over-sampling, the number of samples \(140\) in"
+                    " class 2 will be larger than the number of samples in the"
+                    " majority class \(class #2 -> 100\)")
+    with warns(UserWarning, expected_msg):
+        check_ratio(ratio, y, 'over-sampling')
 
 
 def test_ratio_callable_args():
