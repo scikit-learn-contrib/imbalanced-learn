@@ -122,133 +122,138 @@ def hash_X_y(X, y, n_samples=10, n_features=5):
     return joblib.hash(X[row_idx, col_idx]), joblib.hash(y[row_idx])
 
 
-def _ratio_all(y, sampling_type):
-    """Returns ratio by targeting all classes."""
+def _sampling_target_all(y, sampling_type):
+    """Returns sampling target by targeting all classes."""
     target_stats = Counter(y)
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
-        ratio = {key: n_sample_majority - value
-                 for (key, value) in target_stats.items()}
+        sampling_target = {key: n_sample_majority - value
+                           for (key, value) in target_stats.items()}
     elif (sampling_type == 'under-sampling' or
           sampling_type == 'clean-sampling'):
         n_sample_minority = min(target_stats.values())
-        ratio = {key: n_sample_minority for key in target_stats.keys()}
+        sampling_target = {key: n_sample_minority
+                           for key in target_stats.keys()}
     else:
         raise NotImplementedError
 
-    return ratio
+    return sampling_target
 
 
-def _ratio_majority(y, sampling_type):
-    """Returns ratio by targeting the majority class only."""
+def _sampling_target_majority(y, sampling_type):
+    """Returns sampling target by targeting the majority class only."""
     if sampling_type == 'over-sampling':
-        raise ValueError("'ratio'='majority' cannot be used with"
+        raise ValueError("'sampling_target'='majority' cannot be used with"
                          " over-sampler.")
     elif (sampling_type == 'under-sampling' or
           sampling_type == 'clean-sampling'):
         target_stats = Counter(y)
         class_majority = max(target_stats, key=target_stats.get)
         n_sample_minority = min(target_stats.values())
-        ratio = {key: n_sample_minority
-                 for key in target_stats.keys()
-                 if key == class_majority}
+        sampling_target = {key: n_sample_minority
+                           for key in target_stats.keys()
+                           if key == class_majority}
     else:
         raise NotImplementedError
 
-    return ratio
+    return sampling_target
 
 
-def _ratio_not_majority(y, sampling_type):
-    """Returns ratio by targeting all classes but not the majority."""
+def _sampling_target_not_majority(y, sampling_type):
+    """Returns sampling target by targeting all classes but not the
+    majority."""
     target_stats = Counter(y)
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)
-        ratio = {key: n_sample_majority - value
-                 for (key, value) in target_stats.items()
-                 if key != class_majority}
+        sampling_target = {key: n_sample_majority - value
+                           for (key, value) in target_stats.items()
+                           if key != class_majority}
     elif (sampling_type == 'under-sampling' or
           sampling_type == 'clean-sampling'):
         n_sample_minority = min(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)
-        ratio = {key: n_sample_minority
-                 for key in target_stats.keys()
-                 if key != class_majority}
+        sampling_target = {key: n_sample_minority
+                           for key in target_stats.keys()
+                           if key != class_majority}
     else:
         raise NotImplementedError
 
-    return ratio
+    return sampling_target
 
 
-def _ratio_not_minority(y, sampling_type):
-    """Returns ratio by targeting all classes but not the minority."""
+def _sampling_target_not_minority(y, sampling_type):
+    """Returns sampling target by targeting all classes but not the
+    minority."""
     target_stats = Counter(y)
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
-        ratio = {key: n_sample_majority - value
-                 for (key, value) in target_stats.items()
-                 if key != class_minority}
+        sampling_target = {key: n_sample_majority - value
+                           for (key, value) in target_stats.items()
+                           if key != class_minority}
     elif (sampling_type == 'under-sampling' or
           sampling_type == 'clean-sampling'):
         n_sample_minority = min(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
-        ratio = {key: n_sample_minority
-                 for key in target_stats.keys()
-                 if key != class_minority}
+        sampling_target = {key: n_sample_minority
+                           for key in target_stats.keys()
+                           if key != class_minority}
     else:
         raise NotImplementedError
 
-    return ratio
+    return sampling_target
 
 
-def _ratio_minority(y, sampling_type):
-    """Returns ratio by targeting the minority class only."""
+def _sampling_target_minority(y, sampling_type):
+    """Returns sampling target by targeting the minority class only."""
     target_stats = Counter(y)
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
-        ratio = {key: n_sample_majority - value
-                 for (key, value) in target_stats.items()
-                 if key == class_minority}
+        sampling_target = {key: n_sample_majority - value
+                           for (key, value) in target_stats.items()
+                           if key == class_minority}
     elif (sampling_type == 'under-sampling' or
           sampling_type == 'clean-sampling'):
-        raise ValueError("'ratio'='minority' cannot be used with"
+        raise ValueError("'sampling_target'='minority' cannot be used with"
                          " under-sampler and clean-sampler.")
     else:
         raise NotImplementedError
 
-    return ratio
+    return sampling_target
 
 
-def _ratio_auto(y, sampling_type):
-    """Returns ratio auto for over-sampling and not-minority for
+def _sampling_target_auto(y, sampling_type):
+    """Returns sampling target auto for over-sampling and not-minority for
     under-sampling."""
     if sampling_type == 'over-sampling':
-        return _ratio_not_majority(y, sampling_type)
+        return _sampling_target_not_majority(y, sampling_type)
     elif (sampling_type == 'under-sampling' or
           sampling_type == 'clean-sampling'):
-        return _ratio_not_minority(y, sampling_type)
+        return _sampling_target_not_minority(y, sampling_type)
 
 
-def _ratio_dict(ratio, y, sampling_type):
-    """Returns ratio by converting the dictionary depending of the sampling."""
+def _sampling_target_dict(sampling_target, y, sampling_type):
+    """Returns sampling target by converting the dictionary depending of the
+    sampling."""
     target_stats = Counter(y)
-    # check that all keys in ratio are also in y
-    set_diff_ratio_target = set(ratio.keys()) - set(target_stats.keys())
-    if len(set_diff_ratio_target) > 0:
+    # check that all keys in sampling_target are also in y
+    set_diff_sampling_target_target = (set(sampling_target.keys()) -
+                                       set(target_stats.keys()))
+    if len(set_diff_sampling_target_target) > 0:
         raise ValueError("The {} target class is/are not present in the"
-                         " data.".format(set_diff_ratio_target))
+                         " data.".format(set_diff_sampling_target_target))
     # check that there is no negative number
-    if any(n_samples < 0 for n_samples in ratio.values()):
+    if any(n_samples < 0 for n_samples in sampling_target.values()):
         raise ValueError("The number of samples in a class cannot be negative."
-                         "'ratio' contains some negative value: {}".format(
-                             ratio))
-    ratio_ = {}
+                         "'sampling_target' contains some negative value: {}"
+                         .format(sampling_target))
+    sampling_target_ = {}
     if sampling_type == 'over-sampling':
         n_samples_majority = max(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)
-        for class_sample, n_samples in ratio.items():
+        for class_sample, n_samples in sampling_target.items():
             if n_samples < target_stats[class_sample]:
                 raise ValueError("With over-sampling methods, the number"
                                  " of samples in a class should be greater"
@@ -263,9 +268,10 @@ def _ratio_dict(ratio, y, sampling_type):
                               " {})".format(n_samples, class_sample,
                                             class_majority,
                                             n_samples_majority))
-            ratio_[class_sample] = n_samples - target_stats[class_sample]
+            sampling_target_[class_sample] = (n_samples -
+                                              target_stats[class_sample])
     elif sampling_type == 'under-sampling':
-        for class_sample, n_samples in ratio.items():
+        for class_sample, n_samples in sampling_target.items():
             if n_samples > target_stats[class_sample]:
                 raise ValueError("With under-sampling methods, the number of"
                                  " samples in a class should be less or equal"
@@ -273,71 +279,71 @@ def _ratio_dict(ratio, y, sampling_type):
                                  " Originally, there is {} samples and {}"
                                  " samples are asked.".format(
                                      target_stats[class_sample], n_samples))
-            ratio_[class_sample] = n_samples
+            sampling_target_[class_sample] = n_samples
     elif sampling_type == 'clean-sampling':
         # FIXME: Turn into an error in 0.6
-        warnings.warn("'ratio' as a dict for cleaning methods is deprecated "
-                      "and will raise an error in version 0.6. Please give "
-                      "a list of the classes to be targeted by the sampling.",
-                      DeprecationWarning)
-        # raise ValueError("'ratio' cannot be a dict with cleaning samplers. "
-        #                  "Use a list instead.")
+        warnings.warn("'sampling_target' as a dict for cleaning methods is "
+                      "deprecated and will raise an error in version 0.6. "
+                      "Please give a list of the classes to be targeted by the"
+                      " sampling.", DeprecationWarning)
         # clean-sampling can be more permissive since those samplers do not
         # use samples
-        for class_sample, n_samples in ratio.items():
-            ratio_[class_sample] = n_samples
+        for class_sample, n_samples in sampling_target.items():
+            sampling_target_[class_sample] = n_samples
     else:
         raise NotImplementedError
 
-    return ratio_
+    return sampling_target_
 
 
-def _ratio_list(ratio, y, sampling_type):
-    """With cleaning methods, ratio can be a list to target the class of
-    interest."""
+def _sampling_target_list(sampling_target, y, sampling_type):
+    """With cleaning methods, sampling_target can be a list to target the
+ class of interest."""
     if sampling_type != 'clean-sampling':
-        raise ValueError("'ratio' cannot be a list for samplers which are "
-                         "not cleaning methods.")
+        raise ValueError("'sampling_target' cannot be a list for samplers "
+                         "which are not cleaning methods.")
 
     target_stats = Counter(y)
-    # check that all keys in ratio are also in y
-    set_diff_ratio_target = set(ratio) - set(target_stats.keys())
-    if len(set_diff_ratio_target) > 0:
+    # check that all keys in sampling_target are also in y
+    set_diff_sampling_target_target = (set(sampling_target) -
+                                       set(target_stats.keys()))
+    if len(set_diff_sampling_target_target) > 0:
         raise ValueError("The {} target class is/are not present in the"
-                         " data.".format(set_diff_ratio_target))
+                         " data.".format(set_diff_sampling_target_target))
 
     return {class_sample: min(target_stats.values())
-            for class_sample in ratio}
+            for class_sample in sampling_target}
 
 
-def _ratio_float(ratio, y, sampling_type):
+def _sampling_target_float(sampling_target, y, sampling_type):
     """Take a proportion of the majority (over-sampling) or minority
     (under-sampling) class in binary classification."""
     type_y = type_of_target(y)
     if type_y != 'binary':
-        raise ValueError('"ratio" can be a float only when the type of '
-                         'target is binary. For multi-class, use a dict.')
+        raise ValueError('"sampling_target" can be a float only when the type '
+                         'of target is binary. For multi-class, use a dict.')
     target_stats = Counter(y)
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)
-        ratio_ = {key: int(n_sample_majority * ratio - value)
-                  for (key, value) in target_stats.items()
-                  if key != class_majority}
+        sampling_target_ = {
+            key: int(n_sample_majority * sampling_target - value)
+            for (key, value) in target_stats.items()
+            if key != class_majority}
     elif (sampling_type == 'under-sampling'):
         n_sample_minority = min(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
-        ratio_ = {key: int(n_sample_minority / ratio)
-                  for (key, value) in target_stats.items()
-                  if key != class_minority}
+        sampling_target_ = {key: int(n_sample_minority / sampling_target)
+                            for (key, value) in target_stats.items()
+                            if key != class_minority}
     else:
         raise ValueError("'cleaning-sampling' methods do let the user "
-                         "specify the sampling ratio")
-    return ratio_
+                         "specify the sampling ratio.")
+    return sampling_target_
 
 
-def check_ratio(ratio, y, sampling_type, **kwargs):
-    """Ratio validation for samplers.
+def check_sampling_target(sampling_target, y, sampling_type, **kwargs):
+    """Sampling target validation for samplers.
 
     Checks ratio for consistent type and return a dictionary
     containing each targeted class with its corresponding number of
@@ -389,33 +395,32 @@ def check_ratio(ratio, y, sampling_type, **kwargs):
                          " Got {} class instead".format(np.unique(y).size))
 
     if sampling_type == 'ensemble':
-        return ratio
+        return sampling_target
 
-    if isinstance(ratio, six.string_types):
-        if ratio not in RATIO_KIND.keys():
-            raise ValueError("When 'ratio' is a string, it needs to be one of"
-                             " {}. Got '{}' instead.".format(RATIO_KIND,
-                                                             ratio))
-        return RATIO_KIND[ratio](y, sampling_type)
-    elif isinstance(ratio, dict):
-        return _ratio_dict(ratio, y, sampling_type)
-    elif isinstance(ratio, list):
-        return _ratio_list(ratio, y, sampling_type)
-    elif isinstance(ratio, Real):
-        if ratio <= 0 or ratio > 1:
-            raise ValueError("When 'ratio' is a float, it should in the range"
-                             " (0, 1]. Got {} instead.".format(ratio))
-        return _ratio_float(ratio, y, sampling_type)
-    elif callable(ratio):
-        ratio_ = ratio(y, **kwargs)
-        return _ratio_dict(ratio_, y, sampling_type)
+    if isinstance(sampling_target, six.string_types):
+        if sampling_target not in SAMPLING_TARGET_KIND.keys():
+            raise ValueError("When 'sampling_target' is a string, it needs"
+                             " to be one of {}. Got '{}' instead."
+                             .format(SAMPLING_TARGET_KIND, sampling_target))
+        return SAMPLING_TARGET_KIND[sampling_target](y, sampling_type)
+    elif isinstance(sampling_target, dict):
+        return _sampling_target_dict(sampling_target, y, sampling_type)
+    elif isinstance(sampling_target, list):
+        return _sampling_target_list(sampling_target, y, sampling_type)
+    elif isinstance(sampling_target, Real):
+        if sampling_target <= 0 or sampling_target > 1:
+            raise ValueError("When 'sampling_target' is a float, it should in "
+                             "the range (0, 1]. Got {} instead."
+                             .format(sampling_target))
+        return _sampling_target_float(sampling_target, y, sampling_type)
+    elif callable(sampling_target):
+        sampling_target_ = sampling_target(y, **kwargs)
+        return _sampling_target_dict(sampling_target_, y, sampling_type)
 
 
-RATIO_KIND = {'minority': _ratio_minority,
-              'majority': _ratio_majority,
-              'not minority': _ratio_not_minority,
-              'not majority': _ratio_not_majority,
-              'all': _ratio_all,
-              'auto': _ratio_auto}
-
-check_sampling_target = check_ratio
+SAMPLING_TARGET_KIND = {'minority': _sampling_target_minority,
+                        'majority': _sampling_target_majority,
+                        'not minority': _sampling_target_not_minority,
+                        'not majority': _sampling_target_not_majority,
+                        'all': _sampling_target_all,
+                        'auto': _sampling_target_auto}
