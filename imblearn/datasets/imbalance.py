@@ -7,17 +7,19 @@
 # License: MIT
 
 import logging
+import warnings
 from collections import Counter
 
 from sklearn.utils import check_X_y
 
 from ..under_sampling.prototype_selection import RandomUnderSampler
-from ..utils import check_ratio
+from ..utils import check_sampling_target
 
 LOGGER = logging.getLogger(__name__)
 
 
-def make_imbalance(X, y, ratio, random_state=None, **kwargs):
+def make_imbalance(X, y, sampling_target, ratio=None, random_state=None,
+                   **kwargs):
     """Turns a dataset into an imbalanced dataset at specific ratio.
 
     A simple toy dataset to visualize clustering and classification
@@ -86,16 +88,22 @@ def make_imbalance(X, y, ratio, random_state=None, **kwargs):
     X, y = check_X_y(X, y)
     target_stats = Counter(y)
     # restrict ratio to be a dict or a callable
-    if isinstance(ratio, dict) or callable(ratio):
-        ratio_ = check_ratio(ratio, y, 'under-sampling', **kwargs)
+    if ratio is not None:
+        warnings.warn("'ratio' has been deprecated in 0.4 and will be "
+                      "removed in 0.6. Use 'sampling_target' instead.")
+        sampling_target = ratio
+    if isinstance(sampling_target, dict) or callable(sampling_target):
+        sampling_target_ = check_sampling_target(sampling_target,
+                                                 y, 'under-sampling', **kwargs)
     else:
-        raise ValueError("'ratio' has to be a dictionary or a function"
-                         " returning a dictionary. Got {} instead.".format(
-                             type(ratio)))
+        raise ValueError("'sampling_target' has to be a dictionary or a "
+                         "function returning a dictionary. Got {} instead."
+                         .format(type(sampling_target)))
 
     LOGGER.info('The original target distribution in the dataset is: %s',
                 target_stats)
-    rus = RandomUnderSampler(ratio=ratio_, replacement=False,
+    rus = RandomUnderSampler(sampling_target=sampling_target_,
+                             replacement=False,
                              random_state=random_state)
     X_resampled, y_resampled = rus.fit_sample(X, y)
     LOGGER.info('Make the dataset imbalanced: %s', Counter(y_resampled))

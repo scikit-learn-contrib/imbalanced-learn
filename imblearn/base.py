@@ -18,7 +18,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
 from sklearn.utils.validation import check_is_fitted
 
-from .utils import check_ratio, check_target_type, hash_X_y
+from .utils import check_sampling_target, check_target_type, hash_X_y
 from .utils.deprecation import deprecate_parameter
 
 
@@ -186,9 +186,9 @@ class BaseSampler(SamplerMixin):
         y = check_target_type(y)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
-        # self.sampling_type is already checked in check_ratio
-        self.sampling_target_ = check_ratio(self.sampling_target, y,
-                                            self._sampling_type)
+        # self.sampling_type is already checked in check_sampling_target
+        self.sampling_target_ = check_sampling_target(self.sampling_target, y,
+                                                      self._sampling_type)
 
         return self
 

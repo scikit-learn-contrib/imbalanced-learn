@@ -14,7 +14,7 @@ from sklearn.utils import check_random_state, safe_indexing
 from sklearn.model_selection import cross_val_predict
 
 from .base import BaseEnsembleSampler
-from ..utils import check_ratio, check_target_type
+from ..utils import check_sampling_target, check_target_type
 
 
 class BalanceCascade(BaseEnsembleSampler):
@@ -140,8 +140,8 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
         """
         super(BalanceCascade, self).fit(X, y)
         y = check_target_type(y)
-        self.sampling_target_ = check_ratio(self.sampling_target, y,
-                                            'under-sampling')
+        self.sampling_target_ = check_sampling_target(self.sampling_target, y,
+                                                      'under-sampling')
         return self
 
     def _validate_estimator(self):
