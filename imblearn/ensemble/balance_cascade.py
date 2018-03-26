@@ -108,12 +108,14 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
                  n_max_subset=None,
-                 estimator=None):
-        super(BalanceCascade, self).__init__(ratio=ratio)
+                 estimator=None,
+                 ratio=None):
+        super(BalanceCascade, self).__init__(sampling_target=sampling_target,
+                                             ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.estimator = estimator
@@ -138,7 +140,8 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
         """
         super(BalanceCascade, self).fit(X, y)
         y = check_target_type(y)
-        self.ratio_ = check_ratio(self.ratio, y, 'under-sampling')
+        self.sampling_target_ = check_ratio(self.sampling_target, y,
+                                            'under-sampling')
         return self
 
     def _validate_estimator(self):
@@ -201,8 +204,8 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             # value which will be picked at each round
             index_constant = np.empty((0, ), dtype=y.dtype)
             for target_class in target_stats.keys():
-                if target_class in self.ratio_.keys():
-                    n_samples = self.ratio_[target_class]
+                if target_class in self.sampling_target_.keys():
+                    n_samples = self.sampling_target_[target_class]
                     # extract the data of interest for this round from the
                     # current class
                     index_class = np.flatnonzero(y == target_class)
@@ -246,8 +249,9 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             # check that there is enough samples for another round
             target_stats = Counter(safe_indexing(
                 y, np.flatnonzero(samples_mask)))
-            for target_class in self.ratio_.keys():
-                if target_stats[target_class] < self.ratio_[target_class]:
+            for target_class in self.sampling_target_.keys():
+                if (target_stats[target_class] <
+                        self.sampling_target_[target_class]):
                     b_subset_search = False
 
         X_resampled, y_resampled = [], []

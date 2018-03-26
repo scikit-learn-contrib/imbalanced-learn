@@ -80,11 +80,13 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
-                 replacement=False):
-        super(RandomUnderSampler, self).__init__(ratio=ratio)
+                 replacement=False,
+                 ratio=None):
+        super(RandomUnderSampler, self).__init__(
+                sampling_target=sampling_target, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.replacement = replacement
@@ -120,8 +122,8 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
-                n_samples = self.ratio_[target_class]
+            if target_class in self.sampling_target_.keys():
+                n_samples = self.sampling_target_[target_class]
                 index_target_class = random_state.choice(
                     range(np.count_nonzero(y == target_class)),
                     size=n_samples,

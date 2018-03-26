@@ -135,15 +135,17 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  random_state=None,
                  k_neighbors=5,
                  m_neighbors=10,
                  out_step=0.5,
                  kind='regular',
                  svm_estimator=None,
-                 n_jobs=1):
-        super(SMOTE, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(SMOTE, self).__init__(sampling_target=sampling_target,
+                                    ratio=ratio)
         self.random_state = random_state
         self.kind = kind
         self.k_neighbors = k_neighbors
@@ -325,7 +327,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        for class_sample, n_samples in self.ratio_.items():
+        for class_sample, n_samples in self.sampling_target_.items():
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)
@@ -379,7 +381,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        for class_sample, n_samples in self.ratio_.items():
+        for class_sample, n_samples in self.sampling_target_.items():
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)
@@ -472,7 +474,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        for class_sample, n_samples in self.ratio_.items():
+        for class_sample, n_samples in self.sampling_target_.items():
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)

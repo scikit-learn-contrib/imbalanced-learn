@@ -7,6 +7,7 @@
 from __future__ import division
 
 import logging
+import warnings
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -18,6 +19,7 @@ from sklearn.utils import check_X_y
 from sklearn.utils.validation import check_is_fitted
 
 from .utils import check_ratio, check_target_type, hash_X_y
+from .utils.deprecation import deprecate_parameter
 
 
 class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
@@ -61,7 +63,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
 
-        check_is_fitted(self, 'ratio_')
+        check_is_fitted(self, 'sampling_target_')
         self._check_X_y(X, y)
 
         output = self._sample(X, y)
@@ -143,9 +145,25 @@ class BaseSampler(SamplerMixin):
     instead.
     """
 
-    def __init__(self, ratio='auto'):
+    def __init__(self, sampling_target='auto', ratio=None):
+        self.sampling_target = sampling_target
+        # FIXME: remove in 0.6
         self.ratio = ratio
         self.logger = logging.getLogger(self.__module__)
+
+    @property
+    def ratio_(self):
+        # FIXME: remove in 0.6
+        warnings.warn("'ratio' and 'ratio_' are deprecated. "
+                      "Use 'sampling_target' and 'sampling_target_' instead.",
+                      DeprecationWarning)
+        return self.sampling_target_
+
+    def _deprecate_ratio(self):
+        # both ratio and sampling_target should not be set
+        if self.ratio is not None:
+            deprecate_parameter(self, '0.4', 'ratio', 'sampling_target')
+            self.sampling_target = self.ratio
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -164,11 +182,13 @@ class BaseSampler(SamplerMixin):
             Return self.
 
         """
+        self._deprecate_ratio()
         y = check_target_type(y)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         # self.sampling_type is already checked in check_ratio
-        self.ratio_ = check_ratio(self.ratio, y, self._sampling_type)
+        self.sampling_target_ = check_ratio(self.sampling_target, y,
+                                            self._sampling_type)
 
         return self
 
@@ -250,15 +270,23 @@ class FunctionSampler(SamplerMixin):
                          if self.accept_sparse else False)
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         # when using a sampler, ratio_ is supposed to exist after fit
-        self.ratio_ = 'is_fitted'
+        self.sampling_target_ = 'is_fitted'
 
         return self
+
+    @property
+    def ratio_(self):
+        # FIXME: remove in 0.6
+        warnings.warn("'ratio' and 'ratio_' are deprecated. "
+                      "Use 'sampling_target' and 'sampling_target_' instead.",
+                      DeprecationWarning)
+        return self.sampling_target_
 
     def _sample(self, X, y, func=None, kw_args=None):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']
                          if self.accept_sparse else False)
-        check_is_fitted(self, 'ratio_')
+        check_is_fitted(self, 'sampling_target_')
         X_hash, y_hash = hash_X_y(X, y)
         if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
             raise RuntimeError("X and y need to be same array earlier fitted.")

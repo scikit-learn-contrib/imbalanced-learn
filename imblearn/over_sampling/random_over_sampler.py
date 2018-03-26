@@ -75,8 +75,9 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self, ratio='auto', random_state=None):
-        super(RandomOverSampler, self).__init__(ratio=ratio)
+    def __init__(self, sampling_target='auto', random_state=None, ratio=None):
+        super(RandomOverSampler, self).__init__(
+            sampling_target=sampling_target, ratio=ratio)
         self.random_state = random_state
 
     def _sample(self, X, y):
@@ -105,7 +106,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
 
         sample_indices = range(X.shape[0])
 
-        for class_sample, num_samples in self.ratio_.items():
+        for class_sample, num_samples in self.sampling_target_.items():
             target_class_indices = np.flatnonzero(y == class_sample)
             indices = random_state.randint(
                 low=0, high=target_stats[class_sample], size=num_samples)

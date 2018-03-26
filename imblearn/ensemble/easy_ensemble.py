@@ -96,12 +96,14 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
                  replacement=False,
-                 n_subsets=10):
-        super(EasyEnsemble, self).__init__(ratio=ratio)
+                 n_subsets=10,
+                 ratio=None):
+        super(EasyEnsemble, self).__init__(sampling_target=sampling_target,
+                                           ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.replacement = replacement
@@ -142,7 +144,7 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
 
         for _ in range(self.n_subsets):
             rus = RandomUnderSampler(
-                ratio=self.ratio_, return_indices=True,
+                sampling_target=self.sampling_target_, return_indices=True,
                 random_state=random_state.randint(MAX_INT),
                 replacement=self.replacement)
             sel_x, sel_y, sel_idx = rus.fit_sample(X, y)

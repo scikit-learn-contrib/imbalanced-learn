@@ -98,11 +98,13 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  random_state=None,
                  n_neighbors=5,
-                 n_jobs=1):
-        super(ADASYN, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(ADASYN, self).__init__(sampling_target=sampling_target,
+                                     ratio=ratio)
         self.random_state = random_state
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
@@ -141,7 +143,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        for class_sample, n_samples in self.ratio_.items():
+        for class_sample, n_samples in self.sampling_target_.items():
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)

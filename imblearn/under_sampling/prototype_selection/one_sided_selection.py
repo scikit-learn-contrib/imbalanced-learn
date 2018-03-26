@@ -13,6 +13,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseCleaningSampler
+from ...utils.deprecation import deprecate_parameter
 from .tomek_links import TomekLinks
 
 
@@ -104,13 +105,15 @@ KNeighborsClassifier(n_neighbors=1))
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=None,
                  n_seeds_S=1,
-                 n_jobs=1):
-        super(OneSidedSelection, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(OneSidedSelection, self).__init__(
+            sampling_target=sampling_target, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -165,7 +168,7 @@ KNeighborsClassifier(n_neighbors=1))
         idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
+            if target_class in self.sampling_target_.keys():
                 # select a sample from the current class
                 idx_maj = np.flatnonzero(y == target_class)
                 idx_maj_sample = idx_maj[random_state.randint(
@@ -200,7 +203,8 @@ KNeighborsClassifier(n_neighbors=1))
         y_resampled = safe_indexing(y, idx_under)
 
         # apply Tomek cleaning
-        tl = TomekLinks(ratio=self.ratio_, return_indices=True)
+        tl = TomekLinks(sampling_target=self.sampling_target_,
+                        return_indices=True)
         X_cleaned, y_cleaned, idx_cleaned = tl.fit_sample(X_resampled,
                                                           y_resampled)
 

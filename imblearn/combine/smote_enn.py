@@ -7,6 +7,7 @@
 from __future__ import division
 
 import logging
+import warnings
 
 from sklearn.utils import check_X_y
 
@@ -93,15 +94,17 @@ class SMOTEENN(SamplerMixin):
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  random_state=None,
                  smote=None,
-                 enn=None):
+                 enn=None,
+                 ratio=None):
         super(SMOTEENN, self).__init__()
-        self.ratio = ratio
+        self.sampling_target = sampling_target
         self.random_state = random_state
         self.smote = smote
         self.enn = enn
+        self.ratio = ratio
         self.logger = logging.getLogger(__name__)
 
     def _validate_estimator(self):
@@ -115,7 +118,9 @@ class SMOTEENN(SamplerMixin):
         # Otherwise create a default SMOTE
         else:
             self.smote_ = SMOTE(
-                ratio=self.ratio, random_state=self.random_state)
+                sampling_target=self.sampling_target,
+                random_state=self.random_state,
+                ratio=self.ratio)
 
         if self.enn is not None:
             if isinstance(self.enn, EditedNearestNeighbours):
@@ -125,7 +130,15 @@ class SMOTEENN(SamplerMixin):
                                  ' Got {} instead.'.format(type(self.enn)))
         # Otherwise create a default EditedNearestNeighbours
         else:
-            self.enn_ = EditedNearestNeighbours(ratio='all')
+            self.enn_ = EditedNearestNeighbours(sampling_target='all')
+
+    @property
+    def ratio_(self):
+        # FIXME: remove in 0.6
+        warnings.warn("'ratio' and 'ratio_' are deprecated. "
+                      "Use 'sampling_target' and 'sampling_target_' instead.",
+                      DeprecationWarning)
+        return self.sampling_target_
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -146,7 +159,7 @@ class SMOTEENN(SamplerMixin):
         """
         y = check_target_type(y)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
-        self.ratio_ = self.ratio
+        self.sampling_target_ = self.sampling_target
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
 
         return self

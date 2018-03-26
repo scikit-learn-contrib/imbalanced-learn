@@ -103,13 +103,14 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  random_state=None,
                  estimator=None,
                  voting='auto',
-                 n_jobs=1):
-        super(ClusterCentroids, self).__init__(
-            ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(ClusterCentroids, self).__init__(sampling_target=sampling_target,
+                                               ratio=ratio)
         self.random_state = random_state
         self.estimator = estimator
         self.voting = voting
@@ -179,8 +180,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
 
         X_resampled, y_resampled = [], []
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
-                n_samples = self.ratio_[target_class]
+            if target_class in self.sampling_target_.keys():
+                n_samples = self.sampling_target_[target_class]
                 self.estimator_.set_params(**{'n_clusters': n_samples})
                 self.estimator_.fit(X[y == target_class])
                 X_new, y_new = self._generate_sample(

@@ -112,14 +112,15 @@ CondensedNearestNeighbour #doctest: +SKIP
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=None,
                  n_seeds_S=1,
-                 n_jobs=1):
+                 n_jobs=1,
+                 ratio=None):
         super(CondensedNearestNeighbour, self).__init__(
-            ratio=ratio)
+            sampling_target=sampling_target, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -174,7 +175,7 @@ CondensedNearestNeighbour #doctest: +SKIP
         idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
+            if target_class in self.sampling_target_.keys():
                 # Randomly get one sample from the majority class
                 # Generate the index to select
                 idx_maj = np.flatnonzero(y == target_class)

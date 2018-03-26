@@ -125,13 +125,15 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
-                 n_jobs=1):
-        super(EditedNearestNeighbours, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(EditedNearestNeighbours, self).__init__(
+            sampling_target=sampling_target, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -184,7 +186,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         self.nn_.fit(X)
 
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
+            if target_class in self.sampling_target_.keys():
                 target_class_indices = np.flatnonzero(y == target_class)
                 X_class = safe_indexing(X, target_class_indices)
                 y_class = safe_indexing(y, target_class_indices)
@@ -317,14 +319,16 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  max_iter=100,
                  kind_sel='all',
-                 n_jobs=1):
-        super(RepeatedEditedNearestNeighbours, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(RepeatedEditedNearestNeighbours, self).__init__(
+            sampling_target=sampling_target, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -346,11 +350,13 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
 
-        self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
-                                            return_indices=self.return_indices,
-                                            n_neighbors=self.nn_,
-                                            kind_sel=self.kind_sel,
-                                            n_jobs=self.n_jobs)
+        self.enn_ = EditedNearestNeighbours(
+            sampling_target=self.sampling_target,
+            return_indices=self.return_indices,
+            n_neighbors=self.nn_,
+            kind_sel=self.kind_sel,
+            n_jobs=self.n_jobs,
+            ratio=self.ratio)
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -541,14 +547,16 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
                  allow_minority=False,
-                 n_jobs=1):
-        super(AllKNN, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(AllKNN, self).__init__(sampling_target=sampling_target,
+                                     ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -569,11 +577,13 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
                                           additional_neighbor=1)
 
-        self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
-                                            return_indices=self.return_indices,
-                                            n_neighbors=self.nn_,
-                                            kind_sel=self.kind_sel,
-                                            n_jobs=self.n_jobs)
+        self.enn_ = EditedNearestNeighbours(
+            sampling_target=self.sampling_target,
+            return_indices=self.return_indices,
+            n_neighbors=self.nn_,
+            kind_sel=self.kind_sel,
+            n_jobs=self.n_jobs,
+            ratio=self.ratio)
 
     def _sample(self, X, y):
         """Resample the dataset.

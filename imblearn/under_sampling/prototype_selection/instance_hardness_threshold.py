@@ -111,12 +111,14 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
 
     def __init__(self,
                  estimator=None,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
                  cv=5,
-                 n_jobs=1):
-        super(InstanceHardnessThreshold, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(InstanceHardnessThreshold, self).__init__(
+            sampling_target=sampling_target, ratio=ratio)
         self.random_state = random_state
         self.estimator = estimator
         self.return_indices = return_indices
@@ -183,8 +185,8 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
-                n_samples = self.ratio_[target_class]
+            if target_class in self.sampling_target_.keys():
+                n_samples = self.sampling_target_[target_class]
                 threshold = np.percentile(
                     probabilities[y == target_class],
                     (1. - (n_samples / target_stats[target_class])) * 100.)

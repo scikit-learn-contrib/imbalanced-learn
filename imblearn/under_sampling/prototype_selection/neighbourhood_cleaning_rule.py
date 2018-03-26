@@ -118,14 +118,16 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
                  threshold_cleaning=0.5,
-                 n_jobs=1):
-        super(NeighbourhoodCleaningRule, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(NeighbourhoodCleaningRule, self).__init__(
+            sampling_target=sampling_target, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -178,10 +180,12 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
         """
         self._validate_estimator()
-        enn = EditedNearestNeighbours(ratio=self.ratio, return_indices=True,
+        enn = EditedNearestNeighbours(sampling_target=self.sampling_target,
+                                      return_indices=True,
                                       n_neighbors=self.n_neighbors,
                                       kind_sel='mode',
-                                      n_jobs=self.n_jobs)
+                                      n_jobs=self.n_jobs,
+                                      ratio=self.ratio)
         _, _, index_not_a1 = enn.fit_sample(X, y)
         index_a1 = np.ones(y.shape, dtype=bool)
         index_a1[index_not_a1] = False
@@ -192,7 +196,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         class_minority = min(target_stats, key=target_stats.get)
         # compute which classes to consider for cleaning for the A2 group
         classes_under_sample = [c for c, n_samples in target_stats.items()
-                                if (c in self.ratio_.keys() and
+                                if (c in self.sampling_target_.keys() and
                                     (n_samples > X.shape[0] *
                                      self.threshold_cleaning))]
         self.nn_.fit(X)

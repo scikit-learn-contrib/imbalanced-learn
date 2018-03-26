@@ -94,9 +94,10 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self, ratio='auto', return_indices=False,
-                 random_state=None, n_jobs=1):
-        super(TomekLinks, self).__init__(ratio=ratio)
+    def __init__(self, sampling_target='auto', return_indices=False,
+                 random_state=None, n_jobs=1, ratio=None):
+        super(TomekLinks, self).__init__(sampling_target=sampling_target,
+                                         ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_jobs = n_jobs
@@ -177,7 +178,7 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         nn.fit(X)
         nns = nn.kneighbors(X, return_distance=False)[:, 1]
 
-        links = self.is_tomek(y, nns, self.ratio_)
+        links = self.is_tomek(y, nns, self.sampling_target_)
         idx_under = np.flatnonzero(np.logical_not(links))
 
         if self.return_indices:

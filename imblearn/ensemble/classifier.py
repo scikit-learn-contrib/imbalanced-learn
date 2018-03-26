@@ -192,11 +192,12 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
                  bootstrap_features=False,
                  oob_score=False,
                  warm_start=False,
-                 ratio='auto',
+                 sampling_target='auto',
                  replacement=False,
                  n_jobs=1,
                  random_state=None,
-                 verbose=0):
+                 verbose=0,
+                 ratio=None):
 
         super(BaggingClassifier, self).__init__(
             base_estimator,
@@ -210,6 +211,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             n_jobs=n_jobs,
             random_state=random_state,
             verbose=verbose)
+        self.sampling_target = sampling_target
         self.ratio = ratio
         self.replacement = replacement
 
@@ -230,8 +232,10 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             base_estimator = clone(default)
 
         self.base_estimator_ = Pipeline(
-            [('sampler', RandomUnderSampler(ratio=self.ratio,
-                                            replacement=self.replacement)),
+            [('sampler', RandomUnderSampler(
+                sampling_target=self.sampling_target,
+                replacement=self.replacement,
+                ratio=self.ratio)),
              ('classifier', base_estimator)])
 
     def fit(self, X, y):

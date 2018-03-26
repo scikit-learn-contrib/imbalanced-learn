@@ -15,7 +15,6 @@ import pytest
 
 import numpy as np
 from scipy import sparse
-from pytest import raises
 
 from sklearn.datasets import make_classification
 from sklearn.cluster import KMeans
@@ -44,6 +43,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_fit
     yield check_samplers_fit_sample
     yield check_samplers_ratio_fit_sample
+    yield check_samplers_sampling_target_fit_sample
     yield check_samplers_sparse
     yield check_samplers_pandas
     yield check_samplers_multiclass_ova
@@ -111,7 +111,7 @@ def check_samplers_no_fit_error(name, Sampler):
     sampler = Sampler()
     X = np.random.random((20, 2))
     y = np.array([1] * 5 + [0] * 15)
-    with raises(NotFittedError, match="instance is not fitted yet."):
+    with pytest.raises(NotFittedError, match="instance is not fitted yet."):
         sampler.sample(X, y)
 
 
@@ -122,7 +122,8 @@ def check_samplers_X_consistancy_sample(name, Sampler):
     sampler.fit(X, y)
     X_different = np.random.random((40, 2))
     y_different = y = np.array([1] * 25 + [0] * 15)
-    with raises(RuntimeError, match="X and y need to be same array earlier"):
+    msg = "X and y need to be same array earlier"
+    with pytest.raises(RuntimeError, match=msg):
         sampler.sample(X_different, y_different)
 
 
@@ -131,7 +132,9 @@ def check_samplers_fit(name, Sampler):
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
     sampler.fit(X, y)
+    # FIXME remove in 0.6 -> ratio is deprecated
     assert hasattr(sampler, 'ratio_')
+    assert hasattr(sampler, 'sampling_target_')
 
 
 def check_samplers_fit_sample(name, Sampler):
@@ -161,6 +164,7 @@ def check_samplers_fit_sample(name, Sampler):
                    for value in Counter(y_ensemble).values())
 
 
+# FIXME remove in 0.6 -> ratio will be deprecated
 def check_samplers_ratio_fit_sample(name, Sampler):
     # in this test we will force all samplers to not change the class 1
     X, y = make_classification(n_samples=1000, n_classes=3,
@@ -183,9 +187,39 @@ def check_samplers_ratio_fit_sample(name, Sampler):
         sampler.set_params(ratio=ratio)
         X_res, y_res = sampler.fit_sample(X, y)
         assert Counter(y_res)[1] == expected_stat
-    elif isinstance(sampler, BaseEnsembleSampler):
+    if isinstance(sampler, BaseEnsembleSampler):
         ratio = {2: 201, 0: 201}
         sampler.set_params(ratio=ratio)
+        X_res, y_res = sampler.fit_sample(X, y)
+        y_ensemble = y_res[0]
+        assert Counter(y_ensemble)[1] == expected_stat
+
+
+def check_samplers_sampling_target_fit_sample(name, Sampler):
+    # in this test we will force all samplers to not change the class 1
+    X, y = make_classification(n_samples=1000, n_classes=3,
+                               n_informative=4, weights=[0.2, 0.3, 0.5],
+                               random_state=0)
+    sampler = Sampler()
+    expected_stat = Counter(y)[1]
+    if isinstance(sampler, BaseOverSampler):
+        sampling_target = {2: 498, 0: 498}
+        sampler.set_params(sampling_target=sampling_target)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert Counter(y_res)[1] == expected_stat
+    elif isinstance(sampler, BaseUnderSampler):
+        sampling_target = {2: 201, 0: 201}
+        sampler.set_params(sampling_target=sampling_target)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert Counter(y_res)[1] == expected_stat
+    elif isinstance(sampler, BaseCleaningSampler):
+        sampling_target = {2: 201, 0: 201}
+        sampler.set_params(sampling_target=sampling_target)
+        X_res, y_res = sampler.fit_sample(X, y)
+        assert Counter(y_res)[1] == expected_stat
+    if isinstance(sampler, BaseEnsembleSampler):
+        sampling_target = {2: 201, 0: 201}
+        sampler.set_params(sampling_target=sampling_target)
         X_res, y_res = sampler.fit_sample(X, y)
         y_ensemble = y_res[0]
         assert Counter(y_ensemble)[1] == expected_stat

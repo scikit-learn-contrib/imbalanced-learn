@@ -113,14 +113,16 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_target='auto',
                  return_indices=False,
                  random_state=None,
                  version=1,
                  n_neighbors=3,
                  n_neighbors_ver3=3,
-                 n_jobs=1):
-        super(NearMiss, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(NearMiss, self).__init__(sampling_target=sampling_target,
+                                       ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.version = version
@@ -254,8 +256,8 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         self.nn_.fit(safe_indexing(X, minority_class_indices))
 
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
-                n_samples = self.ratio_[target_class]
+            if target_class in self.sampling_target_.keys():
+                n_samples = self.sampling_target_[target_class]
                 target_class_indices = np.flatnonzero(y == target_class)
                 X_class = safe_indexing(X, target_class_indices)
                 y_class = safe_indexing(y, target_class_indices)
