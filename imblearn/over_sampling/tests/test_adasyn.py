@@ -38,7 +38,7 @@ def test_ada_init():
 def test_ada_fit():
     ada = ADASYN(random_state=RND_SEED)
     ada.fit(X, Y)
-    assert ada.ratio_ == {0: 4, 1: 0}
+    assert ada.ratio_ == {0: 4}
 
 
 def test_ada_fit_sample():
