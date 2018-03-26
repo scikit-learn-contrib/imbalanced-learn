@@ -5,9 +5,8 @@
 
 from collections import Counter
 
-import numpy as np
 import pytest
-from pytest import raises
+import numpy as np
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
@@ -37,7 +36,7 @@ def test_check_neighbors_object():
     estimator = NearestNeighbors(n_neighbors)
     assert estimator is check_neighbors_object(name, estimator)
     n_neighbors = 'rnd'
-    with raises(ValueError, match="has to be one of"):
+    with pytest.raises(ValueError, match="has to be one of"):
         check_neighbors_object(name, n_neighbors)
 
 
@@ -71,16 +70,22 @@ def test_check_target_warning():
         check_target_type(target)
 
 
+def test_check_ratio_warning():
+    msg = 'dict for cleaning methods is deprecated'
+    with pytest.warns(DeprecationWarning, match=msg):
+        check_ratio({1: 0, 2: 0, 3: 0}, multiclass_target, 'clean-sampling')
+
+
 def test_check_ratio_error():
-    with raises(ValueError, match="'sampling_type' should be one of"):
+    with pytest.raises(ValueError, match="'sampling_type' should be one of"):
         check_ratio('auto', np.array([1, 2, 3]), 'rnd')
 
     error_regex = "The target 'y' needs to have more than 1 class."
-    with raises(ValueError, match=error_regex):
+    with pytest.raises(ValueError, match=error_regex):
         check_ratio('auto', np.ones((10, )), 'over-sampling')
 
     error_regex = "When 'ratio' is a string, it needs to be one of"
-    with raises(ValueError, match=error_regex):
+    with pytest.raises(ValueError, match=error_regex):
         check_ratio('rnd', np.array([1, 2, 3]), 'over-sampling')
 
 
@@ -111,21 +116,21 @@ def test_ratio_class_target_unknown(ratio, sampling_method):
 def test_ratio_dict_error():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     ratio = {1: -100, 2: 50, 3: 25}
-    with raises(ValueError, match="in a class cannot be negative."):
+    with pytest.raises(ValueError, match="in a class cannot be negative."):
         check_ratio(ratio, y, 'under-sampling')
     ratio = {1: 45, 2: 100, 3: 70}
     error_regex = ("With over-sampling methods, the number of samples in a"
                    " class should be greater or equal to the original number"
                    " of samples. Originally, there is 50 samples and 45"
                    " samples are asked.")
-    with raises(ValueError, match=error_regex):
+    with pytest.raises(ValueError, match=error_regex):
         check_ratio(ratio, y, 'over-sampling')
 
     error_regex = ("With under-sampling methods, the number of samples in a"
                    " class should be less or equal to the original number of"
                    " samples. Originally, there is 25 samples and 70 samples"
                    " are asked.")
-    with raises(ValueError, match=error_regex):
+    with pytest.raises(ValueError, match=error_regex):
                         check_ratio(ratio, y, 'under-sampling')
 
 
