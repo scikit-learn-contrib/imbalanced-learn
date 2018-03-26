@@ -14,6 +14,7 @@ from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.externals import six, joblib
 from sklearn.utils.multiclass import type_of_target
+from sklearn.utils.deprecation import deprecated
 
 from ..exceptions import raise_isinstance_error
 
@@ -424,3 +425,53 @@ SAMPLING_TARGET_KIND = {'minority': _sampling_target_minority,
                         'not majority': _sampling_target_not_majority,
                         'all': _sampling_target_all,
                         'auto': _sampling_target_auto}
+
+
+@deprecated("imblearn.utils.check_ratio was deprecated in favor of "
+            "imblearn.utils.check_sampling_target in 0.4. It will be "
+            "removed in 0.6.")
+def check_ratio(ratio, y, sampling_type, **kwargs):
+    """Sampling target validation for samplers.
+
+    Checks ratio for consistent type and return a dictionary
+    containing each targeted class with its corresponding number of
+    pixel.
+
+    Parameters
+    ----------
+    ratio : str, dict or callable,
+        Ratio to use for resampling the data set.
+
+        - If ``str``, has to be one of: (i) ``'minority'``: resample the
+          minority class; (ii) ``'majority'``: resample the majority class,
+          (iii) ``'not minority'``: resample all classes apart of the minority
+          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
+          correspond to ``'all'`` with for over-sampling methods and ``'not
+          minority'`` for under-sampling methods. The classes targeted will be
+          over-sampled or under-sampled to achieve an equal number of sample
+          with the majority or minority class.
+        - If ``dict``, the keys correspond to the targeted classes. The values
+          correspond to the desired number of samples.
+        - If callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples.
+
+    y : ndarray, shape (n_samples,)
+        The target array.
+
+    sampling_type : str,
+        The type of sampling. Can be either ``'over-sampling'`` or
+        ``'under-sampling'``.
+
+    kwargs : dict, optional
+        Dictionary of additional keyword arguments to pass to ``ratio``.
+
+    Returns
+    -------
+    ratio_converted : dict,
+        The converted and validated ratio. Returns a dictionary with
+        the key being the class target and the value being the desired
+        number of samples.
+
+    """
+    return check_sampling_target(ratio, y, sampling_type, **kwargs)
