@@ -18,7 +18,7 @@ from sklearn.utils.multiclass import type_of_target
 from ..exceptions import raise_isinstance_error
 
 SAMPLING_KIND = ('over-sampling', 'under-sampling', 'clean-sampling',
-                 'ensemble')
+                 'ensemble', 'scaling')
 TARGET_KIND = ('binary', 'multiclass', 'multilabel-indicator')
 
 
