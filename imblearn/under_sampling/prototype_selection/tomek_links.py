@@ -22,27 +22,30 @@ class TomekLinks(BaseCleaningSampler):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
+    sampling_target : str, list or callable
+        Sampling information to sample the data set.
 
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
+        - When ``str``, specify the class targeted by the resampling. Note the
+          the number of samples will not be equal in each. Possible choices
+          are:
+
+            ``'minority'``: resample only the minority class;
+
+            ``'majority'``: resample only the majority class;
+
+            ``'not minority'``: resample all classes but the minority class;
+
+            ``'not majority'``: resample all classes but the majority class;
+
+            ``'all'``: resample all classes;
+
+            ``'auto'``: equivalent to ``'not minority'``.
+
+        - When ``list``, the list contains the targeted classes.
+
+        - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
-          desired number of samples.
-
-        .. warning::
-           This algorithm is a cleaning under-sampling method. When providing a
-           ``dict``, only the targeted classes will be used; the number of
-           samples will be discarded.
+          desired number of samples for each class.
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -59,6 +62,11 @@ class TomekLinks(BaseCleaningSampler):
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_target`` instead. It will be removed in
+           0.6.
 
     Notes
     -----

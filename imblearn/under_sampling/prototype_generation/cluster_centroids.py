@@ -35,22 +35,42 @@ class ClusterCentroids(BaseUnderSampler):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
+    sampling_target : float, str, dict, callable, (default='auto')
+        Sampling information to sample the data set.
 
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
+        - When ``float``, it corresponds to the ratio :math:`\\alpha_{us}`
+          defined by :math:`N_{rM} = \\alpha_{us} \\times N_{m}` where
+          :math:`N_{rM}` and :math:`N_{m}` are the number of samples in the
+          majority class after resampling and the number of samples in the
+          minority class, respectively.
+
+          .. warning::
+             ``float`` is only available for **binary** classification. An
+             error is raised for multi-class classification.
+
+        - When ``str``, specify the class targeted by the resampling. The
+          number of samples in the different classes will be equalized.
+          Possible choices are:
+
+            ``'minority'``: resample only the minority class;
+
+            ``'majority'``: resample only the majority class;
+
+            ``'not minority'``: resample all classes but the minority class;
+
+            ``'not majority'``: resample all classes but the majority class;
+
+            ``'all'``: resample all classes;
+
+            ``'auto'``: equivalent to ``'not minority'``.
+
+        - When ``dict``, the keys correspond to the targeted classes. The
+          values correspond to the desired number of samples for each targeted
+          class.
+
+        - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
-          desired number of samples.
+          desired number of samples for each class.
 
     random_state : int, RandomState instance or None, optional (default=None)
         If int, ``random_state`` is the seed used by the random number
@@ -75,6 +95,11 @@ class ClusterCentroids(BaseUnderSampler):
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_target`` instead. It will be removed in
+           0.6.
 
     Notes
     -----

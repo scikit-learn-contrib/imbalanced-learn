@@ -186,7 +186,6 @@ class BaseSampler(SamplerMixin):
         y = check_target_type(y)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
-        # self.sampling_type is already checked in check_sampling_target
         self.sampling_target_ = check_sampling_target(self.sampling_target, y,
                                                       self._sampling_type)
 

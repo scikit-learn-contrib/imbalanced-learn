@@ -346,43 +346,88 @@ def _sampling_target_float(sampling_target, y, sampling_type):
 def check_sampling_target(sampling_target, y, sampling_type, **kwargs):
     """Sampling target validation for samplers.
 
-    Checks ratio for consistent type and return a dictionary
-    containing each targeted class with its corresponding number of
-    pixel.
+    Checks that ``sampling_target`` is of consistent type and return a
+    dictionary containing each targeted class with its corresponding
+    number of sample. It is used in :class:`imblearn.base.BaseSampler`.
 
     Parameters
     ----------
-    ratio : str, dict or callable,
-        Ratio to use for resampling the data set.
+    sampling_target : float, str, dict, list or callable,
+        Sampling information to sample the data set.
 
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
+        - When ``float``:
+
+            For **under-sampling methods**, it corresponds to the ratio
+            :math:`\\alpha_{us}` defined by :math:`N_{rM} = \\alpha_{us}
+            \\times N_{m}` where :math:`N_{rM}` and :math:`N_{m}` are the
+            number of samples in the majority class after resampling and the
+            number of samples in the minority class, respectively;
+
+            For **over-sampling methods**, it correspond to the ratio
+            :math:`\\alpha_{os}` defined by :math:`N_{rm} = \\alpha_{os}
+            \\times N_{m}` where :math:`N_{rm}` and :math:`N_{M}` are the
+            number of samples in the minority class after resampling and the
+            number of samples in the majority class, respectively.
+
+            .. warning::
+               ``float`` is only available for **binary** classification. An
+               error is raised for multi-class classification and with cleaning
+               samplers.
+
+        - When ``str``, specify the class targeted by the resampling. For
+          **under- and over-sampling methods**, the number of samples in the
+          different classes will be equalized. For **cleaning methods**, the
+          number of samples will not be equal. Possible choices are:
+
+            ``'minority'``: resample only the minority class;
+
+            ``'majority'``: resample only the majority class;
+
+            ``'not minority'``: resample all classes but the minority class;
+
+            ``'not majority'``: resample all classes but the majority class;
+
+            ``'all'``: resample all classes;
+
+            ``'auto'``: for under-sampling methods, equivalent to ``'not
+            minority'`` and for over-sampling methods, equivalent to ``'not
+            majority'``.
+
+        - When ``dict``, the keys correspond to the targeted classes. The
+          values correspond to the desired number of samples for each targeted
+          class.
+
+          .. warning::
+             ``dict`` is available for both **under- and over-sampling
+             methods**. An error is raised with **cleaning methods**. Use a
+             ``list`` instead.
+
+        - When ``list``, the list contains the targeted classes. It used only
+          for **cleaning methods``.
+
+          .. warning::
+             ``list`` is available for **cleaning methods**. An error is raised
+             with **under- and over-sampling methods**.
+
+        - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
-          desired number of samples.
+          desired number of samples for each class.
 
     y : ndarray, shape (n_samples,)
         The target array.
 
     sampling_type : str,
-        The type of sampling. Can be either ``'over-sampling'`` or
-        ``'under-sampling'``.
+        The type of sampling. Can be either ``'over-sampling'``,
+        ``'under-sampling'``, or ``'clean-sampling'``.
 
     kwargs : dict, optional
-        Dictionary of additional keyword arguments to pass to ``ratio``.
+        Dictionary of additional keyword arguments to pass to
+        ``sampling_target`` when this is a callable.
 
     Returns
     -------
-    ratio_converted : dict,
-        The converted and validated ratio. Returns a dictionary with
+    sampling_target_converted : dict,
+        The converted and validated sampling target. Returns a dictionary with
         the key being the class target and the value being the desired
         number of samples.
 
@@ -435,7 +480,11 @@ def check_ratio(ratio, y, sampling_type, **kwargs):
 
     Checks ratio for consistent type and return a dictionary
     containing each targeted class with its corresponding number of
-    pixel.
+    sample.
+
+    .. deprecated:: 0.4
+       This function is deprecated in favor of
+       :func:`imblearn.utils.check_sampling_target`. It will be removed in 0.6
 
     Parameters
     ----------

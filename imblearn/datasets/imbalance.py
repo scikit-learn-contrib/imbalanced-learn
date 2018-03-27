@@ -35,15 +35,21 @@ def make_imbalance(X, y, sampling_target, ratio=None, random_state=None,
     y : ndarray, shape (n_samples, )
         Corresponding label for each sample in X.
 
-    ratio : str, dict, or callable, optional (default='auto')
+    sampling_target : dict, or callable,
         Ratio to use for resampling the data set.
 
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples. All samples will be
-          passed through if the class is not specified.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
+        - When ``dict``, the keys correspond to the targeted classes. The
+          values correspond to the desired number of samples for each targeted
+          class.
+
+        - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
-          desired number of samples.
+          desired number of samples for each class.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_target`` instead. It will be removed in
+           0.6.
 
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
