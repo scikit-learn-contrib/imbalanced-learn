@@ -61,7 +61,7 @@ class SMOTE(BaseOverSampler):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    m_neighbors : int int or object, optional (default=10)
+    m_neighbors : int or object, optional (default=10)
         If int, number of nearest neighbours to use to determine if a minority
         sample is in danger. Used with ``kind={'borderline1', 'borderline2',
         'svm'}``.  If object, an estimator that inherits
