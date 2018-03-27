@@ -31,8 +31,8 @@ Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
 def test_fit_sample_auto():
-    ratio = 'auto'
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+    sampling_target = 'auto'
+    bc = BalanceCascade(sampling_target=sampling_target, random_state=RND_SEED,
                         return_indices=True)
     X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
     X_gt = np.array([[[1.15514042, 0.0129463],
@@ -78,8 +78,8 @@ def test_fit_sample_auto():
 
 
 def test_fit_sample_half():
-    ratio = {0: 8, 1: 10}
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED)
+    sampling_target = {0: 8, 1: 10}
+    bc = BalanceCascade(sampling_target=sampling_target, random_state=RND_SEED)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
     X_gt = np.array([[[-0.41635887, -0.38299653],
                       [0.53366841, -0.30312976],
@@ -105,9 +105,9 @@ def test_fit_sample_half():
 
 
 def test_fit_sample_auto_early_stop():
-    ratio = 'auto'
+    sampling_target = 'auto'
     estimator = LinearSVC(random_state=RND_SEED)
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+    bc = BalanceCascade(sampling_target=sampling_target, random_state=RND_SEED,
                         return_indices=False, estimator=estimator,
                         n_max_subset=1)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
@@ -133,9 +133,9 @@ def test_fit_sample_auto_early_stop():
 
 
 def test_give_classifier_obj():
-    ratio = 'auto'
+    sampling_target = 'auto'
     estimator = RandomForestClassifier(random_state=RND_SEED)
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+    bc = BalanceCascade(sampling_target=sampling_target, random_state=RND_SEED,
                         return_indices=False, estimator=estimator)
     X_resampled, y_resampled = bc.fit_sample(X, Y)
     X_gt = np.array([[[1.15514042, 0.0129463],
@@ -160,9 +160,9 @@ def test_give_classifier_obj():
 
 
 def test_give_classifier_wrong_obj():
-    ratio = 'auto'
+    sampling_target = 'auto'
     classifier = 2
-    bc = BalanceCascade(ratio=ratio, random_state=RND_SEED,
+    bc = BalanceCascade(sampling_target=sampling_target, random_state=RND_SEED,
                         return_indices=True, estimator=classifier)
     with raises(ValueError, match="Invalid parameter `estimator`"):
         bc.fit_sample(X, Y)

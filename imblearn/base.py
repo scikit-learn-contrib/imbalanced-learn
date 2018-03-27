@@ -245,11 +245,12 @@ class FunctionSampler(SamplerMixin):
 
     >>> from collections import Counter
     >>> from imblearn.under_sampling import RandomUnderSampler
-    >>> def func(X, y, ratio, random_state):
-    ...   return RandomUnderSampler(ratio=ratio,
+    >>> def func(X, y, sampling_target, random_state):
+    ...   return RandomUnderSampler(sampling_target=sampling_target,
     ...                             random_state=random_state).fit_sample(X, y)
     >>> sampler = FunctionSampler(func=func,
-    ...                           kw_args={'ratio': 'auto', 'random_state': 0})
+    ...                           kw_args={'sampling_target': 'auto',
+    ...                                    'random_state': 0})
     >>> X_res, y_res = sampler.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(
     ...     sorted(Counter(y_res).items())))

@@ -51,8 +51,9 @@ def test_rus_fit_sample_with_indices():
 
 
 def test_rus_fit_sample_half():
-    ratio = {0: 3, 1: 6}
-    rus = RandomUnderSampler(ratio=ratio, random_state=RND_SEED,
+    sampling_target = {0: 3, 1: 6}
+    rus = RandomUnderSampler(sampling_target=sampling_target,
+                             random_state=RND_SEED,
                              replacement=True)
     X_resampled, y_resampled = rus.fit_sample(X, Y)
 

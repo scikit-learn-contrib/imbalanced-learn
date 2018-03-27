@@ -30,7 +30,8 @@ iris = load_iris()
 
 def test_balanced_bagging_classifier():
     # Check classification for various parameter settings.
-    X, y = make_imbalance(iris.data, iris.target, ratio={0: 20, 1: 25, 2: 50},
+    X, y = make_imbalance(iris.data, iris.target,
+                          sampling_target={0: 20, 1: 25, 2: 50},
                           random_state=0)
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         random_state=0)
@@ -54,7 +55,8 @@ def test_balanced_bagging_classifier():
 
 def test_bootstrap_samples():
     # Test that bootstrapping samples generate non-perfect base estimators.
-    X, y = make_imbalance(iris.data, iris.target, ratio={0: 20, 1: 25, 2: 50},
+    X, y = make_imbalance(iris.data, iris.target,
+                          sampling_target={0: 20, 1: 25, 2: 50},
                           random_state=0)
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         random_state=0)
@@ -68,7 +70,7 @@ def test_bootstrap_samples():
         max_samples=1.0,
         bootstrap=False,
         n_estimators=10,
-        ratio={},
+        sampling_target={},
         random_state=0).fit(X_train, y_train)
 
     assert (ensemble.score(X_train, y_train) ==
@@ -87,7 +89,8 @@ def test_bootstrap_samples():
 
 def test_bootstrap_features():
     # Test that bootstrapping features may generate duplicate features.
-    X, y = make_imbalance(iris.data, iris.target, ratio={0: 20, 1: 25, 2: 50},
+    X, y = make_imbalance(iris.data, iris.target,
+                          sampling_target={0: 20, 1: 25, 2: 50},
                           random_state=0)
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         random_state=0)
@@ -114,7 +117,8 @@ def test_bootstrap_features():
 
 def test_probability():
     # Predict probabilities.
-    X, y = make_imbalance(iris.data, iris.target, ratio={0: 20, 1: 25, 2: 50},
+    X, y = make_imbalance(iris.data, iris.target,
+                          sampling_target={0: 20, 1: 25, 2: 50},
                           random_state=0)
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         random_state=0)
@@ -149,7 +153,8 @@ def test_probability():
 def test_oob_score_classification():
     # Check that oob prediction is a good estimation of the generalization
     # error.
-    X, y = make_imbalance(iris.data, iris.target, ratio={0: 20, 1: 25, 2: 50},
+    X, y = make_imbalance(iris.data, iris.target,
+                          sampling_target={0: 20, 1: 25, 2: 50},
                           random_state=0)
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         random_state=0)
@@ -180,7 +185,8 @@ def test_oob_score_classification():
 
 def test_single_estimator():
     # Check singleton ensembles.
-    X, y = make_imbalance(iris.data, iris.target, ratio={0: 20, 1: 25, 2: 50},
+    X, y = make_imbalance(iris.data, iris.target,
+                          sampling_target={0: 20, 1: 25, 2: 50},
                           random_state=0)
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         random_state=0)
@@ -201,7 +207,8 @@ def test_single_estimator():
 
 def test_error():
     # Test that it gives proper exception on deficient input.
-    X, y = make_imbalance(iris.data, iris.target, ratio={0: 20, 1: 25, 2: 50})
+    X, y = make_imbalance(iris.data, iris.target,
+                          sampling_target={0: 20, 1: 25, 2: 50})
     base = DecisionTreeClassifier()
 
     # Test n_estimators
@@ -258,7 +265,8 @@ def test_gridsearch():
 
 def test_base_estimator():
     # Check base_estimator and its default values.
-    X, y = make_imbalance(iris.data, iris.target, ratio={0: 20, 1: 25, 2: 50},
+    X, y = make_imbalance(iris.data, iris.target,
+                          sampling_target={0: 20, 1: 25, 2: 50},
                           random_state=0)
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         random_state=0)
@@ -286,7 +294,8 @@ def test_base_estimator():
 
 
 def test_bagging_with_pipeline():
-    X, y = make_imbalance(iris.data, iris.target, ratio={0: 20, 1: 25, 2: 50},
+    X, y = make_imbalance(iris.data, iris.target,
+                          sampling_target={0: 20, 1: 25, 2: 50},
                           random_state=0)
     estimator = BalancedBaggingClassifier(
         make_pipeline(SelectKBest(k=1),

@@ -58,7 +58,8 @@ def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
         by np.random.
 
     kwargs : dict, optional
-        Dictionary of additional keyword arguments to pass to ``ratio``.
+        Dictionary of additional keyword arguments to pass to
+        ``sampling_target``.
 
     Returns
     -------
@@ -73,7 +74,7 @@ def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
     See
     :ref:`sphx_glr_auto_examples_applications_plot_multi_class_under_sampling.py`,
     :ref:`sphx_glr_auto_examples_datasets_plot_make_imbalance.py`, and
-    :ref:`sphx_glr_auto_examples_plot_ratio_usage.py`.
+    :ref:`sphx_glr_auto_examples_plot_sampling_target_usage.py`.
 
     Examples
     --------
@@ -85,7 +86,8 @@ def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
     >>> X, y = data.data, data.target
     >>> print('Distribution before imbalancing: {}'.format(Counter(y)))
     Distribution before imbalancing: Counter({0: 50, 1: 50, 2: 50})
-    >>> X_res, y_res = make_imbalance(X, y, ratio={0: 10, 1: 20, 2: 30},
+    >>> X_res, y_res = make_imbalance(X, y,
+    ...                               sampling_target={0: 10, 1: 20, 2: 30},
     ...                               random_state=42)
     >>> print('Distribution after imbalancing: {}'.format(Counter(y_res)))
     Distribution after imbalancing: Counter({2: 30, 1: 20, 0: 10})

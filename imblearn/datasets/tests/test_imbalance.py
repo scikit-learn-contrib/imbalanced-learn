@@ -27,28 +27,28 @@ def test_make_imbalanced_backcompat():
 
 
 def test_make_imbalance_error():
-    # we are reusing part of utils.check_ratio, however this is not cover in
-    # the common tests so we will repeat it here
-    ratio = {0: -100, 1: 50, 2: 50}
+    # we are reusing part of utils.check_sampling_target, however this is not
+    # cover in the common tests so we will repeat it here
+    sampling_target = {0: -100, 1: 50, 2: 50}
     with raises(ValueError, match="in a class cannot be negative"):
-        make_imbalance(X, Y, ratio)
-    ratio = {0: 10, 1: 70}
+        make_imbalance(X, Y, sampling_target)
+    sampling_target = {0: 10, 1: 70}
     with raises(ValueError, match="should be less or equal to the original"):
-        make_imbalance(X, Y, ratio)
+        make_imbalance(X, Y, sampling_target)
     y_ = np.zeros((X.shape[0], ))
-    ratio = {0: 10}
+    sampling_target = {0: 10}
     with raises(ValueError, match="needs to have more than 1 class."):
-        make_imbalance(X, y_, ratio)
-    ratio = 'random-string'
+        make_imbalance(X, y_, sampling_target)
+    sampling_target = 'random-string'
     with raises(ValueError, match="has to be a dictionary or a function"):
-        make_imbalance(X, Y, ratio)
+        make_imbalance(X, Y, sampling_target)
 
 
 def test_make_imbalance_dict():
-    ratio = {0: 10, 1: 20, 2: 30}
-    X_, y_ = make_imbalance(X, Y, ratio=ratio)
-    assert Counter(y_) == ratio
+    sampling_target = {0: 10, 1: 20, 2: 30}
+    X_, y_ = make_imbalance(X, Y, sampling_target=sampling_target)
+    assert Counter(y_) == sampling_target
 
-    ratio = {0: 10, 1: 20}
-    X_, y_ = make_imbalance(X, Y, ratio=ratio)
+    sampling_target = {0: 10, 1: 20}
+    X_, y_ = make_imbalance(X, Y, sampling_target=sampling_target)
     assert Counter(y_) == {0: 10, 1: 20, 2: 50}

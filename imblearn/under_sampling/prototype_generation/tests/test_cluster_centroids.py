@@ -33,8 +33,9 @@ def test_fit_sample_check_voting():
 
 
 def test_fit_sample_auto():
-    ratio = 'auto'
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
+    sampling_target = 'auto'
+    cc = ClusterCentroids(sampling_target=sampling_target,
+                          random_state=RND_SEED)
     X_resampled, y_resampled = cc.fit_sample(X, Y)
     X_gt = np.array([[0.92923648, 0.76103773],
                      [0.47104475, 0.44386323],
@@ -48,8 +49,9 @@ def test_fit_sample_auto():
 
 
 def test_fit_sample_half():
-    ratio = {0: 3, 1: 6}
-    cc = ClusterCentroids(ratio=ratio, random_state=RND_SEED)
+    sampling_target = {0: 3, 1: 6}
+    cc = ClusterCentroids(sampling_target=sampling_target,
+                          random_state=RND_SEED)
     X_resampled, y_resampled = cc.fit_sample(X, Y)
     X_gt = np.array([[0.92923648, 0.76103773],
                      [0.13347175, 0.12167502],
@@ -79,10 +81,11 @@ def test_multiclass_fit_sample():
 
 
 def test_fit_sample_object():
-    ratio = 'auto'
+    sampling_target = 'auto'
     cluster = KMeans(random_state=RND_SEED)
     cc = ClusterCentroids(
-        ratio=ratio, random_state=RND_SEED, estimator=cluster)
+        sampling_target=sampling_target, random_state=RND_SEED,
+        estimator=cluster)
 
     X_resampled, y_resampled = cc.fit_sample(X, Y)
     X_gt = np.array([[0.92923648, 0.76103773],
@@ -97,12 +100,12 @@ def test_fit_sample_object():
 
 
 def test_fit_hard_voting():
-    ratio = 'auto'
+    sampling_target = 'auto'
     voting = 'hard'
     cluster = KMeans(random_state=RND_SEED)
     cc = ClusterCentroids(
-        ratio=ratio, random_state=RND_SEED, estimator=cluster,
-        voting=voting)
+        sampling_target=sampling_target, random_state=RND_SEED,
+        estimator=cluster, voting=voting)
 
     X_resampled, y_resampled = cc.fit_sample(X, Y)
     X_gt = np.array([[0.92923648, 0.76103773],
@@ -119,14 +122,16 @@ def test_fit_hard_voting():
 
 
 def test_fit_sample_error():
-    ratio = 'auto'
+    sampling_target = 'auto'
     cluster = 'rnd'
     cc = ClusterCentroids(
-        ratio=ratio, random_state=RND_SEED, estimator=cluster)
+        sampling_target=sampling_target, random_state=RND_SEED,
+        estimator=cluster)
     with raises(ValueError, match="has to be a KMeans clustering"):
         cc.fit_sample(X, Y)
 
     voting = 'unknown'
-    cc = ClusterCentroids(ratio=ratio, voting=voting, random_state=RND_SEED)
+    cc = ClusterCentroids(sampling_target=sampling_target, voting=voting,
+                          random_state=RND_SEED)
     with raises(ValueError, match="needs to be one of"):
         cc.fit_sample(X, Y)

@@ -53,9 +53,9 @@ f, axs = plt.subplots(2, 2)
 
 axs = [a for ax in axs for a in ax]
 for ax, sampling_target in zip(axs, (0,
-                           {1: 25, 0: 10},
-                           {1: 14, 0: 10},
-                           {1: 10, 0: 10})):
+                                     {1: 25, 0: 10},
+                                     {1: 14, 0: 10},
+                                     {1: 10, 0: 10})):
     if sampling_target == 0:
         c0, c1 = plot_resampling(ax, X_vis, y, 'Original set')
     else:

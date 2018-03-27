@@ -46,8 +46,9 @@ def test_sample_regular():
 
 
 def test_sample_regular_pass_smote_enn():
-    smote = SMOTEENN(smote=SMOTE(ratio='auto', random_state=RND_SEED),
-                     enn=EditedNearestNeighbours(ratio='all',
+    smote = SMOTEENN(smote=SMOTE(sampling_target='auto',
+                                 random_state=RND_SEED),
+                     enn=EditedNearestNeighbours(sampling_target='all',
                                                  random_state=RND_SEED),
                      random_state=RND_SEED)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
@@ -65,8 +66,8 @@ def test_sample_regular_pass_smote_enn():
 
 
 def test_sample_regular_half():
-    ratio = {0: 10, 1: 12}
-    smote = SMOTEENN(ratio=ratio, random_state=RND_SEED)
+    sampling_target = {0: 10, 1: 12}
+    smote = SMOTEENN(sampling_target=sampling_target, random_state=RND_SEED)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
 
     X_gt = np.array([[1.52091956, -0.49283504],
@@ -80,7 +81,7 @@ def test_sample_regular_half():
 
 def test_validate_estimator_init():
     smote = SMOTE(random_state=RND_SEED)
-    enn = EditedNearestNeighbours(random_state=RND_SEED, ratio='all')
+    enn = EditedNearestNeighbours(random_state=RND_SEED, sampling_target='all')
     smt = SMOTEENN(smote=smote, enn=enn, random_state=RND_SEED)
     X_resampled, y_resampled = smt.fit_sample(X, Y)
     X_gt = np.array([[1.52091956, -0.49283504],

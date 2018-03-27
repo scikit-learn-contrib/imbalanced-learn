@@ -23,23 +23,24 @@ Y = np.array([1, 2, 2, 2, 1, 0, 1, 1, 1, 0])
 
 
 def test_ee_init():
-    # Define a ratio
-    ratio = 1.
-    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED)
+    # Define a sampling_target
+    sampling_target = 1.
+    ee = EasyEnsemble(sampling_target=sampling_target, random_state=RND_SEED)
 
-    assert ee.ratio == ratio
+    assert ee.sampling_target == sampling_target
     assert ee.replacement is False
     assert ee.n_subsets == 10
     assert ee.random_state == RND_SEED
 
 
 def test_fit_sample_auto():
-    # Define the ratio parameter
-    ratio = 'auto'
+    # Define the sampling_target parameter
+    sampling_target = 'auto'
 
     # Create the sampling object
     ee = EasyEnsemble(
-        ratio=ratio, random_state=RND_SEED, return_indices=True, n_subsets=3)
+        sampling_target=sampling_target, random_state=RND_SEED,
+        return_indices=True, n_subsets=3)
 
     # Get the different subset
     X_resampled, y_resampled, idx_under = ee.fit_sample(X, Y)
@@ -63,11 +64,12 @@ def test_fit_sample_auto():
 
 
 def test_fit_sample_half():
-    # Define the ratio parameter
-    ratio = {0: 2, 1: 3, 2: 3}
+    # Define the sampling_target parameter
+    sampling_target = {0: 2, 1: 3, 2: 3}
 
     # Create the sampling object
-    ee = EasyEnsemble(ratio=ratio, random_state=RND_SEED, n_subsets=3)
+    ee = EasyEnsemble(sampling_target=sampling_target, random_state=RND_SEED,
+                      n_subsets=3)
 
     # Get the different subset
     X_resampled, y_resampled = ee.fit_sample(X, Y)
@@ -103,11 +105,11 @@ def test_fit_sample_half():
 
 
 def test_random_state_none():
-    # Define the ratio parameter
-    ratio = 'auto'
+    # Define the sampling_target parameter
+    sampling_target = 'auto'
 
     # Create the sampling object
-    ee = EasyEnsemble(ratio=ratio, random_state=None)
+    ee = EasyEnsemble(sampling_target=sampling_target, random_state=None)
 
     # Get the different subset
     X_resampled, y_resampled = ee.fit_sample(X, Y)

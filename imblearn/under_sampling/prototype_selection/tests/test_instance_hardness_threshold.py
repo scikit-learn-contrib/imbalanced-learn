@@ -28,11 +28,11 @@ ESTIMATOR = GradientBoostingClassifier(random_state=RND_SEED)
 
 
 def test_iht_init():
-    ratio = 'auto'
+    sampling_target = 'auto'
     iht = InstanceHardnessThreshold(
-        ESTIMATOR, ratio=ratio, random_state=RND_SEED)
+        ESTIMATOR, sampling_target=sampling_target, random_state=RND_SEED)
 
-    assert iht.ratio == ratio
+    assert iht.sampling_target == sampling_target
     assert iht.random_state == RND_SEED
 
 
@@ -82,9 +82,9 @@ def test_iht_fit_sample_with_indices():
 
 
 def test_iht_fit_sample_half():
-    ratio = {0: 6, 1: 8}
+    sampling_target = {0: 6, 1: 8}
     iht = InstanceHardnessThreshold(
-        ESTIMATOR, ratio=ratio, random_state=RND_SEED)
+        ESTIMATOR, sampling_target=sampling_target, random_state=RND_SEED)
     X_resampled, y_resampled = iht.fit_sample(X, Y)
 
     X_gt = np.array([[-0.3879569, 0.6894251],

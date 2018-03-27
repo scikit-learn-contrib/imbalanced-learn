@@ -61,9 +61,10 @@ def test_sample_regular():
 
 
 def test_sample_regular_half():
-    ratio = {0: 9, 1: 12}
+    sampling_target = {0: 9, 1: 12}
     kind = 'regular'
-    smote = SMOTE(ratio=ratio, random_state=RND_SEED, kind=kind)
+    smote = SMOTE(sampling_target=sampling_target, random_state=RND_SEED,
+                  kind=kind)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336], [0.53366841, -0.30312976],

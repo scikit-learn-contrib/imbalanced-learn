@@ -22,8 +22,9 @@ Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 
 def test_ros_init():
-    ratio = 'auto'
-    ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
+    sampling_target = 'auto'
+    ros = RandomOverSampler(sampling_target=sampling_target,
+                            random_state=RND_SEED)
     assert ros.random_state == RND_SEED
 
 
@@ -50,8 +51,9 @@ def test_ros_fit_sample():
 
 
 def test_ros_fit_sample_half():
-    ratio = {0: 3, 1: 7}
-    ros = RandomOverSampler(ratio=ratio, random_state=RND_SEED)
+    sampling_target = {0: 3, 1: 7}
+    ros = RandomOverSampler(sampling_target=sampling_target,
+                            random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_sample(X, Y)
     X_gt = np.array([[0.04352327, -0.20515826],
                      [0.92923648, 0.76103773],

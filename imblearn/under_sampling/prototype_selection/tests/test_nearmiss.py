@@ -43,9 +43,9 @@ def test_nearmiss_wrong_version():
 
 
 def test_nm_wrong_nn_obj():
-    ratio = 'auto'
+    sampling_target = 'auto'
     nn = 'rnd'
-    nm = NearMiss(ratio=ratio,
+    nm = NearMiss(sampling_target=sampling_target,
                   version=VERSION_NEARMISS,
                   return_indices=True,
                   n_neighbors=nn)
@@ -53,7 +53,7 @@ def test_nm_wrong_nn_obj():
         nm.fit_sample(X, Y)
     nn3 = 'rnd'
     nn = NearestNeighbors(n_neighbors=3)
-    nm3 = NearMiss(ratio=ratio,
+    nm3 = NearMiss(sampling_target=sampling_target,
                    version=3, return_indices=True,
                    n_neighbors=nn, n_neighbors_ver3=nn3)
     with raises(ValueError, match="has to be one of"):
@@ -61,7 +61,7 @@ def test_nm_wrong_nn_obj():
 
 
 def test_nm_fit_sample_auto():
-    ratio = 'auto'
+    sampling_target = 'auto'
     X_gt = [np.array([[0.91464286, 1.61369212],
                       [-0.80809175, -1.09917302],
                       [-0.20497017, -0.26630228],
@@ -93,7 +93,7 @@ def test_nm_fit_sample_auto():
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])]
     for version_idx, version in enumerate(VERSION_NEARMISS):
-        nm = NearMiss(ratio=ratio,
+        nm = NearMiss(sampling_target=sampling_target,
                       version=version)
         X_resampled, y_resampled = nm.fit_sample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
@@ -101,7 +101,7 @@ def test_nm_fit_sample_auto():
 
 
 def test_nm_fit_sample_auto_indices():
-    ratio = 'auto'
+    sampling_target = 'auto'
     X_gt = [np.array([[0.91464286, 1.61369212],
                       [-0.80809175, -1.09917302],
                       [-0.20497017, -0.26630228],
@@ -136,7 +136,7 @@ def test_nm_fit_sample_auto_indices():
               np.array([3, 10, 11, 2, 8, 5, 9, 1, 6]),
               np.array([3, 10, 11, 0, 5, 8, 14, 4, 12])]
     for version_idx, version in enumerate(VERSION_NEARMISS):
-        nm = NearMiss(ratio=ratio,
+        nm = NearMiss(sampling_target=sampling_target,
                       version=version, return_indices=True)
         X_resampled, y_resampled, idx_under = nm.fit_sample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
@@ -144,8 +144,8 @@ def test_nm_fit_sample_auto_indices():
         assert_array_equal(idx_under, idx_gt[version_idx])
 
 
-def test_nm_fit_sample_float_ratio():
-    ratio = {0: 3, 1: 4, 2: 4}
+def test_nm_fit_sample_float_sampling_target():
+    sampling_target = {0: 3, 1: 4, 2: 4}
     X_gt = [np.array([[-0.20497017, -0.26630228],
                       [-0.80809175, -1.09917302],
                       [0.91464286, 1.61369212],
@@ -184,7 +184,7 @@ def test_nm_fit_sample_float_ratio():
             np.array([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])]
 
     for version_idx, version in enumerate(VERSION_NEARMISS):
-        nm = NearMiss(ratio=ratio,
+        nm = NearMiss(sampling_target=sampling_target,
                       version=version)
         X_resampled, y_resampled = nm.fit_sample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
@@ -192,7 +192,7 @@ def test_nm_fit_sample_float_ratio():
 
 
 def test_nm_fit_sample_nn_obj():
-    ratio = 'auto'
+    sampling_target = 'auto'
     nn = NearestNeighbors(n_neighbors=3)
     X_gt = [np.array([[0.91464286, 1.61369212],
                       [-0.80809175, -1.09917302],
@@ -225,7 +225,7 @@ def test_nm_fit_sample_nn_obj():
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2]),
             np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])]
     for version_idx, version in enumerate(VERSION_NEARMISS):
-        nm = NearMiss(ratio=ratio,
+        nm = NearMiss(sampling_target=sampling_target,
                       version=version, n_neighbors=nn)
         X_resampled, y_resampled = nm.fit_sample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])

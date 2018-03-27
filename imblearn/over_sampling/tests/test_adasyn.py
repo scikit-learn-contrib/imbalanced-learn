@@ -30,15 +30,15 @@ R_TOL = 1e-4
 
 
 def test_ada_init():
-    ratio = 'auto'
-    ada = ADASYN(ratio=ratio, random_state=RND_SEED)
+    sampling_target = 'auto'
+    ada = ADASYN(sampling_target=sampling_target, random_state=RND_SEED)
     assert ada.random_state == RND_SEED
 
 
 def test_ada_fit():
     ada = ADASYN(random_state=RND_SEED)
     ada.fit(X, Y)
-    assert ada.ratio_ == {0: 4}
+    assert ada.sampling_target_ == {0: 4}
 
 
 def test_ada_fit_sample():
@@ -75,9 +75,9 @@ def test_ada_fit_sample():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_ada_fit_ratio_error():
-    ratio = {0: 9, 1: 12}
-    ada = ADASYN(ratio=ratio, random_state=RND_SEED)
+def test_ada_fit_sampling_target_error():
+    sampling_target = {0: 9, 1: 12}
+    ada = ADASYN(sampling_target=sampling_target, random_state=RND_SEED)
     with raises(ValueError, match="No samples will be generated."):
         ada.fit_sample(X, Y)
 

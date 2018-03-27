@@ -16,7 +16,7 @@ from imblearn import FunctionSampler
 from imblearn.under_sampling import RandomUnderSampler
 
 iris = load_iris()
-X, y = make_imbalance(iris.data, iris.target, ratio={0: 10, 1: 25},
+X, y = make_imbalance(iris.data, iris.target, sampling_target={0: 10, 1: 25},
                       random_state=0)
 
 
@@ -63,11 +63,12 @@ def test_function_sampler_func(X, y):
      (sparse.csc_matrix(X), y)])
 def test_function_sampler_func_kwargs(X, y):
 
-    def func(X, y, ratio, random_state):
-        rus = RandomUnderSampler(ratio=ratio, random_state=random_state)
+    def func(X, y, sampling_target, random_state):
+        rus = RandomUnderSampler(sampling_target=sampling_target,
+                                 random_state=random_state)
         return rus.fit_sample(X, y)
 
-    sampler = FunctionSampler(func=func, kw_args={'ratio': 'auto',
+    sampler = FunctionSampler(func=func, kw_args={'sampling_target': 'auto',
                                                   'random_state': 0})
     X_res, y_res = sampler.fit_sample(X, y)
     X_res_2, y_res_2 = RandomUnderSampler(random_state=0).fit_sample(X, y)

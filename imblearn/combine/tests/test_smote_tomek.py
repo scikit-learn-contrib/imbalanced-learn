@@ -54,8 +54,8 @@ def test_sample_regular():
 
 
 def test_sample_regular_half():
-    ratio = {0: 9, 1: 12}
-    smote = SMOTETomek(ratio=ratio, random_state=RND_SEED)
+    sampling_target = {0: 9, 1: 12}
+    smote = SMOTETomek(sampling_target=sampling_target, random_state=RND_SEED)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
     X_gt = np.array([[0.68481731, 0.51935141],
                      [0.62366841, -0.21312976],
@@ -77,7 +77,7 @@ def test_sample_regular_half():
 
 def test_validate_estimator_init():
     smote = SMOTE(random_state=RND_SEED)
-    tomek = TomekLinks(random_state=RND_SEED, ratio='all')
+    tomek = TomekLinks(random_state=RND_SEED, sampling_target='all')
     smt = SMOTETomek(smote=smote, tomek=tomek, random_state=RND_SEED)
     X_resampled, y_resampled = smt.fit_sample(X, Y)
     X_gt = np.array([[0.68481731, 0.51935141],
