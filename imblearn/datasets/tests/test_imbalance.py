@@ -20,6 +20,12 @@ data = load_iris()
 X, Y = data.data, data.target
 
 
+def test_make_imbalanced_backcompat():
+    # check an error is raised with we don't pass sampling_target and ratio
+    with raises(ValueError, match="missing 1 required positional argument"):
+        make_imbalance(X, Y)
+
+
 def test_make_imbalance_error():
     # we are reusing part of utils.check_ratio, however this is not cover in
     # the common tests so we will repeat it here

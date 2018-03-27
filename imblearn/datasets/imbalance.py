@@ -18,7 +18,7 @@ from ..utils import check_sampling_target
 LOGGER = logging.getLogger(__name__)
 
 
-def make_imbalance(X, y, sampling_target, ratio=None, random_state=None,
+def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
                    **kwargs):
     """Turns a dataset into an imbalanced dataset at specific ratio.
 
@@ -94,10 +94,14 @@ def make_imbalance(X, y, sampling_target, ratio=None, random_state=None,
     X, y = check_X_y(X, y)
     target_stats = Counter(y)
     # restrict ratio to be a dict or a callable
+    # FIXME remove ratio at 0.6
     if ratio is not None:
         warnings.warn("'ratio' has been deprecated in 0.4 and will be "
                       "removed in 0.6. Use 'sampling_target' instead.")
         sampling_target = ratio
+    elif sampling_target is None:
+        raise TypeError("make_imbalance() missing 1 required positional "
+                        "argument: 'sampling_target'")
     if isinstance(sampling_target, dict) or callable(sampling_target):
         sampling_target_ = check_sampling_target(sampling_target,
                                                  y, 'under-sampling', **kwargs)
