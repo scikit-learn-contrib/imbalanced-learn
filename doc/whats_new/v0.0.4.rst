@@ -53,6 +53,9 @@ Deprecation
 - Deprecate ``ratio`` in favor of ``sampling_target``. :issue:`411` by
   :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Deprecate the use of a ``dict`` for cleaning methods. a ``list`` should be
+  used. :issue:`411` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 - Deprecate ``random_state`` in :class:`imblearn.under_sampling.NearMiss`,
   :class:`imblearn.under_sampling.EditedNearestNeighbors`,
   :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbors`,
