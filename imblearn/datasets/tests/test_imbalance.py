@@ -22,7 +22,7 @@ X, Y = data.data, data.target
 
 def test_make_imbalanced_backcompat():
     # check an error is raised with we don't pass sampling_target and ratio
-    with raises(ValueError, match="missing 1 required positional argument"):
+    with raises(TypeError, match="missing 1 required positional argument"):
         make_imbalance(X, Y)
 
 

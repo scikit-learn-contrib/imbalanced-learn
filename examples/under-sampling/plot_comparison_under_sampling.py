@@ -155,9 +155,9 @@ fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2,
 X, y = create_dataset(n_samples=5000, weights=(0.1, 0.2, 0.7), class_sep=0.8)
 
 ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
-for ax, sampler in zip(ax_arr, (NearMiss(version=1, random_state=0),
-                                NearMiss(version=2, random_state=0),
-                                NearMiss(version=3, random_state=0))):
+for ax, sampler in zip(ax_arr, (NearMiss(version=1),
+                                NearMiss(version=2),
+                                NearMiss(version=3))):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
@@ -182,9 +182,9 @@ X, y = create_dataset(n_samples=500, weights=(0.2, 0.3, 0.5), class_sep=0.8)
 
 ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
 for ax, sampler in zip(ax_arr, (
-        EditedNearestNeighbours(random_state=0),
-        RepeatedEditedNearestNeighbours(random_state=0),
-        AllKNN(random_state=0, allow_minority=True))):
+        EditedNearestNeighbours(),
+        RepeatedEditedNearestNeighbours(),
+        AllKNN(allow_minority=True))):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
@@ -212,7 +212,7 @@ ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
 for ax, sampler in zip(ax_arr, (
         CondensedNearestNeighbour(random_state=0),
         OneSidedSelection(random_state=0),
-        NeighbourhoodCleaningRule(random_state=0))):
+        NeighbourhoodCleaningRule())):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])

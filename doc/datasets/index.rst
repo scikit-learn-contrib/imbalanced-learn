@@ -94,29 +94,31 @@ Imbalanced generator
 ====================
 
 :func:`make_imbalance` turns an original dataset into an imbalanced
-dataset. This behaviour is driven by the parameter ``ratio`` which behave
-similarly to other resampling algorithm. ``ratio`` can be given as a dictionary
-where the key corresponds to the class and the value is the the number of
-samples in the class::
+dataset. This behaviour is driven by the parameter ``sampling_target`` which
+behave similarly to other resampling algorithm. ``sampling_target`` can be
+given as a dictionary where the key corresponds to the class and the value is
+the number of samples in the class::
 
   >>> from sklearn.datasets import load_iris
   >>> from imblearn.datasets import make_imbalance
   >>> iris = load_iris()
-  >>> ratio = {0: 20, 1: 30, 2: 40}
-  >>> X_imb, y_imb = make_imbalance(iris.data, iris.target, ratio=ratio)
+  >>> sampling_target = {0: 20, 1: 30, 2: 40}
+  >>> X_imb, y_imb = make_imbalance(iris.data, iris.target,
+  ...                               sampling_target=sampling_target)
   >>> sorted(Counter(y_imb).items())
   [(0, 20), (1, 30), (2, 40)]
 
 Note that all samples of a class are passed-through if the class is not mentioned
 in the dictionary::
 
-  >>> ratio = {0: 10}
-  >>> X_imb, y_imb = make_imbalance(iris.data, iris.target, ratio=ratio)
+  >>> sampling_target = {0: 10}
+  >>> X_imb, y_imb = make_imbalance(iris.data, iris.target,
+  ...                               sampling_target=sampling_target)
   >>> sorted(Counter(y_imb).items())
   [(0, 10), (1, 50), (2, 50)]
 
 Instead of a dictionary, a function can be defined and directly pass to
-``ratio``::
+``sampling_target``::
 
   >>> def ratio_multiplier(y):
   ...     multiplier = {0: 0.5, 1: 0.7, 2: 0.95}
@@ -125,9 +127,9 @@ Instead of a dictionary, a function can be defined and directly pass to
   ...         target_stats[key] = int(value * multiplier[key])
   ...     return target_stats
   >>> X_imb, y_imb = make_imbalance(iris.data, iris.target,
-  ...                               ratio=ratio_multiplier)
+  ...                               sampling_target=ratio_multiplier)
   >>> sorted(Counter(y_imb).items())
   [(0, 25), (1, 35), (2, 47)]
 
 See :ref:`sphx_glr_auto_examples_datasets_plot_make_imbalance.py` and
-:ref:`sphx_glr_auto_examples_plot_ratio_usage.py`.
+:ref:`sphx_glr_auto_examples_plot_sampling_target_usage.py`.
