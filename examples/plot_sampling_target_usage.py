@@ -171,7 +171,7 @@ plot_pie(y_res)
 
 ###############################################################################
 # ``sampling_target`` has a ``dict``
-# .................................
+# ..................................
 #
 # When ``sampling_target`` is a ``dict``, the keys correspond to the targeted
 # classes. The values correspond to the desired number of samples for each
