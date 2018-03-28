@@ -7,10 +7,12 @@ from __future__ import division, print_function
 from collections import Counter
 import random
 import numpy as np
+from sklearn.utils import check_random_state, safe_indexing
+
 from .base import BaseScaler
 
 CSS_MODE = ('linear', 'constant')
-CSS_TARGET = ('minority', 'majority', 'both')
+CSS_SAMPLING_STRATEGY = ('minority', 'majority', 'both')
 
 
 class CSS(BaseScaler):
@@ -22,7 +24,7 @@ class CSS(BaseScaler):
         Defines the scaling mode. Currently, two modes are implemented: `'constant'`
         and `'linear'`. 
         
-        In `'constant'` mode, all samples of the `'target'` class will be scaled
+        In `'constant'` mode, all samples of the `'sampling_strategy'` class will be scaled
         by the same amount `c` to their class specific center. The following 
         formula will be applied to calculate the new feature (`X`) values:
         `X[y==0] * (1-c) + col_means * c`
@@ -36,7 +38,7 @@ class CSS(BaseScaler):
         `X[y==0] * (1-c) / norm + col_means * (distances * c) / norm
         
 
-    target : str (default = 'minority')
+    sampling_strategy : str (default = 'minority')
         defines which class to scale. Possible values are 'minority', 'majority',
         and 'both'. Note that all sample are scaled to their corresponding class
         center.
@@ -44,7 +46,7 @@ class CSS(BaseScaler):
     c : float (default = 0.25)
         Defines the amount of the scaling. 
     
-    target_class_value: int (default = None)
+    sampling_strategy_class_value: int (default = None)
         class level indicating the minority class. By default (`None`) the minority
         class will be automatically determined. Use any integer number (e.g. `0`,
         `1` or `-1`) to force the minority class.
@@ -60,10 +62,10 @@ class CSS(BaseScaler):
     mode_ : str
         CSS mode ('constant' or 'linear')
 
-    target_ : str or int
-        Name of the target class ('majority', 'minority', 'both')
+    sampling_strategy_ : str or int
+        Name of the sampling_strategy class ('majority', 'minority', 'both')
          
-    target_class_value: int
+    sampling_strategy_class_value: int
         class level indicating the minority class
 
     c_ : dict of str/int : int
@@ -85,7 +87,7 @@ class CSS(BaseScaler):
 	>>> X_syn = np.r_[1.5 * rng.randn(n_samples_1, 2), 0.5 * rng.randn(n_samples_2, 2) + [2, 2]]
 	>>> y_syn = np.array([0] * (n_samples_1) + [1] * (n_samples_2))
 	>>> X_syn, y_syn = shuffle(X_syn, y_syn)
-	>>> css = CSS(mode="linear", target="both", c=0.1, shuffle=True)
+	>>> css = CSS(mode="linear", sampling_strategy="both", c=0.1, shuffle=True)
 	>>> X_train_res, y_train_res = css.fit_sample(X_syn, y_syn)
 
     References
@@ -96,22 +98,17 @@ class CSS(BaseScaler):
     """
 
     def __init__(self,
+                 sampling_strategy='minority',
                  mode='linear',
-                 target='minority',
                  c=0.25,
                  minority_class_value=None,
-                 shuffle=True,
-                 random_state=None):
-        super(CSS, self).__init__(ratio=1)
+                 shuffle=True):
+        super(CSS, self).__init__()
+        self.sampling_strategy = sampling_strategy
         self.mode = mode
-        self.target = target
         self.c = c
         self.minority_class_value = minority_class_value
         self.shuffle = shuffle
-
-    def _validate_estimator(self):
-        i = 1
-        # nothing to do
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -133,13 +130,9 @@ class CSS(BaseScaler):
 
         super(CSS, self).fit(X, y)
 
-        self._validate_estimator()
-
         return self
 
     def _shuffleTwo(self, a, b):
-        #if len(a) != len(b):
-        #    raise ValueError("lenth of a ({}) doesn't match length of b ({})".format(len(a), len(b)))
 
         indexes = np.array(range(0, len(a)))
         random.shuffle(indexes)
@@ -173,10 +166,10 @@ class CSS(BaseScaler):
                              ' Choices are {}. Got \'{}\' instead.'.format(
                             CSS_MODE, self.mode))
 
-        if self.target not in CSS_TARGET:
-            raise ValueError('Unknown kind for CSS target.'
+        if self.sampling_strategy not in CSS_SAMPLING_STRATEGY:
+            raise ValueError('Unknown kind for CSS sampling_strategy.'
                              ' Choices are {}. Got \'{}\' instead.'.format(
-                                CSS_TARGET, self.target))
+                                CSS_SAMPLING_STRATEGY, self.sampling_strategy))
 
         if self.c < 0 or self.c > 1:
             raise ValueError('Received scaling factor c={}, which'
@@ -188,55 +181,59 @@ class CSS(BaseScaler):
 
         if self.minority_class_value is not None and \
                 not isinstance(self.minority_class_value, int):
-            raise ValueError('Unallowed target class value \'{}\'.'
+            raise ValueError('Unallowed sampling_strategy class value \'{}\'.'
                              ' Valid values include None to automatically'
-                             ' infer the target class or any integer number'
+                             ' infer the sampling_strategy class or any integer number'
                              ' corresponding to the value of the label in y')
 
-
-        mcv = self.minority_class_value
-        if mcv is None:
+        minority_class = self.minority_class_value
+        if minority_class is None:
             # infer minority class value
             counts = Counter(y)
             least_common = counts.most_common()[:-1-1:-1]
-            mcv = least_common[0][0]
+            minority_class = least_common[0][0]
 
-        # in the following _a is majority, _i is minority
-        if self.target is "majority" or self.target is "both":
-            col_means_a = np.mean(X[(y != mcv)], axis=0)
+        # get indices for later, safe indexing
+        majority_class_indices = (y != minority_class)
+        minority_class_indices = (y == minority_class)
+
+        # in the following _majority is majority, _minority is minority
+        if self.sampling_strategy is "majority" or self.sampling_strategy is "both":
+            # mean_majority_class is the mean of all features (=columns)
+            mean_majority_class = np.mean(safe_indexing(X, majority_class_indices), axis=0)
             if self.mode is "linear":
-                distances_a = abs(np.subtract(X[y != mcv], col_means_a))
-        if self.target is "minority" or self.target is "both":
-            col_means_i = np.mean(X[(y == mcv)], axis=0)
+                distances_majority = abs(np.subtract(safe_indexing(X, majority_class_indices), mean_majority_class))
+        if self.sampling_strategy is "minority" or self.sampling_strategy is "both":
+            mean_minority_class = np.mean(safe_indexing(X, minority_class_indices), axis=0)
             if self.mode is "linear":
-                distances_i = abs(np.subtract(X[y == mcv], col_means_i))
+                distances_minority = abs(np.subtract(safe_indexing(X, minority_class_indices), mean_minority_class))
 
-        if self.target is "majority" or self.target is "both":
+        if self.sampling_strategy is "majority" or self.sampling_strategy is "both":
             if self.mode is "constant":
-                X_scaled_a = X[y != mcv] * (1 - self.c) + col_means_a * self.c
+                X_scaled_majority = safe_indexing(X, majority_class_indices) * (1 - self.c) + mean_majority_class * self.c
             elif self.mode is "linear":
-                scale_factors_mean = (distances_a * self.c)
-                scale_factors_values = (1 - self.c * distances_a)
+                scale_factors_mean = (distances_majority * self.c)
+                scale_factors_values = (1 - self.c * distances_majority)
 
-                X_scaled_a = X[y != mcv] * scale_factors_values + col_means_a * scale_factors_mean
-        if self.target is "minority" or self.target is "both":
+                X_scaled_majority = safe_indexing(X, majority_class_indices) * scale_factors_values + mean_majority_class * scale_factors_mean
+        if self.sampling_strategy is "minority" or self.sampling_strategy is "both":
             if self.mode is "constant":
-                X_scaled_i = X[y == mcv] * (1 - self.c) + col_means_i * self.c
+                X_scaled_minority = safe_indexing(X, minority_class_indices) * (1 - self.c) + mean_minority_class * self.c
             elif self.mode is "linear":
-                scale_factors_mean = (distances_i * self.c)
-                scale_factors_values = (1 - self.c * distances_i)
-                X_scaled_i = X[y == mcv] * scale_factors_values + col_means_i * scale_factors_mean
+                scale_factors_mean = (distances_minority * self.c)
+                scale_factors_values = (1 - self.c * distances_minority)
+                X_scaled_minority = safe_indexing(X, minority_class_indices) * scale_factors_values + mean_minority_class * scale_factors_mean
 
         # merge scaled and non scaled stuff
-        if self.target is "majority":
-            X_scaled = np.concatenate([X_scaled_a, X[y == mcv]], axis=0)
-        elif self.target is "minority":
-            X_scaled = np.concatenate([X[y != mcv], X_scaled_i], axis=0)
+        if self.sampling_strategy is "majority":
+            X_scaled = np.concatenate([X_scaled_majority, safe_indexing(X, minority_class_indices)], axis=0)
+        elif self.sampling_strategy is "minority":
+            X_scaled = np.concatenate([safe_indexing(X, majority_class_indices), X_scaled_minority], axis=0)
         else: #"both"
-            X_scaled = np.concatenate([X_scaled_a, X_scaled_i], axis=0)
+            X_scaled = np.concatenate([X_scaled_majority, X_scaled_minority], axis=0)
 
         # make sure that y is in same order like X
-        y_assembled = np.concatenate([y[y != mcv], y[y == mcv]], axis=0)
+        y_assembled = np.concatenate([y[majority_class_indices], y[minority_class_indices]], axis=0)
 
         # shuffle
         X_scaled_shuffled, y_res_shuffled, indices = self._shuffleTwo(X_scaled, y_assembled)
