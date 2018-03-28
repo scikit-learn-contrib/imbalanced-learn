@@ -39,74 +39,74 @@ R_TOL = 1e-4
 
 def test_css_mode():
     # should two fail (illegal value for mode)
-    css = CSS(mode='constant2', target='minority', c=1.01, shuffle=False)
+    css = CSS(mode='constant2', sampling_strategy='minority', c=1.01, shuffle=False)
     assert_raises(ValueError, css.fit_sample, X, y)
 
-    css = CSS(mode='no mode', target='minority', c=0, shuffle=False)
+    css = CSS(mode='no mode', sampling_strategy='minority', c=0, shuffle=False)
     assert_raises(ValueError, css.fit_sample, X, y)
 
     # these two should not fail
     try:
-        css = CSS(mode='constant', target='minority', c=0.25, shuffle=False)
+        css = CSS(mode='constant', sampling_strategy='minority', c=0.25, shuffle=False)
         css.fit_sample(X,y)
-        css = CSS(mode='linear', target='minority', c=0.25, shuffle=False)
+        css = CSS(mode='linear', sampling_strategy='minority', c=0.25, shuffle=False)
         css.fit_sample(X,y)
     except Exception as e:
         raise ValueError('CSS raised an Exception unexpectedly! ({})'.format(e))
 
 def test_css_target():
     # should two fail (illegal value for c)
-    css = CSS(mode='constant', target='abc', c=0.5, shuffle=False)
+    css = CSS(mode='constant', sampling_strategy='abc', c=0.5, shuffle=False)
     assert_raises(ValueError, css.fit_sample, X, y)
 
     # these three should not fail
     try:
-        css = CSS(mode='constant', target='minority', c=0.05, shuffle=False)
+        css = CSS(mode='constant', sampling_strategy='minority', c=0.05, shuffle=False)
         css.fit_sample(X,y)
-        css = CSS(mode='constant', target='majority', c=0.05, shuffle=False)
+        css = CSS(mode='constant', sampling_strategy='majority', c=0.05, shuffle=False)
         css.fit_sample(X,y)
-        css = CSS(mode='constant', target='both', c=0.05, shuffle=False)
+        css = CSS(mode='constant', sampling_strategy='both', c=0.05, shuffle=False)
         css.fit_sample(X,y)
     except Exception as e:
         raise ValueError('CSS raised an Exception unexpectedly! ({})'.format(e))
 
 def test_css_c():
     # should two fail (illegal value for c)
-    css = CSS(mode='constant', target='minority', c=1.01, shuffle=False)
+    css = CSS(mode='constant', sampling_strategy='minority', c=1.01, shuffle=False)
     assert_raises(ValueError, css.fit_sample, X, y)
 
-    css = CSS(mode='constant', target='minority', c=0, shuffle=False)
+    css = CSS(mode='constant', sampling_strategy='minority', c=0, shuffle=False)
     assert_raises(ValueError, css.fit_sample, X, y)
 
     # these two should not fail
     try:
-        css = CSS(mode='constant', target='minority', c=0.01, shuffle=False)
+        css = CSS(mode='constant', sampling_strategy='minority', c=0.01, shuffle=False)
         css.fit_sample(X,y)
-        css = CSS(mode='linear', target='minority', c=0.99, shuffle=False)
+        css = CSS(mode='linear', sampling_strategy='minority', c=0.99, shuffle=False)
         css.fit_sample(X,y)
     except Exception as e:
         raise ValueError('CSS raised an Exception unexpectedly! ({})'.format(e))
 
 
 def test_sample_regular():
-    # minority samples are unaffected when target is majority
-    css = CSS(mode='constant', target='majority', c=1, shuffle=False)
+    # minority samples are unaffected when sampling_strategy is majority
+    css = CSS(mode='constant', sampling_strategy='majority', c=1, shuffle=False)
     X_s, y_s = css.fit_sample(X,y)
     assert_allclose(X[y == 1], X_s[y_s == 1], rtol=R_TOL)
 
-    # majority samples are unaffected when target is minority
-    css = CSS(mode='constant', target='minority', c=1, shuffle=False)
+    # majority samples are unaffected when sampling_strategy is minority
+    css = CSS(mode='constant', sampling_strategy='minority', c=1, shuffle=False)
     X_s, y_s = css.fit_sample(X,y)
     assert_allclose(X[y == 0], X_s[y_s == 0], rtol=R_TOL)
 
-    # both are affected if target is both
-    css = CSS(mode='constant', target='both', c=1, shuffle=False)
+    # both are affected if sampling_strategy is both
+    css = CSS(mode='constant', sampling_strategy='both', c=1, shuffle=False)
     X_s, y_s = css.fit_sample(X,y)
     if np.allclose(X[y == 0], X_s[y_s == 0], rtol=R_TOL):
         raise ValueError('np arrays should not be close!')
 
     # mathematical correctness of constant scaling majority (coarse)
-    css = CSS(mode='constant', target='majority', c=1, shuffle=False)
+    css = CSS(mode='constant', sampling_strategy='majority', c=1, shuffle=False)
     X_s, y_s = css.fit_sample(X, y)
     X_s_sub = X_s[y_s == 0]
     for i in range(2, len(X_s_sub)):
@@ -117,7 +117,7 @@ def test_sample_regular():
 
     # mathematical correctness of constant scaling majority (fine)
     c_test = 0.25
-    css = CSS(mode='constant', target='majority', c=c_test, shuffle=False)
+    css = CSS(mode='constant', sampling_strategy='majority', c=c_test, shuffle=False)
     X_s, y_s = css.fit_sample(X, y)
     X_sub = X[y==0]
     X_s_sub = X_s[y_s==0]
@@ -134,7 +134,7 @@ def test_sample_regular():
 
     # mathematical correctness of constant scaling minority (fine)
     c_test = 0.25
-    css = CSS(mode='constant', target='minority', c=c_test, shuffle=False)
+    css = CSS(mode='constant', sampling_strategy='minority', c=c_test, shuffle=False)
     X_s, y_s = css.fit_sample(X, y)
     X_sub = X[y==1]
     X_s_sub = X_s[y_s==1]
@@ -151,7 +151,7 @@ def test_sample_regular():
 
     # mathematical correctness of linear scaling both
     c_test = 0.1
-    css = CSS(mode='linear', target='both', c=c_test, shuffle=False)
+    css = CSS(mode='linear', sampling_strategy='both', c=c_test, shuffle=False)
     X_s, y_s = css.fit_sample(X, y)
     for lvl in [0,1]:
         X_sub = X[y == lvl]
