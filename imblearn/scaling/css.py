@@ -79,12 +79,10 @@ class CSS(BaseScaler):
 	>>> import numpy as np
 	>>> from sklearn.utils import shuffle
 	>>> from imblearn.scaling import CSS
- 
 	>>> rng = np.random.RandomState(42)
 	>>> n_samples_1 = 50
 	>>> n_samples_2 = 5
-	>>> X_syn = np.r_[1.5 * rng.randn(n_samples_1, 2),
-	    			  0.5 * rng.randn(n_samples_2, 2) + [2, 2]]
+	>>> X_syn = np.r_[1.5 * rng.randn(n_samples_1, 2), 0.5 * rng.randn(n_samples_2, 2) + [2, 2]]
 	>>> y_syn = np.array([0] * (n_samples_1) + [1] * (n_samples_2))
 	>>> X_syn, y_syn = shuffle(X_syn, y_syn)
 	>>> css = CSS(mode="linear", target="both", c=0.1, shuffle=True)
