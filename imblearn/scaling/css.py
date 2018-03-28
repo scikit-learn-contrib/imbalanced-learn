@@ -127,8 +127,32 @@ class CSS(BaseScaler):
             Return self.
 
         """
-
         super(CSS, self).fit(X, y)
+
+        if self.mode not in CSS_MODE:
+            raise ValueError('Unknown kind for CSS mode.'
+                             ' Choices are {}. Got {} instead.'.format(
+                                CSS_MODE, self.mode))
+
+        if self.sampling_strategy not in CSS_SAMPLING_STRATEGY:
+            raise ValueError('Unknown kind for CSS sampling_strategy.'
+                             ' Choices are {}. Got {} instead.'.format(
+                                CSS_SAMPLING_STRATEGY, self.sampling_strategy))
+
+        if self.c < 0 or self.c > 1:
+            raise ValueError('Received scaling factor c={}, which'
+                             ' is outside the allowed range '
+                             '(0-1].'.format(self.c))
+        if self.c is 0:
+            raise ValueError('Received scaling factor c={}, which is'
+                             ' equal to no CSS at.'.format(self.c))
+
+        if (self.minority_class_value is not None and
+                not isinstance(self.minority_class_value, int)):
+            raise ValueError('Unallowed sampling_strategy class value \'{}\'.'
+                             ' Valid values include None to automatically'
+                             ' infer the sampling_strategy class or any integer number'
+                             ' corresponding to the value of the label in y')
 
         return self
 
@@ -160,31 +184,6 @@ class CSS(BaseScaler):
             The corresponding label of `X_scaled`
 
         """
-
-        if self.mode not in CSS_MODE:
-            raise ValueError('Unknown kind for CSS mode.'
-                             ' Choices are {}. Got \'{}\' instead.'.format(
-                            CSS_MODE, self.mode))
-
-        if self.sampling_strategy not in CSS_SAMPLING_STRATEGY:
-            raise ValueError('Unknown kind for CSS sampling_strategy.'
-                             ' Choices are {}. Got \'{}\' instead.'.format(
-                                CSS_SAMPLING_STRATEGY, self.sampling_strategy))
-
-        if self.c < 0 or self.c > 1:
-            raise ValueError('Received scaling factor c={}, which'
-                             ' is outside the allowed range '
-                             '(0-1].'.format(self.c))
-        if self.c is 0:
-            raise ValueError('Received scaling factor c={}, which is'
-                             ' equal to no CSS at.'.format(self.c))
-
-        if self.minority_class_value is not None and \
-                not isinstance(self.minority_class_value, int):
-            raise ValueError('Unallowed sampling_strategy class value \'{}\'.'
-                             ' Valid values include None to automatically'
-                             ' infer the sampling_strategy class or any integer number'
-                             ' corresponding to the value of the label in y')
 
         minority_class = self.minority_class_value
         if minority_class is None:
