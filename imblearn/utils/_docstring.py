@@ -16,23 +16,14 @@ class Substitution(object):
         obj.__doc__ = obj.__doc__.format(**self.params)
         return obj
 
-    def update(self, *args, **kwargs):
-        """
-        Update self.params with supplied args.
 
-        If called, we assume self.params is a dict.
-        """
-
-        self.params.update(*args, **kwargs)
-
-    @classmethod
-    def from_params(cls, params):
-        """
-        In the case where the params is a mutable sequence (list or dictionary)
-        and it may change before this class is called, one may explicitly use a
-        reference to the params rather than using *args or **kwargs which will
-        copy the values and not reference them.
-        """
-        result = cls()
-        result.params = params
-        return result
+_random_state_docstring = \
+    """random_state : int, RandomState instance or None, optional (default=None)
+        Control the randomization of the algorithm
+        - If int, ``random_state`` is the seed used by the random number
+          generator;
+        - If ``RandomState`` instance, random_state is the random number
+          generator;
+        - If ``None``, the random number generator is the ``RandomState``
+          instance used by ``np.random``.
+""".rstrip()

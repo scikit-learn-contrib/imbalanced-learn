@@ -17,8 +17,12 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseCleaningSampler
+from ...utils import Substitution
+from ...utils._docstring import _random_state_docstring
 
 
+@Substitution(sampling_target=BaseCleaningSampler._sampling_target_docstring,
+              random_state=_random_state_docstring)
 class CondensedNearestNeighbour(BaseCleaningSampler):
     """Class to perform under-sampling based on the condensed nearest neighbour
     method.
@@ -27,40 +31,13 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
 
     Parameters
     ----------
-    sampling_target : str, list or callable
-        Sampling information to sample the data set.
-
-        - When ``str``, specify the class targeted by the resampling. Note the
-          the number of samples will not be equal in each. Possible choices
-          are:
-
-            ``'minority'``: resample only the minority class;
-
-            ``'majority'``: resample only the majority class;
-
-            ``'not minority'``: resample all classes but the minority class;
-
-            ``'not majority'``: resample all classes but the majority class;
-
-            ``'all'``: resample all classes;
-
-            ``'auto'``: equivalent to ``'not minority'``.
-
-        - When ``list``, the list contains the targeted classes.
-
-        - When callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples for each class.
+    {sampling_target}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
     n_neighbors : int or object, optional (default=\
 KNeighborsClassifier(n_neighbors=1))
@@ -103,19 +80,18 @@ KNeighborsClassifier(n_neighbors=1))
     Examples
     --------
 
-    >>> from collections import Counter #doctest: +SKIP
-    >>> from sklearn.datasets import fetch_mldata #doctest: +SKIP
+    >>> from collections import Counter # doctest: +SKIP
+    >>> from sklearn.datasets import fetch_mldata # doctest: +SKIP
     >>> from imblearn.under_sampling import \
-CondensedNearestNeighbour #doctest: +SKIP
-    >>> pima = fetch_mldata('diabetes_scale') #doctest: +SKIP
-    >>> X, y = pima['data'], pima['target'] #doctest: +SKIP
-    >>> print('Original dataset shape {}'.format(Counter(y))) #doctest: +SKIP
-    Original dataset shape Counter({1: 500, -1: 268}) #doctest: +SKIP
-    >>> cnn = CondensedNearestNeighbour(random_state=42) #doctest: +SKIP
+CondensedNearestNeighbour # doctest: +SKIP
+    >>> pima = fetch_mldata('diabetes_scale') # doctest: +SKIP
+    >>> X, y = pima['data'], pima['target'] # doctest: +SKIP
+    >>> print('Original dataset shape %s' % Counter(y)) # doctest: +SKIP
+    Original dataset shape Counter({{1: 500, -1: 268}}) # doctest: +SKIP
+    >>> cnn = CondensedNearestNeighbour(random_state=42) # doctest: +SKIP
     >>> X_res, y_res = cnn.fit_sample(X, y) #doctest: +SKIP
-    >>> print('Resampled dataset shape {}'.format(
-    ... Counter(y_res))) #doctest: +SKIP
-    Resampled dataset shape Counter({-1: 268, 1: 227}) #doctest: +SKIP
+    >>> print('Resampled dataset shape %s' % Counter(y_res)) # doctest: +SKIP
+    Resampled dataset shape Counter({{-1: 268, 1: 227}}) # doctest: +SKIP
 
     """
 

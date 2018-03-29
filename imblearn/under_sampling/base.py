@@ -15,8 +15,8 @@ class BaseUnderSampler(BaseSampler):
     """
     _sampling_type = 'under-sampling'
 
-    _sampling_target_docstring = """
-    sampling_target : float, str, dict, callable, (default='auto')
+    _sampling_target_docstring = \
+        """sampling_target : float, str, dict, callable, (default='auto')
         Sampling information to sample the data set.
 
         - When ``float``, it corresponds to the ratio :math:`\\alpha_{us}`
@@ -52,7 +52,7 @@ class BaseUnderSampler(BaseSampler):
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
-    """
+        """.rstrip()
 
 
 class BaseCleaningSampler(BaseSampler):
@@ -62,3 +62,30 @@ class BaseCleaningSampler(BaseSampler):
     instead.
     """
     _sampling_type = 'clean-sampling'
+
+    _sampling_target_docstring = \
+        """sampling_target : str, list or callable
+        Sampling information to sample the data set.
+
+        - When ``str``, specify the class targeted by the resampling. Note the
+          the number of samples will not be equal in each. Possible choices
+          are:
+
+            ``'minority'``: resample only the minority class;
+
+            ``'majority'``: resample only the majority class;
+
+            ``'not minority'``: resample all classes but the minority class;
+
+            ``'not majority'``: resample all classes but the majority class;
+
+            ``'all'``: resample all classes;
+
+            ``'auto'``: equivalent to ``'not minority'``.
+
+        - When ``list``, the list contains the targeted classes.
+
+        - When callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples for each class.
+        """.rstrip()

@@ -17,11 +17,13 @@ from sklearn.utils import safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import Substitution
+from ...utils._docstring import _random_state_docstring
 
 VOTING_KIND = ('auto', 'hard', 'soft')
 
 
-@Substitution(sampling_target=BaseUnderSampler._sampling_target_docstring)
+@Substitution(sampling_target=BaseUnderSampler._sampling_target_docstring,
+              random_state=_random_state_docstring)
 class ClusterCentroids(BaseUnderSampler):
     """Perform under-sampling by generating centroids based on
     clustering methods.
@@ -39,11 +41,7 @@ class ClusterCentroids(BaseUnderSampler):
     ----------
     {sampling_target}
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
     estimator : object, optional(default=KMeans())
         Pass a :class:`sklearn.cluster.KMeans` estimator.

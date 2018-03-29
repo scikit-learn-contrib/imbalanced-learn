@@ -10,10 +10,14 @@ from sklearn.utils import check_random_state
 
 from .base import BaseEnsembleSampler
 from ..under_sampling import RandomUnderSampler
+from ..under_sampling.base import BaseUnderSampler
+from ..utils import Substitution
+from ..utils._docstring import _random_state_docstring
 
 MAX_INT = np.iinfo(np.int32).max
 
-
+@Substitution(sampling_target=BaseUnderSampler._sampling_target_docstring,
+              random_state=_random_state_docstring)
 class EasyEnsemble(BaseEnsembleSampler):
     """Create an ensemble sets by iteratively applying random under-sampling.
 
@@ -24,52 +28,13 @@ class EasyEnsemble(BaseEnsembleSampler):
 
     Parameters
     ----------
-    sampling_target : float, str, dict, callable, (default='auto')
-        Sampling information to sample the data set.
-
-        - When ``float``, it corresponds to the ratio :math:`\\alpha_{us}`
-          defined by :math:`N_{rM} = \\alpha_{us} \\times N_{m}` where
-          :math:`N_{rM}` and :math:`N_{m}` are the number of samples in the
-          majority class after resampling and the number of samples in the
-          minority class, respectively.
-
-          .. warning::
-             ``float`` is only available for **binary** classification. An
-             error is raised for multi-class classification.
-
-        - When ``str``, specify the class targeted by the resampling. The
-          number of samples in the different classes will be equalized.
-          Possible choices are:
-
-            ``'minority'``: resample only the minority class;
-
-            ``'majority'``: resample only the majority class;
-
-            ``'not minority'``: resample all classes but the minority class;
-
-            ``'not majority'``: resample all classes but the majority class;
-
-            ``'all'``: resample all classes;
-
-            ``'auto'``: equivalent to ``'not minority'``.
-
-        - When ``dict``, the keys correspond to the targeted classes. The
-          values correspond to the desired number of samples for each targeted
-          class.
-
-        - When callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples for each class.
+    {sampling_target}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
     replacement : bool, optional (default=False)
         Whether or not to sample randomly with replacement or not.
@@ -111,12 +76,12 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> ee = EasyEnsemble(random_state=42)
     >>> X_res, y_res = ee.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res[0])))
-    Resampled dataset shape Counter({0: 100, 1: 100})
+    >>> print('Resampled dataset shape %s' % Counter(y_res[0]))
+    Resampled dataset shape Counter({{0: 100, 1: 100}})
 
     """
 

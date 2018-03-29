@@ -12,9 +12,13 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
+from ...utils import Substitution
 from ...utils.deprecation import deprecate_parameter
+from ...utils._docstring import _random_state_docstring
 
 
+@Substitution(sampling_target=BaseCleaningSampler._sampling_target_docstring,
+              random_state=_random_state_docstring)
 class TomekLinks(BaseCleaningSampler):
     """Class to perform under-sampling by removing Tomek's links.
 
@@ -22,40 +26,13 @@ class TomekLinks(BaseCleaningSampler):
 
     Parameters
     ----------
-    sampling_target : str, list or callable
-        Sampling information to sample the data set.
-
-        - When ``str``, specify the class targeted by the resampling. Note the
-          the number of samples will not be equal in each. Possible choices
-          are:
-
-            ``'minority'``: resample only the minority class;
-
-            ``'majority'``: resample only the majority class;
-
-            ``'not minority'``: resample all classes but the minority class;
-
-            ``'not majority'``: resample all classes but the majority class;
-
-            ``'all'``: resample all classes;
-
-            ``'auto'``: equivalent to ``'not minority'``.
-
-        - When ``list``, the list contains the targeted classes.
-
-        - When callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples for each class.
+    {sampling_target}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
         .. deprecated:: 0.4
            ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
@@ -93,12 +70,12 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> tl = TomekLinks()
     >>> X_res, y_res = tl.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 897, 0: 100})
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{1: 897, 0: 100}})
 
     """
 
