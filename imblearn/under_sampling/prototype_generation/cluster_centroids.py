@@ -16,10 +16,12 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import safe_indexing
 
 from ..base import BaseUnderSampler
+from ...utils import Substitution
 
 VOTING_KIND = ('auto', 'hard', 'soft')
 
 
+@Substitution(sampling_target=BaseUnderSampler._sampling_target_docstring)
 class ClusterCentroids(BaseUnderSampler):
     """Perform under-sampling by generating centroids based on
     clustering methods.
@@ -35,42 +37,7 @@ class ClusterCentroids(BaseUnderSampler):
 
     Parameters
     ----------
-    sampling_target : float, str, dict, callable, (default='auto')
-        Sampling information to sample the data set.
-
-        - When ``float``, it corresponds to the ratio :math:`\\alpha_{us}`
-          defined by :math:`N_{rM} = \\alpha_{us} \\times N_{m}` where
-          :math:`N_{rM}` and :math:`N_{m}` are the number of samples in the
-          majority class after resampling and the number of samples in the
-          minority class, respectively.
-
-          .. warning::
-             ``float`` is only available for **binary** classification. An
-             error is raised for multi-class classification.
-
-        - When ``str``, specify the class targeted by the resampling. The
-          number of samples in the different classes will be equalized.
-          Possible choices are:
-
-            ``'minority'``: resample only the minority class;
-
-            ``'majority'``: resample only the majority class;
-
-            ``'not minority'``: resample all classes but the minority class;
-
-            ``'not majority'``: resample all classes but the majority class;
-
-            ``'all'``: resample all classes;
-
-            ``'auto'``: equivalent to ``'not minority'``.
-
-        - When ``dict``, the keys correspond to the targeted classes. The
-          values correspond to the desired number of samples for each targeted
-          class.
-
-        - When callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples for each class.
+    {sampling_target}
 
     random_state : int, RandomState instance or None, optional (default=None)
         If int, ``random_state`` is the seed used by the random number
@@ -117,13 +84,14 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s', Counter(y))
+    ... # doctest: +ELLIPSIS
+    Original dataset shape Counter(...)
     >>> cc = ClusterCentroids(random_state=42)
     >>> X_res, y_res = cc.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    >>> print('Resampled dataset shape %s', Counter(y_res))
     ... # doctest: +ELLIPSIS
-    Resampled dataset shape Counter({...})
+    Resampled dataset shape Counter(...)
 
     """
 
