@@ -19,8 +19,9 @@ from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
 
-@Substitution(sampling_target=BaseUnderSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class BalancedBaggingClassifier(BaggingClassifier):
     """A Bagging classifier with additional balancing.
 
@@ -69,7 +70,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
         .. versionadded:: 0.17
            *warm_start* constructor parameter.
 
-    {sampling_target}
+    {sampling_strategy}
 
     replacement : bool, optional (default=False)
         Whether or not to sample randomly with replacement or not.
@@ -85,8 +86,8 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Attributes
     ----------
@@ -171,6 +172,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
      [  2 225]]
 
     """
+
     def __init__(self,
                  base_estimator=None,
                  n_estimators=10,
@@ -180,7 +182,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
                  bootstrap_features=False,
                  oob_score=False,
                  warm_start=False,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  replacement=False,
                  n_jobs=1,
                  random_state=None,
@@ -199,7 +201,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             n_jobs=n_jobs,
             random_state=random_state,
             verbose=verbose)
-        self.sampling_target = sampling_target
+        self.sampling_strategy = sampling_strategy
         self.ratio = ratio
         self.replacement = replacement
 
@@ -219,12 +221,10 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         else:
             base_estimator = clone(default)
 
-        self.base_estimator_ = Pipeline(
-            [('sampler', RandomUnderSampler(
-                sampling_target=self.sampling_target,
-                replacement=self.replacement,
-                ratio=self.ratio)),
-             ('classifier', base_estimator)])
+        self.base_estimator_ = Pipeline([('sampler', RandomUnderSampler(
+            sampling_strategy=self.sampling_strategy,
+            replacement=self.replacement,
+            ratio=self.ratio)), ('classifier', base_estimator)])
 
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training

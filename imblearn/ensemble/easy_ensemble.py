@@ -16,8 +16,10 @@ from ..utils._docstring import _random_state_docstring
 
 MAX_INT = np.iinfo(np.int32).max
 
-@Substitution(sampling_target=BaseUnderSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class EasyEnsemble(BaseEnsembleSampler):
     """Create an ensemble sets by iteratively applying random under-sampling.
 
@@ -28,7 +30,7 @@ class EasyEnsemble(BaseEnsembleSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -44,8 +46,8 @@ class EasyEnsemble(BaseEnsembleSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -86,14 +88,14 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  replacement=False,
                  n_subsets=10,
                  ratio=None):
-        super(EasyEnsemble, self).__init__(sampling_target=sampling_target,
-                                           ratio=ratio)
+        super(EasyEnsemble, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.replacement = replacement
@@ -134,7 +136,8 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
 
         for _ in range(self.n_subsets):
             rus = RandomUnderSampler(
-                sampling_target=self.sampling_target_, return_indices=True,
+                sampling_strategy=self.sampling_strategy_,
+                return_indices=True,
                 random_state=random_state.randint(MAX_INT),
                 replacement=self.replacement)
             sel_x, sel_y, sel_idx = rus.fit_sample(X, y)

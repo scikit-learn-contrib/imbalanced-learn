@@ -15,13 +15,14 @@ from sklearn.model_selection import cross_val_predict
 
 from .base import BaseEnsembleSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import check_sampling_target, check_target_type
+from ..utils import check_sampling_strategy, check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
 
-@Substitution(sampling_target=BaseUnderSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class BalanceCascade(BaseEnsembleSampler):
     """Create an ensemble of balanced sets by iteratively under-sampling the
     imbalanced dataset using an estimator.
@@ -33,7 +34,7 @@ class BalanceCascade(BaseEnsembleSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     return_indices : bool, optional (default=True)
         Whether or not to return the indices of the samples randomly
@@ -55,8 +56,8 @@ class BalanceCascade(BaseEnsembleSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -99,14 +100,14 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  n_max_subset=None,
                  estimator=None,
                  ratio=None):
-        super(BalanceCascade, self).__init__(sampling_target=sampling_target,
-                                             ratio=ratio)
+        super(BalanceCascade, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.estimator = estimator
@@ -131,8 +132,8 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
         """
         super(BalanceCascade, self).fit(X, y)
         y = check_target_type(y)
-        self.sampling_target_ = check_sampling_target(self.sampling_target, y,
-                                                      'under-sampling')
+        self.sampling_strategy_ = check_sampling_strategy(
+            self.sampling_strategy, y, 'under-sampling')
         return self
 
     def _validate_estimator(self):
@@ -188,15 +189,15 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
         n_subsets = 0
         b_subset_search = True
         while b_subset_search:
-            target_stats = Counter(safe_indexing(
-                y, np.flatnonzero(samples_mask)))
+            target_stats = Counter(
+                safe_indexing(y, np.flatnonzero(samples_mask)))
             # store the index of the data to under-sample
             index_under_sample = np.empty((0, ), dtype=y.dtype)
             # value which will be picked at each round
             index_constant = np.empty((0, ), dtype=y.dtype)
             for target_class in target_stats.keys():
-                if target_class in self.sampling_target_.keys():
-                    n_samples = self.sampling_target_[target_class]
+                if target_class in self.sampling_strategy_.keys():
+                    n_samples = self.sampling_strategy_[target_class]
                     # extract the data of interest for this round from the
                     # current class
                     index_class = np.flatnonzero(y == target_class)
@@ -212,14 +213,13 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
                         axis=0)
                 else:
                     index_constant = np.concatenate(
-                        (index_constant,
-                         np.flatnonzero(y == target_class)),
+                        (index_constant, np.flatnonzero(y == target_class)),
                         axis=0)
 
             # store the set created
             n_subsets += 1
-            subset_indices = np.concatenate((index_under_sample,
-                                             index_constant), axis=0)
+            subset_indices = np.concatenate(
+                (index_under_sample, index_constant), axis=0)
             idx_under.append(subset_indices)
 
             # fit and predict using cross validation
@@ -228,9 +228,8 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             pred = cross_val_predict(self.estimator_, X_subset, y_subset)
             # extract the prediction about the targeted classes only
             pred_target = pred[:index_under_sample.size]
-            index_classified = index_under_sample[
-                pred_target == safe_indexing(y_subset,
-                                             range(index_under_sample.size))]
+            index_classified = index_under_sample[pred_target == safe_indexing(
+                y_subset, range(index_under_sample.size))]
             samples_mask[index_classified] = False
 
             # check the stopping criterion
@@ -238,11 +237,11 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
                 if n_subsets == self.n_max_subset:
                     b_subset_search = False
             # check that there is enough samples for another round
-            target_stats = Counter(safe_indexing(
-                y, np.flatnonzero(samples_mask)))
-            for target_class in self.sampling_target_.keys():
+            target_stats = Counter(
+                safe_indexing(y, np.flatnonzero(samples_mask)))
+            for target_class in self.sampling_strategy_.keys():
                 if (target_stats[target_class] <
-                        self.sampling_target_[target_class]):
+                        self.sampling_strategy_[target_class]):
                     b_subset_search = False
 
         X_resampled, y_resampled = [], []

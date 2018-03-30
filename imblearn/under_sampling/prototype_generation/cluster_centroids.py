@@ -22,8 +22,9 @@ from ...utils._docstring import _random_state_docstring
 VOTING_KIND = ('auto', 'hard', 'soft')
 
 
-@Substitution(sampling_target=BaseUnderSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class ClusterCentroids(BaseUnderSampler):
     """Perform under-sampling by generating centroids based on
     clustering methods.
@@ -39,7 +40,7 @@ class ClusterCentroids(BaseUnderSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     {random_state}
 
@@ -63,8 +64,8 @@ class ClusterCentroids(BaseUnderSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -93,14 +94,14 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  random_state=None,
                  estimator=None,
                  voting='auto',
                  n_jobs=1,
                  ratio=None):
-        super(ClusterCentroids, self).__init__(sampling_target=sampling_target,
-                                               ratio=ratio)
+        super(ClusterCentroids, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.estimator = estimator
         self.voting = voting
@@ -121,8 +122,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         if self.voting_ == 'hard':
             nearest_neighbors = NearestNeighbors(n_neighbors=1)
             nearest_neighbors.fit(X, y)
-            indices = nearest_neighbors.kneighbors(centroids,
-                                                   return_distance=False)
+            indices = nearest_neighbors.kneighbors(
+                centroids, return_distance=False)
             X_new = safe_indexing(X, np.squeeze(indices))
         else:
             if sparse.issparse(X):
@@ -170,8 +171,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
 
         X_resampled, y_resampled = [], []
         for target_class in np.unique(y):
-            if target_class in self.sampling_target_.keys():
-                n_samples = self.sampling_target_[target_class]
+            if target_class in self.sampling_strategy_.keys():
+                n_samples = self.sampling_strategy_[target_class]
                 self.estimator_.set_params(**{'n_clusters': n_samples})
                 self.estimator_.fit(X[y == target_class])
                 X_new, y_new = self._generate_sample(

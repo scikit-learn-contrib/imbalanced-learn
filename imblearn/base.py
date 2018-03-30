@@ -18,7 +18,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
 from sklearn.utils.validation import check_is_fitted
 
-from .utils import check_sampling_target, check_target_type, hash_X_y
+from .utils import check_sampling_strategy, check_target_type, hash_X_y
 from .utils.deprecation import deprecate_parameter
 
 
@@ -63,7 +63,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
 
-        check_is_fitted(self, 'sampling_target_')
+        check_is_fitted(self, 'sampling_strategy_')
         self._check_X_y(X, y)
 
         output = self._sample(X, y)
@@ -145,8 +145,8 @@ class BaseSampler(SamplerMixin):
     instead.
     """
 
-    def __init__(self, sampling_target='auto', ratio=None):
-        self.sampling_target = sampling_target
+    def __init__(self, sampling_strategy='auto', ratio=None):
+        self.sampling_strategy = sampling_strategy
         # FIXME: remove in 0.6
         self.ratio = ratio
         self.logger = logging.getLogger(self.__module__)
@@ -154,16 +154,16 @@ class BaseSampler(SamplerMixin):
     @property
     def ratio_(self):
         # FIXME: remove in 0.6
-        warnings.warn("'ratio' and 'ratio_' are deprecated. "
-                      "Use 'sampling_target' and 'sampling_target_' instead.",
+        warnings.warn("'ratio' and 'ratio_' are deprecated. Use "
+                      "'sampling_strategy' and 'sampling_strategy_' instead.",
                       DeprecationWarning)
-        return self.sampling_target_
+        return self.sampling_strategy_
 
     def _deprecate_ratio(self):
-        # both ratio and sampling_target should not be set
+        # both ratio and sampling_strategy should not be set
         if self.ratio is not None:
-            deprecate_parameter(self, '0.4', 'ratio', 'sampling_target')
-            self.sampling_target = self.ratio
+            deprecate_parameter(self, '0.4', 'ratio', 'sampling_strategy')
+            self.sampling_strategy = self.ratio
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -186,8 +186,8 @@ class BaseSampler(SamplerMixin):
         y = check_target_type(y)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
-        self.sampling_target_ = check_sampling_target(self.sampling_target, y,
-                                                      self._sampling_type)
+        self.sampling_strategy_ = check_sampling_strategy(
+            self.sampling_strategy, y, self._sampling_type)
 
         return self
 
@@ -245,11 +245,11 @@ class FunctionSampler(SamplerMixin):
 
     >>> from collections import Counter
     >>> from imblearn.under_sampling import RandomUnderSampler
-    >>> def func(X, y, sampling_target, random_state):
-    ...   return RandomUnderSampler(sampling_target=sampling_target,
+    >>> def func(X, y, sampling_strategy, random_state):
+    ...   return RandomUnderSampler(sampling_strategy=sampling_strategy,
     ...                             random_state=random_state).fit_sample(X, y)
     >>> sampler = FunctionSampler(func=func,
-    ...                           kw_args={'sampling_target': 'auto',
+    ...                           kw_args={'sampling_strategy': 'auto',
     ...                                    'random_state': 0})
     >>> X_res, y_res = sampler.fit_sample(X, y)
     >>> print('Resampled dataset shape {}'.format(
@@ -266,27 +266,31 @@ class FunctionSampler(SamplerMixin):
 
     def fit(self, X, y):
         y = check_target_type(y)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']
-                         if self.accept_sparse else False)
+        X, y = check_X_y(
+            X,
+            y,
+            accept_sparse=['csr', 'csc'] if self.accept_sparse else False)
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
         # when using a sampler, ratio_ is supposed to exist after fit
-        self.sampling_target_ = 'is_fitted'
+        self.sampling_strategy_ = 'is_fitted'
 
         return self
 
     @property
     def ratio_(self):
         # FIXME: remove in 0.6
-        warnings.warn("'ratio' and 'ratio_' are deprecated. "
-                      "Use 'sampling_target' and 'sampling_target_' instead.",
+        warnings.warn("'ratio' and 'ratio_' are deprecated. Use "
+                      "'sampling_strategy' and 'sampling_strategy_' instead.",
                       DeprecationWarning)
-        return self.sampling_target_
+        return self.sampling_strategy_
 
     def _sample(self, X, y, func=None, kw_args=None):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']
-                         if self.accept_sparse else False)
-        check_is_fitted(self, 'sampling_target_')
+        X, y = check_X_y(
+            X,
+            y,
+            accept_sparse=['csr', 'csc'] if self.accept_sparse else False)
+        check_is_fitted(self, 'sampling_strategy_')
         X_hash, y_hash = hash_X_y(X, y)
         if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
             raise RuntimeError("X and y need to be same array earlier fitted.")

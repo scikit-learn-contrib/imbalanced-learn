@@ -17,8 +17,9 @@ from ...utils.deprecation import deprecate_parameter
 from ...utils._docstring import _random_state_docstring
 
 
-@Substitution(sampling_target=BaseCleaningSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class TomekLinks(BaseCleaningSampler):
     """Class to perform under-sampling by removing Tomek's links.
 
@@ -26,7 +27,7 @@ class TomekLinks(BaseCleaningSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -42,8 +43,8 @@ class TomekLinks(BaseCleaningSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -79,10 +80,14 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self, sampling_target='auto', return_indices=False,
-                 random_state=None, n_jobs=1, ratio=None):
-        super(TomekLinks, self).__init__(sampling_target=sampling_target,
-                                         ratio=ratio)
+    def __init__(self,
+                 sampling_strategy='auto',
+                 return_indices=False,
+                 random_state=None,
+                 n_jobs=1,
+                 ratio=None):
+        super(TomekLinks, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_jobs = n_jobs
@@ -163,13 +168,11 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         nn.fit(X)
         nns = nn.kneighbors(X, return_distance=False)[:, 1]
 
-        links = self.is_tomek(y, nns, self.sampling_target_)
+        links = self.is_tomek(y, nns, self.sampling_strategy_)
         idx_under = np.flatnonzero(np.logical_not(links))
 
         if self.return_indices:
-            return (safe_indexing(X, idx_under),
-                    safe_indexing(y, idx_under),
+            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
                     idx_under)
         else:
-            return (safe_indexing(X, idx_under),
-                    safe_indexing(y, idx_under))
+            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under))

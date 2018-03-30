@@ -33,7 +33,6 @@ try:
 except ImportError:
     from sklearn.externals.funcsigs import signature
 
-
 LOGGER = logging.getLogger(__name__)
 
 
@@ -166,10 +165,11 @@ def sensitivity_specificity_support(y_true,
             raise ValueError("Target is %s but average='binary'. Please "
                              "choose another average setting." % y_type)
     elif pos_label not in (None, 1):
-        warnings.warn("Note that pos_label (set to %r) is ignored when "
-                      "average != 'binary' (got %r). You may use "
-                      "labels=[pos_label] to specify a single positive class."
-                      % (pos_label, average), UserWarning)
+        warnings.warn(
+            "Note that pos_label (set to %r) is ignored when "
+            "average != 'binary' (got %r). You may use "
+            "labels=[pos_label] to specify a single positive class." %
+            (pos_label, average), UserWarning)
 
     if labels is None:
         labels = present_labels
@@ -177,8 +177,8 @@ def sensitivity_specificity_support(y_true,
     else:
         n_labels = len(labels)
         labels = np.hstack(
-            [labels, np.setdiff1d(
-                present_labels, labels, assume_unique=True)])
+            [labels,
+             np.setdiff1d(present_labels, labels, assume_unique=True)])
 
     # Calculate tp_sum, pred_sum, true_sum ###
 
@@ -591,8 +591,8 @@ def geometric_mean_score(y_true,
             warn_for=('specificity', 'specificity'),
             sample_weight=sample_weight)
 
-        LOGGER.debug('The sensitivity and specificity are : %s - %s' %
-                     (sen, spe))
+        LOGGER.debug('The sensitivity and specificity are : %s - %s' % (sen,
+                                                                        spe))
         return np.sqrt(sen * spe)
     else:
         present_labels = unique_labels(y_true, y_pred)
@@ -602,8 +602,10 @@ def geometric_mean_score(y_true,
             n_labels = None
         else:
             n_labels = len(labels)
-            labels = np.hstack([labels, np.setdiff1d(present_labels, labels,
-                                                     assume_unique=True)])
+            labels = np.hstack([
+                labels,
+                np.setdiff1d(present_labels, labels, assume_unique=True)
+            ])
 
         le = LabelEncoder()
         le.fit(labels)
@@ -621,14 +623,14 @@ def geometric_mean_score(y_true,
             tp_bins_weights = None
 
         if len(tp_bins):
-            tp_sum = np.bincount(tp_bins, weights=tp_bins_weights,
-                                 minlength=len(labels))
+            tp_sum = np.bincount(
+                tp_bins, weights=tp_bins_weights, minlength=len(labels))
         else:
             # Pathological case
             true_sum = tp_sum = np.zeros(len(labels))
         if len(y_true):
-            true_sum = np.bincount(y_true, weights=sample_weight,
-                                   minlength=len(labels))
+            true_sum = np.bincount(
+                y_true, weights=sample_weight, minlength=len(labels))
 
         # Retain only selected labels
         indices = np.searchsorted(sorted_labels, labels[:n_labels])
@@ -722,8 +724,7 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
             # specificity and specificity
             params_sens_spec = set(sens_spec_sig._parameters.keys())
             # Make the intersection between the parameters
-            sel_params = params_sens_spec.intersection(
-                set(tags_scoring_func))
+            sel_params = params_sens_spec.intersection(set(tags_scoring_func))
             # Create a sub dictionary
             tags_scoring_func = dict((k, tags_scoring_func[k])
                                      for k in sel_params)
@@ -738,12 +739,10 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
                   scoring_func.__name__ == 'jaccard_similarity_score'):
                 tags_scoring_func['average'] = 'binary'
             # Create the list of parameters through signature binding
-            tags_sens_spec = sens_spec_sig.bind(
-                **tags_scoring_func)
+            tags_sens_spec = sens_spec_sig.bind(**tags_scoring_func)
             # Call the sens/spec function
             sen, spe, _ = sensitivity_specificity_support(
-                *tags_sens_spec.args,
-                **tags_sens_spec.kwargs)
+                *tags_sens_spec.args, **tags_sens_spec.kwargs)
             # Compute the dominance
             dom = sen - spe
             return (1. + alpha * dom) * _score
@@ -894,13 +893,11 @@ def classification_report_imbalanced(y_true,
 
     # compute averages
     values = [last_line_heading]
-    for v in (np.average(
-            precision, weights=support), np.average(
-                recall, weights=support), np.average(
-                    specificity, weights=support), np.average(
-                        f1, weights=support), np.average(
-                            geo_mean, weights=support), np.average(
-                                iba, weights=support)):
+    for v in (np.average(precision, weights=support), np.average(
+            recall, weights=support), np.average(specificity, weights=support),
+              np.average(f1, weights=support), np.average(
+                  geo_mean, weights=support), np.average(iba,
+                                                         weights=support)):
         values += ["{0:0.{1}f}".format(v, digits)]
     values += ['{0}'.format(np.sum(support))]
     report += fmt % tuple(values)

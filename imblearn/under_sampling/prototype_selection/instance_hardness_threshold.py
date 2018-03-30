@@ -22,8 +22,9 @@ from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
 
 
-@Substitution(sampling_target=BaseCleaningSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class InstanceHardnessThreshold(BaseCleaningSampler):
     """Class to perform under-sampling based on the instance hardness
     threshold.
@@ -41,7 +42,7 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         inherited from :class:`sklearn.base.ClassifierMixin` and having an
         attribute :func:`predict_proba`.
 
-    {sampling_target}
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -57,8 +58,8 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -96,14 +97,14 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
 
     def __init__(self,
                  estimator=None,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  cv=5,
                  n_jobs=1,
                  ratio=None):
         super(InstanceHardnessThreshold, self).__init__(
-            sampling_target=sampling_target, ratio=ratio)
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.estimator = estimator
         self.return_indices = return_indices
@@ -148,8 +149,9 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         self._validate_estimator()
 
         target_stats = Counter(y)
-        skf = StratifiedKFold(n_splits=self.cv, shuffle=False,
-                              random_state=self.random_state).split(X, y)
+        skf = StratifiedKFold(
+            n_splits=self.cv, shuffle=False,
+            random_state=self.random_state).split(X, y)
         probabilities = np.zeros(y.shape[0], dtype=float)
 
         for train_index, test_index in skf:
@@ -170,8 +172,8 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
-            if target_class in self.sampling_target_.keys():
-                n_samples = self.sampling_target_[target_class]
+            if target_class in self.sampling_strategy_.keys():
+                n_samples = self.sampling_strategy_[target_class]
                 threshold = np.percentile(
                     probabilities[y == target_class],
                     (1. - (n_samples / target_stats[target_class])) * 100.)
@@ -181,8 +183,9 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under, np.flatnonzero(y == target_class)[
-                    index_target_class]), axis=0)
+                (idx_under,
+                 np.flatnonzero(y == target_class)[index_target_class]),
+                axis=0)
 
         if self.return_indices:
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),

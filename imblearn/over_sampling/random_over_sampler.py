@@ -15,8 +15,9 @@ from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
 
-@Substitution(sampling_target=BaseOverSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class RandomOverSampler(BaseOverSampler):
     """Class to perform random over-sampling.
 
@@ -27,14 +28,14 @@ class RandomOverSampler(BaseOverSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     {random_state}
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -65,9 +66,10 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self, sampling_target='auto', random_state=None, ratio=None):
+    def __init__(self, sampling_strategy='auto', random_state=None,
+                 ratio=None):
         super(RandomOverSampler, self).__init__(
-            sampling_target=sampling_target, ratio=ratio)
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
 
     def _sample(self, X, y):
@@ -96,7 +98,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
 
         sample_indices = range(X.shape[0])
 
-        for class_sample, num_samples in self.sampling_target_.items():
+        for class_sample, num_samples in self.sampling_strategy_.items():
             target_class_indices = np.flatnonzero(y == class_sample)
             indices = random_state.randint(
                 low=0, high=target_stats[class_sample], size=num_samples)
@@ -104,5 +106,5 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
             sample_indices = np.append(sample_indices,
                                        target_class_indices[indices])
 
-        return (safe_indexing(X, sample_indices),
-                safe_indexing(y, sample_indices))
+        return (safe_indexing(X, sample_indices), safe_indexing(
+            y, sample_indices))

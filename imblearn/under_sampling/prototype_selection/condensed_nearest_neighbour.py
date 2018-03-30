@@ -21,8 +21,9 @@ from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
 
 
-@Substitution(sampling_target=BaseCleaningSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class CondensedNearestNeighbour(BaseCleaningSampler):
     """Class to perform under-sampling based on the condensed nearest neighbour
     method.
@@ -31,7 +32,7 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -54,8 +55,8 @@ KNeighborsClassifier(n_neighbors=1))
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -96,7 +97,7 @@ CondensedNearestNeighbour # doctest: +SKIP
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=None,
@@ -104,7 +105,7 @@ CondensedNearestNeighbour # doctest: +SKIP
                  n_jobs=1,
                  ratio=None):
         super(CondensedNearestNeighbour, self).__init__(
-            sampling_target=sampling_target, ratio=ratio)
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -159,17 +160,18 @@ CondensedNearestNeighbour # doctest: +SKIP
         idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
-            if target_class in self.sampling_target_.keys():
+            if target_class in self.sampling_strategy_.keys():
                 # Randomly get one sample from the majority class
                 # Generate the index to select
                 idx_maj = np.flatnonzero(y == target_class)
                 idx_maj_sample = idx_maj[random_state.randint(
-                        low=0, high=target_stats[target_class],
-                        size=self.n_seeds_S)]
+                    low=0,
+                    high=target_stats[target_class],
+                    size=self.n_seeds_S)]
 
                 # Create the set C - One majority samples and all minority
-                C_indices = np.append(np.flatnonzero(y == class_minority),
-                                      idx_maj_sample)
+                C_indices = np.append(
+                    np.flatnonzero(y == class_minority), idx_maj_sample)
                 C_x = safe_indexing(X, C_indices)
                 C_y = safe_indexing(y, C_indices)
 
@@ -217,8 +219,7 @@ CondensedNearestNeighbour # doctest: +SKIP
                             np.append(idx_maj_sample,
                                       np.flatnonzero(pred_S_y == S_y)))
 
-                idx_under = np.concatenate((idx_under, idx_maj_sample),
-                                           axis=0)
+                idx_under = np.concatenate((idx_under, idx_maj_sample), axis=0)
             else:
                 idx_under = np.concatenate(
                     (idx_under, np.flatnonzero(y == target_class)), axis=0)

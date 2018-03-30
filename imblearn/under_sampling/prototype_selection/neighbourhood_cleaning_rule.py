@@ -20,12 +20,12 @@ from ...utils import Substitution
 from ...utils.deprecation import deprecate_parameter
 from ...utils._docstring import _random_state_docstring
 
-
 SEL_KIND = ('all', 'mode')
 
 
-@Substitution(sampling_target=BaseCleaningSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class NeighbourhoodCleaningRule(BaseCleaningSampler):
     """Class performing under-sampling based on the neighbourhood cleaning
     rule.
@@ -34,7 +34,7 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -65,8 +65,8 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -103,7 +103,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
@@ -112,7 +112,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                  n_jobs=1,
                  ratio=None):
         super(NeighbourhoodCleaningRule, self).__init__(
-            sampling_target=sampling_target, ratio=ratio)
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -127,17 +127,17 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         if self.random_state is not None:
             deprecate_parameter(self, '0.4', 'random_state')
 
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
+        self.nn_ = check_neighbors_object(
+            'n_neighbors', self.n_neighbors, additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 
         if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
-            raise ValueError("'threshold_cleaning' is a value between 0 and 1."
-                             " Got {} instead.".format(
-                                 self.threshold_cleaning))
+            raise ValueError(
+                "'threshold_cleaning' is a value between 0 and 1."
+                " Got {} instead.".format(self.threshold_cleaning))
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -165,12 +165,13 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
         """
         self._validate_estimator()
-        enn = EditedNearestNeighbours(sampling_target=self.sampling_target,
-                                      return_indices=True,
-                                      n_neighbors=self.n_neighbors,
-                                      kind_sel='mode',
-                                      n_jobs=self.n_jobs,
-                                      ratio=self.ratio)
+        enn = EditedNearestNeighbours(
+            sampling_strategy=self.sampling_strategy,
+            return_indices=True,
+            n_neighbors=self.n_neighbors,
+            kind_sel='mode',
+            n_jobs=self.n_jobs,
+            ratio=self.ratio)
         _, _, index_not_a1 = enn.fit_sample(X, y)
         index_a1 = np.ones(y.shape, dtype=bool)
         index_a1[index_not_a1] = False
@@ -180,16 +181,16 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
         # compute which classes to consider for cleaning for the A2 group
-        classes_under_sample = [c for c, n_samples in target_stats.items()
-                                if (c in self.sampling_target_.keys() and
-                                    (n_samples > X.shape[0] *
-                                     self.threshold_cleaning))]
+        classes_under_sample = [
+            c for c, n_samples in target_stats.items()
+            if (c in self.sampling_strategy_.keys() and (
+                n_samples > X.shape[0] * self.threshold_cleaning))
+        ]
         self.nn_.fit(X)
         class_minority_indices = np.flatnonzero(y == class_minority)
         X_class = safe_indexing(X, class_minority_indices)
         y_class = safe_indexing(y, class_minority_indices)
-        nnhood_idx = self.nn_.kneighbors(
-            X_class, return_distance=False)[:, 1:]
+        nnhood_idx = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
         nnhood_label = y[nnhood_idx]
         if self.kind_sel == 'mode':
             nnhood_label_majority, _ = mode(nnhood_label, axis=1)
@@ -201,8 +202,8 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
             raise NotImplementedError
         # compute a2 group
         index_a2 = np.ravel(nnhood_idx[~nnhood_bool])
-        index_a2 = np.unique([index for index in index_a2
-                              if y[index] in classes_under_sample])
+        index_a2 = np.unique(
+            [index for index in index_a2 if y[index] in classes_under_sample])
 
         union_a1_a2 = np.union1d(index_a1, index_a2).astype(int)
         selected_samples = np.ones(y.shape, dtype=bool)
@@ -210,9 +211,8 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         index_target_class = np.flatnonzero(selected_samples)
 
         if self.return_indices:
-            return (safe_indexing(X, index_target_class),
-                    safe_indexing(y, index_target_class),
-                    index_target_class)
+            return (safe_indexing(X, index_target_class), safe_indexing(
+                y, index_target_class), index_target_class)
         else:
-            return (safe_indexing(X, index_target_class),
-                    safe_indexing(y, index_target_class))
+            return (safe_indexing(X, index_target_class), safe_indexing(
+                y, index_target_class))

@@ -103,7 +103,7 @@ by considering independently each targeted class::
   >>> print(np.vstack({tuple(row) for row in X_resampled}).shape)
   (181, 2)
 
-See :ref:`sphx_glr_auto_examples_plot_sampling_target_usage.py`.,
+See :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py`.,
 :ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
 and :ref:`sphx_glr_auto_examples_under-sampling_plot_random_under_sampler.py`.
 
@@ -214,10 +214,10 @@ the samples of interest in green.
    :scale: 60
    :align: center
 
-The parameter ``sampling_target`` control which sample of the link will be
-removed. For instance, the default (i.e., ``sampling_target='auto'``) will
+The parameter ``sampling_strategy`` control which sample of the link will be
+removed. For instance, the default (i.e., ``sampling_strategy='auto'``) will
 remove the sample from the majority class. Both samples from the majority and
-minority class can be removed by setting ``sampling_target`` to ``'all'``. The
+minority class can be removed by setting ``sampling_strategy`` to ``'all'``. The
 figure illustrates this behaviour.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_002.png

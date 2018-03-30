@@ -50,16 +50,14 @@ class cls:
 
     {param_2}
     """
+
     def __init__(self, param_1, param_2):
         self.param_1 = param_1
         self.param_2 = param_2
 
 
-@pytest.mark.parametrize(
-    "obj, obj_docstring",
-    [(func, func_docstring),
-     (cls, cls_docstring)]
-)
+@pytest.mark.parametrize("obj, obj_docstring", [(func, func_docstring),
+                                                (cls, cls_docstring)])
 def test_docstring_inject(obj, obj_docstring):
     obj_injected_docstring = Substitution(param_1='xxx', param_2='yyy')(obj)
     obj_injected_docstring.__doc__ == obj_docstring

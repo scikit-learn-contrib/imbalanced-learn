@@ -1,6 +1,5 @@
 """Transform a dataset into an imbalanced dataset."""
 
-
 # Authors: Dayvid Oliveira
 #          Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
@@ -13,12 +12,16 @@ from collections import Counter
 from sklearn.utils import check_X_y
 
 from ..under_sampling.prototype_selection import RandomUnderSampler
-from ..utils import check_sampling_target
+from ..utils import check_sampling_strategy
 
 LOGGER = logging.getLogger(__name__)
 
 
-def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
+def make_imbalance(X,
+                   y,
+                   sampling_strategy=None,
+                   ratio=None,
+                   random_state=None,
                    **kwargs):
     """Turns a dataset into an imbalanced dataset at specific ratio.
 
@@ -35,7 +38,7 @@ def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
     y : ndarray, shape (n_samples, )
         Corresponding label for each sample in X.
 
-    sampling_target : dict, or callable,
+    sampling_strategy : dict, or callable,
         Ratio to use for resampling the data set.
 
         - When ``dict``, the keys correspond to the targeted classes. The
@@ -48,8 +51,8 @@ def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -59,7 +62,7 @@ def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
 
     kwargs : dict, optional
         Dictionary of additional keyword arguments to pass to
-        ``sampling_target``.
+        ``sampling_strategy``.
 
     Returns
     -------
@@ -74,7 +77,7 @@ def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
     See
     :ref:`sphx_glr_auto_examples_applications_plot_multi_class_under_sampling.py`,
     :ref:`sphx_glr_auto_examples_datasets_plot_make_imbalance.py`, and
-    :ref:`sphx_glr_auto_examples_plot_sampling_target_usage.py`.
+    :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py`.
 
     Examples
     --------
@@ -87,7 +90,7 @@ def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
     >>> print('Distribution before imbalancing: {}'.format(Counter(y)))
     Distribution before imbalancing: Counter({0: 50, 1: 50, 2: 50})
     >>> X_res, y_res = make_imbalance(X, y,
-    ...                               sampling_target={0: 10, 1: 20, 2: 30},
+    ...                               sampling_strategy={0: 10, 1: 20, 2: 30},
     ...                               random_state=42)
     >>> print('Distribution after imbalancing: {}'.format(Counter(y_res)))
     Distribution after imbalancing: Counter({2: 30, 1: 20, 0: 10})
@@ -99,24 +102,25 @@ def make_imbalance(X, y, sampling_target=None, ratio=None, random_state=None,
     # FIXME remove ratio at 0.6
     if ratio is not None:
         warnings.warn("'ratio' has been deprecated in 0.4 and will be "
-                      "removed in 0.6. Use 'sampling_target' instead.")
-        sampling_target = ratio
-    elif sampling_target is None:
+                      "removed in 0.6. Use 'sampling_strategy' instead.")
+        sampling_strategy = ratio
+    elif sampling_strategy is None:
         raise TypeError("make_imbalance() missing 1 required positional "
-                        "argument: 'sampling_target'")
-    if isinstance(sampling_target, dict) or callable(sampling_target):
-        sampling_target_ = check_sampling_target(sampling_target,
-                                                 y, 'under-sampling', **kwargs)
+                        "argument: 'sampling_strategy'")
+    if isinstance(sampling_strategy, dict) or callable(sampling_strategy):
+        sampling_strategy_ = check_sampling_strategy(
+            sampling_strategy, y, 'under-sampling', **kwargs)
     else:
-        raise ValueError("'sampling_target' has to be a dictionary or a "
+        raise ValueError("'sampling_strategy' has to be a dictionary or a "
                          "function returning a dictionary. Got {} instead."
-                         .format(type(sampling_target)))
+                         .format(type(sampling_strategy)))
 
     LOGGER.info('The original target distribution in the dataset is: %s',
                 target_stats)
-    rus = RandomUnderSampler(sampling_target=sampling_target_,
-                             replacement=False,
-                             random_state=random_state)
+    rus = RandomUnderSampler(
+        sampling_strategy=sampling_strategy_,
+        replacement=False,
+        random_state=random_state)
     X_resampled, y_resampled = rus.fit_sample(X, y)
     LOGGER.info('Make the dataset imbalanced: %s', Counter(y_resampled))
 

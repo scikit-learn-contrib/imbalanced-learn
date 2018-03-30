@@ -17,8 +17,8 @@ class BaseOverSampler(BaseSampler):
 
     _sampling_type = 'over-sampling'
 
-    _sampling_target_docstring = \
-        """sampling_target : float, str, dict or callable, (default='auto')
+    _sampling_strategy_docstring = \
+        """sampling_strategy : float, str, dict or callable, (default='auto')
         Sampling information to resample the data set.
 
         - When ``float``, it corresponds to the ratio :math:`\\alpha_{os}`

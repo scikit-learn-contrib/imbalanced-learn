@@ -92,13 +92,13 @@ output of an :class:`EasyEnsemble` sampler with an ensemble of classifiers
 (i.e. ``BaggingClassifier``). Therefore, :class:`BalancedBaggingClassifier`
 takes the same parameters than the scikit-learn
 ``BaggingClassifier``. Additionally, there is two additional parameters,
-``sampling_target`` and ``replacement``, as in the :class:`EasyEnsemble`
+``sampling_strategy`` and ``replacement``, as in the :class:`EasyEnsemble`
 sampler::
 
 
   >>> from imblearn.ensemble import BalancedBaggingClassifier
   >>> bbc = BalancedBaggingClassifier(base_estimator=DecisionTreeClassifier(),
-  ...                                 sampling_target='auto',
+  ...                                 sampling_strategy='auto',
   ...                                 replacement=False,
   ...                                 random_state=0)
   >>> bbc.fit(X_train, y_train) # doctest: +ELLIPSIS

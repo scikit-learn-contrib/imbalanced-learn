@@ -67,33 +67,14 @@ URL = ('https://zenodo.org/record/61452/files/'
 PRE_FILENAME = 'x'
 POST_FILENAME = 'data.npz'
 
-MAP_NAME_ID_KEYS = ['ecoli',
-                    'optical_digits',
-                    'satimage',
-                    'pen_digits',
-                    'abalone',
-                    'sick_euthyroid',
-                    'spectrometer',
-                    'car_eval_34',
-                    'isolet',
-                    'us_crime',
-                    'yeast_ml8',
-                    'scene',
-                    'libras_move',
-                    'thyroid_sick',
-                    'coil_2000',
-                    'arrhythmia',
-                    'solar_flare_m0',
-                    'oil',
-                    'car_eval_4',
-                    'wine_quality',
-                    'letter_img',
-                    'yeast_me2',
-                    'webpage',
-                    'ozone_level',
-                    'mammography',
-                    'protein_homo',
-                    'abalone_19']
+MAP_NAME_ID_KEYS = [
+    'ecoli', 'optical_digits', 'satimage', 'pen_digits', 'abalone',
+    'sick_euthyroid', 'spectrometer', 'car_eval_34', 'isolet', 'us_crime',
+    'yeast_ml8', 'scene', 'libras_move', 'thyroid_sick', 'coil_2000',
+    'arrhythmia', 'solar_flare_m0', 'oil', 'car_eval_4', 'wine_quality',
+    'letter_img', 'yeast_me2', 'webpage', 'ozone_level', 'mammography',
+    'protein_homo', 'abalone_19'
+]
 
 MAP_NAME_ID = OrderedDict()
 MAP_ID_NAME = OrderedDict()

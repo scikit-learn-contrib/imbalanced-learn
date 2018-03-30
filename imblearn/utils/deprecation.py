@@ -6,7 +6,9 @@
 import warnings
 
 
-def deprecate_parameter(sampler, version_deprecation, param_deprecated,
+def deprecate_parameter(sampler,
+                        version_deprecation,
+                        param_deprecated,
                         new_param=None):
     """Helper to deprecate a parameter by another one.
 
@@ -36,22 +38,19 @@ def deprecate_parameter(sampler, version_deprecation, param_deprecated,
     version_removed = x + '.' + str(int(y) + 2)
     if new_param is None:
         if getattr(sampler, param_deprecated) is not None:
-            warnings.warn("In the estimator {}, the parameter '{}' is"
-                          " deprecated from {} and will be removed in"
-                          " {}.".format(sampler.__class__,
-                                        param_deprecated,
-                                        version_deprecation,
-                                        version_removed),
-                          category=DeprecationWarning)
+            warnings.warn(
+                "In the estimator {}, the parameter '{}' is"
+                " deprecated from {} and will be removed in"
+                " {}.".format(sampler.__class__, param_deprecated,
+                              version_deprecation, version_removed),
+                category=DeprecationWarning)
     else:
         if getattr(sampler, param_deprecated) is not None:
-            warnings.warn("In the estimator {}, the parameter '{}' is"
-                          "deprecated from {} and will be removed in"
-                          " {}. Use '{}' instead.".format(
-                              sampler.__class__,
-                              param_deprecated,
-                              version_deprecation,
-                              version_removed,
-                              new_param),
-                          category=DeprecationWarning)
+            warnings.warn(
+                "In the estimator {}, the parameter '{}' is"
+                "deprecated from {} and will be removed in"
+                " {}. Use '{}' instead.".format(
+                    sampler.__class__, param_deprecated, version_deprecation,
+                    version_removed, new_param),
+                category=DeprecationWarning)
             setattr(sampler, new_param, getattr(sampler, param_deprecated))

@@ -20,8 +20,9 @@ from ...utils.deprecation import deprecate_parameter
 from ...utils._docstring import _random_state_docstring
 
 
-@Substitution(sampling_target=BaseUnderSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class NearMiss(BaseUnderSampler):
     """Class to perform under-sampling based on NearMiss methods.
 
@@ -29,7 +30,7 @@ class NearMiss(BaseUnderSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -63,8 +64,8 @@ class NearMiss(BaseUnderSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -103,7 +104,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  version=1,
@@ -111,8 +112,8 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                  n_neighbors_ver3=3,
                  n_jobs=1,
                  ratio=None):
-        super(NearMiss, self).__init__(sampling_target=sampling_target,
-                                       ratio=ratio)
+        super(NearMiss, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.version = version
@@ -246,8 +247,8 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         self.nn_.fit(safe_indexing(X, minority_class_indices))
 
         for target_class in np.unique(y):
-            if target_class in self.sampling_target_.keys():
-                n_samples = self.sampling_target_[target_class]
+            if target_class in self.sampling_strategy_.keys():
+                n_samples = self.sampling_strategy_[target_class]
                 target_class_indices = np.flatnonzero(y == target_class)
                 X_class = safe_indexing(X, target_class_indices)
                 y_class = safe_indexing(y, target_class_indices)
@@ -256,13 +257,21 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                     dist_vec, idx_vec = self.nn_.kneighbors(
                         X_class, n_neighbors=self.nn_.n_neighbors)
                     index_target_class = self._selection_dist_based(
-                        X, y, dist_vec, n_samples, target_class,
+                        X,
+                        y,
+                        dist_vec,
+                        n_samples,
+                        target_class,
                         sel_strategy='nearest')
                 elif self.version == 2:
                     dist_vec, idx_vec = self.nn_.kneighbors(
                         X_class, n_neighbors=target_stats[class_minority])
                     index_target_class = self._selection_dist_based(
-                        X, y, dist_vec, n_samples, target_class,
+                        X,
+                        y,
+                        dist_vec,
+                        n_samples,
+                        target_class,
                         sel_strategy='nearest')
                 elif self.version == 3:
                     self.nn_ver3_.fit(X_class)
@@ -275,8 +284,12 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                     dist_vec, idx_vec = self.nn_.kneighbors(
                         X_class_selected, n_neighbors=self.nn_.n_neighbors)
                     index_target_class = self._selection_dist_based(
-                        X_class_selected, y_class_selected, dist_vec,
-                        n_samples, target_class, sel_strategy='farthest')
+                        X_class_selected,
+                        y_class_selected,
+                        dist_vec,
+                        n_samples,
+                        target_class,
+                        sel_strategy='farthest')
                     # idx_tmp is relative to the feature selected in the
                     # previous step and we need to find the indirection
                     index_target_class = idx_vec_farthest[index_target_class]
@@ -284,8 +297,9 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under, np.flatnonzero(y == target_class)[
-                    index_target_class]), axis=0)
+                (idx_under,
+                 np.flatnonzero(y == target_class)[index_target_class]),
+                axis=0)
 
         if self.return_indices:
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),

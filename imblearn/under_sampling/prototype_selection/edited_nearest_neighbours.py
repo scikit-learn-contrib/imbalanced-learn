@@ -1,7 +1,6 @@
 """Class to perform under-sampling based on the edited nearest neighbour
 method."""
 
-
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Dayvid Oliveira
 #          Christos Aridas
@@ -22,12 +21,12 @@ from ...utils import Substitution
 from ...utils.deprecation import deprecate_parameter
 from ...utils._docstring import _random_state_docstring
 
-
 SEL_KIND = ('all', 'mode')
 
 
-@Substitution(sampling_target=BaseCleaningSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class EditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
@@ -36,7 +35,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -66,8 +65,8 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -110,7 +109,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
@@ -118,7 +117,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                  n_jobs=1,
                  ratio=None):
         super(EditedNearestNeighbours, self).__init__(
-            sampling_target=sampling_target, ratio=ratio)
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -132,8 +131,8 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         if self.random_state is not None:
             deprecate_parameter(self, '0.4', 'random_state')
 
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
+        self.nn_ = check_neighbors_object(
+            'n_neighbors', self.n_neighbors, additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
         if self.kind_sel not in SEL_KIND:
@@ -171,7 +170,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         self.nn_.fit(X)
 
         for target_class in np.unique(y):
-            if target_class in self.sampling_target_.keys():
+            if target_class in self.sampling_strategy_.keys():
                 target_class_indices = np.flatnonzero(y == target_class)
                 X_class = safe_indexing(X, target_class_indices)
                 y_class = safe_indexing(y, target_class_indices)
@@ -189,8 +188,9 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under, np.flatnonzero(y == target_class)[
-                    index_target_class]), axis=0)
+                (idx_under,
+                 np.flatnonzero(y == target_class)[index_target_class]),
+                axis=0)
 
         if self.return_indices:
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
@@ -199,8 +199,9 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
             return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
 
-@Substitution(sampling_target=BaseCleaningSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
@@ -209,7 +210,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -243,8 +244,8 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -287,7 +288,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
@@ -296,7 +297,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                  n_jobs=1,
                  ratio=None):
         super(RepeatedEditedNearestNeighbours, self).__init__(
-            sampling_target=sampling_target, ratio=ratio)
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -315,11 +316,11 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             raise ValueError('max_iter must be greater than 1.'
                              ' Got {} instead.'.format(type(self.max_iter)))
 
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
+        self.nn_ = check_neighbors_object(
+            'n_neighbors', self.n_neighbors, additional_neighbor=1)
 
         self.enn_ = EditedNearestNeighbours(
-            sampling_target=self.sampling_target,
+            sampling_strategy=self.sampling_strategy,
             return_indices=self.return_indices,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
@@ -383,8 +384,8 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                 val for val, key in zip(stats_enn.values(), stats_enn.keys())
                 if key != class_minority
             ])
-            b_min_bec_maj = np.any(count_non_min <
-                                   target_stats[class_minority])
+            b_min_bec_maj = np.any(
+                count_non_min < target_stats[class_minority])
 
             # Case 3
             b_remove_maj_class = (len(stats_enn) < len(target_stats))
@@ -410,8 +411,9 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             return X_resampled, y_resampled
 
 
-@Substitution(sampling_target=BaseCleaningSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class AllKNN(BaseCleaningSampler):
     """Class to perform under-sampling based on the AllKNN method.
 
@@ -419,7 +421,7 @@ class AllKNN(BaseCleaningSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
@@ -455,8 +457,8 @@ class AllKNN(BaseCleaningSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -498,7 +500,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
@@ -506,8 +508,8 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                  allow_minority=False,
                  n_jobs=1,
                  ratio=None):
-        super(AllKNN, self).__init__(sampling_target=sampling_target,
-                                     ratio=ratio)
+        super(AllKNN, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -525,11 +527,11 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
+        self.nn_ = check_neighbors_object(
+            'n_neighbors', self.n_neighbors, additional_neighbor=1)
 
         self.enn_ = EditedNearestNeighbours(
-            sampling_target=self.sampling_target,
+            sampling_strategy=self.sampling_strategy,
             return_indices=self.return_indices,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
@@ -588,8 +590,8 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                 val for val, key in zip(stats_enn.values(), stats_enn.keys())
                 if key != class_minority
             ])
-            b_min_bec_maj = np.any(count_non_min <
-                                   target_stats[class_minority])
+            b_min_bec_maj = np.any(
+                count_non_min < target_stats[class_minority])
             if self.allow_minority:
                 # overwrite b_min_bec_maj
                 b_min_bec_maj = False

@@ -128,20 +128,16 @@ class Pipeline(pipeline.Pipeline):
         for t in transformers:
             if t is None:
                 continue
-            if (not (hasattr(t, "fit") or
-                     hasattr(t, "fit_transform") or
-                     hasattr(t, "fit_sample")) or
-                not (hasattr(t, "transform") or
-                     hasattr(t, "sample"))):
+            if (not (hasattr(t, "fit") or hasattr(t, "fit_transform") or
+                     hasattr(t, "fit_sample")) or not
+                    (hasattr(t, "transform") or hasattr(t, "sample"))):
                 raise TypeError(
                     "All intermediate steps of the chain should "
                     "be estimators that implement fit and transform or sample "
                     "(but not both) '%s' (type %s) doesn't)" % (t, type(t)))
 
-            if ((hasattr(t, "fit_sample") and
-                 hasattr(t, "fit_transform")) or
-                (hasattr(t, "sample") and
-                 hasattr(t, "transform"))):
+            if ((hasattr(t, "fit_sample") and hasattr(t, "fit_transform")) or
+                    (hasattr(t, "sample") and hasattr(t, "transform"))):
                 raise TypeError(
                     "All intermediate steps of the chain should "
                     "be estimators that implement fit and transform or sample."
@@ -155,8 +151,8 @@ class Pipeline(pipeline.Pipeline):
         # We allow last estimator to be None as an identity transformation
         if estimator is not None and not hasattr(estimator, "fit"):
             raise TypeError("Last step of Pipeline should implement fit. "
-                            "'%s' (type %s) doesn't"
-                            % (estimator, type(estimator)))
+                            "'%s' (type %s) doesn't" % (estimator,
+                                                        type(estimator)))
 
     # Estimator interface
 
@@ -201,8 +197,7 @@ class Pipeline(pipeline.Pipeline):
                         **fit_params_steps[name])
                 elif hasattr(cloned_transformer, "sample"):
                     Xt, yt, fitted_transformer = fit_sample_one_cached(
-                        cloned_transformer, Xt, yt,
-                        **fit_params_steps[name])
+                        cloned_transformer, Xt, yt, **fit_params_steps[name])
                 # Replace the transformer of the step with the fitted
                 # transformer. This is necessary when loading the transformer
                 # from the cache.
@@ -587,8 +582,7 @@ class Pipeline(pipeline.Pipeline):
         return self.steps[-1][-1].score(Xt, y, **score_params)
 
 
-def _fit_transform_one(transformer, weight, X, y,
-                       **fit_params):
+def _fit_transform_one(transformer, weight, X, y, **fit_params):
     if hasattr(transformer, 'fit_transform'):
         res = transformer.fit_transform(X, y, **fit_params)
     else:

@@ -23,8 +23,9 @@ from ..utils._docstring import _random_state_docstring
 SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
 
-@Substitution(sampling_target=BaseOverSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class SMOTE(BaseOverSampler):
     """Class to perform over-sampling using SMOTE.
 
@@ -36,7 +37,7 @@ class SMOTE(BaseOverSampler):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     {random_state}
 
@@ -69,8 +70,8 @@ class SMOTE(BaseOverSampler):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -125,7 +126,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  random_state=None,
                  k_neighbors=5,
                  m_neighbors=10,
@@ -134,8 +135,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                  svm_estimator=None,
                  n_jobs=1,
                  ratio=None):
-        super(SMOTE, self).__init__(sampling_target=sampling_target,
-                                    ratio=ratio)
+        super(SMOTE, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.kind = kind
         self.k_neighbors = k_neighbors
@@ -176,9 +177,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         if kind == 'danger':
             # Samples are in danger for m/2 <= m' < m
-            return np.bitwise_and(
-                n_maj >= (self.nn_m_.n_neighbors - 1) / 2,
-                n_maj < self.nn_m_.n_neighbors - 1)
+            return np.bitwise_and(n_maj >= (self.nn_m_.n_neighbors - 1) / 2,
+                                  n_maj < self.nn_m_.n_neighbors - 1)
         elif kind == 'noise':
             # Samples are noise for m = m'
             return n_maj == self.nn_m_.n_neighbors - 1
@@ -237,8 +237,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             row_indices, col_indices, samples = [], [], []
             for i, (row, col, step) in enumerate(zip(rows, cols, steps)):
                 if X[row].nnz:
-                    sample = X[row] - step * (X[row] -
-                                              nn_data[nn_num[row, col]])
+                    sample = X[row] - step * (
+                        X[row] - nn_data[nn_num[row, col]])
                     row_indices += [i] * len(sample.indices)
                     col_indices += sample.indices.tolist()
                     samples += sample.data.tolist()
@@ -264,15 +264,13 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                              ' Choices are {}. Got {} instead.'.format(
                                  SMOTE_KIND, self.kind))
 
-        self.nn_k_ = check_neighbors_object('k_neighbors',
-                                            self.k_neighbors,
-                                            additional_neighbor=1)
+        self.nn_k_ = check_neighbors_object(
+            'k_neighbors', self.k_neighbors, additional_neighbor=1)
         self.nn_k_.set_params(**{'n_jobs': self.n_jobs})
 
         if self.kind != 'regular':
-            self.nn_m_ = check_neighbors_object('m_neighbors',
-                                                self.m_neighbors,
-                                                additional_neighbor=1)
+            self.nn_m_ = check_neighbors_object(
+                'm_neighbors', self.m_neighbors, additional_neighbor=1)
             self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
 
         if self.kind == 'svm':
@@ -317,7 +315,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        for class_sample, n_samples in self.sampling_target_.items():
+        for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)
@@ -371,15 +369,15 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        for class_sample, n_samples in self.sampling_target_.items():
+        for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)
             X_class = safe_indexing(X, target_class_indices)
 
             self.nn_m_.fit(X)
-            danger_index = self._in_danger_noise(X_class, class_sample, y,
-                                                 kind='danger')
+            danger_index = self._in_danger_noise(
+                X_class, class_sample, y, kind='danger')
             if not any(danger_index):
                 continue
 
@@ -391,10 +389,9 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             # divergence between borderline-1 and borderline-2
             if self.kind == 'borderline1':
                 # Create synthetic samples for borderline points.
-                X_new, y_new = self._make_samples(safe_indexing(X_class,
-                                                                danger_index),
-                                                  class_sample, X_class,
-                                                  nns, n_samples)
+                X_new, y_new = self._make_samples(
+                    safe_indexing(X_class, danger_index), class_sample,
+                    X_class, nns, n_samples)
                 if sparse.issparse(X_new):
                     X_resampled = sparse.vstack([X_resampled, X_new])
                 else:
@@ -407,26 +404,30 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
                 # only minority
                 X_new_1, y_new_1 = self._make_samples(
-                    safe_indexing(X_class, danger_index), class_sample,
-                    X_class, nns,
-                    int(fractions * (n_samples + 1)), step_size=1.)
+                    safe_indexing(X_class, danger_index),
+                    class_sample,
+                    X_class,
+                    nns,
+                    int(fractions * (n_samples + 1)),
+                    step_size=1.)
 
                 # we use a one-vs-rest policy to handle the multiclass in which
                 # new samples will be created considering not only the majority
                 # class but all over classes.
                 X_new_2, y_new_2 = self._make_samples(
-                    safe_indexing(X_class, danger_index), class_sample,
+                    safe_indexing(X_class, danger_index),
+                    class_sample,
                     safe_indexing(X, np.flatnonzero(y != class_sample)),
-                    nns, int((1 - fractions) * n_samples), step_size=0.5)
+                    nns,
+                    int((1 - fractions) * n_samples),
+                    step_size=0.5)
 
                 if sparse.issparse(X_resampled):
-                    X_resampled = sparse.vstack([X_resampled,
-                                                 X_new_1, X_new_2])
+                    X_resampled = sparse.vstack(
+                        [X_resampled, X_new_1, X_new_2])
                 else:
-                    X_resampled = np.vstack((X_resampled,
-                                             X_new_1, X_new_2))
-                y_resampled = np.hstack((y_resampled,
-                                         y_new_1, y_new_2))
+                    X_resampled = np.vstack((X_resampled, X_new_1, X_new_2))
+                y_resampled = np.hstack((y_resampled, y_new_1, y_new_2))
 
         return X_resampled, y_resampled
 
@@ -464,39 +465,40 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        for class_sample, n_samples in self.sampling_target_.items():
+        for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)
             X_class = safe_indexing(X, target_class_indices)
 
             self.svm_estimator_.fit(X, y)
-            support_index = self.svm_estimator_.support_[
-                y[self.svm_estimator_.support_] == class_sample]
+            support_index = self.svm_estimator_.support_[y[
+                self.svm_estimator_.support_] == class_sample]
             support_vector = safe_indexing(X, support_index)
 
             self.nn_m_.fit(X)
-            noise_bool = self._in_danger_noise(support_vector, class_sample, y,
-                                               kind='noise')
+            noise_bool = self._in_danger_noise(
+                support_vector, class_sample, y, kind='noise')
             support_vector = safe_indexing(
-                support_vector,
-                np.flatnonzero(np.logical_not(noise_bool)))
-            danger_bool = self._in_danger_noise(support_vector, class_sample,
-                                                y, kind='danger')
+                support_vector, np.flatnonzero(np.logical_not(noise_bool)))
+            danger_bool = self._in_danger_noise(
+                support_vector, class_sample, y, kind='danger')
             safety_bool = np.logical_not(danger_bool)
 
             self.nn_k_.fit(X_class)
             fractions = random_state.beta(10, 10)
             if np.count_nonzero(danger_bool) > 0:
-                nns = self.nn_k_.kneighbors(safe_indexing(
-                    support_vector,
-                    np.flatnonzero(danger_bool)),
-                                            return_distance=False)[:, 1:]
+                nns = self.nn_k_.kneighbors(
+                    safe_indexing(support_vector, np.flatnonzero(danger_bool)),
+                    return_distance=False)[:, 1:]
 
                 X_new_1, y_new_1 = self._make_samples(
                     safe_indexing(support_vector, np.flatnonzero(danger_bool)),
-                    class_sample, X_class,
-                    nns, int(fractions * (n_samples + 1)), step_size=1.)
+                    class_sample,
+                    X_class,
+                    nns,
+                    int(fractions * (n_samples + 1)),
+                    step_size=1.)
 
             if np.count_nonzero(safety_bool) > 0:
                 nns = self.nn_k_.kneighbors(
@@ -505,23 +507,24 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
                 X_new_2, y_new_2 = self._make_samples(
                     safe_indexing(support_vector, np.flatnonzero(safety_bool)),
-                    class_sample, X_class,
-                    nns, int((1 - fractions) * n_samples),
+                    class_sample,
+                    X_class,
+                    nns,
+                    int((1 - fractions) * n_samples),
                     step_size=-self.out_step)
 
             if (np.count_nonzero(danger_bool) > 0 and
                     np.count_nonzero(safety_bool) > 0):
                 if sparse.issparse(X_resampled):
-                    X_resampled = sparse.vstack([X_resampled,
-                                                 X_new_1, X_new_2])
+                    X_resampled = sparse.vstack(
+                        [X_resampled, X_new_1, X_new_2])
                 else:
-                    X_resampled = np.vstack((X_resampled,
-                                             X_new_1, X_new_2))
-                y_resampled = np.concatenate((y_resampled, y_new_1, y_new_2),
-                                             axis=0)
+                    X_resampled = np.vstack((X_resampled, X_new_1, X_new_2))
+                y_resampled = np.concatenate(
+                    (y_resampled, y_new_1, y_new_2), axis=0)
             elif np.count_nonzero(danger_bool) == 0:
                 if sparse.issparse(X_resampled):
-                    X_resampled = sparse.vstack([X_resampled,  X_new_2])
+                    X_resampled = sparse.vstack([X_resampled, X_new_2])
                 else:
                     X_resampled = np.vstack((X_resampled, X_new_2))
                 y_resampled = np.concatenate((y_resampled, y_new_2), axis=0)

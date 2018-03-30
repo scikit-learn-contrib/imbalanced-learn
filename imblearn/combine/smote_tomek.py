@@ -21,8 +21,9 @@ from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
 
-@Substitution(sampling_target=BaseOverSampler._sampling_target_docstring,
-              random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class SMOTETomek(SamplerMixin):
     """Class to perform over-sampling using SMOTE and cleaning using
     Tomek links.
@@ -33,7 +34,7 @@ class SMOTETomek(SamplerMixin):
 
     Parameters
     ----------
-    {sampling_target}
+    {sampling_strategy}
 
     {random_state}
 
@@ -49,8 +50,8 @@ class SMOTETomek(SamplerMixin):
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
-           Use the parameter ``sampling_target`` instead. It will be removed in
-           0.6.
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -92,13 +93,13 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self,
-                 sampling_target='auto',
+                 sampling_strategy='auto',
                  random_state=None,
                  smote=None,
                  tomek=None,
                  ratio=None):
         super(SMOTETomek, self).__init__()
-        self.sampling_target = sampling_target
+        self.sampling_strategy = sampling_strategy
         self.random_state = random_state
         self.smote = smote
         self.tomek = tomek
@@ -117,7 +118,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
         # Otherwise create a default SMOTE
         else:
             self.smote_ = SMOTE(
-                sampling_target=self.sampling_target,
+                sampling_strategy=self.sampling_strategy,
                 random_state=self.random_state,
                 ratio=self.ratio)
 
@@ -129,15 +130,15 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
                                  'Got {} instead.'.format(type(self.tomek)))
         # Otherwise create a default TomekLinks
         else:
-            self.tomek_ = TomekLinks(sampling_target='all')
+            self.tomek_ = TomekLinks(sampling_strategy='all')
 
     @property
     def ratio_(self):
         # FIXME: remove in 0.6
-        warnings.warn("'ratio' and 'ratio_' are deprecated. "
-                      "Use 'sampling_target' and 'sampling_target_' instead.",
+        warnings.warn("'ratio' and 'ratio_' are deprecated. Use "
+                      "'sampling_strategy' and 'sampling_strategy_' instead.",
                       DeprecationWarning)
-        return self.sampling_target_
+        return self.sampling_strategy_
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -158,7 +159,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
         """
         y = check_target_type(y)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
-        self.sampling_target_ = self.sampling_target
+        self.sampling_strategy_ = self.sampling_strategy
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
 
         return self

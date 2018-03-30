@@ -1,9 +1,9 @@
 """
 ======================================================================
-Usage of the ``sampling_target`` parameter for the different algorithms
+Usage of the ``sampling_strategy`` parameter for the different algorithms
 =======================================================================
 
-This example shows the different usage of the parameter ``sampling_target`` for
+This example shows the different usage of the parameter ``sampling_strategy`` for
 the different family of samplers (i.e. over-sampling, under-sampling. or
 cleaning methods).
 
@@ -56,23 +56,23 @@ print('Information of the original iris data set: \n {}'.format(
     Counter(iris.target)))
 plot_pie(iris.target)
 
-sampling_target = {0: 10, 1: 20, 2: 47}
-X, y = make_imbalance(iris.data, iris.target, sampling_target=sampling_target)
+sampling_strategy = {0: 10, 1: 20, 2: 47}
+X, y = make_imbalance(iris.data, iris.target, sampling_strategy=sampling_strategy)
 
 print('Information of the iris data set after making it'
-      ' imbalanced using a dict: \n sampling_target={} \n y: {}'
-      .format(sampling_target, Counter(y)))
+      ' imbalanced using a dict: \n sampling_strategy={} \n y: {}'
+      .format(sampling_strategy, Counter(y)))
 plot_pie(y)
 
 ###############################################################################
-# Using ``sampling_target`` in resampling algorithms
+# Using ``sampling_strategy`` in resampling algorithms
 ###############################################################################
 
 ###############################################################################
-# ``sampling_target`` as a ``float``
+# ``sampling_strategy`` as a ``float``
 # ...................................
 #
-# ``sampling_target`` can be given a ``float``. For **under-sampling
+# ``sampling_strategy`` can be given a ``float``. For **under-sampling
 # methods**, it corresponds to the ratio :math:`\\alpha_{us}` defined by
 # :math:`N_{rM} = \\alpha_{us} \\times N_{m}` where :math:`N_{rM}` and
 # :math:`N_{m}` are the number of samples in the majority class after
@@ -83,14 +83,14 @@ binary_mask = np.bitwise_or(y == 0, y == 2)
 binary_y = y[binary_mask]
 binary_X = X[binary_mask]
 
-sampling_target = 0.8
+sampling_strategy = 0.8
 
-rus = RandomUnderSampler(sampling_target=sampling_target)
+rus = RandomUnderSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = rus.fit_sample(binary_X, binary_y)
 print('Information of the iris data set after making it '
       'balanced using a float and an under-sampling method: \n '
-      'sampling_target={} \n y: {}'
-      .format(sampling_target, Counter(y_res)))
+      'sampling_strategy={} \n y: {}'
+      .format(sampling_strategy, Counter(y_res)))
 plot_pie(y_res)
 
 ###############################################################################
@@ -100,100 +100,100 @@ plot_pie(y_res)
 # minority class after resampling and the number of samples in the majority
 # class, respectively.
 
-ros = RandomOverSampler(sampling_target=sampling_target)
+ros = RandomOverSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = ros.fit_sample(binary_X, binary_y)
 print('Information of the iris data set after making it '
       'balanced using a float and an over-sampling method: \n '
-      'sampling_target={} \n y: {}'
-      .format(sampling_target, Counter(y_res)))
+      'sampling_strategy={} \n y: {}'
+      .format(sampling_strategy, Counter(y_res)))
 plot_pie(y_res)
 
 ###############################################################################
-# ``sampling_target`` has a ``str``
+# ``sampling_strategy`` has a ``str``
 # .................................
 #
-# ``sampling_target`` can be given as a string which specify the class targeted
+# ``sampling_strategy`` can be given as a string which specify the class targeted
 # by the resampling. With under- and over-sampling, the number of samples will
 # be equalized.
 #
 # Note that we are using multiple classes from now on.
 
-sampling_target = 'not minority'
+sampling_strategy = 'not minority'
 
-rus = RandomUnderSampler(sampling_target=sampling_target)
+rus = RandomUnderSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = rus.fit_sample(X, y)
 print('Information of the iris data set after making it '
-      'balanced by under-sampling: \n sampling_target={} \n y: {}'
-      .format(sampling_target, Counter(y_res)))
+      'balanced by under-sampling: \n sampling_strategy={} \n y: {}'
+      .format(sampling_strategy, Counter(y_res)))
 plot_pie(y_res)
 
-sampling_target = 'not majority'
+sampling_strategy = 'not majority'
 
-ros = RandomOverSampler(sampling_target=sampling_target)
+ros = RandomOverSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = ros.fit_sample(X, y)
 print('Information of the iris data set after making it '
-      'balanced by over-sampling: \n sampling_target={} \n y: {}'
-      .format(sampling_target, Counter(y_res)))
+      'balanced by over-sampling: \n sampling_strategy={} \n y: {}'
+      .format(sampling_strategy, Counter(y_res)))
 plot_pie(y_res)
 
 ###############################################################################
 # With **cleaning method**, the number of samples in each class will not be
 # equalized even if targeted.
 
-sampling_target = 'not minority'
-tl = TomekLinks(sampling_target)
+sampling_strategy = 'not minority'
+tl = TomekLinks(sampling_strategy)
 X_res, y_res = tl.fit_sample(X, y)
 print('Information of the iris data set after making it '
-      'balanced by cleaning sampling: \n sampling_target={} \n y: {}'
-      .format(sampling_target, Counter(y_res)))
+      'balanced by cleaning sampling: \n sampling_strategy={} \n y: {}'
+      .format(sampling_strategy, Counter(y_res)))
 plot_pie(y_res)
 
 ###############################################################################
-# ``sampling_target`` as a ``dict``
+# ``sampling_strategy`` as a ``dict``
 # ..................................
 #
-# When ``sampling_target`` is a ``dict``, the keys correspond to the targeted
+# When ``sampling_strategy`` is a ``dict``, the keys correspond to the targeted
 # classes. The values correspond to the desired number of samples for each
 # targeted class. This is working for both **under- and over-sampling**
 # algorithms but not for the **cleaning algorithms**. Use a ``list`` instead.
 
 
-sampling_target = {0: 10, 1: 15, 2: 20}
+sampling_strategy = {0: 10, 1: 15, 2: 20}
 
-rus = RandomUnderSampler(sampling_target=sampling_target)
+rus = RandomUnderSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = rus.fit_sample(X, y)
 print('Information of the iris data set after making it '
-      'balanced by under-sampling: \n sampling_target={} \n y: {}'
-      .format(sampling_target, Counter(y_res)))
+      'balanced by under-sampling: \n sampling_strategy={} \n y: {}'
+      .format(sampling_strategy, Counter(y_res)))
 plot_pie(y_res)
 
-sampling_target = {0: 25, 1: 35, 2: 47}
+sampling_strategy = {0: 25, 1: 35, 2: 47}
 
-ros = RandomOverSampler(sampling_target=sampling_target)
+ros = RandomOverSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = ros.fit_sample(X, y)
 print('Information of the iris data set after making it '
-      'balanced by over-sampling: \n sampling_target={} \n y: {}'
-      .format(sampling_target, Counter(y_res)))
+      'balanced by over-sampling: \n sampling_strategy={} \n y: {}'
+      .format(sampling_strategy, Counter(y_res)))
 plot_pie(y_res)
 
 ###############################################################################
-# ``sampling_target`` as a ``list``
+# ``sampling_strategy`` as a ``list``
 # ..................................
 #
-# When ``sampling_target`` is a ``list``, the list contains the targeted
+# When ``sampling_strategy`` is a ``list``, the list contains the targeted
 # classes. It is used only for **cleaning methods** and raise an error
 # otherwise.
 
-sampling_target = [0, 1, 2]
-tl = TomekLinks(sampling_target=sampling_target)
+sampling_strategy = [0, 1, 2]
+tl = TomekLinks(sampling_strategy=sampling_strategy)
 X_res, y_res = tl.fit_sample(X, y)
 print('Information of the iris data set after making it '
-      'balanced by cleaning sampling: \n sampling_target={} \n y: {}'
-      .format(sampling_target, Counter(y_res)))
+      'balanced by cleaning sampling: \n sampling_strategy={} \n y: {}'
+      .format(sampling_strategy, Counter(y_res)))
 plot_pie(y_res)
 
 ###############################################################################
-# ``sampling_target`` as a callable
+# ``sampling_strategy`` as a callable
 # ..................................
 #
 # When callable, function taking ``y`` and returns a ``dict``. The keys
@@ -210,7 +210,7 @@ def ratio_multiplier(y):
     return target_stats
 
 
-X_res, y_res = (RandomUnderSampler(sampling_target=ratio_multiplier)
+X_res, y_res = (RandomUnderSampler(sampling_strategy=ratio_multiplier)
                 .fit_sample(X, y))
 
 print('Information of the iris data set after balancing using a callable'
