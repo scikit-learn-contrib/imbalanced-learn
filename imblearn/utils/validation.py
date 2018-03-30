@@ -338,7 +338,7 @@ def _sampling_target_float(sampling_target, y, sampling_type):
                             for (key, value) in target_stats.items()
                             if key != class_minority}
     else:
-        raise ValueError("'cleaning-sampling' methods do let the user "
+        raise ValueError("'clean-sampling' methods do let the user "
                          "specify the sampling ratio.")
     return sampling_target_
 
@@ -455,8 +455,8 @@ def check_sampling_target(sampling_target, y, sampling_type, **kwargs):
         return _sampling_target_list(sampling_target, y, sampling_type)
     elif isinstance(sampling_target, Real):
         if sampling_target <= 0 or sampling_target > 1:
-            raise ValueError("When 'sampling_target' is a float, it should in "
-                             "the range (0, 1]. Got {} instead."
+            raise ValueError("When 'sampling_target' is a float, it should be "
+                             "in the range (0, 1]. Got {} instead."
                              .format(sampling_target))
         return _sampling_target_float(sampling_target, y, sampling_type)
     elif callable(sampling_target):

@@ -79,6 +79,12 @@ def test_check_sampling_target_warning():
                               'clean-sampling')
 
 
+def test_check_sampling_target_float_error():
+    msg = "'clean-sampling' methods do let the user specify the sampling ratio"
+    with pytest.raises(ValueError, match=msg):
+        check_sampling_target(0.5, binary_target, 'clean-sampling')
+
+
 def test_check_sampling_target_error():
     with pytest.raises(ValueError, match="'sampling_type' should be one of"):
         check_sampling_target('auto', np.array([1, 2, 3]), 'rnd')
@@ -100,7 +106,7 @@ def test_check_sampling_target_error():
 def test_check_sampling_target_error_wrong_string(
         sampling_target, sampling_type, err_msg):
     with pytest.raises(ValueError,
-                       message=("'{}' cannot be used with {}"
+                       match=("'{}' cannot be used with {}"
                                 .format(sampling_target, err_msg))):
         check_sampling_target(sampling_target, np.array([1, 2, 3]),
                               sampling_type)
@@ -147,13 +153,13 @@ def test_sampling_target_dict_error():
 )
 def test_sampling_target_float_error_not_in_range(sampling_target):
     y = np.array([1] * 50 + [2] * 100)
-    with pytest.raises(ValueError, message='it should be in the range'):
-        check_sampling_target(sampling_target, y, 'under_sampling')
+    with pytest.raises(ValueError, match='it should be in the range'):
+        check_sampling_target(sampling_target, y, 'under-sampling')
 
 
 def test_sampling_target_float_error_not_binary():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    with pytest.raises(ValueError, message='the type of target is binary'):
+    with pytest.raises(ValueError, match='the type of target is binary'):
         sampling_target = 0.5
         check_sampling_target(sampling_target, y, 'under-sampling')
 
@@ -164,7 +170,7 @@ def test_sampling_target_float_error_not_binary():
 )
 def test_sampling_target_list_error_not_clean_sampling(sampling_method):
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    with pytest.raises(ValueError, message='cannot be a list for samplers'):
+    with pytest.raises(ValueError, match='cannot be a list for samplers'):
         sampling_target = [1, 2, 3]
         check_sampling_target(sampling_target, y, sampling_method)
 

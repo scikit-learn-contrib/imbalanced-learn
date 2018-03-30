@@ -52,3 +52,14 @@ def test_make_imbalance_dict():
     sampling_target = {0: 10, 1: 20}
     X_, y_ = make_imbalance(X, Y, sampling_target=sampling_target)
     assert Counter(y_) == {0: 10, 1: 20, 2: 50}
+
+
+def test_make_imbalance_ratio():
+    # check that using 'ratio' is working
+    sampling_target = {0: 10, 1: 20, 2: 30}
+    X_, y_ = make_imbalance(X, Y, ratio=sampling_target)
+    assert Counter(y_) == sampling_target
+
+    sampling_target = {0: 10, 1: 20}
+    X_, y_ = make_imbalance(X, Y, ratio=sampling_target)
+    assert Counter(y_) == {0: 10, 1: 20, 2: 50}

@@ -1,3 +1,9 @@
+"""Utilities for docstring in imbalanced-learn."""
+
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
+
 class Substitution(object):
     """Decorate a function's or a class' docstring to perform string
     substitution on it.
@@ -26,4 +32,4 @@ _random_state_docstring = \
           generator;
         - If ``None``, the random number generator is the ``RandomState``
           instance used by ``np.random``.
-""".rstrip()
+    """.rstrip()
