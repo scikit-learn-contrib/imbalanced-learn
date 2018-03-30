@@ -33,8 +33,6 @@ class BaseUnderSampler(BaseSampler):
           number of samples in the different classes will be equalized.
           Possible choices are:
 
-            ``'minority'``: resample only the minority class;
-
             ``'majority'``: resample only the majority class;
 
             ``'not minority'``: resample all classes but the minority class;
@@ -71,8 +69,6 @@ class BaseCleaningSampler(BaseSampler):
           the number of samples will not be equal in each. Possible choices
           are:
 
-            ``'minority'``: resample only the minority class;
-
             ``'majority'``: resample only the majority class;
 
             ``'not minority'``: resample all classes but the minority class;
@@ -83,7 +79,8 @@ class BaseCleaningSampler(BaseSampler):
 
             ``'auto'``: equivalent to ``'not minority'``.
 
-        - When ``list``, the list contains the targeted classes.
+        - When ``list``, the list contains the classes targeted by the
+          resampling.
 
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the

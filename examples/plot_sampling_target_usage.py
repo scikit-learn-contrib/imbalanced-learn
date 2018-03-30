@@ -1,7 +1,7 @@
 """
 ======================================================================
-Usage of the ``sampling_target`` parameter for the different algorithm
-======================================================================
+Usage of the ``sampling_target`` parameter for the different algorithms
+=======================================================================
 
 This example shows the different usage of the parameter ``sampling_target`` for
 the different family of samplers (i.e. over-sampling, under-sampling. or
@@ -34,22 +34,21 @@ def plot_pie(y):
     sizes = list(target_stats.values())
     explode = tuple([0.1] * len(target_stats))
 
+    def make_autopct(values):
+        def my_autopct(pct):
+            total = sum(values)
+            val = int(round(pct * total / 100.0))
+            return '{p:.2f}%  ({v:d})'.format(p=pct, v=val)
+        return my_autopct
+
     fig, ax = plt.subplots()
     ax.pie(sizes, explode=explode, labels=labels, shadow=True,
-           autopct='%1.1f%%')
+           autopct=make_autopct(sizes))
     ax.axis('equal')
 
 
 ###############################################################################
-# Creation of an imbalanced data set from a balanced data set
-###############################################################################
-
-###############################################################################
-# We will show how to use the parameter ``sampling_target`` when dealing with
-# the ``make_imbalance`` function. For this function, this parameter accepts
-# both dictionary and callable. When using a dictionary, each key will
-# correspond to the class of interest and the corresponding value will be the
-# number of samples desired in this class.
+# First, we will create an imbalanced data set from a the iris data set.
 
 iris = load_iris()
 
@@ -57,7 +56,7 @@ print('Information of the original iris data set: \n {}'.format(
     Counter(iris.target)))
 plot_pie(iris.target)
 
-sampling_target = {0: 10, 1: 20, 2: 30}
+sampling_target = {0: 10, 1: 20, 2: 47}
 X, y = make_imbalance(iris.data, iris.target, sampling_target=sampling_target)
 
 print('Information of the iris data set after making it'
@@ -66,33 +65,11 @@ print('Information of the iris data set after making it'
 plot_pie(y)
 
 ###############################################################################
-# You might required more flexibility and require your own heuristic to
-# determine the number of samples by class and you can define your own callable
-# as follow. In this case we will define a function which will use a float
-# multiplier to define the number of samples per class.
-
-
-def ratio_multiplier(y):
-    multiplier = {0: 0.5, 1: 0.7, 2: 0.95}
-    target_stats = Counter(y)
-    for key, value in target_stats.items():
-        target_stats[key] = int(value * multiplier[key])
-    return target_stats
-
-
-X, y = make_imbalance(iris.data, iris.target, sampling_target=ratio_multiplier)
-
-print('Information of the iris data set after making it'
-      ' imbalanced using a callable: \n sampling_target={} \n y: {}'
-      .format(sampling_target, Counter(y)))
-plot_pie(y)
-
-###############################################################################
-# Using ``sampling_target`` in resampling algorithm
+# Using ``sampling_target`` in resampling algorithms
 ###############################################################################
 
 ###############################################################################
-# ``sampling_target`` has a ``float``
+# ``sampling_target`` as a ``float``
 # ...................................
 #
 # ``sampling_target`` can be given a ``float``. For **under-sampling
@@ -138,6 +115,8 @@ plot_pie(y_res)
 # ``sampling_target`` can be given as a string which specify the class targeted
 # by the resampling. With under- and over-sampling, the number of samples will
 # be equalized.
+#
+# Note that we are using multiple classes from now on.
 
 sampling_target = 'not minority'
 
@@ -170,7 +149,7 @@ print('Information of the iris data set after making it '
 plot_pie(y_res)
 
 ###############################################################################
-# ``sampling_target`` has a ``dict``
+# ``sampling_target`` as a ``dict``
 # ..................................
 #
 # When ``sampling_target`` is a ``dict``, the keys correspond to the targeted
@@ -198,7 +177,7 @@ print('Information of the iris data set after making it '
 plot_pie(y_res)
 
 ###############################################################################
-# ``sampling_target`` has a ``list``
+# ``sampling_target`` as a ``list``
 # ..................................
 #
 # When ``sampling_target`` is a ``list``, the list contains the targeted
@@ -214,7 +193,7 @@ print('Information of the iris data set after making it '
 plot_pie(y_res)
 
 ###############################################################################
-# ``sampling_target`` has a callable
+# ``sampling_target`` as a callable
 # ..................................
 #
 # When callable, function taking ``y`` and returns a ``dict``. The keys
@@ -235,7 +214,7 @@ X_res, y_res = (RandomUnderSampler(sampling_target=ratio_multiplier)
                 .fit_sample(X, y))
 
 print('Information of the iris data set after balancing using a callable'
-      ' mode:\n ratio={} \n y: {}'.format(sampling_target, Counter(y_res)))
+      ' mode:\n ratio={} \n y: {}'.format(ratio_multiplier, Counter(y_res)))
 plot_pie(y_res)
 
 plt.show()

@@ -21,23 +21,21 @@ class BaseOverSampler(BaseSampler):
         """sampling_target : float, str, dict or callable, (default='auto')
         Sampling information to resample the data set.
 
-        - When ``float``, it correspond to the ratio :math:`\\alpha_{os}`
+        - When ``float``, it corresponds to the ratio :math:`\\alpha_{os}`
           defined by :math:`N_{rm} = \\alpha_{os} \\times N_{m}` where
           :math:`N_{rm}` and :math:`N_{M}` are the number of samples in the
           minority class after resampling and the number of samples in the
           majority class, respectively.
 
-        .. warning::
-           ``float`` is only available for **binary** classification. An error
-           is raised for multi-class classification.
+            .. warning::
+               ``float`` is only available for **binary** classification. An
+               error is raised for multi-class classification.
 
         - When ``str``, specify the class targeted by the resampling. The
           number of samples in the different classes will be equalized.
           Possible choices are:
 
             ``'minority'``: resample only the minority class;
-
-            ``'majority'``: resample only the majority class;
 
             ``'not minority'``: resample all classes but the minority class;
 
