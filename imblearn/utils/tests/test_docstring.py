@@ -41,7 +41,7 @@ cls_docstring = \
     """.rstrip()
 
 
-class cls(object):
+class cls:
     """A class.
 
     Parameters
