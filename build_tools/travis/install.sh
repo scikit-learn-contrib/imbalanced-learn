@@ -39,7 +39,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
     conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
-    conds install --yes pandas keras
+    conda install --yes pandas keras
 
     if [[ "$SKLEARN_VERSION" == "master" ]]; then
         conda install --yes cython
