@@ -4,8 +4,8 @@ from keras.utils import to_categorical
 
 from sklearn.datasets import load_iris
 
+from imblearn.datasets import make_imbalance
 from imblearn.keras import BalancedBatchGenerator
-
 
 iris = load_iris()
 X, y = iris.data, to_categorical(iris.target, 3)
