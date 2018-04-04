@@ -269,5 +269,10 @@ def check_samplers_multiclass_ova(name, Sampler):
     X_res, y_res = sampler.fit_sample(X, y)
     X_res_ova, y_res_ova = sampler.fit_sample(X, y_ova)
     assert_allclose(X_res, X_res_ova)
-    assert type_of_target(y_res_ova) == type_of_target(y_ova)
-    assert_allclose(y_res, y_res_ova.argmax(axis=1))
+    if issubclass(Sampler, BaseEnsembleSampler):
+        for batch_y, batch_y_ova in zip(y_res, y_res_ova):
+            assert type_of_target(batch_y_ova) == type_of_target(y_ova)
+            assert_allclose(batch_y, batch_y_ova.argmax(axis=1))
+    else:
+        assert type_of_target(y_res_ova) == type_of_target(y_ova)
+        assert_allclose(y_res, y_res_ova.argmax(axis=1))
