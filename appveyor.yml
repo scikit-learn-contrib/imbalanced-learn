@@ -33,7 +33,8 @@ install:
   # https://github.com/conda/conda/issues/1753
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PYTHON%\\Library\\bin;%PATH%"
   - conda install pip scipy numpy scikit-learn=0.19 -y -q
-  - conda install pandas keras -y -q
+  - conda install pandas -y -q
+  - conda install -c conda-forge keras -y -q
   - conda install pytest pytest-cov -y -q
   - conda install nose -y -q  # FIXME: remove this line when using sklearn > 0.19
   - pip install .
