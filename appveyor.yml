@@ -40,6 +40,7 @@ install:
   - conda install pip scipy numpy scikit-learn=0.19 -y -q
   - "conda install %OPTIONAL_DEP% -y -q"
   - conda install pytest pytest-cov -y -q
+  - pip install codecov
   - conda install nose -y -q  # FIXME: remove this line when using sklearn > 0.19
   - pip install .
 
