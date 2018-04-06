@@ -47,3 +47,12 @@ test_script:
   - mkdir for_test
   - cd for_test
   - pytest --pyargs imblearn --cov-report term-missing --cov=imblearn
+
+after_test:
+  - if not exist dist mkdir dist
+  - if exist .coverage (cp .coverage dist\) else (echo no .coverage)
+  - codecov
+  - if exist coverage.xml (cp coverage.xml dist\) else (echo no coverage.xml)
+
+artifacts:
+  - path: dist\*
