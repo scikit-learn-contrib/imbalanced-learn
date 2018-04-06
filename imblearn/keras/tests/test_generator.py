@@ -31,14 +31,8 @@ def _build_keras_model(n_classes, n_features):
 
 
 def test_balanced_batch_generator_class_no_return_indices():
-    model = _build_keras_model(y.shape[1], X.shape[1])
     with pytest.raises(ValueError, match='needs to return the indices'):
-        training_generator = BalancedBatchGenerator(X, y,
-                                                    sampler=ClusterCentroids(),
-                                                    batch_size=10,
-                                                    random_state=42)
-        model.fit_generator(generator=training_generator,
-                            epochs=10)
+        BalancedBatchGenerator(X, y, sampler=ClusterCentroids(), batch_size=10)
 
 
 @pytest.mark.parametrize(
@@ -59,12 +53,9 @@ def test_balanced_batch_generator_class(sampler, sample_weight):
 
 
 def test_balanced_batch_generator_function_no_return_indices():
-    model = _build_keras_model(y.shape[1], X.shape[1])
     with pytest.raises(ValueError, match='needs to return the indices'):
-        training_generator, sample_per_epoch = balanced_batch_generator(
+        balanced_batch_generator(
             X, y, sampler=ClusterCentroids(), batch_size=10, random_state=42)
-        model.fit_generator(generator=training_generator,
-                            epochs=10)
 
 
 @pytest.mark.parametrize(
