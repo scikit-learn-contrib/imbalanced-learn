@@ -10,22 +10,27 @@ environment:
     - PYTHON: "C:\\Miniconda-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
+      OPTIONAL_DEP: "pandas"
 
     - PYTHON: "C:\\Miniconda"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
+      OPTIONAL_DEP: "pandas"
 
     - PYTHON: "C:\\Miniconda35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
+      OPTIONAL_DEP: "pandas keras tensorflow"
 
     - PYTHON: "C:\\Miniconda36-x64"
       PYTHON_VERSION: "3.6.x"
       PYTHON_ARCH: "64"
+      OPTIONAL_DEP: "pandas keras tensorflow"
 
     - PYTHON: "C:\\Miniconda36"
       PYTHON_VERSION: "3.6.x"
       PYTHON_ARCH: "32"
+      OPTIONAL_DEP: "pandas"
 
 install:
   # Prepend miniconda installed Python to the PATH of this build
@@ -33,8 +38,7 @@ install:
   # https://github.com/conda/conda/issues/1753
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PYTHON%\\Library\\bin;%PATH%"
   - conda install pip scipy numpy scikit-learn=0.19 -y -q
-  - conda install pandas -y -q
-  - conda install -c conda-forge keras -y -q
+  - "conda install %OPTIONAL_DEP% -y -q"
   - conda install pytest pytest-cov -y -q
   - conda install nose -y -q  # FIXME: remove this line when using sklearn > 0.19
   - pip install .
