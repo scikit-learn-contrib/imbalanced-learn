@@ -1,5 +1,7 @@
 import pytest
 
+import numpy as np
+
 keras = pytest.importorskip('keras')
 
 from keras.models import Sequential
@@ -9,9 +11,11 @@ from keras.utils import to_categorical
 from sklearn.datasets import load_iris
 
 from imblearn.datasets import make_imbalance
-from imblearn.keras import BalancedBatchGenerator
 from imblearn.under_sampling import ClusterCentroids
 from imblearn.under_sampling import NearMiss
+
+from imblearn.keras import BalancedBatchGenerator
+from imblearn.keras import balanced_batch_generator
 
 iris = load_iris()
 X, y = make_imbalance(iris.data, iris.target, {0: 30, 1: 50, 2: 40})
@@ -38,14 +42,42 @@ def test_balanced_batch_generator_class_no_return_indices():
 
 
 @pytest.mark.parametrize(
-    "sampler",
-    [None, NearMiss()]
+    "sampler, sample_weight",
+    [(None, None),
+     (NearMiss(), None),
+     (None, np.random.uniform(size=(y.shape[0])))]
 )
-def test_balanced_batch_generator_class(sampler):
+def test_balanced_batch_generator_class(sampler, sample_weight):
     model = _build_keras_model(y.shape[1], X.shape[1])
     training_generator = BalancedBatchGenerator(X, y,
+                                                sample_weight=sample_weight,
                                                 sampler=sampler,
                                                 batch_size=10,
                                                 random_state=42)
     model.fit_generator(generator=training_generator,
+                        epochs=10)
+
+
+def test_balanced_batch_generator_function_no_return_indices():
+    model = _build_keras_model(y.shape[1], X.shape[1])
+    with pytest.raises(ValueError, match='needs to return the indices'):
+        training_generator, sample_per_epoch = balanced_batch_generator(
+            X, y, sampler=ClusterCentroids(), batch_size=10, random_state=42)
+        model.fit_generator(generator=training_generator,
+                            epochs=10)
+
+
+@pytest.mark.parametrize(
+    "sampler, sample_weight",
+    [(None, None),
+     (NearMiss(), None),
+     (None, np.random.uniform(size=(y.shape[0])))]
+)
+def test_balanced_batch_generator_function(sampler, sample_weight):
+    model = _build_keras_model(y.shape[1], X.shape[1])
+    training_generator, steps_per_epoch = balanced_batch_generator(
+        X, y, sample_weight=sample_weight, sampler=sampler, batch_size=10,
+        random_state=42)
+    model.fit_generator(generator=training_generator,
+                        steps_per_epoch=steps_per_epoch,
                         epochs=10)
