@@ -50,10 +50,6 @@ test_script:
   - pytest --pyargs imblearn --cov-report term-missing --cov=imblearn
 
 after_test:
-  - if not exist dist mkdir dist
-  - if exist .coverage (cp .coverage dist\) else (echo no .coverage)
+  - cp .coverage %APPVEYOR_BUILD_FOLDER%
+  - cd %APPVEYOR_BUILD_FOLDER%
   - codecov
-  - if exist coverage.xml (cp coverage.xml dist\) else (echo no coverage.xml)
-
-artifacts:
-  - path: dist\*
