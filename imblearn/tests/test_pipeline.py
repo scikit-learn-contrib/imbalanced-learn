@@ -5,7 +5,6 @@ Test the pipeline module.
 #          Christos Aridas
 # License: MIT
 
-
 from tempfile import mkdtemp
 import shutil
 import time
@@ -32,15 +31,13 @@ from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (RandomUnderSampler,
                                      EditedNearestNeighbours as ENN)
 
-
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
     "the pizza burger beer copyright",
     "the the pizza beer beer copyright",
     "the burger beer beer copyright",
     "the coke burger coke copyright",
-    "the coke burger burger",
-)
+    "the coke burger burger", )
 
 R_TOL = 1e-4
 
@@ -55,7 +52,6 @@ class NoFit(object):
 
 
 class NoTrans(NoFit):
-
     def fit(self, X, y):
         return self
 
@@ -81,7 +77,6 @@ class Transf(NoInvTransf):
 
 
 class TransfFitParams(Transf):
-
     def fit(self, X, y, **fit_params):
         self.fit_params = fit_params
         return self
@@ -186,8 +181,8 @@ def test_pipeline_init():
     # Smoke test with only an estimator
     clf = NoTrans()
     pipe = Pipeline([('svc', clf)])
-    expected = dict(svc__a=None, svc__b=None, svc=clf,
-                    **pipe.get_params(deep=False))
+    expected = dict(
+        svc__a=None, svc__b=None, svc=clf, **pipe.get_params(deep=False))
     assert pipe.get_params(deep=True) == expected
 
     # Check that params are set
@@ -336,7 +331,7 @@ def test_pipeline_methods_preprocessing_svm():
 
         # check shapes of various prediction functions
         predict = pipe.predict(X)
-        assert predict.shape == (n_samples,)
+        assert predict.shape == (n_samples, )
 
         proba = pipe.predict_proba(X)
         assert proba.shape == (n_samples, n_classes)
@@ -367,10 +362,8 @@ def test_fit_predict_on_pipeline():
     separate_pred = km.fit_predict(scaled)
 
     # use a pipeline to do the transform and clustering in one step
-    pipe = Pipeline([
-        ('scaler', scaler_for_pipeline),
-        ('Kmeans', km_for_pipeline)
-    ])
+    pipe = Pipeline([('scaler', scaler_for_pipeline), ('Kmeans',
+                                                       km_for_pipeline)])
     pipeline_pred = pipe.fit_predict(iris.data)
 
     assert_array_almost_equal(pipeline_pred, separate_pred)
@@ -391,10 +384,8 @@ def test_fit_predict_with_intermediate_fit_params():
     # tests that Pipeline passes fit_params to intermediate steps
     # when fit_predict is invoked
     pipe = Pipeline([('transf', TransfFitParams()), ('clf', FitParamT())])
-    pipe.fit_predict(X=None,
-                     y=None,
-                     transf__should_get_this=True,
-                     clf__should_succeed=True)
+    pipe.fit_predict(
+        X=None, y=None, transf__should_get_this=True, clf__should_succeed=True)
     assert pipe.named_steps['transf'].fit_params['should_get_this']
     assert pipe.named_steps['clf'].successful
     assert 'should_succeed' not in pipe.named_steps['transf'].fit_params
@@ -485,13 +476,15 @@ def test_set_pipeline_step_none():
     assert_array_equal([[exp]], pipeline.fit_transform(X, y))
     assert_array_equal([exp], pipeline.fit(X).predict(X))
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
-    expected_params = {'steps': pipeline.steps,
-                       'm2': mult2,
-                       'm3': None,
-                       'last': mult5,
-                       'memory': None,
-                       'm2__mult': 2,
-                       'last__mult': 5}
+    expected_params = {
+        'steps': pipeline.steps,
+        'm2': mult2,
+        'm3': None,
+        'last': mult5,
+        'memory': None,
+        'm2__mult': 2,
+        'last__mult': 5
+    }
     assert pipeline.get_params(deep=True) == expected_params
 
     pipeline.set_params(m2=None)
@@ -501,8 +494,10 @@ def test_set_pipeline_step_none():
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
 
     # for other methods, ensure no AttributeErrors on None:
-    other_methods = ['predict_proba', 'predict_log_proba',
-                     'decision_function', 'transform', 'score']
+    other_methods = [
+        'predict_proba', 'predict_log_proba', 'decision_function', 'transform',
+        'score'
+    ]
     for method in other_methods:
         getattr(pipeline, method)(X)
 
@@ -599,8 +594,8 @@ def test_pipeline_wrong_memory():
     y = iris.target
     # Define memory as an integer
     memory = 1
-    cached_pipe = Pipeline([('transf', DummyTransf()), ('svc', SVC())],
-                           memory=memory)
+    cached_pipe = Pipeline(
+        [('transf', DummyTransf()), ('svc', SVC())], memory=memory)
     error_regex = ("'memory' should either be a string or a joblib.Memory"
                    " instance, got 'memory=1' instead.")
     with raises(ValueError, match=error_regex):
@@ -618,8 +613,8 @@ def test_pipeline_memory_transformer():
         clf = SVC(probability=True, random_state=0)
         transf = DummyTransf()
         pipe = Pipeline([('transf', clone(transf)), ('svc', clf)])
-        cached_pipe = Pipeline([('transf', transf), ('svc', clf)],
-                               memory=memory)
+        cached_pipe = Pipeline(
+            [('transf', transf), ('svc', clf)], memory=memory)
 
         # Memoize the transformer at the first fit
         cached_pipe.fit(X, y)
@@ -629,8 +624,8 @@ def test_pipeline_memory_transformer():
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
         assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
-        assert_array_equal(pipe.predict_log_proba(X),
-                           cached_pipe.predict_log_proba(X))
+        assert_array_equal(
+            pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe.named_steps['transf'].means_)
@@ -641,8 +636,8 @@ def test_pipeline_memory_transformer():
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
         assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
-        assert_array_equal(pipe.predict_log_proba(X),
-                           cached_pipe.predict_log_proba(X))
+        assert_array_equal(
+            pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe.named_steps['transf'].means_)
@@ -651,16 +646,16 @@ def test_pipeline_memory_transformer():
         # Check that even changing the name step does not affect the cache hit
         clf_2 = SVC(probability=True, random_state=0)
         transf_2 = DummyTransf()
-        cached_pipe_2 = Pipeline([('transf_2', transf_2), ('svc', clf_2)],
-                                 memory=memory)
+        cached_pipe_2 = Pipeline(
+            [('transf_2', transf_2), ('svc', clf_2)], memory=memory)
         cached_pipe_2.fit(X, y)
 
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe_2.predict(X))
-        assert_array_equal(pipe.predict_proba(X),
-                           cached_pipe_2.predict_proba(X))
-        assert_array_equal(pipe.predict_log_proba(X),
-                           cached_pipe_2.predict_log_proba(X))
+        assert_array_equal(
+            pipe.predict_proba(X), cached_pipe_2.predict_proba(X))
+        assert_array_equal(
+            pipe.predict_log_proba(X), cached_pipe_2.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe_2.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe_2.named_steps['transf_2'].means_)
@@ -688,8 +683,8 @@ def test_pipeline_memory_sampler():
         clf = SVC(probability=True, random_state=0)
         transf = DummySampler()
         pipe = Pipeline([('transf', clone(transf)), ('svc', clf)])
-        cached_pipe = Pipeline([('transf', transf), ('svc', clf)],
-                               memory=memory)
+        cached_pipe = Pipeline(
+            [('transf', transf), ('svc', clf)], memory=memory)
 
         # Memoize the transformer at the first fit
         cached_pipe.fit(X, y)
@@ -699,8 +694,8 @@ def test_pipeline_memory_sampler():
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
         assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
-        assert_array_equal(pipe.predict_log_proba(X),
-                           cached_pipe.predict_log_proba(X))
+        assert_array_equal(
+            pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe.named_steps['transf'].means_)
@@ -711,8 +706,8 @@ def test_pipeline_memory_sampler():
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
         assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
-        assert_array_equal(pipe.predict_log_proba(X),
-                           cached_pipe.predict_log_proba(X))
+        assert_array_equal(
+            pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe.named_steps['transf'].means_)
@@ -721,16 +716,16 @@ def test_pipeline_memory_sampler():
         # Check that even changing the name step does not affect the cache hit
         clf_2 = SVC(probability=True, random_state=0)
         transf_2 = DummySampler()
-        cached_pipe_2 = Pipeline([('transf_2', transf_2), ('svc', clf_2)],
-                                 memory=memory)
+        cached_pipe_2 = Pipeline(
+            [('transf_2', transf_2), ('svc', clf_2)], memory=memory)
         cached_pipe_2.fit(X, y)
 
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe_2.predict(X))
-        assert_array_equal(pipe.predict_proba(X),
-                           cached_pipe_2.predict_proba(X))
-        assert_array_equal(pipe.predict_log_proba(X),
-                           cached_pipe_2.predict_log_proba(X))
+        assert_array_equal(
+            pipe.predict_proba(X), cached_pipe_2.predict_proba(X))
+        assert_array_equal(
+            pipe.predict_log_proba(X), cached_pipe_2.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe_2.score(X, y))
         assert_array_equal(pipe.named_steps['transf'].means_,
                            cached_pipe_2.named_steps['transf_2'].means_)
@@ -819,8 +814,7 @@ def test_pipeline_sample():
     assert_allclose(y_trans, y_trans3, rtol=R_TOL)
 
     pca = PCA()
-    pipeline = Pipeline([('pca', PCA()),
-                         ('rus', rus)])
+    pipeline = Pipeline([('pca', PCA()), ('rus', rus)])
 
     X_trans, y_trans = pipeline.fit(X, y).sample(X, y)
     X_pca = pca.fit_transform(X)

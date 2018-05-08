@@ -5,9 +5,8 @@
 
 from collections import Counter
 
-import numpy as np
 import pytest
-from pytest import raises
+import numpy as np
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
@@ -18,8 +17,12 @@ from sklearn.utils.testing import assert_array_equal
 from imblearn.utils.testing import warns
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_ratio
+from imblearn.utils import check_sampling_strategy
 from imblearn.utils import hash_X_y
 from imblearn.utils import check_target_type
+
+multiclass_target = np.array([1] * 50 + [2] * 100 + [3] * 25)
+binary_target = np.array([1] * 25 + [0] * 100)
 
 
 def test_check_neighbors_object():
@@ -34,27 +37,23 @@ def test_check_neighbors_object():
     estimator = NearestNeighbors(n_neighbors)
     assert estimator is check_neighbors_object(name, estimator)
     n_neighbors = 'rnd'
-    with raises(ValueError, match="has to be one of"):
+    with pytest.raises(ValueError, match="has to be one of"):
         check_neighbors_object(name, n_neighbors)
 
 
-@pytest.mark.parametrize(
-    "target, output_target",
-    [(np.array([0, 1, 1]), np.array([0, 1, 1])),
-     (np.array([0, 1, 2]), np.array([0, 1, 2])),
-     (np.array([[0, 1], [1, 0]]), np.array([1, 0]))]
-)
+@pytest.mark.parametrize("target, output_target", [(np.array(
+    [0, 1, 1]), np.array([0, 1, 1])), (np.array([0, 1, 2]), np.array(
+        [0, 1, 2])), (np.array([[0, 1], [1, 0]]), np.array([1, 0]))])
 def test_check_target_type(target, output_target):
     converted_target = check_target_type(target.astype(int))
     assert_array_equal(converted_target, output_target.astype(int))
 
 
-@pytest.mark.parametrize(
-    "target, output_target, is_ova",
-    [(np.array([0, 1, 1]), np.array([0, 1, 1]), False),
-     (np.array([0, 1, 2]), np.array([0, 1, 2]), False),
-     (np.array([[0, 1], [1, 0]]), np.array([1, 0]), True)]
-)
+@pytest.mark.parametrize("target, output_target, is_ova",
+                         [(np.array([0, 1, 1]), np.array([0, 1, 1]), False),
+                          (np.array([0, 1, 2]), np.array([0, 1, 2]),
+                           False), (np.array([[0, 1], [1, 0]]),
+                                    np.array([1, 0]), True)])
 def test_check_target_type_ova(target, output_target, is_ova):
     converted_target, binarize_target = check_target_type(
         target.astype(int), indicate_one_vs_all=True)
@@ -68,140 +67,297 @@ def test_check_target_warning():
         check_target_type(target)
 
 
-def test_check_ratio_error():
-    with raises(ValueError, match="'sampling_type' should be one of"):
-        check_ratio('auto', np.array([1, 2, 3]), 'rnd')
+def test_check_sampling_strategy_warning():
+    msg = 'dict for cleaning methods is deprecated'
+    with pytest.warns(DeprecationWarning, match=msg):
+        check_sampling_strategy({
+            1: 0,
+            2: 0,
+            3: 0
+        }, multiclass_target, 'clean-sampling')
+
+
+def test_check_sampling_strategy_float_error():
+    msg = "'clean-sampling' methods do let the user specify the sampling ratio"
+    with pytest.raises(ValueError, match=msg):
+        check_sampling_strategy(0.5, binary_target, 'clean-sampling')
+
+
+def test_check_sampling_strategy_error():
+    with pytest.raises(ValueError, match="'sampling_type' should be one of"):
+        check_sampling_strategy('auto', np.array([1, 2, 3]), 'rnd')
 
     error_regex = "The target 'y' needs to have more than 1 class."
-    with raises(ValueError, match=error_regex):
-        check_ratio('auto', np.ones((10, )), 'over-sampling')
+    with pytest.raises(ValueError, match=error_regex):
+        check_sampling_strategy('auto', np.ones((10, )), 'over-sampling')
 
-    error_regex = "When 'ratio' is a string, it needs to be one of"
-    with raises(ValueError, match=error_regex):
-        check_ratio('rnd', np.array([1, 2, 3]), 'over-sampling')
+    error_regex = "When 'sampling_strategy' is a string, it needs to be one of"
+    with pytest.raises(ValueError, match=error_regex):
+        check_sampling_strategy('rnd', np.array([1, 2, 3]), 'over-sampling')
 
 
-def test_ratio_all_over_sampling():
+@pytest.mark.parametrize("sampling_strategy, sampling_type, err_msg",
+                         [('majority', 'over-sampling', 'over-sampler'),
+                          ('minority', 'under-sampling', 'under-sampler')])
+def test_check_sampling_strategy_error_wrong_string(sampling_strategy,
+                                                    sampling_type, err_msg):
+    with pytest.raises(
+            ValueError,
+            match=("'{}' cannot be used with {}".format(
+                sampling_strategy, err_msg))):
+        check_sampling_strategy(sampling_strategy,
+                                np.array([1, 2, 3]), sampling_type)
+
+
+@pytest.mark.parametrize("sampling_strategy, sampling_method", [({
+    10: 10
+}, 'under-sampling'), ({
+    10: 10
+}, 'over-sampling'), ([10], 'clean-sampling')])
+def test_sampling_strategy_class_target_unknown(sampling_strategy,
+                                                sampling_method):
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    for each in ('all', 'auto'):
-        assert check_ratio(each, y, 'over-sampling') == {1: 50, 2: 0, 3: 75}
+    with pytest.raises(ValueError, match="are not present in the data."):
+        check_sampling_strategy(sampling_strategy, y, sampling_method)
 
 
-def test_ratio_all_under_sampling():
+def test_sampling_strategy_dict_error():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('all', y, 'under-sampling')
-    assert ratio == {1: 25, 2: 25, 3: 25}
-
-
-def test_ratio_majority_over_sampling():
-    error_regex = "'ratio'='majority' cannot be used with over-sampler."
-    with raises(ValueError, match=error_regex):
-        check_ratio('majority', np.array([1, 2, 3]), 'over-sampling')
-
-
-def test_ratio_majority_under_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('majority', y, 'under-sampling')
-    assert ratio == {2: 25}
-
-
-def test_ratio_not_minority_over_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('not minority', y, 'over-sampling')
-    assert ratio == {1: 50, 2: 0}
-
-
-def test_ratio_not_minority_under_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('not minority', y, 'under-sampling')
-    assert ratio == {1: 25, 2: 25}
-    ratio = check_ratio('auto', y, 'under-sampling')
-    assert ratio == {1: 25, 2: 25}
-
-
-def test_ratio_minority_over_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = check_ratio('minority', y, 'over-sampling')
-    assert ratio == {3: 75}
-
-
-def test_ratio_minority_under_sampling():
-    error_regex = "'ratio'='minority' cannot be used with under-sampler."
-    with raises(ValueError, match=error_regex):
-        check_ratio('minority', np.array([1, 2, 3]), 'under-sampling')
-
-
-def test_ratio_dict_error():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = {1: -100, 2: 50, 3: 25}
-    with raises(ValueError, match="in a class cannot be negative."):
-        check_ratio(ratio, y, 'under-sampling')
-    ratio = {10: 10}
-    with raises(ValueError, match="are not present in the data."):
-        check_ratio(ratio, y, 'over-sampling')
-    ratio = {1: 45, 2: 100, 3: 70}
+    sampling_strategy = {1: -100, 2: 50, 3: 25}
+    with pytest.raises(ValueError, match="in a class cannot be negative."):
+        check_sampling_strategy(sampling_strategy, y, 'under-sampling')
+    sampling_strategy = {1: 45, 2: 100, 3: 70}
     error_regex = ("With over-sampling methods, the number of samples in a"
                    " class should be greater or equal to the original number"
                    " of samples. Originally, there is 50 samples and 45"
                    " samples are asked.")
-    with raises(ValueError, match=error_regex):
-        check_ratio(ratio, y, 'over-sampling')
+    with pytest.raises(ValueError, match=error_regex):
+        check_sampling_strategy(sampling_strategy, y, 'over-sampling')
 
     error_regex = ("With under-sampling methods, the number of samples in a"
                    " class should be less or equal to the original number of"
                    " samples. Originally, there is 25 samples and 70 samples"
                    " are asked.")
-    with raises(ValueError, match=error_regex):
-                        check_ratio(ratio, y, 'under-sampling')
+    with pytest.raises(ValueError, match=error_regex):
+        check_sampling_strategy(sampling_strategy, y, 'under-sampling')
 
 
-def test_ratio_dict_over_sampling():
+@pytest.mark.parametrize("sampling_strategy", [-10, 10])
+def test_sampling_strategy_float_error_not_in_range(sampling_strategy):
+    y = np.array([1] * 50 + [2] * 100)
+    with pytest.raises(ValueError, match='it should be in the range'):
+        check_sampling_strategy(sampling_strategy, y, 'under-sampling')
+
+
+def test_sampling_strategy_float_error_not_binary():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = {1: 70, 2: 100, 3: 70}
-    ratio_ = check_ratio(ratio, y, 'over-sampling')
-    assert ratio_ == {1: 20, 2: 0, 3: 45}
-    ratio = {1: 70, 2: 140, 3: 70}
+    with pytest.raises(ValueError, match='the type of target is binary'):
+        sampling_strategy = 0.5
+        check_sampling_strategy(sampling_strategy, y, 'under-sampling')
+
+
+@pytest.mark.parametrize("sampling_method",
+                         ['over-sampling', 'under-sampling'])
+def test_sampling_strategy_list_error_not_clean_sampling(sampling_method):
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    with pytest.raises(ValueError, match='cannot be a list for samplers'):
+        sampling_strategy = [1, 2, 3]
+        check_sampling_strategy(sampling_strategy, y, sampling_method)
+
+
+def _sampling_strategy_func(y):
+    # this function could create an equal number of samples
+    target_stats = Counter(y)
+    n_samples = max(target_stats.values())
+    return {key: int(n_samples) for key in target_stats.keys()}
+
+
+@pytest.mark.parametrize(
+    "sampling_strategy, sampling_type, expected_sampling_strategy, target",
+    [('auto', 'under-sampling', {
+        1: 25,
+        2: 25
+    }, multiclass_target), ('auto', 'clean-sampling', {
+        1: 25,
+        2: 25
+    }, multiclass_target), ('auto', 'over-sampling', {
+        1: 50,
+        3: 75
+    }, multiclass_target), ('all', 'over-sampling', {
+        1: 50,
+        2: 0,
+        3: 75
+    }, multiclass_target), ('all', 'under-sampling', {
+        1: 25,
+        2: 25,
+        3: 25
+    }, multiclass_target), ('all', 'clean-sampling', {
+        1: 25,
+        2: 25,
+        3: 25
+    }, multiclass_target), ('majority', 'under-sampling', {
+        2: 25
+    }, multiclass_target), ('majority', 'clean-sampling', {
+        2: 25
+    }, multiclass_target), ('minority', 'over-sampling', {
+        3: 75
+    }, multiclass_target), ('not minority', 'over-sampling', {
+        1: 50,
+        2: 0
+    }, multiclass_target), ('not minority', 'under-sampling', {
+        1: 25,
+        2: 25
+    }, multiclass_target), ('not minority', 'clean-sampling', {
+        1: 25,
+        2: 25
+    }, multiclass_target), ('not majority', 'over-sampling', {
+        1: 50,
+        3: 75
+    }, multiclass_target), ('not majority', 'under-sampling', {
+        1: 25,
+        3: 25
+    }, multiclass_target), ('not majority', 'clean-sampling', {
+        1: 25,
+        3: 25
+    }, multiclass_target), ({
+        1: 70,
+        2: 100,
+        3: 70
+    }, 'over-sampling', {
+        1: 20,
+        2: 0,
+        3: 45
+    }, multiclass_target), ({
+        1: 30,
+        2: 45,
+        3: 25
+    }, 'under-sampling', {
+        1: 30,
+        2: 45,
+        3: 25
+    }, multiclass_target), ([1], 'clean-sampling', {
+        1: 25
+    }, multiclass_target), (_sampling_strategy_func, 'over-sampling', {
+        1: 50,
+        2: 0,
+        3: 75
+    }, multiclass_target), (0.5, 'over-sampling', {
+        1: 25
+    }, binary_target), (0.5, 'under-sampling', {
+        0: 50
+    }, binary_target)])
+def test_check_sampling_strategy(sampling_strategy, sampling_type,
+                                 expected_sampling_strategy, target):
+    sampling_strategy_ = check_sampling_strategy(sampling_strategy, target,
+                                                 sampling_type)
+    assert sampling_strategy_ == expected_sampling_strategy
+
+
+@pytest.mark.parametrize("ratio, sampling_type, expected_ratio, target", [
+    ('auto', 'under-sampling', {
+        1: 25,
+        2: 25
+    }, multiclass_target), ('auto', 'clean-sampling', {
+        1: 25,
+        2: 25
+    }, multiclass_target), ('auto', 'over-sampling', {
+        1: 50,
+        3: 75
+    }, multiclass_target), ('all', 'over-sampling', {
+        1: 50,
+        2: 0,
+        3: 75
+    }, multiclass_target), ('all', 'under-sampling', {
+        1: 25,
+        2: 25,
+        3: 25
+    }, multiclass_target), ('all', 'clean-sampling', {
+        1: 25,
+        2: 25,
+        3: 25
+    }, multiclass_target), ('majority', 'under-sampling', {
+        2: 25
+    }, multiclass_target), ('majority', 'clean-sampling', {
+        2: 25
+    }, multiclass_target), ('minority', 'over-sampling', {
+        3: 75
+    }, multiclass_target), ('not minority', 'over-sampling', {
+        1: 50,
+        2: 0
+    }, multiclass_target), ('not minority', 'under-sampling', {
+        1: 25,
+        2: 25
+    }, multiclass_target), ('not minority', 'clean-sampling', {
+        1: 25,
+        2: 25
+    }, multiclass_target), ('not majority', 'over-sampling', {
+        1: 50,
+        3: 75
+    }, multiclass_target), ('not majority', 'under-sampling', {
+        1: 25,
+        3: 25
+    }, multiclass_target), ('not majority', 'clean-sampling', {
+        1: 25,
+        3: 25
+    }, multiclass_target), ({
+        1: 70,
+        2: 100,
+        3: 70
+    }, 'over-sampling', {
+        1: 20,
+        2: 0,
+        3: 45
+    }, multiclass_target), ({
+        1: 30,
+        2: 45,
+        3: 25
+    }, 'under-sampling', {
+        1: 30,
+        2: 45,
+        3: 25
+    }, multiclass_target), ([1], 'clean-sampling', {
+        1: 25
+    }, multiclass_target), (_sampling_strategy_func, 'over-sampling', {
+        1: 50,
+        2: 0,
+        3: 75
+    }, multiclass_target), (0.5, 'over-sampling', {
+        1: 25
+    }, binary_target), (0.5, 'under-sampling', {
+        0: 50
+    }, binary_target)
+])
+def test_check_ratio(ratio, sampling_type, expected_ratio, target):
+    with pytest.warns(DeprecationWarning, match="check_ratio is deprecated"):
+        ratio_ = check_ratio(ratio, target, sampling_type)
+        assert ratio_ == expected_ratio
+
+
+def test_sampling_strategy_dict_over_sampling():
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    sampling_strategy = {1: 70, 2: 140, 3: 70}
     expected_msg = ("After over-sampling, the number of samples \(140\) in"
                     " class 2 will be larger than the number of samples in the"
                     " majority class \(class #2 -> 100\)")
     with warns(UserWarning, expected_msg):
-        check_ratio(ratio, y, 'over-sampling')
+        check_sampling_strategy(sampling_strategy, y, 'over-sampling')
 
 
-def test_ratio_dict_under_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    ratio = {1: 30, 2: 45, 3: 25}
-    ratio_ = check_ratio(ratio, y, 'under-sampling')
-    assert ratio_ == ratio
-
-
-def test_ratio_callable():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-
-    def ratio_func(y):
-        # this function could create an equal number of samples
-        target_stats = Counter(y)
-        n_samples = max(target_stats.values())
-        return {key: int(n_samples)
-                for key in target_stats.keys()}
-
-    ratio_ = check_ratio(ratio_func, y, 'over-sampling')
-    assert ratio_ == {1: 50, 2: 0, 3: 75}
-
-
-def test_ratio_callable_args():
+def test_sampling_strategy_callable_args():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     multiplier = {1: 1.5, 2: 1, 3: 3}
 
-    def ratio_func(y, multiplier):
+    def sampling_strategy_func(y, multiplier):
         """samples such that each class will be affected by the multiplier."""
         target_stats = Counter(y)
-        return {key: int(values * multiplier[key])
-                for key, values in target_stats.items()}
+        return {
+            key: int(values * multiplier[key])
+            for key, values in target_stats.items()
+        }
 
-    ratio_ = check_ratio(ratio_func, y, 'over-sampling',
-                         multiplier=multiplier)
-    assert ratio_ == {1: 25, 2: 0, 3: 50}
+    sampling_strategy_ = check_sampling_strategy(
+        sampling_strategy_func, y, 'over-sampling', multiplier=multiplier)
+    assert sampling_strategy_ == {1: 25, 2: 0, 3: 50}
 
 
 def test_hash_X_y():

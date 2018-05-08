@@ -10,10 +10,16 @@ from sklearn.utils import check_random_state
 
 from .base import BaseEnsembleSampler
 from ..under_sampling import RandomUnderSampler
+from ..under_sampling.base import BaseUnderSampler
+from ..utils import Substitution
+from ..utils._docstring import _random_state_docstring
 
 MAX_INT = np.iinfo(np.int32).max
 
 
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class EasyEnsemble(BaseEnsembleSampler):
     """Create an ensemble sets by iteratively applying random under-sampling.
 
@@ -24,38 +30,24 @@ class EasyEnsemble(BaseEnsembleSampler):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
-
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples.
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
     replacement : bool, optional (default=False)
         Whether or not to sample randomly with replacement or not.
 
     n_subsets : int, optional (default=10)
         Number of subsets to generate.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -86,22 +78,24 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> ee = EasyEnsemble(random_state=42)
     >>> X_res, y_res = ee.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res[0])))
-    Resampled dataset shape Counter({0: 100, 1: 100})
+    >>> print('Resampled dataset shape %s' % Counter(y_res[0]))
+    Resampled dataset shape Counter({{0: 100, 1: 100}})
 
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  replacement=False,
-                 n_subsets=10):
-        super(EasyEnsemble, self).__init__(ratio=ratio)
+                 n_subsets=10,
+                 ratio=None):
+        super(EasyEnsemble, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.replacement = replacement
@@ -142,7 +136,8 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
 
         for _ in range(self.n_subsets):
             rus = RandomUnderSampler(
-                ratio=self.ratio_, return_indices=True,
+                sampling_strategy=self.sampling_strategy_,
+                return_indices=True,
                 random_state=random_state.randint(MAX_INT),
                 replacement=self.replacement)
             sel_x, sel_y, sel_idx = rus.fit_sample(X, y)

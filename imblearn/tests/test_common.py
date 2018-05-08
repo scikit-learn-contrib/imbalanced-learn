@@ -21,8 +21,7 @@ def test_all_estimators():
     assert len(estimators) > 0
     for name, Estimator in estimators:
         # some can just not be sensibly default constructed
-        yield (_named_check(check_estimator, name),
-               Estimator)
+        yield (_named_check(check_estimator, name), Estimator)
 
 
 def test_non_meta_estimators():

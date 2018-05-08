@@ -16,10 +16,15 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import safe_indexing
 
 from ..base import BaseUnderSampler
+from ...utils import Substitution
+from ...utils._docstring import _random_state_docstring
 
 VOTING_KIND = ('auto', 'hard', 'soft')
 
 
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class ClusterCentroids(BaseUnderSampler):
     """Perform under-sampling by generating centroids based on
     clustering methods.
@@ -35,28 +40,9 @@ class ClusterCentroids(BaseUnderSampler):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
+    {sampling_strategy}
 
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples.
-
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
     estimator : object, optional(default=KMeans())
         Pass a :class:`sklearn.cluster.KMeans` estimator.
@@ -76,6 +62,11 @@ class ClusterCentroids(BaseUnderSampler):
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
+
     Notes
     -----
     Supports mutli-class resampling by sampling each class independently.
@@ -92,24 +83,25 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> cc = ClusterCentroids(random_state=42)
     >>> X_res, y_res = cc.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
     ... # doctest: +ELLIPSIS
-    Resampled dataset shape Counter({...})
+    Resampled dataset shape Counter({{...}})
 
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_strategy='auto',
                  random_state=None,
                  estimator=None,
                  voting='auto',
-                 n_jobs=1):
+                 n_jobs=1,
+                 ratio=None):
         super(ClusterCentroids, self).__init__(
-            ratio=ratio)
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.estimator = estimator
         self.voting = voting
@@ -130,8 +122,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         if self.voting_ == 'hard':
             nearest_neighbors = NearestNeighbors(n_neighbors=1)
             nearest_neighbors.fit(X, y)
-            indices = nearest_neighbors.kneighbors(centroids,
-                                                   return_distance=False)
+            indices = nearest_neighbors.kneighbors(
+                centroids, return_distance=False)
             X_new = safe_indexing(X, np.squeeze(indices))
         else:
             if sparse.issparse(X):
@@ -179,8 +171,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
 
         X_resampled, y_resampled = [], []
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
-                n_samples = self.ratio_[target_class]
+            if target_class in self.sampling_strategy_.keys():
+                n_samples = self.sampling_strategy_[target_class]
                 self.estimator_.set_params(**{'n_clusters': n_samples})
                 self.estimator_.fit(X[y == target_class])
                 X_new, y_new = self._generate_sample(
