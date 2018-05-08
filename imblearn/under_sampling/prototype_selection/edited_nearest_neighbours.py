@@ -1,7 +1,6 @@
 """Class to perform under-sampling based on the edited nearest neighbour
 method."""
 
-
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Dayvid Oliveira
 #          Christos Aridas
@@ -18,12 +17,16 @@ from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
+from ...utils import Substitution
 from ...utils.deprecation import deprecate_parameter
-
+from ...utils._docstring import _random_state_docstring
 
 SEL_KIND = ('all', 'mode')
 
 
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class EditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
@@ -32,37 +35,13 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
-
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples.
-
-        .. warning::
-           This algorithm is a cleaning under-sampling method. When providing a
-           ``dict``, only the targeted classes will be used; the number of
-           samples will be discarded.
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
         .. deprecated:: 0.4
            ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
@@ -83,6 +62,11 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -115,23 +99,25 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> enn = EditedNearestNeighbours()
     >>> X_res, y_res = enn.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 887, 0: 100})
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{1: 887, 0: 100}})
 
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
-                 n_jobs=1):
-        super(EditedNearestNeighbours, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(EditedNearestNeighbours, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -145,8 +131,8 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         if self.random_state is not None:
             deprecate_parameter(self, '0.4', 'random_state')
 
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
+        self.nn_ = check_neighbors_object(
+            'n_neighbors', self.n_neighbors, additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
         if self.kind_sel not in SEL_KIND:
@@ -184,7 +170,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         self.nn_.fit(X)
 
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
+            if target_class in self.sampling_strategy_.keys():
                 target_class_indices = np.flatnonzero(y == target_class)
                 X_class = safe_indexing(X, target_class_indices)
                 y_class = safe_indexing(y, target_class_indices)
@@ -202,8 +188,9 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under, np.flatnonzero(y == target_class)[
-                    index_target_class]), axis=0)
+                (idx_under,
+                 np.flatnonzero(y == target_class)[index_target_class]),
+                axis=0)
 
         if self.return_indices:
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
@@ -212,6 +199,9 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
             return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
 
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
@@ -220,37 +210,13 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
-
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples.
-
-        .. warning::
-           This algorithm is a cleaning under-sampling method. When providing a
-           ``dict``, only the targeted classes will be used; the number of
-           samples will be discarded.
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
         .. deprecated:: 0.4
            ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
@@ -275,6 +241,11 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     n_jobs : int, optional (default=1)
         The number of thread to open when it is possible.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -307,24 +278,26 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> renn = RepeatedEditedNearestNeighbours()
     >>> X_res, y_res = renn.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 887, 0: 100})
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{1: 887, 0: 100}})
 
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  max_iter=100,
                  kind_sel='all',
-                 n_jobs=1):
-        super(RepeatedEditedNearestNeighbours, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(RepeatedEditedNearestNeighbours, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -343,14 +316,16 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             raise ValueError('max_iter must be greater than 1.'
                              ' Got {} instead.'.format(type(self.max_iter)))
 
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
+        self.nn_ = check_neighbors_object(
+            'n_neighbors', self.n_neighbors, additional_neighbor=1)
 
-        self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
-                                            return_indices=self.return_indices,
-                                            n_neighbors=self.nn_,
-                                            kind_sel=self.kind_sel,
-                                            n_jobs=self.n_jobs)
+        self.enn_ = EditedNearestNeighbours(
+            sampling_strategy=self.sampling_strategy,
+            return_indices=self.return_indices,
+            n_neighbors=self.nn_,
+            kind_sel=self.kind_sel,
+            n_jobs=self.n_jobs,
+            ratio=self.ratio)
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -409,8 +384,8 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                 val for val, key in zip(stats_enn.values(), stats_enn.keys())
                 if key != class_minority
             ])
-            b_min_bec_maj = np.any(count_non_min <
-                                   target_stats[class_minority])
+            b_min_bec_maj = np.any(
+                count_non_min < target_stats[class_minority])
 
             # Case 3
             b_remove_maj_class = (len(stats_enn) < len(target_stats))
@@ -436,6 +411,9 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             return X_resampled, y_resampled
 
 
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class AllKNN(BaseCleaningSampler):
     """Class to perform under-sampling based on the AllKNN method.
 
@@ -443,37 +421,13 @@ class AllKNN(BaseCleaningSampler):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
-
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples.
-
-        .. warning::
-           This algorithm is a cleaning under-sampling method. When providing a
-           ``dict``, only the targeted classes will be used; the number of
-           samples will be discarded.
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
         .. deprecated:: 0.4
            ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
@@ -500,6 +454,11 @@ class AllKNN(BaseCleaningSampler):
 
     n_jobs : int, optional (default=1)
         The number of thread to open when it is possible.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -531,24 +490,26 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> allknn = AllKNN()
     >>> X_res, y_res = allknn.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({1: 887, 0: 100})
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{1: 887, 0: 100}})
 
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
                  allow_minority=False,
-                 n_jobs=1):
-        super(AllKNN, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(AllKNN, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -566,14 +527,16 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
+        self.nn_ = check_neighbors_object(
+            'n_neighbors', self.n_neighbors, additional_neighbor=1)
 
-        self.enn_ = EditedNearestNeighbours(ratio=self.ratio,
-                                            return_indices=self.return_indices,
-                                            n_neighbors=self.nn_,
-                                            kind_sel=self.kind_sel,
-                                            n_jobs=self.n_jobs)
+        self.enn_ = EditedNearestNeighbours(
+            sampling_strategy=self.sampling_strategy,
+            return_indices=self.return_indices,
+            n_neighbors=self.nn_,
+            kind_sel=self.kind_sel,
+            n_jobs=self.n_jobs,
+            ratio=self.ratio)
 
     def _sample(self, X, y):
         """Resample the dataset.
@@ -627,8 +590,8 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                 val for val, key in zip(stats_enn.values(), stats_enn.keys())
                 if key != class_minority
             ])
-            b_min_bec_maj = np.any(count_non_min <
-                                   target_stats[class_minority])
+            b_min_bec_maj = np.any(
+                count_non_min < target_stats[class_minority])
             if self.allow_minority:
                 # overwrite b_min_bec_maj
                 b_min_bec_maj = False

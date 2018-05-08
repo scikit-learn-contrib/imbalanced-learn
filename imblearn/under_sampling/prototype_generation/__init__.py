@@ -5,6 +5,4 @@ methods that generate new samples in order to balance the dataset.
 
 from .cluster_centroids import ClusterCentroids
 
-__all__ = [
-    'ClusterCentroids'
-]
+__all__ = ['ClusterCentroids']

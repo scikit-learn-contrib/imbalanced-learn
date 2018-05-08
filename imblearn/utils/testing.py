@@ -17,7 +17,6 @@ from sklearn.base import BaseEstimator
 from imblearn.base import SamplerMixin
 import imblearn
 
-
 # meta-estimators need another estimator to be instantiated.
 META_ESTIMATORS = []
 # estimators that there is no way to default-construct sensibly
@@ -27,7 +26,8 @@ DONT_TEST = []
 
 
 def all_estimators(include_meta_estimators=False,
-                   include_other=False, type_filter=None,
+                   include_other=False,
+                   type_filter=None,
                    include_dont_test=False):
     """Get a list of all estimators from imblearn.
 
@@ -65,8 +65,9 @@ def all_estimators(include_meta_estimators=False,
         and ``class`` is the actual type of the class.
 
     """
+
     def is_abstract(c):
-        if not(hasattr(c, '__abstractmethods__')):
+        if not (hasattr(c, '__abstractmethods__')):
             return False
         if not len(c.__abstractmethods__):
             return False
@@ -85,9 +86,10 @@ def all_estimators(include_meta_estimators=False,
 
     all_classes = set(all_classes)
 
-    estimators = [c for c in all_classes
-                  if (issubclass(c[1], BaseEstimator) and
-                      c[0] != 'BaseEstimator')]
+    estimators = [
+        c for c in all_classes
+        if (issubclass(c[1], BaseEstimator) and c[0] != 'BaseEstimator')
+    ]
     # get rid of abstract base classes
     estimators = [c for c in estimators if not is_abstract(c[1])]
 
@@ -112,8 +114,8 @@ def all_estimators(include_meta_estimators=False,
         for name, mixin in filters.items():
             if name in type_filter:
                 type_filter.remove(name)
-                filtered_estimators.extend([est for est in estimators
-                                            if issubclass(est[1], mixin)])
+                filtered_estimators.extend(
+                    [est for est in estimators if issubclass(est[1], mixin)])
         estimators = filtered_estimators
         if type_filter:
             raise ValueError("Parameter type_filter must be 'sampler' or "

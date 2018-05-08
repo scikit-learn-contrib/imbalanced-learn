@@ -55,12 +55,12 @@ multipliers = [0.9, 0.75, 0.5, 0.25, 0.1]
 for i, multiplier in enumerate(multipliers, start=1):
     ax = axs[i]
 
-    X_, y_ = make_imbalance(X, y, ratio=ratio_func,
+    X_, y_ = make_imbalance(X, y, sampling_strategy=ratio_func,
                             **{"multiplier": multiplier,
                                "minority_class": 1})
     ax.scatter(X_[y_ == 0, 0], X_[y_ == 0, 1], label="Class #0", alpha=0.5)
     ax.scatter(X_[y_ == 1, 0], X_[y_ == 1, 1], label="Class #1", alpha=0.5)
-    ax.set_title('ratio = {}'.format(multiplier))
+    ax.set_title('sampling_strategy = {}'.format(multiplier))
     plot_decoration(ax)
 
 plt.tight_layout()

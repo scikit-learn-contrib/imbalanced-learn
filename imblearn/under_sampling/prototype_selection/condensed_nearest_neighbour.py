@@ -17,8 +17,13 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseCleaningSampler
+from ...utils import Substitution
+from ...utils._docstring import _random_state_docstring
 
 
+@Substitution(
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class CondensedNearestNeighbour(BaseCleaningSampler):
     """Class to perform under-sampling based on the condensed nearest neighbour
     method.
@@ -27,37 +32,13 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
-
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples.
-
-        .. warning::
-           This algorithm is a cleaning under-sampling method. When providing a
-           ``dict``, only the targeted classes will be used; the number of
-           samples will be discarded.
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
     n_neighbors : int or object, optional (default=\
 KNeighborsClassifier(n_neighbors=1))
@@ -71,6 +52,11 @@ KNeighborsClassifier(n_neighbors=1))
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -95,31 +81,31 @@ KNeighborsClassifier(n_neighbors=1))
     Examples
     --------
 
-    >>> from collections import Counter #doctest: +SKIP
-    >>> from sklearn.datasets import fetch_mldata #doctest: +SKIP
+    >>> from collections import Counter # doctest: +SKIP
+    >>> from sklearn.datasets import fetch_mldata # doctest: +SKIP
     >>> from imblearn.under_sampling import \
-CondensedNearestNeighbour #doctest: +SKIP
-    >>> pima = fetch_mldata('diabetes_scale') #doctest: +SKIP
-    >>> X, y = pima['data'], pima['target'] #doctest: +SKIP
-    >>> print('Original dataset shape {}'.format(Counter(y))) #doctest: +SKIP
-    Original dataset shape Counter({1: 500, -1: 268}) #doctest: +SKIP
-    >>> cnn = CondensedNearestNeighbour(random_state=42) #doctest: +SKIP
+CondensedNearestNeighbour # doctest: +SKIP
+    >>> pima = fetch_mldata('diabetes_scale') # doctest: +SKIP
+    >>> X, y = pima['data'], pima['target'] # doctest: +SKIP
+    >>> print('Original dataset shape %s' % Counter(y)) # doctest: +SKIP
+    Original dataset shape Counter({{1: 500, -1: 268}}) # doctest: +SKIP
+    >>> cnn = CondensedNearestNeighbour(random_state=42) # doctest: +SKIP
     >>> X_res, y_res = cnn.fit_sample(X, y) #doctest: +SKIP
-    >>> print('Resampled dataset shape {}'.format(
-    ... Counter(y_res))) #doctest: +SKIP
-    Resampled dataset shape Counter({-1: 268, 1: 227}) #doctest: +SKIP
+    >>> print('Resampled dataset shape %s' % Counter(y_res)) # doctest: +SKIP
+    Resampled dataset shape Counter({{-1: 268, 1: 227}}) # doctest: +SKIP
 
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
                  n_neighbors=None,
                  n_seeds_S=1,
-                 n_jobs=1):
+                 n_jobs=1,
+                 ratio=None):
         super(CondensedNearestNeighbour, self).__init__(
-            ratio=ratio)
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -174,17 +160,18 @@ CondensedNearestNeighbour #doctest: +SKIP
         idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
+            if target_class in self.sampling_strategy_.keys():
                 # Randomly get one sample from the majority class
                 # Generate the index to select
                 idx_maj = np.flatnonzero(y == target_class)
                 idx_maj_sample = idx_maj[random_state.randint(
-                        low=0, high=target_stats[target_class],
-                        size=self.n_seeds_S)]
+                    low=0,
+                    high=target_stats[target_class],
+                    size=self.n_seeds_S)]
 
                 # Create the set C - One majority samples and all minority
-                C_indices = np.append(np.flatnonzero(y == class_minority),
-                                      idx_maj_sample)
+                C_indices = np.append(
+                    np.flatnonzero(y == class_minority), idx_maj_sample)
                 C_x = safe_indexing(X, C_indices)
                 C_y = safe_indexing(y, C_indices)
 
@@ -232,8 +219,7 @@ CondensedNearestNeighbour #doctest: +SKIP
                             np.append(idx_maj_sample,
                                       np.flatnonzero(pred_S_y == S_y)))
 
-                idx_under = np.concatenate((idx_under, idx_maj_sample),
-                                           axis=0)
+                idx_under = np.concatenate((idx_under, idx_maj_sample), axis=0)
             else:
                 idx_under = np.concatenate(
                     (idx_under, np.flatnonzero(y == target_class)), axis=0)

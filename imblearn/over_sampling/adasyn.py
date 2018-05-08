@@ -13,8 +13,13 @@ from sklearn.utils import check_random_state, safe_indexing
 
 from .base import BaseOverSampler
 from ..utils import check_neighbors_object
+from ..utils import Substitution
+from ..utils._docstring import _random_state_docstring
 
 
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class ADASYN(BaseOverSampler):
     """Perform over-sampling using Adaptive Synthetic (ADASYN) sampling
     approach for imbalanced datasets.
@@ -23,28 +28,9 @@ class ADASYN(BaseOverSampler):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
+    {sampling_strategy}
 
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples.
-
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
     n_neighbors : int int or object, optional (default=5)
         If ``int``, number of nearest neighbours to used to construct synthetic
@@ -54,6 +40,11 @@ class ADASYN(BaseOverSampler):
 
     n_jobs : int, optional (default=1)
         Number of threads to run the algorithm when it is possible.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -88,29 +79,31 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000,
     ... random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> ada = ADASYN(random_state=42)
     >>> X_res, y_res = ada.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({0: 904, 1: 900})
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{0: 904, 1: 900}})
 
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_strategy='auto',
                  random_state=None,
                  n_neighbors=5,
-                 n_jobs=1):
-        super(ADASYN, self).__init__(ratio=ratio)
+                 n_jobs=1,
+                 ratio=None):
+        super(ADASYN, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
         """Create the necessary objects for ADASYN"""
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors,
-                                          additional_neighbor=1)
+        self.nn_ = check_neighbors_object(
+            'n_neighbors', self.n_neighbors, additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
     def _sample(self, X, y):
@@ -141,7 +134,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         X_resampled = X.copy()
         y_resampled = y.copy()
 
-        for class_sample, n_samples in self.ratio_.items():
+        for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)
@@ -183,17 +176,16 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                     steps = random_state.uniform(size=len(nn_zs))
                     if x_i.nnz:
                         for step, nn_z in zip(steps, nn_zs):
-                            sample = (x_i +
-                                      step * (X_class[x_i_nn[nn_z], :] - x_i))
-                            row_indices += ([n_samples_generated] *
-                                            len(sample.indices))
+                            sample = (x_i + step *
+                                      (X_class[x_i_nn[nn_z], :] - x_i))
+                            row_indices += (
+                                [n_samples_generated] * len(sample.indices))
                             col_indices += sample.indices.tolist()
                             samples += sample.data.tolist()
                             n_samples_generated += 1
-                X_new = (sparse.csr_matrix((samples,
-                                            (row_indices, col_indices)),
-                                           [np.sum(n_samples_generate),
-                                            X.shape[1]]))
+                X_new = (sparse.csr_matrix(
+                    (samples, (row_indices, col_indices)),
+                    [np.sum(n_samples_generate), X.shape[1]]))
                 y_new = np.array([class_sample] * np.sum(n_samples_generate))
             else:
                 x_class_gen = []
@@ -204,9 +196,10 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                     nn_zs = random_state.randint(
                         1, high=self.nn_.n_neighbors, size=num_sample_i)
                     steps = random_state.uniform(size=len(nn_zs))
-                    x_class_gen.append([x_i +
-                                        step * (X_class[x_i_nn[nn_z], :] - x_i)
-                                        for step, nn_z in zip(steps, nn_zs)])
+                    x_class_gen.append([
+                        x_i + step * (X_class[x_i_nn[nn_z], :] - x_i)
+                        for step, nn_z in zip(steps, nn_zs)
+                    ])
 
                 X_new = np.concatenate(x_class_gen)
                 y_new = np.array([class_sample] * np.sum(n_samples_generate))

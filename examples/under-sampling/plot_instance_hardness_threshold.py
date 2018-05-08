@@ -52,20 +52,21 @@ X_vis = pca.fit_transform(X)
 f, axs = plt.subplots(2, 2)
 
 axs = [a for ax in axs for a in ax]
-for ax, ratio in zip(axs, (0,
-                           {1: 25, 0: 10},
-                           {1: 14, 0: 10},
-                           {1: 10, 0: 10})):
-    if ratio == 0:
+for ax, sampling_strategy in zip(axs, (0,
+                                     {1: 25, 0: 10},
+                                     {1: 14, 0: 10},
+                                     {1: 10, 0: 10})):
+    if sampling_strategy == 0:
         c0, c1 = plot_resampling(ax, X_vis, y, 'Original set')
     else:
-        iht = InstanceHardnessThreshold(ratio=ratio,
+        iht = InstanceHardnessThreshold(sampling_strategy=sampling_strategy,
                                         estimator=LogisticRegression(),
                                         return_indices=True)
         X_res, y_res, idx_res = iht.fit_sample(X, y)
         X_res_vis = pca.transform(X_res)
         plot_resampling(ax, X_res_vis, y_res,
-                        'Instance Hardness Threshold ({})'.format(ratio))
+                        'Instance Hardness Threshold ({})'
+                        .format(sampling_strategy))
         # plot samples which have been removed
         idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]),
                                            idx_res)

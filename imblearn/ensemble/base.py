@@ -4,6 +4,8 @@ Base class for the ensemble method.
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
+import warnings
+
 import numpy as np
 
 from sklearn.preprocessing import label_binarize
@@ -22,6 +24,14 @@ class BaseEnsembleSampler(BaseSampler):
     """
 
     _sampling_type = 'ensemble'
+
+    @property
+    def ratio_(self):
+        warnings.warn(
+            "'ratio' and 'ratio_' are deprecated. "
+            "Use 'sampling_strategy' and 'sampling_strategy_' instead.",
+            DeprecationWarning)
+        return self.sampling_strategy_
 
     def sample(self, X, y):
         """Resample the dataset.
@@ -49,7 +59,7 @@ class BaseEnsembleSampler(BaseSampler):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
 
-        check_is_fitted(self, 'ratio_')
+        check_is_fitted(self, 'sampling_strategy_')
         self._check_X_y(X, y)
 
         output = self._sample(X, y)
@@ -57,8 +67,8 @@ class BaseEnsembleSampler(BaseSampler):
         if binarize_y:
             y_resampled = output[1]
             classes = np.unique(y)
-            y_resampled_encoded = np.array([label_binarize(batch_y, classes)
-                                            for batch_y in y_resampled])
+            y_resampled_encoded = np.array(
+                [label_binarize(batch_y, classes) for batch_y in y_resampled])
             if len(output) == 2:
                 return output[0], y_resampled_encoded
             else:

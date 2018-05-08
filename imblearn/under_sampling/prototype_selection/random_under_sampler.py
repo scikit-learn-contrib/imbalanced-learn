@@ -10,8 +10,13 @@ import numpy as np
 from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseUnderSampler
+from ...utils import Substitution
+from ...utils._docstring import _random_state_docstring
 
 
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class RandomUnderSampler(BaseUnderSampler):
     """Class to perform random under-sampling.
 
@@ -22,42 +27,28 @@ class RandomUnderSampler(BaseUnderSampler):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
-
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples.
+    {sampling_strategy}
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly selected
         from the majority class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
     replacement : boolean, optional (default=False)
         Whether the sample is with or without replacement.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
     Supports mutli-class resampling by sampling each class independently.
 
     See
-    :ref:`sphx_glr_auto_examples_plot_ratio_usage.py` and
+    :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py` and
     :ref:`sphx_glr_auto_examples_under-sampling_plot_random_under_sampler.py`
 
     Examples
@@ -70,21 +61,23 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ...  weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> rus = RandomUnderSampler(random_state=42)
     >>> X_res, y_res = rus.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({0: 100, 1: 100})
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{0: 100, 1: 100}})
 
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
-                 replacement=False):
-        super(RandomUnderSampler, self).__init__(ratio=ratio)
+                 replacement=False,
+                 ratio=None):
+        super(RandomUnderSampler, self).__init__(
+            sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
         self.replacement = replacement
@@ -120,8 +113,8 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         idx_under = np.empty((0, ), dtype=int)
 
         for target_class in np.unique(y):
-            if target_class in self.ratio_.keys():
-                n_samples = self.ratio_[target_class]
+            if target_class in self.sampling_strategy_.keys():
+                n_samples = self.sampling_strategy_[target_class]
                 index_target_class = random_state.choice(
                     range(np.count_nonzero(y == target_class)),
                     size=n_samples,
@@ -130,8 +123,9 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under, np.flatnonzero(y == target_class)[
-                    index_target_class]), axis=0)
+                (idx_under,
+                 np.flatnonzero(y == target_class)[index_target_class]),
+                axis=0)
 
         if self.return_indices:
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),

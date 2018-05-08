@@ -6,6 +6,18 @@ Version 0.4 (under development)
 Changelog
 ---------
 
+API
+...
+
+- Replace the parameter ``ratio`` by ``sampling_strategy``. :issue:`411` by
+  :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Enable to use a ``float`` with binary classification for
+  ``sampling_strategy``. :issue:`411` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Enable to use a ``list`` for the cleaning methods to specify the class to
+  sample. :issue:`411` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancement
 ...........
 
@@ -34,3 +46,20 @@ Maintenance
 
 - Remove deprecated parameters in 0.2 - :issue:`331` by :user:`Guillaume
   Lemaitre <glemaitre>`.
+
+Deprecation
+...........
+
+- Deprecate ``ratio`` in favor of ``sampling_strategy``. :issue:`411` by
+  :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Deprecate the use of a ``dict`` for cleaning methods. a ``list`` should be
+  used. :issue:`411` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Deprecate ``random_state`` in :class:`imblearn.under_sampling.NearMiss`,
+  :class:`imblearn.under_sampling.EditedNearestNeighbors`,
+  :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbors`,
+  :class:`imblearn.under_sampling.AllKNN`,
+  :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`,
+  :class:`imblearn.under_sampling.InstanceHardnessThreshold`,
+  :class:`imblearn.under_sampling.CondensedNearestNeighbours`.

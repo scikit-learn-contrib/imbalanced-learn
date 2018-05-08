@@ -7,15 +7,22 @@
 from __future__ import division
 
 import logging
+import warnings
 
 from sklearn.utils import check_X_y
 
 from ..base import SamplerMixin
 from ..over_sampling import SMOTE
+from ..over_sampling.base import BaseOverSampler
 from ..under_sampling import EditedNearestNeighbours
 from ..utils import check_target_type, hash_X_y
+from ..utils import Substitution
+from ..utils._docstring import _random_state_docstring
 
 
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class SMOTEENN(SamplerMixin):
     """Class to perform over-sampling using SMOTE and cleaning using ENN.
 
@@ -25,33 +32,19 @@ class SMOTEENN(SamplerMixin):
 
     Parameters
     ----------
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
+    {sampling_strategy}
 
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples.
-
-    random_state : int, RandomState instance or None, optional (default=None)
-        If int, ``random_state`` is the seed used by the random number
-        generator; If ``RandomState`` instance, random_state is the random
-        number generator; If ``None``, the random number generator is the
-        ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
     smote : object, optional (default=SMOTE())
         The :class:`imblearn.over_sampling.SMOTE` object to use. If not given,
         a :class:`imblearn.over_sampling.SMOTE` object with default parameters
         will be given.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Notes
     -----
@@ -83,25 +76,27 @@ class SMOTEENN(SamplerMixin):
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> sme = SMOTEENN(random_state=42)
     >>> X_res, y_res = sme.fit_sample(X, y)
-    >>> print('Resampled dataset shape {}'.format(Counter(y_res)))
-    Resampled dataset shape Counter({0: 900, 1: 881})
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{0: 900, 1: 881}})
 
     """
 
     def __init__(self,
-                 ratio='auto',
+                 sampling_strategy='auto',
                  random_state=None,
                  smote=None,
-                 enn=None):
+                 enn=None,
+                 ratio=None):
         super(SMOTEENN, self).__init__()
-        self.ratio = ratio
+        self.sampling_strategy = sampling_strategy
         self.random_state = random_state
         self.smote = smote
         self.enn = enn
+        self.ratio = ratio
         self.logger = logging.getLogger(__name__)
 
     def _validate_estimator(self):
@@ -115,7 +110,9 @@ class SMOTEENN(SamplerMixin):
         # Otherwise create a default SMOTE
         else:
             self.smote_ = SMOTE(
-                ratio=self.ratio, random_state=self.random_state)
+                sampling_strategy=self.sampling_strategy,
+                random_state=self.random_state,
+                ratio=self.ratio)
 
         if self.enn is not None:
             if isinstance(self.enn, EditedNearestNeighbours):
@@ -125,7 +122,15 @@ class SMOTEENN(SamplerMixin):
                                  ' Got {} instead.'.format(type(self.enn)))
         # Otherwise create a default EditedNearestNeighbours
         else:
-            self.enn_ = EditedNearestNeighbours(ratio='all')
+            self.enn_ = EditedNearestNeighbours(sampling_strategy='all')
+
+    @property
+    def ratio_(self):
+        # FIXME: remove in 0.6
+        warnings.warn("'ratio' and 'ratio_' are deprecated. Use "
+                      "'sampling_strategy' and 'sampling_strategy_' instead.",
+                      DeprecationWarning)
+        return self.sampling_strategy_
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.
@@ -146,7 +151,7 @@ class SMOTEENN(SamplerMixin):
         """
         y = check_target_type(y)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
-        self.ratio_ = self.ratio
+        self.sampling_strategy_ = self.sampling_strategy
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
 
         return self

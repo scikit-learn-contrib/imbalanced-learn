@@ -11,12 +11,17 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.ensemble import BaggingClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble.bagging import _generate_bagging_indices
 
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
+from ..under_sampling.base import BaseUnderSampler
+from ..utils import Substitution
+from ..utils._docstring import _random_state_docstring
 
 
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class BalancedBaggingClassifier(BaggingClassifier):
     """A Bagging classifier with additional balancing.
 
@@ -65,22 +70,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
         .. versionadded:: 0.17
            *warm_start* constructor parameter.
 
-    ratio : str, dict, or callable, optional (default='auto')
-        Ratio to use for resampling the data set.
-
-        - If ``str``, has to be one of: (i) ``'minority'``: resample the
-          minority class; (ii) ``'majority'``: resample the majority class,
-          (iii) ``'not minority'``: resample all classes apart of the minority
-          class, (iv) ``'all'``: resample all classes, and (v) ``'auto'``:
-          correspond to ``'all'`` with for over-sampling methods and ``'not
-          minority'`` for under-sampling methods. The classes targeted will be
-          over-sampled or under-sampled to achieve an equal number of sample
-          with the majority or minority class.
-        - If ``dict``, the keys correspond to the targeted classes. The values
-          correspond to the desired number of samples.
-        - If callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples.
+    {sampling_strategy}
 
     replacement : bool, optional (default=False)
         Whether or not to sample randomly with replacement or not.
@@ -89,16 +79,15 @@ class BalancedBaggingClassifier(BaggingClassifier):
         The number of jobs to run in parallel for both `fit` and `predict`.
         If -1, then the number of jobs is set to the number of cores.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        - If int, ``random_state`` is the seed used by the random number
-          generator;
-        - If ``RandomState`` instance, random_state is the random
-          number generator;
-        - If ``None``, the random number generator is the
-          ``RandomState`` instance used by ``np.random``.
+    {random_state}
 
     verbose : int, optional (default=0)
         Controls the verbosity of the building process.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
 
     Attributes
     ----------
@@ -170,8 +159,8 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
-    Original dataset shape Counter({1: 900, 0: 100})
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
     >>> X_train, X_test, y_train, y_test = train_test_split(X, y,
     ...                                                     random_state=0)
     >>> bbc = BalancedBaggingClassifier(random_state=42)
@@ -183,6 +172,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
      [  2 225]]
 
     """
+
     def __init__(self,
                  base_estimator=None,
                  n_estimators=10,
@@ -192,11 +182,12 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
                  bootstrap_features=False,
                  oob_score=False,
                  warm_start=False,
-                 ratio='auto',
+                 sampling_strategy='auto',
                  replacement=False,
                  n_jobs=1,
                  random_state=None,
-                 verbose=0):
+                 verbose=0,
+                 ratio=None):
 
         super(BaggingClassifier, self).__init__(
             base_estimator,
@@ -210,6 +201,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             n_jobs=n_jobs,
             random_state=random_state,
             verbose=verbose)
+        self.sampling_strategy = sampling_strategy
         self.ratio = ratio
         self.replacement = replacement
 
@@ -229,10 +221,10 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         else:
             base_estimator = clone(default)
 
-        self.base_estimator_ = Pipeline(
-            [('sampler', RandomUnderSampler(ratio=self.ratio,
-                                            replacement=self.replacement)),
-             ('classifier', base_estimator)])
+        self.base_estimator_ = Pipeline([('sampler', RandomUnderSampler(
+            sampling_strategy=self.sampling_strategy,
+            replacement=self.replacement,
+            ratio=self.ratio)), ('classifier', base_estimator)])
 
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training

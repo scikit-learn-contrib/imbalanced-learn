@@ -64,8 +64,9 @@ fig.tight_layout()
 
 ###############################################################################
 # We can run the ``TomekLinks`` sampling to remove the corresponding
-# samples. If ``ratio='auto'`` only the sample from the majority class will be
-# removed. If ``ratio='all'`` both samples will be removed.
+# samples. If ``sampling_strategy='auto'`` only the sample from the majority
+# class will be removed. If ``sampling_strategy='all'`` both samples will be
+# removed.
 
 sampler = TomekLinks()
 
@@ -76,8 +77,8 @@ title_arr = ('Removing only majority samples',
              'Removing all samples')
 for ax, title, sampler in zip(ax_arr,
                               title_arr,
-                              [TomekLinks(ratio='auto', random_state=0),
-                               TomekLinks(ratio='all', random_state=0)]):
+                              [TomekLinks(sampling_strategy='auto'),
+                               TomekLinks(sampling_strategy='all')]):
     X_res, y_res = sampler.fit_sample(np.vstack((X_minority, X_majority)),
                                       np.array([0] * X_minority.shape[0] +
                                                [1] * X_majority.shape[0]))
