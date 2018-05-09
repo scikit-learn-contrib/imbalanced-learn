@@ -15,6 +15,7 @@ from ..utils._docstring import _random_state_docstring
 keras = pytest.importorskip("keras")
 
 
+@Substitution(random_state=_random_state_docstring)
 class BalancedBatchGenerator(keras.utils.Sequence):
     """Create balanced batches when training a keras model.
 
@@ -40,14 +41,7 @@ class BalancedBatchGenerator(keras.utils.Sequence):
     batch_size : int, optional (default=32)
         Number of samples per gradient update.
 
-    random_state : int, RandomState instance or None, optional (default=None)
-        Control the randomization of the algorithm
-        - If int, ``random_state`` is the seed used by the random number
-          generator;
-        - If ``RandomState`` instance, random_state is the random number
-          generator;
-        - If ``None``, the random number generator is the ``RandomState``
-          instance used by ``np.random``.
+    {random_state}
 
     Attributes
     ----------
@@ -62,7 +56,7 @@ class BalancedBatchGenerator(keras.utils.Sequence):
     >>> from sklearn.datasets import load_iris
     >>> iris = load_iris()
     >>> from imblearn.datasets import make_imbalance
-    >>> X, y = make_imbalance(iris.data, iris.target, {0: 30, 1: 50, 2: 40})
+    >>> X, y = make_imbalance(iris.data, iris.target, {{0: 30, 1: 50, 2: 40}})
     >>> y = keras.utils.to_categorical(y, 3)
     >>> import keras
     >>> model = keras.models.Sequential()
@@ -177,7 +171,7 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
     >>> from sklearn.datasets import load_iris
     >>> iris = load_iris()
     >>> from imblearn.datasets import make_imbalance
-    >>> X, y = make_imbalance(iris.data, iris.target, {0: 30, 1: 50, 2: 40})
+    >>> X, y = make_imbalance(iris.data, iris.target, {{0: 30, 1: 50, 2: 40}})
     >>> y = keras.utils.to_categorical(y, 3)
     >>> import keras
     >>> model = keras.models.Sequential()
