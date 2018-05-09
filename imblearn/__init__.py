@@ -21,6 +21,9 @@ metrics
     with imbalanced dataset.
 over_sampling
     Module which provides methods to under-sample a dataset.
+tensorflow
+    Module which provides custom generator, layers for deep learning using
+    tensorflow.
 under-sampling
     Module which provides methods to over-sample a dataset.
 utils

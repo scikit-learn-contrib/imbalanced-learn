@@ -1,0 +1,111 @@
+"""Implement generators for ``keras`` which will balance the data."""
+from __future__ import division
+
+import pytest
+
+from sklearn.base import clone
+from sklearn.utils import safe_indexing
+from sklearn.utils import check_random_state
+from sklearn.utils.testing import set_random_state
+
+from ..under_sampling import RandomUnderSampler
+
+keras = pytest.importorskip("keras")
+
+
+class BalancedBatchGenerator(keras.utils.Sequence):
+    """Create balanced batches when training a keras model.
+
+    Create a keras ``Sequence`` which is given to ``fit_generator``. The
+    sampler defines the sampling strategy used to balance the dataset ahead of
+    creating the batch. The sampler should have an attribute
+    ``return_indices``.
+
+    Parameters
+    ----------
+    X : ndarray, shape (n_samples, n_features)
+        Original imbalanced dataset.
+
+    y : ndarray, shape (n_samples,) or (n_samples, n_classes)
+        Associated targets.
+
+    sample_weight : ndarray, shape (n_samples,)
+        Sample weight.
+
+    sampler : object or None, optional (default=None)
+        A sampler instance which has an attribute ``return_indices``.
+
+    batch_size : int, optional (default=32)
+        Number of samples per gradient update.
+
+    random_state : int, RandomState instance or None, optional (default=None)
+        Control the randomization of the algorithm
+        - If int, ``random_state`` is the seed used by the random number
+          generator;
+        - If ``RandomState`` instance, random_state is the random number
+          generator;
+        - If ``None``, the random number generator is the ``RandomState``
+          instance used by ``np.random``.
+
+    Attributes
+    ----------
+    sampler_ : object
+        The sampler used to balance the dataset.
+
+    indices_ : ndarray, shape (n_samples, n_features)
+        The indices of the samples selected during sampling.
+
+    """
+    def __init__(self, X, y, sample_weight=None, sampler=None, batch_size=32,
+                 random_state=None):
+        self.X = X
+        self.y = y
+        self.sample_weight = sample_weight
+        self.sampler = sampler
+        self.batch_size = batch_size
+        self.random_state = random_state
+        self._sample()
+
+    def _sample(self):
+        random_state = check_random_state(self.random_state)
+        if self.sampler is None:
+            self.sampler_ = RandomUnderSampler(return_indices=True,
+                                               random_state=random_state)
+        else:
+            if not hasattr(self.sampler, 'return_indices'):
+                raise ValueError("'sampler' needs to return the indices of "
+                                 "the samples selected. Provide a sampler "
+                                 "which has an attribute 'return_indices'.")
+            self.sampler_ = clone(self.sampler)
+            self.sampler_.set_params(return_indices=True)
+            set_random_state(self.sampler_, random_state)
+
+        _, _, self.indices_ = self.sampler_.fit_sample(self.X, self.y)
+        # shuffle the indices since the sampler are packing them by class
+        random_state.shuffle(self.indices_)
+
+    def __len__(self):
+        return int(self.indices_.size // self.batch_size)
+
+    def __getitem__(self, index):
+        if self.sample_weight is None:
+            return (
+                safe_indexing(self.X,
+                              self.indices_[index * self.batch_size:
+                                            (index + 1) * self.batch_size]),
+                safe_indexing(self.y,
+                              self.indices_[index * self.batch_size:
+                                            (index + 1) * self.batch_size])
+            )
+        else:
+            return (
+                safe_indexing(self.X,
+                              self.indices_[index * self.batch_size:
+                                            (index + 1) * self.batch_size]),
+                safe_indexing(self.y,
+                              self.indices_[index * self.batch_size:
+                                            (index + 1) * self.batch_size]),
+                safe_indexing(self.sample_weight,
+                              self.indices_[index * self.batch_size:
+                                            (index + 1) * self.batch_size])
+            )
