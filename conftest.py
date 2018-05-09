@@ -8,6 +8,7 @@
 # Set numpy array str/repr to legacy behaviour on numpy > 1.13 to make
 # the doctests pass
 import numpy as np
+
 try:
     np.set_printoptions(legacy='1.13')
 except TypeError:

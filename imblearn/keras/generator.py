@@ -1,14 +1,7 @@
 """Implement generators for ``keras`` which will balance the data."""
 from __future__ import division
 
-try:
-    import keras
-except ImportError:
-    # Skip the tests for the examples
-    import pytest
-    keras = pytest.importorskip('keras')
-    raise ImportError("To use the imblearn.keras module, you need to install "
-                      "keras.")
+import pytest
 
 from sklearn.base import clone
 from sklearn.utils import safe_indexing
@@ -16,9 +9,13 @@ from sklearn.utils import check_random_state
 from sklearn.utils.testing import set_random_state
 
 from ..under_sampling import RandomUnderSampler
+from ..utils import Substitution
+from ..utils._docstring import _random_state_docstring
+
+keras = pytest.importorskip("keras")
 
 
-# FIXME: add docstring for random_state using Substitution
+@Substitution(random_state=_random_state_docstring)
 class BalancedBatchGenerator(keras.utils.Sequence):
     """Create balanced batches when training a keras model.
 
