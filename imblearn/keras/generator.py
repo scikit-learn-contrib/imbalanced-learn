@@ -15,7 +15,6 @@ from ..utils._docstring import _random_state_docstring
 keras = pytest.importorskip("keras")
 
 
-@Substitution(random_state=_random_state_docstring)
 class BalancedBatchGenerator(keras.utils.Sequence):
     """Create balanced batches when training a keras model.
 
@@ -41,7 +40,14 @@ class BalancedBatchGenerator(keras.utils.Sequence):
     batch_size : int, optional (default=32)
         Number of samples per gradient update.
 
-    {random_state}
+    random_state : int, RandomState instance or None, optional (default=None)
+        Control the randomization of the algorithm
+        - If int, ``random_state`` is the seed used by the random number
+          generator;
+        - If ``RandomState`` instance, random_state is the random number
+          generator;
+        - If ``None``, the random number generator is the ``RandomState``
+          instance used by ``np.random``.
 
     Attributes
     ----------
@@ -127,6 +133,7 @@ class BalancedBatchGenerator(keras.utils.Sequence):
             )
 
 
+@Substitution(random_state=_random_state_docstring)
 def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
                              batch_size=32, random_state=None):
     """Create a balanced batch generator to train keras model.
