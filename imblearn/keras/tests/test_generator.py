@@ -2,11 +2,6 @@ import pytest
 
 import numpy as np
 
-keras = pytest.importorskip('keras')
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.utils import to_categorical
-
 from sklearn.datasets import load_iris
 
 from imblearn.datasets import make_imbalance
@@ -15,6 +10,11 @@ from imblearn.under_sampling import NearMiss
 
 from imblearn.keras import BalancedBatchGenerator
 from imblearn.keras import balanced_batch_generator
+
+keras = pytest.importorskip('keras')
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.utils import to_categorical
 
 iris = load_iris()
 X, y = make_imbalance(iris.data, iris.target, {0: 30, 1: 50, 2: 40})
