@@ -127,6 +127,11 @@ Prototype selection
    :template: class.rst
 
    keras.BalancedBatchGenerator
+
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+   
    keras.balanced_batch_generator
 
 .. _tensorflow_ref:
@@ -142,8 +147,8 @@ Prototype selection
 
 .. autosummary::
    :toctree: generated/
-   :template: class.rst
-
+   :template: function.rst
+              
    tensorflow.balanced_batch_generator
 
 .. _misc_ref:
