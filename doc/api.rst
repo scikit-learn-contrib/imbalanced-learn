@@ -111,6 +111,41 @@ Prototype selection
    ensemble.BalancedBaggingClassifier
    ensemble.EasyEnsemble
 
+.. _keras_ref:
+
+:mod:`imblearn.keras`: Batch generator for Keras
+================================================
+
+.. automodule:: imblearn.keras
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: imblearn
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+   keras.BalancedBatchGenerator
+   keras.balanced_batch_generator
+
+.. _tensorflow_ref:
+   
+:mod:`imblearn.tensorflow`: Batch generator for TensorFlow
+==========================================================
+
+.. automodule:: imblearn.tensorflow
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: imblearn
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+   tensorflow.balanced_batch_generator
+
 .. _misc_ref:
    
 Miscellaneous
