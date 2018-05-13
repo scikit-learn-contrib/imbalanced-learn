@@ -9,10 +9,13 @@ from sklearn.utils import check_random_state
 from sklearn.utils.testing import set_random_state
 
 from ..under_sampling import RandomUnderSampler
+from ..utils import Substitution
+from ..utils._docstring import _random_state_docstring
 
 keras = pytest.importorskip("keras")
 
 
+@Substitution(random_state=_random_state_docstring)
 class BalancedBatchGenerator(keras.utils.Sequence):
     """Create balanced batches when training a keras model.
 
@@ -54,6 +57,28 @@ class BalancedBatchGenerator(keras.utils.Sequence):
 
     indices_ : ndarray, shape (n_samples, n_features)
         The indices of the samples selected during sampling.
+
+    Examples
+    --------
+    >>> from sklearn.datasets import load_iris
+    >>> iris = load_iris()
+    >>> from imblearn.datasets import make_imbalance
+    >>> class_dict = dict()
+    >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
+    >>> X, y = make_imbalance(iris.data, iris.target, class_dict)
+    >>> y = keras.utils.to_categorical(y, 3)
+    >>> import keras
+    >>> model = keras.models.Sequential()
+    >>> model.add(keras.layers.Dense(y.shape[1], input_dim=X.shape[1],
+    ...                              activation='softmax'))
+    >>> model.compile(optimizer='sgd', loss='categorical_crossentropy',
+    ...               metrics=['accuracy'])
+    >>> from imblearn.keras import BalancedBatchGenerator
+    >>> from imblearn.under_sampling import NearMiss
+    >>> training_generator = BalancedBatchGenerator(
+    ...     X, y, sampler=NearMiss(), batch_size=10, random_state=42)
+    >>> callback_history = model.fit_generator(generator=training_generator,
+    ...                                        epochs=10, verbose=0)
 
     """
     def __init__(self, X, y, sample_weight=None, sampler=None, batch_size=32,
