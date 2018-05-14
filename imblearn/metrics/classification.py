@@ -473,7 +473,7 @@ def geometric_mean_score(y_true,
                          average='multiclass',
                          sample_weight=None,
                          correction=0.0):
-    """Compute the geometric mean
+    """Compute the geometric mean.
 
     The geometric mean (G-mean) is the root of the product of class-wise
     sensitivity. This measure tries to maximize the accuracy on each of the
@@ -515,7 +515,7 @@ def geometric_mean_score(y_true,
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : str or None, optional (default=``'multiclass'``)
+    average : str or None, optional (default='multiclass')
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
