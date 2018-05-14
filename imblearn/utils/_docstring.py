@@ -25,7 +25,8 @@ class Substitution(object):
 
 _random_state_docstring = \
     """random_state : int, RandomState instance or None, optional (default=None)
-        Control the randomization of the algorithm
+        Control the randomization of the algorithm.
+
         - If int, ``random_state`` is the seed used by the random number
           generator;
         - If ``RandomState`` instance, random_state is the random number

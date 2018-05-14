@@ -108,7 +108,6 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
 
     """
 
-
     random_state = check_random_state(random_state)
     if sampler is None:
         sampler_ = RandomUnderSampler(return_indices=True,
