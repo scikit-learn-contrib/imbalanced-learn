@@ -38,3 +38,82 @@ We illustrate the use of such sampler to implement an outlier rejection
 estimator which can be easily used within a
 :class:`imblearn.pipeline.Pipeline`:
 :ref:`sphx_glr_auto_examples_plot_outlier_rejections.py`
+
+.. _generators:
+
+Custom generators
+-----------------
+
+Imbalanced-learn provides specific generators for TensorFlow and Keras which
+will generate balanced mini-batches.
+
+.. _tensorflow_generator:
+
+TensorFlow generator
+~~~~~~~~~~~~~~~~~~~~
+
+The :func:`tensorflow.balanced_batch_generator` allow to generate balanced
+mini-batches using an imbalanced-learn sampler which returns indices::
+
+  >>> X = X.astype(np.float32)
+  >>> from imblearn.under_sampling import RandomUnderSampler
+  >>> from imblearn.tensorflow import balanced_batch_generator
+  >>> training_generator, steps_per_epoch = balanced_batch_generator(
+  ...     X, y, sample_weight=None, sampler=RandomUnderSampler(),
+  ...     batch_size=10, random_state=42)
+
+The ``generator`` and ``steps_per_epoch`` can be used during the training of
+the Tensorflow model. We will illustrate how to use this generator. First, we
+can define a logistic regression model which will be optimized by a gradient
+descent::
+
+  >>> learning_rate, epochs = 0.01, 10
+  >>> input_size, output_size = X.shape[1], 3
+  >>> import tensorflow as tf
+  >>> def init_weights(shape):
+  ...     return tf.Variable(tf.random_normal(shape, stddev=0.01))
+  >>> def accuracy(y_true, y_pred):
+  ...     return np.mean(np.argmax(y_pred, axis=1) == y_true)
+  >>> # input and output
+  >>> data = tf.placeholder("float32", shape=[None, input_size])
+  >>> targets = tf.placeholder("int32", shape=[None])
+  >>> # build the model and weights
+  >>> W = init_weights([input_size, output_size])
+  >>> b = init_weights([output_size])
+  >>> out_act = tf.nn.sigmoid(tf.matmul(data, W) + b)
+  >>> # build the loss, predict, and train operator
+  >>> cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+  ...     logits=out_act, labels=targets)
+  >>> loss = tf.reduce_sum(cross_entropy)
+  >>> optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+  >>> train_op = optimizer.minimize(loss)
+  >>> predict = tf.nn.softmax(out_act)
+  >>> # Initialization of all variables in the graph
+  >>> init = tf.global_variables_initializer()
+
+Once the model initialize, we train the model by iterating on balanced
+mini-batches of data and minizing the loss previously defined::
+
+  >>> with tf.Session() as sess:
+  ...     print('Starting training')
+  ...     sess.run(init)
+  ...     for e in range(epochs):
+  ...         for i in range(steps_per_epoch):
+  ...             X_batch, y_batch = next(training_generator)
+  ...             feed_dict = dict()
+  ...             feed_dict[data] = X_batch; feed_dict[targets] = y_batch
+  ...             sess.run([train_op, loss], feed_dict=feed_dict)
+  ...         # For each epoch, run accuracy on train and test
+  ...         feed_dict = dict()
+  ...         feed_dict[data] = X
+  ...         predicts_train = sess.run(predict, feed_dict=feed_dict)
+  ...         print("epoch: {} train accuracy: {:.3f}"
+  ...               .format(e, accuracy(y, predicts_train)))
+  ... # doctest: +ELLIPSIS
+  Starting training
+  [...
+
+.. _keras_generator:
+
+Keras generator
+~~~~~~~~~~~~~~~
