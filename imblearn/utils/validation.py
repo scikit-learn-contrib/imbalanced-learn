@@ -417,7 +417,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
              ``list`` instead.
 
         - When ``list``, the list contains the targeted classes. It used only
-          for **cleaning methods``.
+          for **cleaning methods**.
 
           .. warning::
              ``list`` is available for **cleaning methods**. An error is raised
