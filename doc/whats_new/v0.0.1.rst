@@ -9,7 +9,9 @@ Changelog
 API
 ~~~
 
-- First release of the stable API. By `Fernando Nogueira`_, `Guillaume Lemaitre`_, `Christos Aridas`_, and `Dayvid Oliveira`_.
+- First release of the stable API. By :user;`Fernando Nogueira <fmfn>`,
+  :user:`Guillaume Lemaitre <glemaitre>`, :user:`Christos Aridas <chkoar>`,
+  and :user:`Dayvid Oliveira <dvro>`.
 
 New methods
 ~~~~~~~~~~~

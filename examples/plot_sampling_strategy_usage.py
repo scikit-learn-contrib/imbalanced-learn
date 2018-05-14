@@ -1,10 +1,10 @@
 """
-======================================================================
+=========================================================================
 Usage of the ``sampling_strategy`` parameter for the different algorithms
-=======================================================================
+=========================================================================
 
-This example shows the different usage of the parameter ``sampling_strategy`` for
-the different family of samplers (i.e. over-sampling, under-sampling. or
+This example shows the different usage of the parameter ``sampling_strategy``
+for the different family of samplers (i.e. over-sampling, under-sampling. or
 cleaning methods).
 
 """
@@ -57,7 +57,8 @@ print('Information of the original iris data set: \n {}'.format(
 plot_pie(iris.target)
 
 sampling_strategy = {0: 10, 1: 20, 2: 47}
-X, y = make_imbalance(iris.data, iris.target, sampling_strategy=sampling_strategy)
+X, y = make_imbalance(iris.data, iris.target,
+                      sampling_strategy=sampling_strategy)
 
 print('Information of the iris data set after making it'
       ' imbalanced using a dict: \n sampling_strategy={} \n y: {}'
@@ -70,7 +71,7 @@ plot_pie(y)
 
 ###############################################################################
 # ``sampling_strategy`` as a ``float``
-# ...................................
+# ....................................
 #
 # ``sampling_strategy`` can be given a ``float``. For **under-sampling
 # methods**, it corresponds to the ratio :math:`\\alpha_{us}` defined by
@@ -110,11 +111,11 @@ plot_pie(y_res)
 
 ###############################################################################
 # ``sampling_strategy`` has a ``str``
-# .................................
+# ...................................
 #
-# ``sampling_strategy`` can be given as a string which specify the class targeted
-# by the resampling. With under- and over-sampling, the number of samples will
-# be equalized.
+# ``sampling_strategy`` can be given as a string which specify the class
+# targeted by the resampling. With under- and over-sampling, the number of
+# samples will be equalized.
 #
 # Note that we are using multiple classes from now on.
 
@@ -150,7 +151,7 @@ plot_pie(y_res)
 
 ###############################################################################
 # ``sampling_strategy`` as a ``dict``
-# ..................................
+# ...................................
 #
 # When ``sampling_strategy`` is a ``dict``, the keys correspond to the targeted
 # classes. The values correspond to the desired number of samples for each
@@ -178,7 +179,7 @@ plot_pie(y_res)
 
 ###############################################################################
 # ``sampling_strategy`` as a ``list``
-# ..................................
+# ...................................
 #
 # When ``sampling_strategy`` is a ``list``, the list contains the targeted
 # classes. It is used only for **cleaning methods** and raise an error
@@ -194,7 +195,7 @@ plot_pie(y_res)
 
 ###############################################################################
 # ``sampling_strategy`` as a callable
-# ..................................
+# ...................................
 #
 # When callable, function taking ``y`` and returns a ``dict``. The keys
 # correspond to the targeted classes. The values correspond to the desired

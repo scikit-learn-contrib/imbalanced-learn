@@ -1,4 +1,4 @@
-.. _changes_0_3:
+.. _changes_0_4:
 
 Version 0.4 (under development)
 ===============================
