@@ -51,11 +51,14 @@ balanced_batch_generator.__doc__ = \
     Examples
     --------
     >>> from sklearn.datasets import load_iris
-    >>> iris = load_iris()
+    >>> X, y = load_iris(return_X_y=True)
     >>> from imblearn.datasets import make_imbalance
-    >>> X, y = make_imbalance(iris.data, iris.target, {{0: 30, 1: 50, 2: 40}})
-    >>> y = keras.utils.to_categorical(y, 3)
+    >>> class_dict = dict()
+    >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
+    >>> from imblearn.datasets import make_imbalance
+    >>> X, y = make_imbalance(X, y, class_dict)
     >>> import keras
+    >>> y = keras.utils.to_categorical(y, 3)
     >>> model = keras.models.Sequential()
     >>> model.add(keras.layers.Dense(y.shape[1], input_dim=X.shape[1],
     ...                              activation='softmax'))
