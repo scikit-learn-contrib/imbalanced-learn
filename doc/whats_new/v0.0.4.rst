@@ -18,6 +18,12 @@ API
 - Enable to use a ``list`` for the cleaning methods to specify the class to
   sample. :issue:`411` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+New features
+............
+
+- Add a ``keras`` and ``tensorflow`` modules to create balanced mini-batches
+  generator. :issue:`409` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancement
 ...........
 

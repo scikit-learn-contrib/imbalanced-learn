@@ -16,7 +16,6 @@ from ..utils._docstring import _random_state_docstring
 from ..tensorflow import balanced_batch_generator as tf_bbg
 
 
-@Substitution(random_state=_random_state_docstring)
 class BalancedBatchGenerator(keras.utils.Sequence):
     """Create balanced batches when training a keras model.
 
