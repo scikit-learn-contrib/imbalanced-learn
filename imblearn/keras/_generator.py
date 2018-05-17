@@ -13,7 +13,7 @@ keras = pytest.importorskip("keras")
 from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
-from ..tensorflow import balanced_batch_generator as keras_bbg
+from ..tensorflow import balanced_batch_generator as tf_bbg
 
 
 @Substitution(random_state=_random_state_docstring)
@@ -202,6 +202,6 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
 
     """
 
-    return keras_bbg(X=X, y=y, sample_weight=sample_weight,
-                     sampler=sampler, batch_size=batch_size,
-                     random_state=random_state)
+    return tf_bbg(X=X, y=y, sample_weight=sample_weight,
+                  sampler=sampler, batch_size=batch_size,
+                  random_state=random_state)
