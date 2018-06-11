@@ -53,7 +53,7 @@ class EasyEnsemble(BaseEnsembleSampler):
     -----
     The method is described in [1]_.
 
-    Supports mutli-class resampling by sampling each class independently.
+    Supports multi-class resampling by sampling each class independently.
 
     See :ref:`sphx_glr_auto_examples_ensemble_plot_easy_ensemble.py`.
 

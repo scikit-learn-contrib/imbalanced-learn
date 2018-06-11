@@ -62,7 +62,7 @@ KNeighborsClassifier(n_neighbors=1))
     -----
     The method is based on [1]_.
 
-    Supports mutli-class resampling. A one-vs.-rest scheme is used when
+    Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
     See
