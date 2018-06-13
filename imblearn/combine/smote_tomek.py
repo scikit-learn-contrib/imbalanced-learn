@@ -57,7 +57,7 @@ class SMOTETomek(SamplerMixin):
     -----
     The methos is presented in [1]_.
 
-    Supports mutli-class resampling. Refer to SMOTE and TomekLinks regarding
+    Supports multi-class resampling. Refer to SMOTE and TomekLinks regarding
     the scheme which used.
 
     See :ref:`sphx_glr_auto_examples_combine_plot_smote_tomek.py` and

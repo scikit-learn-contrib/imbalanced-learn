@@ -63,7 +63,7 @@ class BalanceCascade(BaseEnsembleSampler):
     -----
     The method is described in [1]_.
 
-    Supports mutli-class resampling. A one-vs.-rest scheme is used as
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
     originally proposed in [1]_.
 
     See :ref:`sphx_glr_auto_examples_ensemble_plot_balance_cascade.py`.
