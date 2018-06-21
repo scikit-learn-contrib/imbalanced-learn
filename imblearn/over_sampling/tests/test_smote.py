@@ -281,7 +281,12 @@ def test_sample_regular_wrong_svm():
 
 def test_sample_kmeans():
     kind = 'kmeans'
-    smote = SMOTE(random_state=RND_SEED, kind=kind, n_kmeans_clusters=3, k_neighbors=2)
+    smote = SMOTE(
+        random_state=RND_SEED,
+        kind=kind,
+        n_kmeans_clusters=3,
+        k_neighbors=2
+    )
     X_resampled, y_resampled = smote.fit_sample(X, Y)
     X_gt = np.array([
         [0.11622591, -0.0317206], [0.77481731, 0.60935141],
@@ -294,8 +299,8 @@ def test_sample_kmeans():
         [-0.18410027, -0.45194484], [0.9281014, 0.53085498],
         [-0.14374509, 0.27370049], [-0.41635887, -0.38299653],
         [0.08711622, 0.93259929], [1.70580611, -0.11219234],
-        [1.25192108, - 0.22367336], [1.45849179, - 0.17293647],
-        [0.92581435, - 0.29748169], [1.25192108, - 0.22367336]
+        [0.98135505, 0.22510669], [0.80404479, -0.27321949],
+        [0.91314969, -0.376049], [0.82740979, -0.35957365]
     ])
 
     y_gt = np.array([

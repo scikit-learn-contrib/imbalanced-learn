@@ -61,7 +61,8 @@ class SMOTE(BaseOverSampler):
 
     kind : str, optional (default='regular')
         The type of SMOTE algorithm to use one of the following options:
-        ``'regular'``, ``'borderline1'``, ``'borderline2'``, ``'svm'``, ``'kmeans'``.
+        ``'regular'``, ``'borderline1'``, ``'borderline2'``, ``'svm'``,
+        ``'kmeans'``.
 
     svm_estimator : object, optional (default=SVC())
         If ``kind='svm'``, a parametrized :class:`sklearn.svm.SVC`
@@ -589,9 +590,9 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         References
         ----------
-        .. [4] H. M. Nguyen, E. W. Cooper, K. Kamei, "Borderline over-sampling
-           for imbalanced data classification," International Journal of
-           Knowledge Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.
+        .. [4] Felix Last, Georgios Douzas, and Fernando Bacao, "Oversampling
+           for Imbalanced Learning based on K-Means and SMOTE",
+           https://arxiv.org/pdf/1711.00837.pdf
 
         """
         random_state = check_random_state(self.random_state)
@@ -606,7 +607,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
             km = KMeans(
                 self.n_kmeans_clusters,
-                random_state=self.random_state,
+                random_state=random_state,
                 n_jobs=self.n_jobs
             )
             X_clusters = km.fit_predict(X)
