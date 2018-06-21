@@ -140,7 +140,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                  out_step=0.5,
                  kind='regular',
                  svm_estimator=None,
-                 n_kmeans_clusters=10,
+                 n_kmeans_clusters=25,
                  n_jobs=1,
                  ratio=None):
         super(SMOTE, self).__init__(
@@ -561,7 +561,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         non_diag_elements = (len(X) ** 2) - len(X)
         mean_distance = euclidean_distances.sum() / non_diag_elements
 
-        density = len(X) / (mean_distance ** 2)
+        density = len(X) / (mean_distance ** np.log10(len(X)))
         sparsity = 1 / density
         return sparsity
 

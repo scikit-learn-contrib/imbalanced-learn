@@ -215,18 +215,20 @@ fig.tight_layout()
 # the support vectors found using an SVM algorithm to create new samples.
 
 fig, ((ax1, ax2), (ax3, ax4),
-      (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, figsize=(15, 30))
+      (ax5, ax6), (ax7, ax8),
+      (ax9, ax10)) = plt.subplots(5, 2, figsize=(15, 30))
 X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94),
                       class_sep=0.8)
 
-ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8))
-string_add = ['regular', 'borderline-1', 'borderline-2', 'SVM']
+ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10))
+string_add = ['regular', 'borderline-1', 'borderline-2', 'SVM', 'K-Means']
 for str_add, ax, sampler in zip(string_add,
                                 ax_arr,
                                 (SMOTE(random_state=0),
                                  SMOTE(random_state=0, kind='borderline1'),
                                  SMOTE(random_state=0, kind='borderline2'),
-                                 SMOTE(random_state=0, kind='svm'))):
+                                 SMOTE(random_state=0, kind='svm'),
+                                 SMOTE(random_state=0, kind='kmeans'))):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
