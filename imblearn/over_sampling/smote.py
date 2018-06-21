@@ -644,6 +644,12 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                 cs / sum(cluster_sparsities) for cs in cluster_sparsities
             ]
 
+            if not valid_clusters:
+                raise RuntimeError(
+                    "No clusters found with sufficient samples of"
+                    "class {}.".format(class_sample)
+                )
+
             for cluster_n in range(len(valid_clusters)):
                 X_cluster = safe_indexing(X, valid_clusters[cluster_n])
                 y_cluster = safe_indexing(y, valid_clusters[cluster_n])
