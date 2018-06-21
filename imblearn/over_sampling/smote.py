@@ -12,7 +12,9 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.svm import SVC
+from sklearn.cluster import KMeans
 from sklearn.utils import check_random_state, safe_indexing
+from sklearn.metrics.pairwise import pairwise_distances
 
 from .base import BaseOverSampler
 from ..exceptions import raise_isinstance_error
@@ -20,7 +22,7 @@ from ..utils import check_neighbors_object
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
-SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
+SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm', 'kmeans')
 
 
 @Substitution(
@@ -59,11 +61,15 @@ class SMOTE(BaseOverSampler):
 
     kind : str, optional (default='regular')
         The type of SMOTE algorithm to use one of the following options:
-        ``'regular'``, ``'borderline1'``, ``'borderline2'``, ``'svm'``.
+        ``'regular'``, ``'borderline1'``, ``'borderline2'``, ``'svm'``, ``'kmeans'``.
 
     svm_estimator : object, optional (default=SVC())
         If ``kind='svm'``, a parametrized :class:`sklearn.svm.SVC`
         classifier can be passed.
+
+    n_kmeans_clusters: int, optional (default=10)
+        If ``kind='kmeans'``, the number of clusters that is the be used by the
+        k-means algorithm for sample identification.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
@@ -133,6 +139,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                  out_step=0.5,
                  kind='regular',
                  svm_estimator=None,
+                 n_kmeans_clusters=10,
                  n_jobs=1,
                  ratio=None):
         super(SMOTE, self).__init__(
@@ -143,6 +150,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         self.m_neighbors = m_neighbors
         self.out_step = out_step
         self.svm_estimator = svm_estimator
+        self.n_kmeans_clusters = n_kmeans_clusters
         self.n_jobs = n_jobs
 
     def _in_danger_noise(self, samples, target_class, y, kind='danger'):
@@ -537,6 +545,136 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         return X_resampled, y_resampled
 
+    def _find_cluster_sparsity(self, X):
+        """ Finds the sparsity of a cluster of samples. The sparsity is
+         calculated according to the method described in [4]_. """
+
+        euclidean_distances = pairwise_distances(
+            X, metric="euclidean", n_jobs=self.n_jobs
+        )
+
+        # Negate diagonal elements.
+        for ind in range(X.shape[0]):
+            euclidean_distances[ind, ind] = 0
+
+        non_diag_elements = (len(X) ** 2) - len(X)
+        mean_distance = euclidean_distances.sum() / non_diag_elements
+
+        density = len(X) / (mean_distance ** 2)
+        sparsity = 1 / density
+        return sparsity
+
+    def _sample_kmeans(self, X, y):
+        """Resample the dataset using the SMOTE K-Means implementation.
+
+        Use the SMOTE K-Means algorithm proposed in [4]_. K-Means clustering
+        is used to select samples for over sampling.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : array-like, shape (n_samples,)
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : {ndarray, sparse matrix}, shape \
+(n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : ndarray, shape (n_samples_new,)
+            The corresponding label of `X_resampled`
+
+        References
+        ----------
+        .. [4] H. M. Nguyen, E. W. Cooper, K. Kamei, "Borderline over-sampling
+           for imbalanced data classification," International Journal of
+           Knowledge Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.
+
+        """
+        random_state = check_random_state(self.random_state)
+        X_resampled = X.copy()
+        y_resampled = y.copy()
+
+        for class_sample, n_samples in self.sampling_strategy_.items():
+            if n_samples == 0:
+                continue
+            target_class_indices = np.flatnonzero(y == class_sample)
+            X_class = safe_indexing(X, target_class_indices)
+
+            km = KMeans(
+                self.n_kmeans_clusters,
+                random_state=self.random_state,
+                n_jobs=self.n_jobs
+            )
+            X_clusters = km.fit_predict(X)
+
+            valid_clusters = []
+            cluster_sparsities = []
+
+            # Identify clusters where class_sample is the majority
+            for cluster_n in range(self.n_kmeans_clusters):
+                cluster_index = np.flatnonzero(X_clusters == cluster_n)
+
+                X_cluster = safe_indexing(X, cluster_index)
+                y_cluster = safe_indexing(y, cluster_index)
+
+                cluster_class_mean = (y_cluster == class_sample).mean()
+
+                X_cluster_class = safe_indexing(
+                    X_cluster,
+                    np.flatnonzero(y_cluster == class_sample)
+                )
+
+                if len(X_cluster_class) < self.k_neighbors + 1:
+                    continue
+
+                if cluster_class_mean < 0.5:
+                    continue
+
+                valid_clusters.append(cluster_index)
+                cluster_sparsities.append(
+                    self._find_cluster_sparsity(X_cluster_class)
+                )
+
+            cluster_weights = [
+                cs / sum(cluster_sparsities) for cs in cluster_sparsities
+            ]
+
+            for cluster_n in range(len(valid_clusters)):
+                X_cluster = safe_indexing(X, valid_clusters[cluster_n])
+                y_cluster = safe_indexing(y, valid_clusters[cluster_n])
+
+                X_cluster_class = safe_indexing(
+                    X_cluster, np.flatnonzero(y_cluster == class_sample)
+                )
+
+                self.nn_k_.fit(X_cluster_class)
+
+                nns = self.nn_k_.kneighbors(
+                    X_cluster_class, return_distance=False
+                )[:, 1:]
+
+                c_n_samples = int(n_samples * cluster_weights[cluster_n])
+                X_new, y_new = self._make_samples(
+                    X_cluster_class,
+                    class_sample,
+                    X_class,
+                    nns,
+                    c_n_samples,
+                    1.0
+                )
+
+                if sparse.issparse(X_new):
+                    X_resampled = sparse.vstack([X_resampled, X_new])
+                else:
+                    X_resampled = np.vstack((X_resampled, X_new))
+                y_resampled = np.hstack((y_resampled, y_new))
+
+        return X_resampled, y_resampled
+
     def _sample(self, X, y):
         """Resample the dataset.
 
@@ -566,3 +704,5 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             return self._sample_borderline(X, y)
         elif self.kind == 'svm':
             return self._sample_svm(X, y)
+        elif self.kind == 'kmeans':
+            return self._sample_kmeans(X, y)
