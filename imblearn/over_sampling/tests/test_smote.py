@@ -309,3 +309,15 @@ def test_sample_kmeans():
 
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_sample_kmeans_wrong_hyperparams():
+    kind = 'kmeans'
+    smote = SMOTE(
+        random_state=RND_SEED,
+        kind=kind,
+        n_kmeans_clusters=10,
+        k_neighbors=4
+    )
+    with raises(RuntimeError, match="No clusters found"):
+        smote.fit_sample(X, Y)
