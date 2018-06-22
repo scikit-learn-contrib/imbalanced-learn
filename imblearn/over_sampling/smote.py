@@ -674,8 +674,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                     1.0
                 )
 
-                stack = [sparse.vstack, np.vstack][int(sparse.issparse(X_new))]
-                X_resampled = stack([X_resampled, X_new])
+                stack = [np.vstack, sparse.vstack][int(sparse.issparse(X_new))]
+                X_resampled = stack((X_resampled, X_new))
                 y_resampled = np.hstack((y_resampled, y_new))
 
         return X_resampled, y_resampled
