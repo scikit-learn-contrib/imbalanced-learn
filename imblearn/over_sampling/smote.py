@@ -624,15 +624,15 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
                 cluster_class_mean = (y_cluster == class_sample).mean()
 
+                if cluster_class_mean < 0.5:
+                    continue
+
                 X_cluster_class = safe_indexing(
                     X_cluster,
                     np.flatnonzero(y_cluster == class_sample)
                 )
 
                 if len(X_cluster_class) < self.k_neighbors + 1:
-                    continue
-
-                if cluster_class_mean < 0.5:
                     continue
 
                 valid_clusters.append(cluster_index)
