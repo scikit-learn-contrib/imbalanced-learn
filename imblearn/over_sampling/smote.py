@@ -7,6 +7,8 @@
 
 from __future__ import division
 
+import math
+
 import numpy as np
 
 from scipy import sparse
@@ -71,6 +73,16 @@ class SMOTE(BaseOverSampler):
     n_kmeans_clusters: int, optional (default=10)
         If ``kind='kmeans'``, the number of clusters that is the be used by the
         k-means algorithm for sample identification.
+
+    cluster_balance_threshold: float, optional (default=0.5)
+        If ``kind='kmeans'``, the threshold at which a cluster is called
+        balanced and where samples of the class selected for SMOTE will be
+        oversampled.
+
+    density_estimation_exponent: str or float, optional (default="auto")
+        If ``kind='kmeans'``, this exponent is used to determine the density
+        of a cluster. Leaving it to 'auto' will use a feature-length based
+        exponent, but any floating point number will be accepted.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
@@ -141,6 +153,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                  kind='regular',
                  svm_estimator=None,
                  n_kmeans_clusters=25,
+                 cluster_balance_threshold=0.5,
+                 density_estimation_exponent="auto",
                  n_jobs=1,
                  ratio=None):
         super(SMOTE, self).__init__(
@@ -152,6 +166,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         self.out_step = out_step
         self.svm_estimator = svm_estimator
         self.n_kmeans_clusters = n_kmeans_clusters
+        self.cluster_balance_threshold = cluster_balance_threshold
+        self.density_estimation_exponent = density_estimation_exponent
         self.n_jobs = n_jobs
 
     def _in_danger_noise(self, samples, target_class, y, kind='danger'):
@@ -548,7 +564,12 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
     def _find_cluster_sparsity(self, X):
         """ Finds the sparsity of a cluster of samples. The sparsity is
-         calculated according to the method described in [4]_. """
+         calculated according to the method described in [4]_. `de` is
+         specified with the `densitity_estimation_exponent`, which defaults
+         to 'auto'. With automatic exponent selection, a value is chosen
+         that closely fits the magnitude in all directions of a unit vector
+         in that feature space according the formula `log(n, 1.6) ** 1.8 * 0.16`
+         where n indicates the number of dimensions. """
 
         euclidean_distances = pairwise_distances(
             X, metric="euclidean", n_jobs=self.n_jobs
@@ -561,7 +582,11 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         non_diag_elements = (len(X) ** 2) - len(X)
         mean_distance = euclidean_distances.sum() / non_diag_elements
 
-        density = len(X) / (mean_distance ** np.log10(len(X)))
+        de = self.density_estimation_exponent
+        if self.density_estimation_exponent == "auto":
+            de = math.log(len(X), 1.6) ** 1.8 * 0.16
+
+        density = len(X) / (mean_distance ** de)
         sparsity = 1 / density
         return sparsity
 
@@ -615,7 +640,12 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             valid_clusters = []
             cluster_sparsities = []
 
-            # Identify clusters where class_sample is the majority
+            cluster_balance_threshold = self.cluster_balance_threshold
+            # A specifying a single cluster will act as normal SMOTE
+            if self.n_kmeans_clusters == 1:
+                cluster_balance_threshold = float("-inf")
+
+            # Identify valid clusters
             for cluster_n in range(self.n_kmeans_clusters):
                 cluster_index = np.flatnonzero(X_clusters == cluster_n)
 
@@ -624,16 +654,16 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
                 cluster_class_mean = (y_cluster == class_sample).mean()
 
-                if cluster_class_mean < 0.5:
+                if cluster_class_mean < cluster_balance_threshold:
+                    continue
+
+                if len(X_cluster) < 2:
                     continue
 
                 X_cluster_class = safe_indexing(
                     X_cluster,
                     np.flatnonzero(y_cluster == class_sample)
                 )
-
-                if len(X_cluster_class) < self.k_neighbors + 1:
-                    continue
 
                 valid_clusters.append(cluster_index)
                 cluster_sparsities.append(
@@ -658,9 +688,15 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                     X_cluster, np.flatnonzero(y_cluster == class_sample)
                 )
 
-                self.nn_k_.fit(X_cluster_class)
+                nn_k = check_neighbors_object(
+                    'k_neighbors',
+                    min(self.k_neighbors, len(X_cluster_class)) - 1,
+                    additional_neighbor=1
+                )
 
-                nns = self.nn_k_.kneighbors(
+                nn_k.fit(X_cluster_class)
+
+                nns = nn_k.kneighbors(
                     X_cluster_class, return_distance=False
                 )[:, 1:]
 
