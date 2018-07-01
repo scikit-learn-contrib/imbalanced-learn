@@ -564,11 +564,12 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
     def _find_cluster_sparsity(self, X):
         """ Finds the sparsity of a cluster of samples. The sparsity is
-         calculated according to the method described in [4]_. `de` is
-         specified with the `densitity_estimation_exponent`, which defaults
+         calculated according to the method described in [4]_. ``'de'``  is
+         specified with the ``'densitity_estimation_exponent'``, which defaults
          to 'auto'. With automatic exponent selection, a value is chosen
          that closely fits the magnitude in all directions of a unit vector
-         in that feature space according the formula `log(n, 1.6) ** 1.8 * 0.16`
+         in that feature space according the formula
+         ``'log(n, 1.6) ** 1.8 * 0.16'``
          where n indicates the number of dimensions. """
 
         euclidean_distances = pairwise_distances(
@@ -657,7 +658,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                 if cluster_class_mean < cluster_balance_threshold:
                     continue
 
-                if len(X_cluster) < 2:
+                if len(X_cluster) < 3:
                     continue
 
                 X_cluster_class = safe_indexing(
@@ -688,11 +689,18 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                     X_cluster, np.flatnonzero(y_cluster == class_sample)
                 )
 
+                cluster_k_neighbours = min(
+                    self.k_neighbors,
+                    len(X_cluster_class)
+                )
+
                 nn_k = check_neighbors_object(
                     'k_neighbors',
-                    min(self.k_neighbors, len(X_cluster_class)) - 1,
+                    cluster_k_neighbours - 1,
                     additional_neighbor=1
                 )
+
+                print(X_cluster_class, cluster_k_neighbours)
 
                 nn_k.fit(X_cluster_class)
 
