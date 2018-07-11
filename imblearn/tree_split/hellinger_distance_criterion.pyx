@@ -1,3 +1,7 @@
+# Author: Evgeni Dubov <evgeni.dubov@gmail.com>
+#
+# License: BSD 3 clause
+
 from sklearn.tree._criterion cimport ClassificationCriterion
 from sklearn.tree._criterion cimport SIZE_t
 
