@@ -658,9 +658,6 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                 if cluster_class_mean < cluster_balance_threshold:
                     continue
 
-                if len(X_cluster) < 3:
-                    continue
-
                 X_cluster_class = safe_indexing(
                     X_cluster,
                     np.flatnonzero(y_cluster == class_sample)
@@ -677,7 +674,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
             if not valid_clusters:
                 raise RuntimeError(
-                    "No clusters found with sufficient samples of"
+                    "No clusters found with sufficient samples of "
                     "class {}.".format(class_sample)
                 )
 
@@ -696,19 +693,17 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
                 nn_k = check_neighbors_object(
                     'k_neighbors',
-                    cluster_k_neighbours - 1,
+                    cluster_k_neighbours,
                     additional_neighbor=1
                 )
 
-                print(X_cluster_class, cluster_k_neighbours)
-
                 nn_k.fit(X_cluster_class)
-
                 nns = nn_k.kneighbors(
                     X_cluster_class, return_distance=False
                 )[:, 1:]
 
                 c_n_samples = int(n_samples * cluster_weights[cluster_n])
+
                 X_new, y_new = self._make_samples(
                     X_cluster_class,
                     class_sample,
