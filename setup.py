@@ -5,7 +5,7 @@ import codecs
 import os
 import subprocess
 import sys
-from setuptools import find_packages, setup
+from setuptools import find_packages
 
 # get __version__ from _version.py
 ver_file = os.path.join('imblearn', '_version.py')
@@ -69,7 +69,6 @@ def generate_cython(package):
 def setup_package():
     from numpy.distutils.core import setup
 
-    old_path = os.getcwd()
     local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
     src_path = local_path
 
