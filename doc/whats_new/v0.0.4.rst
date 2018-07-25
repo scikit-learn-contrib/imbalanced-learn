@@ -30,6 +30,9 @@ Enhancement
 - Add support for one-vs-all encoded target to support keras. :issue:`409` by
   :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add support for Hellinger Distance as sklearn classification tree split criterion.
+  By :user: `Evgeni Dubov <EvgeniDubov>`.
+  
 Bug fixes
 .........
 
