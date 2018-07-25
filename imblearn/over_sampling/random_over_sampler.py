@@ -29,11 +29,11 @@ class RandomOverSampler(BaseOverSampler):
     Parameters
     ----------
     {sampling_strategy}
-    
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly selected
         in the corresponding classes.
-        
+
     {random_state}
 
     ratio : str, dict, or callable
@@ -78,7 +78,6 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.return_indices = return_indices
         self.random_state = random_state
-
 
     def _sample(self, X, y):
         """Resample the dataset.
