@@ -29,11 +29,11 @@ SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 class BaseSMOTE(BaseOverSampler):
     """Base class for the different SMOTE algorithms."""
     def __init__(self,
-                sampling_strategy='auto',
-                random_state=None,
-                k_neighbors=5,
-                n_jobs=1,
-                ratio=None):
+                 sampling_strategy='auto',
+                 random_state=None,
+                 k_neighbors=5,
+                 n_jobs=1,
+                 ratio=None):
         super(BaseSMOTE, self).__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
