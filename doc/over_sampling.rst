@@ -127,11 +127,11 @@ nearest neighbors class. Those variants are presented in the figure below.
    :align: center
 
 
-The parameter ``kind`` is controlling this feature and the following types are
-available: (i) ``'borderline1'``, (ii) ``'borderline2'``, and (iii) ``'svm'``::
+The :class:`BorderlineSMOTE` and :class:`SVMSMOTE` offer some variant of the SMOTE
+algorithm::
 
-  >>> from imblearn.over_sampling import SMOTE, ADASYN
-  >>> X_resampled, y_resampled = SMOTE(kind='borderline1').fit_sample(X, y)
+  >>> from imblearn.over_sampling import BorderlineSMOTE
+  >>> X_resampled, y_resampled = BorderlineSMOTE().fit_sample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4674), (1, 4674), (2, 4674)]
 
@@ -172,16 +172,16 @@ The **regular** SMOTE algorithm --- cf. to the :class:`SMOTE` object --- does no
 impose any rule and will randomly pick-up all possible :math:`x_i` available.
 
 The **borderline** SMOTE --- cf. to the :class:`BorderlineSMOTE` with the
-parameters ``kind='borderline1'`` and ``kind='borderline2'`` --- will classify
-each sample :math:`x_i` to be (i) noise (i.e. all nearest-neighbors are from a
-different class than the one of :math:`x_i`), (ii) in danger (i.e. at least
-half of the nearest neighbors are from the same class than :math:`x_i`,
-or (iii) safe (i.e. all nearest neighbors are from the same class than
-:math:`x_i`). **Borderline-1** and **Borderline-2** SMOTE will use the samples
-*in danger* to generate new samples. In **Borderline-1** SMOTE, :math:`x_{zi}`
-will belong to the same class than the one of the sample :math:`x_i`. On the
-contrary, **Borderline-2** SMOTE will consider :math:`x_{zi}` which can be from
-any class.
+parameters ``kind='borderline-1'`` and ``kind='borderline-2'`` --- will
+classify each sample :math:`x_i` to be (i) noise (i.e. all nearest-neighbors
+are from a different class than the one of :math:`x_i`), (ii) in danger
+(i.e. at least half of the nearest neighbors are from the same class than
+:math:`x_i`, or (iii) safe (i.e. all nearest neighbors are from the same class
+than :math:`x_i`). **Borderline-1** and **Borderline-2** SMOTE will use the
+samples *in danger* to generate new samples. In **Borderline-1** SMOTE,
+:math:`x_{zi}` will belong to the same class than the one of the sample
+:math:`x_i`. On the contrary, **Borderline-2** SMOTE will consider
+:math:`x_{zi}` which can be from any class.
 
 **SVM** SMOTE --- cf. to :class:`SVMSMOTE` --- uses an SVM classifier to find
 support vectors and generate samples considering them. Note that the ``C``
