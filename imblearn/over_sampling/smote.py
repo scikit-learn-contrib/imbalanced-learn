@@ -481,6 +481,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
 
             self.nn_k_.fit(X_class)
             fractions = random_state.beta(10, 10)
+            n_generated_samples = int(fractions * (n_samples + 1))
             if np.count_nonzero(danger_bool) > 0:
                 nns = self.nn_k_.kneighbors(
                     safe_indexing(support_vector, np.flatnonzero(danger_bool)),
@@ -491,7 +492,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                     class_sample,
                     X_class,
                     nns,
-                    int(fractions * (n_samples + 1)),
+                    n_generated_samples,
                     step_size=1.)
 
             if np.count_nonzero(safety_bool) > 0:
@@ -504,7 +505,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                     class_sample,
                     X_class,
                     nns,
-                    int((1 - fractions) * n_samples),
+                    n_samples - n_generated_samples,
                     step_size=-self.out_step)
 
             if (np.count_nonzero(danger_bool) > 0 and
@@ -532,6 +533,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
         return X_resampled, y_resampled
 
 
+# FIXME: In 0.6, SMOTE should inherit only from BaseSMOTE.
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring)
@@ -648,12 +650,10 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                  svm_estimator='deprecated',
                  n_jobs=1,
                  ratio=None):
+        # FIXME: in 0.6 call super()
         BaseSMOTE.__init__(self, sampling_strategy=sampling_strategy,
                            random_state=random_state, k_neighbors=k_neighbors,
                            n_jobs=n_jobs, ratio=ratio)
-        # super(SMOTE, self).__init__(
-        #     sampling_strategy=sampling_strategy, random_state=random_state,
-        #     k_neighbors=k_neighbors, n_jobs=n_jobs, ratio=ratio)
         self.kind = kind
         self.m_neighbors = m_neighbors
         self.out_step = out_step
@@ -661,8 +661,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
+        # FIXME: in 0.6 call super()
         BaseSMOTE._validate_estimator(self)
-        # super(SMOTE, self)._validate_estimator()
         # FIXME: remove in 0.6 after deprecation cycle
         if self.kind != 'deprecated' and not (self.kind == 'borderline-1' or
                                               self.kind == 'borderline-2'):
