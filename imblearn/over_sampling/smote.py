@@ -7,7 +7,6 @@
 
 from __future__ import division
 
-import functools
 import types
 import warnings
 
@@ -24,6 +23,7 @@ from ..utils import check_neighbors_object
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
+# FIXME: remove in 0.6
 SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
 
