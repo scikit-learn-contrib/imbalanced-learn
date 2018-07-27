@@ -269,7 +269,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
             'k_neighbors', self.k_neighbors, additional_neighbor=1)
         self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
         if self.kind not in ('borderline-1', 'borderline-2'):
-            raise ValueError('The possible "kind" of algorithm are'
+            raise ValueError('The possible "kind" of algorithm are '
                              '"borderline-1" and "borderline-2".'
                              'Got {} instead.'.format(self.kind))
 
@@ -746,5 +746,3 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             y_resampled = np.hstack((y_resampled, y_new))
 
         return X_resampled, y_resampled
-
-

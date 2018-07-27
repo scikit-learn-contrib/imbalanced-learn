@@ -30,6 +30,10 @@ Enhancement
 - Add support for one-vs-all encoded target to support keras. :issue:`409` by
   :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Adding specific class for borderline and SVM SMOTE using
+  :class:`BorderlineSMOTE` and :class:`SVMSMOTE`.
+  :issue:`440` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Bug fixes
 .........
 
@@ -63,3 +67,9 @@ Deprecation
   :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`,
   :class:`imblearn.under_sampling.InstanceHardnessThreshold`,
   :class:`imblearn.under_sampling.CondensedNearestNeighbours`.
+
+- Deprecate ``kind``, ``out_step``, ``svm_estimator``, ``m_neighbors`` in
+  :class:`imblearn.over_sampling.SMOTE`. User should use
+  :class:`imblearn.over_sampling.SVMSMOTE` and
+  :class:`imblearn.over_sampling.BorderlineSMOTE`.
+  :issue:`440` by :user:`Guillaume Lemaitre <glemaitre>`.
