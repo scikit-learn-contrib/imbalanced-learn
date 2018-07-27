@@ -714,7 +714,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                     class_sample,
                     X_class,
                     nns,
-                    int((1 - fractions) * n_samples + 1),
+                    int((1 - fractions) * n_samples),
                     step_size=-self.out_step)
 
             if (np.count_nonzero(danger_bool) > 0 and
