@@ -66,8 +66,8 @@ class BalancedBatchGenerator(keras.utils.Sequence):
     >>> class_dict = dict()
     >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
     >>> X, y = make_imbalance(iris.data, iris.target, class_dict)
-    >>> y = keras.utils.to_categorical(y, 3)
     >>> import keras
+    >>> y = keras.utils.to_categorical(y, 3)
     >>> model = keras.models.Sequential()
     >>> model.add(keras.layers.Dense(y.shape[1], input_dim=X.shape[1],
     ...                              activation='softmax'))
