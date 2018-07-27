@@ -222,7 +222,7 @@ X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94),
                       class_sep=0.8)
 
 ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8))
-for ax, sampler in zip(string_add, ax_arr,
+for ax, sampler in zip(ax_arr,
                        (SMOTE(random_state=0),
                         BorderlineSMOTE(random_state=0, kind='borderline-1'),
                         BorderlineSMOTE(random_state=0, kind='borderline-2'),
