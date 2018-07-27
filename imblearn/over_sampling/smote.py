@@ -673,7 +673,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             else:
                 warnings.warn('"kind" is deprecated in 0.4 and will be '
                               'removed in 0.6. Use SMOTE, BorderlineSMOTE or '
-                              'SVMSMOTE instead.')
+                              'SVMSMOTE instead.', DeprecationWarning)
 
             if self.kind == 'borderline1' or self.kind == 'borderline2':
                 self._sample = types.MethodType(BorderlineSMOTE._sample, self)
@@ -688,12 +688,12 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                 else:
                     warnings.warn('"out_step" is deprecated in 0.4 and will '
                                   'be removed in 0.6. Use SVMSMOTE class '
-                                  'instead.')
+                                  'instead.', DeprecationWarning)
 
                 if self.svm_estimator == 'deprecated':
                     warnings.warn('"svm_estimator" is deprecated in 0.4 and '
                                   'will be removed in 0.6. Use SVMSMOTE class '
-                                  'instead.')
+                                  'instead.', DeprecationWarning)
                 if (self.svm_estimator is None or
                         self.svm_estimator == 'deprecated'):
                     self.svm_estimator_ = SVC(random_state=self.random_state)
@@ -709,7 +709,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                 else:
                     warnings.warn('"m_neighbors" is deprecated in 0.4 and '
                                   'will be removed in 0.6. Use SVMSMOTE class '
-                                  'or BorderlineSMOTE instead.')
+                                  'or BorderlineSMOTE instead.',
+                                  DeprecationWarning)
 
                 self.nn_m_ = check_neighbors_object(
                     'm_neighbors', self.m_neighbors, additional_neighbor=1)

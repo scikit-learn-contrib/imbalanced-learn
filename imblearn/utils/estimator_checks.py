@@ -152,8 +152,6 @@ def check_samplers_fit_sample(name, Sampler):
     if isinstance(sampler, BaseOverSampler):
         target_stats_res = Counter(y_res)
         n_samples = max(target_stats.values())
-        print(Counter(y))
-        print(Counter(y_res))
         assert all(value >= n_samples for value in Counter(y_res).values())
     elif isinstance(sampler, BaseUnderSampler):
         n_samples = min(target_stats.values())
