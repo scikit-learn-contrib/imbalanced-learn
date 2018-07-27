@@ -672,7 +672,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                                      SMOTE_KIND, self.kind))
             else:
                 warnings.warn('"kind" is deprecated in 0.4 and will be '
-                              'removed in 0.6. Use BorderlineSMOTE or '
+                              'removed in 0.6. Use SMOTE, BorderlineSMOTE or '
                               'SVMSMOTE instead.')
 
             if self.kind == 'borderline1' or self.kind == 'borderline2':

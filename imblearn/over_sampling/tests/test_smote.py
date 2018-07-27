@@ -6,7 +6,7 @@
 from __future__ import print_function
 
 import numpy as np
-from pytest import raises
+import pytest
 
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.neighbors import NearestNeighbors
@@ -35,13 +35,12 @@ R_TOL = 1e-4
 def test_smote_wrong_kind():
     kind = 'rnd'
     smote = SMOTE(kind=kind, random_state=RND_SEED)
-    with raises(ValueError, match="Unknown kind for SMOTE"):
+    with pytest.raises(ValueError, match="Unknown kind for SMOTE"):
         smote.fit_sample(X, Y)
 
 
 def test_sample_regular():
-    kind = 'regular'
-    smote = SMOTE(random_state=RND_SEED, kind=kind)
+    smote = SMOTE(random_state=RND_SEED)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
@@ -67,9 +66,8 @@ def test_sample_regular():
 
 def test_sample_regular_half():
     sampling_strategy = {0: 9, 1: 12}
-    kind = 'regular'
     smote = SMOTE(
-        sampling_strategy=sampling_strategy, random_state=RND_SEED, kind=kind)
+        sampling_strategy=sampling_strategy, random_state=RND_SEED)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
@@ -90,6 +88,7 @@ def test_sample_regular_half():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
 def test_sample_borderline1():
     kind = 'borderline1'
     smote = SMOTE(random_state=RND_SEED, kind=kind)
@@ -116,6 +115,7 @@ def test_sample_borderline1():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
 def test_sample_borderline2():
     kind = 'borderline2'
     smote = SMOTE(random_state=RND_SEED, kind=kind)
@@ -140,6 +140,10 @@ def test_sample_borderline2():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
+@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"out_step" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
 def test_sample_svm():
     kind = 'svm'
     smote = SMOTE(random_state=RND_SEED, kind=kind)
@@ -174,6 +178,8 @@ def test_sample_svm():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
+@pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
 def test_fit_sample_nn_obj():
     kind = 'borderline1'
     nn_m = NearestNeighbors(n_neighbors=11)
@@ -204,9 +210,8 @@ def test_fit_sample_nn_obj():
 
 
 def test_sample_regular_with_nn():
-    kind = 'regular'
     nn_k = NearestNeighbors(n_neighbors=6)
-    smote = SMOTE(random_state=RND_SEED, kind=kind, k_neighbors=nn_k)
+    smote = SMOTE(random_state=RND_SEED, k_neighbors=nn_k)
     X_resampled, y_resampled = smote.fit_sample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
@@ -230,28 +235,34 @@ def test_sample_regular_with_nn():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
+@pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
 def test_wrong_nn():
     kind = 'borderline1'
     nn_m = 'rnd'
     nn_k = NearestNeighbors(n_neighbors=6)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
-    with raises(ValueError, match="has to be one of"):
+    with pytest.raises(ValueError, match="has to be one of"):
         smote.fit_sample(X, Y)
     nn_k = 'rnd'
     nn_m = NearestNeighbors(n_neighbors=10)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
-    with raises(ValueError, match="has to be one of"):
+    with pytest.raises(ValueError, match="has to be one of"):
         smote.fit_sample(X, Y)
     kind = 'regular'
     nn_k = 'rnd'
     smote = SMOTE(random_state=RND_SEED, kind=kind, k_neighbors=nn_k)
-    with raises(ValueError, match="has to be one of"):
+    with pytest.raises(ValueError, match="has to be one of"):
         smote.fit_sample(X, Y)
 
 
-def test_sample_regular_with_nn_svm():
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
+@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"out_step" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
+def test_sample_with_nn_svm():
     kind = 'svm'
     nn_k = NearestNeighbors(n_neighbors=6)
     svm = SVC(random_state=RND_SEED)
@@ -288,6 +299,8 @@ def test_sample_regular_with_nn_svm():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
+@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
 def test_sample_regular_wrong_svm():
     kind = 'svm'
     nn_k = NearestNeighbors(n_neighbors=6)
@@ -295,5 +308,5 @@ def test_sample_regular_wrong_svm():
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, svm_estimator=svm)
 
-    with raises(ValueError, match="has to be one of"):
+    with pytest.raises(ValueError, match="has to be one of"):
         smote.fit_sample(X, Y)
