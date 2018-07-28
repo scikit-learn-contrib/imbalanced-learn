@@ -3,6 +3,8 @@ from __future__ import division
 
 import pytest
 
+from scipy.sparse import issparse
+
 from sklearn.base import clone
 from sklearn.utils import safe_indexing
 from sklearn.utils import check_random_state
@@ -40,6 +42,11 @@ class BalancedBatchGenerator(keras.utils.Sequence):
 
     batch_size : int, optional (default=32)
         Number of samples per gradient update.
+
+    sparse : bool, optional (default=False)
+        Either or not to conserve or not the sparsity of the input (i.e. ``X``,
+        ``y``, ``sample_weight``). By default, the returned batches will be
+        dense.
 
     random_state : int, RandomState instance or None, optional (default=None)
         Control the randomization of the algorithm
@@ -82,12 +89,13 @@ class BalancedBatchGenerator(keras.utils.Sequence):
 
     """
     def __init__(self, X, y, sample_weight=None, sampler=None, batch_size=32,
-                 random_state=None):
+                 sparse=False, random_state=None):
         self.X = X
         self.y = y
         self.sample_weight = sample_weight
         self.sampler = sampler
         self.batch_size = batch_size
+        self.sparse = sparse
         self.random_state = random_state
         self._sample()
 
@@ -113,32 +121,35 @@ class BalancedBatchGenerator(keras.utils.Sequence):
         return int(self.indices_.size // self.batch_size)
 
     def __getitem__(self, index):
+        X_resampled = safe_indexing(
+            self.X, self.indices_[index * self.batch_size:
+                                  (index + 1) * self.batch_size])
+        if issparse(X_resampled) and not self.sparse:
+            X_resampled = X_resampled.toarray()
+
+        y_resampled = safe_indexing(
+            self.y, self.indices_[index * self.batch_size:
+                                  (index + 1) * self.batch_size])
+        if issparse(y_resampled) and not self.sparse:
+            y_resampled = y_resampled.toarray()
+
+        if self.sample_weight is not None:
+            sample_weight_resampled = safe_indexing(
+                self.sample_weight,
+                self.indices_[index * self.batch_size:
+                              (index + 1) * self.batch_size])
+            if issparse(sample_weight_resampled) and not self.sparse:
+                sample_weight = sample_weight.toarray()
+
         if self.sample_weight is None:
-            return (
-                safe_indexing(self.X,
-                              self.indices_[index * self.batch_size:
-                                            (index + 1) * self.batch_size]),
-                safe_indexing(self.y,
-                              self.indices_[index * self.batch_size:
-                                            (index + 1) * self.batch_size])
-            )
+            return X_resampled, y_resampled
         else:
-            return (
-                safe_indexing(self.X,
-                              self.indices_[index * self.batch_size:
-                                            (index + 1) * self.batch_size]),
-                safe_indexing(self.y,
-                              self.indices_[index * self.batch_size:
-                                            (index + 1) * self.batch_size]),
-                safe_indexing(self.sample_weight,
-                              self.indices_[index * self.batch_size:
-                                            (index + 1) * self.batch_size])
-            )
+            return X_resampled, y_resampled, sample_weight_resampled
 
 
 @Substitution(random_state=_random_state_docstring)
 def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
-                             batch_size=32, random_state=None):
+                             batch_size=32, sparse=False, random_state=None):
     """Create a balanced batch generator to train keras model.
 
     Returns a generator --- as well as the number of step per epoch --- which
@@ -162,6 +173,11 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
 
     batch_size : int, optional (default=32)
         Number of samples per gradient update.
+
+    sparse : bool, optional (default=False)
+        Either or not to conserve or not the sparsity of the input (i.e. ``X``,
+        ``y``, ``sample_weight``). By default, the returned batches will be
+        dense.
 
     {random_state}
 
@@ -203,4 +219,4 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
 
     return tf_bbg(X=X, y=y, sample_weight=sample_weight,
                   sampler=sampler, batch_size=batch_size,
-                  random_state=random_state)
+                  sparse=sparse, random_state=random_state)

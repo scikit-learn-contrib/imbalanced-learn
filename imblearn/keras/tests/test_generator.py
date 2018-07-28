@@ -1,6 +1,7 @@
 import pytest
 
 import numpy as np
+from scipy import sparse
 
 from sklearn.datasets import load_iris
 
@@ -51,6 +52,16 @@ def test_balanced_batch_generator_class(sampler, sample_weight):
                         epochs=10)
 
 
+def test_balanced_batch_generator_class_sparse():
+    training_generator = BalancedBatchGenerator(sparse.csr_matrix(X), y,
+                                                batch_size=100,
+                                                sparse=True,
+                                                random_state=42)
+    for idx in range(len(training_generator)):
+        X_batch, y_batch = training_generator.__getitem__(idx)
+        assert sparse.issparse(X_batch)
+
+
 def test_balanced_batch_generator_function_no_return_indices():
     with pytest.raises(ValueError, match='needs to return the indices'):
         balanced_batch_generator(
@@ -71,3 +82,12 @@ def test_balanced_batch_generator_function(sampler, sample_weight):
     model.fit_generator(generator=training_generator,
                         steps_per_epoch=steps_per_epoch,
                         epochs=10)
+
+
+def test_balanced_batch_generator_function_sparse():
+    training_generator, steps_per_epoch = balanced_batch_generator(
+        sparse.csr_matrix(X), y, sparse=True, batch_size=10,
+        random_state=42)
+    for idx in range(steps_per_epoch):
+        X_batch, y_batch = next(training_generator)
+        assert sparse.issparse(X_batch)

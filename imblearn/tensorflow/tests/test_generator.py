@@ -2,6 +2,7 @@ from __future__ import division
 
 import pytest
 import numpy as np
+from scipy import sparse
 
 from sklearn.datasets import load_iris
 
@@ -72,3 +73,16 @@ def test_balanced_batch_generator(sampler):
             predicts_train = sess.run(predict, feed_dict={data: X})
             print("epoch: {} train accuracy: {:.3f}"
                   .format(e, accuracy(y, predicts_train)))
+
+
+def test_balanced_batch_generator_function_sparse():
+    X, y = load_iris(return_X_y=True)
+    X, y = make_imbalance(X, y, {0: 30, 1: 50, 2: 40})
+    X = X.astype(np.float32)
+
+    training_generator, steps_per_epoch = balanced_batch_generator(
+        sparse.csr_matrix(X), y, sparse=True, batch_size=10,
+        random_state=42)
+    for idx in range(steps_per_epoch):
+        X_batch, y_batch = next(training_generator)
+        assert sparse.issparse(X_batch)
