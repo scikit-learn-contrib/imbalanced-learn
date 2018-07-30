@@ -127,11 +127,11 @@ nearest neighbors class. Those variants are presented in the figure below.
    :align: center
 
 
-The parameter ``kind`` is controlling this feature and the following types are
-available: (i) ``'borderline1'``, (ii) ``'borderline2'``, and (iii) ``'svm'``::
+The :class:`BorderlineSMOTE` and :class:`SVMSMOTE` offer some variant of the SMOTE
+algorithm::
 
-  >>> from imblearn.over_sampling import SMOTE, ADASYN
-  >>> X_resampled, y_resampled = SMOTE(kind='borderline1').fit_sample(X, y)
+  >>> from imblearn.over_sampling import BorderlineSMOTE
+  >>> X_resampled, y_resampled = BorderlineSMOTE().fit_sample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4674), (1, 4674), (2, 4674)]
 
@@ -168,12 +168,11 @@ interpolation will create a sample on the line between :math:`x_{i}` and
 Each SMOTE variant and ADASYN differ from each other by selecting the samples
 :math:`x_i` ahead of generating the new samples.
 
-The **regular** SMOTE algorithm --- cf. to ``kind='regular'`` when
-instantiating a :class:`SMOTE` object --- does not impose any rule and will
-randomly pick-up all possible :math:`x_i` available.
+The **regular** SMOTE algorithm --- cf. to the :class:`SMOTE` object --- does not
+impose any rule and will randomly pick-up all possible :math:`x_i` available.
 
-The **borderline** SMOTE --- cf. to ``kind='borderline1'`` and
-``kind='borderline2'`` when instantiating a :class:`SMOTE` object --- will
+The **borderline** SMOTE --- cf. to the :class:`BorderlineSMOTE` with the
+parameters ``kind='borderline-1'`` and ``kind='borderline-2'`` --- will
 classify each sample :math:`x_i` to be (i) noise (i.e. all nearest-neighbors
 are from a different class than the one of :math:`x_i`), (ii) in danger
 (i.e. at least half of the nearest neighbors are from the same class than
@@ -184,10 +183,9 @@ samples *in danger* to generate new samples. In **Borderline-1** SMOTE,
 :math:`x_i`. On the contrary, **Borderline-2** SMOTE will consider
 :math:`x_{zi}` which can be from any class.
 
-**SVM** SMOTE --- cf. to ``kind='svm'`` when instantiating a :class:`SMOTE`
-object --- uses an SVM classifier to find support vectors and generate samples
-considering them. Note that the ``C`` parameter of the SVM classifier allows to
-select more or less support vectors.
+**SVM** SMOTE --- cf. to :class:`SVMSMOTE` --- uses an SVM classifier to find
+support vectors and generate samples considering them. Note that the ``C``
+parameter of the SVM classifier allows to select more or less support vectors.
 
 For both borderline and SVM SMOTE, a neighborhood is defined using the
 parameter ``m_neighbors`` to decide if a sample is in danger, safe, or noise.
@@ -196,7 +194,7 @@ ADASYN is working similarly to the regular SMOTE. However, the number of
 samples generated for each :math:`x_i` is proportional to the number of samples
 which are not from the same class than :math:`x_i` in a given
 neighborhood. Therefore, more samples will be generated in the area that the
-nearest neighbor rule is not respected. The parameter ``n_neighbors`` is
+nearest neighbor rule is not respected. The parameter ``m_neighbors`` is
 equivalent to ``k_neighbors`` in :class:`SMOTE`.
 
 Multi-class management
