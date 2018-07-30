@@ -4,6 +4,7 @@
 #          Christos Aridas
 # License: MIT
 
+""""EasyEnsemble is also called as BalancedBaggingClassifier"""
 import numpy as np
 
 from sklearn.utils import check_random_state
