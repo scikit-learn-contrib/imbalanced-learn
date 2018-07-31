@@ -39,8 +39,10 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
     sample_weight : ndarray, shape (n_samples,)
         Sample weight.
 
-    sampler : object or None, optional (default=None)
+    sampler : object or None, optional (default=RandomUnderSampler)
         A sampler instance which has an attribute ``return_indices``.
+        By default, the sampler used is a
+        :class:`imblearn.under_sampling.RandomUnderSampler`.
 
     batch_size : int, optional (default=32)
         Number of samples per gradient update.
