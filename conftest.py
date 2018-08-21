@@ -18,12 +18,14 @@ except TypeError:
 
 def pytest_runtest_setup(item):
     fname = item.fspath.strpath
-    if fname.endswith('keras/_generator.py'):
+    if (fname.endswith('keras/_generator.py') or
+            fname.endswith('miscellaneous.rst')):
         try:
             import keras
         except ImportError:
             pytest.skip('The keras package is not installed.')
-    elif fname.endswith('tensorflow/_generator.py'):
+    elif (fname.endswith('tensorflow/_generator.py') or
+          fname.endswith('miscellaneous.rst')):
         try:
             import tensorflow
         except ImportError:
