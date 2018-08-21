@@ -77,9 +77,10 @@ categorical_pipeline = make_pipeline(
     SimpleImputer(missing_values=-1, strategy='most_frequent'),
     OneHotEncoder(categories='auto'))
 
-preprocessor = ColumnTransformer([('num', numerical_pipeline, num_col),
-                                  ('cat', categorical_pipeline, cat_col)],
-                                 remainder='drop')
+preprocessor = ColumnTransformer(
+    [('numerical_preprocessing', numerical_pipeline, numerical_columns),
+     ('categorical_preprocessing', categorical_pipeline, categorical_columns)],
+    remainder='drop')
 
 # Create an environment variable to avoid using the GPU. This can be changed.
 import os
@@ -150,7 +151,7 @@ from sklearn.metrics import roc_auc_score
 @timeit
 def fit_predict_imbalanced_model(X_train, y_train, X_test, y_test):
     model = make_model(X_train.shape[1])
-    model.fit(X_train, y_train, epochs=2, verbose=0, batch_size=1000)
+    model.fit(X_train, y_train, epochs=2, verbose=1, batch_size=1000)
     y_pred = model.predict_proba(X_test, batch_size=1000)
     return roc_auc_score(y_test, y_pred)
 
@@ -168,7 +169,7 @@ def fit_predict_balanced_model(X_train, y_train, X_test, y_test):
     training_generator = BalancedBatchGenerator(X_train, y_train,
                                                 batch_size=1000,
                                                 random_state=42)
-    model.fit_generator(generator=training_generator, epochs=5, verbose=0)
+    model.fit_generator(generator=training_generator, epochs=5, verbose=1)
     y_pred = model.predict_proba(X_test, batch_size=1000)
     return roc_auc_score(y_test, y_pred)
 
