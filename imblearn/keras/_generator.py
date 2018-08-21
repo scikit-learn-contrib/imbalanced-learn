@@ -1,7 +1,7 @@
 """Implement generators for ``keras`` which will balance the data."""
 from __future__ import division
 
-import pytest
+import keras
 
 from scipy.sparse import issparse
 
@@ -9,8 +9,6 @@ from sklearn.base import clone
 from sklearn.utils import safe_indexing
 from sklearn.utils import check_random_state
 from sklearn.utils.testing import set_random_state
-
-keras = pytest.importorskip("keras")
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
@@ -141,7 +139,7 @@ class BalancedBatchGenerator(keras.utils.Sequence):
                 self.indices_[index * self.batch_size:
                               (index + 1) * self.batch_size])
             if issparse(sample_weight_resampled) and not self.sparse:
-                sample_weight = sample_weight.toarray()
+                sample_weight_resampled = sample_weight_resampled.toarray()
 
         if self.sample_weight is None:
             return X_resampled, y_resampled
