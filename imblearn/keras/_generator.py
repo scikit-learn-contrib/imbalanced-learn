@@ -1,6 +1,9 @@
 """Implement generators for ``keras`` which will balance the data."""
 from __future__ import division
 
+# This is a trick to avoid an error during tests collection with pytest. We
+# avoid the error when importing the package raise the error at the moment of
+# creating the instance.
 try:
     import keras
     ParentClass = keras.utils.Sequence
