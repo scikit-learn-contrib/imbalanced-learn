@@ -55,7 +55,7 @@ def test_balanced_batch_generator_class(sampler, sample_weight):
 @pytest.mark.parametrize("is_sparse", [True, False])
 def test_balanced_batch_generator_class_sparse(is_sparse):
     training_generator = BalancedBatchGenerator(sparse.csr_matrix(X), y,
-                                                batch_size=100,
+                                                batch_size=10,
                                                 sparse=is_sparse,
                                                 random_state=42)
     for idx in range(len(training_generator)):
