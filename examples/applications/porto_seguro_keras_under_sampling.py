@@ -220,6 +220,12 @@ df_time = (pd.DataFrame({'Balanced model': cv_time_balanced,
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+sns.boxplot(y='level_0', x=0, data=df_time)
+sns.despine(top=True, right=True, left=True)
+plt.xlabel('time [s]')
+plt.ylabel('')
+plt.title('Computation time difference using a random under-sampling')
+
 sns.boxplot(y='level_0', x=0, data=df_results, whis=10.0)
 sns.despine(top=True, right=True, left=True)
 ax = plt.gca()
@@ -228,9 +234,3 @@ ax.xaxis.set_major_formatter(
 plt.xlabel('ROC-AUC')
 plt.ylabel('')
 plt.title('Difference in terms of ROC-AUC using a random under-sampling')
-
-sns.boxplot(y='level_0', x=0, data=df_time)
-sns.despine(top=True, right=True, left=True)
-plt.xlabel('time [s]')
-plt.ylabel('')
-plt.title('Computation time difference using a random under-sampling')
