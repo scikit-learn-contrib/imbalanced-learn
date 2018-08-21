@@ -14,10 +14,7 @@ from imblearn.tensorflow import balanced_batch_generator
 tf = pytest.importorskip('tensorflow')
 
 
-@pytest.mark.parametrize(
-    "sampler",
-    [None, NearMiss()]
-)
+@pytest.mark.parametrize("sampler", [None, NearMiss()])
 def test_balanced_batch_generator(sampler):
     X, y = load_iris(return_X_y=True)
     X, y = make_imbalance(X, y, {0: 30, 1: 50, 2: 40})
@@ -75,14 +72,18 @@ def test_balanced_batch_generator(sampler):
                   .format(e, accuracy(y, predicts_train)))
 
 
-def test_balanced_batch_generator_function_sparse():
+@pytest.mark.parametrize("is_sparse", [True, False])
+def test_balanced_batch_generator_function_sparse(is_sparse):
     X, y = load_iris(return_X_y=True)
     X, y = make_imbalance(X, y, {0: 30, 1: 50, 2: 40})
     X = X.astype(np.float32)
 
     training_generator, steps_per_epoch = balanced_batch_generator(
-        sparse.csr_matrix(X), y, sparse=True, batch_size=10,
+        sparse.csr_matrix(X), y, sparse=is_sparse, batch_size=10,
         random_state=42)
     for idx in range(steps_per_epoch):
         X_batch, y_batch = next(training_generator)
-        assert sparse.issparse(X_batch)
+        if is_sparse:
+            assert sparse.issparse(X_batch)
+        else:
+            assert not sparse.issparse(X_batch)

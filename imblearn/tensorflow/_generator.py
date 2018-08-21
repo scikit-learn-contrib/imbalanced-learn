@@ -44,9 +44,8 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
         Number of samples per gradient update.
 
     sparse : bool, optional (default=False)
-        Either or not to conserve or not the sparsity of the input (i.e. ``X``,
-        ``y``, ``sample_weight``). By default, the returned batches will be
-        dense.
+        Either or not to conserve or not the sparsity of the input ``X``. By
+        default, the returned batches will be dense.
 
     {random_state}
 
@@ -134,29 +133,17 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
     random_state.shuffle(indices)
 
     def generator(X, y, sample_weight, indices, batch_size):
-        if sample_weight is None:
-            while True:
-                for index in range(0, len(indices), batch_size):
-                    X_res = safe_indexing(X, indices[index:index + batch_size])
-                    y_res = safe_indexing(y, indices[index:index + batch_size])
-                    if issparse(X_res) and not sparse:
-                        X_res = X_res.toarray()
-                    if issparse(y_res) and not sparse:
-                        y_res = y_res.toarray()
+        while True:
+            for index in range(0, len(indices), batch_size):
+                X_res = safe_indexing(X, indices[index:index + batch_size])
+                y_res = safe_indexing(y, indices[index:index + batch_size])
+                if issparse(X_res) and not sparse:
+                    X_res = X_res.toarray()
+                if sample_weight is None:
                     yield X_res, y_res
-        else:
-            while True:
-                for index in range(0, len(indices), batch_size):
-                    X_res = safe_indexing(X, indices[index:index + batch_size])
-                    y_res = safe_indexing(y, indices[index:index + batch_size])
+                else:
                     sw_res = safe_indexing(sample_weight,
                                            indices[index:index + batch_size])
-                    if issparse(X_res) and not sparse:
-                        X_res = X_res.toarray()
-                    if issparse(y_res) and not sparse:
-                        y_res = y_res.toarray()
-                    if issparse(sw_res) and not sparse:
-                        sw_res = sw_res.toarray()
                     yield X_res, y_res, sw_res
 
     return (generator(X, y, sample_weight, indices, batch_size),
