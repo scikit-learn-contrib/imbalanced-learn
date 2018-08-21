@@ -1,7 +1,13 @@
 """Implement generators for ``keras`` which will balance the data."""
 from __future__ import division
 
-import keras
+try:
+    import keras
+    ParentClass = keras.utils.Sequence
+    HAS_KERAS = True
+except ImportError:
+    ParentClass = object
+    HAS_KERAS = False
 
 from scipy.sparse import issparse
 
@@ -16,7 +22,7 @@ from ..utils._docstring import _random_state_docstring
 from ..tensorflow import balanced_batch_generator as tf_bbg
 
 
-class BalancedBatchGenerator(keras.utils.Sequence):
+class BalancedBatchGenerator(ParentClass):
     """Create balanced batches when training a keras model.
 
     Create a keras ``Sequence`` which is given to ``fit_generator``. The
@@ -90,6 +96,8 @@ class BalancedBatchGenerator(keras.utils.Sequence):
     """
     def __init__(self, X, y, sample_weight=None, sampler=None, batch_size=32,
                  sparse=False, random_state=None):
+        if not HAS_KERAS:
+            raise ImportError("'No module named 'keras'")
         self.X = X
         self.y = y
         self.sample_weight = sample_weight

@@ -39,7 +39,10 @@ if [[ "$DISTRIB" == "conda" ]]; then
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
     conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
-    conda install --yes pandas keras
+    # only install optional dependency in python 3.6
+    if [[ $PYTHON_VERSION == "3.6" ]]; then
+        conda install --yes pandas keras
+    fi
 
     if [[ "$SKLEARN_VERSION" == "master" ]]; then
         conda install --yes cython
@@ -70,7 +73,7 @@ python --version
 python -c "import numpy; print('numpy %s' % numpy.__version__)"
 python -c "import scipy; print('scipy %s' % scipy.__version__)"
 
-python setup.py develop
+pip install -e .
 ccache --show-stats
 # Useful for debugging how ccache is used
 # cat $CCACHE_LOGFILE
