@@ -50,7 +50,7 @@ class ADASYN(BaseOverSampler):
     -----
     The implementation is based on [1]_.
 
-    Supports mutli-class resampling. A one-vs.-rest scheme is used.
+    Supports multi-class resampling. A one-vs.-rest scheme is used.
 
     See
     :ref:`sphx_glr_auto_examples_applications_plot_over_sampling_benchmark_lfw.py`,

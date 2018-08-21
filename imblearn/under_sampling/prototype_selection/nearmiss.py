@@ -71,7 +71,7 @@ class NearMiss(BaseUnderSampler):
     -----
     The methods are based on [1]_.
 
-    Supports mutli-class resampling.
+    Supports multi-class resampling.
 
     See
     :ref:`sphx_glr_auto_examples_applications_plot_multi_class_under_sampling.py`

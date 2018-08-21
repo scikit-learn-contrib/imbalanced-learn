@@ -50,7 +50,7 @@ class SMOTEENN(SamplerMixin):
     -----
     The method is presented in [1]_.
 
-    Supports mutli-class resampling. Refer to SMOTE and ENN regarding the
+    Supports multi-class resampling. Refer to SMOTE and ENN regarding the
     scheme which used.
 
     See :ref:`sphx_glr_auto_examples_combine_plot_smote_enn.py` and

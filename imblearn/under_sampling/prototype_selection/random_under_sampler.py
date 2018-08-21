@@ -45,7 +45,7 @@ class RandomUnderSampler(BaseUnderSampler):
 
     Notes
     -----
-    Supports mutli-class resampling by sampling each class independently.
+    Supports multi-class resampling by sampling each class independently.
 
     See
     :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py` and

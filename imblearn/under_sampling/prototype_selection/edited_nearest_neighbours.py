@@ -72,7 +72,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     -----
     The method is based on [1]_.
 
-    Supports mutli-class resampling. A one-vs.-rest scheme is used when
+    Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
     See
@@ -252,7 +252,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     The method is based on [1]_. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
-    Supports mutli-class resampling.
+    Supports multi-class resampling.
 
     See
     :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py` and
@@ -464,7 +464,7 @@ class AllKNN(BaseCleaningSampler):
     -----
     The method is based on [1]_.
 
-    Supports mutli-class resampling. A one-vs.-rest scheme is used when
+    Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
     See :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.

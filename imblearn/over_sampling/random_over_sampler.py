@@ -39,7 +39,7 @@ class RandomOverSampler(BaseOverSampler):
 
     Notes
     -----
-    Supports mutli-class resampling by sampling each class independently.
+    Supports multi-class resampling by sampling each class independently.
 
     See
     :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
