@@ -40,19 +40,19 @@ if [[ "$DISTRIB" == "conda" ]]; then
     source activate testenv
     conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
 
-    if [[ "$SKLEARN_VERSION" == "master" ]]; then
-        conda install --yes cython
-        pip install -U git+https://github.com/scikit-learn/scikit-learn.git
-    else
-        conda install --yes scikit-learn=$SKLEARN_VERSION
-    fi
-
-    if [[ $PYTHON_VERSION == "3.6" ]] || [[ $PYTHON_VERSION == "3.7" ]]; then
+    if [[ $PYTHON_VERSION == "3.6" ]]; then
         conda install --yes pandas
         conda install --yes -c conda-forge keras
         KERAS_BACKEND=tensorflow
         python -c "import keras.backend"
         sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
+    fi
+
+    if [[ "$SKLEARN_VERSION" == "master" ]]; then
+        conda install --yes cython
+        pip install -U git+https://github.com/scikit-learn/scikit-learn.git
+    else
+        conda install --yes scikit-learn=$SKLEARN_VERSION
     fi
 
     conda install --yes nose pytest pytest-cov
