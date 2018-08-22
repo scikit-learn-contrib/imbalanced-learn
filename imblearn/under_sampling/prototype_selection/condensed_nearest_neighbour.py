@@ -13,6 +13,7 @@ import numpy as np
 
 from scipy.sparse import issparse
 
+from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 
@@ -121,7 +122,7 @@ CondensedNearestNeighbour # doctest: +SKIP
             self.estimator_ = KNeighborsClassifier(
                 n_neighbors=self.n_neighbors, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
-            self.estimator_ = self.n_neighbors
+            self.estimator_ = clone(self.n_neighbors)
         else:
             raise ValueError('`n_neighbors` has to be a int or an object'
                              ' inhereited from KNeighborsClassifier.'

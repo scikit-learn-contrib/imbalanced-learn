@@ -8,7 +8,7 @@ from collections import Counter
 
 import numpy as np
 
-from sklearn.base import ClassifierMixin
+from sklearn.base import ClassifierMixin, clone
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 from sklearn.model_selection import cross_val_predict
@@ -142,7 +142,7 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
         if (self.estimator is not None and
                 isinstance(self.estimator, ClassifierMixin) and
                 hasattr(self.estimator, 'predict')):
-            self.estimator_ = self.estimator
+            self.estimator_ = clone(self.estimator)
         elif self.estimator is None:
             self.estimator_ = KNeighborsClassifier()
         else:

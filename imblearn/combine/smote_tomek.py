@@ -10,6 +10,7 @@ from __future__ import division
 import logging
 import warnings
 
+from sklearn.base import clone
 from sklearn.utils import check_X_y
 
 from ..base import SamplerMixin
@@ -111,7 +112,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
 
         if self.smote is not None:
             if isinstance(self.smote, SMOTE):
-                self.smote_ = self.smote
+                self.smote_ = clone(self.smote)
             else:
                 raise ValueError('smote needs to be a SMOTE object.'
                                  'Got {} instead.'.format(type(self.smote)))
@@ -124,7 +125,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
 
         if self.tomek is not None:
             if isinstance(self.tomek, TomekLinks):
-                self.tomek_ = self.tomek
+                self.tomek_ = clone(self.tomek)
             else:
                 raise ValueError('tomek needs to be a TomekLinks object.'
                                  'Got {} instead.'.format(type(self.tomek)))

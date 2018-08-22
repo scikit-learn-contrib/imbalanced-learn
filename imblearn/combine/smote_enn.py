@@ -9,6 +9,7 @@ from __future__ import division
 import logging
 import warnings
 
+from sklearn.base import clone
 from sklearn.utils import check_X_y
 
 from ..base import SamplerMixin
@@ -103,7 +104,7 @@ class SMOTEENN(SamplerMixin):
         "Private function to validate SMOTE and ENN objects"
         if self.smote is not None:
             if isinstance(self.smote, SMOTE):
-                self.smote_ = self.smote
+                self.smote_ = clone(self.smote)
             else:
                 raise ValueError('smote needs to be a SMOTE object.'
                                  'Got {} instead.'.format(type(self.smote)))
@@ -116,7 +117,7 @@ class SMOTEENN(SamplerMixin):
 
         if self.enn is not None:
             if isinstance(self.enn, EditedNearestNeighbours):
-                self.enn_ = self.enn
+                self.enn_ = clone(self.enn)
             else:
                 raise ValueError('enn needs to be an EditedNearestNeighbours.'
                                  ' Got {} instead.'.format(type(self.enn)))

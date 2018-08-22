@@ -12,7 +12,7 @@ from collections import Counter
 
 import numpy as np
 
-from sklearn.base import ClassifierMixin
+from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.utils import safe_indexing
@@ -117,7 +117,7 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         if (self.estimator is not None and
                 isinstance(self.estimator, ClassifierMixin) and
                 hasattr(self.estimator, 'predict_proba')):
-            self.estimator_ = self.estimator
+            self.estimator_ = clone(self.estimator)
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
                 random_state=self.random_state, n_jobs=self.n_jobs)
