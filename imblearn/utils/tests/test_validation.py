@@ -35,7 +35,8 @@ def test_check_neighbors_object():
     assert issubclass(type(estimator), KNeighborsMixin)
     assert estimator.n_neighbors == 2
     estimator = NearestNeighbors(n_neighbors)
-    assert estimator is check_neighbors_object(name, estimator)
+    estimator_cloned = check_neighbors_object(name, estimator)
+    assert estimator.n_neighbors == estimator_cloned.n_neighbors
     n_neighbors = 'rnd'
     with pytest.raises(ValueError, match="has to be one of"):
         check_neighbors_object(name, n_neighbors)
