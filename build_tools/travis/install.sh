@@ -39,7 +39,6 @@ if [[ "$DISTRIB" == "conda" ]]; then
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
     conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
-    # only install optional dependency in python 3.6
 
     if [[ "$SKLEARN_VERSION" == "master" ]]; then
         conda install --yes cython
@@ -48,8 +47,9 @@ if [[ "$DISTRIB" == "conda" ]]; then
         conda install --yes scikit-learn=$SKLEARN_VERSION
     fi
 
-    if [[ $PYTHON_VERSION == "3.6" ]]; then
-        conda install --yes pandas keras
+    if [[ $PYTHON_VERSION == "3.6" ]] || [[ $PYTHON_VERSION == "3.7" ]]; then
+        conda install --yes pandas
+        conda install --yes -c conda-forge keras
         KERAS_BACKEND=tensorflow
         python -c "import keras.backend"
         sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;

@@ -220,12 +220,14 @@ df_time = (pd.DataFrame({'Balanced model': cv_time_balanced,
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+plt.figure()
 sns.boxplot(y='level_0', x=0, data=df_time)
 sns.despine(top=True, right=True, left=True)
 plt.xlabel('time [s]')
 plt.ylabel('')
 plt.title('Computation time difference using a random under-sampling')
 
+plt.figure()
 sns.boxplot(y='level_0', x=0, data=df_results, whis=10.0)
 sns.despine(top=True, right=True, left=True)
 ax = plt.gca()
