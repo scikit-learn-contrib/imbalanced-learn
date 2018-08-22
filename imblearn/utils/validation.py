@@ -10,6 +10,7 @@ from numbers import Integral, Real
 
 import numpy as np
 
+from sklearn.base import clone
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.externals import six, joblib
@@ -50,7 +51,7 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     if isinstance(nn_object, Integral):
         return NearestNeighbors(n_neighbors=nn_object + additional_neighbor)
     elif isinstance(nn_object, KNeighborsMixin):
-        return nn_object
+        return clone(nn_object)
     else:
         raise_isinstance_error(nn_name, [int, KNeighborsMixin], nn_object)
 

@@ -14,6 +14,7 @@ import numpy as np
 
 from scipy import sparse
 
+from sklearn.base import clone
 from sklearn.svm import SVC
 from sklearn.utils import check_random_state, safe_indexing
 
@@ -448,7 +449,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
         if self.svm_estimator is None:
             self.svm_estimator_ = SVC(random_state=self.random_state)
         elif isinstance(self.svm_estimator, SVC):
-            self.svm_estimator_ = self.svm_estimator
+            self.svm_estimator_ = clone(self.svm_estimator)
         else:
             raise_isinstance_error('svm_estimator', [SVC],
                                    self.svm_estimator)
@@ -698,7 +699,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                         self.svm_estimator == 'deprecated'):
                     self.svm_estimator_ = SVC(random_state=self.random_state)
                 elif isinstance(self.svm_estimator, SVC):
-                    self.svm_estimator_ = self.svm_estimator
+                    self.svm_estimator_ = clone(self.svm_estimator)
                 else:
                     raise_isinstance_error('svm_estimator', [SVC],
                                            self.svm_estimator)
