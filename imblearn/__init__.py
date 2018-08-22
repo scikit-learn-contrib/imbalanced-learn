@@ -13,11 +13,17 @@ ensemble
 exceptions
     Module including custom warnings and error clases used across
     imbalanced-learn.
+keras
+    Module which provides custom generator, layers for deep learning using
+    keras.
 metrics
     Module which provides metrics to quantified the classification performance
     with imbalanced dataset.
 over_sampling
     Module which provides methods to under-sample a dataset.
+tensorflow
+    Module which provides custom generator, layers for deep learning using
+    tensorflow.
 under-sampling
     Module which provides methods to over-sample a dataset.
 utils

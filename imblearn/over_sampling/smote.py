@@ -8,15 +8,19 @@
 from __future__ import division
 
 import math
+import types
+import warnings
+from numbers import Integral
 
 import numpy as np
 
 from scipy import sparse
 
-from sklearn.svm import SVC
+from sklearn.base import clone
 from sklearn.cluster import KMeans
-from sklearn.utils import check_random_state, safe_indexing
 from sklearn.metrics.pairwise import pairwise_distances
+from sklearn.svm import SVC
+from sklearn.utils import check_random_state, safe_indexing
 
 from .base import BaseOverSampler
 from ..exceptions import raise_isinstance_error
@@ -24,191 +28,31 @@ from ..utils import check_neighbors_object
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
-SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm', 'kmeans')
+# FIXME: remove in 0.6
+SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
 
-@Substitution(
-    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
-class SMOTE(BaseOverSampler):
-    """Class to perform over-sampling using SMOTE.
-
-    This object is an implementation of SMOTE - Synthetic Minority
-    Over-sampling Technique, and the variants Borderline SMOTE 1, 2 and
-    SVM-SMOTE.
-
-    Read more in the :ref:`User Guide <smote_adasyn>`.
-
-    Parameters
-    ----------
-    {sampling_strategy}
-
-    {random_state}
-
-    k_neighbors : int or object, optional (default=5)
-        If ``int``, number of nearest neighbours to used to construct synthetic
-        samples.  If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
-
-    m_neighbors : int or object, optional (default=10)
-        If int, number of nearest neighbours to use to determine if a minority
-        sample is in danger. Used with ``kind={{'borderline1', 'borderline2',
-        'svm'}}``.  If object, an estimator that inherits
-        from :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used
-        to find the k_neighbors.
-
-    out_step : float, optional (default=0.5)
-        Step size when extrapolating. Used with ``kind='svm'``.
-
-    kind : str, optional (default='regular')
-        The type of SMOTE algorithm to use one of the following options:
-        ``'regular'``, ``'borderline1'``, ``'borderline2'``, ``'svm'``,
-        ``'kmeans'``.
-
-    svm_estimator : object, optional (default=SVC())
-        If ``kind='svm'``, a parametrized :class:`sklearn.svm.SVC`
-        classifier can be passed.
-
-    n_kmeans_clusters: int, optional (default=10)
-        If ``kind='kmeans'``, the number of clusters that is the be used by the
-        k-means algorithm for sample identification.
-
-    cluster_balance_threshold: float, optional (default=0.5)
-        If ``kind='kmeans'``, the threshold at which a cluster is called
-        balanced and where samples of the class selected for SMOTE will be
-        oversampled.
-
-    density_estimation_exponent: str or float, optional (default="auto")
-        If ``kind='kmeans'``, this exponent is used to determine the density
-        of a cluster. Leaving it to 'auto' will use a feature-length based
-        exponent, but any floating point number will be accepted.
-
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
-    Notes
-    -----
-    See the original papers: [1]_, [2]_, [3]_ for more details.
-
-    Supports multi-class resampling. A one-vs.-rest scheme is used as
-    originally proposed in [1]_.
-
-    See
-    :ref:`sphx_glr_auto_examples_applications_plot_over_sampling_benchmark_lfw.py`,
-    :ref:`sphx_glr_auto_examples_evaluation_plot_classification_report.py`,
-    :ref:`sphx_glr_auto_examples_evaluation_plot_metrics.py`,
-    :ref:`sphx_glr_auto_examples_model_selection_plot_validation_curve.py`,
-    :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
-    and :ref:`sphx_glr_auto_examples_over-sampling_plot_smote.py`.
-
-    See also
-    --------
-    ADASYN : Over-sample using ADASYN.
-
-    References
-    ----------
-    .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
-       synthetic minority over-sampling technique," Journal of artificial
-       intelligence research, 321-357, 2002.
-
-    .. [2] H. Han, W. Wen-Yuan, M. Bing-Huan, "Borderline-SMOTE: a new
-       over-sampling method in imbalanced data sets learning," Advances in
-       intelligent computing, 878-887, 2005.
-
-    .. [3] H. M. Nguyen, E. W. Cooper, K. Kamei, "Borderline over-sampling for
-       imbalanced data classification," International Journal of Knowledge
-       Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.
-
-    Examples
-    --------
-
-    >>> from collections import Counter
-    >>> from sklearn.datasets import make_classification
-    >>> from imblearn.over_sampling import \
-SMOTE # doctest: +NORMALIZE_WHITESPACE
-    >>> X, y = make_classification(n_classes=2, class_sep=2,
-    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
-    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape %s' % Counter(y))
-    Original dataset shape Counter({{1: 900, 0: 100}})
-    >>> sm = SMOTE(random_state=42)
-    >>> X_res, y_res = sm.fit_sample(X, y)
-    >>> print('Resampled dataset shape %s' % Counter(y_res))
-    Resampled dataset shape Counter({{0: 900, 1: 900}})
-
-    """
-
+class BaseSMOTE(BaseOverSampler):
+    """Base class for the different SMOTE algorithms."""
     def __init__(self,
                  sampling_strategy='auto',
                  random_state=None,
                  k_neighbors=5,
-                 m_neighbors=10,
-                 out_step=0.5,
-                 kind='regular',
-                 svm_estimator=None,
-                 n_kmeans_clusters=25,
-                 cluster_balance_threshold=0.5,
-                 density_estimation_exponent="auto",
                  n_jobs=1,
                  ratio=None):
-        super(SMOTE, self).__init__(
+        super(BaseSMOTE, self).__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
-        self.kind = kind
         self.k_neighbors = k_neighbors
-        self.m_neighbors = m_neighbors
-        self.out_step = out_step
-        self.svm_estimator = svm_estimator
-        self.n_kmeans_clusters = n_kmeans_clusters
-        self.cluster_balance_threshold = cluster_balance_threshold
-        self.density_estimation_exponent = density_estimation_exponent
         self.n_jobs = n_jobs
 
-    def _in_danger_noise(self, samples, target_class, y, kind='danger'):
-        """Estimate if a set of sample are in danger or noise.
-
-        Parameters
-        ----------
-        samples : {array-like, sparse matrix}, shape (n_samples, n_features)
-            The samples to check if either they are in danger or not.
-
-        target_class : int or str,
-            The target corresponding class being over-sampled.
-
-        y : array-like, shape (n_samples,)
-            The true label in order to check the neighbour labels.
-
-        kind : str, optional (default='danger')
-            The type of classification to use. Can be either:
-
-            - If 'danger', check if samples are in danger,
-            - If 'noise', check if samples are noise.
-
-        Returns
-        -------
-        output : ndarray, shape (n_samples,)
-            A boolean array where True refer to samples in danger or noise.
-
+    def _validate_estimator(self):
+        """Check the NN estimators shared across the different SMOTE
+        algorithms.
         """
-        x = self.nn_m_.kneighbors(samples, return_distance=False)[:, 1:]
-        nn_label = (y[x] != target_class).astype(int)
-        n_maj = np.sum(nn_label, axis=1)
-
-        if kind == 'danger':
-            # Samples are in danger for m/2 <= m' < m
-            return np.bitwise_and(n_maj >= (self.nn_m_.n_neighbors - 1) / 2,
-                                  n_maj < self.nn_m_.n_neighbors - 1)
-        elif kind == 'noise':
-            # Samples are noise for m = m'
-            return n_maj == self.nn_m_.n_neighbors - 1
-        else:
-            raise NotImplementedError
+        self.nn_k_ = check_neighbors_object(
+            'k_neighbors', self.k_neighbors, additional_neighbor=1)
+        self.nn_k_.set_params(**{'n_jobs': self.n_jobs})
 
     def _make_samples(self,
                       X,
@@ -281,116 +125,162 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         else:
             return X_new, y_new
 
+    def _in_danger_noise(self, nn_estimator, samples, target_class, y,
+                         kind='danger'):
+        """Estimate if a set of sample are in danger or noise.
+
+        Used by BorderlineSMOTE and SVMSMOTE.
+
+        Parameters
+        ----------
+        nn_estimator : estimator
+            An estimator that inherits from
+            :class:`sklearn.neighbors.base.KNeighborsMixin` use to determine if
+            a sample is in danger/noise.
+
+        samples : {array-like, sparse matrix}, shape (n_samples, n_features)
+            The samples to check if either they are in danger or not.
+
+        target_class : int or str
+            The target corresponding class being over-sampled.
+
+        y : array-like, shape (n_samples,)
+            The true label in order to check the neighbour labels.
+
+        kind : str, optional (default='danger')
+            The type of classification to use. Can be either:
+
+            - If 'danger', check if samples are in danger,
+            - If 'noise', check if samples are noise.
+
+        Returns
+        -------
+        output : ndarray, shape (n_samples,)
+            A boolean array where True refer to samples in danger or noise.
+
+        """
+        x = nn_estimator.kneighbors(samples, return_distance=False)[:, 1:]
+        nn_label = (y[x] != target_class).astype(int)
+        n_maj = np.sum(nn_label, axis=1)
+
+        if kind == 'danger':
+            # Samples are in danger for m/2 <= m' < m
+            return np.bitwise_and(n_maj >= (nn_estimator.n_neighbors - 1) / 2,
+                                  n_maj < nn_estimator.n_neighbors - 1)
+        elif kind == 'noise':
+            # Samples are noise for m = m'
+            return n_maj == nn_estimator.n_neighbors - 1
+        else:
+            raise NotImplementedError
+
+
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
+class BorderlineSMOTE(BaseSMOTE):
+    """Over-sampling using Borderline SMOTE.
+
+    This algorithm is a variant of the original SMOTE algorithm proposed in
+    [2]_. Borderline samples will be detected and used to generate new
+    synthetic samples.
+
+    Read more in the :ref:`User Guide <smote_adasyn>`.
+
+    Parameters
+    ----------
+    {sampling_strategy}
+
+    {random_state}
+
+    k_neighbors : int or object, optional (default=5)
+        If ``int``, number of nearest neighbours to used to construct synthetic
+        samples.  If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
+
+    n_jobs : int, optional (default=1)
+        The number of threads to open if possible.
+
+    m_neighbors : int or object, optional (default=10)
+        If int, number of nearest neighbours to use to determine if a minority
+        sample is in danger. If object, an estimator that inherits
+        from :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used
+        to find the m_neighbors.
+
+    kind : str, optional (default='borderline-1')
+        The type of SMOTE algorithm to use one of the following options:
+        ``'borderline-1'``, ``'borderline-2'``.
+
+    Notes
+    -----
+    See the original papers: [2]_ for more details.
+
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
+    originally proposed in [1]_.
+
+    See also
+    --------
+    SMOTE : Over-sample using SMOTE.
+
+    SVMSMOTE : Over-sample using SVM-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
+
+    References
+    ----------
+    .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
+       synthetic minority over-sampling technique," Journal of artificial
+       intelligence research, 321-357, 2002.
+
+    .. [2] H. Han, W. Wen-Yuan, M. Bing-Huan, "Borderline-SMOTE: a new
+       over-sampling method in imbalanced data sets learning," Advances in
+       intelligent computing, 878-887, 2005.
+
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import make_classification
+    >>> from imblearn.over_sampling import \
+BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
+    >>> sm = BorderlineSMOTE(random_state=42)
+    >>> X_res, y_res = sm.fit_sample(X, y)
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{0: 900, 1: 900}})
+
+    """
+
+    def __init__(self,
+                 sampling_strategy='auto',
+                 random_state=None,
+                 k_neighbors=5,
+                 n_jobs=1,
+                 m_neighbors=10,
+                 kind='borderline-1'):
+        super(BorderlineSMOTE, self).__init__(
+            sampling_strategy=sampling_strategy, random_state=random_state,
+            k_neighbors=k_neighbors, n_jobs=n_jobs, ratio=None)
+        self.m_neighbors = m_neighbors
+        self.kind = kind
+
     def _validate_estimator(self):
-        """Create the necessary objects for SMOTE."""
-
-        if self.kind not in SMOTE_KIND:
-            raise ValueError('Unknown kind for SMOTE algorithm.'
-                             ' Choices are {}. Got {} instead.'.format(
-                                 SMOTE_KIND, self.kind))
-
-        self.nn_k_ = check_neighbors_object(
+        super(BorderlineSMOTE, self)._validate_estimator()
+        self.nn_m_ = check_neighbors_object(
             'k_neighbors', self.k_neighbors, additional_neighbor=1)
-        self.nn_k_.set_params(**{'n_jobs': self.n_jobs})
+        self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
+        if self.kind not in ('borderline-1', 'borderline-2'):
+            raise ValueError('The possible "kind" of algorithm are '
+                             '"borderline-1" and "borderline-2".'
+                             'Got {} instead.'.format(self.kind))
 
-        if self.kind != 'regular':
-            self.nn_m_ = check_neighbors_object(
-                'm_neighbors', self.m_neighbors, additional_neighbor=1)
-            self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
+    def _sample(self, X, y):
+        self._validate_estimator()
 
-        if self.kind == 'svm':
-            if self.svm_estimator is None:
-                self.svm_estimator_ = SVC(random_state=self.random_state)
-            elif isinstance(self.svm_estimator, SVC):
-                self.svm_estimator_ = self.svm_estimator
-            else:
-                raise_isinstance_error('svm_estimator', [SVC],
-                                       self.svm_estimator)
-
-    def _sample_regular(self, X, y):
-        """Resample the dataset using the regular SMOTE implementation.
-
-        Use the regular SMOTE algorithm proposed in [1]_.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
-
-        References
-        ----------
-        .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
-           synthetic minority over-sampling technique," Journal of artificial
-           intelligence research, 321-357, 2002.
-
-        """
-
-        X_resampled = X.copy()
-        y_resampled = y.copy()
-
-        for class_sample, n_samples in self.sampling_strategy_.items():
-            if n_samples == 0:
-                continue
-            target_class_indices = np.flatnonzero(y == class_sample)
-            X_class = safe_indexing(X, target_class_indices)
-
-            self.nn_k_.fit(X_class)
-            nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
-            X_new, y_new = self._make_samples(X_class, class_sample, X_class,
-                                              nns, n_samples, 1.0)
-
-            if sparse.issparse(X_new):
-                X_resampled = sparse.vstack([X_resampled, X_new])
-            else:
-                X_resampled = np.vstack((X_resampled, X_new))
-            y_resampled = np.hstack((y_resampled, y_new))
-
-        return X_resampled, y_resampled
-
-    def _sample_borderline(self, X, y):
-        """Resample the dataset using the borderline SMOTE implementation.
-
-        Use the borderline SMOTE algorithm proposed in [2]_. Two methods can be
-        used: (i) borderline-1 or (ii) borderline-2. A nearest-neighbours
-        algorithm is used to determine the samples forming the boundaries and
-        will create samples next to those features depending on some criterion.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
-
-        References
-        ----------
-        .. [2] H. Han, W. Wen-Yuan, M. Bing-Huan, "Borderline-SMOTE: a new
-           over-sampling method in imbalanced data sets learning," Advances in
-           intelligent computing, 878-887, 2005.
-
-        """
         X_resampled = X.copy()
         y_resampled = y.copy()
 
@@ -402,7 +292,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
             self.nn_m_.fit(X)
             danger_index = self._in_danger_noise(
-                X_class, class_sample, y, kind='danger')
+                self.nn_m_, X_class, class_sample, y, kind='danger')
             if not any(danger_index):
                 continue
 
@@ -412,7 +302,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                 return_distance=False)[:, 1:]
 
             # divergence between borderline-1 and borderline-2
-            if self.kind == 'borderline1':
+            if self.kind == 'borderline-1':
                 # Create synthetic samples for borderline points.
                 X_new, y_new = self._make_samples(
                     safe_indexing(X_class, danger_index), class_sample,
@@ -423,7 +313,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                     X_resampled = np.vstack((X_resampled, X_new))
                 y_resampled = np.hstack((y_resampled, y_new))
 
-            else:
+            elif self.kind == 'borderline-2':
                 random_state = check_random_state(self.random_state)
                 fractions = random_state.beta(10, 10)
 
@@ -456,36 +346,120 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         return X_resampled, y_resampled
 
-    def _sample_svm(self, X, y):
-        """Resample the dataset using the SVM SMOTE implementation.
 
-        Use the SVM SMOTE algorithm proposed in [3]_. A SVM classifier detect
-        support vectors to get a notion of the boundary.
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
+class SVMSMOTE(BaseSMOTE):
+    """Over-sampling using SVM-SMOTE.
 
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
+    Variant of SMOTE algorithm which use an SVM algorithm to detect sample to
+    use for generating new synthetic samples as proposed in [2]_.
 
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
+    Read more in the :ref:`User Guide <smote_adasyn>`.
 
-        Returns
-        -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
-            The array containing the resampled data.
+    Parameters
+    ----------
+    {sampling_strategy}
 
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
+    {random_state}
 
-        References
-        ----------
-        .. [3] H. M. Nguyen, E. W. Cooper, K. Kamei, "Borderline over-sampling
-           for imbalanced data classification," International Journal of
-           Knowledge Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2001.
+    k_neighbors : int or object, optional (default=5)
+        If ``int``, number of nearest neighbours to used to construct synthetic
+        samples.  If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
 
-        """
+    n_jobs : int, optional (default=1)
+        The number of threads to open if possible.
+
+    m_neighbors : int or object, optional (default=10)
+        If int, number of nearest neighbours to use to determine if a minority
+        sample is in danger. If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the m_neighbors.
+
+    svm_estimator : object, optional (default=SVC())
+        A parametrized :class:`sklearn.svm.SVC` classifier can be passed.
+
+    out_step : float, optional (default=0.5)
+        Step size when extrapolating.
+
+    Notes
+    -----
+    See the original papers: [2]_ for more details.
+
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
+    originally proposed in [1]_.
+
+    See also
+    --------
+    SMOTE : Over-sample using SMOTE.
+
+    BorderlineSMOTE : Over-sample using Borderline-SMOTE.
+
+    ADASYN : Over-sample using ADASYN.
+
+    References
+    ----------
+    .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
+       synthetic minority over-sampling technique," Journal of artificial
+       intelligence research, 321-357, 2002.
+
+    .. [2] H. M. Nguyen, E. W. Cooper, K. Kamei, "Borderline over-sampling for
+       imbalanced data classification," International Journal of Knowledge
+       Engineering and Soft Data Paradigms, 3(1), pp.4-21, 2009.
+
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import make_classification
+    >>> from imblearn.over_sampling import \
+SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
+    >>> sm = SVMSMOTE(random_state=42)
+    >>> X_res, y_res = sm.fit_sample(X, y)
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{0: 900, 1: 900}})
+
+    """
+
+    def __init__(self,
+                 sampling_strategy='auto',
+                 random_state=None,
+                 k_neighbors=5,
+                 n_jobs=1,
+                 m_neighbors=10,
+                 svm_estimator=None,
+                 out_step=0.5):
+        super(SVMSMOTE, self).__init__(
+            sampling_strategy=sampling_strategy, random_state=random_state,
+            k_neighbors=k_neighbors, n_jobs=n_jobs, ratio=None)
+        self.m_neighbors = m_neighbors
+        self.svm_estimator = svm_estimator
+        self.out_step = out_step
+
+    def _validate_estimator(self):
+        super(SVMSMOTE, self)._validate_estimator()
+        self.nn_m_ = check_neighbors_object(
+            'k_neighbors', self.k_neighbors, additional_neighbor=1)
+        self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
+
+        if self.svm_estimator is None:
+            self.svm_estimator_ = SVC(random_state=self.random_state)
+        elif isinstance(self.svm_estimator, SVC):
+            self.svm_estimator_ = self.svm_estimator
+        else:
+            raise_isinstance_error('svm_estimator', [SVC],
+                                   self.svm_estimator)
+
+    def _sample(self, X, y):
+        self._validate_estimator()
         random_state = check_random_state(self.random_state)
         X_resampled = X.copy()
         y_resampled = y.copy()
@@ -503,15 +477,16 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
             self.nn_m_.fit(X)
             noise_bool = self._in_danger_noise(
-                support_vector, class_sample, y, kind='noise')
+                self.nn_m_, support_vector, class_sample, y, kind='noise')
             support_vector = safe_indexing(
                 support_vector, np.flatnonzero(np.logical_not(noise_bool)))
             danger_bool = self._in_danger_noise(
-                support_vector, class_sample, y, kind='danger')
+                self.nn_m_, support_vector, class_sample, y, kind='danger')
             safety_bool = np.logical_not(danger_bool)
 
             self.nn_k_.fit(X_class)
             fractions = random_state.beta(10, 10)
+            n_generated_samples = int(fractions * (n_samples + 1))
             if np.count_nonzero(danger_bool) > 0:
                 nns = self.nn_k_.kneighbors(
                     safe_indexing(support_vector, np.flatnonzero(danger_bool)),
@@ -522,7 +497,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                     class_sample,
                     X_class,
                     nns,
-                    int(fractions * (n_samples + 1)),
+                    n_generated_samples,
                     step_size=1.)
 
             if np.count_nonzero(safety_bool) > 0:
@@ -535,7 +510,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                     class_sample,
                     X_class,
                     nns,
-                    int((1 - fractions) * n_samples),
+                    n_samples - n_generated_samples,
                     step_size=-self.out_step)
 
             if (np.count_nonzero(danger_bool) > 0 and
@@ -562,65 +537,308 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
         return X_resampled, y_resampled
 
+
+# FIXME: In 0.6, SMOTE should inherit only from BaseSMOTE.
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
+class SMOTE(SVMSMOTE, BorderlineSMOTE):
+    """Class to perform over-sampling using SMOTE.
+
+    This object is an implementation of SMOTE - Synthetic Minority
+    Over-sampling Technique as presented in [1]_.
+
+    Read more in the :ref:`User Guide <smote_adasyn>`.
+
+    Parameters
+    ----------
+    {sampling_strategy}
+
+    {random_state}
+
+    k_neighbors : int or object, optional (default=5)
+        If ``int``, number of nearest neighbours to used to construct synthetic
+        samples.  If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
+
+    m_neighbors : int or object, optional (default=10)
+        If int, number of nearest neighbours to use to determine if a minority
+        sample is in danger. Used with ``kind={{'borderline1', 'borderline2',
+        'svm'}}``.  If object, an estimator that inherits
+        from :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used
+        to find the k_neighbors.
+
+        .. deprecated:: 0.4
+           ``m_neighbors`` is deprecated in 0.4 and will be removed in 0.6. Use
+           :class:`BorderlineSMOTE` or :class:`SVMSMOTE` instead to use the
+           intended algorithm.
+
+    out_step : float, optional (default=0.5)
+        Step size when extrapolating. Used with ``kind='svm'``.
+
+        .. deprecated:: 0.4
+           ``out_step`` is deprecated in 0.4 and will be removed in 0.6. Use
+           :class:`SVMSMOTE` instead to use the intended algorithm.
+
+    kind : str, optional (default='regular')
+        The type of SMOTE algorithm to use one of the following options:
+        ``'regular'``, ``'borderline1'``, ``'borderline2'``, ``'svm'``.
+
+        .. deprecated:: 0.4
+           ``kind`` is deprecated in 0.4 and will be removed in 0.6. Use
+           :class:`BorderlineSMOTE` or :class:`SVMSMOTE` instead to use the
+           intended algorithm.
+
+    svm_estimator : object, optional (default=SVC())
+        If ``kind='svm'``, a parametrized :class:`sklearn.svm.SVC`
+        classifier can be passed.
+
+        .. deprecated:: 0.4
+           ``out_step`` is deprecated in 0.4 and will be removed in 0.6. Use
+           :class:`SVMSMOTE` instead to use the intended algorithm.
+
+    n_jobs : int, optional (default=1)
+        The number of threads to open if possible.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
+
+    Notes
+    -----
+    See the original papers: [1]_ for more details.
+
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
+    originally proposed in [1]_.
+
+    See also
+    --------
+    BorderlineSMOTE : Over-sample using the borderline-SMOTE variant.
+
+    SVMSMOTE : Over-sample using the SVM-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
+
+    References
+    ----------
+    .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
+       synthetic minority over-sampling technique," Journal of artificial
+       intelligence research, 321-357, 2002.
+
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import make_classification
+    >>> from imblearn.over_sampling import \
+SMOTE # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
+    >>> sm = SMOTE(random_state=42)
+    >>> X_res, y_res = sm.fit_sample(X, y)
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{0: 900, 1: 900}})
+
+    """
+    def __init__(self,
+                 sampling_strategy='auto',
+                 random_state=None,
+                 k_neighbors=5,
+                 m_neighbors='deprecated',
+                 out_step='deprecated',
+                 kind='deprecated',
+                 svm_estimator='deprecated',
+                 n_jobs=1,
+                 ratio=None):
+        # FIXME: in 0.6 call super()
+        BaseSMOTE.__init__(self, sampling_strategy=sampling_strategy,
+                           random_state=random_state, k_neighbors=k_neighbors,
+                           n_jobs=n_jobs, ratio=ratio)
+        self.kind = kind
+        self.m_neighbors = m_neighbors
+        self.out_step = out_step
+        self.svm_estimator = svm_estimator
+        self.n_jobs = n_jobs
+
+    def _validate_estimator(self):
+        # FIXME: in 0.6 call super()
+        BaseSMOTE._validate_estimator(self)
+        # FIXME: remove in 0.6 after deprecation cycle
+        if self.kind != 'deprecated' and not (self.kind == 'borderline-1' or
+                                              self.kind == 'borderline-2'):
+            if self.kind not in SMOTE_KIND:
+                raise ValueError('Unknown kind for SMOTE algorithm.'
+                                 ' Choices are {}. Got {} instead.'.format(
+                                     SMOTE_KIND, self.kind))
+            else:
+                warnings.warn('"kind" is deprecated in 0.4 and will be '
+                              'removed in 0.6. Use SMOTE, BorderlineSMOTE or '
+                              'SVMSMOTE instead.', DeprecationWarning)
+
+            if self.kind == 'borderline1' or self.kind == 'borderline2':
+                self._sample = types.MethodType(BorderlineSMOTE._sample, self)
+                self.kind = ('borderline-1' if self.kind == 'borderline1'
+                             else 'borderline-2')
+
+            elif self.kind == 'svm':
+                self._sample = types.MethodType(SVMSMOTE._sample, self)
+
+                if self.out_step == 'deprecated':
+                    self.out_step = 0.5
+                else:
+                    warnings.warn('"out_step" is deprecated in 0.4 and will '
+                                  'be removed in 0.6. Use SVMSMOTE class '
+                                  'instead.', DeprecationWarning)
+
+                if self.svm_estimator == 'deprecated':
+                    warnings.warn('"svm_estimator" is deprecated in 0.4 and '
+                                  'will be removed in 0.6. Use SVMSMOTE class '
+                                  'instead.', DeprecationWarning)
+                if (self.svm_estimator is None or
+                        self.svm_estimator == 'deprecated'):
+                    self.svm_estimator_ = SVC(random_state=self.random_state)
+                elif isinstance(self.svm_estimator, SVC):
+                    self.svm_estimator_ = self.svm_estimator
+                else:
+                    raise_isinstance_error('svm_estimator', [SVC],
+                                           self.svm_estimator)
+
+            if self.kind != 'regular':
+                if self.m_neighbors == 'deprecated':
+                    self.m_neighbors = 10
+                else:
+                    warnings.warn('"m_neighbors" is deprecated in 0.4 and '
+                                  'will be removed in 0.6. Use SVMSMOTE class '
+                                  'or BorderlineSMOTE instead.',
+                                  DeprecationWarning)
+
+                self.nn_m_ = check_neighbors_object(
+                    'm_neighbors', self.m_neighbors, additional_neighbor=1)
+                self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
+
+    # FIXME: to be removed in 0.6
+    def fit(self, X, y):
+        self._validate_estimator()
+        BaseSMOTE.fit(self, X, y)
+        return self
+
+    def _sample(self, X, y):
+        # FIXME: uncomment in version 0.6
+        # self._validate_estimator()
+
+        X_resampled = X.copy()
+        y_resampled = y.copy()
+
+        for class_sample, n_samples in self.sampling_strategy_.items():
+            if n_samples == 0:
+                continue
+            target_class_indices = np.flatnonzero(y == class_sample)
+            X_class = safe_indexing(X, target_class_indices)
+
+            self.nn_k_.fit(X_class)
+            nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
+            X_new, y_new = self._make_samples(X_class, class_sample, X_class,
+                                              nns, n_samples, 1.0)
+
+            if sparse.issparse(X_new):
+                X_resampled = sparse.vstack([X_resampled, X_new])
+            else:
+                X_resampled = np.vstack((X_resampled, X_new))
+            y_resampled = np.hstack((y_resampled, y_new))
+
+        return X_resampled, y_resampled
+
+
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
+class KMeansSMOTE(BaseSMOTE):
+    """Apply a KMeans clustering before to over-sample using SMOTE.
+
+    This is an implementation of the algorithm described in [1]_.
+
+    Read more in the :ref:`User Guide <smote_adasyn>`.
+
+    Parameters
+    ----------
+    {sampling_strategy}
+
+    {random_state}
+
+    k_neighbors : int or object, optional (default=5)
+        If ``int``, number of nearest neighbours to used to construct synthetic
+        samples.  If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
+
+    n_jobs : int, optional (default=1)
+        The number of threads to open if possible.
+
+    kmeans_estimator : int or object, optional (default=KMeans())
+        A KMeans instance or the number of clusters.
+
+    cluster_balance_threshold: float, optional (default=0.5)
+        The threshold at which a cluster is called balanced and where samples
+        of the class selected for SMOTE will be oversampled.
+
+    density_exponent: str or float, optional (default="auto")
+        This exponent is used to determine the density of a cluster. Leaving it
+        to 'auto' will use a feature-length based exponent.
+
+    """
+    def __init__(self,
+                 sampling_strategy='auto',
+                 random_state=None,
+                 k_neighbors=5,
+                 n_jobs=1,
+                 kmeans_estimator=None,
+                 cluster_balance_threshold=0.5,
+                 density_exponent="auto"):
+        super(KMeansSMOTE, self).__init__(
+            sampling_strategy=sampling_strategy, random_state=random_state,
+            k_neighbors=k_neighbors, n_jobs=n_jobs, ratio=None)
+        self.kmeans_estimator = kmeans_estimator
+        self.cluster_balance_threshold = cluster_balance_threshold
+        self.density_exponent = density_exponent
+
+    def _validate_estimator(self):
+        super(KMeansSMOTE, self)._validate_estimator()
+        if self.kmeans_estimator is None:
+            self.kmeans_estimator_ = KMeans(
+                random_state=self.random_state)
+        elif isinstance(self.kmeans_estimator, Integral):
+            self.kmeans_estimator_ = KMeans(
+                n_clusters=self.kmeans_estimator,
+                random_state=self.random_state)
+        else:
+            self.kmeans_estimator_ = clone(self.kmeans_estimator)
+
+        self.cluster_balance_threshold_ = (
+            self.cluster_balance_threshold
+            if self.kmeans_estimator_.n_clusters != 1 else -np.inf)
+
     def _find_cluster_sparsity(self, X):
-        """ Finds the sparsity of a cluster of samples. The sparsity is
-         calculated according to the method described in [4]_. ``'de'``  is
-         specified with the ``'densitity_estimation_exponent'``, which defaults
-         to 'auto'. With automatic exponent selection, a value is chosen
-         that closely fits the magnitude in all directions of a unit vector
-         in that feature space according the formula
-         ``'log(n, 1.6) ** 1.8 * 0.16'``
-         where n indicates the number of dimensions. """
+        euclidean_distances = pairwise_distances(X, metric="euclidean",
+                                                 n_jobs=self.n_jobs)
 
-        euclidean_distances = pairwise_distances(
-            X, metric="euclidean", n_jobs=self.n_jobs
-        )
-
-        # Negate diagonal elements.
+        # negate diagonal elements
         for ind in range(X.shape[0]):
             euclidean_distances[ind, ind] = 0
 
         non_diag_elements = (len(X) ** 2) - len(X)
         mean_distance = euclidean_distances.sum() / non_diag_elements
+        exponent = (math.log(len(X), 1.6) ** 1.8 * 0.16
+                    if self.density_exponent == 'auto'
+                    else self.density_exponent)
+        return (mean_distance ** exponent) / X.shape[0]
 
-        de = self.density_estimation_exponent
-        if self.density_estimation_exponent == "auto":
-            de = math.log(len(X), 1.6) ** 1.8 * 0.16
-
-        density = len(X) / (mean_distance ** de)
-        sparsity = 1 / density
-        return sparsity
-
-    def _sample_kmeans(self, X, y):
-        """Resample the dataset using the SMOTE K-Means implementation.
-
-        Use the SMOTE K-Means algorithm proposed in [4]_. K-Means clustering
-        is used to select samples for over sampling.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
-
-        References
-        ----------
-        .. [4] Felix Last, Georgios Douzas, and Fernando Bacao, "Oversampling
-           for Imbalanced Learning based on K-Means and SMOTE",
-           https://arxiv.org/pdf/1711.00837.pdf
-
-        """
+    def _sample(self, X, y):
+        self._validate_estimator()
         random_state = check_random_state(self.random_state)
         X_resampled = X.copy()
         y_resampled = y.copy()
@@ -631,122 +849,65 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             target_class_indices = np.flatnonzero(y == class_sample)
             X_class = safe_indexing(X, target_class_indices)
 
-            km = KMeans(
-                self.n_kmeans_clusters,
-                random_state=random_state,
-                n_jobs=self.n_jobs
-            )
-            X_clusters = km.fit_predict(X)
+            X_clusters = self.kmeans_estimator_.fit_predict(X)
 
             valid_clusters = []
             cluster_sparsities = []
 
-            cluster_balance_threshold = self.cluster_balance_threshold
-            # A specifying a single cluster will act as normal SMOTE
-            if self.n_kmeans_clusters == 1:
-                cluster_balance_threshold = float("-inf")
-
             # Identify valid clusters
-            for cluster_n in range(self.n_kmeans_clusters):
-                cluster_index = np.flatnonzero(X_clusters == cluster_n)
+            for cluster_idx in range(self.kmeans_estimator_.n_clusters):
+                cluster_mask = np.flatnonzero(X_clusters == cluster_idx)
 
-                X_cluster = safe_indexing(X, cluster_index)
-                y_cluster = safe_indexing(y, cluster_index)
+                X_cluster = safe_indexing(X, cluster_mask)
+                y_cluster = safe_indexing(y, cluster_mask)
 
                 cluster_class_mean = (y_cluster == class_sample).mean()
 
-                if cluster_class_mean < cluster_balance_threshold:
+                if cluster_class_mean < self.cluster_balance_threshold_:
                     continue
 
                 X_cluster_class = safe_indexing(
-                    X_cluster,
-                    np.flatnonzero(y_cluster == class_sample)
-                )
+                    X_cluster, np.flatnonzero(y_cluster == class_sample))
 
-                valid_clusters.append(cluster_index)
+                valid_clusters.append(cluster_mask)
                 cluster_sparsities.append(
-                    self._find_cluster_sparsity(X_cluster_class)
-                )
+                    self._find_cluster_sparsity(X_cluster_class))
 
-            cluster_weights = [
-                cs / sum(cluster_sparsities) for cs in cluster_sparsities
-            ]
+            cluster_sparsities = np.array(cluster_sparsities)
+            cluster_weights = cluster_sparsities / cluster_sparsities.sum()
 
             if not valid_clusters:
                 raise RuntimeError(
                     "No clusters found with sufficient samples of "
-                    "class {}.".format(class_sample)
-                )
+                    "class {}.".format(class_sample))
 
-            for cluster_n in range(len(valid_clusters)):
-                X_cluster = safe_indexing(X, valid_clusters[cluster_n])
-                y_cluster = safe_indexing(y, valid_clusters[cluster_n])
+            for valid_cluster_idx, valid_cluster in enumerate(valid_clusters):
+                X_cluster = safe_indexing(X, valid_cluster)
+                y_cluster = safe_indexing(y, valid_cluster)
 
                 X_cluster_class = safe_indexing(
-                    X_cluster, np.flatnonzero(y_cluster == class_sample)
-                )
+                    X_cluster, np.flatnonzero(y_cluster == class_sample))
 
-                cluster_k_neighbours = min(
-                    self.k_neighbors,
-                    len(X_cluster_class)
-                )
+                cluster_k_neighbours = min(self.nn_k_.n_neighbors,
+                                           len(X_cluster_class) + 1)
+                self.nn_k_.set_params(n_neighbors=cluster_k_neighbours)
 
-                nn_k = check_neighbors_object(
-                    'k_neighbors',
-                    cluster_k_neighbours,
-                    additional_neighbor=1
-                )
+                self.nn_k_.fit(X_cluster_class)
+                nns = self.nn_k_.kneighbors(X_cluster_class,
+                                            return_distance=False)[:, 1:]
 
-                nn_k.fit(X_cluster_class)
-                nns = nn_k.kneighbors(
-                    X_cluster_class, return_distance=False
-                )[:, 1:]
+                cluster_n_samples = int(
+                    n_samples * cluster_weights[valid_cluster_idx])
 
-                c_n_samples = int(n_samples * cluster_weights[cluster_n])
-
-                X_new, y_new = self._make_samples(
-                    X_cluster_class,
-                    class_sample,
-                    X_class,
-                    nns,
-                    c_n_samples,
-                    1.0
-                )
+                X_new, y_new = self._make_samples(X_cluster_class,
+                                                  class_sample,
+                                                  X_class,
+                                                  nns,
+                                                  cluster_n_samples,
+                                                  1.0)
 
                 stack = [np.vstack, sparse.vstack][int(sparse.issparse(X_new))]
                 X_resampled = stack((X_resampled, X_new))
                 y_resampled = np.hstack((y_resampled, y_new))
 
         return X_resampled, y_resampled
-
-    def _sample(self, X, y):
-        """Resample the dataset.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
-
-        """
-        self._validate_estimator()
-
-        if self.kind == 'regular':
-            return self._sample_regular(X, y)
-        elif self.kind == 'borderline1' or self.kind == 'borderline2':
-            return self._sample_borderline(X, y)
-        elif self.kind == 'svm':
-            return self._sample_svm(X, y)
-        elif self.kind == 'kmeans':
-            return self._sample_kmeans(X, y)

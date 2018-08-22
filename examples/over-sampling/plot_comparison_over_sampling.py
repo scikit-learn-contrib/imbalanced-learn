@@ -20,7 +20,10 @@ from sklearn.datasets import make_classification
 from sklearn.svm import LinearSVC
 
 from imblearn.pipeline import make_pipeline
-from imblearn.over_sampling import ADASYN, SMOTE, RandomOverSampler
+from imblearn.over_sampling import ADASYN
+from imblearn.over_sampling import (SMOTE, BorderlineSMOTE, KMeansSMOTE,
+                                    SVMSMOTE)
+from imblearn.over_sampling import RandomOverSampler
 from imblearn.base import SamplerMixin
 from imblearn.utils import hash_X_y
 
@@ -220,23 +223,21 @@ fig, ((ax1, ax2), (ax3, ax4),
 X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94),
                       class_sep=0.8)
 
+
 ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10))
-string_add = ['regular', 'borderline-1', 'borderline-2', 'SVM', 'K-Means']
-for str_add, ax, sampler in zip(string_add,
-                                ax_arr,
-                                (SMOTE(random_state=0),
-                                 SMOTE(random_state=0, kind='borderline1'),
-                                 SMOTE(random_state=0, kind='borderline2'),
-                                 SMOTE(random_state=0, kind='svm'),
-                                 SMOTE(random_state=0, kind='kmeans'))):
+for ax, sampler in zip(ax_arr,
+                       (SMOTE(random_state=0),
+                        BorderlineSMOTE(random_state=0, kind='borderline-1'),
+                        BorderlineSMOTE(random_state=0, kind='borderline-2'),
+                        KMeansSMOTE(kmeans_estimator=3, random_state=0),
+                        SVMSMOTE(random_state=0))):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
-    ax[0].set_title('Decision function for {} {}'.format(
-        str_add, sampler.__class__.__name__))
+    ax[0].set_title('Decision function for {}'.format(
+        sampler.__class__.__name__))
     plot_resampling(X, y, sampler, ax[1])
-    ax[1].set_title('Resampling using {} {}'.format(
-        str_add, sampler.__class__.__name__))
+    ax[1].set_title('Resampling using {}'.format(sampler.__class__.__name__))
 fig.tight_layout()
 
 plt.show()
