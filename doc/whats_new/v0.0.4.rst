@@ -56,6 +56,10 @@ Bug fixes
   generating new samples. :issue:`354` by :user:`Guillaume Lemaitre
   <glemaitre>`.
 
+- Fix bug which allow for sorted behavior of ``sampling_strategy`` dictionary
+  and thus to obtain a deterministic results when using the same random state.
+  :issue:`447` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 - Force to clone scikit-learn estimator passed as attributes to samplers.
   :issue:`446` by :user:`Guillaume Lemaitre <glemaitre>`.
 

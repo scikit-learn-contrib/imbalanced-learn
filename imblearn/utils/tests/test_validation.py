@@ -4,6 +4,7 @@
 # License: MIT
 
 from collections import Counter
+from collections import OrderedDict
 
 import pytest
 import numpy as np
@@ -372,3 +373,19 @@ def test_hash_X_y():
     y = np.array([0] * 2 + [1] * 3)
     # all data will be used in this case
     assert hash_X_y(X, y) == (joblib.hash(X), joblib.hash(y))
+
+
+@pytest.mark.parametrize(
+    "sampling_strategy, sampling_type, expected_result",
+    [({3: 25, 1: 25, 2: 25}, 'under-sampling',
+      OrderedDict({1: 25, 2: 25, 3: 25})),
+     ({3: 100, 1: 100, 2: 100}, 'over-sampling',
+      OrderedDict({1: 50, 2: 0, 3: 75}))])
+def test_sampling_strategy_check_order(sampling_strategy, sampling_type,
+                                       expected_result):
+    # We pass on purpose a non sorted dictionary and check that the resulting
+    # dictionary is sorted. Refer to issue #428.
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    sampling_strategy_ = check_sampling_strategy(
+        sampling_strategy, y, sampling_type)
+    assert sampling_strategy_ == expected_result
