@@ -377,9 +377,9 @@ def test_hash_X_y():
 @pytest.mark.parametrize(
     "sampling_strategy, sampling_type, expected_result",
     [({3: 25, 1: 25, 2: 25}, 'under-sampling',
-      OrderedDict({1: 25, 2: 25, 3:25})),
+      OrderedDict({1: 25, 2: 25, 3: 25})),
      ({3: 100, 1: 100, 2: 100}, 'over-sampling',
-      OrderedDict({1:50, 2:0, 3:75}))])
+      OrderedDict({1: 50, 2: 0, 3: 75}))])
 def test_sampling_strategy_check_order(sampling_strategy, sampling_type,
                                        expected_result):
     # We pass on purpose a non sorted dictionary and check that the resulting
