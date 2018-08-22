@@ -11,6 +11,7 @@ from __future__ import division, print_function
 import numpy as np
 from scipy import sparse
 
+from sklearn.base import clone
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import safe_indexing
@@ -113,7 +114,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             self.estimator_ = KMeans(
                 random_state=self.random_state, n_jobs=self.n_jobs)
         elif isinstance(self.estimator, KMeans):
-            self.estimator_ = self.estimator
+            self.estimator_ = clone(self.estimator)
         else:
             raise ValueError('`estimator` has to be a KMeans clustering.'
                              ' Got {} instead.'.format(type(self.estimator)))
