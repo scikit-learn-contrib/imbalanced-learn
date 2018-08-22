@@ -32,6 +32,10 @@ class RandomOverSampler(BaseOverSampler):
 
     {random_state}
 
+    return_indices : bool, optional (default=False)
+        Whether or not to return the indices of the samples randomly selected
+        in the corresponding classes.
+
     ratio : str, dict, or callable
         .. deprecated:: 0.4
            Use the parameter ``sampling_strategy`` instead. It will be removed
@@ -66,10 +70,13 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self, sampling_strategy='auto', random_state=None,
+    def __init__(self, sampling_strategy='auto',
+                 return_indices=False,
+                 random_state=None,
                  ratio=None):
         super(RandomOverSampler, self).__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
+        self.return_indices = return_indices
         self.random_state = random_state
 
     def _sample(self, X, y):
@@ -106,5 +113,9 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
             sample_indices = np.append(sample_indices,
                                        target_class_indices[indices])
 
-        return (safe_indexing(X, sample_indices), safe_indexing(
-            y, sample_indices))
+        if self.return_indices:
+            return (safe_indexing(X, sample_indices), safe_indexing(
+                    y, sample_indices), sample_indices)
+        else:
+            return (safe_indexing(X, sample_indices), safe_indexing(
+                    y, sample_indices))
