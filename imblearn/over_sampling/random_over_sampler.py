@@ -30,11 +30,11 @@ class RandomOverSampler(BaseOverSampler):
     ----------
     {sampling_strategy}
 
+    {random_state}
+
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly selected
         in the corresponding classes.
-
-    {random_state}
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
