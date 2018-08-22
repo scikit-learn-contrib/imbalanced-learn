@@ -23,7 +23,8 @@ from ..utils._docstring import _random_state_docstring
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring)
 class BalancedBaggingClassifier(BaggingClassifier):
-    """A Bagging classifier with additional balancing.
+    """A Bagging classifier with additional balancing. It is similar to
+    ``EasyEnsemble`` [6]_.
 
     This implementation of Bagging is similar to the scikit-learn
     implementation. It includes an additional step to balance the training set
@@ -146,6 +147,10 @@ class BalancedBaggingClassifier(BaggingClassifier):
     .. [5] Chen, Chao, Andy Liaw, and Leo Breiman. "Using random forest to
            learn imbalanced data." University of California, Berkeley 110,
            2004.
+    .. [6] X. Y. Liu, J. Wu and Z. H. Zhou, "Exploratory Undersampling for
+           Class-Imbalance Learning," in IEEE Transactions on Systems, Man, and
+           Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550,
+           April 2009.
 
     Examples
     --------
