@@ -28,9 +28,10 @@ __all__ = ['Pipeline', 'make_pipeline']
 class Pipeline(pipeline.Pipeline):
     """Pipeline of transforms and resamples with a final estimator.
 
-    Sequentially apply a list of transforms, samples and a final estimator.
+    Sequentially apply a list of transforms, sampling, and a final estimator.
     Intermediate steps of the pipeline must be transformers or resamplers,
     that is, they must implement fit, transform and sample methods.
+    The samplers are only applied during fit.
     The final estimator only needs to implement fit.
     The transformers and samplers in the pipeline can be cached using
     ``memory`` argument.
