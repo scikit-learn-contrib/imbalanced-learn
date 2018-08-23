@@ -3,12 +3,17 @@
 #          Christos Aridas
 # License: MIT
 
+import pytest
 import numpy as np
 
 from sklearn.datasets import load_iris
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.utils.testing import assert_array_equal
+from sklearn.model_selection import train_test_split
 
 from imblearn.ensemble import EasyEnsemble
+from imblearn.ensemble import EasyEnsembleClassifier
+from imblearn.datasets import make_imbalance
 
 iris = load_iris()
 
@@ -106,3 +111,29 @@ def test_random_state_none():
 
     # Get the different subset
     X_resampled, y_resampled = ee.fit_sample(X, Y)
+
+
+@pytest.mark.parametrize("n_estimators", [10, 20, 30])
+@pytest.mark.parametrize("adaboost_estimator", [
+    AdaBoostClassifier(n_estimators=50),
+    AdaBoostClassifier(n_estimators=100)])
+def test_easy_ensemble_classifier(n_estimators, adaboost_estimator):
+    # Check classification for various parameter settings.
+    X, y = make_imbalance(
+        iris.data,
+        iris.target,
+        sampling_strategy={0: 20,
+                           1: 25,
+                           2: 50},
+        random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+
+    eec = EasyEnsembleClassifier(n_estimators=n_estimators,
+                                 adaboost_estimator=adaboost_estimator,
+                                 n_jobs=-1,
+                                 random_state=RND_SEED)
+    eec.fit(X_train, y_train).score(X_test, y_test)
+    assert len(eec.estimators_) == n_estimators
+    for est in eec.estimators_:
+        assert (len(est.named_steps['classifier']) ==
+                adaboost_estimator.n_estimators)

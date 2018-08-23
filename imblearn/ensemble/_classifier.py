@@ -194,7 +194,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
                  verbose=0,
                  ratio=None):
 
-        super(BaggingClassifier, self).__init__(
+        super(BalancedBaggingClassifier, self).__init__(
             base_estimator,
             n_estimators=n_estimators,
             max_samples=max_samples,
