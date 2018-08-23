@@ -108,8 +108,8 @@ In addition, :class:`RandomUnderSampler` allows to sample heterogeneous data
 
   >>> X_hetero = np.array([['xxx', 1, 1.0], ['yyy', 2, 2.0], ['zzz', 3, 3.0]],
   ...                     dtype=np.object)
-  >>> y = np.array([0, 0, 1])
-  >>> X_resampled, y_resampled = rus.fit_sample(X_hetero, y)
+  >>> y_hetero = np.array([0, 0, 1])
+  >>> X_resampled, y_resampled = rus.fit_sample(X_hetero, y_hetero)
   >>> print(X_resampled)
   [['xxx' 1 1.0]
    ['zzz' 3 3.0]]
