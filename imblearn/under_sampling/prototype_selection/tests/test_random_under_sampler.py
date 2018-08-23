@@ -63,7 +63,6 @@ def test_rus_fit_sample_half():
                      [0.15490546, 0.3130677], [0.20792588, 1.49407907],
                      [0.15490546, 0.3130677], [0.12372842, 0.6536186]])
     y_gt = np.array([0, 0, 0, 1, 1, 1, 1, 1, 1])
-    print(X_resampled)
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -78,3 +77,15 @@ def test_multiclass_fit_sample():
     assert count_y_res[0] == 2
     assert count_y_res[1] == 2
     assert count_y_res[2] == 2
+
+
+def test_random_under_sampling_heterogeneous_data():
+    X_hetero = np.array([['xxx', 1, 1.0], ['yyy', 2, 2.0], ['zzz', 3, 3.0]],
+                        dtype=np.object)
+    y = np.array([0, 0, 1])
+    rus = RandomUnderSampler(random_state=RND_SEED)
+    X_res, y_res = rus.fit_sample(X_hetero, y)
+
+    assert X_res.shape[0] == 2
+    assert y_res.shape[0] == 2
+    assert X_res.dtype == object

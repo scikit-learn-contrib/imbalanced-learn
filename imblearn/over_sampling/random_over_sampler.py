@@ -8,9 +8,10 @@ from __future__ import division
 from collections import Counter
 
 import numpy as np
-from sklearn.utils import check_random_state, safe_indexing
+from sklearn.utils import check_X_y, check_random_state, safe_indexing
 
 from .base import BaseOverSampler
+from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
@@ -78,6 +79,12 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.return_indices = return_indices
         self.random_state = random_state
+
+    @staticmethod
+    def _check_X_y(X, y):
+        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
+        return X, y, binarize_y
 
     def _sample(self, X, y):
         """Resample the dataset.

@@ -7,6 +7,7 @@ from __future__ import print_function
 
 from collections import Counter
 
+import pytest
 import numpy as np
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_array_equal
@@ -88,3 +89,16 @@ def test_multiclass_fit_sample():
     assert count_y_res[0] == 5
     assert count_y_res[1] == 5
     assert count_y_res[2] == 5
+
+
+def test_random_over_sampling_heterogeneous_data():
+    X_hetero = np.array([['xxx', 1, 1.0], ['yyy', 2, 2.0], ['zzz', 3, 3.0]],
+                        dtype=np.object)
+    y = np.array([0, 0, 1])
+    ros = RandomOverSampler(random_state=RND_SEED)
+    X_res, y_res = ros.fit_sample(X_hetero, y)
+
+    assert X_res.shape[0] == 4
+    assert y_res.shape[0] == 4
+    assert X_res.dtype == object
+    assert X_res[-1, 0] in X_hetero[:, 0]

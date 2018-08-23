@@ -60,7 +60,7 @@ class BaseEnsembleSampler(BaseSampler):
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
 
         check_is_fitted(self, 'sampling_strategy_')
-        self._check_X_y(X, y)
+        self._check_X_y_hash(X, y)
 
         output = self._sample(X, y)
 

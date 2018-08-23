@@ -31,13 +31,6 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     _estimator_type = 'sampler'
 
-    def _check_X_y(self, X, y):
-        """Private function to check that the X and y in fitting are the same
-        than in sampling."""
-        X_hash, y_hash = hash_X_y(X, y)
-        if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
-            raise RuntimeError("X and y need to be same array earlier fitted.")
-
     def sample(self, X, y):
         """Resample the dataset.
 
@@ -60,11 +53,10 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         """
         # Check the consistency of X and y
-        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
+        X, y, binarize_y = self._check_X_y(X, y)
 
         check_is_fitted(self, 'sampling_strategy_')
-        self._check_X_y(X, y)
+        self._check_X_y_hash(X, y)
 
         output = self._sample(X, y)
 
@@ -151,6 +143,19 @@ class BaseSampler(SamplerMixin):
         self.ratio = ratio
         self.logger = logging.getLogger(self.__module__)
 
+    @staticmethod
+    def _check_X_y(X, y):
+        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
+        return X, y, binarize_y
+
+    def _check_X_y_hash(self, X, y):
+        """Private function to check that the X and y in fitting are the same
+        than in sampling."""
+        X_hash, y_hash = hash_X_y(X, y)
+        if self.X_hash_ != X_hash or self.y_hash_ != y_hash:
+            raise RuntimeError("X and y need to be same array earlier fitted.")
+
     @property
     def ratio_(self):
         # FIXME: remove in 0.6
@@ -183,9 +188,9 @@ class BaseSampler(SamplerMixin):
 
         """
         self._deprecate_ratio()
-        y = check_target_type(y)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
+        X, y, _ = self._check_X_y(X, y)
         self.X_hash_, self.y_hash_ = hash_X_y(X, y)
+        # _sampling_type is defined in the children base class
         self.sampling_strategy_ = check_sampling_strategy(
             self.sampling_strategy, y, self._sampling_type)
 
