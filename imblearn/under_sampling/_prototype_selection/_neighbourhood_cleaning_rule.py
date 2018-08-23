@@ -14,7 +14,7 @@ from scipy.stats import mode
 from sklearn.utils import safe_indexing
 
 from ..base import BaseCleaningSampler
-from .edited_nearest_neighbours import EditedNearestNeighbours
+from ._edited_nearest_neighbours import EditedNearestNeighbours
 from ...utils import check_neighbors_object
 from ...utils import Substitution
 from ...utils.deprecation import deprecate_parameter
