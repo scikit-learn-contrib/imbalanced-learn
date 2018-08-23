@@ -78,6 +78,15 @@ Maintenance
 - Remove deprecated parameters in 0.2 - :issue:`331` by :user:`Guillaume
   Lemaitre <glemaitre>`.
 
+- Make some modules private.
+  :issue:`452` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Documentation
+.............
+
+- Remove some docstring which are not necessary.
+  :issue:`454` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 
