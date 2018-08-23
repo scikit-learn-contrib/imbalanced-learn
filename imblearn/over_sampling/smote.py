@@ -52,6 +52,7 @@ class BaseSMOTE(BaseOverSampler):
 
     def _make_samples(self,
                       X,
+                      y_dtype,
                       y_type,
                       nn_data,
                       nn_num,
@@ -64,6 +65,9 @@ class BaseSMOTE(BaseOverSampler):
         ----------
         X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Points from which the points will be created.
+
+        y_dtype : dtype
+            The data type of the targets.
 
         y_type : str or int
             The minority target value, just so the function can return the
@@ -108,15 +112,16 @@ class BaseSMOTE(BaseOverSampler):
                     col_indices += sample.indices.tolist()
                     samples += sample.data.tolist()
         else:
-            X_new = np.zeros((n_samples, X.shape[1]))
+            X_new = np.zeros((n_samples, X.shape[1]), dtype=X.dtype)
             for i, (row, col, step) in enumerate(zip(rows, cols, steps)):
                 X_new[i] = X[row] - step * (X[row] - nn_data[nn_num[row, col]])
 
-        y_new = np.array([y_type] * len(samples_indices))
+        y_new = np.array([y_type] * len(samples_indices), dtype=y_dtype)
 
         if sparse.issparse(X):
             return (sparse.csr_matrix((samples, (row_indices, col_indices)),
-                                      [len(samples_indices), X.shape[1]]),
+                                      [len(samples_indices), X.shape[1]],
+                                      dtype=X.dtype),
                     y_new)
         else:
             return X_new, y_new
@@ -301,8 +306,8 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
             if self.kind == 'borderline-1':
                 # Create synthetic samples for borderline points.
                 X_new, y_new = self._make_samples(
-                    safe_indexing(X_class, danger_index), class_sample,
-                    X_class, nns, n_samples)
+                    safe_indexing(X_class, danger_index), y.dtype,
+                    class_sample, X_class, nns, n_samples)
                 if sparse.issparse(X_new):
                     X_resampled = sparse.vstack([X_resampled, X_new])
                 else:
@@ -316,6 +321,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                 # only minority
                 X_new_1, y_new_1 = self._make_samples(
                     safe_indexing(X_class, danger_index),
+                    y.dtype,
                     class_sample,
                     X_class,
                     nns,
@@ -327,6 +333,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                 # class but all over classes.
                 X_new_2, y_new_2 = self._make_samples(
                     safe_indexing(X_class, danger_index),
+                    y.dtype,
                     class_sample,
                     safe_indexing(X, np.flatnonzero(y != class_sample)),
                     nns,
@@ -490,6 +497,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
 
                 X_new_1, y_new_1 = self._make_samples(
                     safe_indexing(support_vector, np.flatnonzero(danger_bool)),
+                    y.dtype,
                     class_sample,
                     X_class,
                     nns,
@@ -503,6 +511,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
 
                 X_new_2, y_new_2 = self._make_samples(
                     safe_indexing(support_vector, np.flatnonzero(safety_bool)),
+                    y.dtype,
                     class_sample,
                     X_class,
                     nns,
@@ -738,8 +747,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
             self.nn_k_.fit(X_class)
             nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
-            X_new, y_new = self._make_samples(X_class, class_sample, X_class,
-                                              nns, n_samples, 1.0)
+            X_new, y_new = self._make_samples(X_class, y.dtype, class_sample,
+                                              X_class, nns, n_samples, 1.0)
 
             if sparse.issparse(X_new):
                 X_resampled = sparse.vstack([X_resampled, X_new])

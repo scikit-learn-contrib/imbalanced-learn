@@ -63,6 +63,10 @@ Bug fixes
 - Force to clone scikit-learn estimator passed as attributes to samplers.
   :issue:`446` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Fix bug which was not preserving the dtype of X and y when generating
+  samples.
+  issue:`448` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Maintenance
 ...........
 
