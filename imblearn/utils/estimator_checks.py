@@ -24,6 +24,7 @@ from sklearn.utils.estimator_checks import check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import assert_allclose
+from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.testing import set_random_state
 from sklearn.utils.multiclass import type_of_target
 
@@ -59,8 +60,7 @@ def monkey_patch_check_dtype_object(name, estimator_orig):
     if name not in SUPPORT_STRING:
         X[0, 0] = {'foo': 'bar'}
         msg = "argument must be a string or a number"
-        with pytest.raises(TypeError, match=msg):
-            estimator.fit(X, y)
+        assert_raises_regex(TypeError, msg, estimator.fit, X, y)
     else:
         estimator.fit(X, y)
 
