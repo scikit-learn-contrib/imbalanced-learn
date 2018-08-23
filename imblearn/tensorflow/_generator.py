@@ -16,7 +16,8 @@ from ..utils._docstring import _random_state_docstring
 
 @Substitution(random_state=_random_state_docstring)
 def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
-                             batch_size=32, sparse=False, random_state=None):
+                             batch_size=32, keep_sparse=False,
+                             random_state=None):
     """Create a balanced batch generator to train keras model.
 
     Returns a generator --- as well as the number of step per epoch --- which
@@ -43,7 +44,7 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
     batch_size : int, optional (default=32)
         Number of samples per gradient update.
 
-    sparse : bool, optional (default=False)
+    keep_sparse : bool, optional (default=False)
         Either or not to conserve or not the sparsity of the input ``X``. By
         default, the returned batches will be dense.
 
@@ -137,7 +138,7 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
             for index in range(0, len(indices), batch_size):
                 X_res = safe_indexing(X, indices[index:index + batch_size])
                 y_res = safe_indexing(y, indices[index:index + batch_size])
-                if issparse(X_res) and not sparse:
+                if issparse(X_res) and not keep_sparse:
                     X_res = X_res.toarray()
                 if sample_weight is None:
                     yield X_res, y_res

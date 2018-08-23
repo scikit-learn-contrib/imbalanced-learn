@@ -52,7 +52,7 @@ class BalancedBatchGenerator(ParentClass):
     batch_size : int, optional (default=32)
         Number of samples per gradient update.
 
-    sparse : bool, optional (default=False)
+    keep_sparse : bool, optional (default=False)
         Either or not to conserve or not the sparsity of the input (i.e. ``X``,
         ``y``, ``sample_weight``). By default, the returned batches will be
         dense.
@@ -98,7 +98,7 @@ class BalancedBatchGenerator(ParentClass):
 
     """
     def __init__(self, X, y, sample_weight=None, sampler=None, batch_size=32,
-                 sparse=False, random_state=None):
+                 keep_sparse=False, random_state=None):
         if not HAS_KERAS:
             raise ImportError("'No module named 'keras'")
         self.X = X
@@ -106,7 +106,7 @@ class BalancedBatchGenerator(ParentClass):
         self.sample_weight = sample_weight
         self.sampler = sampler
         self.batch_size = batch_size
-        self.sparse = sparse
+        self.keep_sparse = keep_sparse
         self.random_state = random_state
         self._sample()
 
@@ -138,7 +138,7 @@ class BalancedBatchGenerator(ParentClass):
         y_resampled = safe_indexing(
             self.y, self.indices_[index * self.batch_size:
                                   (index + 1) * self.batch_size])
-        if issparse(X_resampled) and not self.sparse:
+        if issparse(X_resampled) and not self.keep_sparse:
             X_resampled = X_resampled.toarray()
         if self.sample_weight is not None:
             sample_weight_resampled = safe_indexing(
@@ -154,7 +154,8 @@ class BalancedBatchGenerator(ParentClass):
 
 @Substitution(random_state=_random_state_docstring)
 def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
-                             batch_size=32, sparse=False, random_state=None):
+                             batch_size=32, keep_sparse=False,
+                             random_state=None):
     """Create a balanced batch generator to train keras model.
 
     Returns a generator --- as well as the number of step per epoch --- which
@@ -181,7 +182,7 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
     batch_size : int, optional (default=32)
         Number of samples per gradient update.
 
-    sparse : bool, optional (default=False)
+    keep_sparse : bool, optional (default=False)
         Either or not to conserve or not the sparsity of the input (i.e. ``X``,
         ``y``, ``sample_weight``). By default, the returned batches will be
         dense.
@@ -226,4 +227,4 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
 
     return tf_bbg(X=X, y=y, sample_weight=sample_weight,
                   sampler=sampler, batch_size=batch_size,
-                  sparse=sparse, random_state=random_state)
+                  keep_sparse=keep_sparse, random_state=random_state)

@@ -52,15 +52,15 @@ def test_balanced_batch_generator_class(sampler, sample_weight):
                         epochs=10)
 
 
-@pytest.mark.parametrize("is_sparse", [True, False])
-def test_balanced_batch_generator_class_sparse(is_sparse):
+@pytest.mark.parametrize("keep_sparse", [True, False])
+def test_balanced_batch_generator_class_sparse(keep_sparse):
     training_generator = BalancedBatchGenerator(sparse.csr_matrix(X), y,
                                                 batch_size=10,
-                                                sparse=is_sparse,
+                                                keep_sparse=keep_sparse,
                                                 random_state=42)
     for idx in range(len(training_generator)):
         X_batch, y_batch = training_generator.__getitem__(idx)
-        if is_sparse:
+        if keep_sparse:
             assert sparse.issparse(X_batch)
         else:
             assert not sparse.issparse(X_batch)
@@ -88,14 +88,14 @@ def test_balanced_batch_generator_function(sampler, sample_weight):
                         epochs=10)
 
 
-@pytest.mark.parametrize("is_sparse", [True, False])
-def test_balanced_batch_generator_function_sparse(is_sparse):
+@pytest.mark.parametrize("keep_sparse", [True, False])
+def test_balanced_batch_generator_function_sparse(keep_sparse):
     training_generator, steps_per_epoch = balanced_batch_generator(
-        sparse.csr_matrix(X), y, sparse=is_sparse, batch_size=10,
+        sparse.csr_matrix(X), y, keep_sparse=keep_sparse, batch_size=10,
         random_state=42)
     for idx in range(steps_per_epoch):
         X_batch, y_batch = next(training_generator)
-        if is_sparse:
+        if keep_sparse:
             assert sparse.issparse(X_batch)
         else:
             assert not sparse.issparse(X_batch)
