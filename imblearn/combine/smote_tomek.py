@@ -13,7 +13,7 @@ import warnings
 from sklearn.base import clone
 from sklearn.utils import check_X_y
 
-from ..base import SamplerMixin
+from ..base import BaseSampler
 from ..over_sampling import SMOTE
 from ..over_sampling.base import BaseOverSampler
 from ..under_sampling import TomekLinks
@@ -25,7 +25,7 @@ from ..utils._docstring import _random_state_docstring
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring)
-class SMOTETomek(SamplerMixin):
+class SMOTETomek(BaseSampler):
     """Class to perform over-sampling using SMOTE and cleaning using
     Tomek links.
 
@@ -132,14 +132,6 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
         # Otherwise create a default TomekLinks
         else:
             self.tomek_ = TomekLinks(sampling_strategy='all')
-
-    @property
-    def ratio_(self):
-        # FIXME: remove in 0.6
-        warnings.warn("'ratio' and 'ratio_' are deprecated. Use "
-                      "'sampling_strategy' and 'sampling_strategy_' instead.",
-                      DeprecationWarning)
-        return self.sampling_strategy_
 
     def fit(self, X, y):
         """Find the classes statistics before to perform sampling.

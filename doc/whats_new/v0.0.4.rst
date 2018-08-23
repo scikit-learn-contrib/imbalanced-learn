@@ -45,6 +45,11 @@ Enhancement
   :issue:`439` by :user:`Hugo Gascon<hgascon>` and
   :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Allow :class:`imblearn.under_sampling.RandomUnderSampler` and
+  :class:`imblearn.over_sampling.RandomOverSampler` to sample object array
+  containing strings.
+  :issue:`448` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Bug fixes
 .........
 
