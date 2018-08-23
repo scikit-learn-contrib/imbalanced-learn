@@ -18,7 +18,7 @@ This is the full API documentation of the `imbalanced-learn` toolbox.
 Prototype generation
 --------------------
 
-.. automodule:: imblearn.under_sampling.prototype_generation
+.. automodule:: imblearn.under_sampling._prototype_generation
    :no-members:
    :no-inherited-members:
 
@@ -33,7 +33,7 @@ Prototype generation
 Prototype selection
 -------------------
 
-.. automodule:: imblearn.under_sampling.prototype_selection
+.. automodule:: imblearn.under_sampling._prototype_selection
    :no-members:
    :no-inherited-members:
 
@@ -131,11 +131,11 @@ Prototype selection
 .. autosummary::
    :toctree: generated/
    :template: function.rst
-   
+
    keras.balanced_batch_generator
 
 .. _tensorflow_ref:
-   
+
 :mod:`imblearn.tensorflow`: Batch generator for TensorFlow
 ==========================================================
 
