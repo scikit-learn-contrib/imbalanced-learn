@@ -95,7 +95,8 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
     @abstractmethod
     def _sample(self, X, y):
-        """Resample the dataset.
+        """Base method defined in each sampler to defined the sampling
+        strategy.
 
         Parameters
         ----------

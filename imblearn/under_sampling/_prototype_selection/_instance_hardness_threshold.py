@@ -126,26 +126,6 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
                 type(self.estimator)))
 
     def _sample(self, X, y):
-        """Resample the dataset.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
-
-        idx_under : ndarray, shape (n_samples, )
-            If `return_indices` is `True`, a boolean array will be returned
-            containing the which samples have been selected.
-
-        """
         self._validate_estimator()
 
         target_stats = Counter(y)

@@ -135,30 +135,6 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         return links
 
     def _sample(self, X, y):
-        """Resample the dataset.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
-
-        idx_under : ndarray, shape (n_samples, )
-            If `return_indices` is `True`, a boolean array will be returned
-            containing the which samples have been selected.
-
-        """
         # check for deprecated random_state
         if self.random_state is not None:
             deprecate_parameter(self, '0.4', 'random_state')
