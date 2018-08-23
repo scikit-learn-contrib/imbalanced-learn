@@ -45,6 +45,8 @@ class RandomOverSampler(BaseOverSampler):
     Notes
     -----
     Supports multi-class resampling by sampling each class independently.
+    Supports heterogeneous data as object array containing string and numeric
+    data.
 
     See
     :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,

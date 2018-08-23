@@ -48,6 +48,8 @@ class RandomUnderSampler(BaseUnderSampler):
     Notes
     -----
     Supports multi-class resampling by sampling each class independently.
+    Supports heterogeneous data as object array containing string and numeric
+    data.
 
     See
     :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py` and
