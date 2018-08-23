@@ -49,6 +49,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_sparse
     yield check_samplers_pandas
     yield check_samplers_multiclass_ova
+    yield check_samplers_preserve_dtype
 
 
 def _yield_all_checks(name, estimator):
@@ -333,3 +334,20 @@ def check_samplers_multiclass_ova(name, Sampler):
     else:
         assert type_of_target(y_res_ova) == type_of_target(y_ova)
         assert_allclose(y_res, y_res_ova.argmax(axis=1))
+
+
+def check_samplers_preserve_dtype(name, Sampler):
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0)
+    # Cast X and y to not default dtype
+    X = X.astype(np.float32)
+    y = y.astype(np.int32)
+    sampler = Sampler()
+    set_random_state(sampler)
+    X_res, y_res = sampler.fit_sample(X, y)
+    assert X.dtype == X_res.dtype
+    assert y.dtype == y_res.dtype

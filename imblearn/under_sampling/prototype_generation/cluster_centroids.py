@@ -128,10 +128,10 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             X_new = safe_indexing(X, np.squeeze(indices))
         else:
             if sparse.issparse(X):
-                X_new = sparse.csr_matrix(centroids)
+                X_new = sparse.csr_matrix(centroids, dtype=X.dtype)
             else:
                 X_new = centroids
-        y_new = np.array([target_class] * centroids.shape[0])
+        y_new = np.array([target_class] * centroids.shape[0], dtype=y.dtype)
 
         return X_new, y_new
 
@@ -191,4 +191,4 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
 
-        return X_resampled, np.array(y_resampled)
+        return X_resampled, np.array(y_resampled, dtype=y.dtype)

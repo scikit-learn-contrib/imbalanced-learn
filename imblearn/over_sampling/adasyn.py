@@ -185,8 +185,9 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                             n_samples_generated += 1
                 X_new = (sparse.csr_matrix(
                     (samples, (row_indices, col_indices)),
-                    [np.sum(n_samples_generate), X.shape[1]]))
-                y_new = np.array([class_sample] * np.sum(n_samples_generate))
+                    [np.sum(n_samples_generate), X.shape[1]], dtype=X.dtype))
+                y_new = np.array([class_sample] * np.sum(n_samples_generate),
+                                 dtype=y.dtype)
             else:
                 x_class_gen = []
                 for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
@@ -201,8 +202,9 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                         for step, nn_z in zip(steps, nn_zs)
                     ])
 
-                X_new = np.concatenate(x_class_gen)
-                y_new = np.array([class_sample] * np.sum(n_samples_generate))
+                X_new = np.concatenate(x_class_gen).astype(X.dtype)
+                y_new = np.array([class_sample] * np.sum(n_samples_generate),
+                                 dtype=y.dtype)
 
             if sparse.issparse(X_new):
                 X_resampled = sparse.vstack([X_resampled, X_new])
