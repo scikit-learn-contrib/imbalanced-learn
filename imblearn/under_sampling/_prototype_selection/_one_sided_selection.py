@@ -15,7 +15,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseCleaningSampler
-from .tomek_links import TomekLinks
+from ._tomek_links import TomekLinks
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
 
