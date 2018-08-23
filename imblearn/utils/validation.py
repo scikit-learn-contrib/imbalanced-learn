@@ -122,12 +122,12 @@ def hash_X_y(X, y, n_samples=10, n_features=5):
     row_idx = slice(None, None, max(1, X.shape[0] // n_samples))
     col_idx = slice(None, None, max(1, X.shape[1] // n_features))
 
-    if hasattr(X, 'iloc'):
-        X_hash = joblib.hash(X.iloc[row_idx, col_idx])
-    else:
-        X_hash = joblib.hash(X[row_idx, col_idx])
+    X_subset = (X.iloc[row_idx, col_idx]
+                if hasattr(X, 'iloc') else X[row_idx, col_idx])
+    y_subset = (y.iloc[row_idx]
+                if hasattr(y, 'iloc') else y[row_idx])
 
-    return X_hash, joblib.hash(y[row_idx])
+    return joblib.hash(X_subset), joblib.hash(y_subset)
 
 
 def _sampling_strategy_all(y, sampling_type):

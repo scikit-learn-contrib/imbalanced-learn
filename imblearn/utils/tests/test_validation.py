@@ -375,6 +375,20 @@ def test_hash_X_y():
     assert hash_X_y(X, y) == (joblib.hash(X), joblib.hash(y))
 
 
+def test_hash_X_y_pandas():
+    pd = pytest.importorskip("pandas")
+    rng = check_random_state(0)
+    X = pd.DataFrame(rng.randn(2000, 20))
+    y = pd.Series([0] * 500 + [1] * 1500)
+    assert hash_X_y(X, y, 10, 10) == (joblib.hash(X.iloc[::200, ::2]),
+                                      joblib.hash(y.iloc[::200]))
+
+    X = pd.DataFrame(rng.randn(5, 2))
+    y = pd.Series([0] * 2 + [1] * 3)
+    # all data will be used in this case
+    assert hash_X_y(X, y) == (joblib.hash(X), joblib.hash(y))
+
+
 @pytest.mark.parametrize(
     "sampling_strategy, sampling_type, expected_result",
     [({3: 25, 1: 25, 2: 25}, 'under-sampling',
