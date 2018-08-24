@@ -7,7 +7,7 @@ from ._easy_ensemble import EasyEnsemble
 from ._easy_ensemble import EasyEnsembleClassifier
 from ._balance_cascade import BalanceCascade
 
-from ._classifier import BalancedBaggingClassifier
+from ._bagging import BalancedBaggingClassifier
 
 __all__ = ['EasyEnsemble', 'EasyEnsembleClassifier',
            'BalancedBaggingClassifier', 'BalanceCascade']
