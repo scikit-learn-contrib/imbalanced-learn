@@ -110,6 +110,7 @@ Prototype selection
    ensemble.BalanceCascade
    ensemble.BalancedBaggingClassifier
    ensemble.EasyEnsemble
+   ensemble.EasyEnsembleClassifier
 
 .. _keras_ref:
 
