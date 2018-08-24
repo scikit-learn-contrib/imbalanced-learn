@@ -55,8 +55,11 @@ imbalanced-learn is tested to work under Python 2.7 and Python 3.5, and
 * scipy(>=0.13.3)
 * numpy(>=1.8.2)
 * scikit-learn(>=0.19.0)
+* keras 2 (optional)
+* tensorflow (optional)
 
-Additionally, to run the examples, you need matplotlib(>=2.0.0).
+Additionally, to run the examples, you need matplotlib(>=2.0.0) and
+pandas(>=0.22).
 
 Installation
 ~~~~~~~~~~~~
