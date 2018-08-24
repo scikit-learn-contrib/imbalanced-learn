@@ -237,10 +237,10 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-        X : array-like of shape = [n_samples, n_features]
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             The training input samples.
 
-        y : array-like, shape = [n_samples]
+        y : array-like, shape (n_samples,)
             The target values.
 
         Returns

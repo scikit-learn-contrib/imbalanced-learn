@@ -12,6 +12,7 @@ from sklearn.base import clone
 from sklearn.utils import check_random_state
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble.bagging import BaggingClassifier
+from sklearn.utils.deprecation import deprecated
 
 from .base import BaseEnsembleSampler
 from ..under_sampling import RandomUnderSampler
@@ -26,11 +27,17 @@ MAX_INT = np.iinfo(np.int32).max
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring)
+@deprecated('EasyEnsemble is deprecated in 0.4 and will be removed in 0.6. '
+            'Use EasyEnsembleClassifier instead.')
 class EasyEnsemble(BaseEnsembleSampler):
     """Create an ensemble sets by iteratively applying random under-sampling.
 
     This method iteratively select a random subset and make an ensemble of the
     different sets.
+
+    .. deprecated:: 0.4
+       ``EasyEnsemble`` is deprecated in 0.4 and will be removed in 0.6. Use
+       ``EasyEnsembleClassifier`` instead.
 
     Read more in the :ref:`User Guide <ensemble_samplers>`.
 
@@ -151,9 +158,14 @@ class EasyEnsembleClassifier(BaggingClassifier):
     n_estimators : int, optional (default=10)
         Number of AdaBoost learners in the ensemble.
 
-    adaboost_estimator : object, optional (default=AdaBoostClassifier())
+    base_estimator : object, optional (default=AdaBoostClassifier())
         The base AdaBoost classifier used in the inner ensemble. Note that you
         can set the number of inner learner by passing your own instance.
+
+    warm_start : bool, optional (default=False)
+        When set to True, reuse the solution of the previous call to fit
+        and add more estimators to the ensemble, otherwise, just fit
+        a whole new ensemble.
 
     {sampling_strategy}
 
@@ -168,6 +180,20 @@ class EasyEnsembleClassifier(BaggingClassifier):
 
     verbose : int, optional (default=0)
         Controls the verbosity of the building process.
+
+    Attributes
+    ----------
+    base_estimator_ : estimator
+        The base estimator from which the ensemble is grown.
+
+    estimators_ : list of estimators
+        The collection of fitted base estimators.
+
+    classes_ : array, shape (n_classes,)
+        The classes labels.
+
+    n_classes_ : int or list
+        The number of classes.
 
     Notes
     -----
@@ -211,18 +237,18 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
      [  2 225]]
 
     """
-    def __init__(self, n_estimators=10, adaboost_estimator=None,
-                 sampling_strategy='auto', replacement=False,
-                 n_jobs=1, random_state=None, verbose=0):
+    def __init__(self, n_estimators=10, base_estimator=None, warm_start=False,
+                 sampling_strategy='auto', replacement=False, n_jobs=1,
+                 random_state=None, verbose=0):
         super(EasyEnsembleClassifier, self).__init__(
-            adaboost_estimator,
+            base_estimator,
             n_estimators=n_estimators,
             max_samples=1.0,
             max_features=1.0,
             bootstrap=False,
             bootstrap_features=False,
             oob_score=False,
-            warm_start=False,
+            warm_start=warm_start,
             n_jobs=n_jobs,
             random_state=random_state,
             verbose=verbose)

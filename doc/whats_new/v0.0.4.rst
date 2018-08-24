@@ -24,6 +24,10 @@ New features
 - Add a ``keras`` and ``tensorflow`` modules to create balanced mini-batches
   generator. :issue:`409` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add :class:`imblearn.ensemble.EasyEnsembleClassifier` which create a bag of
+  AdaBoost classifier trained on balanced bootstrap samples.
+  :issue:`455` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancement
 ...........
 
@@ -109,3 +113,8 @@ Deprecation
   :class:`imblearn.over_sampling.SVMSMOTE` and
   :class:`imblearn.over_sampling.BorderlineSMOTE`.
   :issue:`440` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Deprecate :class:`imblearn.ensemble.EasyEnsemble` in favor of meta-estimator
+  :class:`imblearn.ensemble.EasyEnsembleClassifier` which follow the exact
+  algorithm described in the literature.
+  :issue:`455` by :user:`Guillaume Lemaitre <glemaitre>`.
