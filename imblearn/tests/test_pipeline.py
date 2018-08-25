@@ -5,6 +5,7 @@ Test the pipeline module.
 #          Christos Aridas
 # License: MIT
 
+from distutils.version import LooseVersion
 from tempfile import mkdtemp
 import shutil
 import time
@@ -12,6 +13,7 @@ import time
 import numpy as np
 from pytest import raises
 
+from sklearn.utils.testing import assert_true
 from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_array_almost_equal
 from sklearn.utils.testing import assert_allclose
@@ -25,11 +27,12 @@ from sklearn.cluster import KMeans
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.datasets import load_iris, make_classification
 from sklearn.preprocessing import StandardScaler
-from sklearn.externals.joblib import Memory
+from sklearn.externals.joblib import Memory, __version__ as joblib_version
 
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (RandomUnderSampler,
                                      EditedNearestNeighbours as ENN)
+
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
@@ -1073,3 +1076,20 @@ def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
     X_fit_then_sample_res, y_fit_then_sample_res = pipeline.sample(X, y)
     assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_res)
     assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_res)
+
+
+
+
+    def test_make_pipeline_memory():
+        cachedir = mkdtemp()
+        if LooseVersion(joblib_version) < LooseVersion('0.12'):
+            # Deal with change of API in joblib
+            memory = Memory(cachedir=cachedir, verbose=10)
+        else:
+            memory = Memory(location=cachedir, verbose=10)
+        pipeline = make_pipeline(DummyTransf(), SVC(), memory=memory)
+        assert_true(pipeline.memory is memory)
+        pipeline = make_pipeline(DummyTransf(), SVC())
+        assert_true(pipeline.memory is None)
+
+        shutil.rmtree(cachedir)
