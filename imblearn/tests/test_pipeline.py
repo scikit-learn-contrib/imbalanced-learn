@@ -1078,16 +1078,16 @@ def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
     assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_res)
 
 
-    def test_make_pipeline_memory():
-        cachedir = mkdtemp()
-        if LooseVersion(joblib_version) < LooseVersion('0.12'):
-            # Deal with change of API in joblib
-            memory = Memory(cachedir=cachedir, verbose=10)
-        else:
-            memory = Memory(location=cachedir, verbose=10)
-        pipeline = make_pipeline(DummyTransf(), SVC(), memory=memory)
-        assert_true(pipeline.memory is memory)
-        pipeline = make_pipeline(DummyTransf(), SVC())
-        assert_true(pipeline.memory is None)
+def test_make_pipeline_memory():
+    cachedir = mkdtemp()
+    if LooseVersion(joblib_version) < LooseVersion('0.12'):
+        # Deal with change of API in joblib
+        memory = Memory(cachedir=cachedir, verbose=10)
+    else:
+        memory = Memory(location=cachedir, verbose=10)
+    pipeline = make_pipeline(DummyTransf(), SVC(), memory=memory)
+    assert_true(pipeline.memory is memory)
+    pipeline = make_pipeline(DummyTransf(), SVC())
+    assert_true(pipeline.memory is None)
 
-        shutil.rmtree(cachedir)
+    shutil.rmtree(cachedir)
