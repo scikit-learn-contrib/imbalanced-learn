@@ -617,6 +617,11 @@ def make_pipeline(*steps, **kwargs):
         directly. Use the attribute ``named_steps`` or ``steps`` to
         inspect estimators within the pipeline. Caching the
         transformers is advantageous when fitting is time consuming.
+
+    Returns
+    -------
+    p : Pipeline
+
     See also
     --------
     imblearn.pipeline.Pipeline : Class for creating a pipeline of
@@ -632,9 +637,6 @@ def make_pipeline(*steps, **kwargs):
                      StandardScaler(copy=True, with_mean=True, with_std=True)),
                     ('gaussiannb',
                      GaussianNB(priors=None))])
-    Returns
-    -------
-    p : Pipeline
     """
     memory = kwargs.pop('memory', None)
     if kwargs:
