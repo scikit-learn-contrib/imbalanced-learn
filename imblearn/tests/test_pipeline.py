@@ -1078,8 +1078,6 @@ def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
     assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_res)
 
 
-
-
     def test_make_pipeline_memory():
         cachedir = mkdtemp()
         if LooseVersion(joblib_version) < LooseVersion('0.12'):
