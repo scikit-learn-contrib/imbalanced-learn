@@ -602,12 +602,15 @@ def _fit_sample_one(sampler, X, y, **fit_params):
 
 def make_pipeline(*steps, **kwargs):
     """Construct a Pipeline from the given estimators.
+
     This is a shorthand for the Pipeline constructor; it does not require, and
     does not permit, naming the estimators. Instead, their names will be set
     to the lowercase of their types automatically.
+
     Parameters
     ----------
     *steps : list of estimators.
+
     memory : None, str or object with the joblib.Memory interface, optional
         Used to cache the fitted transformers of the pipeline. By default,
         no caching is performed. If a string is given, it is the path to
@@ -626,6 +629,7 @@ def make_pipeline(*steps, **kwargs):
     --------
     imblearn.pipeline.Pipeline : Class for creating a pipeline of
         transforms with a final estimator.
+
     Examples
     --------
     >>> from sklearn.naive_bayes import GaussianNB
