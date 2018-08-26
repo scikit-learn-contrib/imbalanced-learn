@@ -74,7 +74,11 @@ Bug fixes
 
 - Fix bug which was not preserving the dtype of X and y when generating
   samples.
-  issue:`448` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :issue:`448` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Add the option to pass a ``Memory`` object to :func:`make_pipeline` like 
+  in :class:`pipeline.Pipeline` class.
+  :issue:`458` by :user:`Christos Aridas <chkoar>`.
 
 Maintenance
 ...........
