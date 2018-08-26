@@ -76,6 +76,9 @@ Bug fixes
   samples.
   issue:`448` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add the option to pass a ``Memory`` object to :func:`make_pipeline` like 
+  in :class:`pipeline.Pipeline` class. Βy :user:`Christos Aridas <chkoar>`.
+
 Maintenance
 ...........
 
