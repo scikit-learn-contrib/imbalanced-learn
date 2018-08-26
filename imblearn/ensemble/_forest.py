@@ -41,15 +41,15 @@ def _local_parallel_build_trees(sampler, tree, forest, X, y, sample_weight,
     X_resampled, y_resampled, selected_idx = sampler.fit_sample(X, y)
     if sample_weight is not None:
         sample_weight = safe_indexing(sample_weight, selected_idx)
-    tree = _parallel_build_trees(tree, forest, X, y, sample_weight, tree_idx,
-                                 n_trees, verbose=verbose,
-                                 class_weight=class_weight)
+    tree = _parallel_build_trees(tree, forest, X_resampled, y_resampled,
+                                 sample_weight, tree_idx, n_trees,
+                                 verbose=verbose, class_weight=class_weight)
     return sampler, tree
 
 
-""" @Substitution(
+@Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring) """
+    random_state=_random_state_docstring)
 class BalancedRandomForestClassifier(RandomForestClassifier):
     """A balanced random forest classifier.
 
@@ -161,8 +161,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         Note that for multioutput (including multilabel) weights should be
         defined for each class of every column in its own dict. For example,
         for four-class multilabel classification weights should be
-        [{0: 1, 1: 1}, {0: 1, 1: 5}, {0: 1, 1: 1}, {0: 1, 1: 1}] instead of
-        [{1:1}, {2:5}, {3:1}, {4:1}].
+        [{{0: 1, 1: 1}}, {{0: 1, 1: 5}}, {{0: 1, 1: 1}}, {{0: 1, 1: 1}}]
+        instead of [{{1:1}}, {{2:5}}, {{3:1}}, {{4:1}}].
         The "balanced" mode uses the values of y to automatically adjust
         weights inversely proportional to class frequencies in the input data
         as ``n_samples / (n_classes * np.bincount(y))``
