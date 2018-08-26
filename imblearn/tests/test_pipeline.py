@@ -26,7 +26,7 @@ from sklearn.cluster import KMeans
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.datasets import load_iris, make_classification
 from sklearn.preprocessing import StandardScaler
-from sklearn.externals.joblib import Memory, __version__ as joblib_version
+from sklearn.externals.joblib import Memory
 
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (RandomUnderSampler,
