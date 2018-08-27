@@ -312,35 +312,6 @@ class Pipeline(pipeline.Pipeline):
             return last_step.fit_resample(Xt, yt, **fit_params)
 
     @if_delegate_has_method(delegate='_final_estimator')
-    def sample(self, X, y):
-        """Sample the data with the final estimator
-
-        Applies transformers/samplers to the data, and the sample
-        method of the final estimator. Valid only if the final
-        estimator implements sample.
-
-        Parameters
-        ----------
-        X : iterable
-            Data to predict on. Must fulfill input requirements of first step
-            of the pipeline.
-
-        """
-        Xt = X
-        for name, transform in self.steps[:-1]:
-            if transform is None:
-                continue
-            if hasattr(transform, "fit_resample"):
-                # XXX: Calling sample in pipeline it means that the
-                # last estimator is a sampler. Samplers don't carry
-                # the sampled data. So, call 'fit_resample' in all intermediate
-                # steps to get the sampled data for the last estimator.
-                Xt, y = transform.fit_resample(Xt, y)
-            else:
-                Xt = transform.transform(Xt)
-        return self.steps[-1][-1].fit_resample(Xt, y)
-
-    @if_delegate_has_method(delegate='_final_estimator')
     def predict(self, X):
         """Apply transformers/samplers to the data, and predict with the final
         estimator
