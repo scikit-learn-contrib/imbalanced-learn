@@ -58,7 +58,5 @@ class BaseEnsembleSampler(BaseSampler):
                 [label_binarize(batch_y, classes) for batch_y in y_resampled])
             if len(output) == 2:
                 return output[0], y_resampled_encoded
-            else:
-                return output[0], y_resampled_encoded, output[2]
-        else:
-            return output
+            return output[0], y_resampled_encoded, output[2]
+        return output
