@@ -22,7 +22,6 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import label_binarize
 from sklearn.utils.estimator_checks import check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
-from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.testing import set_random_state
