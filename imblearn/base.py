@@ -16,6 +16,8 @@ from sklearn.base import BaseEstimator
 from sklearn.externals import six
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
+from sklearn.utils import check_consistent_length
+from sklearn.utils import indexable
 
 from .utils import check_sampling_strategy, check_target_type
 from .utils.deprecation import deprecate_parameter
@@ -55,7 +57,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             self.sampling_strategy, y, self._sampling_type)
         return self
 
-    def fit_resample(self, X, y):
+    def fit_resample(self, X, y, *arrays):
         """Resample the dataset.
 
         Parameters
@@ -66,6 +68,11 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
+        *arrays : sequence of indexables with same length / shape[0]
+            Allowed inputs are lists, numpy arrays, scipy-sparse matrices or
+            pandas dataframes. It is the placeholder to sample
+            ``sample_weight`` array.
+
         Returns
         -------
         X_resampled : {array-like, sparse matrix}, shape \
@@ -75,15 +82,20 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         y_resampled : array-like, shape (n_samples_new,)
             The corresponding label of `X_resampled`.
 
+        *arrays : sequence of indexables, shape (n_samples_new,) or \
+(n_samples_new, n_features)
+
         """
         self._deprecate_ratio()
 
+        arrays = indexable(*arrays)
         X, y, binarize_y = self._check_X_y(X, y)
+        check_consistent_length(X, y, *arrays)
 
         self.sampling_strategy_ = check_sampling_strategy(
             self.sampling_strategy, y, self._sampling_type)
 
-        output = self._fit_resample(X, y)
+        output = self._fit_resample(X, y, *arrays)
 
         if binarize_y:
             y_sampled = label_binarize(output[1], np.unique(y))
@@ -96,7 +108,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     fit_sample = fit_resample
 
     @abstractmethod
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, *arrays):
         """Base method defined in each sampler to defined the sampling
         strategy.
 
@@ -107,6 +119,11 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
+
+        *arrays : sequence of indexables with same length / shape[0]
+            Allowed inputs are lists, numpy arrays, scipy-sparse matrices or
+            pandas dataframes. It is the placeholder to sample
+            ``sample_weight`` array.
 
         Returns
         -------

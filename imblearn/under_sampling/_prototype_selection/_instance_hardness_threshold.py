@@ -9,6 +9,7 @@ threshold."""
 from __future__ import division
 
 from collections import Counter
+from itertools import chain
 
 import numpy as np
 
@@ -125,7 +126,7 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
             raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
                 type(self.estimator)))
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, *arrays):
         self._validate_estimator()
 
         target_stats = Counter(y)
@@ -167,8 +168,9 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
                  np.flatnonzero(y == target_class)[index_target_class]),
                 axis=0)
 
+        resampled_arrays = list(chain.from_iterable(
+            (safe_indexing(array, idx_under),) for array in (X, y, *arrays)))
+
         if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
-        else:
-            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+            return resampled_arrays + [idx_under]
+        return resampled_arrays

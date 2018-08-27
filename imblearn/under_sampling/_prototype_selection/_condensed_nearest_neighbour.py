@@ -8,6 +8,7 @@ method."""
 from __future__ import division
 
 from collections import Counter
+from itertools import chain
 
 import numpy as np
 
@@ -128,7 +129,7 @@ CondensedNearestNeighbour # doctest: +SKIP
                              ' inhereited from KNeighborsClassifier.'
                              ' Got {} instead.'.format(type(self.n_neighbors)))
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, *arrays):
         self._validate_estimator()
 
         random_state = check_random_state(self.random_state)
@@ -201,8 +202,9 @@ CondensedNearestNeighbour # doctest: +SKIP
                 idx_under = np.concatenate(
                     (idx_under, np.flatnonzero(y == target_class)), axis=0)
 
+        resampled_arrays = list(chain.from_iterable(
+            (safe_indexing(array, idx_under),) for array in (X, y, *arrays)))
+
         if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
-        else:
-            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+            return resampled_arrays + [idx_under]
+        return resampled_arrays

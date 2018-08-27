@@ -7,6 +7,7 @@
 from __future__ import division
 
 from collections import Counter
+from itertools import chain
 
 import numpy as np
 
@@ -122,7 +123,7 @@ KNeighborsClassifier(n_neighbors=1))
                              ' inhereited from KNeighborsClassifier.'
                              ' Got {} instead.'.format(type(self.n_neighbors)))
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, *arrays):
         self._validate_estimator()
 
         random_state = check_random_state(self.random_state)
@@ -174,7 +175,9 @@ KNeighborsClassifier(n_neighbors=1))
             X_resampled, y_resampled)
 
         idx_under = safe_indexing(idx_under, idx_cleaned)
+        resampled_arrays = list(chain.from_iterable(
+            (safe_indexing(array, idx_under),) for array in arrays))
+
         if self.return_indices:
-            return (X_cleaned, y_cleaned, idx_under)
-        else:
-            return X_cleaned, y_cleaned
+            return [X_cleaned, y_cleaned] + resampled_arrays +[idx_under]
+        return [X_cleaned, y_cleaned] + resampled_arrays

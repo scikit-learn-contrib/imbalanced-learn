@@ -9,6 +9,7 @@ method."""
 from __future__ import division
 
 from collections import Counter
+from itertools import chain
 
 import numpy as np
 from scipy.stats import mode
@@ -138,7 +139,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, *arrays):
         self._validate_estimator()
 
         idx_under = np.empty((0, ), dtype=int)
@@ -168,11 +169,12 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                  np.flatnonzero(y == target_class)[index_target_class]),
                 axis=0)
 
+        resampled_arrays = list(chain.from_iterable(
+            (safe_indexing(array, idx_under),) for array in (X, y, *arrays)))
+
         if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
-        else:
-            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+            return resampled_arrays + [idx_under]
+        return resampled_arrays
 
 
 @Substitution(
@@ -303,7 +305,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             n_jobs=self.n_jobs,
             ratio=self.ratio)
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, *arrays):
         self._validate_estimator()
 
         X_, y_ = X, y
@@ -489,7 +491,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             n_jobs=self.n_jobs,
             ratio=self.ratio)
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, *arrays):
         self._validate_estimator()
 
         X_, y_ = X, y

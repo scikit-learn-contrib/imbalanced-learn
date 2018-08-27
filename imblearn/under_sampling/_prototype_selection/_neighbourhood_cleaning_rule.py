@@ -7,6 +7,7 @@
 from __future__ import division, print_function
 
 from collections import Counter
+from itertools import chain
 
 import numpy as np
 from scipy.stats import mode
@@ -139,7 +140,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                 "'threshold_cleaning' is a value between 0 and 1."
                 " Got {} instead.".format(self.threshold_cleaning))
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, *arrays):
         self._validate_estimator()
         enn = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
@@ -186,9 +187,10 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         selected_samples[union_a1_a2] = False
         index_target_class = np.flatnonzero(selected_samples)
 
+        resampled_arrays = list(chain.from_iterable(
+            (safe_indexing(array, index_target_class),)
+            for array in (X, y, *arrays)))
+
         if self.return_indices:
-            return (safe_indexing(X, index_target_class), safe_indexing(
-                y, index_target_class), index_target_class)
-        else:
-            return (safe_indexing(X, index_target_class), safe_indexing(
-                y, index_target_class))
+            return resampled_arrays + [index_target_class]
+        return resampled_arrays

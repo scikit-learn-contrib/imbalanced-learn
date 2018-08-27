@@ -10,6 +10,7 @@ import sys
 import traceback
 
 from collections import Counter
+from inspect import signature
 
 import pytest
 
@@ -20,6 +21,7 @@ from sklearn.base import clone
 from sklearn.datasets import make_classification
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import label_binarize
+from sklearn.utils import check_consistent_length
 from sklearn.utils.estimator_checks import check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.utils.testing import assert_allclose
@@ -73,6 +75,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_pandas
     yield check_samplers_multiclass_ova
     yield check_samplers_preserve_dtype
+    yield check_samplers_resample_sample_weight
 
 
 def _yield_all_checks(name, estimator):
@@ -358,3 +361,18 @@ def check_samplers_preserve_dtype(name, Sampler):
     X_res, y_res = sampler.fit_resample(X, y)
     assert X.dtype == X_res.dtype
     assert y.dtype == y_res.dtype
+
+
+def check_samplers_resample_sample_weight(name, Sampler):
+    # check that X, y, and an additional sample_weight array can be resampled.
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0)
+    sample_weight = np.ones_like(y)
+    sampler = Sampler()
+    set_random_state(sampler)
+    X_res, y_res, sw_res = sampler.fit_resample(X, y, sample_weight)
+    assert check_consistent_length(X_res, y_res, sw_res)
