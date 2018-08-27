@@ -30,7 +30,28 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     _estimator_type = 'sampler'
 
     def fit(self, X, y):
-        self.fit_resample(X, y)
+        """Check inputs and statistics of the sampler.
+
+        You should use ``fit_resample`` in all cases.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            Data array.
+
+        y : array-like, shape (n_samples,)
+            Target array.
+
+        Returns
+        -------
+        self : object
+            Return the instance itself.
+
+        """
+        self._deprecate_ratio()
+        X, y, _ = self._check_X_y(X, y)
+        self.sampling_strategy_ = check_sampling_strategy(
+            self.sampling_strategy, y, self._sampling_type)
         return self
 
     def fit_resample(self, X, y):
@@ -67,8 +88,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             y_sampled = label_binarize(output[1], np.unique(y))
             if len(output) == 2:
                 return output[0], y_sampled
-            else:
-                return output[0], y_sampled, output[2]
+            return output[0], y_sampled, output[2]
         return output
 
     #  define an alias for back-compatibility
@@ -200,8 +220,9 @@ class FunctionSampler(BaseSampler):
     >>> from collections import Counter
     >>> from imblearn.under_sampling import RandomUnderSampler
     >>> def func(X, y, sampling_strategy, random_state):
-    ...   return RandomUnderSampler(sampling_strategy=sampling_strategy,
-    ...                             random_state=random_state).fit_resample(X, y)
+    ...   return RandomUnderSampler(
+    ...       sampling_strategy=sampling_strategy,
+    ...       random_state=random_state).fit_resample(X, y)
     >>> sampler = FunctionSampler(func=func,
     ...                           kw_args={'sampling_strategy': 'auto',
     ...                                    'random_state': 0})

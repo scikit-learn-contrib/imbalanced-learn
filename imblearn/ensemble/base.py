@@ -7,10 +7,8 @@ Base class for the ensemble method.
 import numpy as np
 
 from sklearn.preprocessing import label_binarize
-from sklearn.utils import check_X_y
 
 from ..base import BaseSampler
-from ..utils import check_target_type
 from ..utils import check_sampling_strategy
 
 

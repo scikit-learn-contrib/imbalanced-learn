@@ -737,7 +737,6 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
     # FIXME: to be removed in 0.6
     def _fit_resample(self, X, y):
         self._validate_estimator()
-        print(self._sample)
         return self._sample(X, y)
 
     def _sample(self, X, y):

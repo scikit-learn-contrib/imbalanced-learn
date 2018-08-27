@@ -12,11 +12,10 @@ from sklearn.base import ClassifierMixin, clone
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 from sklearn.model_selection import cross_val_predict
-from sklearn.utils import check_X_y
 
 from .base import BaseEnsembleSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import check_sampling_strategy, check_target_type
+from ..utils import check_sampling_strategy
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 

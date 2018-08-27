@@ -19,7 +19,6 @@ from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.externals import six
 from sklearn.externals.joblib import Memory
-from sklearn.utils import tosequence
 from sklearn.utils.metaestimators import if_delegate_has_method
 
 __all__ = ['Pipeline', 'make_pipeline']
@@ -45,8 +44,8 @@ class Pipeline(pipeline.Pipeline):
     ----------
     steps : list
         List of (name, transform) tuples (implementing
-        fit/transform/fit_resample) that are chained, in the order in which they
-        are chained, with the last object an estimator.
+        fit/transform/fit_resample) that are chained, in the order in which
+        they are chained, with the last object an estimator.
 
     memory : Instance of joblib.Memory or string, optional (default=None)
         Used to cache the fitted transformers of the pipeline. By default,
@@ -126,15 +125,15 @@ class Pipeline(pipeline.Pipeline):
             if (not (hasattr(t, "fit") or
                      hasattr(t, "fit_transform") or
                      hasattr(t, "fit_resample")) or
-                not (hasattr(t, "transform") or
-                     hasattr(t, "fit_resample"))):
+                    not (hasattr(t, "transform") or
+                         hasattr(t, "fit_resample"))):
                 raise TypeError(
                     "All intermediate steps of the chain should "
                     "be estimators that implement fit and transform or sample "
                     "(but not both) '%s' (type %s) doesn't)" % (t, type(t)))
 
             if (hasattr(t, "fit_resample") and (hasattr(t, "fit_transform") or
-                    hasattr(t, "transform"))):
+                                                hasattr(t, "transform"))):
                 raise TypeError(
                     "All intermediate steps of the chain should "
                     "be estimators that implement fit and transform or sample."

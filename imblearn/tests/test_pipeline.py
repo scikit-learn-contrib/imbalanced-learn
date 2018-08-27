@@ -1037,7 +1037,8 @@ def test_pipeline_fit_then_sample_with_sampler_last_estimator():
     rus = RandomUnderSampler(random_state=42)
     enn = ENN()
     pipeline = make_pipeline(rus, enn)
-    X_fit_resample_resampled, y_fit_resample_resampled = pipeline.fit_resample(X, y)
+    X_fit_resample_resampled, y_fit_resample_resampled = \
+        pipeline.fit_resample(X, y)
     pipeline = make_pipeline(rus, enn)
     pipeline.fit(X, y)
     X_fit_then_sample_res, y_fit_then_sample_res = pipeline.fit_resample(X, y)
@@ -1061,7 +1062,8 @@ def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
     rus = RandomUnderSampler(random_state=42)
     enn = ENN()
     pipeline = make_pipeline(rus, enn, rus)
-    X_fit_resample_resampled, y_fit_resample_resampled = pipeline.fit_resample(X, y)
+    X_fit_resample_resampled, y_fit_resample_resampled = \
+        pipeline.fit_resample(X, y)
     pipeline = make_pipeline(rus, enn, rus)
     pipeline.fit(X, y)
     X_fit_then_sample_res, y_fit_then_sample_res = pipeline.fit_resample(X, y)
