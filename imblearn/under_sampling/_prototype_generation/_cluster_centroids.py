@@ -11,6 +11,7 @@ from __future__ import division, print_function
 import numpy as np
 from scipy import sparse
 
+from sklearn.base import clone
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import safe_indexing
@@ -113,7 +114,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             self.estimator_ = KMeans(
                 random_state=self.random_state, n_jobs=self.n_jobs)
         elif isinstance(self.estimator, KMeans):
-            self.estimator_ = self.estimator
+            self.estimator_ = clone(self.estimator)
         else:
             raise ValueError('`estimator` has to be a KMeans clustering.'
                              ' Got {} instead.'.format(type(self.estimator)))
@@ -127,34 +128,14 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             X_new = safe_indexing(X, np.squeeze(indices))
         else:
             if sparse.issparse(X):
-                X_new = sparse.csr_matrix(centroids)
+                X_new = sparse.csr_matrix(centroids, dtype=X.dtype)
             else:
                 X_new = centroids
-        y_new = np.array([target_class] * centroids.shape[0])
+        y_new = np.array([target_class] * centroids.shape[0], dtype=y.dtype)
 
         return X_new, y_new
 
     def _sample(self, X, y):
-        """Resample the dataset.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
-
-        """
         self._validate_estimator()
 
         if self.voting == 'auto':
@@ -190,4 +171,4 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
 
-        return X_resampled, np.array(y_resampled)
+        return X_resampled, np.array(y_resampled, dtype=y.dtype)

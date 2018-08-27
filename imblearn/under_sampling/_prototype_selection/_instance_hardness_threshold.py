@@ -12,7 +12,7 @@ from collections import Counter
 
 import numpy as np
 
-from sklearn.base import ClassifierMixin
+from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.utils import safe_indexing
@@ -117,7 +117,7 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
         if (self.estimator is not None and
                 isinstance(self.estimator, ClassifierMixin) and
                 hasattr(self.estimator, 'predict_proba')):
-            self.estimator_ = self.estimator
+            self.estimator_ = clone(self.estimator)
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
                 random_state=self.random_state, n_jobs=self.n_jobs)
@@ -126,26 +126,6 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
                 type(self.estimator)))
 
     def _sample(self, X, y):
-        """Resample the dataset.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
-
-        idx_under : ndarray, shape (n_samples, )
-            If `return_indices` is `True`, a boolean array will be returned
-            containing the which samples have been selected.
-
-        """
         self._validate_estimator()
 
         target_stats = Counter(y)

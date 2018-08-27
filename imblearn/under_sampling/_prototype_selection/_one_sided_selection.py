@@ -9,11 +9,13 @@ from __future__ import division
 from collections import Counter
 
 import numpy as np
+
+from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseCleaningSampler
-from .tomek_links import TomekLinks
+from ._tomek_links import TomekLinks
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
 
@@ -114,36 +116,13 @@ KNeighborsClassifier(n_neighbors=1))
             self.estimator_ = KNeighborsClassifier(
                 n_neighbors=self.n_neighbors, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
-            self.estimator_ = self.n_neighbors
+            self.estimator_ = clone(self.n_neighbors)
         else:
             raise ValueError('`n_neighbors` has to be a int or an object'
                              ' inhereited from KNeighborsClassifier.'
                              ' Got {} instead.'.format(type(self.n_neighbors)))
 
     def _sample(self, X, y):
-        """Resample the dataset.
-
-        Parameters
-        ----------
-        X : ndarray, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : ndarray, shape (n_samples, )
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : ndarray, shape (n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new)
-            The corresponding label of `X_resampled`
-
-        idx_under : ndarray, shape (n_samples, )
-            If `return_indices` is `True`, a boolean array will be returned
-            containing the which samples have been selected.
-
-        """
         self._validate_estimator()
 
         random_state = check_random_state(self.random_state)

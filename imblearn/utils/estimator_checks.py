@@ -16,6 +16,7 @@ import pytest
 import numpy as np
 from scipy import sparse
 
+from sklearn.base import clone
 from sklearn.datasets import make_classification
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import label_binarize
@@ -23,6 +24,7 @@ from sklearn.utils.estimator_checks import check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.testing import assert_allclose
+from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.testing import set_random_state
 from sklearn.utils.multiclass import type_of_target
 
@@ -35,6 +37,32 @@ from imblearn.under_sampling import NearMiss, ClusterCentroids
 from imblearn.utils.testing import warns
 
 DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE']
+SUPPORT_STRING = ['RandomUnderSampler', 'RandomOverSampler']
+
+
+def monkey_patch_check_dtype_object(name, estimator_orig):
+    # check that estimators treat dtype object as numeric if possible
+    rng = np.random.RandomState(0)
+    X = rng.rand(40, 10).astype(object)
+    y = np.array([0] * 10 + [1] * 30, dtype=np.int)
+    estimator = clone(estimator_orig)
+
+    estimator.fit(X, y)
+    if hasattr(estimator, "sample"):
+        estimator.sample(X, y)
+
+    try:
+        estimator.fit(X, y.astype(object))
+    except Exception as e:
+        if "Unknown label type" not in str(e):
+            raise
+
+    if name not in SUPPORT_STRING:
+        X[0, 0] = {'foo': 'bar'}
+        msg = "argument must be a string or a number"
+        assert_raises_regex(TypeError, msg, estimator.fit, X, y)
+    else:
+        estimator.fit(X, y)
 
 
 def _yield_sampler_checks(name, Estimator):
@@ -49,6 +77,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_sparse
     yield check_samplers_pandas
     yield check_samplers_multiclass_ova
+    yield check_samplers_preserve_dtype
 
 
 def _yield_all_checks(name, estimator):
@@ -73,7 +102,11 @@ def check_estimator(Estimator):
         Class to check. Estimator is a class object (not an instance).
     """
     name = Estimator.__name__
-    # test scikit-learn compatibility
+    # monkey patch check_dtype_object for the sampler allowing strings
+    import sklearn.utils.estimator_checks
+    sklearn.utils.estimator_checks.check_dtype_object = \
+        monkey_patch_check_dtype_object
+    # scikit-learn common tests
     sklearn_check_estimator(Estimator)
     check_parameters_default_constructible(name, Estimator)
     for check in _yield_all_checks(name, Estimator):
@@ -333,3 +366,20 @@ def check_samplers_multiclass_ova(name, Sampler):
     else:
         assert type_of_target(y_res_ova) == type_of_target(y_ova)
         assert_allclose(y_res, y_res_ova.argmax(axis=1))
+
+
+def check_samplers_preserve_dtype(name, Sampler):
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0)
+    # Cast X and y to not default dtype
+    X = X.astype(np.float32)
+    y = y.astype(np.int32)
+    sampler = Sampler()
+    set_random_state(sampler)
+    X_res, y_res = sampler.fit_sample(X, y)
+    assert X.dtype == X_res.dtype
+    assert y.dtype == y_res.dtype

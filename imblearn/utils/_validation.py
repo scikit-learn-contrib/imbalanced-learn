@@ -6,10 +6,12 @@ from __future__ import division
 
 import warnings
 from collections import Counter
+from collections import OrderedDict
 from numbers import Integral, Real
 
 import numpy as np
 
+from sklearn.base import clone
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.externals import six, joblib
@@ -50,7 +52,7 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     if isinstance(nn_object, Integral):
         return NearestNeighbors(n_neighbors=nn_object + additional_neighbor)
     elif isinstance(nn_object, KNeighborsMixin):
-        return nn_object
+        return clone(nn_object)
     else:
         raise_isinstance_error(nn_name, [int, KNeighborsMixin], nn_object)
 
@@ -98,7 +100,7 @@ def hash_X_y(X, y, n_samples=10, n_features=5):
 
     Parameters
     ----------
-    X : ndarray, shape (n_samples, n_features)
+    X : array_like, shape (n_samples, n_features)
         The ``X`` array.
 
     y : ndarray, shape (n_samples)
@@ -120,7 +122,12 @@ def hash_X_y(X, y, n_samples=10, n_features=5):
     row_idx = slice(None, None, max(1, X.shape[0] // n_samples))
     col_idx = slice(None, None, max(1, X.shape[1] // n_features))
 
-    return joblib.hash(X[row_idx, col_idx]), joblib.hash(y[row_idx])
+    X_subset = (X.iloc[row_idx, col_idx]
+                if hasattr(X, 'iloc') else X[row_idx, col_idx])
+    y_subset = (y.iloc[row_idx]
+                if hasattr(y, 'iloc') else y[row_idx])
+
+    return joblib.hash(X_subset), joblib.hash(y_subset)
 
 
 def _sampling_strategy_all(y, sampling_type):
@@ -462,21 +469,30 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
             raise ValueError("When 'sampling_strategy' is a string, it needs"
                              " to be one of {}. Got '{}' instead.".format(
                                  SAMPLING_TARGET_KIND, sampling_strategy))
-        return SAMPLING_TARGET_KIND[sampling_strategy](y, sampling_type)
+        return OrderedDict(sorted(
+            SAMPLING_TARGET_KIND[sampling_strategy](y, sampling_type).items()))
     elif isinstance(sampling_strategy, dict):
-        return _sampling_strategy_dict(sampling_strategy, y, sampling_type)
+        return OrderedDict(sorted(
+            _sampling_strategy_dict(sampling_strategy, y, sampling_type)
+            .items()))
     elif isinstance(sampling_strategy, list):
-        return _sampling_strategy_list(sampling_strategy, y, sampling_type)
+        return OrderedDict(sorted(
+            _sampling_strategy_list(sampling_strategy, y, sampling_type)
+            .items()))
     elif isinstance(sampling_strategy, Real):
         if sampling_strategy <= 0 or sampling_strategy > 1:
             raise ValueError(
                 "When 'sampling_strategy' is a float, it should be "
                 "in the range (0, 1]. Got {} instead."
                 .format(sampling_strategy))
-        return _sampling_strategy_float(sampling_strategy, y, sampling_type)
+        return OrderedDict(sorted(
+            _sampling_strategy_float(sampling_strategy, y, sampling_type)
+            .items()))
     elif callable(sampling_strategy):
         sampling_strategy_ = sampling_strategy(y, **kwargs)
-        return _sampling_strategy_dict(sampling_strategy_, y, sampling_type)
+        return OrderedDict(sorted(
+            _sampling_strategy_dict(sampling_strategy_, y, sampling_type)
+            .items()))
 
 
 SAMPLING_TARGET_KIND = {

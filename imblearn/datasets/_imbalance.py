@@ -11,7 +11,7 @@ from collections import Counter
 
 from sklearn.utils import check_X_y
 
-from ..under_sampling.prototype_selection import RandomUnderSampler
+from ..under_sampling import RandomUnderSampler
 from ..utils import check_sampling_strategy
 
 LOGGER = logging.getLogger(__name__)

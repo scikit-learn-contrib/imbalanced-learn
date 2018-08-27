@@ -12,6 +12,7 @@ import time
 import numpy as np
 from pytest import raises
 
+from sklearn.utils.testing import assert_true
 from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_array_almost_equal
 from sklearn.utils.testing import assert_allclose
@@ -30,6 +31,7 @@ from sklearn.externals.joblib import Memory
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (RandomUnderSampler,
                                      EditedNearestNeighbours as ENN)
+
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
@@ -1073,3 +1075,15 @@ def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
     X_fit_then_sample_res, y_fit_then_sample_res = pipeline.sample(X, y)
     assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_res)
     assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_res)
+
+
+def test_make_pipeline_memory():
+    cachedir = mkdtemp()
+    try:
+        memory = Memory(cachedir=cachedir, verbose=10)
+        pipeline = make_pipeline(DummyTransf(), SVC(), memory=memory)
+        assert pipeline.memory is memory
+        pipeline = make_pipeline(DummyTransf(), SVC())
+        assert pipeline.memory is None
+    finally:
+        shutil.rmtree(cachedir)

@@ -107,27 +107,6 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
     def _sample(self, X, y):
-        """Resample the dataset.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
-
-
-        """
         self._validate_estimator()
         random_state = check_random_state(self.random_state)
 
@@ -185,8 +164,9 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                             n_samples_generated += 1
                 X_new = (sparse.csr_matrix(
                     (samples, (row_indices, col_indices)),
-                    [np.sum(n_samples_generate), X.shape[1]]))
-                y_new = np.array([class_sample] * np.sum(n_samples_generate))
+                    [np.sum(n_samples_generate), X.shape[1]], dtype=X.dtype))
+                y_new = np.array([class_sample] * np.sum(n_samples_generate),
+                                 dtype=y.dtype)
             else:
                 x_class_gen = []
                 for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
@@ -201,8 +181,9 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                         for step, nn_z in zip(steps, nn_zs)
                     ])
 
-                X_new = np.concatenate(x_class_gen)
-                y_new = np.array([class_sample] * np.sum(n_samples_generate))
+                X_new = np.concatenate(x_class_gen).astype(X.dtype)
+                y_new = np.array([class_sample] * np.sum(n_samples_generate),
+                                 dtype=y.dtype)
 
             if sparse.issparse(X_new):
                 X_resampled = sparse.vstack([X_resampled, X_new])

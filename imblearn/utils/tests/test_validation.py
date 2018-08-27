@@ -4,6 +4,7 @@
 # License: MIT
 
 from collections import Counter
+from collections import OrderedDict
 
 import pytest
 import numpy as np
@@ -35,7 +36,8 @@ def test_check_neighbors_object():
     assert issubclass(type(estimator), KNeighborsMixin)
     assert estimator.n_neighbors == 2
     estimator = NearestNeighbors(n_neighbors)
-    assert estimator is check_neighbors_object(name, estimator)
+    estimator_cloned = check_neighbors_object(name, estimator)
+    assert estimator.n_neighbors == estimator_cloned.n_neighbors
     n_neighbors = 'rnd'
     with pytest.raises(ValueError, match="has to be one of"):
         check_neighbors_object(name, n_neighbors)
@@ -371,3 +373,33 @@ def test_hash_X_y():
     y = np.array([0] * 2 + [1] * 3)
     # all data will be used in this case
     assert hash_X_y(X, y) == (joblib.hash(X), joblib.hash(y))
+
+
+def test_hash_X_y_pandas():
+    pd = pytest.importorskip("pandas")
+    rng = check_random_state(0)
+    X = pd.DataFrame(rng.randn(2000, 20))
+    y = pd.Series([0] * 500 + [1] * 1500)
+    assert hash_X_y(X, y, 10, 10) == (joblib.hash(X.iloc[::200, ::2]),
+                                      joblib.hash(y.iloc[::200]))
+
+    X = pd.DataFrame(rng.randn(5, 2))
+    y = pd.Series([0] * 2 + [1] * 3)
+    # all data will be used in this case
+    assert hash_X_y(X, y) == (joblib.hash(X), joblib.hash(y))
+
+
+@pytest.mark.parametrize(
+    "sampling_strategy, sampling_type, expected_result",
+    [({3: 25, 1: 25, 2: 25}, 'under-sampling',
+      OrderedDict({1: 25, 2: 25, 3: 25})),
+     ({3: 100, 1: 100, 2: 100}, 'over-sampling',
+      OrderedDict({1: 50, 2: 0, 3: 75}))])
+def test_sampling_strategy_check_order(sampling_strategy, sampling_type,
+                                       expected_result):
+    # We pass on purpose a non sorted dictionary and check that the resulting
+    # dictionary is sorted. Refer to issue #428.
+    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
+    sampling_strategy_ = check_sampling_strategy(
+        sampling_strategy, y, sampling_type)
+    assert sampling_strategy_ == expected_result

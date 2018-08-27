@@ -7,9 +7,11 @@
 from __future__ import division
 
 import numpy as np
-from sklearn.utils import check_random_state, safe_indexing
+
+from sklearn.utils import check_X_y, check_random_state, safe_indexing
 
 from ..base import BaseUnderSampler
+from ...utils import check_target_type
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
 
@@ -46,6 +48,8 @@ class RandomUnderSampler(BaseUnderSampler):
     Notes
     -----
     Supports multi-class resampling by sampling each class independently.
+    Supports heterogeneous data as object array containing string and numeric
+    data.
 
     See
     :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py` and
@@ -82,32 +86,13 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         self.return_indices = return_indices
         self.replacement = replacement
 
+    @staticmethod
+    def _check_X_y(X, y):
+        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
+        return X, y, binarize_y
+
     def _sample(self, X, y):
-        """Resample the dataset.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
-            The array containing the resampled data.
-
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
-
-        idx_under : ndarray, shape (n_samples, )
-            If `return_indices` is `True`, an array will be returned
-            containing a boolean for each sample to represent whether
-            that sample was selected or not.
-
-        """
         random_state = check_random_state(self.random_state)
 
         idx_under = np.empty((0, ), dtype=int)
