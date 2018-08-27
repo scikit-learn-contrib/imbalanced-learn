@@ -247,4 +247,3 @@ Imbalance-learn provides some fast-prototyping tools.
    utils.check_neighbors_object
    utils.check_ratio
    utils.check_sampling_strategy
-   utils.hash_X_y

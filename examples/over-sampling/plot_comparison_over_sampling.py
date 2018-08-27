@@ -23,8 +23,7 @@ from imblearn.pipeline import make_pipeline
 from imblearn.over_sampling import ADASYN
 from imblearn.over_sampling import SMOTE, BorderlineSMOTE, SVMSMOTE
 from imblearn.over_sampling import RandomOverSampler
-from imblearn.base import SamplerMixin
-from imblearn.utils import hash_X_y
+from imblearn.base import BaseSampler
 
 print(__doc__)
 
@@ -131,20 +130,11 @@ fig.tight_layout()
 
 
 # Make an identity sampler
-class FakeSampler(SamplerMixin):
+class FakeSampler(BaseSampler):
 
-    def fit(self, X, y):
-        self.ratio_ = 1
-        self.X_hash_ = hash_X_y(X, y)
-        return self
+    _sampling_type = 'bypass'
 
-    def sample(self, X, y):
-        return X,
-
-    def _sample(self, X, y):
-        pass
-
-    def fit_resample(self, X, y):
+    def _fit_resample(self, X, y):
         return X, y
 
 
