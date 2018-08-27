@@ -21,7 +21,7 @@ API
 - Replace ``fit_sample`` by ``fit_resample``. An alias is still available for
   backward compatibility. In addition, ``sample`` has been removed to avoid
   resampling on different set of data.
-  :issue:`xxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :issue:`462` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 New features
 ............
