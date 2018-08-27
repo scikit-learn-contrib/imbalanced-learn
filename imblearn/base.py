@@ -16,6 +16,7 @@ from sklearn.base import BaseEstimator
 from sklearn.externals import six
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
+
 from .utils import check_sampling_strategy, check_target_type
 from .utils.deprecation import deprecate_parameter
 
@@ -72,7 +73,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             The array containing the resampled data.
 
         y_resampled : array-like, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
+            The corresponding label of `X_resampled`.
 
         """
         self._deprecate_ratio()

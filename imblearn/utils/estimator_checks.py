@@ -66,8 +66,6 @@ def monkey_patch_check_dtype_object(name, estimator_orig):
 def _yield_sampler_checks(name, Estimator):
     yield check_target_type
     yield check_samplers_one_label
-    yield check_samplers_no_fit_error
-    yield check_samplers_X_consistancy_sample
     yield check_samplers_fit
     yield check_samplers_fit_resample
     yield check_samplers_ratio_fit_resample
@@ -80,7 +78,7 @@ def _yield_sampler_checks(name, Estimator):
 
 def _yield_all_checks(name, estimator):
     # trigger our checks if this is a SamplerMixin
-    if hasattr(estimator, 'sample'):
+    if hasattr(estimator, 'fit_resample'):
         for check in _yield_sampler_checks(name, estimator):
             yield check
 
@@ -138,26 +136,6 @@ def check_samplers_one_label(name, Sampler):
         print(error_string_fit, traceback, exc)
         traceback.print_exc(file=sys.stdout)
         raise exc
-
-
-def check_samplers_no_fit_error(name, Sampler):
-    sampler = Sampler()
-    X = np.random.random((20, 2))
-    y = np.array([1] * 5 + [0] * 15)
-    with pytest.raises(NotFittedError, match="instance is not fitted yet."):
-        sampler.sample(X, y)
-
-
-def check_samplers_X_consistancy_sample(name, Sampler):
-    sampler = Sampler()
-    X = np.random.random((30, 2))
-    y = np.array([1] * 20 + [0] * 10)
-    sampler.fit(X, y)
-    X_different = np.random.random((40, 2))
-    y_different = y = np.array([1] * 25 + [0] * 15)
-    msg = "X and y need to be same array earlier"
-    with pytest.raises(RuntimeError, match=msg):
-        sampler.sample(X_different, y_different)
 
 
 def check_samplers_fit(name, Sampler):
