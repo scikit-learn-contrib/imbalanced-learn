@@ -62,7 +62,7 @@ for ax, sampling_strategy in zip(axs, (0,
         iht = InstanceHardnessThreshold(sampling_strategy=sampling_strategy,
                                         estimator=LogisticRegression(),
                                         return_indices=True)
-        X_res, y_res, idx_res = iht.fit_sample(X, y)
+        X_res, y_res, idx_res = iht.fit_resample(X, y)
         X_res_vis = pca.transform(X_res)
         plot_resampling(ax, X_res_vis, y_res,
                         'Instance Hardness Threshold ({})'

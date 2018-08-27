@@ -35,12 +35,12 @@ def test_smote_wrong_kind():
     kind = 'rnd'
     smote = SMOTE(kind=kind, random_state=RND_SEED)
     with pytest.raises(ValueError, match="Unknown kind for SMOTE"):
-        smote.fit_sample(X, Y)
+        smote.fit_resample(X, Y)
 
 
 def test_sample_regular():
     smote = SMOTE(random_state=RND_SEED)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
     ], [0.53366841, -0.30312976], [1.52091956, -0.49283504], [
@@ -67,7 +67,7 @@ def test_sample_regular_half():
     sampling_strategy = {0: 9, 1: 12}
     smote = SMOTE(
         sampling_strategy=sampling_strategy, random_state=RND_SEED)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
     ], [0.53366841, -0.30312976], [1.52091956, -0.49283504], [
@@ -91,7 +91,7 @@ def test_sample_regular_half():
 def test_sample_borderline1():
     kind = 'borderline1'
     smote = SMOTE(random_state=RND_SEED, kind=kind)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
     ], [0.53366841, -0.30312976], [1.52091956, -0.49283504], [
@@ -118,7 +118,7 @@ def test_sample_borderline1():
 def test_sample_borderline2():
     kind = 'borderline2'
     smote = SMOTE(random_state=RND_SEED, kind=kind)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
     ], [0.53366841, -0.30312976], [1.52091956, -0.49283504], [
@@ -146,7 +146,7 @@ def test_sample_borderline2():
 def test_sample_svm():
     kind = 'svm'
     smote = SMOTE(random_state=RND_SEED, kind=kind)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206],
                      [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336],
@@ -179,13 +179,13 @@ def test_sample_svm():
 
 @pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
 @pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
-def test_fit_sample_nn_obj():
+def test_fit_resample_nn_obj():
     kind = 'borderline1'
     nn_m = NearestNeighbors(n_neighbors=11)
     nn_k = NearestNeighbors(n_neighbors=6)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
     ], [0.53366841, -0.30312976], [1.52091956, -0.49283504], [
@@ -211,7 +211,7 @@ def test_fit_sample_nn_obj():
 def test_sample_regular_with_nn():
     nn_k = NearestNeighbors(n_neighbors=6)
     smote = SMOTE(random_state=RND_SEED, k_neighbors=nn_k)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
     ], [0.53366841, -0.30312976], [1.52091956, -0.49283504], [
@@ -243,18 +243,18 @@ def test_wrong_nn():
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
     with pytest.raises(ValueError, match="has to be one of"):
-        smote.fit_sample(X, Y)
+        smote.fit_resample(X, Y)
     nn_k = 'rnd'
     nn_m = NearestNeighbors(n_neighbors=10)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
     with pytest.raises(ValueError, match="has to be one of"):
-        smote.fit_sample(X, Y)
+        smote.fit_resample(X, Y)
     kind = 'regular'
     nn_k = 'rnd'
     smote = SMOTE(random_state=RND_SEED, kind=kind, k_neighbors=nn_k)
     with pytest.raises(ValueError, match="has to be one of"):
-        smote.fit_sample(X, Y)
+        smote.fit_resample(X, Y)
 
 
 @pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
@@ -267,7 +267,7 @@ def test_sample_with_nn_svm():
     svm = SVC(random_state=RND_SEED)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, svm_estimator=svm)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206],
                      [0.77481731, 0.60935141],
                      [1.25192108, -0.22367336],
@@ -308,13 +308,13 @@ def test_sample_regular_wrong_svm():
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, svm_estimator=svm)
 
     with pytest.raises(ValueError, match="has to be one of"):
-        smote.fit_sample(X, Y)
+        smote.fit_resample(X, Y)
 
 
 def test_borderline_smote_wrong_kind():
     bsmote = BorderlineSMOTE(kind='rand')
     with pytest.raises(ValueError, match='The possible "kind" of algorithm'):
-        bsmote.fit_sample(X, Y)
+        bsmote.fit_resample(X, Y)
 
 
 @pytest.mark.parametrize('kind', ['borderline-1', 'borderline-2'])
@@ -324,8 +324,8 @@ def test_borderline_smote(kind):
                                 k_neighbors=NearestNeighbors(n_neighbors=6),
                                 m_neighbors=NearestNeighbors(n_neighbors=11))
 
-    X_res_1, y_res_1 = bsmote.fit_sample(X, Y)
-    X_res_2, y_res_2 = bsmote_nn.fit_sample(X, Y)
+    X_res_1, y_res_1 = bsmote.fit_resample(X, Y)
+    X_res_2, y_res_2 = bsmote_nn.fit_resample(X, Y)
 
     assert_allclose(X_res_1, X_res_2)
     assert_array_equal(y_res_1, y_res_2)
@@ -338,8 +338,8 @@ def test_svm_smote():
                             m_neighbors=NearestNeighbors(n_neighbors=11),
                             svm_estimator=SVC(random_state=42))
 
-    X_res_1, y_res_1 = svm_smote.fit_sample(X, Y)
-    X_res_2, y_res_2 = svm_smote_nn.fit_sample(X, Y)
+    X_res_1, y_res_1 = svm_smote.fit_resample(X, Y)
+    X_res_2, y_res_2 = svm_smote_nn.fit_resample(X, Y)
 
     assert_allclose(X_res_1, X_res_2)
     assert_array_equal(y_res_1, y_res_2)

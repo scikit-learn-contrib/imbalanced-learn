@@ -82,7 +82,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> ada = ADASYN(random_state=42)
-    >>> X_res, y_res = ada.fit_sample(X, y)
+    >>> X_res, y_res = ada.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 904, 1: 900}})
 
@@ -106,7 +106,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             'n_neighbors', self.n_neighbors, additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
         random_state = check_random_state(self.random_state)
 

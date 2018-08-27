@@ -124,7 +124,7 @@ class BalancedBatchGenerator(ParentClass):
             self.sampler_.set_params(return_indices=True)
             set_random_state(self.sampler_, random_state)
 
-        _, _, self.indices_ = self.sampler_.fit_sample(self.X, self.y)
+        _, _, self.indices_ = self.sampler_.fit_resample(self.X, self.y)
         # shuffle the indices since the sampler are packing them by class
         random_state.shuffle(self.indices_)
 

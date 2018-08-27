@@ -33,12 +33,12 @@ X_vis = pca.fit_transform(X)
 
 # Apply Cluster Centroids
 cc = ClusterCentroids()
-X_resampled, y_resampled = cc.fit_sample(X, y)
+X_resampled, y_resampled = cc.fit_resample(X, y)
 X_res_vis_soft = pca.transform(X_resampled)
 
 # Use hard voting instead of soft voting
 cc = ClusterCentroids(voting='hard')
-X_resampled, y_resampled = cc.fit_sample(X, y)
+X_resampled, y_resampled = cc.fit_resample(X, y)
 X_res_vis_hard = pca.transform(X_resampled)
 
 # Two subplots, unpack the axes array immediately

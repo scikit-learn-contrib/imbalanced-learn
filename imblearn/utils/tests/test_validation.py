@@ -11,15 +11,12 @@ import numpy as np
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import check_random_state
-from sklearn.externals import joblib
 from sklearn.utils.testing import assert_array_equal
 
 from imblearn.utils.testing import warns
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_ratio
 from imblearn.utils import check_sampling_strategy
-from imblearn.utils import hash_X_y
 from imblearn.utils import check_target_type
 
 multiclass_target = np.array([1] * 50 + [2] * 100 + [3] * 25)
@@ -360,33 +357,6 @@ def test_sampling_strategy_callable_args():
     sampling_strategy_ = check_sampling_strategy(
         sampling_strategy_func, y, 'over-sampling', multiplier=multiplier)
     assert sampling_strategy_ == {1: 25, 2: 0, 3: 50}
-
-
-def test_hash_X_y():
-    rng = check_random_state(0)
-    X = rng.randn(2000, 20)
-    y = np.array([0] * 500 + [1] * 1500)
-    assert hash_X_y(X, y, 10, 10) == (joblib.hash(X[::200, ::2]),
-                                      joblib.hash(y[::200]))
-
-    X = rng.randn(5, 2)
-    y = np.array([0] * 2 + [1] * 3)
-    # all data will be used in this case
-    assert hash_X_y(X, y) == (joblib.hash(X), joblib.hash(y))
-
-
-def test_hash_X_y_pandas():
-    pd = pytest.importorskip("pandas")
-    rng = check_random_state(0)
-    X = pd.DataFrame(rng.randn(2000, 20))
-    y = pd.Series([0] * 500 + [1] * 1500)
-    assert hash_X_y(X, y, 10, 10) == (joblib.hash(X.iloc[::200, ::2]),
-                                      joblib.hash(y.iloc[::200]))
-
-    X = pd.DataFrame(rng.randn(5, 2))
-    y = pd.Series([0] * 2 + [1] * 3)
-    # all data will be used in this case
-    assert hash_X_y(X, y) == (joblib.hash(X), joblib.hash(y))
 
 
 @pytest.mark.parametrize(

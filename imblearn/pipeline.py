@@ -45,7 +45,7 @@ class Pipeline(pipeline.Pipeline):
     ----------
     steps : list
         List of (name, transform) tuples (implementing
-        fit/transform/fit_sample) that are chained, in the order in which they
+        fit/transform/fit_resample) that are chained, in the order in which they
         are chained, with the last object an estimator.
 
     memory : Instance of joblib.Memory or string, optional (default=None)
@@ -110,12 +110,6 @@ class Pipeline(pipeline.Pipeline):
 
     # BaseEstimator interface
 
-    def __init__(self, steps, memory=None):
-        # shallow copy of steps
-        self.steps = tosequence(steps)
-        self._validate_steps()
-        self.memory = memory
-
     def _validate_steps(self):
         names, estimators = zip(*self.steps)
 
@@ -129,16 +123,18 @@ class Pipeline(pipeline.Pipeline):
         for t in transformers:
             if t is None:
                 continue
-            if (not (hasattr(t, "fit") or hasattr(t, "fit_transform") or
-                     hasattr(t, "fit_sample")) or not
-                    (hasattr(t, "transform") or hasattr(t, "sample"))):
+            if (not (hasattr(t, "fit") or
+                     hasattr(t, "fit_transform") or
+                     hasattr(t, "fit_resample")) or
+                not (hasattr(t, "transform") or
+                     hasattr(t, "fit_resample"))):
                 raise TypeError(
                     "All intermediate steps of the chain should "
                     "be estimators that implement fit and transform or sample "
                     "(but not both) '%s' (type %s) doesn't)" % (t, type(t)))
 
-            if ((hasattr(t, "fit_sample") and hasattr(t, "fit_transform")) or
-                    (hasattr(t, "sample") and hasattr(t, "transform"))):
+            if (hasattr(t, "fit_resample") and (hasattr(t, "fit_transform") or
+                    hasattr(t, "transform"))):
                 raise TypeError(
                     "All intermediate steps of the chain should "
                     "be estimators that implement fit and transform or sample."
@@ -171,7 +167,7 @@ class Pipeline(pipeline.Pipeline):
                              " 'memory={!r}' instead.".format(memory))
 
         fit_transform_one_cached = memory.cache(_fit_transform_one)
-        fit_sample_one_cached = memory.cache(_fit_sample_one)
+        fit_resample_one_cached = memory.cache(_fit_resample_one)
 
         fit_params_steps = dict((name, {}) for name, step in self.steps
                                 if step is not None)
@@ -196,8 +192,8 @@ class Pipeline(pipeline.Pipeline):
                     Xt, fitted_transformer = fit_transform_one_cached(
                         cloned_transformer, None, Xt, yt,
                         **fit_params_steps[name])
-                elif hasattr(cloned_transformer, "sample"):
-                    Xt, yt, fitted_transformer = fit_sample_one_cached(
+                elif hasattr(cloned_transformer, "fit_resample"):
+                    Xt, yt, fitted_transformer = fit_resample_one_cached(
                         cloned_transformer, Xt, yt, **fit_params_steps[name])
                 # Replace the transformer of the step with the fitted
                 # transformer. This is necessary when loading the transformer
@@ -278,11 +274,11 @@ class Pipeline(pipeline.Pipeline):
             return last_step.fit(Xt, yt, **fit_params).transform(Xt)
 
     @if_delegate_has_method(delegate='_final_estimator')
-    def fit_sample(self, X, y=None, **fit_params):
+    def fit_resample(self, X, y=None, **fit_params):
         """Fit the model and sample with the final estimator
 
         Fits all the transformers/samplers one after the other and
-        transform/sample the data, then uses fit_sample on transformed
+        transform/sample the data, then uses fit_resample on transformed
         data with the final estimator.
 
         Parameters
@@ -313,8 +309,8 @@ class Pipeline(pipeline.Pipeline):
         Xt, yt, fit_params = self._fit(X, y, **fit_params)
         if last_step is None:
             return Xt
-        elif hasattr(last_step, 'fit_sample'):
-            return last_step.fit_sample(Xt, yt, **fit_params)
+        elif hasattr(last_step, 'fit_resample'):
+            return last_step.fit_resample(Xt, yt, **fit_params)
 
     @if_delegate_has_method(delegate='_final_estimator')
     def sample(self, X, y):
@@ -335,15 +331,15 @@ class Pipeline(pipeline.Pipeline):
         for name, transform in self.steps[:-1]:
             if transform is None:
                 continue
-            if hasattr(transform, "fit_sample"):
+            if hasattr(transform, "fit_resample"):
                 # XXX: Calling sample in pipeline it means that the
                 # last estimator is a sampler. Samplers don't carry
-                # the sampled data. So, call 'fit_sample' in all intermediate
+                # the sampled data. So, call 'fit_resample' in all intermediate
                 # steps to get the sampled data for the last estimator.
-                Xt, y = transform.fit_sample(Xt, y)
+                Xt, y = transform.fit_resample(Xt, y)
             else:
                 Xt = transform.transform(Xt)
-        return self.steps[-1][-1].fit_sample(Xt, y)
+        return self.steps[-1][-1].fit_resample(Xt, y)
 
     @if_delegate_has_method(delegate='_final_estimator')
     def predict(self, X):
@@ -365,7 +361,7 @@ class Pipeline(pipeline.Pipeline):
         for _, transform in self.steps[:-1]:
             if transform is None:
                 continue
-            if hasattr(transform, "fit_sample"):
+            if hasattr(transform, "fit_resample"):
                 pass
             else:
                 Xt = transform.transform(Xt)
@@ -421,7 +417,7 @@ class Pipeline(pipeline.Pipeline):
         for _, transform in self.steps[:-1]:
             if transform is None:
                 continue
-            if hasattr(transform, "fit_sample"):
+            if hasattr(transform, "fit_resample"):
                 pass
             else:
                 Xt = transform.transform(Xt)
@@ -447,7 +443,7 @@ class Pipeline(pipeline.Pipeline):
         for _, transform in self.steps[:-1]:
             if transform is None:
                 continue
-            if hasattr(transform, "fit_sample"):
+            if hasattr(transform, "fit_resample"):
                 pass
             else:
                 Xt = transform.transform(Xt)
@@ -473,7 +469,7 @@ class Pipeline(pipeline.Pipeline):
         for _, transform in self.steps[:-1]:
             if transform is None:
                 continue
-            if hasattr(transform, "fit_sample"):
+            if hasattr(transform, "fit_resample"):
                 pass
             else:
                 Xt = transform.transform(Xt)
@@ -506,7 +502,7 @@ class Pipeline(pipeline.Pipeline):
         for name, transform in self.steps:
             if transform is None:
                 continue
-            if hasattr(transform, "fit_sample"):
+            if hasattr(transform, "fit_resample"):
                 pass
             else:
                 Xt = transform.transform(Xt)
@@ -541,7 +537,7 @@ class Pipeline(pipeline.Pipeline):
         for name, transform in self.steps[::-1]:
             if transform is None:
                 continue
-            if hasattr(transform, "fit_sample"):
+            if hasattr(transform, "fit_resample"):
                 pass
             else:
                 Xt = transform.inverse_transform(Xt)
@@ -573,7 +569,7 @@ class Pipeline(pipeline.Pipeline):
         for _, transform in self.steps[:-1]:
             if transform is None:
                 continue
-            if hasattr(transform, "fit_sample"):
+            if hasattr(transform, "fit_resample"):
                 pass
             else:
                 Xt = transform.transform(Xt)
@@ -594,8 +590,8 @@ def _fit_transform_one(transformer, weight, X, y, **fit_params):
     return res * weight, transformer
 
 
-def _fit_sample_one(sampler, X, y, **fit_params):
-    X_res, y_res = sampler.fit_sample(X, y, **fit_params)
+def _fit_resample_one(sampler, X, y, **fit_params):
+    X_res, y_res = sampler.fit_resample(X, y, **fit_params)
 
     return X_res, y_res, sampler
 

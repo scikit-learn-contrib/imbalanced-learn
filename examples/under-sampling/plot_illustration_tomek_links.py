@@ -79,7 +79,7 @@ for ax, title, sampler in zip(ax_arr,
                               title_arr,
                               [TomekLinks(sampling_strategy='auto'),
                                TomekLinks(sampling_strategy='all')]):
-    X_res, y_res = sampler.fit_sample(np.vstack((X_minority, X_majority)),
+    X_res, y_res = sampler.fit_resample(np.vstack((X_minority, X_majority)),
                                       np.array([0] * X_minority.shape[0] +
                                                [1] * X_majority.shape[0]))
     ax.scatter(X_res[y_res == 0][:, 0], X_res[y_res == 0][:, 1],

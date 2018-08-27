@@ -57,7 +57,7 @@ X_resampled = []
 y_resampled = []
 X_res_vis = []
 for method in sm:
-    X_res, y_res = method.fit_sample(X, y)
+    X_res, y_res = method.fit_resample(X, y)
     X_resampled.append(X_res)
     y_resampled.append(y_res)
     X_res_vis.append(pca.transform(X_res))

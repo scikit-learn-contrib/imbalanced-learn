@@ -12,6 +12,7 @@ from sklearn.base import ClassifierMixin, clone
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 from sklearn.model_selection import cross_val_predict
+from sklearn.utils import check_X_y
 
 from .base import BaseEnsembleSampler
 from ..under_sampling.base import BaseUnderSampler
@@ -92,7 +93,7 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> bc = BalanceCascade(random_state=42)
-    >>> X_res, y_res = bc.fit_sample(X, y)
+    >>> X_res, y_res = bc.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res[0])) \
     # doctest: +ELLIPSIS
     Resampled dataset shape Counter({{...}})
@@ -113,29 +114,6 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
         self.estimator = estimator
         self.n_max_subset = n_max_subset
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(BalanceCascade, self).fit(X, y)
-        y = check_target_type(y)
-        self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, 'under-sampling')
-        return self
-
     def _validate_estimator(self):
         """Private function to create the classifier"""
 
@@ -151,8 +129,11 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
 
         self.logger.debug(self.estimator_)
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
+
+        self.sampling_strategy_ = check_sampling_strategy(
+            self.sampling_strategy, y, 'under-sampling')
 
         random_state = check_random_state(self.random_state)
 
@@ -168,9 +149,9 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             target_stats = Counter(
                 safe_indexing(y, np.flatnonzero(samples_mask)))
             # store the index of the data to under-sample
-            index_under_sample = np.empty((0, ), dtype=y.dtype)
+            index_under_sample = np.empty((0, ), dtype=np.int)
             # value which will be picked at each round
-            index_constant = np.empty((0, ), dtype=y.dtype)
+            index_constant = np.empty((0, ), dtype=np.int)
             for target_class in target_stats.keys():
                 if target_class in self.sampling_strategy_.keys():
                     n_samples = self.sampling_strategy_[target_class]

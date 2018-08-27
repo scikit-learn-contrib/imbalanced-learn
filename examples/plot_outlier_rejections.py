@@ -73,7 +73,7 @@ def outlier_rejection(X, y):
 
 
 reject_sampler = FunctionSampler(func=outlier_rejection)
-X_inliers, y_inliers = reject_sampler.fit_sample(X_train, y_train)
+X_inliers, y_inliers = reject_sampler.fit_resample(X_train, y_train)
 plot_scatter(X_inliers, y_inliers, 'Training data without outliers')
 
 pipe = make_pipeline(FunctionSampler(func=outlier_rejection),

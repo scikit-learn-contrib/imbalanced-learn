@@ -27,7 +27,7 @@ randomly sampling with replacement the current available samples. The
    ...                            class_sep=0.8, random_state=0)
    >>> from imblearn.over_sampling import RandomOverSampler
    >>> ros = RandomOverSampler(random_state=0)
-   >>> X_resampled, y_resampled = ros.fit_sample(X, y)
+   >>> X_resampled, y_resampled = ros.fit_resample(X, y)
    >>> from collections import Counter
    >>> print(sorted(Counter(y_resampled).items()))
    [(0, 4674), (1, 4674), (2, 4674)]
@@ -59,7 +59,7 @@ In addition, :class:`RandomOverSampler` allows to sample heterogeneous data
   >>> X_hetero = np.array([['xxx', 1, 1.0], ['yyy', 2, 2.0], ['zzz', 3, 3.0]],
   ...                     dtype=np.object)
   >>> y_hetero = np.array([0, 0, 1])
-  >>> X_resampled, y_resampled = ros.fit_sample(X_hetero, y_hetero)
+  >>> X_resampled, y_resampled = ros.fit_resample(X_hetero, y_hetero)
   >>> print(X_resampled)
   [['xxx' 1 1.0]
    ['yyy' 2 2.0]
@@ -82,11 +82,11 @@ to over-sample minority classes: (i) the Synthetic Minority Oversampling Techniq
 can be used in the same manner::
 
   >>> from imblearn.over_sampling import SMOTE, ADASYN
-  >>> X_resampled, y_resampled = SMOTE().fit_sample(X, y)
+  >>> X_resampled, y_resampled = SMOTE().fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4674), (1, 4674), (2, 4674)]
   >>> clf_smote = LinearSVC().fit(X_resampled, y_resampled)
-  >>> X_resampled, y_resampled = ADASYN().fit_sample(X, y)
+  >>> X_resampled, y_resampled = ADASYN().fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4673), (1, 4662), (2, 4674)]
   >>> clf_adasyn = LinearSVC().fit(X_resampled, y_resampled)
@@ -147,7 +147,7 @@ The :class:`BorderlineSMOTE` and :class:`SVMSMOTE` offer some variant of the SMO
 algorithm::
 
   >>> from imblearn.over_sampling import BorderlineSMOTE
-  >>> X_resampled, y_resampled = BorderlineSMOTE().fit_sample(X, y)
+  >>> X_resampled, y_resampled = BorderlineSMOTE().fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4674), (1, 4674), (2, 4674)]
 

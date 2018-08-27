@@ -4,16 +4,14 @@ Base class for the ensemble method.
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
-import warnings
-
 import numpy as np
 
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
-from sklearn.utils.validation import check_is_fitted
 
 from ..base import BaseSampler
 from ..utils import check_target_type
+from ..utils import check_sampling_strategy
 
 
 class BaseEnsembleSampler(BaseSampler):
@@ -25,15 +23,7 @@ class BaseEnsembleSampler(BaseSampler):
 
     _sampling_type = 'ensemble'
 
-    @property
-    def ratio_(self):
-        warnings.warn(
-            "'ratio' and 'ratio_' are deprecated. "
-            "Use 'sampling_strategy' and 'sampling_strategy_' instead.",
-            DeprecationWarning)
-        return self.sampling_strategy_
-
-    def sample(self, X, y):
+    def fit_resample(self, X, y):
         """Resample the dataset.
 
         Parameters
@@ -56,13 +46,12 @@ class BaseEnsembleSampler(BaseSampler):
         """
         # Ensemble are a bit specific since they are returning an array of
         # resampled arrays.
-        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
+        X, y, binarize_y = self._check_X_y(X, y)
 
-        check_is_fitted(self, 'sampling_strategy_')
-        self._check_X_y_hash(X, y)
+        self.sampling_strategy_ = check_sampling_strategy(
+            self.sampling_strategy, y, self._sampling_type)
 
-        output = self._sample(X, y)
+        output = self._fit_resample(X, y)
 
         if binarize_y:
             y_resampled = output[1]

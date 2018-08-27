@@ -89,7 +89,7 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> iht = InstanceHardnessThreshold(random_state=42)
-    >>> X_res, y_res = iht.fit_sample(X, y)
+    >>> X_res, y_res = iht.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 840, 0: 100}})
 
@@ -125,7 +125,7 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
             raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
                 type(self.estimator)))
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
 
         target_stats = Counter(y)
