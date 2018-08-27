@@ -52,7 +52,7 @@ Enhancement
 - Allow :class:`imblearn.under_sampling.RandomUnderSampler` and
   :class:`imblearn.over_sampling.RandomOverSampler` to sample object array
   containing strings.
-  :issue:`448` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :issue:`451` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Bug fixes
 .........
@@ -74,7 +74,7 @@ Bug fixes
 
 - Fix bug which was not preserving the dtype of X and y when generating
   samples.
-  :issue:`448` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :issue:`450` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - Add the option to pass a ``Memory`` object to :func:`make_pipeline` like 
   in :class:`pipeline.Pipeline` class.
