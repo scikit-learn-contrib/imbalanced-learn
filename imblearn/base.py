@@ -17,7 +17,6 @@ from sklearn.externals import six
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
 from sklearn.utils import check_consistent_length
-from sklearn.utils import indexable
 
 from .utils import check_sampling_strategy, check_target_type
 from .utils.deprecation import deprecate_parameter
