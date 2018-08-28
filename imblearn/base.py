@@ -57,7 +57,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             self.sampling_strategy, y, self._sampling_type)
         return self
 
-    def fit_resample(self, X, y, *arrays):
+    def fit_resample(self, X, y, sample_weight=None):
         """Resample the dataset.
 
         Parameters
@@ -68,34 +68,38 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
-        *arrays : sequence of indexables with same length / shape[0]
-            Allowed inputs are lists, numpy arrays, scipy-sparse matrices or
-            pandas dataframes. It is the placeholder to sample
-            ``sample_weight`` array.
+        sample_weight : array-like, shape (n_samples,) or None
+            Sample weights.
+
 
         Returns
         -------
-        X_resampled : {array-like, sparse matrix}, shape \
+        X_resampled : {ndarray, sparse matrix}, shape \
 (n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : array-like, shape (n_samples_new,)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`.
 
-        *arrays : sequence of indexables, shape (n_samples_new,) or \
-(n_samples_new, n_features)
+        sample_weight_resampled : ndarray, shape (n_samples_new,)
+            Resampled sample weights. This output is returned only if
+            ``sample_weight`` was not ``None``.
+
+        idx_resampled : ndarray, shape (n_samples_new,)
+            Indices of the selected features. This output is optional and only
+            available for some sampler if ``return_indices=True``.
 
         """
         self._deprecate_ratio()
 
-        arrays = indexable(*arrays)
         X, y, binarize_y = self._check_X_y(X, y)
-        check_consistent_length(X, y, *arrays)
+        if sample_weight is not None:
+            check_consistent_length(X, y, sample_weight)
 
         self.sampling_strategy_ = check_sampling_strategy(
             self.sampling_strategy, y, self._sampling_type)
 
-        output = self._fit_resample(X, y, *arrays)
+        output = self._fit_resample(X, y, sample_weight)
 
         if binarize_y:
             y_sampled = label_binarize(output[1], np.unique(y))
@@ -108,7 +112,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     fit_sample = fit_resample
 
     @abstractmethod
-    def _fit_resample(self, X, y, *arrays):
+    def _fit_resample(self, X, y, sample_weight=None):
         """Base method defined in each sampler to defined the sampling
         strategy.
 
@@ -120,10 +124,8 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
-        *arrays : sequence of indexables with same length / shape[0]
-            Allowed inputs are lists, numpy arrays, scipy-sparse matrices or
-            pandas dataframes. It is the placeholder to sample
-            ``sample_weight`` array.
+        sample_weight : array-like, shape (n_samples,) or None
+            Sample weights.
 
         Returns
         -------
@@ -132,7 +134,15 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             The array containing the resampled data.
 
         y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
+            The corresponding label of `X_resampled`.
+
+        sample_weight_resampled : ndarray, shape (n_samples_new,)
+            Resampled sample weights. This output is returned only if
+            ``sample_weight`` was not ``None``.
+
+        idx_resampled : ndarray, shape (n_samples_new,)
+            Indices of the selected features. This output is optional and only
+            available for some sampler if ``return_indices=True``.
 
         """
         pass

@@ -8,7 +8,6 @@ from __future__ import division
 
 import warnings
 from collections import Counter
-from itertools import chain
 
 import numpy as np
 
@@ -212,7 +211,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
             raise ValueError('Parameter `version` must be 1, 2 or 3, got'
                              ' {}'.format(self.version))
 
-    def _fit_resample(self, X, y, *arrays):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
 
         idx_under = np.empty((0, ), dtype=int)
@@ -278,8 +277,9 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                  np.flatnonzero(y == target_class)[index_target_class]),
                 axis=0)
 
-        resampled_arrays = list(chain.from_iterable(
-            (safe_indexing(array, idx_under),) for array in (X, y, *arrays)))
+        resampled_arrays = [safe_indexing(arr, idx_under)
+                            for arr in (X, y, sample_weight)
+                            if arr is not None]
 
         if self.return_indices:
             return resampled_arrays + [idx_under]

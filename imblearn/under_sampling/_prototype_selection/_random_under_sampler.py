@@ -94,7 +94,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
         return X, y, binarize_y
 
-    def _fit_resample(self, X, y, *arrays):
+    def _fit_resample(self, X, y, sample_weight=None):
         random_state = check_random_state(self.random_state)
 
         idx_under = np.empty((0, ), dtype=int)
@@ -114,9 +114,10 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                  np.flatnonzero(y == target_class)[index_target_class]),
                 axis=0)
 
-        resampled_arrays = list(chain.from_iterable(
-            (safe_indexing(array, idx_under),) for array in (X, y, *arrays)))
+        resampled_arrays = [safe_indexing(arr, idx_under)
+                            for arr in (X, y, sample_weight)
+                            if arr is not None]
 
         if self.return_indices:
-            return resampled_arrays + [idx_under]
-        return resampled_arrays
+            return tuple(resampled_arrays + [idx_under])
+        return tuple(resampled_arrays)

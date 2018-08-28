@@ -7,7 +7,6 @@
 from __future__ import division
 
 from collections import Counter
-from itertools import chain
 
 import numpy as np
 
@@ -123,7 +122,7 @@ KNeighborsClassifier(n_neighbors=1))
                              ' inhereited from KNeighborsClassifier.'
                              ' Got {} instead.'.format(type(self.n_neighbors)))
 
-    def _fit_resample(self, X, y, *arrays):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
 
         random_state = check_random_state(self.random_state)
@@ -165,19 +164,24 @@ KNeighborsClassifier(n_neighbors=1))
                 idx_under = np.concatenate(
                     (idx_under, np.flatnonzero(y == target_class)), axis=0)
 
-        X_resampled = safe_indexing(X, idx_under)
-        y_resampled = safe_indexing(y, idx_under)
+        X_res = safe_indexing(X, idx_under)
+        y_res = safe_indexing(y, idx_under)
+        sample_weight_res = (safe_indexing(sample_weight, idx_under)
+                             if sample_weight is not None else None)
 
         # apply Tomek cleaning
         tl = TomekLinks(
             sampling_strategy=self.sampling_strategy_, return_indices=True)
-        X_cleaned, y_cleaned, idx_cleaned = tl.fit_resample(
-            X_resampled, y_resampled)
+        X_res, y_res, idx_cleaned = tl.fit_resample(X_res, y_res,
+                                                    sample_weight_res)
 
         idx_under = safe_indexing(idx_under, idx_cleaned)
-        resampled_arrays = list(chain.from_iterable(
-            (safe_indexing(array, idx_under),) for array in arrays))
+        sample_weight_res = (safe_indexing(sample_weight_res, idx_cleaned)
+                             if sample_weight_res is not None else None)
+
+        resampled_arrays = [arr for arr in (X_res, y_res, sample_weight_res)
+                            if arr is not None]
 
         if self.return_indices:
-            return [X_cleaned, y_cleaned] + resampled_arrays +[idx_under]
-        return [X_cleaned, y_cleaned] + resampled_arrays
+            return tuple(resampled_arrays + [idx_under])
+        return tuple(resampled_arrays)
