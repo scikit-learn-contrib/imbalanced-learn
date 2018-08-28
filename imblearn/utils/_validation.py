@@ -14,14 +14,14 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
-from sklearn.externals import six, joblib
+from sklearn.externals import six
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.deprecation import deprecated
 
 from ..exceptions import raise_isinstance_error
 
 SAMPLING_KIND = ('over-sampling', 'under-sampling', 'clean-sampling',
-                 'ensemble')
+                 'ensemble', 'bypass')
 TARGET_KIND = ('binary', 'multiclass', 'multilabel-indicator')
 
 
@@ -93,41 +93,6 @@ def check_target_type(y, indicate_one_vs_all=False):
                 type_y == 'multilabel-indicator')
     else:
         return y.argmax(axis=1) if type_y == 'multilabel-indicator' else y
-
-
-def hash_X_y(X, y, n_samples=10, n_features=5):
-    """Compute hash of the input arrays.
-
-    Parameters
-    ----------
-    X : array_like, shape (n_samples, n_features)
-        The ``X`` array.
-
-    y : ndarray, shape (n_samples)
-        The ``y`` array.
-
-    n_samples : int, optional
-        The number of samples to use to compute the hash. Default is 100.
-
-    n_features : int, optional
-        The number of features to use to compute the hash. Default is 10.
-
-    Returns
-    -------
-    X_hash: str
-        Hash identifier of the ``X`` matrix.
-    y_hash: str
-        Hash identifier of the ``y`` matrix.
-    """
-    row_idx = slice(None, None, max(1, X.shape[0] // n_samples))
-    col_idx = slice(None, None, max(1, X.shape[1] // n_features))
-
-    X_subset = (X.iloc[row_idx, col_idx]
-                if hasattr(X, 'iloc') else X[row_idx, col_idx])
-    y_subset = (y.iloc[row_idx]
-                if hasattr(y, 'iloc') else y[row_idx])
-
-    return joblib.hash(X_subset), joblib.hash(y_subset)
 
 
 def _sampling_strategy_all(y, sampling_type):
@@ -461,7 +426,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
         raise ValueError("The target 'y' needs to have more than 1 class."
                          " Got {} class instead".format(np.unique(y).size))
 
-    if sampling_type == 'ensemble':
+    if sampling_type in ('ensemble', 'bypass'):
         return sampling_strategy
 
     if isinstance(sampling_strategy, six.string_types):

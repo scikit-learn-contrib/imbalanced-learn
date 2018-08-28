@@ -34,7 +34,7 @@ X_syn_train, X_syn_test, y_syn_train, y_syn_test = train_test_split(X_syn,
 
 # remove Tomek links
 tl = TomekLinks(return_indices=True)
-X_resampled, y_resampled, idx_resampled = tl.fit_sample(X_syn, y_syn)
+X_resampled, y_resampled, idx_resampled = tl.fit_resample(X_syn, y_syn)
 
 fig = plt.figure()
 ax = fig.add_subplot(1, 1, 1)

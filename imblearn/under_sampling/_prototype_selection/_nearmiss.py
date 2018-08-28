@@ -97,7 +97,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> nm = NearMiss()
-    >>> X_res, y_res = nm.fit_sample(X, y)
+    >>> X_res, y_res = nm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 100, 1: 100}})
 
@@ -211,7 +211,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
             raise ValueError('Parameter `version` must be 1, 2 or 3, got'
                              ' {}'.format(self.version))
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
 
         idx_under = np.empty((0, ), dtype=int)

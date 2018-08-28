@@ -32,7 +32,7 @@ K-means method instead of the original samples::
   [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.under_sampling import ClusterCentroids
   >>> cc = ClusterCentroids(random_state=0)
-  >>> X_resampled, y_resampled = cc.fit_sample(X, y)
+  >>> X_resampled, y_resampled = cc.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
@@ -82,7 +82,7 @@ randomly selecting a subset of data for the targeted classes::
 
   >>> from imblearn.under_sampling import RandomUnderSampler
   >>> rus = RandomUnderSampler(random_state=0)
-  >>> X_resampled, y_resampled = rus.fit_sample(X, y)
+  >>> X_resampled, y_resampled = rus.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
@@ -99,7 +99,7 @@ by considering independently each targeted class::
   >>> print(np.vstack({tuple(row) for row in X_resampled}).shape)
   (192, 2)
   >>> rus = RandomUnderSampler(random_state=0, replacement=True)
-  >>> X_resampled, y_resampled = rus.fit_sample(X, y)
+  >>> X_resampled, y_resampled = rus.fit_resample(X, y)
   >>> print(np.vstack({tuple(row) for row in X_resampled}).shape)
   (181, 2)
 
@@ -109,7 +109,7 @@ In addition, :class:`RandomUnderSampler` allows to sample heterogeneous data
   >>> X_hetero = np.array([['xxx', 1, 1.0], ['yyy', 2, 2.0], ['zzz', 3, 3.0]],
   ...                     dtype=np.object)
   >>> y_hetero = np.array([0, 0, 1])
-  >>> X_resampled, y_resampled = rus.fit_sample(X_hetero, y_hetero)
+  >>> X_resampled, y_resampled = rus.fit_resample(X_hetero, y_hetero)
   >>> print(X_resampled)
   [['xxx' 1 1.0]
    ['zzz' 3 3.0]]
@@ -126,7 +126,7 @@ be selected with the parameter ``version``::
 
   >>> from imblearn.under_sampling import NearMiss
   >>> nm1 = NearMiss(version=1)
-  >>> X_resampled_nm1, y_resampled = nm1.fit_sample(X, y)
+  >>> X_resampled_nm1, y_resampled = nm1.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
@@ -261,7 +261,7 @@ the sample inspected to keep it in the dataset::
   [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.under_sampling import EditedNearestNeighbours
   >>> enn = EditedNearestNeighbours()
-  >>> X_resampled, y_resampled = enn.fit_sample(X, y)
+  >>> X_resampled, y_resampled = enn.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 213), (2, 4568)]
 
@@ -275,7 +275,7 @@ Generally, repeating the algorithm will delete more data::
 
    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
    >>> renn = RepeatedEditedNearestNeighbours()
-   >>> X_resampled, y_resampled = renn.fit_sample(X, y)
+   >>> X_resampled, y_resampled = renn.fit_resample(X, y)
    >>> print(sorted(Counter(y_resampled).items()))
    [(0, 64), (1, 208), (2, 4551)]
 
@@ -285,7 +285,7 @@ internal nearest neighbors algorithm is increased at each iteration::
 
   >>> from imblearn.under_sampling import AllKNN
   >>> allknn = AllKNN()
-  >>> X_resampled, y_resampled = allknn.fit_sample(X, y)
+  >>> X_resampled, y_resampled = allknn.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 220), (2, 4601)]
 
@@ -323,7 +323,7 @@ The :class:`CondensedNearestNeighbour` can be used in the following manner::
 
   >>> from imblearn.under_sampling import CondensedNearestNeighbour
   >>> cnn = CondensedNearestNeighbour(random_state=0)
-  >>> X_resampled, y_resampled = cnn.fit_sample(X, y)
+  >>> X_resampled, y_resampled = cnn.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 24), (2, 115)]
 
@@ -338,7 +338,7 @@ used as::
 
   >>> from imblearn.under_sampling import OneSidedSelection
   >>> oss = OneSidedSelection(random_state=0)
-  >>> X_resampled, y_resampled = oss.fit_sample(X, y)
+  >>> X_resampled, y_resampled = oss.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 174), (2, 4403)]
 
@@ -352,7 +352,7 @@ neighbors classifier. The class can be used as::
 
   >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
   >>> ncr = NeighbourhoodCleaningRule()
-  >>> X_resampled, y_resampled = ncr.fit_sample(X, y)
+  >>> X_resampled, y_resampled = ncr.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 234), (2, 4666)]
 
@@ -380,7 +380,7 @@ removed. The class can be used as::
   >>> from imblearn.under_sampling import InstanceHardnessThreshold
   >>> iht = InstanceHardnessThreshold(random_state=0,
   ...                                 estimator=LogisticRegression())
-  >>> X_resampled, y_resampled = iht.fit_sample(X, y)
+  >>> X_resampled, y_resampled = iht.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 

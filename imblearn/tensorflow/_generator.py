@@ -129,7 +129,7 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
         sampler_.set_params(return_indices=True)
         set_random_state(sampler_, random_state)
 
-    _, _, indices = sampler_.fit_sample(X, y)
+    _, _, indices = sampler_.fit_resample(X, y)
     # shuffle the indices since the sampler are packing them by class
     random_state.shuffle(indices)
 

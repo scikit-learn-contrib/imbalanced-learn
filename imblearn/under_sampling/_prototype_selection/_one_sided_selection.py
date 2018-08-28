@@ -85,7 +85,7 @@ KNeighborsClassifier(n_neighbors=1))
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> oss = OneSidedSelection(random_state=42)
-    >>> X_res, y_res = oss.fit_sample(X, y)
+    >>> X_res, y_res = oss.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 495, 0: 100}})
 
@@ -122,7 +122,7 @@ KNeighborsClassifier(n_neighbors=1))
                              ' inhereited from KNeighborsClassifier.'
                              ' Got {} instead.'.format(type(self.n_neighbors)))
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
 
         random_state = check_random_state(self.random_state)
@@ -170,7 +170,7 @@ KNeighborsClassifier(n_neighbors=1))
         # apply Tomek cleaning
         tl = TomekLinks(
             sampling_strategy=self.sampling_strategy_, return_indices=True)
-        X_cleaned, y_cleaned, idx_cleaned = tl.fit_sample(
+        X_cleaned, y_cleaned, idx_cleaned = tl.fit_resample(
             X_resampled, y_resampled)
 
         idx_under = safe_indexing(idx_under, idx_cleaned)

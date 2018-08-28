@@ -18,15 +18,11 @@ and adding a sampling functionality through the ``sample`` method:
 
       estimator = obj.fit(data, targets)
 
-:Sampler:
+:Resampler:
 
     To resample a data sets, each sampler implements::
 
-      data_resampled, targets_resampled = obj.sample(data, targets)
-
-    Fitting and sampling can also be done in one step::
-
-      data_resampled, targets_resampled = obj.fit_sample(data, targets)
+      data_resampled, targets_resampled = obj.fit_resample(data, targets)
 
 Imbalanced-learn samplers accept the same inputs that in scikit-learn:
 

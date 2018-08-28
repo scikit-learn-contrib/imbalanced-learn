@@ -57,7 +57,7 @@ y_resampled = []
 X_res_vis = []
 idx_samples_removed = []
 for method in nm:
-    X_res, y_res, idx_res = method.fit_sample(X, y)
+    X_res, y_res, idx_res = method.fit_resample(X, y)
     X_resampled.append(X_res)
     y_resampled.append(y_res)
     X_res_vis.append(pca.transform(X_res))

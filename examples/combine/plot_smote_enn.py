@@ -32,7 +32,7 @@ X_vis = pca.fit_transform(X)
 
 # Apply SMOTE + ENN
 sm = SMOTEENN()
-X_resampled, y_resampled = sm.fit_sample(X, y)
+X_resampled, y_resampled = sm.fit_resample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
 # Two subplots, unpack the axes array immediately

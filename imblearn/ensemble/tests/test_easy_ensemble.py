@@ -46,7 +46,7 @@ def test_ee_init():
 
 
 @pytest.mark.filterwarnings('ignore:Class EasyEnsemble is deprecated')
-def test_fit_sample_auto():
+def test_fit_resample_auto():
     # Define the sampling_strategy parameter
     sampling_strategy = 'auto'
 
@@ -58,7 +58,7 @@ def test_fit_sample_auto():
         n_subsets=3)
 
     # Get the different subset
-    X_resampled, y_resampled, idx_under = ee.fit_sample(X, Y)
+    X_resampled, y_resampled, idx_under = ee.fit_resample(X, Y)
 
     X_gt = np.array([[[0.85117925, 1.0185556], [-0.58539673, 0.62515052],
                       [1.35269503, 0.44812421], [0.5220963, 0.11349303],
@@ -79,7 +79,7 @@ def test_fit_sample_auto():
 
 
 @pytest.mark.filterwarnings('ignore:Class EasyEnsemble is deprecated')
-def test_fit_sample_half():
+def test_fit_resample_half():
     # Define the sampling_strategy parameter
     sampling_strategy = {0: 2, 1: 3, 2: 3}
 
@@ -90,7 +90,7 @@ def test_fit_sample_half():
         n_subsets=3)
 
     # Get the different subset
-    X_resampled, y_resampled = ee.fit_sample(X, Y)
+    X_resampled, y_resampled = ee.fit_resample(X, Y)
 
     X_gt = np.array([[[-0.58539673, 0.62515052], [0.85117925, 1.0185556],
                       [1.35269503, 0.44812421], [-1.23195149, 0.15427291],
@@ -119,7 +119,7 @@ def test_random_state_none():
     ee = EasyEnsemble(sampling_strategy=sampling_strategy, random_state=None)
 
     # Get the different subset
-    X_resampled, y_resampled = ee.fit_sample(X, Y)
+    X_resampled, y_resampled = ee.fit_resample(X, Y)
 
 
 @pytest.mark.parametrize("n_estimators", [10, 20])

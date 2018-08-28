@@ -91,7 +91,7 @@ CondensedNearestNeighbour # doctest: +SKIP
     >>> print('Original dataset shape %s' % Counter(y)) # doctest: +SKIP
     Original dataset shape Counter({{1: 500, -1: 268}}) # doctest: +SKIP
     >>> cnn = CondensedNearestNeighbour(random_state=42) # doctest: +SKIP
-    >>> X_res, y_res = cnn.fit_sample(X, y) #doctest: +SKIP
+    >>> X_res, y_res = cnn.fit_resample(X, y) #doctest: +SKIP
     >>> print('Resampled dataset shape %s' % Counter(y_res)) # doctest: +SKIP
     Resampled dataset shape Counter({{-1: 268, 1: 227}}) # doctest: +SKIP
 
@@ -128,7 +128,7 @@ CondensedNearestNeighbour # doctest: +SKIP
                              ' inhereited from KNeighborsClassifier.'
                              ' Got {} instead.'.format(type(self.n_neighbors)))
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
 
         random_state = check_random_state(self.random_state)

@@ -68,7 +68,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> rus = RandomUnderSampler(random_state=42)
-    >>> X_res, y_res = rus.fit_sample(X, y)
+    >>> X_res, y_res = rus.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 100, 1: 100}})
 
@@ -92,7 +92,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
         return X, y, binarize_y
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
 
         idx_under = np.empty((0, ), dtype=int)

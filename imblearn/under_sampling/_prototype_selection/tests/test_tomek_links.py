@@ -32,9 +32,9 @@ def test_tl_init():
     assert tl.n_jobs == 1
 
 
-def test_tl_fit_sample():
+def test_tl_fit_resample():
     tl = TomekLinks()
-    X_resampled, y_resampled = tl.fit_sample(X, Y)
+    X_resampled, y_resampled = tl.fit_resample(X, Y)
 
     X_gt = np.array([[0.31230513, 0.1216318], [0.68481731, 0.51935141], [
         1.34192108, -0.13367336
@@ -51,9 +51,9 @@ def test_tl_fit_sample():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_tl_fit_sample_with_indices():
+def test_tl_fit_resample_with_indices():
     tl = TomekLinks(return_indices=True)
-    X_resampled, y_resampled, idx_under = tl.fit_sample(X, Y)
+    X_resampled, y_resampled, idx_under = tl.fit_resample(X, Y)
 
     X_gt = np.array([[0.31230513, 0.1216318], [0.68481731, 0.51935141], [
         1.34192108, -0.13367336
@@ -77,4 +77,4 @@ def test_deprecation_random_state():
     tl = TomekLinks(random_state=0)
     with warns(
             DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        tl.fit_sample(X, Y)
+        tl.fit_resample(X, Y)

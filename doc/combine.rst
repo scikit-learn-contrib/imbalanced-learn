@@ -33,12 +33,12 @@ to their former samplers::
   [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.combine import SMOTEENN
   >>> smote_enn = SMOTEENN(random_state=0)
-  >>> X_resampled, y_resampled = smote_enn.fit_sample(X, y)
+  >>> X_resampled, y_resampled = smote_enn.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4060), (1, 4381), (2, 3502)]
   >>> from imblearn.combine import SMOTETomek
   >>> smote_tomek = SMOTETomek(random_state=0)
-  >>> X_resampled, y_resampled = smote_tomek.fit_sample(X, y)
+  >>> X_resampled, y_resampled = smote_tomek.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4499), (1, 4566), (2, 4413)]
 
