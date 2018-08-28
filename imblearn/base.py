@@ -17,6 +17,7 @@ from sklearn.externals import six
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
 from sklearn.utils import check_consistent_length
+from sklearn.utils import check_array
 
 from .utils import check_sampling_strategy, check_target_type
 from .utils.deprecation import deprecate_parameter
@@ -93,6 +94,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         X, y, binarize_y = self._check_X_y(X, y)
         if sample_weight is not None:
+            sample_weight = check_array(sample_weight, ensure_2d=False)
             check_consistent_length(X, y, sample_weight)
 
         self.sampling_strategy_ = check_sampling_strategy(
@@ -269,7 +271,7 @@ class FunctionSampler(BaseSampler):
         self.kw_args = kw_args
         self.logger = logging.getLogger(__name__)
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']
                          if self.accept_sparse else False)
         func = _identity if self.func is None else self.func

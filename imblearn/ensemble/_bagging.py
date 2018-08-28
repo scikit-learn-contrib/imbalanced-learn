@@ -210,7 +210,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         self.ratio = ratio
         self.replacement = replacement
 
-    def _validate_estimator(self, default=DecisionTreeClassifier()):
+    def _validate_estimator(self):
         """Check the estimator and the n_estimator attribute, set the
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
@@ -224,12 +224,14 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         if self.base_estimator is not None:
             base_estimator = clone(self.base_estimator)
         else:
-            base_estimator = clone(default)
+            base_estimator = clone(DecisionTreeClassifier())
 
-        self.base_estimator_ = Pipeline([('sampler', RandomUnderSampler(
-            sampling_strategy=self.sampling_strategy,
-            replacement=self.replacement,
-            ratio=self.ratio)), ('classifier', base_estimator)])
+        self.base_estimator_ = Pipeline([
+            ('sampler', RandomUnderSampler(
+                sampling_strategy=self.sampling_strategy,
+                replacement=self.replacement,
+                ratio=self.ratio)),
+            ('classifier', base_estimator)])
 
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training
@@ -248,6 +250,5 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         self : object
             Returns self.
         """
-        # RandomUnderSampler is not supporting sample_weight. We need to pass
-        # None.
+        # Pipeline does not support sample_weight
         return self._fit(X, y, self.max_samples, sample_weight=None)

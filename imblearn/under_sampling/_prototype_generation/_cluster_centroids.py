@@ -135,14 +135,11 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
 
         return X_new, y_new
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
 
         if self.voting == 'auto':
-            if sparse.issparse(X):
-                self.voting_ = 'hard'
-            else:
-                self.voting_ = 'soft'
+            self.voting_ = 'hard' if sparse.issparse(X) else 'soft'
         else:
             if self.voting in VOTING_KIND:
                 self.voting_ = self.voting

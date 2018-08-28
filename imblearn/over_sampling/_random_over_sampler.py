@@ -88,7 +88,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
         return X, y, binarize_y
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         random_state = check_random_state(self.random_state)
         target_stats = Counter(y)
 
@@ -102,9 +102,10 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
             sample_indices = np.append(sample_indices,
                                        target_class_indices[indices])
 
+        resampled_arrays = [safe_indexing(arr, sample_indices)
+                            for arr in (X, y, sample_weight)
+                            if arr is not None]
+
         if self.return_indices:
-            return (safe_indexing(X, sample_indices), safe_indexing(
-                    y, sample_indices), sample_indices)
-        else:
-            return (safe_indexing(X, sample_indices), safe_indexing(
-                    y, sample_indices))
+            return tuple(resampled_arrays + [sample_indices])
+        return tuple(resampled_arrays)

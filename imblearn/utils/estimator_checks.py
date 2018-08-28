@@ -10,7 +10,6 @@ import sys
 import traceback
 
 from collections import Counter
-from inspect import signature
 
 import pytest
 
@@ -38,6 +37,8 @@ from imblearn.under_sampling import NearMiss, ClusterCentroids
 from imblearn.utils.testing import warns
 
 DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE']
+DONT_SUPPORT_SAMPLE_WEIGHT = ['EasyEnsemble', 'BalanceCascade',
+                              'ClusterCentroids', 'FunctionTransformer']
 SUPPORT_STRING = ['RandomUnderSampler', 'RandomOverSampler']
 
 
@@ -301,7 +302,7 @@ def check_samplers_pandas(name, Sampler):
         n_informative=4,
         weights=[0.2, 0.3, 0.5],
         random_state=0)
-    X_pd, y_pd = pd.DataFrame(X), pd.Series(y)
+    X_pd = pd.DataFrame(X)
     sampler = Sampler()
     if isinstance(Sampler(), SMOTE):
         samplers = [
@@ -317,7 +318,7 @@ def check_samplers_pandas(name, Sampler):
 
     for sampler in samplers:
         set_random_state(sampler)
-        X_res_pd, y_res_pd = sampler.fit_resample(X_pd, y_pd)
+        X_res_pd, y_res_pd = sampler.fit_resample(X_pd, y)
         X_res, y_res = sampler.fit_resample(X, y)
         assert_allclose(X_res_pd, X_res)
         assert_allclose(y_res_pd, y_res)
@@ -365,14 +366,15 @@ def check_samplers_preserve_dtype(name, Sampler):
 
 def check_samplers_resample_sample_weight(name, Sampler):
     # check that X, y, and an additional sample_weight array can be resampled.
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0)
-    sample_weight = np.ones_like(y)
-    sampler = Sampler()
-    set_random_state(sampler)
-    X_res, y_res, sw_res = sampler.fit_resample(X, y, sample_weight)
-    assert check_consistent_length(X_res, y_res, sw_res)
+    if name not in DONT_SUPPORT_SAMPLE_WEIGHT:
+        X, y = make_classification(
+            n_samples=1000,
+            n_classes=3,
+            n_informative=4,
+            weights=[0.2, 0.3, 0.5],
+            random_state=0)
+        sample_weight = np.ones_like(y)
+        sampler = Sampler()
+        set_random_state(sampler)
+        X_res, y_res, sw_res = sampler.fit_resample(X, y, sample_weight)
+        assert check_consistent_length(X_res, y_res, sw_res) is None

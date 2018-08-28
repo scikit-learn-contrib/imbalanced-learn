@@ -172,12 +172,15 @@ KNeighborsClassifier(n_neighbors=1))
         # apply Tomek cleaning
         tl = TomekLinks(
             sampling_strategy=self.sampling_strategy_, return_indices=True)
-        X_res, y_res, idx_cleaned = tl.fit_resample(X_res, y_res,
-                                                    sample_weight_res)
+        resampled_arrays = tl.fit_resample(X_res, y_res, sample_weight_res)
+        if sample_weight_res is not None:
+            X_res, y_res, sample_weight_res, idx_cleaned = resampled_arrays
+        else:
+            X_res, y_res, idx_cleaned = resampled_arrays
 
         idx_under = safe_indexing(idx_under, idx_cleaned)
-        sample_weight_res = (safe_indexing(sample_weight_res, idx_cleaned)
-                             if sample_weight_res is not None else None)
+        """ sample_weight_res = (safe_indexing(sample_weight_res, idx_cleaned)
+                             if sample_weight_res is not None else None) """
 
         resampled_arrays = [arr for arr in (X_res, y_res, sample_weight_res)
                             if arr is not None]

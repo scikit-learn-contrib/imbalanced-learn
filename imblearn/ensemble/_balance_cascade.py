@@ -128,7 +128,7 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
 
         self.logger.debug(self.estimator_)
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
 
         self.sampling_strategy_ = check_sampling_strategy(
