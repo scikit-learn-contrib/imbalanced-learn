@@ -49,7 +49,7 @@ print('The data set is imbalanced: {}'.format(Counter(y_train['target'])))
 ###############################################################################
 
 from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import FunctionTransformer

@@ -67,7 +67,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> ros = RandomOverSampler(random_state=42)
-    >>> X_res, y_res = ros.fit_sample(X, y)
+    >>> X_res, y_res = ros.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
 
@@ -88,7 +88,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
         return X, y, binarize_y
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
         target_stats = Counter(y)
 

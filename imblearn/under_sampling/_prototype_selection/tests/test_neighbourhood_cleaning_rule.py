@@ -31,19 +31,19 @@ def test_ncr_error():
             match=("'threshold_cleaning' is a value between"
                    " 0 and 1")):
         NeighbourhoodCleaningRule(
-            threshold_cleaning=threshold_cleaning).fit_sample(X, Y)
+            threshold_cleaning=threshold_cleaning).fit_resample(X, Y)
     threshold_cleaning = 10
     with raises(
             ValueError,
             match=("'threshold_cleaning' is a value between"
                    " 0 and 1")):
         NeighbourhoodCleaningRule(
-            threshold_cleaning=threshold_cleaning).fit_sample(X, Y)
+            threshold_cleaning=threshold_cleaning).fit_resample(X, Y)
 
 
-def test_ncr_fit_sample():
+def test_ncr_fit_resample():
     ncr = NeighbourhoodCleaningRule()
-    X_resampled, y_resampled = ncr.fit_sample(X, Y)
+    X_resampled, y_resampled = ncr.fit_resample(X, Y)
 
     X_gt = np.array([[0.34096173, 0.50947647], [-0.91735824, 0.93110278], [
         -0.20413357, 0.64628718
@@ -56,9 +56,9 @@ def test_ncr_fit_sample():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_ncr_fit_sample_mode():
+def test_ncr_fit_resample_mode():
     ncr = NeighbourhoodCleaningRule(kind_sel='mode')
-    X_resampled, y_resampled = ncr.fit_sample(X, Y)
+    X_resampled, y_resampled = ncr.fit_resample(X, Y)
 
     X_gt = np.array([[0.34096173, 0.50947647], [-0.91735824, 0.93110278], [
         -0.20413357, 0.64628718
@@ -71,9 +71,9 @@ def test_ncr_fit_sample_mode():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_ncr_fit_sample_with_indices():
+def test_ncr_fit_resample_with_indices():
     ncr = NeighbourhoodCleaningRule(return_indices=True)
-    X_resampled, y_resampled, idx_under = ncr.fit_sample(X, Y)
+    X_resampled, y_resampled, idx_under = ncr.fit_resample(X, Y)
 
     X_gt = np.array([[0.34096173, 0.50947647], [-0.91735824, 0.93110278], [
         -0.20413357, 0.64628718
@@ -88,10 +88,10 @@ def test_ncr_fit_sample_with_indices():
     assert_array_equal(idx_under, idx_gt)
 
 
-def test_ncr_fit_sample_nn_obj():
+def test_ncr_fit_resample_nn_obj():
     nn = NearestNeighbors(n_neighbors=4)
     ncr = NeighbourhoodCleaningRule(return_indices=True, n_neighbors=nn)
-    X_resampled, y_resampled, idx_under = ncr.fit_sample(X, Y)
+    X_resampled, y_resampled, idx_under = ncr.fit_resample(X, Y)
 
     X_gt = np.array([[0.34096173, 0.50947647], [-0.91735824, 0.93110278], [
         -0.20413357, 0.64628718
@@ -110,11 +110,11 @@ def test_ncr_wrong_nn_obj():
     nn = 'rnd'
     ncr = NeighbourhoodCleaningRule(return_indices=True, n_neighbors=nn)
     with raises(ValueError, match="has to be one of"):
-        ncr.fit_sample(X, Y)
+        ncr.fit_resample(X, Y)
 
 
 def test_deprecation_random_state():
     ncr = NeighbourhoodCleaningRule(random_state=0)
     with warns(
             DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        ncr.fit_sample(X, Y)
+        ncr.fit_resample(X, Y)

@@ -39,7 +39,7 @@ class DummySampler(object):
     def fit(self, X, y):
         return self
 
-    def fit_sample(self, X, y):
+    def fit_resample(self, X, y):
         return self.sample(X, y)
 
 

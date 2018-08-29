@@ -32,7 +32,7 @@ X_vis = pca.fit_transform(X)
 
 # Apply the random over-sampling
 ros = RandomOverSampler()
-X_resampled, y_resampled = ros.fit_sample(X, y)
+X_resampled, y_resampled = ros.fit_resample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
 # Two subplots, unpack the axes array immediately

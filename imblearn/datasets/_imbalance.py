@@ -121,7 +121,7 @@ def make_imbalance(X,
         sampling_strategy=sampling_strategy_,
         replacement=False,
         random_state=random_state)
-    X_resampled, y_resampled = rus.fit_sample(X, y)
+    X_resampled, y_resampled = rus.fit_resample(X, y)
     LOGGER.info('Make the dataset imbalanced: %s', Counter(y_resampled))
 
     return X_resampled, y_resampled

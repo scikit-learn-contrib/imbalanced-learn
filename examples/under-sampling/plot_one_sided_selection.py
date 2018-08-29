@@ -33,7 +33,7 @@ X_vis = pca.fit_transform(X)
 
 # Apply One-Sided Selection
 oss = OneSidedSelection(return_indices=True)
-X_resampled, y_resampled, idx_resampled = oss.fit_sample(X, y)
+X_resampled, y_resampled, idx_resampled = oss.fit_resample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
 fig = plt.figure()

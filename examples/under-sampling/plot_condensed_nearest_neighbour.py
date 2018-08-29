@@ -33,7 +33,7 @@ X_vis = pca.fit_transform(X)
 
 # Apply Condensed Nearest Neighbours
 cnn = CondensedNearestNeighbour(return_indices=True)
-X_resampled, y_resampled, idx_resampled = cnn.fit_sample(X, y)
+X_resampled, y_resampled, idx_resampled = cnn.fit_resample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
 fig = plt.figure()

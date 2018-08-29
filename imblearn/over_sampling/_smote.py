@@ -250,7 +250,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> sm = BorderlineSMOTE(random_state=42)
-    >>> X_res, y_res = sm.fit_sample(X, y)
+    >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
 
@@ -278,6 +278,10 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
             raise ValueError('The possible "kind" of algorithm are '
                              '"borderline-1" and "borderline-2".'
                              'Got {} instead.'.format(self.kind))
+
+    # FIXME: rename _sample -> _fit_resample in 0.6
+    def _fit_resample(self, X, y):
+        return self._sample(X, y)
 
     def _sample(self, X, y):
         self._validate_estimator()
@@ -426,7 +430,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> sm = SVMSMOTE(random_state=42)
-    >>> X_res, y_res = sm.fit_sample(X, y)
+    >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
 
@@ -460,6 +464,10 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
         else:
             raise_isinstance_error('svm_estimator', [SVC],
                                    self.svm_estimator)
+
+    # FIXME: rename _sample -> _fit_resample in 0.6
+    def _fit_resample(self, X, y):
+        return self._sample(X, y)
 
     def _sample(self, X, y):
         self._validate_estimator()
@@ -645,7 +653,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> sm = SMOTE(random_state=42)
-    >>> X_res, y_res = sm.fit_sample(X, y)
+    >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
 
@@ -727,10 +735,9 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                 self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
 
     # FIXME: to be removed in 0.6
-    def fit(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
-        BaseSMOTE.fit(self, X, y)
-        return self
+        return self._sample(X, y)
 
     def _sample(self, X, y):
         # FIXME: uncomment in version 0.6

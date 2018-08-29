@@ -33,7 +33,7 @@ X_vis = pca.fit_transform(X)
 
 # Apply neighbourhood cleaning rule
 ncl = NeighbourhoodCleaningRule(return_indices=True)
-X_resampled, y_resampled, idx_resampled = ncl.fit_sample(X, y)
+X_resampled, y_resampled, idx_resampled = ncl.fit_resample(X, y)
 X_res_vis = pca.transform(X_resampled)
 
 fig = plt.figure()

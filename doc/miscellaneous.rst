@@ -28,7 +28,7 @@ to retain the 10 first elements of the array ``X`` and ``y``::
   >>> def func(X, y):
   ...   return X[:10], y[:10]
   >>> sampler = FunctionSampler(func=func)
-  >>> X_res, y_res = sampler.fit_sample(X, y)
+  >>> X_res, y_res = sampler.fit_resample(X, y)
   >>> np.all(X_res == X[:10])
   True
   >>> np.all(y_res == y[:10])

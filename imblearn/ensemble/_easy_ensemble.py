@@ -94,7 +94,7 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> ee = EasyEnsemble(random_state=42)
-    >>> X_res, y_res = ee.fit_sample(X, y)
+    >>> X_res, y_res = ee.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res[0]))
     Resampled dataset shape Counter({{0: 100, 1: 100}})
 
@@ -114,7 +114,7 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
         self.replacement = replacement
         self.n_subsets = n_subsets
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
 
         X_resampled = []
@@ -128,7 +128,7 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
                 return_indices=True,
                 random_state=random_state.randint(MAX_INT),
                 replacement=self.replacement)
-            sel_x, sel_y, sel_idx = rus.fit_sample(X, y)
+            sel_x, sel_y, sel_idx = rus.fit_resample(X, y)
             X_resampled.append(sel_x)
             y_resampled.append(sel_y)
             if self.return_indices:

@@ -53,16 +53,16 @@ f, axs = plt.subplots(2, 2)
 
 axs = [a for ax in axs for a in ax]
 for ax, sampling_strategy in zip(axs, (0,
-                                     {1: 25, 0: 10},
-                                     {1: 14, 0: 10},
-                                     {1: 10, 0: 10})):
+                                       {1: 25, 0: 10},
+                                       {1: 14, 0: 10},
+                                       {1: 10, 0: 10})):
     if sampling_strategy == 0:
         c0, c1 = plot_resampling(ax, X_vis, y, 'Original set')
     else:
         iht = InstanceHardnessThreshold(sampling_strategy=sampling_strategy,
                                         estimator=LogisticRegression(),
                                         return_indices=True)
-        X_res, y_res, idx_res = iht.fit_sample(X, y)
+        X_res, y_res, idx_res = iht.fit_resample(X, y)
         X_res_vis = pca.transform(X_res)
         plot_resampling(ax, X_res_vis, y_res,
                         'Instance Hardness Threshold ({})'
