@@ -134,7 +134,7 @@ class FakeSampler(BaseSampler):
 
     _sampling_type = 'bypass'
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         return X, y
 
 

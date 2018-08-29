@@ -123,8 +123,7 @@ class BaseSMOTE(BaseOverSampler):
                                       [len(samples_indices), X.shape[1]],
                                       dtype=X.dtype),
                     y_new)
-        else:
-            return X_new, y_new
+        return X_new, y_new
 
     def _in_danger_noise(self, nn_estimator, samples, target_class, y,
                          kind='danger'):
