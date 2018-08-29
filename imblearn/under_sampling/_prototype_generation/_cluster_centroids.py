@@ -119,20 +119,28 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             raise ValueError('`estimator` has to be a KMeans clustering.'
                              ' Got {} instead.'.format(type(self.estimator)))
 
-    def _generate_sample(self, X, y, centroids, target_class):
+    def _generate_sample(self, X, y, sample_weight, centroids, target_class):
         if self.voting_ == 'hard':
             nearest_neighbors = NearestNeighbors(n_neighbors=1)
             nearest_neighbors.fit(X, y)
             indices = nearest_neighbors.kneighbors(
                 centroids, return_distance=False)
             X_new = safe_indexing(X, np.squeeze(indices))
+            if sample_weight is not None:
+                sample_weight_new = safe_indexing(sample_weight,
+                                                  np.squeeze(indices))
         else:
             if sparse.issparse(X):
                 X_new = sparse.csr_matrix(centroids, dtype=X.dtype)
             else:
                 X_new = centroids
+            if sample_weight is not None:
+                sample_weight_new = np.ones(centroids.shape[0],
+                                            dtype=sample_weight.dtype)
         y_new = np.array([target_class] * centroids.shape[0], dtype=y.dtype)
 
+        if sample_weight is not None:
+            return X_new, y_new, sample_weight_new
         return X_new, y_new
 
     def _fit_resample(self, X, y, sample_weight=None):
@@ -148,24 +156,35 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                                  " instead.".format(VOTING_KIND, self.voting))
 
         X_resampled, y_resampled = [], []
+        if sample_weight is not None:
+            sample_weight_resampled = []
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
                 self.estimator_.set_params(**{'n_clusters': n_samples})
                 self.estimator_.fit(X[y == target_class])
-                X_new, y_new = self._generate_sample(
-                    X, y, self.estimator_.cluster_centers_, target_class)
-                X_resampled.append(X_new)
-                y_resampled.append(y_new)
+                new_arrays = self._generate_sample(
+                    X, y, sample_weight, self.estimator_.cluster_centers_,
+                    target_class)
+                X_resampled.append(new_arrays[0])
+                y_resampled.append(new_arrays[1])
+                if sample_weight is not None:
+                    sample_weight_resampled.append(new_arrays[2])
             else:
                 target_class_indices = np.flatnonzero(y == target_class)
                 X_resampled.append(safe_indexing(X, target_class_indices))
                 y_resampled.append(safe_indexing(y, target_class_indices))
+                if sample_weight is not None:
+                    sample_weight_resampled.append(
+                        safe_indexing(sample_weight, target_class_indices))
 
-        if sparse.issparse(X):
-            X_resampled = sparse.vstack(X_resampled)
-        else:
-            X_resampled = np.vstack(X_resampled)
-        y_resampled = np.hstack(y_resampled)
+        X_resampled = (sparse.vstack(X_resampled)
+                       if sparse.issparse(X) else np.vstack(X_resampled))
+        y_resampled = np.array(np.hstack(y_resampled), dtype=y.dtype)
+        if sample_weight is not None:
+            sample_weight_resampled = np.array(
+                np.hstack(sample_weight_resampled), dtype=sample_weight.dtype)
 
-        return X_resampled, np.array(y_resampled, dtype=y.dtype)
+        if sample_weight is not None:
+            return X_resampled, y_resampled, sample_weight_resampled
+        return X_resampled, y_resampled

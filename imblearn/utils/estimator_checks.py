@@ -38,7 +38,7 @@ from imblearn.utils.testing import warns
 
 DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE']
 DONT_SUPPORT_SAMPLE_WEIGHT = ['EasyEnsemble', 'BalanceCascade',
-                              'ClusterCentroids', 'FunctionTransformer']
+                              'FunctionSampler']
 SUPPORT_STRING = ['RandomUnderSampler', 'RandomOverSampler']
 
 
