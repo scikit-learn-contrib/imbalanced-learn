@@ -16,6 +16,8 @@ from sklearn.base import BaseEstimator
 from sklearn.externals import six
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
+from sklearn.utils import check_consistent_length
+from sklearn.utils import check_array
 
 from .utils import check_sampling_strategy, check_target_type
 from .utils.deprecation import deprecate_parameter
@@ -55,7 +57,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             self.sampling_strategy, y, self._sampling_type)
         return self
 
-    def fit_resample(self, X, y):
+    def fit_resample(self, X, y, sample_weight=None):
         """Resample the dataset.
 
         Parameters
@@ -66,24 +68,39 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
+        sample_weight : array-like, shape (n_samples,) or None
+            Sample weights.
+
+
         Returns
         -------
-        X_resampled : {array-like, sparse matrix}, shape \
+        X_resampled : {ndarray, sparse matrix}, shape \
 (n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : array-like, shape (n_samples_new,)
+        y_resampled : ndarray, shape (n_samples_new,)
             The corresponding label of `X_resampled`.
+
+        sample_weight_resampled : ndarray, shape (n_samples_new,)
+            Resampled sample weights. This output is returned only if
+            ``sample_weight`` was not ``None``.
+
+        idx_resampled : ndarray, shape (n_samples_new,)
+            Indices of the selected features. This output is optional and only
+            available for some sampler if ``return_indices=True``.
 
         """
         self._deprecate_ratio()
 
         X, y, binarize_y = self._check_X_y(X, y)
+        if sample_weight is not None:
+            sample_weight = check_array(sample_weight, ensure_2d=False)
+            check_consistent_length(X, y, sample_weight)
 
         self.sampling_strategy_ = check_sampling_strategy(
             self.sampling_strategy, y, self._sampling_type)
 
-        output = self._fit_resample(X, y)
+        output = self._fit_resample(X, y, sample_weight)
 
         if binarize_y:
             y_sampled = label_binarize(output[1], np.unique(y))
@@ -96,7 +113,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
     fit_sample = fit_resample
 
     @abstractmethod
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         """Base method defined in each sampler to defined the sampling
         strategy.
 
@@ -108,6 +125,9 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         y : array-like, shape (n_samples,)
             Corresponding label for each sample in X.
 
+        sample_weight : array-like, shape (n_samples,) or None
+            Sample weights.
+
         Returns
         -------
         X_resampled : {ndarray, sparse matrix}, shape \
@@ -115,7 +135,15 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
             The array containing the resampled data.
 
         y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
+            The corresponding label of `X_resampled`.
+
+        sample_weight_resampled : ndarray, shape (n_samples_new,)
+            Resampled sample weights. This output is returned only if
+            ``sample_weight`` was not ``None``.
+
+        idx_resampled : ndarray, shape (n_samples_new,)
+            Indices of the selected features. This output is optional and only
+            available for some sampler if ``return_indices=True``.
 
         """
         pass
@@ -243,7 +271,7 @@ class FunctionSampler(BaseSampler):
         self.kw_args = kw_args
         self.logger = logging.getLogger(__name__)
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']
                          if self.accept_sparse else False)
         func = _identity if self.func is None else self.func

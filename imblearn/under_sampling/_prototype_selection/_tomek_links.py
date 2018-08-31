@@ -134,7 +134,7 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
         return links
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         # check for deprecated random_state
         if self.random_state is not None:
             deprecate_parameter(self, '0.4', 'random_state')
@@ -147,8 +147,10 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         links = self.is_tomek(y, nns, self.sampling_strategy_)
         idx_under = np.flatnonzero(np.logical_not(links))
 
+        resampled_arrays = [safe_indexing(arr, idx_under)
+                            for arr in (X, y, sample_weight)
+                            if arr is not None]
+
         if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
-        else:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under))
+            return tuple(resampled_arrays + [idx_under])
+        return tuple(resampled_arrays)

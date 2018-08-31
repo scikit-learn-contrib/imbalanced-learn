@@ -562,7 +562,6 @@ def _fit_transform_one(transformer, weight, X, y, **fit_params):
 
 def _fit_resample_one(sampler, X, y, **fit_params):
     X_res, y_res = sampler.fit_resample(X, y, **fit_params)
-
     return X_res, y_res, sampler
 
 

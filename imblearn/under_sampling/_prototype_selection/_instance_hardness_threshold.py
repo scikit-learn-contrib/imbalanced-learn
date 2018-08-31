@@ -16,6 +16,7 @@ from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.utils import safe_indexing
+from sklearn.utils.fixes import signature
 
 from ..base import BaseCleaningSampler
 from ...utils import Substitution
@@ -125,7 +126,7 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
             raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
                 type(self.estimator)))
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
 
         target_stats = Counter(y)
@@ -134,13 +135,23 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
             random_state=self.random_state).split(X, y)
         probabilities = np.zeros(y.shape[0], dtype=float)
 
+        support_sample_weight = "sample_weight" in signature(
+            self.estimator_.fit).parameters
+
         for train_index, test_index in skf:
             X_train = safe_indexing(X, train_index)
             X_test = safe_indexing(X, test_index)
             y_train = safe_indexing(y, train_index)
             y_test = safe_indexing(y, test_index)
+            if sample_weight is not None:
+                sample_weight_train = safe_indexing(sample_weight, train_index)
+            else:
+                sample_weight_train = None
 
-            self.estimator_.fit(X_train, y_train)
+            if support_sample_weight:
+                self.estimator_.fit(X_train, y_train, sample_weight_train)
+            else:
+                self.estimator_.fit(X_train, y_train)
 
             probs = self.estimator_.predict_proba(X_test)
             classes = self.estimator_.classes_
@@ -167,8 +178,10 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
                  np.flatnonzero(y == target_class)[index_target_class]),
                 axis=0)
 
+        resampled_arrays = [safe_indexing(arr, idx_under)
+                            for arr in (X, y, sample_weight)
+                            if arr is not None]
+
         if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
-        else:
-            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+            return tuple(resampled_arrays + [idx_under])
+        return tuple(resampled_arrays)

@@ -114,7 +114,7 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
         self.replacement = replacement
         self.n_subsets = n_subsets
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         random_state = check_random_state(self.random_state)
 
         X_resampled = []

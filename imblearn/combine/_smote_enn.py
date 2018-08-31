@@ -125,11 +125,11 @@ class SMOTEENN(BaseSampler):
         else:
             self.enn_ = EditedNearestNeighbours(sampling_strategy='all')
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
         y = check_target_type(y)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         self.sampling_strategy_ = self.sampling_strategy
 
-        X_res, y_res = self.smote_.fit_resample(X, y)
-        return self.enn_.fit_resample(X_res, y_res)
+        resampled_arrays = self.smote_.fit_resample(X, y, sample_weight)
+        return self.enn_.fit_resample(*resampled_arrays)

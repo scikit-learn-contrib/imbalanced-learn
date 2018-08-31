@@ -106,12 +106,14 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             'n_neighbors', self.n_neighbors, additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
         random_state = check_random_state(self.random_state)
 
         X_resampled = X.copy()
         y_resampled = y.copy()
+        if sample_weight is not None:
+            sample_weight_resampled = sample_weight.copy()
 
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
@@ -165,8 +167,6 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                 X_new = (sparse.csr_matrix(
                     (samples, (row_indices, col_indices)),
                     [np.sum(n_samples_generate), X.shape[1]], dtype=X.dtype))
-                y_new = np.array([class_sample] * np.sum(n_samples_generate),
-                                 dtype=y.dtype)
             else:
                 x_class_gen = []
                 for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
@@ -182,8 +182,13 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                     ])
 
                 X_new = np.concatenate(x_class_gen).astype(X.dtype)
-                y_new = np.array([class_sample] * np.sum(n_samples_generate),
-                                 dtype=y.dtype)
+
+            y_new = np.array([class_sample] * np.sum(n_samples_generate),
+                             dtype=y.dtype)
+            if sample_weight is not None:
+                sample_weight_resampled = np.hstack(
+                    (sample_weight_resampled,
+                     np.ones_like(y_new, dtype=sample_weight.dtype)))
 
             if sparse.issparse(X_new):
                 X_resampled = sparse.vstack([X_resampled, X_new])
@@ -191,4 +196,6 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                 X_resampled = np.vstack((X_resampled, X_new))
             y_resampled = np.hstack((y_resampled, y_new))
 
+        if sample_weight is not None:
+            return X_resampled, y_resampled, sample_weight_resampled
         return X_resampled, y_resampled

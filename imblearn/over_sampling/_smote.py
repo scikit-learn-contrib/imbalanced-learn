@@ -123,8 +123,7 @@ class BaseSMOTE(BaseOverSampler):
                                       [len(samples_indices), X.shape[1]],
                                       dtype=X.dtype),
                     y_new)
-        else:
-            return X_new, y_new
+        return X_new, y_new
 
     def _in_danger_noise(self, nn_estimator, samples, target_class, y,
                          kind='danger'):
@@ -280,14 +279,16 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                              'Got {} instead.'.format(self.kind))
 
     # FIXME: rename _sample -> _fit_resample in 0.6
-    def _fit_resample(self, X, y):
-        return self._sample(X, y)
+    def _fit_resample(self, X, y, sample_weight=None):
+        return self._sample(X, y, sample_weight)
 
-    def _sample(self, X, y):
+    def _sample(self, X, y, sample_weight=None):
         self._validate_estimator()
 
         X_resampled = X.copy()
         y_resampled = y.copy()
+        if sample_weight is not None:
+            sample_weight_resampled = sample_weight.copy()
 
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
@@ -317,6 +318,10 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                 else:
                     X_resampled = np.vstack((X_resampled, X_new))
                 y_resampled = np.hstack((y_resampled, y_new))
+                if sample_weight is not None:
+                    sample_weight_resampled = np.hstack(
+                        (sample_weight_resampled,
+                         np.ones_like(y_new, dtype=sample_weight.dtype)))
 
             elif self.kind == 'borderline-2':
                 random_state = check_random_state(self.random_state)
@@ -350,7 +355,14 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                 else:
                     X_resampled = np.vstack((X_resampled, X_new_1, X_new_2))
                 y_resampled = np.hstack((y_resampled, y_new_1, y_new_2))
+                if sample_weight is not None:
+                    sample_weight_resampled = np.hstack(
+                        (sample_weight_resampled,
+                         np.ones_like(y_new_1, dtype=sample_weight.dtype),
+                         np.ones_like(y_new_2, dtype=sample_weight.dtype)))
 
+        if sample_weight is not None:
+            return X_resampled, y_resampled, sample_weight_resampled
         return X_resampled, y_resampled
 
 
@@ -466,14 +478,16 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                                    self.svm_estimator)
 
     # FIXME: rename _sample -> _fit_resample in 0.6
-    def _fit_resample(self, X, y):
-        return self._sample(X, y)
+    def _fit_resample(self, X, y, sample_weight=None):
+        return self._sample(X, y, sample_weight)
 
-    def _sample(self, X, y):
+    def _sample(self, X, y, sample_weight=None):
         self._validate_estimator()
         random_state = check_random_state(self.random_state)
         X_resampled = X.copy()
         y_resampled = y.copy()
+        if sample_weight is not None:
+            sample_weight_resampled = sample_weight.copy()
 
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
@@ -535,19 +549,34 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                     X_resampled = np.vstack((X_resampled, X_new_1, X_new_2))
                 y_resampled = np.concatenate(
                     (y_resampled, y_new_1, y_new_2), axis=0)
+                if sample_weight is not None:
+                    sample_weight_resampled = np.hstack(
+                        (sample_weight_resampled,
+                         np.ones_like(y_new_1, dtype=sample_weight.dtype),
+                         np.ones_like(y_new_2, dtype=sample_weight.dtype)))
             elif np.count_nonzero(danger_bool) == 0:
                 if sparse.issparse(X_resampled):
                     X_resampled = sparse.vstack([X_resampled, X_new_2])
                 else:
                     X_resampled = np.vstack((X_resampled, X_new_2))
                 y_resampled = np.concatenate((y_resampled, y_new_2), axis=0)
+                if sample_weight is not None:
+                    sample_weight_resampled = np.hstack(
+                        (sample_weight_resampled,
+                         np.ones_like(y_new_2, dtype=sample_weight.dtype)))
             elif np.count_nonzero(safety_bool) == 0:
                 if sparse.issparse(X_resampled):
                     X_resampled = sparse.vstack([X_resampled, X_new_1])
                 else:
                     X_resampled = np.vstack((X_resampled, X_new_1))
                 y_resampled = np.concatenate((y_resampled, y_new_1), axis=0)
+                if sample_weight is not None:
+                    sample_weight_resampled = np.hstack(
+                        (sample_weight_resampled,
+                         np.ones_like(y_new_1, dtype=sample_weight.dtype)))
 
+        if sample_weight is not None:
+            return X_resampled, y_resampled, sample_weight_resampled
         return X_resampled, y_resampled
 
 
@@ -735,16 +764,18 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                 self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
 
     # FIXME: to be removed in 0.6
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
-        return self._sample(X, y)
+        return self._sample(X, y, sample_weight)
 
-    def _sample(self, X, y):
+    def _sample(self, X, y, sample_weight=None):
         # FIXME: uncomment in version 0.6
         # self._validate_estimator()
 
         X_resampled = X.copy()
         y_resampled = y.copy()
+        if sample_weight is not None:
+            sample_weight_resampled = sample_weight.copy()
 
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
@@ -762,5 +793,11 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             else:
                 X_resampled = np.vstack((X_resampled, X_new))
             y_resampled = np.hstack((y_resampled, y_new))
+            if sample_weight is not None:
+                sample_weight_resampled = np.hstack(
+                    (sample_weight_resampled,
+                     np.ones_like(y_new, dtype=sample_weight.dtype)))
 
+        if sample_weight is not None:
+            return X_resampled, y_resampled, sample_weight_resampled
         return X_resampled, y_resampled

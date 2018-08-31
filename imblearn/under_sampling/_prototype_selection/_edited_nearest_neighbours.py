@@ -138,7 +138,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
 
         idx_under = np.empty((0, ), dtype=int)
@@ -168,11 +168,13 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                  np.flatnonzero(y == target_class)[index_target_class]),
                 axis=0)
 
+        resampled_arrays = [safe_indexing(arr, idx_under)
+                            for arr in (X, y, sample_weight)
+                            if arr is not None]
+
         if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
-        else:
-            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+            return tuple(resampled_arrays + [idx_under])
+        return tuple(resampled_arrays)
 
 
 @Substitution(
@@ -303,22 +305,35 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             n_jobs=self.n_jobs,
             ratio=self.ratio)
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
 
-        X_, y_ = X, y
+        X_, y_, sample_weight_ = X, y, sample_weight
         if self.return_indices:
             idx_under = np.arange(X.shape[0], dtype=int)
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
 
-        for n_iter in range(self.max_iter):
+        for _ in range(self.max_iter):
 
             prev_len = y_.shape[0]
             if self.return_indices:
-                X_enn, y_enn, idx_enn = self.enn_.fit_resample(X_, y_)
+                resampled_data = self.enn_.fit_resample(X_, y_, sample_weight_)
             else:
-                X_enn, y_enn = self.enn_.fit_resample(X_, y_)
+                resampled_data = self.enn_.fit_resample(X_, y_, sample_weight_)
+
+            # unpacking data
+            if len(resampled_data) == 2:
+                X_enn, y_enn = resampled_data
+                sample_weight_enn = None
+            elif len(resampled_data) == 3:
+                if sample_weight_ is not None:
+                    X_enn, y_enn, sample_weight_enn = resampled_data
+                else:
+                    X_enn, y_enn, idx_enn = resampled_data
+                    sample_weight_enn = None
+            else:
+                X_enn, y_enn, sample_weight_enn, idx_enn = resampled_data
 
             # Check the stopping criterion
             # 1. If there is no changes for the vector y
@@ -341,25 +356,24 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             # Case 3
             b_remove_maj_class = (len(stats_enn) < len(target_stats))
 
-            X_, y_, = X_enn, y_enn
+            X_, y_, sample_weight_ = X_enn, y_enn, sample_weight_enn
+
             if self.return_indices:
                 idx_under = idx_under[idx_enn]
 
             if b_conv or b_min_bec_maj or b_remove_maj_class:
                 if b_conv:
+                    X_, y_, sample_weight_ = X_enn, y_enn, sample_weight_enn
                     if self.return_indices:
-                        X_, y_, = X_enn, y_enn
                         idx_under = idx_under[idx_enn]
-                    else:
-                        X_, y_, = X_enn, y_enn
                 break
 
-        X_resampled, y_resampled = X_, y_
+        resampled_arrays = [arr for arr in (X_, y_, sample_weight_)
+                            if arr is not None]
 
         if self.return_indices:
-            return X_resampled, y_resampled, idx_under
-        else:
-            return X_resampled, y_resampled
+            return tuple(resampled_arrays + [idx_under])
+        return tuple(resampled_arrays)
 
 
 @Substitution(
@@ -489,10 +503,10 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             n_jobs=self.n_jobs,
             ratio=self.ratio)
 
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, sample_weight=None):
         self._validate_estimator()
 
-        X_, y_ = X, y
+        X_, y_, sample_weight_ = X, y, sample_weight
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
 
@@ -503,9 +517,22 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             self.enn_.n_neighbors = curr_size_ngh
 
             if self.return_indices:
-                X_enn, y_enn, idx_enn = self.enn_.fit_resample(X_, y_)
+                resampled_data = self.enn_.fit_resample(X_, y_, sample_weight_)
             else:
-                X_enn, y_enn = self.enn_.fit_resample(X_, y_)
+                resampled_data = self.enn_.fit_resample(X_, y_, sample_weight_)
+
+            # unpacking data
+            if len(resampled_data) == 2:
+                X_enn, y_enn = resampled_data
+                sample_weight_enn = None
+            elif len(resampled_data) == 3:
+                if sample_weight_ is not None:
+                    X_enn, y_enn, sample_weight_enn = resampled_data
+                else:
+                    X_enn, y_enn, idx_enn = resampled_data
+                    sample_weight_enn = None
+            else:
+                X_enn, y_enn, sample_weight_enn, idx_enn = resampled_data
 
             # Check the stopping criterion
             # 1. If the number of samples in the other class become inferior to
@@ -526,16 +553,16 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             # Case 2
             b_remove_maj_class = (len(stats_enn) < len(target_stats))
 
-            X_, y_, = X_enn, y_enn
+            X_, y_, sample_weight_ = X_enn, y_enn, sample_weight_enn
             if self.return_indices:
                 idx_under = idx_under[idx_enn]
 
             if b_min_bec_maj or b_remove_maj_class:
                 break
 
-        X_resampled, y_resampled = X_, y_
+        resampled_arrays = [arr for arr in (X_, y_, sample_weight_)
+                            if arr is not None]
 
         if self.return_indices:
-            return X_resampled, y_resampled, idx_under
-        else:
-            return X_resampled, y_resampled
+            return tuple(resampled_arrays + [idx_under])
+        return tuple(resampled_arrays)
