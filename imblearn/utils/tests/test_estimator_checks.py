@@ -3,7 +3,6 @@ import numpy as np
 
 from sklearn.base import BaseEstimator
 from sklearn.utils import check_X_y
-from sklearn.utils.testing import assert_no_warnings
 
 from imblearn.base import BaseSampler
 from imblearn.utils.estimator_checks import check_estimator
@@ -58,8 +57,10 @@ class NotTransformingTargetOvR(BaseBadSampler):
         self.fit(X, y)
         return X, y
 
+
 class NotPreservingDtypeSampler(BaseSampler):
     _sampling_type = 'bypass'
+
     def _fit_resample(self, X, y):
         return X.astype(np.float64), y.astype(np.int64)
 
