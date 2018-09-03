@@ -142,9 +142,8 @@ def check_samplers_fit(name, Sampler):
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
     sampler.fit(X, y)
-    # FIXME remove in 0.6 -> ratio is deprecated
-    assert hasattr(sampler, 'ratio_')
-    assert hasattr(sampler, 'sampling_strategy_')
+    assert hasattr(sampler, 'sampling_strategy_'), \
+        "No fitted attribute sampling_strategy_"
 
 
 def check_samplers_fit_resample(name, Sampler):
@@ -298,7 +297,7 @@ def check_samplers_pandas(name, Sampler):
         n_informative=4,
         weights=[0.2, 0.3, 0.5],
         random_state=0)
-    X_pd, y_pd = pd.DataFrame(X), pd.Series(y)
+    X_pd = pd.DataFrame(X)
     sampler = Sampler()
     if isinstance(Sampler(), SMOTE):
         samplers = [
@@ -314,7 +313,7 @@ def check_samplers_pandas(name, Sampler):
 
     for sampler in samplers:
         set_random_state(sampler)
-        X_res_pd, y_res_pd = sampler.fit_resample(X_pd, y_pd)
+        X_res_pd, y_res_pd = sampler.fit_resample(X_pd, y)
         X_res, y_res = sampler.fit_resample(X, y)
         assert_allclose(X_res_pd, X_res)
         assert_allclose(y_res_pd, y_res)
@@ -356,5 +355,5 @@ def check_samplers_preserve_dtype(name, Sampler):
     sampler = Sampler()
     set_random_state(sampler)
     X_res, y_res = sampler.fit_resample(X, y)
-    assert X.dtype == X_res.dtype
-    assert y.dtype == y_res.dtype
+    assert X.dtype == X_res.dtype, "X dtype is not preserved"
+    assert y.dtype == y_res.dtype, "y dtype is not preserved"
