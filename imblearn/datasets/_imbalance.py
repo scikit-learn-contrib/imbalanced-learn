@@ -5,7 +5,6 @@
 #          Christos Aridas
 # License: MIT
 
-import logging
 import warnings
 from collections import Counter
 
@@ -14,14 +13,13 @@ from sklearn.utils import check_X_y
 from ..under_sampling import RandomUnderSampler
 from ..utils import check_sampling_strategy
 
-LOGGER = logging.getLogger(__name__)
-
 
 def make_imbalance(X,
                    y,
                    sampling_strategy=None,
                    ratio=None,
                    random_state=None,
+                   verbose=False,
                    **kwargs):
     """Turns a dataset into an imbalanced dataset at specific ratio.
 
@@ -59,6 +57,9 @@ def make_imbalance(X,
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by np.random.
+
+    verbose : bool, optional (default=False)
+        Show information regarding the sampling.
 
     kwargs : dict, optional
         Dictionary of additional keyword arguments to pass to
@@ -115,13 +116,15 @@ def make_imbalance(X,
                          "function returning a dictionary. Got {} instead."
                          .format(type(sampling_strategy)))
 
-    LOGGER.info('The original target distribution in the dataset is: %s',
-                target_stats)
+    if verbose:
+        print('The original target distribution in the dataset is: %s',
+              target_stats)
     rus = RandomUnderSampler(
         sampling_strategy=sampling_strategy_,
         replacement=False,
         random_state=random_state)
     X_resampled, y_resampled = rus.fit_resample(X, y)
-    LOGGER.info('Make the dataset imbalanced: %s', Counter(y_resampled))
+    if verbose:
+        print('Make the dataset imbalanced: %s', Counter(y_resampled))
 
     return X_resampled, y_resampled

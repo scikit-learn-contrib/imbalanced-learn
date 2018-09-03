@@ -16,7 +16,8 @@ from sklearn.svm import SVC
 from sklearn.feature_selection import SelectKBest
 from sklearn.utils.testing import (assert_array_equal,
                                    assert_array_almost_equal, assert_raises,
-                                   assert_warns, assert_warns_message)
+                                   assert_warns, assert_warns_message,
+                                   assert_allclose)
 
 from imblearn.datasets import make_imbalance
 from imblearn.ensemble import BalancedBaggingClassifier
@@ -436,7 +437,6 @@ def test_oob_score_consistency():
     assert bagging.fit(X, y).oob_score_ == bagging.fit(X, y).oob_score_
 
 
-# FIXME: uncomment when #9723 is merged in scikit-learn
 def test_estimators_samples():
     # Check that format of estimators_samples_ is correct and that results
     # generated at fit time can be identically reproduced at a later time
@@ -458,8 +458,8 @@ def test_estimators_samples():
 
     # Test for correct formatting
     assert len(estimators_samples) == len(estimators)
-    assert len(estimators_samples[0]) == len(X)
-    assert estimators_samples[0].dtype.kind == 'b'
+    assert len(estimators_samples[0]) == len(X) // 2
+    assert estimators_samples[0].dtype.kind == 'i'
 
     # Re-fit single estimator to test for consistent sampling
     estimator_index = 0
@@ -474,7 +474,7 @@ def test_estimators_samples():
     estimator.fit(X_train, y_train)
     new_coefs = estimator.steps[-1][1].coef_
 
-    assert_array_almost_equal(orig_coefs, new_coefs)
+    assert_allclose(orig_coefs, new_coefs)
 
 
 def test_max_samples_consistency():

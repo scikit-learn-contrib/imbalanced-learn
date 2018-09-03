@@ -126,8 +126,6 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
                 type(self.estimator)))
 
-        self.logger.debug(self.estimator_)
-
     def _fit_resample(self, X, y):
         self._validate_estimator()
 
