@@ -6,7 +6,6 @@
 
 from __future__ import division
 
-import logging
 import warnings
 from abc import ABCMeta, abstractmethod
 
@@ -132,7 +131,6 @@ class BaseSampler(SamplerMixin):
         self.sampling_strategy = sampling_strategy
         # FIXME: remove in 0.6
         self.ratio = ratio
-        self.logger = logging.getLogger(self.__module__)
 
     @staticmethod
     def _check_X_y(X, y):
@@ -153,18 +151,6 @@ class BaseSampler(SamplerMixin):
         if self.ratio is not None:
             deprecate_parameter(self, '0.4', 'ratio', 'sampling_strategy')
             self.sampling_strategy = self.ratio
-
-    def __getstate__(self):
-        """Prevent logger from being pickled."""
-        object_dictionary = self.__dict__.copy()
-        del object_dictionary['logger']
-        return object_dictionary
-
-    def __setstate__(self, dict):
-        """Re-open the logger."""
-        logger = logging.getLogger(self.__module__)
-        self.__dict__.update(dict)
-        self.logger = logger
 
 
 def _identity(X, y):
@@ -241,7 +227,6 @@ class FunctionSampler(BaseSampler):
         self.func = func
         self.accept_sparse = accept_sparse
         self.kw_args = kw_args
-        self.logger = logging.getLogger(__name__)
 
     def _fit_resample(self, X, y):
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']

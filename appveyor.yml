@@ -37,7 +37,8 @@ install:
   # Add Library/bin directory to fix issue
   # https://github.com/conda/conda/issues/1753
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PYTHON%\\Library\\bin;%PATH%"
-  - conda install pip scipy numpy scikit-learn=0.19 -y -q
+  - conda install pip scipy numpy -y -q
+  - pip install --pre scikit-learn
   - "conda install %OPTIONAL_DEP% -y -q"
   - conda install pytest pytest-cov -y -q
   - pip install codecov

@@ -6,8 +6,6 @@
 
 from __future__ import division
 
-import logging
-
 from sklearn.base import clone
 from sklearn.utils import check_X_y
 
@@ -98,7 +96,6 @@ class SMOTEENN(BaseSampler):
         self.smote = smote
         self.enn = enn
         self.ratio = ratio
-        self.logger = logging.getLogger(__name__)
 
     def _validate_estimator(self):
         "Private function to validate SMOTE and ENN objects"
