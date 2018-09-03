@@ -26,9 +26,10 @@ which accepts arrays, matrices, or sparse matrices as arguments, the following
 should be used when applicable.
 
 - :func:`check_neighbors_object`: Check the objects is consistent to be a NN.
-- :func:`check_target_type`: Check the target types to be conform to the current samplers.
-- :func:`check_ratio`: Checks ratio for consistent type and return a dictionary
-    containing each targeted class with its corresponding number of pixel.
+- :func:`check_target_type`: Check the target types to be conform to the current sam  plers.
+- :func:`check_sampling_strategy`: Checks that sampling target is onsistent with
+  the type and return a dictionary containing each targeted class with its
+  corresponding number of pixel.
 
 
 Deprecation

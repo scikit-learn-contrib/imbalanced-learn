@@ -13,11 +13,17 @@ ensemble
 exceptions
     Module including custom warnings and error clases used across
     imbalanced-learn.
+keras
+    Module which provides custom generator, layers for deep learning using
+    keras.
 metrics
     Module which provides metrics to quantified the classification performance
     with imbalanced dataset.
 over_sampling
     Module which provides methods to under-sample a dataset.
+tensorflow
+    Module which provides custom generator, layers for deep learning using
+    tensorflow.
 under-sampling
     Module which provides methods to over-sample a dataset.
 utils
@@ -26,10 +32,7 @@ pipeline
     Module which allowing to create pipeline with scikit-learn estimators.
 """
 
+from .base import FunctionSampler
 from ._version import __version__
 
-# list all submodules available in imblearn and version
-__all__ = [
-    'combine', 'ensemble', 'exceptions', 'metrics', 'over_sampling',
-    'under_sampling', 'utils', 'pipeline', '__version__'
-]
+__all__ = ['FunctionSampler', '__version__']

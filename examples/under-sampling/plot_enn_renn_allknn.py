@@ -58,7 +58,7 @@ c0, c1 = plot_resampling(ax1, X_vis, y, 'Original set')
 # Apply the ENN
 print('ENN')
 enn = EditedNearestNeighbours(return_indices=True)
-X_resampled, y_resampled, idx_resampled = enn.fit_sample(X, y)
+X_resampled, y_resampled, idx_resampled = enn.fit_resample(X, y)
 X_res_vis = pca.transform(X_resampled)
 idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]), idx_resampled)
 reduction_str = ('Reduced {:.2f}%'.format(100 * (1 - float(len(X_resampled)) /
@@ -72,7 +72,7 @@ plot_resampling(ax2, X_res_vis, y_resampled, 'ENN - ' + reduction_str)
 # Apply the RENN
 print('RENN')
 renn = RepeatedEditedNearestNeighbours(return_indices=True)
-X_resampled, y_resampled, idx_resampled = renn.fit_sample(X, y)
+X_resampled, y_resampled, idx_resampled = renn.fit_resample(X, y)
 X_res_vis = pca.transform(X_resampled)
 idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]), idx_resampled)
 reduction_str = ('Reduced {:.2f}%'.format(100 * (1 - float(len(X_resampled)) /
@@ -86,7 +86,7 @@ plot_resampling(ax3, X_res_vis, y_resampled, 'RENN - ' + reduction_str)
 # Apply the AllKNN
 print('AllKNN')
 allknn = AllKNN(return_indices=True)
-X_resampled, y_resampled, idx_resampled = allknn.fit_sample(X, y)
+X_resampled, y_resampled, idx_resampled = allknn.fit_resample(X, y)
 X_res_vis = pca.transform(X_resampled)
 idx_samples_removed = np.setdiff1d(np.arange(X_vis.shape[0]), idx_resampled)
 reduction_str = ('Reduced {:.2f}%'.format(100 * (1 - float(len(X_resampled)) /

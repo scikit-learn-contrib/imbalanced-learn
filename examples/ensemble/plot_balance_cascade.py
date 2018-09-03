@@ -32,7 +32,7 @@ X_vis = pca.fit_transform(X)
 
 # Apply Balance Cascade method
 bc = BalanceCascade()
-X_resampled, y_resampled = bc.fit_sample(X, y)
+X_resampled, y_resampled = bc.fit_resample(X, y)
 X_res_vis = []
 for X_res in X_resampled:
     X_res_vis.append(pca.transform(X_res))

@@ -3,7 +3,6 @@
 #          Christos Aridas
 # License: MIT
 
-
 from __future__ import print_function
 
 from collections import Counter
@@ -20,29 +19,46 @@ data = load_iris()
 X, Y = data.data, data.target
 
 
+def test_make_imbalanced_backcompat():
+    # check an error is raised with we don't pass sampling_strategy and ratio
+    with raises(TypeError, match="missing 1 required positional argument"):
+        make_imbalance(X, Y)
+
+
 def test_make_imbalance_error():
-    # we are reusing part of utils.check_ratio, however this is not cover in
-    # the common tests so we will repeat it here
-    ratio = {0: -100, 1: 50, 2: 50}
+    # we are reusing part of utils.check_sampling_strategy, however this is not
+    # cover in the common tests so we will repeat it here
+    sampling_strategy = {0: -100, 1: 50, 2: 50}
     with raises(ValueError, match="in a class cannot be negative"):
-        make_imbalance(X, Y, ratio)
-    ratio = {0: 10, 1: 70}
+        make_imbalance(X, Y, sampling_strategy)
+    sampling_strategy = {0: 10, 1: 70}
     with raises(ValueError, match="should be less or equal to the original"):
-        make_imbalance(X, Y, ratio)
+        make_imbalance(X, Y, sampling_strategy)
     y_ = np.zeros((X.shape[0], ))
-    ratio = {0: 10}
+    sampling_strategy = {0: 10}
     with raises(ValueError, match="needs to have more than 1 class."):
-        make_imbalance(X, y_, ratio)
-    ratio = 'random-string'
+        make_imbalance(X, y_, sampling_strategy)
+    sampling_strategy = 'random-string'
     with raises(ValueError, match="has to be a dictionary or a function"):
-        make_imbalance(X, Y, ratio)
+        make_imbalance(X, Y, sampling_strategy)
 
 
 def test_make_imbalance_dict():
-    ratio = {0: 10, 1: 20, 2: 30}
-    X_, y_ = make_imbalance(X, Y, ratio=ratio)
-    assert Counter(y_) == ratio
+    sampling_strategy = {0: 10, 1: 20, 2: 30}
+    X_, y_ = make_imbalance(X, Y, sampling_strategy=sampling_strategy)
+    assert Counter(y_) == sampling_strategy
 
-    ratio = {0: 10, 1: 20}
-    X_, y_ = make_imbalance(X, Y, ratio=ratio)
+    sampling_strategy = {0: 10, 1: 20}
+    X_, y_ = make_imbalance(X, Y, sampling_strategy=sampling_strategy)
+    assert Counter(y_) == {0: 10, 1: 20, 2: 50}
+
+
+def test_make_imbalance_ratio():
+    # check that using 'ratio' is working
+    sampling_strategy = {0: 10, 1: 20, 2: 30}
+    X_, y_ = make_imbalance(X, Y, ratio=sampling_strategy)
+    assert Counter(y_) == sampling_strategy
+
+    sampling_strategy = {0: 10, 1: 20}
+    X_, y_ = make_imbalance(X, Y, ratio=sampling_strategy)
     assert Counter(y_) == {0: 10, 1: 20, 2: 50}

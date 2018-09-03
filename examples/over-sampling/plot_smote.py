@@ -17,6 +17,8 @@ from sklearn.datasets import make_classification
 from sklearn.decomposition import PCA
 
 from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling import BorderlineSMOTE
+from imblearn.over_sampling import SVMSMOTE
 
 print(__doc__)
 
@@ -49,13 +51,13 @@ pca = PCA(n_components=2)
 X_vis = pca.fit_transform(X)
 
 # Apply regular SMOTE
-kind = ['regular', 'borderline1', 'borderline2', 'svm']
-sm = [SMOTE(kind=k) for k in kind]
+sm = [SMOTE(), BorderlineSMOTE(kind='borderline-1'),
+      BorderlineSMOTE(kind='borderline-2'), SVMSMOTE()]
 X_resampled = []
 y_resampled = []
 X_res_vis = []
 for method in sm:
-    X_res, y_res = method.fit_sample(X, y)
+    X_res, y_res = method.fit_resample(X, y)
     X_resampled.append(X_res)
     y_resampled.append(y_res)
     X_res_vis.append(pca.transform(X_res))
@@ -67,9 +69,10 @@ ax2.axis('off')
 ax_res = [ax3, ax4, ax5, ax6]
 
 c0, c1 = plot_resampling(ax1, X_vis, y, 'Original set')
-for i in range(len(kind)):
+for i, name in enumerate(['SMOTE', 'SMOTE Borderline-1',
+                          'SMOTE Borderline-2', 'SMOTE SVM']):
     plot_resampling(ax_res[i], X_res_vis[i], y_resampled[i],
-                    'SMOTE {}'.format(kind[i]))
+                    '{}'.format(name))
 
 ax2.legend((c0, c1), ('Class #0', 'Class #1'), loc='center',
            ncol=1, labelspacing=0.)

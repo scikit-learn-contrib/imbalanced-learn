@@ -1,8 +1,8 @@
+# coding: utf-8
 """Testing the metric for classification with imbalanced dataset"""
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
-
 
 from __future__ import division, print_function
 
@@ -34,7 +34,6 @@ from imblearn.metrics import make_index_balanced_accuracy
 from imblearn.metrics import classification_report_imbalanced
 
 from imblearn.utils.testing import warns
-
 
 RND_SEED = 42
 R_TOL = 1e-2
@@ -161,12 +160,11 @@ def test_sensitivity_specificity_ignored_labels():
     assert_allclose(
         np.mean([1., 0.33]), specificity_13(average='macro'), rtol=R_TOL)
     assert_allclose(
-        np.average(
-            [1., .33], weights=[2., 1.]),
+        np.average([1., .33], weights=[2., 1.]),
         specificity_13(average='weighted'),
         rtol=R_TOL)
-    assert_allclose(3. / (3. + 2.), specificity_13(average='micro'),
-                    rtol=R_TOL)
+    assert_allclose(
+        3. / (3. + 2.), specificity_13(average='micro'), rtol=R_TOL)
 
     # ensure the above were meaningful tests:
     for each in ['macro', 'weighted', 'micro']:
@@ -189,8 +187,8 @@ def test_sensitivity_specificity_support_errors():
 
     # Bad pos_label
     with raises(ValueError):
-        sensitivity_specificity_support(y_true, y_pred, pos_label=2,
-                                        average='binary')
+        sensitivity_specificity_support(
+            y_true, y_pred, pos_label=2, average='binary')
 
     # Bad average option
     with raises(ValueError):
@@ -200,9 +198,8 @@ def test_sensitivity_specificity_support_errors():
 def test_sensitivity_specificity_unused_pos_label():
     # but average != 'binary'; even if data is binary
     with warns(UserWarning, "use labels=\[pos_label\] to specify a single"):
-        sensitivity_specificity_support([1, 2, 1], [1, 2, 2],
-                                        pos_label=2,
-                                        average='macro')
+        sensitivity_specificity_support(
+            [1, 2, 1], [1, 2, 2], pos_label=2, average='macro')
 
 
 def test_geometric_mean_support_binary():
@@ -221,63 +218,82 @@ def test_geometric_mean_multiclass():
 
     y_true = [0, 0, 0, 0]
     y_pred = [1, 1, 1, 1]
-    print(geometric_mean_score(y_true, y_pred))
     assert_allclose(geometric_mean_score(y_true, y_pred), 0.0, rtol=R_TOL)
 
     cor = 0.001
     y_true = [0, 0, 0, 0]
     y_pred = [0, 0, 0, 0]
-    assert_allclose(geometric_mean_score(y_true, y_pred, correction=cor),
-                    1.0, rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, correction=cor), 1.0, rtol=R_TOL)
 
     y_true = [0, 0, 0, 0]
     y_pred = [1, 1, 1, 1]
-    assert_allclose(geometric_mean_score(y_true, y_pred, correction=cor),
-                    cor, rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, correction=cor), cor, rtol=R_TOL)
 
     y_true = [0, 0, 1, 1]
     y_pred = [0, 1, 1, 0]
-    assert_allclose(geometric_mean_score(y_true, y_pred, correction=cor),
-                    0.5, rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, correction=cor), 0.5, rtol=R_TOL)
 
     y_true = [0, 1, 2, 0, 1, 2]
     y_pred = [0, 2, 1, 0, 0, 1]
-    assert_allclose(geometric_mean_score(y_true, y_pred, correction=cor),
-                    (1*cor*cor)**(1.0/3.0), rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, correction=cor),
+        (1 * cor * cor) ** (1.0 / 3.0),
+        rtol=R_TOL)
 
     y_true = [0, 1, 2, 3, 4, 5]
     y_pred = [0, 1, 2, 3, 4, 5]
-    assert_allclose(geometric_mean_score(y_true, y_pred, correction=cor),
-                    1, rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, correction=cor), 1, rtol=R_TOL)
 
     y_true = [0, 1, 1, 1, 1, 0]
     y_pred = [0, 0, 1, 1, 1, 1]
-    assert_allclose(geometric_mean_score(y_true, y_pred, correction=cor),
-                    (0.5*0.75)**0.5, rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, correction=cor),
+        (0.5 * 0.75) ** 0.5,
+        rtol=R_TOL)
 
     y_true = [0, 1, 2, 0, 1, 2]
     y_pred = [0, 2, 1, 0, 0, 1]
-    assert_allclose(geometric_mean_score(y_true, y_pred, average='macro'),
-                    0.47140452079103168, rtol=R_TOL)
-    assert_allclose(geometric_mean_score(y_true, y_pred, average='micro'),
-                    0.47140452079103168, rtol=R_TOL)
-    assert_allclose(geometric_mean_score(y_true, y_pred,
-                                         average='weighted'),
-                    0.47140452079103168, rtol=R_TOL)
-    assert_allclose(geometric_mean_score(y_true, y_pred, average=None),
-                    [0.8660254, 0.0, 0.0], rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, average='macro'),
+        0.47140452079103168,
+        rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, average='micro'),
+        0.47140452079103168,
+        rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, average='weighted'),
+        0.47140452079103168,
+        rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, average=None),
+        [0.8660254, 0.0, 0.0],
+        rtol=R_TOL)
 
     y_true = [0, 1, 2, 0, 1, 2]
     y_pred = [0, 1, 1, 0, 0, 1]
-    assert_allclose(geometric_mean_score(y_true, y_pred, labels=[0, 1]),
-                    0.70710678118654752, rtol=R_TOL)
-    assert_allclose(geometric_mean_score(y_true, y_pred, labels=[0, 1],
-                                         sample_weight=[1, 2, 1, 1, 2, 1]),
-                    0.70710678118654752, rtol=R_TOL)
-    assert_allclose(geometric_mean_score(y_true, y_pred, labels=[0, 1],
-                                         sample_weight=[1, 2, 1, 1, 2, 1],
-                                         average='weighted'),
-                    0.3333333333, rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(y_true, y_pred, labels=[0, 1]),
+        0.70710678118654752,
+        rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(
+            y_true, y_pred, labels=[0, 1], sample_weight=[1, 2, 1, 1, 2, 1]),
+        0.70710678118654752,
+        rtol=R_TOL)
+    assert_allclose(
+        geometric_mean_score(
+            y_true,
+            y_pred,
+            labels=[0, 1],
+            sample_weight=[1, 2, 1, 1, 2, 1],
+            average='weighted'),
+        0.3333333333,
+        rtol=R_TOL)
 
     y_true, y_pred, _ = make_prediction(binary=False)
 
@@ -316,9 +332,9 @@ def test_classification_report_imbalanced_multiclass():
 
     # print classification report with class names
     expected_report = ('pre rec spe f1 geo iba sup setosa 0.83 0.79 0.92 '
-                       '0.81 0.86 0.74 24 versicolor 0.33 0.10 0.86 0.15 '
-                       '0.44 0.19 31 virginica 0.42 0.90 0.55 0.57 0.63 '
-                       '0.37 20 avg / total 0.51 0.53 0.80 0.47 0.62 0.41 75')
+                       '0.81 0.85 0.72 24 versicolor 0.33 0.10 0.86 0.15 '
+                       '0.29 0.08 31 virginica 0.42 0.90 0.55 0.57 0.70 '
+                       '0.51 20 avg / total 0.51 0.53 0.80 0.47 0.58 0.40 75')
 
     report = classification_report_imbalanced(
         y_true,
@@ -328,9 +344,9 @@ def test_classification_report_imbalanced_multiclass():
     assert _format_report(report) == expected_report
     # print classification report with label detection
     expected_report = ('pre rec spe f1 geo iba sup 0 0.83 0.79 0.92 0.81 '
-                       '0.86 0.74 24 1 0.33 0.10 0.86 0.15 0.44 0.19 31 2 '
-                       '0.42 0.90 0.55 0.57 0.63 0.37 20 avg / total 0.51 '
-                       '0.53 0.80 0.47 0.62 0.41 75')
+                       '0.85 0.72 24 1 0.33 0.10 0.86 0.15 0.29 0.08 31 '
+                       '2 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total '
+                       '0.51 0.53 0.80 0.47 0.58 0.40 75')
 
     report = classification_report_imbalanced(y_true, y_pred)
     assert _format_report(report) == expected_report
@@ -342,11 +358,11 @@ def test_classification_report_imbalanced_multiclass_with_digits():
 
     # print classification report with class names
     expected_report = ('pre rec spe f1 geo iba sup setosa 0.82609 0.79167 '
-                       '0.92157 0.80851 0.86409 0.74085 24 versicolor '
-                       '0.33333 0.09677 0.86364 0.15000 0.43809 0.18727 31 '
-                       'virginica 0.41860 0.90000 0.54545 0.57143 0.62645 '
-                       '0.37208 20 avg / total 0.51375 0.53333 0.79733 '
-                       '0.47310 0.62464 0.41370 75')
+                       '0.92157 0.80851 0.85415 0.72010 24 versicolor '
+                       '0.33333 0.09677 0.86364 0.15000 0.28910 0.07717 '
+                       '31 virginica 0.41860 0.90000 0.54545 0.57143 0.70065 '
+                       '0.50831 20 avg / total 0.51375 0.53333 0.79733 '
+                       '0.47310 0.57966 0.39788 75')
     report = classification_report_imbalanced(
         y_true,
         y_pred,
@@ -356,9 +372,9 @@ def test_classification_report_imbalanced_multiclass_with_digits():
     assert _format_report(report) == expected_report
     # print classification report with label detection
     expected_report = ('pre rec spe f1 geo iba sup 0 0.83 0.79 0.92 0.81 '
-                       '0.86 0.74 24 1 0.33 0.10 0.86 0.15 0.44 0.19 31 2 '
-                       '0.42 0.90 0.55 0.57 0.63 0.37 20 avg / total 0.51 '
-                       '0.53 0.80 0.47 0.62 0.41 75')
+                       '0.85 0.72 24 1 0.33 0.10 0.86 0.15 0.29 0.08 31 '
+                       '2 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total 0.51 '
+                       '0.53 0.80 0.47 0.58 0.40 75')
     report = classification_report_imbalanced(y_true, y_pred)
     assert _format_report(report) == expected_report
 
@@ -369,17 +385,17 @@ def test_classification_report_imbalanced_multiclass_with_string_label():
     y_true = np.array(["blue", "green", "red"])[y_true]
     y_pred = np.array(["blue", "green", "red"])[y_pred]
 
-    expected_report = ('pre rec spe f1 geo iba sup blue 0.83 0.79 0.92 '
-                       '0.81 0.86 0.74 24 green 0.33 0.10 0.86 0.15 0.44 '
-                       '0.19 31 red 0.42 0.90 0.55 0.57 0.63 0.37 20 '
-                       'avg / total 0.51 0.53 0.80 0.47 0.62 0.41 75')
+    expected_report = ('pre rec spe f1 geo iba sup blue 0.83 0.79 0.92 0.81 '
+                       '0.85 0.72 24 green 0.33 0.10 0.86 0.15 0.29 0.08 31 '
+                       'red 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total '
+                       '0.51 0.53 0.80 0.47 0.58 0.40 75')
     report = classification_report_imbalanced(y_true, y_pred)
     assert _format_report(report) == expected_report
 
-    expected_report = ('pre rec spe f1 geo iba sup a 0.83 0.79 0.92 0.81 '
-                       '0.86 0.74 24 b 0.33 0.10 0.86 0.15 0.44 0.19 31 '
-                       'c 0.42 0.90 0.55 0.57 0.63 0.37 20 avg / total '
-                       '0.51 0.53 0.80 0.47 0.62 0.41 75')
+    expected_report = ('pre rec spe f1 geo iba sup a 0.83 0.79 0.92 0.81 0.85 '
+                       '0.72 24 b 0.33 0.10 0.86 0.15 0.29 0.08 31 c 0.42 '
+                       '0.90 0.55 0.57 0.70 0.51 20 avg / total 0.51 0.53 '
+                       '0.80 0.47 0.58 0.40 75')
     report = classification_report_imbalanced(
         y_true, y_pred, target_names=["a", "b", "c"])
     assert _format_report(report) == expected_report
@@ -392,10 +408,10 @@ def test_classification_report_imbalanced_multiclass_with_unicode_label():
     y_true = labels[y_true]
     y_pred = labels[y_pred]
 
-    expected_report = (u'pre rec spe f1 geo iba sup blue\xa2 0.83 0.79 '
-                       u'0.92 0.81 0.86 0.74 24 green\xa2 0.33 0.10 0.86 '
-                       u'0.15 0.44 0.19 31 red\xa2 0.42 0.90 0.55 0.57 0.63 '
-                       u'0.37 20 avg / total 0.51 0.53 0.80 0.47 0.62 0.41 75')
+    expected_report = (u'pre rec spe f1 geo iba sup blue¢ 0.83 0.79 0.92 0.81 '
+                       u'0.85 0.72 24 green¢ 0.33 0.10 0.86 0.15 0.29 0.08 31 '
+                       u'red¢ 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total '
+                       u'0.51 0.53 0.80 0.47 0.58 0.40 75')
     if np_version[:3] < (1, 7, 0):
         with raises(RuntimeError, match="NumPy < 1.7.0"):
             classification_report_imbalanced(y_true, y_pred)
@@ -412,9 +428,9 @@ def test_classification_report_imbalanced_multiclass_with_long_string_label():
     y_pred = labels[y_pred]
 
     expected_report = ('pre rec spe f1 geo iba sup blue 0.83 0.79 0.92 0.81 '
-                       '0.86 0.74 24 greengreengreengreengreen 0.33 0.10 '
-                       '0.86 0.15 0.44 0.19 31 red 0.42 0.90 0.55 0.57 0.63 '
-                       '0.37 20 avg / total 0.51 0.53 0.80 0.47 0.62 0.41 75')
+                       '0.85 0.72 24 greengreengreengreengreen 0.33 0.10 '
+                       '0.86 0.15 0.29 0.08 31 red 0.42 0.90 0.55 0.57 0.70 '
+                       '0.51 20 avg / total 0.51 0.53 0.80 0.47 0.58 0.40 75')
 
     report = classification_report_imbalanced(y_true, y_pred)
     assert _format_report(report) == expected_report
@@ -423,23 +439,21 @@ def test_classification_report_imbalanced_multiclass_with_long_string_label():
 def test_iba_sklearn_metrics():
     y_true, y_pred, _ = make_prediction(binary=True)
 
-    acc = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        accuracy_score)
+    acc = make_index_balanced_accuracy(alpha=0.5, squared=True)(accuracy_score)
     score = acc(y_true, y_pred)
     assert score == approx(0.54756)
 
-    jss = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        jaccard_similarity_score)
+    jss = make_index_balanced_accuracy(
+        alpha=0.5, squared=True)(jaccard_similarity_score)
     score = jss(y_true, y_pred)
     assert score == approx(0.54756)
 
-    pre = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        precision_score)
+    pre = make_index_balanced_accuracy(
+        alpha=0.5, squared=True)(precision_score)
     score = pre(y_true, y_pred)
     assert score == approx(0.65025)
 
-    rec = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        recall_score)
+    rec = make_index_balanced_accuracy(alpha=0.5, squared=True)(recall_score)
     score = rec(y_true, y_pred)
     assert score == approx(0.41616000000000009)
 
@@ -447,22 +461,21 @@ def test_iba_sklearn_metrics():
 def test_iba_error_y_score_prob():
     y_true, y_pred, _ = make_prediction(binary=True)
 
-    aps = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        average_precision_score)
+    aps = make_index_balanced_accuracy(
+        alpha=0.5, squared=True)(average_precision_score)
     with raises(AttributeError):
         aps(y_true, y_pred)
 
-    brier = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        brier_score_loss)
+    brier = make_index_balanced_accuracy(
+        alpha=0.5, squared=True)(brier_score_loss)
     with raises(AttributeError):
         brier(y_true, y_pred)
 
-    kappa = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        cohen_kappa_score)
+    kappa = make_index_balanced_accuracy(
+        alpha=0.5, squared=True)(cohen_kappa_score)
     with raises(AttributeError):
         kappa(y_true, y_pred)
 
-    ras = make_index_balanced_accuracy(alpha=0.5, squared=True)(
-        roc_auc_score)
+    ras = make_index_balanced_accuracy(alpha=0.5, squared=True)(roc_auc_score)
     with raises(AttributeError):
         ras(y_true, y_pred)

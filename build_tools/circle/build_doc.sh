@@ -92,13 +92,12 @@ conda create -n $CONDA_ENV_NAME --yes --quiet python=3
 source activate $CONDA_ENV_NAME
 
 conda install --yes pip numpy scipy scikit-learn pillow matplotlib sphinx \
-      sphinx_rtd_theme numpydoc
+      sphinx_rtd_theme numpydoc pandas keras nose
 pip install -U git+https://github.com/sphinx-gallery/sphinx-gallery.git
 
 # Build and install imbalanced-learn in dev mode
-cd "$HOME/$CIRCLE_PROJECT_REPONAME"
 ls -l
-python setup.py develop
+pip install -e .
 
 # The pipefail is requested to propagate exit code
 set -o pipefail && cd doc && make $MAKE_TARGET 2>&1 | tee ~/log.txt

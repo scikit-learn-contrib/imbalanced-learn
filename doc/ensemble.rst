@@ -11,6 +11,11 @@ Ensemble of samplers
 Samplers
 --------
 
+.. warning::
+   Note that those:class:`EasyEnsemble` is deprecated and you should use
+   :class:`EasyEnsembleClassifier` instead. :class:`EasyEnsembleClassifier` is
+   presented in the next section.
+
 An imbalanced data set can be balanced by creating several balanced
 subsets. The module :mod:`imblearn.ensemble` allows to create such sets.
 
@@ -28,7 +33,7 @@ under-sampling the original set::
   [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.ensemble import EasyEnsemble
   >>> ee = EasyEnsemble(random_state=0, n_subsets=10)
-  >>> X_resampled, y_resampled = ee.fit_sample(X, y)
+  >>> X_resampled, y_resampled = ee.fit_resample(X, y)
   >>> print(X_resampled.shape)
   (10, 192, 2)
   >>> print(sorted(Counter(y_resampled[0]).items()))
@@ -50,7 +55,7 @@ parameter ``n_max_subset`` and an additional bootstraping can be activated with
   >>> bc = BalanceCascade(random_state=0,
   ...                     estimator=LogisticRegression(random_state=0),
   ...                     n_max_subset=4)
-  >>> X_resampled, y_resampled = bc.fit_sample(X, y)
+  >>> X_resampled, y_resampled = bc.fit_resample(X, y)
   >>> print(X_resampled.shape)
   (4, 192, 2)
   >>> print(sorted(Counter(y_resampled[0]).items()))
@@ -92,12 +97,13 @@ output of an :class:`EasyEnsemble` sampler with an ensemble of classifiers
 (i.e. ``BaggingClassifier``). Therefore, :class:`BalancedBaggingClassifier`
 takes the same parameters than the scikit-learn
 ``BaggingClassifier``. Additionally, there is two additional parameters,
-``ratio`` and ``replacement``, as in the :class:`EasyEnsemble` sampler::
+``sampling_strategy`` and ``replacement`` to control the behaviour of the
+random under-sampler::
 
 
   >>> from imblearn.ensemble import BalancedBaggingClassifier
   >>> bbc = BalancedBaggingClassifier(base_estimator=DecisionTreeClassifier(),
-  ...                                 ratio='auto',
+  ...                                 sampling_strategy='auto',
   ...                                 replacement=False,
   ...                                 random_state=0)
   >>> bbc.fit(X_train, y_train) # doctest: +ELLIPSIS
@@ -110,7 +116,7 @@ takes the same parameters than the scikit-learn
 
 It also possible to turn a balanced bagging classifier into a balanced random
 forest using a decision tree classifier and setting the parameter
-``max_features='auto'`. It allows to randomly select a subset of features for
+``max_features='auto'``. It allows to randomly select a subset of features for
 each tree::
 
   >>> brf = BalancedBaggingClassifier(
@@ -126,3 +132,19 @@ each tree::
 
 See
 :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_bagging_classifier.py`.
+
+A specific method which uses ``AdaBoost`` as learners in the bagging
+classifier is called EasyEnsemble. The :class:`EasyEnsembleClassifier` allows
+to bag AdaBoost learners which are trained on balanced bootstrap samples.
+Similarly to the :class:`BalancedBaggingClassifier` API, one can construct
+the ensemble as::
+
+  >>> from imblearn.ensemble import EasyEnsembleClassifier
+  >>> eec = EasyEnsembleClassifier(random_state=0)
+  >>> eec.fit(X_train, y_train) # doctest: +ELLIPSIS
+  EasyEnsembleClassifier(...)
+  >>> y_pred = eec.predict(X_test)
+  >>> confusion_matrix(y_test, y_pred)
+  array([[  9,   1,   2],
+         [  5,  52,   2],
+         [252,  45, 882]])

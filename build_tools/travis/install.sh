@@ -38,13 +38,21 @@ if [[ "$DISTRIB" == "conda" ]]; then
     # provided versions
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
-    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION pandas
+    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
+
+    if [[ $PYTHON_VERSION == "3.6" ]]; then
+        conda install --yes pandas
+        conda install --yes -c conda-forge keras
+        KERAS_BACKEND=tensorflow
+        python -c "import keras.backend"
+        sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
+    fi
 
     if [[ "$SKLEARN_VERSION" == "master" ]]; then
         conda install --yes cython
         pip install -U git+https://github.com/scikit-learn/scikit-learn.git
     else
-        conda install --yes scikit-learn=$SKLEARN_VERSION
+        conda install --yes scikit-learn=$SKLEARN_VERSION  -c conda-forge/label/rc -c conda-forge
     fi
 
     conda install --yes pytest pytest-cov
@@ -58,8 +66,10 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # Create a new virtualenv using system site packages for python, numpy
     virtualenv --system-site-packages testvenv
     source testvenv/bin/activate
-    pip install scikit-learn pandas pytest pytest-cov codecov \
-        sphinx numpydoc
+
+    pip install --pre scikit-learn
+    pip install pandas keras tensorflow
+    pip install nose nose-timer pytest pytest-cov codecov sphinx numpydoc
 
 fi
 
@@ -67,7 +77,7 @@ python --version
 python -c "import numpy; print('numpy %s' % numpy.__version__)"
 python -c "import scipy; print('scipy %s' % scipy.__version__)"
 
-python setup.py develop
+pip install -e .
 ccache --show-stats
 # Useful for debugging how ccache is used
 # cat $CCACHE_LOGFILE
