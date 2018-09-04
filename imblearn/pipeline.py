@@ -97,12 +97,14 @@ class Pipeline(pipeline.Pipeline):
     Pipeline(...)
     >>> y_hat = pipeline.predict(X_test)
     >>> print(classification_report(y_test, y_hat))
-                 precision    recall  f1-score   support
+                  precision    recall  f1-score   support
     <BLANKLINE>
-              0       0.87      1.00      0.93        26
-              1       1.00      0.98      0.99       224
+               0       0.87      1.00      0.93        26
+               1       1.00      0.98      0.99       224
     <BLANKLINE>
-    avg / total       0.99      0.98      0.98       250
+       micro avg       0.98      0.98      0.98       250
+       macro avg       0.93      0.99      0.96       250
+    weighted avg       0.99      0.98      0.98       250
     <BLANKLINE>
 
     """
@@ -606,7 +608,7 @@ def make_pipeline(*steps, **kwargs):
              steps=[('standardscaler',
                      StandardScaler(copy=True, with_mean=True, with_std=True)),
                     ('gaussiannb',
-                     GaussianNB(priors=None))])
+                     GaussianNB(priors=None, var_smoothing=1e-09))])
     """
     memory = kwargs.pop('memory', None)
     if kwargs:

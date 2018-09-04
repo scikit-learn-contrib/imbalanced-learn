@@ -40,7 +40,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     source activate testenv
     conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
 
-    if [[ $PYTHON_VERSION == "3.6" ]]; then
+    if [[ $PYTHON_VERSION == "3.7" ]]; then
         conda install --yes pandas
         conda install --yes -c conda-forge keras
         KERAS_BACKEND=tensorflow
@@ -52,12 +52,11 @@ if [[ "$DISTRIB" == "conda" ]]; then
         conda install --yes cython
         pip install -U git+https://github.com/scikit-learn/scikit-learn.git
     else
-        conda install --yes scikit-learn=$SKLEARN_VERSION
+        conda install --yes scikit-learn=$SKLEARN_VERSION -c conda-forge/label/rc -c conda-forge
     fi
 
-    conda install --yes nose pytest pytest-cov
-    # Install nose-timer via pip
-    pip install nose-timer codecov
+    conda install --yes pytest pytest-cov
+    pip install codecov
 
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # At the time of writing numpy 1.9.1 is included in the travis
@@ -67,9 +66,10 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # Create a new virtualenv using system site packages for python, numpy
     virtualenv --system-site-packages testvenv
     source testvenv/bin/activate
-    pip install scikit-learn
+
+    pip install --pre scikit-learn
     pip install pandas keras tensorflow
-    pip install nose nose-timer pytest pytest-cov codecov sphinx numpydoc
+    pip install pytest pytest-cov codecov sphinx numpydoc
 
 fi
 

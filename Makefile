@@ -13,14 +13,14 @@ clean:
 	rm -rf examples/.ipynb_checkpoints
 
 test-code:
-	py.test imblearn
+	pytest imblearn
 
 test-doc:
-	py.test doc/*.rst
+	pytest doc/*.rst
 
 test-coverage:
 	rm -rf coverage .coverage
-	py.test --cov=imblearn imblearn
+	pytest --cov=imblearn imblearn
 
 test: test-coverage test-doc
 

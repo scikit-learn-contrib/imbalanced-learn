@@ -81,7 +81,7 @@ Bug fixes
   samples.
   :issue:`450` by :user:`Guillaume Lemaitre <glemaitre>`.
 
-- Add the option to pass a ``Memory`` object to :func:`make_pipeline` like 
+- Add the option to pass a ``Memory`` object to :func:`make_pipeline` like
   in :class:`pipeline.Pipeline` class.
   :issue:`458` by :user:`Christos Aridas <chkoar>`.
 
@@ -93,6 +93,9 @@ Maintenance
 
 - Make some modules private.
   :issue:`452` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Upgrade requirements to scikit-learn 0.20.
+  :issue:`379` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Documentation
 .............
