@@ -40,7 +40,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     source activate testenv
     conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
 
-    if [[ $PYTHON_VERSION == "3.6" ]]; then
+    if [[ $PYTHON_VERSION == "3.7" ]]; then
         conda install --yes pandas
         conda install --yes -c conda-forge keras
         KERAS_BACKEND=tensorflow
@@ -69,7 +69,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
 
     pip install --pre scikit-learn
     pip install pandas keras tensorflow
-    pip install nose nose-timer pytest pytest-cov codecov sphinx numpydoc
+    pip install pytest pytest-cov codecov sphinx numpydoc
 
 fi
 
