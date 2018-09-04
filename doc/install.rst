@@ -9,7 +9,7 @@ The imbalanced-learn package requires the following dependencies:
 
 * numpy (>=1.8.2)
 * scipy (>=0.13.3)
-* scikit-learn (>=0.19.0)
+* scikit-learn (>=0.20)
 * keras 2 (optional)
 * tensorflow (optional)
 
@@ -49,6 +49,10 @@ You want to test the code before to install::
 You wish to test the coverage of your version::
 
   $ make coverage
+
+You can also use `pytest`::
+
+  $ pytest imblearn -v
 
 Contribute
 ==========

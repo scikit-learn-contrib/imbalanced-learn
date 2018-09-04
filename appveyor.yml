@@ -8,27 +8,27 @@ environment:
   # We use miniconda versions of Python provided by appveyor windows images
   matrix:
     - PYTHON: "C:\\Miniconda-x64"
-      PYTHON_VERSION: "2.7.x"
+      PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "64"
       OPTIONAL_DEP: "pandas"
 
     - PYTHON: "C:\\Miniconda"
-      PYTHON_VERSION: "2.7.x"
+      PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
       OPTIONAL_DEP: "pandas"
 
     - PYTHON: "C:\\Miniconda36-x64"
-      PYTHON_VERSION: "3.6.x"
+      PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "64"
       OPTIONAL_DEP: "pandas keras tensorflow"
 
     - PYTHON: "C:\\Miniconda36-x64"
-      PYTHON_VERSION: "3.7.x"
+      PYTHON_VERSION: "3.7"
       PYTHON_ARCH: "64"
-      OPTIONAL_DEP: "pandas keras tensorflow"
+      OPTIONAL_DEP: "pandas"
 
     - PYTHON: "C:\\Miniconda36"
-      PYTHON_VERSION: "3.7.x"
+      PYTHON_VERSION: "3.7"
       PYTHON_ARCH: "32"
       OPTIONAL_DEP: "pandas"
 
@@ -38,7 +38,7 @@ install:
   # https://github.com/conda/conda/issues/1753
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PYTHON%\\Library\\bin;%PATH%"
   - conda update conda -y -q
-  - conda create -n testenv --yes python=$PYTHON_VERSION pip
+  - conda create -n testenv --yes python=%PYTHON_VERSION% pip
   - activate testenv
   - conda install scipy numpy -y -q
   - pip install --pre scikit-learn
