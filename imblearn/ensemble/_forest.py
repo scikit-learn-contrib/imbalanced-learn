@@ -228,7 +228,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
       0.15534173  0.01377474]
     >>> print(clf.predict([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ...                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]))
-    [2]
+    [1]
 
     References
     ----------
