@@ -61,6 +61,8 @@ imbalanced-learn is tested to work under Python 2.7 and Python 3.6, and
 Additionally, to run the examples, you need matplotlib(>=2.0.0) and
 pandas(>=0.22).
 
+**imbalanced-learn 0.4 is the last version to support Python 2.7**
+
 Installation
 ~~~~~~~~~~~~
 
