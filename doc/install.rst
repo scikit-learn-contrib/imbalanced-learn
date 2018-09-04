@@ -14,7 +14,8 @@ The imbalanced-learn package requires the following dependencies:
 * tensorflow (optional)
 
 Our release policy is to follow the scikit-learn releases in order to
-synchronize the new feature.
+synchronize the new feature. **imbalanced-learn 0.4 is the last version to
+support Python 2.7**
 
 Install
 =======
