@@ -15,28 +15,41 @@ from . import SMOTE
 class SMOTENC(SMOTE):
     """Class to perform over-sampling using SMOTE-NC.
 
-    This object is an implementation of SMOTE-NC - Synthetic Minority
-    Over-sampling Technique-Nominal Continuous. As SMOTE-NC is an extension of
-    SMOTE, this object is an extension of existing SMOTE implementation.
-    This means that all implemented SMOTE variants (Borderline SMOTE 1, 2 and
-    SVM-SMOTE) are still supported for continuous features.
+    Implementation of the Synthetic Minority Over-sampling Technique
+    for Nominal and Continuous (SMOTE-NC) features. SMOTE-NC is intended
+    to deal with mixed datasets of categorical and numerical data.
 
-    Please note that this implementation of SMOTE-NC does make an important
-    assumption about the data: all nominal features have to be one-hot encoded,
-    i.e. using :class:`sklearn.preprocessing.OneHotEncoder`.
+    SMOTE-NC requires to one-hot encode the categorical features before
+    sampling, i.e. using :class:`sklearn.preprocessing.OneHotEncoder`.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
     Parameters
     ----------
-    categorical_features : array-like, shape (n_categorical_features,)
+    {sampling_strategy}
+
+    {random_state}
+
+    {k_neighbors}
+
+    {m_neighbors}
+
+    {out_step}
+
+    {kind}
+
+    {svm_estimator}
+
+    {n_jobs}
+
+    {ratio}
+
+    categorical_feature_indices : array-like, shape (n_categorical_features,)
         Indices to categorical feature ranges.
         Value of
         :attr:`sklearn.preprocessing.OneHotEncoder.feature_indices_`
         can be plugged directly.
         See :class:`sklearn.preprocessing.OneHotEncoder` for details.
-
-    Please see :class:`imblearn.over_sampling.SMOTE` for other available parameters.
 
     Attributes
     ----------
@@ -44,7 +57,10 @@ class SMOTENC(SMOTE):
         Median of standard deviations of continuous features.
 
     categorical_feature_indices_ : array-like, shape (n_categorical_features,)
-        Indices to nominal feature ranges.
+        Indices to categorical feature ranges.
+
+    continuous_feature_indices_ : array-like, shape (n_continuous_features,)
+        Indices to continuous feature ranges.
 
     Notes
     -----
@@ -63,6 +79,10 @@ class SMOTENC(SMOTE):
 
     See also
     --------
+    SMOTE : Over-sample using SMOTE.
+
+    SVMSMOTE : Over-sample using SVM-SMOTE variant.
+
     ADASYN : Over-sample using ADASYN.
 
     References
@@ -79,7 +99,7 @@ class SMOTENC(SMOTE):
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.preprocessing import OneHotEncoder
     >>> from imblearn.over_sampling import \
-SMOTE, SMOTENC # doctest: +NORMALIZE_WHITESPACE
+SMOTENC # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -87,14 +107,14 @@ SMOTE, SMOTENC # doctest: +NORMALIZE_WHITESPACE
     Original dataset shape (1000, 20)
     >>> print('Original dataset samples per class {}'.format(Counter(y)))
     Original dataset samples per class Counter({1: 900, 0: 100})
-    >>> # replace two last columns with nominal features encoded as integers
+    >>> # replace two last columns with categorical features encoded as integers
     >>> X[:, -2:] = RandomState(10).randint(0, 4, size=(1000, 2))
-    >>> # apply OneHotEncoder
+    >>> # One-hot encode the categorical columns
     >>> encoder = OneHotEncoder(n_values=[4, 4], categorical_features=[18, 19])
     >>> X = encoder.fit_transform(X)
     >>> print('One-hot encoded dataset shape (%s, %s)' % X.shape)
     One-hot encoded dataset shape (1000, 26)
-    >>> sm = SMOTENC(random_state=42, categorical_features=encoder.feature_indices_)
+    >>> sm = SMOTENC(random_state=42, categorical_feature_indices=encoder.feature_indices_)
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset samples per class {}'.format(Counter(y_res)))
     Resampled dataset samples per class Counter({0: 900, 1: 900})
@@ -111,7 +131,7 @@ SMOTE, SMOTENC # doctest: +NORMALIZE_WHITESPACE
                  svm_estimator='deprecated',
                  n_jobs=1,
                  ratio=None,
-                 categorical_features=None):
+                 categorical_feature_indices=None):
         super(SMOTENC, self).__init__(sampling_strategy=sampling_strategy,
                                       random_state=random_state,
                                       k_neighbors=k_neighbors,
@@ -121,16 +141,16 @@ SMOTE, SMOTENC # doctest: +NORMALIZE_WHITESPACE
                                       svm_estimator=svm_estimator,
                                       n_jobs=n_jobs,
                                       ratio=ratio)
-        self.categorical_features = categorical_features
+        self.categorical_feature_indices = categorical_feature_indices
 
     def _fit_resample(self, X, y):
-        if self.categorical_features is None:
-            warnings.warn('No "categorical_features" were specified when '
+        if self.categorical_feature_indices is None:
+            warnings.warn('No "categorical_feature_indices" were specified when '
                           'this instance was created. Will fall back '
                           'to normal SMOTE', RuntimeWarning)
             return super(SMOTENC, self)._fit_resample(X, y)
 
-        feature_indices = check_array(self.categorical_features, ensure_2d=False,
+        feature_indices = check_array(self.categorical_feature_indices, ensure_2d=False,
                                       ensure_min_samples=2, estimator=self)
         n_features = X.shape[1]
 
@@ -140,38 +160,62 @@ SMOTE, SMOTENC # doctest: +NORMALIZE_WHITESPACE
                              % X.shape)
 
         self.categorical_feature_indices_ = feature_indices
-        continuous_cols = np.delete(np.arange(n_features),
-                                    np.arange(feature_indices[0],
-                                              feature_indices[-1]))
-        if len(continuous_cols) == 0:
+        self.continuous_feature_indices_ = np.setdiff1d(
+            np.arange(n_features), np.arange(self.categorical_feature_indices_[0],
+                                             self.categorical_feature_indices_[-1]))
+
+        if self.continuous_feature_indices_.size == 0:
             raise ValueError('Looks like all features in X are '
                              'categorical which is not supported. '
                              'For this method to work X should have '
                              'at least 1 continuous feature.')
 
         if sparse.issparse(X):
-            # let StandardScaler handle per-column variance in sparse matrix
             scaler = StandardScaler(with_mean=False,
                                     with_std=True,
                                     copy=False)
-            scaler.fit(X.tocsc()[:, continuous_cols])
+            scaler.fit(X.tocsc()[:, self.continuous_feature_indices_])
             self.std_median_ = np.median(np.sqrt(scaler.var_))
         else:
-            std = np.std(X[:, continuous_cols], axis=0)
+            std = np.std(X[:, self.continuous_feature_indices_], axis=0)
             self.std_median_ = np.median(std)
 
         return super(SMOTENC, self)._fit_resample(X, y)
 
     def _generate_sample(self, X, nn_data, nn_num, row, col, step):
         """
-        Generates a new sample using normal SMOTE but then replaces
-        nominal features in generated sample according to SMOTE-NC:
-        with the value occurring in the majority of the k-nearest neighbors.
+        Parameters
+        ----------
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            Points from which the points will be created.
+
+        nn_data : ndarray, shape (n_samples_all, n_features)
+            Data set carrying all the neighbours to be used.
+
+        nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)
+            The nearest neighbours of each sample in `nn_data`.
+
+        row : int
+            Index pointing at feature vector in X which will be used
+            as a base for creating new sample.
+
+        col : int
+            Index pointing at which nearest neighbor of base feature vector
+            will be used when creating new sample.
+
+        step : float
+            Step size for new sample.
+
+        Returns
+        -------
+        X_new : {ndarray, sparse matrix}, shape (n_features,)
+            Single synthetically generated sample.
+
         """
         sample = super(SMOTENC, self)._generate_sample(X, nn_data, nn_num,
                                                        row, col, step)
         if not hasattr(self, "categorical_feature_indices_"):
-            warnings.warn('No "categorical_features" were specified when '
+            warnings.warn('No "categorical_feature_indices" were specified when '
                           'this instance was created. Will fall back '
                           'to normal SMOTE', RuntimeWarning)
             return sample
@@ -225,15 +269,15 @@ SMOTE, SMOTENC # doctest: +NORMALIZE_WHITESPACE
 
     def _with_std_median(self, X):
         """
-        Given that all nominal features are assumed to be one-hot encoded,
+        Given that all categorical features are assumed to be one-hot encoded,
         their values are either 0 or 1. We replace values in original input
         which are equal to 1 with calculated median of standard deviations
         divided by 2. It will ensure that whenever distance is calculated
-        between two feature vectors, the difference of two different nominal
+        between two feature vectors, the difference of two different categorical
         features will always equal to median standard deviation.
         """
         if not hasattr(self, "categorical_feature_indices_"):
-            warnings.warn('No "categorical_features" were specified when '
+            warnings.warn('No "categorical_feature_indices" were specified when '
                           'this instance was created. Will fallback '
                           'to normal SMOTE', RuntimeWarning)
             return X

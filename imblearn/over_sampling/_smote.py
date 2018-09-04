@@ -78,7 +78,7 @@ class BaseSMOTE(BaseOverSampler):
             Data set carrying all the neighbours to be used
 
         nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)
-            The nearest neighbours of each sample in nn_data.
+            The nearest neighbours of each sample in `nn_data`.
 
         n_samples : int
             The number of samples to generate.
@@ -132,10 +132,10 @@ class BaseSMOTE(BaseOverSampler):
             Points from which the points will be created.
 
         nn_data : ndarray, shape (n_samples_all, n_features)
-            Data set carrying all the neighbours to be used
+            Data set carrying all the neighbours to be used.
 
         nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)
-            The nearest neighbours of each sample in nn_data.
+            The nearest neighbours of each sample in `nn_data`.
 
         row : int
             Index pointing at feature vector in X which will be used
@@ -150,7 +150,7 @@ class BaseSMOTE(BaseOverSampler):
 
         Returns
         -------
-        X_new : {array, sparse matrix}, shape (n_features,)
+        X_new : {ndarray, sparse matrix}, shape (n_features,)
             Single synthetically generated sample.
 
         """

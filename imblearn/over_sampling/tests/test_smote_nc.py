@@ -48,7 +48,7 @@ X_indices = [2, 5, 7]
 
 def test_sample_regular():
     kind = 'regular'
-    smote = SMOTENC(random_state=RND_SEED, kind=kind, categorical_features=X_indices)
+    smote = SMOTENC(random_state=RND_SEED, kind=kind, categorical_feature_indices=X_indices)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206, 0, 0, 1, 0, 1],
                      [0.77481731, 0.60935141, 0, 1, 0, 0, 1],
@@ -85,7 +85,7 @@ def test_sample_regular_half():
     ratio = {0: 9, 1: 12}
     kind = 'regular'
     smote = SMOTENC(ratio=ratio, random_state=RND_SEED, kind=kind,
-                    categorical_features=X_indices)
+                    categorical_feature_indices=X_indices)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206, 0, 0, 1, 0, 1],
                      [0.77481731, 0.60935141, 0, 1, 0, 0, 1],
@@ -117,7 +117,7 @@ def test_sample_regular_half():
 def test_sample_borderline1():
     kind = 'borderline1'
     smote = SMOTENC(random_state=RND_SEED, kind=kind,
-                    categorical_features=X_indices)
+                    categorical_feature_indices=X_indices)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206, 0, 0, 1, 0, 1],
                      [0.77481731, 0.60935141, 0, 1, 0, 0, 1],
@@ -153,7 +153,7 @@ def test_sample_borderline1():
 def test_sample_borderline2():
     kind = 'borderline2'
     smote = SMOTENC(random_state=RND_SEED, kind=kind,
-                    categorical_features=X_indices)
+                    categorical_feature_indices=X_indices)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206, 0, 0, 1, 0, 1],
                      [0.77481731, 0.60935141, 0, 1, 0, 0, 1],
@@ -187,7 +187,7 @@ def test_sample_borderline2():
 def test_sample_svm():
     kind = 'svm'
     smote = SMOTENC(random_state=RND_SEED, kind=kind,
-                    categorical_features=X_indices)
+                    categorical_feature_indices=X_indices)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206, 0, 0, 1, 0, 1],
                      [0.77481731, 0.60935141, 0, 1, 0, 0, 1],
@@ -224,7 +224,7 @@ def test_fit_sample_nn_obj():
     nn_m = NearestNeighbors(n_neighbors=11)
     nn_k = NearestNeighbors(n_neighbors=6)
     smote = SMOTENC(random_state=RND_SEED, kind=kind, k_neighbors=nn_k,
-                    m_neighbors=nn_m, categorical_features=X_indices)
+                    m_neighbors=nn_m, categorical_feature_indices=X_indices)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206, 0, 0, 1, 0, 1],
                      [0.77481731, 0.60935141, 0, 1, 0, 0, 1],
@@ -261,7 +261,7 @@ def test_sample_regular_with_nn():
     kind = 'regular'
     nn_k = NearestNeighbors(n_neighbors=6)
     smote = SMOTENC(random_state=RND_SEED, kind=kind, k_neighbors=nn_k,
-                    categorical_features=X_indices)
+                    categorical_feature_indices=X_indices)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206, 0, 0, 1, 0, 1],
                      [0.77481731, 0.60935141, 0, 1, 0, 0, 1],
@@ -300,7 +300,7 @@ def test_sample_regular_with_nn_svm():
     svm = SVC(random_state=RND_SEED)
     smote = SMOTENC(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, svm_estimator=svm,
-        categorical_features=X_indices)
+        categorical_feature_indices=X_indices)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206, 0, 0, 1, 0, 1],
                      [0.77481731, 0.60935141, 0, 1, 0, 0, 1],
@@ -398,20 +398,20 @@ def test_sample_regular_fallback_no_nominal():
 
 
 def test_fit_feature_indices_too_little():
-    smote = SMOTENC(random_state=RND_SEED, categorical_features=[1])
+    smote = SMOTENC(random_state=RND_SEED, categorical_feature_indices=[1])
     with raises(ValueError, match='minimum of 2 is required'):
         smote.fit_resample(X, Y)
 
 
 def test_fit_feature_indices_out_of_bounds():
-    smote = SMOTENC(random_state=RND_SEED, categorical_features=[3, 5, 8])
+    smote = SMOTENC(random_state=RND_SEED, categorical_feature_indices=[3, 5, 8])
     with raises(ValueError, match='Indices of categorical features have to be '
                                   'less than number of features in X'):
         smote.fit_resample(X, Y)
 
 
 def test_fit_feature_indices_covers_all_features():
-    smote = SMOTENC(random_state=RND_SEED, categorical_features=[0, 5, 7])
+    smote = SMOTENC(random_state=RND_SEED, categorical_feature_indices=[0, 5, 7])
     with raises(ValueError, match='all features in X are categorical '
                                   'which is not supported'):
         smote.fit_resample(X, Y)
