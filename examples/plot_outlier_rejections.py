@@ -86,7 +86,8 @@ def outlier_rejection(X, y):
     """This will be our function used to resample our dataset."""
     model = IsolationForest(max_samples=100,
                             contamination=0.4,
-                            random_state=rng)
+                            random_state=rng,
+                            behaviour='new')
     model.fit(X)
     y_pred = model.predict(X)
     return X[y_pred == 1], y[y_pred == 1]
@@ -105,11 +106,11 @@ plot_scatter(X_inliers, y_inliers, 'Training data without outliers')
 # affected during the prediction.
 
 pipe = make_pipeline(FunctionSampler(func=outlier_rejection),
-                     LogisticRegression(random_state=rng))
+                     LogisticRegression(solver='lbfgs', random_state=rng))
 y_pred = pipe.fit(X_train, y_train).predict(X_test)
 print(classification_report(y_test, y_pred))
 
-clf = LogisticRegression(random_state=rng)
+clf = LogisticRegression(solver='lbfgs', random_state=rng)
 y_pred = clf.fit(X_train, y_train).predict(X_test)
 print(classification_report(y_test, y_pred))
 

@@ -119,7 +119,7 @@ KNeighborsClassifier(n_neighbors=1))
             self.estimator_ = clone(self.n_neighbors)
         else:
             raise ValueError('`n_neighbors` has to be a int or an object'
-                             ' inhereited from KNeighborsClassifier.'
+                             ' inherited from KNeighborsClassifier.'
                              ' Got {} instead.'.format(type(self.n_neighbors)))
 
     def _fit_resample(self, X, y):
@@ -135,10 +135,10 @@ KNeighborsClassifier(n_neighbors=1))
             if target_class in self.sampling_strategy_.keys():
                 # select a sample from the current class
                 idx_maj = np.flatnonzero(y == target_class)
-                idx_maj_sample = idx_maj[random_state.randint(
-                    low=0,
-                    high=target_stats[target_class],
-                    size=self.n_seeds_S)]
+                sel_idx_maj = random_state.randint(
+                    low=0, high=target_stats[target_class],
+                    size=self.n_seeds_S)
+                idx_maj_sample = idx_maj[sel_idx_maj]
 
                 minority_class_indices = np.flatnonzero(y == class_minority)
                 C_indices = np.append(minority_class_indices, idx_maj_sample)
@@ -150,7 +150,7 @@ KNeighborsClassifier(n_neighbors=1))
 
                 # create the set S with removing the seed from S
                 # since that it will be added anyway
-                idx_maj_extracted = np.delete(idx_maj, idx_maj_sample, axis=0)
+                idx_maj_extracted = np.delete(idx_maj, sel_idx_maj, axis=0)
                 S_x = safe_indexing(X, idx_maj_extracted)
                 S_y = safe_indexing(y, idx_maj_extracted)
                 self.estimator_.fit(C_x, C_y)
@@ -169,7 +169,8 @@ KNeighborsClassifier(n_neighbors=1))
 
         # apply Tomek cleaning
         tl = TomekLinks(
-            sampling_strategy=self.sampling_strategy_, return_indices=True)
+            sampling_strategy=list(self.sampling_strategy_.keys()),
+            return_indices=True)
         X_cleaned, y_cleaned, idx_cleaned = tl.fit_resample(
             X_resampled, y_resampled)
 

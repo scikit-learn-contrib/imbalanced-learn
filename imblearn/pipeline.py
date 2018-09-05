@@ -18,8 +18,8 @@ from __future__ import division
 from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.externals import six
-from sklearn.externals.joblib import Memory
 from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.validation import check_memory
 
 __all__ = ['Pipeline', 'make_pipeline']
 
@@ -157,15 +157,7 @@ class Pipeline(pipeline.Pipeline):
     def _fit(self, X, y=None, **fit_params):
         self._validate_steps()
         # Setup the memory
-        memory = self.memory
-        if memory is None:
-            memory = Memory(cachedir=None, verbose=0)
-        elif isinstance(memory, six.string_types):
-            memory = Memory(cachedir=memory, verbose=0)
-        elif not isinstance(memory, Memory):
-            raise ValueError("'memory' should either be a string or"
-                             " a joblib.Memory instance, got"
-                             " 'memory={!r}' instead.".format(memory))
+        memory = check_memory(self.memory)
 
         fit_transform_one_cached = memory.cache(_fit_transform_one)
         fit_resample_one_cached = memory.cache(_fit_resample_one)
@@ -181,10 +173,20 @@ class Pipeline(pipeline.Pipeline):
             if transformer is None:
                 pass
             else:
-                if memory.cachedir is None:
-                    # we do not clone when caching is disabled to preserve
-                    # backward compatibility
-                    cloned_transformer = transformer
+                if hasattr(memory, 'location'):
+                    # joblib >= 0.12
+                    if memory.location is None:
+                        # we do not clone when caching is disabled to
+                        # preserve backward compatibility
+                        cloned_transformer = transformer
+                    else:
+                        cloned_transformer = clone(transformer)
+                elif hasattr(memory, 'cachedir'):
+                    # joblib < 0.11
+                    if memory.cachedir is None:
+                        # we do not clone when caching is disabled to
+                        # preserve backward compatibility
+                        cloned_transformer = transformer
                 else:
                     cloned_transformer = clone(transformer)
                 # Fit or load from cache the current transfomer

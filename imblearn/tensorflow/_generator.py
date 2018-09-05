@@ -13,9 +13,9 @@ from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
-DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearesNeighbors',
+DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
                           'RepeatedEditedNearestNeighbours', 'AllKNN',
-                          'NeighbourhoodCleaningRule', 'TonekLinks')
+                          'NeighbourhoodCleaningRule', 'TomekLinks')
 
 
 @Substitution(random_state=_random_state_docstring)

@@ -20,6 +20,14 @@ def test_all_estimator_no_base_class(name, Estimator):
     assert not name.lower().startswith('base'), msg
 
 
+@pytest.mark.filterwarnings("ignore:'ratio' is deprecated from 0.4")
+@pytest.mark.filterwarnings("ignore:'sampling_strategy' as a dict for")
+@pytest.mark.filterwarnings("ignore:Class EasyEnsemble is deprecated")
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
+@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"out_step" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings("ignore:'y' should be of types")
 @pytest.mark.parametrize(
     'name, Estimator',
     all_estimators(include_meta_estimators=True)
@@ -42,6 +50,14 @@ def _generate_checks_per_estimator(check_generator, estimators):
             yield name, Estimator, check
 
 
+@pytest.mark.filterwarnings("ignore:'ratio' is deprecated from 0.4")
+@pytest.mark.filterwarnings("ignore:'sampling_strategy' as a dict for")
+@pytest.mark.filterwarnings("ignore:Class EasyEnsemble is deprecated")
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
+@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"out_step" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings("ignore:'y' should be of types")
 @pytest.mark.parametrize(
     'name, Estimator, check',
     _generate_checks_per_estimator(_yield_all_checks,

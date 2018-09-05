@@ -597,8 +597,7 @@ def test_pipeline_wrong_memory():
     cached_pipe = Pipeline(
         [('transf', DummyTransf()), ('svc', SVC(gamma='scale'))],
         memory=memory)
-    error_regex = ("'memory' should either be a string or a joblib.Memory"
-                   " instance, got 'memory=1' instead.")
+    error_regex = ("string or have the same interface as sklearn.utils.Memory")
     with raises(ValueError, match=error_regex):
         cached_pipe.fit(X, y)
 
@@ -609,7 +608,7 @@ def test_pipeline_memory_transformer():
     y = iris.target
     cachedir = mkdtemp()
     try:
-        memory = Memory(cachedir=cachedir, verbose=10)
+        memory = Memory(cachedir, verbose=10)
         # Test with Transformer + SVC
         clf = SVC(gamma='scale', probability=True, random_state=0)
         transf = DummyTransf()
@@ -679,7 +678,7 @@ def test_pipeline_memory_sampler():
         random_state=0)
     cachedir = mkdtemp()
     try:
-        memory = Memory(cachedir=cachedir, verbose=10)
+        memory = Memory(cachedir, verbose=10)
         # Test with Transformer + SVC
         clf = SVC(gamma='scale', probability=True, random_state=0)
         transf = DummySampler()
@@ -1077,7 +1076,7 @@ def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
 def test_make_pipeline_memory():
     cachedir = mkdtemp()
     try:
-        memory = Memory(cachedir=cachedir, verbose=10)
+        memory = Memory(cachedir, verbose=10)
         pipeline = make_pipeline(DummyTransf(), SVC(gamma='scale'),
                                  memory=memory)
         assert pipeline.memory is memory

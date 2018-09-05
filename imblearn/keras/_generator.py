@@ -24,9 +24,9 @@ from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 from ..tensorflow import balanced_batch_generator as tf_bbg
 
-DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearesNeighbors',
+DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
                           'RepeatedEditedNearestNeighbours', 'AllKNN',
-                          'NeighbourhoodCleaningRule', 'TonekLinks')
+                          'NeighbourhoodCleaningRule', 'TomekLinks')
 
 
 class BalancedBatchGenerator(ParentClass):
