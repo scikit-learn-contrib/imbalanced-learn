@@ -53,7 +53,9 @@ parameter ``n_max_subset`` and an additional bootstraping can be activated with
   >>> from imblearn.ensemble import BalanceCascade
   >>> from sklearn.linear_model import LogisticRegression
   >>> bc = BalanceCascade(random_state=0,
-  ...                     estimator=LogisticRegression(random_state=0),
+  ...                     estimator=LogisticRegression(solver='lbfgs',
+  ...                                                  multi_class='auto',
+  ...                                                  random_state=0),
   ...                     n_max_subset=4)
   >>> X_resampled, y_resampled = bc.fit_resample(X, y)
   >>> print(X_resampled.shape)
