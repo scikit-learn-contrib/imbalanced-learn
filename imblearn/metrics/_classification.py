@@ -632,11 +632,13 @@ def geometric_mean_score(y_true,
         tp_sum = tp_sum[indices]
         true_sum = true_sum[indices]
 
-        recall = _prf_divide(tp_sum, true_sum, "recall", "true", None,
-                             "recall")
+        with np.errstate(divide='ignore', invalid='ignore'):
+            recall = _prf_divide(tp_sum, true_sum, "recall", "true", None,
+                                 "recall")
         recall[recall == 0] = correction
 
-        gmean = sp.stats.gmean(recall)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            gmean = sp.stats.gmean(recall)
         # old version of scipy return MaskedConstant instead of 0.0
         if isinstance(gmean, np.ma.core.MaskedConstant):
             return 0.0

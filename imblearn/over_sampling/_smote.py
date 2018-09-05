@@ -458,7 +458,8 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
         self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
 
         if self.svm_estimator is None:
-            self.svm_estimator_ = SVC(random_state=self.random_state)
+            self.svm_estimator_ = SVC(gamma='scale',
+                                      random_state=self.random_state)
         elif isinstance(self.svm_estimator, SVC):
             self.svm_estimator_ = clone(self.svm_estimator)
         else:
@@ -714,7 +715,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                                   'instead.', DeprecationWarning)
                 if (self.svm_estimator is None or
                         self.svm_estimator == 'deprecated'):
-                    self.svm_estimator_ = SVC(random_state=self.random_state)
+                    self.svm_estimator_ = SVC(gamma='scale',
+                                              random_state=self.random_state)
                 elif isinstance(self.svm_estimator, SVC):
                     self.svm_estimator_ = clone(self.svm_estimator)
                 else:

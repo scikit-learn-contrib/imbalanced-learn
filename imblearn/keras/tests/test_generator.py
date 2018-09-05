@@ -13,6 +13,7 @@ from keras.utils import to_categorical
 from imblearn.datasets import make_imbalance
 from imblearn.under_sampling import ClusterCentroids
 from imblearn.under_sampling import NearMiss
+from imblearn.over_sampling import RandomOverSampler
 
 from imblearn.keras import BalancedBatchGenerator
 from imblearn.keras import balanced_batch_generator
@@ -38,6 +39,7 @@ def test_balanced_batch_generator_class_no_return_indices():
 @pytest.mark.parametrize(
     "sampler, sample_weight",
     [(None, None),
+     (RandomOverSampler(), None),
      (NearMiss(), None),
      (None, np.random.uniform(size=(y.shape[0])))]
 )
@@ -75,6 +77,7 @@ def test_balanced_batch_generator_function_no_return_indices():
 @pytest.mark.parametrize(
     "sampler, sample_weight",
     [(None, None),
+     (RandomOverSampler(), None),
      (NearMiss(), None),
      (None, np.random.uniform(size=(y.shape[0])))]
 )

@@ -42,7 +42,7 @@ install:
   - activate testenv
   - conda install scipy numpy -y -q
   - pip install --pre scikit-learn
-  - "conda install %OPTIONAL_DEP% -y -q"
+  - conda install %OPTIONAL_DEP% -y -q
   - conda install pytest pytest-cov -y -q
   - pip install codecov
   - pip install .

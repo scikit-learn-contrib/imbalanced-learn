@@ -47,10 +47,10 @@ def test_balanced_bagging_classifier():
     for base_estimator in [
             None,
             DummyClassifier(),
-            Perceptron(),
+            Perceptron(max_iter=1000, tol=1e-3),
             DecisionTreeClassifier(),
             KNeighborsClassifier(),
-            SVC()
+            SVC(gamma='scale')
     ]:
         for params in grid:
             BalancedBaggingClassifier(
@@ -155,8 +155,10 @@ def test_probability():
 
         # Degenerate case, where some classes are missing
         ensemble = BalancedBaggingClassifier(
-            base_estimator=LogisticRegression(), random_state=0,
-            max_samples=5).fit(X_train, y_train)
+            base_estimator=LogisticRegression(solver='lbfgs',
+                                              multi_class='auto'),
+            random_state=0, max_samples=5)
+        ensemble.fit(X_train, y_train)
 
         assert_array_almost_equal(
             np.sum(ensemble.predict_proba(X_test), axis=1),
@@ -179,7 +181,7 @@ def test_oob_score_classification():
         random_state=0)
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
-    for base_estimator in [DecisionTreeClassifier(), SVC()]:
+    for base_estimator in [DecisionTreeClassifier(), SVC(gamma='scale')]:
         clf = BalancedBaggingClassifier(
             base_estimator=base_estimator,
             n_estimators=100,
@@ -282,8 +284,8 @@ def test_gridsearch():
     parameters = {'n_estimators': (1, 2), 'base_estimator__C': (1, 2)}
 
     GridSearchCV(
-        BalancedBaggingClassifier(SVC()), parameters, scoring="roc_auc").fit(
-            X, y)
+        BalancedBaggingClassifier(SVC(gamma='scale')), parameters, cv=3,
+        scoring="roc_auc").fit(X, y)
 
 
 def test_base_estimator():
@@ -311,7 +313,8 @@ def test_base_estimator():
                       DecisionTreeClassifier)
 
     ensemble = BalancedBaggingClassifier(
-        Perceptron(), n_jobs=3, random_state=0).fit(X_train, y_train)
+        Perceptron(max_iter=1000, tol=1e-3), n_jobs=3, random_state=0).fit(
+            X_train, y_train)
 
     assert isinstance(ensemble.base_estimator_.steps[-1][1], Perceptron)
 
@@ -445,7 +448,8 @@ def test_estimators_samples():
 
     # remap the y outside of the BalancedBaggingclassifier
     # _, y = np.unique(y, return_inverse=True)
-    bagging = BalancedBaggingClassifier(LogisticRegression(),
+    bagging = BalancedBaggingClassifier(LogisticRegression(solver='lbfgs',
+                                                           multi_class='auto'),
                                         max_samples=0.5,
                                         max_features=0.5, random_state=1,
                                         bootstrap=False)

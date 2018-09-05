@@ -37,6 +37,10 @@ from imblearn.utils.testing import warns
 
 DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE']
 SUPPORT_STRING = ['RandomUnderSampler', 'RandomOverSampler']
+# FIXME: remove in 0.6
+DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
+                          'RepeatedEditedNearestNeighbours', 'AllKNN',
+                          'NeighbourhoodCleaningRule', 'TomekLinks')
 
 
 def monkey_patch_check_dtype_object(name, estimator_orig):
@@ -82,7 +86,7 @@ def _yield_all_checks(name, estimator):
             yield check
 
 
-def check_estimator(Estimator):
+def check_estimator(Estimator, run_sampler_tests=True):
     """Check if estimator adheres to scikit-learn conventions and
     imbalanced-learn
 
@@ -94,7 +98,10 @@ def check_estimator(Estimator):
     Parameters
     ----------
     Estimator : class
-        Class to check. Estimator is a class object (not an instance).
+        Class to check. Estimator is a class object (not an instance)
+
+    run_sampler_tests=True : bool, default=True
+        Will run or not the samplers tests.
     """
     name = Estimator.__name__
     # monkey patch check_dtype_object for the sampler allowing strings
@@ -104,15 +111,18 @@ def check_estimator(Estimator):
     # scikit-learn common tests
     sklearn_check_estimator(Estimator)
     check_parameters_default_constructible(name, Estimator)
-    for check in _yield_all_checks(name, Estimator):
-        check(name, Estimator)
+    if run_sampler_tests:
+        for check in _yield_all_checks(name, Estimator):
+            check(name, Estimator)
 
 
 def check_target_type(name, Estimator):
     X = np.random.random((20, 2))
     y = np.linspace(0, 1, 20)
     estimator = Estimator()
-    set_random_state(estimator)
+    # FIXME: in 0.6 set the random_state for all
+    if name not in DONT_HAVE_RANDOM_STATE:
+        set_random_state(estimator)
     with warns(UserWarning, match='should be of types'):
         estimator.fit(X, y)
 
@@ -162,7 +172,13 @@ def check_samplers_fit_resample(name, Sampler):
         assert all(value >= n_samples for value in Counter(y_res).values())
     elif isinstance(sampler, BaseUnderSampler):
         n_samples = min(target_stats.values())
-        assert all(value == n_samples for value in Counter(y_res).values())
+        if name == 'InstanceHardnessThreshold':
+            # IHT does not enforce the number of samples but provide a number
+            # of samples the closest to the desired target.
+            assert all(Counter(y_res)[k] <= target_stats[k]
+                       for k in target_stats.keys())
+        else:
+            assert all(value == n_samples for value in Counter(y_res).values())
     elif isinstance(sampler, BaseCleaningSampler):
         target_stats_res = Counter(y_res)
         class_minority = min(target_stats, key=target_stats.get)
@@ -232,7 +248,7 @@ def check_samplers_sampling_strategy_fit_resample(name, Sampler):
         X_res, y_res = sampler.fit_resample(X, y)
         assert Counter(y_res)[1] == expected_stat
     elif isinstance(sampler, BaseCleaningSampler):
-        sampling_strategy = {2: 201, 0: 201}
+        sampling_strategy = [2, 0]
         sampler.set_params(sampling_strategy=sampling_strategy)
         X_res, y_res = sampler.fit_resample(X, y)
         assert Counter(y_res)[1] == expected_stat
@@ -273,7 +289,9 @@ def check_samplers_sparse(name, Sampler):
         samplers = [Sampler()]
 
     for sampler in samplers:
-        set_random_state(sampler)
+        # FIXME: in 0.6 set the random_state for all
+        if name not in DONT_HAVE_RANDOM_STATE:
+            set_random_state(sampler)
         X_res_sparse, y_res_sparse = sampler.fit_resample(X_sparse, y)
         X_res, y_res = sampler.fit_resample(X, y)
         if not isinstance(sampler, BaseEnsembleSampler):
@@ -312,7 +330,9 @@ def check_samplers_pandas(name, Sampler):
         samplers = [Sampler()]
 
     for sampler in samplers:
-        set_random_state(sampler)
+        # FIXME: in 0.6 set the random_state for all
+        if name not in DONT_HAVE_RANDOM_STATE:
+            set_random_state(sampler)
         X_res_pd, y_res_pd = sampler.fit_resample(X_pd, y)
         X_res, y_res = sampler.fit_resample(X, y)
         assert_allclose(X_res_pd, X_res)
@@ -329,7 +349,9 @@ def check_samplers_multiclass_ova(name, Sampler):
         random_state=0)
     y_ova = label_binarize(y, np.unique(y))
     sampler = Sampler()
-    set_random_state(sampler)
+    # FIXME: in 0.6 set the random_state for all
+    if name not in DONT_HAVE_RANDOM_STATE:
+        set_random_state(sampler)
     X_res, y_res = sampler.fit_resample(X, y)
     X_res_ova, y_res_ova = sampler.fit_resample(X, y_ova)
     assert_allclose(X_res, X_res_ova)
@@ -353,7 +375,9 @@ def check_samplers_preserve_dtype(name, Sampler):
     X = X.astype(np.float32)
     y = y.astype(np.int32)
     sampler = Sampler()
-    set_random_state(sampler)
+    # FIXME: in 0.6 set the random_state for all
+    if name not in DONT_HAVE_RANDOM_STATE:
+        set_random_state(sampler)
     X_res, y_res = sampler.fit_resample(X, y)
     assert X.dtype == X_res.dtype, "X dtype is not preserved"
     assert y.dtype == y_res.dtype, "y dtype is not preserved"

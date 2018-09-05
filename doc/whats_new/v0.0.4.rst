@@ -97,6 +97,9 @@ Maintenance
 - Upgrade requirements to scikit-learn 0.20.
   :issue:`379` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Catch deprecation warning in testing.
+  :issue:`441` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Documentation
 .............
 

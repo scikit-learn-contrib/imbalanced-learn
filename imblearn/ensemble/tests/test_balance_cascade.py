@@ -118,7 +118,7 @@ def test_fit_resample_auto_early_stop():
 
 def test_give_classifier_obj():
     sampling_strategy = 'auto'
-    estimator = RandomForestClassifier(random_state=RND_SEED)
+    estimator = RandomForestClassifier(n_estimators=10, random_state=RND_SEED)
     bc = BalanceCascade(
         sampling_strategy=sampling_strategy,
         random_state=RND_SEED,

@@ -17,15 +17,15 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.utils import safe_indexing
 
-from ..base import BaseCleaningSampler
+from ..base import BaseUnderSampler
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring)
-class InstanceHardnessThreshold(BaseCleaningSampler):
+class InstanceHardnessThreshold(BaseUnderSampler):
     """Class to perform under-sampling based on the instance hardness
     threshold.
 
@@ -91,7 +91,7 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
     >>> iht = InstanceHardnessThreshold(random_state=42)
     >>> X_res, y_res = iht.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
-    Resampled dataset shape Counter({{1: 840, 0: 100}})
+    Resampled dataset shape Counter({{1: 574, 0: 100}})
 
     """
 
@@ -120,7 +120,8 @@ class InstanceHardnessThreshold(BaseCleaningSampler):
             self.estimator_ = clone(self.estimator)
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
-                random_state=self.random_state, n_jobs=self.n_jobs)
+                n_estimators=100, random_state=self.random_state,
+                n_jobs=self.n_jobs)
         else:
             raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
                 type(self.estimator)))
