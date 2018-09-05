@@ -65,6 +65,8 @@ class NotPreservingDtypeSampler(BaseSampler):
         return X.astype(np.float64), y.astype(np.int64)
 
 
+@pytest.mark.filterwarnings("ignore:'y' should be of types")
+@pytest.mark.filterwarnings("ignore: Can't check dok sparse matrix for nan")
 @pytest.mark.parametrize(
     'Estimator, err_type, err_msg',
     [(BaseBadSampler, AssertionError, "TypeError not raised by fit"),

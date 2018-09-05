@@ -7,6 +7,7 @@ from __future__ import print_function
 
 from collections import Counter
 
+import pytest
 import numpy as np
 
 from pytest import raises
@@ -53,6 +54,7 @@ def test_make_imbalance_dict():
     assert Counter(y_) == {0: 10, 1: 20, 2: 50}
 
 
+@pytest.mark.filterwarnings("ignore:'ratio' has been deprecated in 0.4")
 def test_make_imbalance_ratio():
     # check that using 'ratio' is working
     sampling_strategy = {0: 10, 1: 20, 2: 30}

@@ -32,11 +32,11 @@ under-sampling the original set::
   >>> print(sorted(Counter(y).items()))
   [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.ensemble import EasyEnsemble
-  >>> ee = EasyEnsemble(random_state=0, n_subsets=10)
-  >>> X_resampled, y_resampled = ee.fit_resample(X, y)
-  >>> print(X_resampled.shape)
+  >>> ee = EasyEnsemble(random_state=0, n_subsets=10) # doctest: +SKIP
+  >>> X_resampled, y_resampled = ee.fit_resample(X, y) # doctest: +SKIP
+  >>> print(X_resampled.shape) # doctest: +SKIP
   (10, 192, 2)
-  >>> print(sorted(Counter(y_resampled[0]).items()))
+  >>> print(sorted(Counter(y_resampled[0]).items())) # doctest: +SKIP
   [(0, 64), (1, 64), (2, 64)]
 
 :class:`EasyEnsemble` has two important parameters: (i) ``n_subsets`` will be
@@ -53,7 +53,9 @@ parameter ``n_max_subset`` and an additional bootstraping can be activated with
   >>> from imblearn.ensemble import BalanceCascade
   >>> from sklearn.linear_model import LogisticRegression
   >>> bc = BalanceCascade(random_state=0,
-  ...                     estimator=LogisticRegression(random_state=0),
+  ...                     estimator=LogisticRegression(solver='lbfgs',
+  ...                                                  multi_class='auto',
+  ...                                                  random_state=0),
   ...                     n_max_subset=4)
   >>> X_resampled, y_resampled = bc.fit_resample(X, y)
   >>> print(X_resampled.shape)
