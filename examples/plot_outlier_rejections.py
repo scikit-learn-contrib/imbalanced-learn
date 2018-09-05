@@ -37,6 +37,7 @@ def plot_scatter(X, y, title):
     plt.legend()
     plt.title(title)
 
+
 ##############################################################################
 # Toy data generation
 ##############################################################################
@@ -81,6 +82,7 @@ plot_scatter(X_test, y_test, 'Testing dataset')
 # our dataset during training. The function passed to the
 # :class:`imblearn.FunctionSampler` will be called when using the method
 # ``fit_resample``.
+
 
 def outlier_rejection(X, y):
     """This will be our function used to resample our dataset."""
