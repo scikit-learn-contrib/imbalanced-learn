@@ -87,7 +87,7 @@ KNeighborsClassifier(n_neighbors=1))
     >>> oss = OneSidedSelection(random_state=42)
     >>> X_res, y_res = oss.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
-    Resampled dataset shape Counter({{1: 495, 0: 100}})
+    Resampled dataset shape Counter({{1: 496, 0: 100}})
 
     """
 
