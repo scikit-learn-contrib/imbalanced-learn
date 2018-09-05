@@ -264,7 +264,7 @@ def test_wrong_nn():
 def test_sample_with_nn_svm():
     kind = 'svm'
     nn_k = NearestNeighbors(n_neighbors=6)
-    svm = SVC(random_state=RND_SEED)
+    svm = SVC(gamma='scale', random_state=RND_SEED)
     smote = SMOTE(
         random_state=RND_SEED, kind=kind, k_neighbors=nn_k, svm_estimator=svm)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
@@ -336,7 +336,7 @@ def test_svm_smote():
     svm_smote_nn = SVMSMOTE(random_state=42,
                             k_neighbors=NearestNeighbors(n_neighbors=6),
                             m_neighbors=NearestNeighbors(n_neighbors=11),
-                            svm_estimator=SVC(random_state=42))
+                            svm_estimator=SVC(gamma='scale', random_state=42))
 
     X_res_1, y_res_1 = svm_smote.fit_resample(X, Y)
     X_res_2, y_res_2 = svm_smote_nn.fit_resample(X, Y)
