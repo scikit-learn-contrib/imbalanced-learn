@@ -86,7 +86,7 @@ def _yield_all_checks(name, estimator):
             yield check
 
 
-def check_estimator(Estimator):
+def check_estimator(Estimator, run_sampler_tests=True):
     """Check if estimator adheres to scikit-learn conventions and
     imbalanced-learn
 
@@ -98,7 +98,10 @@ def check_estimator(Estimator):
     Parameters
     ----------
     Estimator : class
-        Class to check. Estimator is a class object (not an instance).
+        Class to check. Estimator is a class object (not an instance)
+
+    run_sampler_tests=True : bool, default=True
+        Will run or not the samplers tests.
     """
     name = Estimator.__name__
     # monkey patch check_dtype_object for the sampler allowing strings
@@ -108,8 +111,9 @@ def check_estimator(Estimator):
     # scikit-learn common tests
     sklearn_check_estimator(Estimator)
     check_parameters_default_constructible(name, Estimator)
-    for check in _yield_all_checks(name, Estimator):
-        check(name, Estimator)
+    if run_sampler_tests:
+        for check in _yield_all_checks(name, Estimator):
+            check(name, Estimator)
 
 
 def check_target_type(name, Estimator):

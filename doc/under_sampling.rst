@@ -340,7 +340,7 @@ used as::
   >>> oss = OneSidedSelection(random_state=0)
   >>> X_resampled, y_resampled = oss.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
-  [(0, 64), (1, 174), (2, 4403)]
+  [(0, 64), (1, 174), (2, 4404)]
 
 Our implementation offer to set the number of seeds to put in the set :math:`C`
 originally by setting the parameter ``n_seeds_S``.
