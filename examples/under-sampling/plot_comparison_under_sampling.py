@@ -236,7 +236,7 @@ clf = LinearSVC().fit(X, y)
 plot_decision_function(X, y, clf, ax1)
 ax1.set_title('Linear SVC with y={}'.format(Counter(y)))
 sampler = InstanceHardnessThreshold(
-    random_state=0, estimator=LogisticRegression(solver='lbgs',
+    random_state=0, estimator=LogisticRegression(solver='lbfgs',
                                                  multi_class='auto'))
 clf = make_pipeline(sampler, LinearSVC())
 clf.fit(X, y)
