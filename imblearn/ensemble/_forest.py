@@ -4,8 +4,8 @@
 # License: MIT
 
 import numbers
-import warnings
 from warnings import warn
+from copy import deepcopy
 
 import numpy as np
 from numpy import float32 as DTYPE
@@ -16,11 +16,9 @@ from sklearn.base import clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble.base import _set_random_states
-from sklearn.ensemble.forest import _generate_sample_indices
 from sklearn.ensemble.forest import _parallel_build_trees
 from sklearn.exceptions import DataConversionWarning
 from sklearn.externals.joblib import Parallel, delayed
-from sklearn.utils import compute_sample_weight
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import safe_indexing
@@ -297,7 +295,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         else:
             self.base_estimator_ = clone(default)
 
-        self.sampler_ = RandomUnderSampler(
+        self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self.sampling_strategy,
             replacement=self.replacement,
             return_indices=True)
@@ -310,7 +308,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         estimator = clone(self.base_estimator_)
         estimator.set_params(**dict((p, getattr(self, p))
                                     for p in self.estimator_params))
-        sampler = clone(self.sampler_)
+        sampler = clone(self.base_sampler_)
 
         if random_state is not None:
             _set_random_states(estimator, random_state)
@@ -319,7 +317,11 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         if append:
             self.estimators_.append(estimator)
             self.samplers_.append(sampler)
-            self.pipelines_.append(make_pipeline(sampler, estimator))
+            self.pipelines_.append(make_pipeline(deepcopy(sampler),
+                                                 deepcopy(estimator)))
+            # do not return the indices within a pipeline
+            self.pipelines_[-1].named_steps['randomundersampler'].set_params(
+                return_indices=False)
 
         return estimator, sampler
 
@@ -328,7 +330,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         Parameters
         ----------
-        X : array-like or sparse matrix of shape = [n_samples, n_features]
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
             The training input samples. Internally, its dtype will be converted
             to ``dtype=np.float32``. If a sparse matrix is provided, it will be
             converted into a sparse ``csc_matrix``.
@@ -361,7 +363,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             X.sort_indices()
 
         # Remap output
-        n_samples, self.n_features_ = X.shape
+        _, self.n_features_ = X.shape
 
         y = np.atleast_1d(y)
         if y.ndim == 2 and y.shape[1] == 1:
@@ -421,7 +423,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
             trees = []
             samplers = []
-            for i in range(n_more_estimators):
+            for _ in range(n_more_estimators):
                 tree, sampler = self._make_sampler_estimator(
                     append=False, random_state=random_state)
                 trees.append(tree)
@@ -446,8 +448,11 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self.samplers_.extend(samplers)
 
             # Create pipeline with the fitted samplers and trees
-            self.pipelines_.extend([make_pipeline(s, t)
+            self.pipelines_.extend([make_pipeline(deepcopy(s), deepcopy(t))
                                     for s, t in zip(samplers, trees)])
+            for idx in range(len(self.pipelines_)):
+                self.pipelines_[idx].named_steps[
+                    'randomundersampler'].set_params(return_indices=False)
 
         if self.oob_score:
             self._set_oob_score(X, y)
