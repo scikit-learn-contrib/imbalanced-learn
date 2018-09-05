@@ -8,13 +8,14 @@ from sklearn.datasets import load_iris
 
 from imblearn.datasets import make_imbalance
 from imblearn.under_sampling import NearMiss
+from imblearn.over_sampling import RandomOverSampler
 
 from imblearn.tensorflow import balanced_batch_generator
 
 tf = pytest.importorskip('tensorflow')
 
 
-@pytest.mark.parametrize("sampler", [None, NearMiss()])
+@pytest.mark.parametrize("sampler", [None, NearMiss(), RandomOverSampler()])
 def test_balanced_batch_generator(sampler):
     X, y = load_iris(return_X_y=True)
     X, y = make_imbalance(X, y, {0: 30, 1: 50, 2: 40})
