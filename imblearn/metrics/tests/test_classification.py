@@ -10,6 +10,7 @@ from functools import partial
 
 import numpy as np
 
+import pytest
 from pytest import approx, raises
 
 from sklearn import datasets
@@ -20,7 +21,6 @@ from sklearn.utils.fixes import np_version
 from sklearn.utils.validation import check_random_state
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.utils.testing import assert_no_warnings
-from sklearn.utils.testing import ignore_warnings
 from sklearn.metrics import accuracy_score, average_precision_score
 from sklearn.metrics import brier_score_loss, cohen_kappa_score
 from sklearn.metrics import jaccard_similarity_score, precision_score
@@ -113,6 +113,7 @@ def test_sensitivity_specificity_score_binary():
         assert_allclose(spe, 0.88, rtol=R_TOL)
 
 
+@pytest.mark.filterwarnings("ignore:Specificity is ill-defined")
 def test_sensitivity_specificity_f_binary_single_class():
     # Such a case may occur with non-stratified cross-validation
     assert sensitivity_score([1, 1], [1, 1]) == 1.
@@ -122,7 +123,6 @@ def test_sensitivity_specificity_f_binary_single_class():
     assert specificity_score([-1, -1], [-1, -1]) == 0.
 
 
-@ignore_warnings
 def test_sensitivity_specificity_extra_labels():
     y_true = [1, 3, 3, 2]
     y_pred = [1, 1, 3, 2]
@@ -148,7 +148,6 @@ def test_sensitivity_specificity_extra_labels():
     assert_allclose(np.mean([1., 0.67, 1., 1., 1.]), actual, rtol=R_TOL)
 
 
-@ignore_warnings
 def test_sensitivity_specificity_ignored_labels():
     y_true = [1, 1, 2, 3]
     y_pred = [1, 3, 3, 3]
@@ -181,7 +180,6 @@ def test_sensitivity_specificity_error_multilabels():
         sensitivity_score(y_true_bin, y_pred_bin)
 
 
-@ignore_warnings
 def test_sensitivity_specificity_support_errors():
     y_true, y_pred, _ = make_prediction(binary=True)
 
@@ -211,6 +209,7 @@ def test_geometric_mean_support_binary():
     assert_allclose(geo_mean, 0.77, rtol=R_TOL)
 
 
+@pytest.mark.filterwarnings("ignore:Recall is ill-defined")
 def test_geometric_mean_multiclass():
     y_true = [0, 0, 1, 1]
     y_pred = [0, 0, 1, 1]

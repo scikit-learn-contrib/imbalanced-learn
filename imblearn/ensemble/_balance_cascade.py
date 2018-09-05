@@ -179,7 +179,7 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             # fit and predict using cross validation
             X_subset = safe_indexing(X, subset_indices)
             y_subset = safe_indexing(y, subset_indices)
-            pred = cross_val_predict(self.estimator_, X_subset, y_subset)
+            pred = cross_val_predict(self.estimator_, X_subset, y_subset, cv=3)
             # extract the prediction about the targeted classes only
             pred_target = pred[:index_under_sample.size]
             index_classified = index_under_sample[pred_target == safe_indexing(
