@@ -43,7 +43,8 @@ if [[ "$DISTRIB" == "conda" ]]; then
     if [[ $PYTHON_VERSION == "3.6" ]]; then
         # Tensorflow is not available in Python 3.7 yet.
         conda install --yes pandas
-        conda install --yes -c conda-forge keras
+        pip install tensorflow
+        pip install keras
         KERAS_BACKEND=tensorflow
         python -c "import keras.backend"
         sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
