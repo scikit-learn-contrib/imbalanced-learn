@@ -116,9 +116,6 @@ random under-sampler::
          [   0,   55,    4],
          [  42,   46, 1091]])
 
-See
-:ref:`sphx_glr_auto_examples_ensemble_plot_comparison_bagging_classifier.py`.
-
 :class:`BalancedRandomForestClassifier` is another ensemble method in which
 each tree of the forest will be provided a balanced boostrap sample. This class
 provides all functionality of the
@@ -153,3 +150,6 @@ the ensemble as::
   array([[  9,   1,   2],
          [  5,  52,   2],
          [252,  45, 882]])
+
+See
+:ref:`sphx_glr_auto_examples_ensemble_plot_comparison_ensemble_classifier.py`.

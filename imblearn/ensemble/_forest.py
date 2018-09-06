@@ -213,6 +213,11 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         was never left out during the bootstrap. In this case,
         `oob_decision_function_` might contain NaN.
 
+    Notes
+    -----
+    See
+    :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_ensemble_classifier.py`.
+
     Examples
     --------
     >>> from imblearn.ensemble import BalancedRandomForestClassifier
