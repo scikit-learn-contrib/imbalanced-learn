@@ -93,6 +93,23 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
           `ceil(min_samples_split * n_samples)` are the minimum
           number of samples for each split.
 
+    min_samples_leaf : int, float, optional (default=1)
+        The minimum number of samples required to be at a leaf node:
+        - If int, then consider ``min_samples_leaf`` as the minimum number.
+        - If float, then ``min_samples_leaf`` is a fraction and
+          `ceil(min_samples_leaf * n_samples)` are the minimum
+          number of samples for each node.
+
+    min_weight_fraction_leaf : float, optional (default=0.)
+        The minimum weighted fraction of the sum total of weights (of all
+        the input samples) required to be at a leaf node. Samples have
+        equal weight when sample_weight is not provided.
+
+        .. deprecated:: 0.20
+           The parameter ``min_weight_fraction_leaf`` is deprecated in version
+           0.20. Its implementation, like ``min_samples_leaf``, is ineffective
+           for regularization.
+
     max_leaf_nodes : int or None, optional (default=None)
         Grow trees with ``max_leaf_nodes`` in best-first fashion.
         Best nodes are defined as relative reduction in impurity.
@@ -232,6 +249,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                  criterion="gini",
                  max_depth=None,
                  min_samples_split=2,
+                 min_samples_leaf='deprecated',
+                 min_weight_fraction_leaf='deprecated',
                  max_features="auto",
                  max_leaf_nodes=None,
                  min_impurity_decrease=0.,
@@ -256,8 +275,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             warm_start=warm_start,
             class_weight=class_weight,
             min_samples_split=min_samples_split,
-            min_samples_leaf='deprecated',
-            min_weight_fraction_leaf='deprecated',
+            min_samples_leaf=min_samples_leaf,
+            min_weight_fraction_leaf=min_weight_fraction_leaf,
             max_features=max_features,
             max_leaf_nodes=max_leaf_nodes,
             min_impurity_decrease=min_impurity_decrease)

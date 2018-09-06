@@ -159,9 +159,11 @@ Below is a list of the methods currently implemented in this module.
     1. SMOTE + Tomek links [12]_
     2. SMOTE + ENN [11]_
 
-* Ensemble sampling
+* Ensemble classifier using samplers internally
     1. EasyEnsemble [13]_
     2. BalanceCascade [13]_
+    3. Balanced Random Forest [16]_
+    4. Balanced Bagging
 
 The different algorithms are presented in the sphinx-gallery_.
 
@@ -200,3 +202,5 @@ References:
 .. [14] : I. Tomek, “An experiment with the edited nearest-neighbor rule,” IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6), pp. 448-452, 1976. [`bib <references.bib#L158>`_]
 
 .. [15] : H. He, Y. Bai, E. A. Garcia, S. Li, “ADASYN: Adaptive synthetic sampling approach for imbalanced learning,” In Proceedings of the 5th IEEE International Joint Conference on Neural Networks, pp. 1322-1328, 2008. [`pdf <https://pdfs.semanticscholar.org/4823/4756b7cf798bfeb47328f7c5d597fd4838c2.pdf>`_] [`bib <references.bib#L62>`_] 
+
+.. [16] : C. Chao, A. Liaw, and L. Breiman. "Using random forest to learn imbalanced data." University of California, Berkeley 110 (2004): 1-12.
