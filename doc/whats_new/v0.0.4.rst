@@ -33,6 +33,10 @@ New features
   AdaBoost classifier trained on balanced bootstrap samples.
   :issue:`455` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add :class:`imblearn.ensemble.BalancedRandomForestClassifier` which balanced
+  each bootstrap provided to each tree of the forest.
+  :issue:`459` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancement
 ...........
 
