@@ -18,9 +18,13 @@ from imblearn.over_sampling import RandomOverSampler
 from imblearn.keras import BalancedBatchGenerator
 from imblearn.keras import balanced_batch_generator
 
-iris = load_iris()
-X, y = make_imbalance(iris.data, iris.target, {0: 30, 1: 50, 2: 40})
-y = to_categorical(y, 3)
+
+@pytest.fixture
+def data():
+    iris = load_iris()
+    X, y = make_imbalance(iris.data, iris.target, {0: 30, 1: 50, 2: 40})
+    y = to_categorical(y, 3)
+    return X, y
 
 
 def _build_keras_model(n_classes, n_features):
@@ -31,9 +35,9 @@ def _build_keras_model(n_classes, n_features):
     return model
 
 
-def test_balanced_batch_generator_class_no_return_indices():
+def test_balanced_batch_generator_class_no_return_indices(data):
     with pytest.raises(ValueError, match='needs to return the indices'):
-        BalancedBatchGenerator(X, y, sampler=ClusterCentroids(), batch_size=10)
+        BalancedBatchGenerator(*data, sampler=ClusterCentroids(), batch_size=10)
 
 
 @pytest.mark.parametrize(
@@ -41,9 +45,10 @@ def test_balanced_batch_generator_class_no_return_indices():
     [(None, None),
      (RandomOverSampler(), None),
      (NearMiss(), None),
-     (None, np.random.uniform(size=(y.shape[0])))]
+     (None, np.random.uniform(size=120))]
 )
-def test_balanced_batch_generator_class(sampler, sample_weight):
+def test_balanced_batch_generator_class(data, sampler, sample_weight):
+    X, y = data
     model = _build_keras_model(y.shape[1], X.shape[1])
     training_generator = BalancedBatchGenerator(X, y,
                                                 sample_weight=sample_weight,
@@ -55,23 +60,24 @@ def test_balanced_batch_generator_class(sampler, sample_weight):
 
 
 @pytest.mark.parametrize("keep_sparse", [True, False])
-def test_balanced_batch_generator_class_sparse(keep_sparse):
+def test_balanced_batch_generator_class_sparse(data, keep_sparse):
+    X, y = data
     training_generator = BalancedBatchGenerator(sparse.csr_matrix(X), y,
                                                 batch_size=10,
                                                 keep_sparse=keep_sparse,
                                                 random_state=42)
     for idx in range(len(training_generator)):
-        X_batch, y_batch = training_generator.__getitem__(idx)
+        X_batch, _ = training_generator.__getitem__(idx)
         if keep_sparse:
             assert sparse.issparse(X_batch)
         else:
             assert not sparse.issparse(X_batch)
 
 
-def test_balanced_batch_generator_function_no_return_indices():
+def test_balanced_batch_generator_function_no_return_indices(data):
     with pytest.raises(ValueError, match='needs to return the indices'):
         balanced_batch_generator(
-            X, y, sampler=ClusterCentroids(), batch_size=10, random_state=42)
+            *data, sampler=ClusterCentroids(), batch_size=10, random_state=42)
 
 
 @pytest.mark.parametrize(
@@ -79,9 +85,10 @@ def test_balanced_batch_generator_function_no_return_indices():
     [(None, None),
      (RandomOverSampler(), None),
      (NearMiss(), None),
-     (None, np.random.uniform(size=(y.shape[0])))]
+     (None, np.random.uniform(size=120))]
 )
-def test_balanced_batch_generator_function(sampler, sample_weight):
+def test_balanced_batch_generator_function(data, sampler, sample_weight):
+    X, y = data
     model = _build_keras_model(y.shape[1], X.shape[1])
     training_generator, steps_per_epoch = balanced_batch_generator(
         X, y, sample_weight=sample_weight, sampler=sampler, batch_size=10,
@@ -92,12 +99,13 @@ def test_balanced_batch_generator_function(sampler, sample_weight):
 
 
 @pytest.mark.parametrize("keep_sparse", [True, False])
-def test_balanced_batch_generator_function_sparse(keep_sparse):
+def test_balanced_batch_generator_function_sparse(data, keep_sparse):
+    X, y = data
     training_generator, steps_per_epoch = balanced_batch_generator(
         sparse.csr_matrix(X), y, keep_sparse=keep_sparse, batch_size=10,
         random_state=42)
-    for idx in range(steps_per_epoch):
-        X_batch, y_batch = next(training_generator)
+    for _ in range(steps_per_epoch):
+        X_batch, _ = next(training_generator)
         if keep_sparse:
             assert sparse.issparse(X_batch)
         else:
