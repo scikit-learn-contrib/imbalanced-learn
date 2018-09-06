@@ -34,6 +34,7 @@ from imblearn.datasets import fetch_datasets
 from imblearn.ensemble import BalancedBaggingClassifier
 from imblearn.ensemble import BalancedRandomForestClassifier
 from imblearn.ensemble import EasyEnsembleClassifier
+from imblearn.ensemble import RUSBoostClassifier
 
 from imblearn.metrics import geometric_mean_score
 
@@ -191,14 +192,26 @@ eec = EasyEnsembleClassifier(n_estimators=10,
                              base_estimator=base_estimator,
                              n_jobs=-1)
 eec.fit(X_train, y_train)
-y_pred_eec = tree.predict(X_test)
+y_pred_eec = eec.predict(X_test)
 print('Easy ensemble classifier performance:')
 print('Balanced accuracy: {:.2f} - Geometric mean {:.2f}'
       .format(balanced_accuracy_score(y_test, y_pred_eec),
               geometric_mean_score(y_test, y_pred_eec)))
 cm_eec = confusion_matrix(y_test, y_pred_eec)
-fig, ax = plt.subplots()
-plot_confusion_matrix(cm_eec, classes=np.unique(satimage.target), ax=ax,
+fig, ax = plt.subplots(ncols=2)
+plot_confusion_matrix(cm_eec, classes=np.unique(satimage.target), ax=ax[0],
                       title='Easy ensemble classifier')
+
+rusboost = RUSBoostClassifier(n_estimators=10,
+                              base_estimator=base_estimator)
+rusboost.fit(X_train, y_train)
+y_pred_rusboost = rusboost.predict(X_test)
+print('Easy ensemble classifier performance:')
+print('Balanced accuracy: {:.2f} - Geometric mean {:.2f}'
+      .format(balanced_accuracy_score(y_test, y_pred_rusboost),
+              geometric_mean_score(y_test, y_pred_rusboost)))
+cm_rusboost = confusion_matrix(y_test, y_pred_rusboost)
+plot_confusion_matrix(cm_rusboost, classes=np.unique(satimage.target),
+                      ax=ax[1], title='RUSBoost classifier')
 
 plt.show()
