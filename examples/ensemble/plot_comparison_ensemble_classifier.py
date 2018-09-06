@@ -66,6 +66,7 @@ def plot_confusion_matrix(cm, classes, ax,
     ax.set_ylabel('True label')
     ax.set_xlabel('Predicted label')
 
+
 ###############################################################################
 # Load an imbalanced dataset
 ###############################################################################
@@ -110,7 +111,7 @@ plot_confusion_matrix(cm_tree, classes=np.unique(satimage.target), ax=ax,
 # random under-sampling to balanced each boostrap sample.
 
 bagging = BaggingClassifier(n_estimators=50, random_state=0, n_jobs=-1)
-balanced_bagging = BalancedBaggingClassifier(n_estimators=50,random_state=0,
+balanced_bagging = BalancedBaggingClassifier(n_estimators=50, random_state=0,
                                              n_jobs=-1)
 
 bagging.fit(X_train, y_train)
