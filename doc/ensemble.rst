@@ -116,24 +116,24 @@ random under-sampler::
          [   0,   55,    4],
          [  42,   46, 1091]])
 
-It also possible to turn a balanced bagging classifier into a balanced random
-forest using a decision tree classifier and setting the parameter
-``max_features='auto'``. It allows to randomly select a subset of features for
-each tree::
+:class:`BalancedRandomForestClassifier` is another ensemble method in which
+each tree of the forest will be provided a balanced boostrap sample. This class
+provides all functionality of the
+:class:`sklearn.ensemble.RandomForestClassifier` and notably the
+`feature_importances_` attributes::
 
-  >>> brf = BalancedBaggingClassifier(
-  ...          base_estimator=DecisionTreeClassifier(max_features='auto'),
-  ...          random_state=0)
+
+  >>> from imblearn.ensemble import BalancedRandomForestClassifier
+  >>> brf = BalancedRandomForestClassifier(n_estimators=10, random_state=0)
   >>> brf.fit(X_train, y_train) # doctest: +ELLIPSIS
-  BalancedBaggingClassifier(...)
+  BalancedRandomForestClassifier(...)
   >>> y_pred = brf.predict(X_test)
   >>> confusion_matrix(y_test, y_pred)
   array([[   9,    1,    2],
-         [   0,   54,    5],
-         [  31,   34, 1114]])
-
-See
-:ref:`sphx_glr_auto_examples_ensemble_plot_comparison_bagging_classifier.py`.
+         [   3,   54,    2],
+         [ 113,   47, 1019]])
+  >>> brf.feature_importances_
+  array([ 0.63501243,  0.36498757])
 
 A specific method which uses ``AdaBoost`` as learners in the bagging
 classifier is called EasyEnsemble. The :class:`EasyEnsembleClassifier` allows
@@ -150,3 +150,6 @@ the ensemble as::
   array([[  9,   1,   2],
          [  5,  52,   2],
          [252,  45, 882]])
+
+See
+:ref:`sphx_glr_auto_examples_ensemble_plot_comparison_ensemble_classifier.py`.

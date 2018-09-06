@@ -1,4 +1,4 @@
-"""Ensemble predictors combining a sampler and a classifier."""
+"""Bagging classifier trained on balanced bootstrap samples."""
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas

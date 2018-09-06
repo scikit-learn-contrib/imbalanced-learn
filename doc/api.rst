@@ -109,6 +109,7 @@ Prototype selection
 
    ensemble.BalanceCascade
    ensemble.BalancedBaggingClassifier
+   ensemble.BalancedRandomForestClassifier
    ensemble.EasyEnsemble
    ensemble.EasyEnsembleClassifier
 
