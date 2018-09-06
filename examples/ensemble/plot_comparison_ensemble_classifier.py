@@ -34,10 +34,7 @@ from imblearn.datasets import fetch_datasets
 from imblearn.ensemble import BalancedBaggingClassifier
 from imblearn.ensemble import BalancedRandomForestClassifier
 from imblearn.ensemble import EasyEnsembleClassifier
-<<<<<<< HEAD
 from imblearn.ensemble import RUSBoostClassifier
-=======
->>>>>>> origin/master
 
 from imblearn.metrics import geometric_mean_score
 
