@@ -110,6 +110,6 @@ def test_validate_estimator_default():
      ({'tomek': 'rnd'}, "tomek needs to be a TomekLinks")]
 )
 def test_error_wrong_object(smote_params, err_msg):
-    smt = SMOTETomek(**smote_params, random_state=RND_SEED)
+    smt = SMOTETomek(**smote_params)
     with pytest.raises(ValueError, match=err_msg):
         smt.fit_resample(X, Y)

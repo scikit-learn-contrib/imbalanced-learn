@@ -104,6 +104,6 @@ def test_validate_estimator_default():
      ({'enn': 'rnd'}, "enn needs to be an ")]
 )
 def test_error_wrong_object(smote_params, err_msg):
-    smt = SMOTEENN(**smote_params, random_state=RND_SEED)
+    smt = SMOTEENN(**smote_params)
     with pytest.raises(ValueError, match=err_msg):
         smt.fit_resample(X, Y)

@@ -35,8 +35,9 @@ def test_make_imbalanced_backcompat(iris):
 def test_make_imbalance_error(iris, sampling_strategy, err_msg):
     # we are reusing part of utils.check_sampling_strategy, however this is not
     # cover in the common tests so we will repeat it here
+    X, y = iris
     with pytest.raises(ValueError, match=err_msg):
-        make_imbalance(*iris, sampling_strategy)
+        make_imbalance(X, y, sampling_strategy)
 
 
 def test_make_imbalance_error_single_class(iris):
@@ -52,7 +53,8 @@ def test_make_imbalance_error_single_class(iris):
      ({0: 10, 1: 20}, {0: 10, 1: 20, 2: 50})]
 )
 def test_make_imbalance_dict(iris, sampling_strategy, expected_counts):
-    _, y_ = make_imbalance(*iris, sampling_strategy=sampling_strategy)
+    X, y = iris
+    _, y_ = make_imbalance(X, y, sampling_strategy=sampling_strategy)
     assert Counter(y_) == expected_counts
 
 
@@ -63,5 +65,6 @@ def test_make_imbalance_dict(iris, sampling_strategy, expected_counts):
      ({0: 10, 1: 20}, {0: 10, 1: 20, 2: 50})]
 )
 def test_make_imbalance_dict_ratio(iris, sampling_strategy, expected_counts):
-    _, y_ = make_imbalance(*iris, ratio=sampling_strategy)
+    X, y = iris
+    _, y_ = make_imbalance(X, y, ratio=sampling_strategy)
     assert Counter(y_) == expected_counts
