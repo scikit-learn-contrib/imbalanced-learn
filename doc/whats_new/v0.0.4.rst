@@ -104,6 +104,9 @@ Maintenance
 - Catch deprecation warning in testing.
   :issue:`441` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Refactor and impose `pytest` style tests.
+  :issue:`470` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Documentation
 .............
 
