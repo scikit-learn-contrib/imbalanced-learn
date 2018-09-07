@@ -1,11 +1,9 @@
 """Test the module cluster centroids."""
-from __future__ import print_function
-
 from collections import Counter
 
+import pytest
 import numpy as np
 from scipy import sparse
-from pytest import raises
 
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_array_equal
@@ -23,13 +21,14 @@ Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 R_TOL = 1e-4
 
 
-def test_fit_resample_check_voting():
+@pytest.mark.parametrize(
+    "X, expected_voting",
+    [(X, 'soft'), (sparse.csr_matrix(X), 'hard')]
+)
+def test_fit_resample_check_voting(X, expected_voting):
     cc = ClusterCentroids(random_state=RND_SEED)
     cc.fit_resample(X, Y)
-    assert cc.voting_ == 'soft'
-    cc = ClusterCentroids(random_state=RND_SEED)
-    cc.fit_resample(sparse.csr_matrix(X), Y)
-    assert cc.voting_ == 'hard'
+    assert cc.voting_ == expected_voting
 
 
 def test_fit_resample_auto():
@@ -111,20 +110,12 @@ def test_fit_hard_voting():
         assert np.any(np.all(x == X, axis=1))
 
 
-def test_fit_resample_error():
-    sampling_strategy = 'auto'
-    cluster = 'rnd'
-    cc = ClusterCentroids(
-        sampling_strategy=sampling_strategy,
-        random_state=RND_SEED,
-        estimator=cluster)
-    with raises(ValueError, match="has to be a KMeans clustering"):
-        cc.fit_resample(X, Y)
-
-    voting = 'unknown'
-    cc = ClusterCentroids(
-        sampling_strategy=sampling_strategy,
-        voting=voting,
-        random_state=RND_SEED)
-    with raises(ValueError, match="needs to be one of"):
+@pytest.mark.parametrize(
+    "cluster_centroids_params, err_msg",
+    [({"estimator": "rnd"}, "has to be a KMeans clustering"),
+     ({"voting": "unknown"}, "needs to be one of")]
+)
+def test_fit_resample_error(cluster_centroids_params, err_msg):
+    cc = ClusterCentroids(**cluster_centroids_params)
+    with pytest.raises(ValueError, match=err_msg):
         cc.fit_resample(X, Y)

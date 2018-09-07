@@ -15,8 +15,7 @@ func_docstring = \
     xxx
 
     yyy
-    """.rstrip()
-
+    """
 
 def func(param_1, param_2):
     """A function.
@@ -38,7 +37,7 @@ cls_docstring = \
     xxx
 
     yyy
-    """.rstrip()
+    """
 
 
 class cls:
@@ -60,4 +59,4 @@ class cls:
                                                 (cls, cls_docstring)])
 def test_docstring_inject(obj, obj_docstring):
     obj_injected_docstring = Substitution(param_1='xxx', param_2='yyy')(obj)
-    obj_injected_docstring.__doc__ == obj_docstring
+    assert obj_injected_docstring.__doc__ == obj_docstring
