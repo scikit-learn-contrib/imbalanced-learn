@@ -36,9 +36,25 @@ def test_rusboost(imbalanced_dataset, algorithm):
     rusboost.fit(X, y)
     adaboost.fit(X, y)
 
-    assert len(rusboost.feature_importances_) == imbalanced_dataset[0].shape[1]
     assert_array_equal(classes, rusboost.classes_)
 
+    # check that we have an ensemble of samplers and estimators with a
+    # consistent size
+    assert len(rusboost.estimators_) > 1
+    assert len(rusboost.estimators_) == len(rusboost.samplers_)
+    assert len(rusboost.pipelines_) == len(rusboost.samplers_)
+
+    # each sampler in the ensemble should have different random state
+    assert (len(set(sampler.random_state for sampler in rusboost.samplers_)) ==
+        len(rusboost.samplers_))
+    # each estimator in the ensemble should have different random state
+    assert (len(set(est.random_state for est in rusboost.estimators_)) ==
+        len(rusboost.estimators_))
+
+    # check the consistency of the feature importances
+    assert len(rusboost.feature_importances_) == imbalanced_dataset[0].shape[1]
+
+    # check the consistency of the prediction outpus
     y_pred = rusboost.predict_proba(X)
     assert y_pred.shape[1] == len(classes)
     assert rusboost.decision_function(X).shape[1] == len(classes)
@@ -50,6 +66,8 @@ def test_rusboost(imbalanced_dataset, algorithm):
     y_pred = rusboost.predict(X)
     assert y_pred.shape == y.shape
 
+    # check that the balanced accuracy score of RUSBoost is better than
+    # AdaBoost
     bal_acc_rusboost = balanced_accuracy_score(y, y_pred)
     bal_acc_adaboost = balanced_accuracy_score(y, adaboost.predict(X))
     assert bal_acc_rusboost > bal_acc_adaboost
