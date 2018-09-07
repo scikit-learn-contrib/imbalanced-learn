@@ -3,10 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
 from sklearn.neighbors import NearestNeighbors
@@ -28,33 +26,17 @@ Y = np.array([1, 2, 1, 0, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 VERSION_NEARMISS = (1, 2, 3)
 
 
-def test_nearmiss_wrong_version():
-    version = 1000
-    nm = NearMiss(version=version)
-    with raises(ValueError, match="must be 1, 2 or 3"):
+@pytest.mark.parametrize(
+    "nearmiss_params, err_msg",
+    [({"version": 1000}, "must be 1, 2 or 3"),
+     ({"version": 1, "n_neighbors": 'rnd'}, "has to be one of"),
+     ({"version": 3, "n_neighbors": NearestNeighbors(n_neighbors=3),
+       "n_neighbors_ver3": "rnd"}, "has to be one of")]
+)
+def test_nearmiss_error(nearmiss_params, err_msg):
+    nm = NearMiss(**nearmiss_params)
+    with pytest.raises(ValueError, match=err_msg):
         nm.fit_resample(X, Y)
-
-
-def test_nm_wrong_nn_obj():
-    sampling_strategy = 'auto'
-    nn = 'rnd'
-    nm = NearMiss(
-        sampling_strategy=sampling_strategy,
-        version=VERSION_NEARMISS,
-        return_indices=True,
-        n_neighbors=nn)
-    with raises(ValueError, match="has to be one of"):
-        nm.fit_resample(X, Y)
-    nn3 = 'rnd'
-    nn = NearestNeighbors(n_neighbors=3)
-    nm3 = NearMiss(
-        sampling_strategy=sampling_strategy,
-        version=3,
-        return_indices=True,
-        n_neighbors=nn,
-        n_neighbors_ver3=nn3)
-    with raises(ValueError, match="has to be one of"):
-        nm3.fit_resample(X, Y)
 
 
 def test_nm_fit_resample_auto():

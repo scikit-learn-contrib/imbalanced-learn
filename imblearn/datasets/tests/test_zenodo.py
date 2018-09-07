@@ -6,10 +6,10 @@ Skipped if datasets is not already downloaded to data_home.
 #          Christos Aridas
 # License: MIT
 
-from imblearn.datasets import fetch_datasets
-from sklearn.utils.testing import SkipTest, assert_allclose
+import pytest
 
-from pytest import raises
+from imblearn.datasets import fetch_datasets
+from sklearn.utils.testing import SkipTest
 
 DATASET_SHAPE = {
     'ecoli': (336, 7),
@@ -79,19 +79,20 @@ def test_fetch_filter():
     assert DATASET_SHAPE['ecoli'] == X1.shape
     assert X1.shape == X2.shape
 
-    assert_allclose(X1.sum(), X2.sum())
+    assert X1.sum() == pytest.approx(X2.sum())
 
     y1, y2 = datasets1['ecoli'].target, datasets2['ecoli'].target
     assert (X1.shape[0], ) == y1.shape
     assert (X1.shape[0], ) == y2.shape
 
 
-def test_fetch_error():
-    with raises(ValueError, match='is not a dataset available.'):
-        fetch_datasets(filter_data=tuple(['rnd']))
-    with raises(ValueError, match='dataset with the ID='):
-        fetch_datasets(filter_data=tuple([-1]))
-    with raises(ValueError, match='dataset with the ID='):
-        fetch_datasets(filter_data=tuple([100]))
-    with raises(ValueError, match='value in the tuple'):
-        fetch_datasets(filter_data=tuple([1.00]))
+@pytest.mark.parametrize(
+    "filter_data, err_msg",
+    [(('rnf',), "is not a dataset available"),
+     ((-1,), "dataset with the ID="),
+     ((100,), "dataset with the ID="),
+     ((1.00,), "value in the tuple")]
+)
+def test_fetch_error(filter_data, err_msg):
+    with pytest.raises(ValueError, match=err_msg):
+        fetch_datasets(filter_data=filter_data)

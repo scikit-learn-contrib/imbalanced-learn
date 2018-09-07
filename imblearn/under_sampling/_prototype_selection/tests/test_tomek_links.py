@@ -3,8 +3,6 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
 import numpy as np
 from sklearn.utils.testing import assert_array_equal
 
