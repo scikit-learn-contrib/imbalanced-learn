@@ -254,6 +254,7 @@ def test_geometric_mean_score_prediction(average, expected_gmean):
     gmean = geometric_mean_score(y_true, y_pred, average=average)
     assert gmean == pytest.approx(expected_gmean, rel=R_TOL)
 
+
 def test_iba_geo_mean_binary():
     y_true, y_pred, _ = make_prediction(binary=True)
 
