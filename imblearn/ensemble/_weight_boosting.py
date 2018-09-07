@@ -9,11 +9,109 @@ from sklearn.ensemble.base import _set_random_states
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import safe_indexing
 
-from imblearn.under_sampling import RandomUnderSampler
-from imblearn.pipeline import make_pipeline
+from ..under_sampling.base import BaseUnderSampler
+from ..under_sampling import RandomUnderSampler
+from ..pipeline import make_pipeline
+from ..utils import Substitution
+from ..utils._docstring import _random_state_docstring
 
 
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class RUSBoostClassifier(AdaBoostClassifier):
+    """Random under-sampling integrating in the learning of an AdaBoost
+    classifier.
+
+    During learning, the problem of class balancing is alleviated by random
+    under-sampling the sample at each iteration of the boosting algorithm.
+
+    Read more in the :ref:`User Guide <adaboost>`.
+
+    Parameters
+    ----------
+    base_estimator : object, optional (default=DecisionTreeClassifier)
+        The base estimator from which the boosted ensemble is built.
+        Support for sample weighting is required, as well as proper `classes_`
+        and `n_classes_` attributes.
+
+    n_estimators : integer, optional (default=50)
+        The maximum number of estimators at which boosting is terminated.
+        In case of perfect fit, the learning procedure is stopped early.
+
+    learning_rate : float, optional (default=1.)
+        Learning rate shrinks the contribution of each classifier by
+        ``learning_rate``. There is a trade-off between ``learning_rate`` and
+        ``n_estimators``.
+
+    algorithm : {{'SAMME', 'SAMME.R'}}, optional (default='SAMME.R')
+        If 'SAMME.R' then use the SAMME.R real boosting algorithm.
+        ``base_estimator`` must support calculation of class probabilities.
+        If 'SAMME' then use the SAMME discrete boosting algorithm.
+        The SAMME.R algorithm typically converges faster than SAMME,
+        achieving a lower test error with fewer boosting iterations.
+
+    {sampling_strategy}
+
+    replacement : bool, optional (default=False)
+        Whether or not to sample randomly with replacement or not.
+
+    {random_state}
+
+    Attributes
+    ----------
+    estimators_ : list of classifiers
+        The collection of fitted sub-estimators.
+
+    samplers_ : list of RandomUnderSampler
+        The collection of fitted samplers.
+
+    pipelines_ : list of Pipeline.
+        The collection of fitted pipelines (samplers + trees).
+
+    classes_ : ndarray, shape (n_classes,)
+        The classes labels.
+
+    n_classes_ : int
+        The number of classes.
+
+    estimator_weights_ : ndarray, shape (n_estimator,)
+        Weights for each estimator in the boosted ensemble.
+
+    estimator_errors_ : ndarray, shape (n_estimator,)
+        Classification error for each estimator in the boosted
+        ensemble.
+
+    feature_importances_ : ndarray, shape (n_features,)
+        The feature importances if supported by the ``base_estimator``.
+
+    See also
+    --------
+    BalancedBaggingClassifier, BalancedRandomForestClassifier,
+    EasyEnsembleClassifier
+
+    References
+    ----------
+    .. [1] Seiffert, C., Khoshgoftaar, T. M., Van Hulse, J., & Napolitano, A.
+       "RUSBoost: A hybrid approach to alleviating class imbalance." IEEE
+       Transactions on Systems, Man, and Cybernetics-Part A: Systems and Humans
+       40.1 (2010): 185-197.
+
+    Examples
+    --------
+    >>> from imblearn.ensemble import RUSBoostClassifier
+    >>> from sklearn.datasets import make_classification
+    >>>
+    >>> X, y = make_classification(n_samples=1000, n_classes=3,
+    ...                            n_informative=4, weights=[0.2, 0.3, 0.5],
+    ...                            random_state=0)
+    >>> clf = RUSBoostClassifier(random_state=0)
+    >>> clf.fit(X, y)  # doctest: +ELLIPSIS
+    RUSBoostClassifier(...)
+    >>> clf.predict(X)  # doctest: +ELLIPSIS
+    array([...])
+    """
+
     def __init__(self, base_estimator=None, n_estimators=50, learning_rate=1.,
                  algorithm='SAMME.R', sampling_strategy='auto',
                  replacement=False, random_state=None):
@@ -27,6 +125,27 @@ class RUSBoostClassifier(AdaBoostClassifier):
         self.replacement = replacement
 
     def fit(self, X, y, sample_weight=None):
+        """Build a boosted classifier from the training set (X, y).
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            The training input samples. Sparse matrix can be CSC, CSR, COO,
+            DOK, or LIL. DOK and LIL are converted to CSR.
+
+        y : array-like, shape (n_samples,)
+            The target values (class labels).
+
+        sample_weight : array-like, shape (n_samples,), optional
+            Sample weights. If None, the sample weights are initialized to
+            ``1 / n_samples``.
+
+        Returns
+        -------
+        self : object
+            Returns self.
+
+        """
         self.samplers_ = []
         self.pipelines_ = []
         super(RUSBoostClassifier, self).fit(X, y, sample_weight)

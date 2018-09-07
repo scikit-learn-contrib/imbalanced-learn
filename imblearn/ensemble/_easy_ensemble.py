@@ -203,7 +203,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
 
     See also
     --------
-    BalanceCascade, BalancedBaggingClassifier
+    BalancedBaggingClassifier, BalancedRandomForestClassifier
 
     References
     ----------

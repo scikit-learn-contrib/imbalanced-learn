@@ -187,7 +187,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     pipelines_ : list of Pipeline.
         The collection of fitted pipelines (samplers + trees).
 
-    classes_ : array of shape = [n_classes] or a list of such arrays
+    classes_ : ndaray, shape (n_classes,) or a list of such arrays
         The classes labels (single output problem), or a list of arrays of
         class labels (multi-output problem).
 
@@ -201,13 +201,13 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     n_outputs_ : int
         The number of outputs when ``fit`` is performed.
 
-    feature_importances_ : array of shape = [n_features]
+    feature_importances_ : ndarray, shape (n_features,)
         The feature importances (the higher, the more important the feature).
 
     oob_score_ : float
         Score of the training dataset obtained using an out-of-bag estimate.
 
-    oob_decision_function_ : array of shape = [n_samples, n_classes]
+    oob_decision_function_ : ndarray, shape (n_samples, n_classes)
         Decision function computed with out-of-bag estimate on the training
         set. If n_estimators is small it might be possible that a data point
         was never left out during the bootstrap. In this case,
@@ -217,6 +217,16 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     -----
     See
     :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_ensemble_classifier.py`.
+
+    See also
+    --------
+    BalancedBaggingClassifier, EasyEnsembleClassifier, RUSBoostClassifier
+
+    References
+    ----------
+    .. [1] Chen, Chao, Andy Liaw, and Leo Breiman. "Using random forest to
+       learn imbalanced data." University of California, Berkeley 110 (2004):
+       1-12.
 
     Examples
     --------
@@ -237,16 +247,6 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     >>> print(clf.predict([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ...                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]))
     [1]
-
-    References
-    ----------
-    .. [1] Chen, Chao, Andy Liaw, and Leo Breiman. "Using random forest to
-       learn imbalanced data." University of California, Berkeley 110 (2004):
-       1-12.
-
-    See also
-    --------
-    BalancedBaggingClassifier, EasyEnsembleClassifier
 
     """
     def __init__(self,

@@ -5,9 +5,7 @@ import numpy as np
 from sklearn.datasets import make_classification
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import balanced_accuracy_score
-from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_array_equal
-from sklearn.model_selection import GridSearchCV
 
 from imblearn.ensemble import RUSBoostClassifier
 
