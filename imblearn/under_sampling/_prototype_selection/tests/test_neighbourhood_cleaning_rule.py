@@ -3,8 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
 from sklearn.neighbors import NearestNeighbors
@@ -24,21 +24,16 @@ X = np.array([[1.57737838, 0.1997882], [0.8960075, 0.46130762], [
 Y = np.array([1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 
 
-def test_ncr_error():
-    threshold_cleaning = -10
-    with raises(
-            ValueError,
-            match=("'threshold_cleaning' is a value between"
-                   " 0 and 1")):
-        NeighbourhoodCleaningRule(
-            threshold_cleaning=threshold_cleaning).fit_resample(X, Y)
-    threshold_cleaning = 10
-    with raises(
-            ValueError,
-            match=("'threshold_cleaning' is a value between"
-                   " 0 and 1")):
-        NeighbourhoodCleaningRule(
-            threshold_cleaning=threshold_cleaning).fit_resample(X, Y)
+@pytest.mark.parametrize(
+    "ncr_params, err_msg",
+    [({"threshold_cleaning": -10}, "value between 0 and 1"),
+     ({"threshold_cleaning": 10}, "value between 0 and 1"),
+     ({"n_neighbors": 'rnd'}, "has to be one of")]
+)
+def test_ncr_error(ncr_params, err_msg):
+    ncr = NeighbourhoodCleaningRule(**ncr_params)
+    with pytest.raises(ValueError, match=err_msg):
+        ncr.fit_resample(X, Y)
 
 
 def test_ncr_fit_resample():
@@ -104,13 +99,6 @@ def test_ncr_fit_resample_nn_obj():
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert_array_equal(idx_under, idx_gt)
-
-
-def test_ncr_wrong_nn_obj():
-    nn = 'rnd'
-    ncr = NeighbourhoodCleaningRule(return_indices=True, n_neighbors=nn)
-    with raises(ValueError, match="has to be one of"):
-        ncr.fit_resample(X, Y)
 
 
 def test_deprecation_random_state():

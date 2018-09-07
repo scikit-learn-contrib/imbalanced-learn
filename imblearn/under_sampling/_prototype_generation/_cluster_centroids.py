@@ -6,7 +6,7 @@ clustering."""
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
 import numpy as np
 from scipy import sparse

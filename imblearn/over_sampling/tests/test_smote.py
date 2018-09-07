@@ -3,8 +3,6 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
 import numpy as np
 import pytest
 
@@ -29,13 +27,6 @@ X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
               [0.08711622, 0.93259929], [1.70580611, -0.11219234]])
 Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 R_TOL = 1e-4
-
-
-def test_smote_wrong_kind():
-    kind = 'rnd'
-    smote = SMOTE(kind=kind, random_state=RND_SEED)
-    with pytest.raises(ValueError, match="Unknown kind for SMOTE"):
-        smote.fit_resample(X, Y)
 
 
 def test_sample_regular():
@@ -236,24 +227,24 @@ def test_sample_regular_with_nn():
 
 @pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
 @pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
-def test_wrong_nn():
-    kind = 'borderline1'
-    nn_m = 'rnd'
-    nn_k = NearestNeighbors(n_neighbors=6)
-    smote = SMOTE(
-        random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
-    with pytest.raises(ValueError, match="has to be one of"):
-        smote.fit_resample(X, Y)
-    nn_k = 'rnd'
-    nn_m = NearestNeighbors(n_neighbors=10)
-    smote = SMOTE(
-        random_state=RND_SEED, kind=kind, k_neighbors=nn_k, m_neighbors=nn_m)
-    with pytest.raises(ValueError, match="has to be one of"):
-        smote.fit_resample(X, Y)
-    kind = 'regular'
-    nn_k = 'rnd'
-    smote = SMOTE(random_state=RND_SEED, kind=kind, k_neighbors=nn_k)
-    with pytest.raises(ValueError, match="has to be one of"):
+@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
+@pytest.mark.parametrize(
+    "smote_params, err_msg",
+    [({"kind": "rnd"}, "Unknown kind for SMOTE"),
+     ({"kind": "borderline1",
+       "k_neighbors": NearestNeighbors(n_neighbors=6),
+       "m_neighbors": 'rnd'}, "has to be one of"),
+     ({"k_neighbors": 'rnd',
+       "m_neighbors": NearestNeighbors(n_neighbors=10)}, "has to be one of"),
+     ({"kind": "regular",
+       "k_neighbors": 'rnd'}, "has to be one of"),
+     ({"kind": "svm",
+       "k_neighbors": NearestNeighbors(n_neighbors=6),
+       "svm_estimator": 'rnd'}, "has to be one of")]
+)
+def test_smote_error_passing_estimator(smote_params, err_msg):
+    smote = SMOTE(**smote_params)
+    with pytest.raises(ValueError, match=err_msg):
         smote.fit_resample(X, Y)
 
 
@@ -296,19 +287,6 @@ def test_sample_with_nn_svm():
                      1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0])
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
-
-
-@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
-@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
-def test_sample_regular_wrong_svm():
-    kind = 'svm'
-    nn_k = NearestNeighbors(n_neighbors=6)
-    svm = 'rnd'
-    smote = SMOTE(
-        random_state=RND_SEED, kind=kind, k_neighbors=nn_k, svm_estimator=svm)
-
-    with pytest.raises(ValueError, match="has to be one of"):
-        smote.fit_resample(X, Y)
 
 
 def test_borderline_smote_wrong_kind():

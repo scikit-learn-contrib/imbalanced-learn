@@ -3,10 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 
@@ -106,12 +104,12 @@ def test_validate_estimator_default():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_error_wrong_object():
-    smote = 'rnd'
-    tomek = 'rnd'
-    smt = SMOTETomek(smote=smote, random_state=RND_SEED)
-    with raises(ValueError, match="smote needs to be a SMOTE"):
-        smt.fit_resample(X, Y)
-    smt = SMOTETomek(tomek=tomek, random_state=RND_SEED)
-    with raises(ValueError, match="tomek needs to be a TomekLinks"):
+@pytest.mark.parametrize(
+    "smote_params, err_msg",
+    [({'smote': 'rnd'}, "smote needs to be a SMOTE"),
+     ({'tomek': 'rnd'}, "tomek needs to be a TomekLinks")]
+)
+def test_error_wrong_object(smote_params, err_msg):
+    smt = SMOTETomek(**smote_params)
+    with pytest.raises(ValueError, match=err_msg):
         smt.fit_resample(X, Y)
