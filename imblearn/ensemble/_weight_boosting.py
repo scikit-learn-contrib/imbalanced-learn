@@ -13,11 +13,11 @@ from imblearn.under_sampling import RandomUnderSampler
 from imblearn.pipeline import make_pipeline
 
 
-class BaseSamplerBoostClassifier(AdaBoostClassifier):
+class RUSBoostClassifier(AdaBoostClassifier):
     def __init__(self, base_estimator=None, n_estimators=50, learning_rate=1.,
                  algorithm='SAMME.R', sampling_strategy='auto',
                  replacement=False, random_state=None):
-        super(BaseSamplerBoostClassifier, self).__init__(
+        super(RUSBoostClassifier, self).__init__(
             base_estimator=base_estimator,
             n_estimators=n_estimators,
             learning_rate=learning_rate,
@@ -29,8 +29,29 @@ class BaseSamplerBoostClassifier(AdaBoostClassifier):
     def fit(self, X, y, sample_weight=None):
         self.samplers_ = []
         self.pipelines_ = []
-        super(BaseSamplerBoostClassifier, self).fit(X, y, sample_weight)
+        super(RUSBoostClassifier, self).fit(X, y, sample_weight)
         return self
+
+    def _validate_estimator(self, default=DecisionTreeClassifier()):
+        """Check the estimator and the n_estimator attribute, set the
+        `base_estimator_` attribute."""
+        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
+            raise ValueError("n_estimators must be an integer, "
+                             "got {0}.".format(type(self.n_estimators)))
+
+        if self.n_estimators <= 0:
+            raise ValueError("n_estimators must be greater than zero, "
+                             "got {0}.".format(self.n_estimators))
+
+        if self.base_estimator is not None:
+            self.base_estimator_ = clone(self.base_estimator)
+        else:
+            self.base_estimator_ = clone(default)
+
+        self.base_sampler_ = RandomUnderSampler(
+            sampling_strategy=self.sampling_strategy,
+            replacement=self.replacement,
+            return_indices=True)
 
     def _make_sampler_estimator(self, append=True, random_state=None):
         """Make and configure a copy of the `base_estimator_` attribute.
@@ -176,27 +197,3 @@ class BaseSamplerBoostClassifier(AdaBoostClassifier):
                                      (estimator_weight < 0)))
 
         return sample_weight, estimator_weight, estimator_error
-
-
-class RUSBoostClassifier(BaseSamplerBoostClassifier):
-
-    def _validate_estimator(self, default=DecisionTreeClassifier()):
-        """Check the estimator and the n_estimator attribute, set the
-        `base_estimator_` attribute."""
-        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError("n_estimators must be an integer, "
-                             "got {0}.".format(type(self.n_estimators)))
-
-        if self.n_estimators <= 0:
-            raise ValueError("n_estimators must be greater than zero, "
-                             "got {0}.".format(self.n_estimators))
-
-        if self.base_estimator is not None:
-            self.base_estimator_ = clone(self.base_estimator)
-        else:
-            self.base_estimator_ = clone(default)
-
-        self.base_sampler_ = RandomUnderSampler(
-            sampling_strategy=self.sampling_strategy,
-            replacement=self.replacement,
-            return_indices=True)

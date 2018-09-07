@@ -3,6 +3,8 @@ import pytest
 import numpy as np
 
 from sklearn.datasets import make_classification
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.metrics import balanced_accuracy_score
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_array_equal
 from sklearn.model_selection import GridSearchCV
@@ -19,21 +21,35 @@ def imbalanced_dataset():
                                random_state=0)
 
 
-def test_rusboost(imbalanced_dataset):
+@pytest.mark.parametrize('algorithm', ['SAMME', 'SAMME.R'])
+def test_rusboost(imbalanced_dataset, algorithm):
     X, y = imbalanced_dataset
+    classes = np.unique(y)
 
-    n_estimators = 10
-    rusboost = RUSBoostClassifier(n_estimators=n_estimators, random_state=0)
+    n_estimators = 100
+    rusboost = RUSBoostClassifier(n_estimators=n_estimators,
+                                  algorithm=algorithm,
+                                  random_state=0)
+    adaboost = AdaBoostClassifier(n_estimators=n_estimators,
+                                  algorithm=algorithm,
+                                  random_state=0)
     rusboost.fit(X, y)
+    adaboost.fit(X, y)
 
-    assert len(rusboost.samplers_) == n_estimators
-    assert len(rusboost.estimators_) == n_estimators
-    assert len(rusboost.pipelines_) == n_estimators
     assert len(rusboost.feature_importances_) == imbalanced_dataset[0].shape[1]
+    assert_array_equal(classes, rusboost.classes_)
 
-    rusboost.predict(X)
-    rusboost.predict_proba(X)
-    rusboost.predict_log_proba(X)
-    rusboost.staged_predict(X)
-    rusboost.staged_predict_proba(X)
-    rusboost.decision_function(X)
+    y_pred = rusboost.predict_proba(X)
+    assert y_pred.shape[1] == len(classes)
+    assert rusboost.decision_function(X).shape[1] == len(classes)
+
+    score = rusboost.score(X, y)
+    assert score > 0.8, "Failed with algorithm {} and score {}".format(
+        algorithm, score)
+
+    y_pred = rusboost.predict(X)
+    assert y_pred.shape == y.shape
+
+    bal_acc_rusboost = balanced_accuracy_score(y, y_pred)
+    bal_acc_adaboost = balanced_accuracy_score(y, adaboost.predict(X))
+    assert bal_acc_rusboost > bal_acc_adaboost
