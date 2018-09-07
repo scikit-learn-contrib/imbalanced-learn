@@ -32,11 +32,11 @@ test:
   override:
     - cat ~/log.txt && if grep -q "Traceback (most recent call last):" ~/log.txt; then false; else true; fi
 
-deployment:
- push:
-   branch: /^master$|^[0-9]+\.[0-9]+\.X$/
-   commands:
-     - bash build_tools/circle/push_doc.sh
+# deployment:
+#  push:
+#    branch: /^master$|^[0-9]+\.[0-9]+\.X$/
+#    commands:
+#      - bash build_tools/circle/push_doc.sh
 general:
   # Open the doc to the API
   artifacts:

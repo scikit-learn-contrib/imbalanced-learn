@@ -44,6 +44,21 @@ URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 LICENSE = 'MIT'
 DOWNLOAD_URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 VERSION = _VERSION_GLOBALS['__version__']
+EXTRAS_REQUIRE = {
+    'tests': [
+        'pytest',
+        'pytest-cov'],
+    'docs': [
+        'sphinx',
+        'sphinx-gallery',
+        'sphinx_rtd_theme',
+        'numpydoc',
+        'matplotlib',
+        'pandas',
+        'keras',
+        'tensorflow'
+    ]
+}
 
 
 def configuration(parent_package='', top_path=None):
@@ -96,6 +111,7 @@ if __name__ == "__main__":
               'Programming Language :: Python :: 3.6'
           ],
           packages=find_packages(),
-          install_requires=['scipy',
-                            'numpy',
-                            'scikit-learn'])
+          install_requires=['numpy>=1.8.2',
+                            'scipy>=0.13.3',
+                            'scikit-learn>=0.19'],
+          extras_require=EXTRAS_REQUIRE)
