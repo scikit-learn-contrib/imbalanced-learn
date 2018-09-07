@@ -4,7 +4,7 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_
+|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |ReadTheDocs|_ |PythonVersion|_ |Pypi|_ |Gitter|_
 
 .. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn.svg?branch=master
 .. _Travis: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn
@@ -17,6 +17,9 @@
 
 .. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield&circle-token=:circle-token
 .. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn/tree/master
+
+.. |ReadTheDocs| image:: https://readthedocs.org/projects/imbalanced-learn/badge/?version=latest
+.. _ReadTheDocs: https://imbalanced-learn.readthedocs.io/en/latest/?badge=latest
 
 .. |PythonVersion| image:: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
 .. _PythonVersion: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg

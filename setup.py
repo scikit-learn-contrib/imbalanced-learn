@@ -21,7 +21,6 @@ URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 LICENSE = 'MIT'
 DOWNLOAD_URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 VERSION = __version__
-INSTALL_REQUIRES = ['numpy', 'scipy', 'scikit-learn']
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
                'License :: OSI Approved',
@@ -36,6 +35,22 @@ CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Programming Language :: Python :: 2.7',
                'Programming Language :: Python :: 3.6',
                'Programming Language :: Python :: 3.7']
+INSTALL_REQUIRES = ['numpy>=1.8.2', 'scipy>=0.13.3', 'scikit-learn>=0.20rc1']
+EXTRAS_REQUIRE = {
+    'tests': [
+        'pytest',
+        'pytest-cov'],
+    'docs': [
+        'sphinx',
+        'sphinx-gallery',
+        'sphinx_rtd_theme',
+        'numpydoc',
+        'matplotlib',
+        'pandas',
+        'keras',
+        'tensorflow'
+    ]
+}
 
 
 setup(name=DISTNAME,
@@ -50,4 +65,5 @@ setup(name=DISTNAME,
       zip_safe=False,  # the package can run out of an .egg file
       classifiers=CLASSIFIERS,
       packages=find_packages(),
-      install_requires=INSTALL_REQUIRES)
+      install_requires=INSTALL_REQUIRES,
+      extras_require=EXTRAS_REQUIRE)
