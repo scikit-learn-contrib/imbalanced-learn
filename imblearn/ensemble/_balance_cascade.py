@@ -12,6 +12,7 @@ from sklearn.base import ClassifierMixin, clone
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 from sklearn.model_selection import cross_val_predict
+from sklearn.utils.deprecation import deprecated
 
 from .base import BaseEnsembleSampler
 from ..under_sampling.base import BaseUnderSampler
@@ -23,6 +24,7 @@ from ..utils._docstring import _random_state_docstring
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring)
+@deprecated('BalanceCascade is deprecated in 0.4 and will be removed in 0.6.')
 class BalanceCascade(BaseEnsembleSampler):
     """Create an ensemble of balanced sets by iteratively under-sampling the
     imbalanced dataset using an estimator.
