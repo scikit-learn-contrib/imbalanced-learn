@@ -19,7 +19,7 @@ to obtain a cleaner space. The two ready-to use classes imbalanced-learn impleme
 for combining over- and undersampling methods are: (i) :class:`SMOTETomek`
 and (ii) :class:`SMOTEENN`.
 
-Those two classes can be used like any other sampler with parameters identical 
+Those two classes can be used like any other sampler with parameters identical
 to their former samplers::
 
   >>> from collections import Counter
@@ -49,8 +49,3 @@ noisy samples than :class:`SMOTETomek`.
    :target: ./auto_examples/combine/plot_comparison_combine.html
    :scale: 60
    :align: center
-
-See :ref:`sphx_glr_auto_examples_combine_plot_smote_enn.py`,
-:ref:`sphx_glr_auto_examples_combine_plot_smote_tomek.py`,
-and
-:ref:`sphx_glr_auto_examples_combine_plot_comparison_combine.py`.

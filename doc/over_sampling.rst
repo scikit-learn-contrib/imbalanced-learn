@@ -68,9 +68,6 @@ In addition, :class:`RandomOverSampler` allows to sample heterogeneous data
   >>> print(y_resampled)
   [0 0 1 1]
 
-See :ref:`sphx_glr_auto_examples_over-sampling_plot_random_over_sampling.py`
-for usage example.
-
 .. _smote_adasyn:
 
 From random over-sampling to SMOTE and ADASYN
@@ -98,9 +95,6 @@ methods.
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :scale: 60
    :align: center
-
-See :ref:`sphx_glr_auto_examples_over-sampling_plot_smote.py` and
-:ref:`sphx_glr_auto_examples_over-sampling_plot_adasyn.py` for usage example.
 
 Ill-posed examples
 ------------------
@@ -150,9 +144,6 @@ algorithm::
   >>> X_resampled, y_resampled = BorderlineSMOTE().fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4674), (1, 4674), (2, 4674)]
-
-See :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`
-to see a comparison between the different over-sampling methods.
 
 Mathematical formulation
 ========================

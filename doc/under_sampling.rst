@@ -55,9 +55,6 @@ original one.
    generated are not specifically sparse. Therefore, even if the resulting
    matrix will be sparse, the algorithm will be inefficient in this regard.
 
-See :ref:`sphx_glr_auto_examples_under-sampling_plot_cluster_centroids.py` and
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`.
-
 Prototype selection
 ===================
 
@@ -116,10 +113,6 @@ In addition, :class:`RandomUnderSampler` allows to sample heterogeneous data
   >>> print(y_resampled)
   [0 1]
 
-See :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py`.,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
-and :ref:`sphx_glr_auto_examples_under-sampling_plot_random_under_sampler.py`.
-
 :class:`NearMiss` adds some heuristic rules to select
 samples. :class:`NearMiss` implements 3 different types of heuristic which can
 be selected with the parameter ``version``::
@@ -136,11 +129,6 @@ and ``n_neighbors_ver3`` accept classifier derived from ``KNeighborsMixin``
 from scikit-learn. The former parameter is used to compute the average distance
 to the neighbors while the latter is used for the pre-selection of the samples
 of interest.
-
-See
-:ref:`sphx_glr_auto_examples_applications_plot_multi_class_under_sampling.py`,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
-and :ref:`sphx_glr_auto_examples_under-sampling_plot_nearmiss.py`.
 
 Mathematical formulation
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -194,9 +182,6 @@ affected by noise due to the first step sample selection.
    :scale: 60
    :align: center
 
-See
-:ref:`sphx_glr_auto_examples_under-sampling_plot_illustration_nearmiss.py`.
-
 Cleaning under-sampling techniques
 ----------------------------------
 
@@ -237,11 +222,6 @@ figure illustrates this behaviour.
    :target: ./auto_examples/under-sampling/plot_illustration_tomek_links.html
    :scale: 60
    :align: center
-
-See
-:ref:`sphx_glr_auto_examples_under-sampling_plot_illustration_tomek_links.py`
-and
-:ref:`sphx_glr_auto_examples_under-sampling_plot_tomek_links.py`.
 
 .. _edited_nearest_neighbors:
 
@@ -296,11 +276,6 @@ impact by cleaning noisy samples next to the boundaries of the classes.
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
    :scale: 60
    :align: center
-
-See
-:ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py`,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
-and :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
 
 .. _condensed_nearest_neighbors:
 
@@ -361,12 +336,6 @@ neighbors classifier. The class can be used as::
    :scale: 60
    :align: center
 
-See
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_condensed_nearest_neighbour.py`,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_one_sided_selection.py`, and
-:ref:`sphx_glr_auto_examples_under-sampling_plot_neighbourhood_cleaning_rule.py`.
-
 .. _instance_hardness_threshold:
 
 Instance hardness threshold
@@ -402,7 +371,3 @@ The figure below gives another examples on some toy data.
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
    :scale: 60
    :align: center
-
-See
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_instance_hardness_threshold.py`.
