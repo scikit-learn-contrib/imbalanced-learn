@@ -3,7 +3,6 @@ import pytest
 import numpy as np
 
 from sklearn.datasets import make_classification
-from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.utils.testing import assert_array_equal
 
@@ -19,13 +18,25 @@ def imbalanced_dataset():
                                random_state=0)
 
 
+@pytest.mark.parametrize(
+    "boosting_params, err_msg",
+    [({"n_estimators": 'whatever'}, "n_estimators must be an integer"),
+     ({"n_estimators": -100}, "n_estimators must be greater than zero")]
+)
+def test_balanced_random_forest_error(imbalanced_dataset, boosting_params,
+                                      err_msg):
+    rusboost = RUSBoostClassifier(**boosting_params)
+    with pytest.raises(ValueError, message=err_msg):
+        rusboost.fit(*imbalanced_dataset)
+
+
 @pytest.mark.parametrize('algorithm', ['SAMME', 'SAMME.R'])
 def test_rusboost(imbalanced_dataset, algorithm):
     X, y = imbalanced_dataset
     X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y)
     classes = np.unique(y)
 
-    n_estimators = 100
+    n_estimators = 500
     rusboost = RUSBoostClassifier(n_estimators=n_estimators,
                                   algorithm=algorithm,
                                   random_state=0)
@@ -60,3 +71,23 @@ def test_rusboost(imbalanced_dataset, algorithm):
     y_pred = rusboost.predict(X_test)
     assert y_pred.shape == y_test.shape
 
+
+@pytest.mark.parametrize('algorithm', ['SAMME', 'SAMME.R'])
+def test_rusboost_sample_weight(imbalanced_dataset, algorithm):
+    X, y = imbalanced_dataset
+    sample_weight = np.ones_like(y)
+    rusboost = RUSBoostClassifier(algorithm=algorithm,
+                                  random_state=0)
+
+    # Predictions should be the same when sample_weight are all ones
+    y_pred_sample_weight = rusboost.fit(X, y, sample_weight).predict(X)
+    y_pred_no_sample_weight = rusboost.fit(X, y).predict(X)
+
+    assert_array_equal(y_pred_sample_weight, y_pred_no_sample_weight)
+
+    rng = np.random.RandomState(42)
+    sample_weight = rng.rand(y.shape[0])
+    y_pred_sample_weight = rusboost.fit(X, y, sample_weight).predict(X)
+
+    with pytest.raises(AssertionError):
+        assert_array_equal(y_pred_no_sample_weight, y_pred_sample_weight)
