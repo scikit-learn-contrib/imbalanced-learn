@@ -54,10 +54,6 @@ class RandomUnderSampler(BaseUnderSampler):
     Supports heterogeneous data as object array containing string and numeric
     data.
 
-    See
-    :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py` and
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_random_under_sampler.py`
-
     Examples
     --------
 

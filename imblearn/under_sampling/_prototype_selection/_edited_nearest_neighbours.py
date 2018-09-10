@@ -75,10 +75,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
-    See
-    :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py` and
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
-
     See also
     --------
     CondensedNearestNeighbour, RepeatedEditedNearestNeighbours, AllKNN

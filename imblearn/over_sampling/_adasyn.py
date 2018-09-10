@@ -52,11 +52,6 @@ class ADASYN(BaseOverSampler):
 
     Supports multi-class resampling. A one-vs.-rest scheme is used.
 
-    See
-    :ref:`sphx_glr_auto_examples_applications_plot_over_sampling_benchmark_lfw.py`,
-    :ref:`sphx_glr_auto_examples_over-sampling_plot_adasyn.py` and
-    :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`.
-
     See also
     --------
     SMOTE : Over-sample using SMOTE.

@@ -68,9 +68,6 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
-    See
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_instance_hardness_threshold.py`.
-
     References
     ----------
     .. [1] D. Smith, Michael R., Tony Martinez, and Christophe Giraud-Carrier.

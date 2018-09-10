@@ -66,9 +66,6 @@ KNeighborsClassifier(n_neighbors=1))
     Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
-    See
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_condensed_nearest_neighbour.py`.
-
     See also
     --------
     EditedNearestNeighbours, RepeatedEditedNearestNeighbours, AllKNN

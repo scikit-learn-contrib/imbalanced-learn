@@ -48,12 +48,6 @@ class RandomOverSampler(BaseOverSampler):
     Supports heterogeneous data as object array containing string and numeric
     data.
 
-    See
-    :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
-    :ref:`sphx_glr_auto_examples_over-sampling_plot_random_over_sampling.py`,
-    and
-    :ref:`sphx_glr_auto_examples_applications_plot_over_sampling_benchmark_lfw.py`.
-
     Examples
     --------
 
