@@ -23,14 +23,13 @@ from ..utils._docstring import _random_state_docstring
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring)
 class BalancedBaggingClassifier(BaggingClassifier):
-    """A Bagging classifier with additional balancing. It is similar to
-    ``EasyEnsemble`` [6]_.
+    """A Bagging classifier with additional balancing.
 
     This implementation of Bagging is similar to the scikit-learn
     implementation. It includes an additional step to balance the training set
     at fit time using a ``RandomUnderSampler``.
 
-    Read more in the :ref:`User Guide <ensemble_meta_estimators>`.
+    Read more in the :ref:`User Guide <bagging>`.
 
     Parameters
     ----------
@@ -67,9 +66,6 @@ class BalancedBaggingClassifier(BaggingClassifier):
         When set to True, reuse the solution of the previous call to fit
         and add more estimators to the ensemble, otherwise, just fit
         a whole new ensemble.
-
-        .. versionadded:: 0.17
-           *warm_start* constructor parameter.
 
     {sampling_strategy}
 
@@ -127,7 +123,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
     `max_features='auto'` as a base estimator.
 
     See
-    :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_bagging_classifier.py`.
+    :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_ensemble_classifier.py`.
 
     See also
     --------
@@ -147,10 +143,6 @@ class BalancedBaggingClassifier(BaggingClassifier):
     .. [5] Chen, Chao, Andy Liaw, and Leo Breiman. "Using random forest to
            learn imbalanced data." University of California, Berkeley 110,
            2004.
-    .. [6] X. Y. Liu, J. Wu and Z. H. Zhou, "Exploratory Undersampling for
-           Class-Imbalance Learning," in IEEE Transactions on Systems, Man, and
-           Cybernetics, Part B (Cybernetics), vol. 39, no. 2, pp. 539-550,
-           April 2009.
 
     Examples
     --------

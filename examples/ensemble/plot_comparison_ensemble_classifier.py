@@ -206,7 +206,7 @@ rusboost = RUSBoostClassifier(n_estimators=10,
                               base_estimator=base_estimator)
 rusboost.fit(X_train, y_train)
 y_pred_rusboost = rusboost.predict(X_test)
-print('Easy ensemble classifier performance:')
+print('RUSBoost classifier performance:')
 print('Balanced accuracy: {:.2f} - Geometric mean {:.2f}'
       .format(balanced_accuracy_score(y_test, y_pred_rusboost),
               geometric_mean_score(y_test, y_pred_rusboost)))

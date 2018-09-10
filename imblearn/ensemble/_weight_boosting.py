@@ -26,7 +26,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
     During learning, the problem of class balancing is alleviated by random
     under-sampling the sample at each iteration of the boosting algorithm.
 
-    Read more in the :ref:`User Guide <adaboost>`.
+    Read more in the :ref:`User Guide <boosting>`.
 
     Parameters
     ----------

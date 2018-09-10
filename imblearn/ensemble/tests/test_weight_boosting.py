@@ -24,7 +24,7 @@ def test_rusboost(imbalanced_dataset, algorithm):
     X, y = imbalanced_dataset
     classes = np.unique(y)
 
-    n_estimators = 100
+    n_estimators = 200
     rusboost = RUSBoostClassifier(n_estimators=n_estimators,
                                   algorithm=algorithm,
                                   random_state=0)
@@ -44,10 +44,10 @@ def test_rusboost(imbalanced_dataset, algorithm):
 
     # each sampler in the ensemble should have different random state
     assert (len(set(sampler.random_state for sampler in rusboost.samplers_)) ==
-        len(rusboost.samplers_))
+            len(rusboost.samplers_))
     # each estimator in the ensemble should have different random state
     assert (len(set(est.random_state for est in rusboost.estimators_)) ==
-        len(rusboost.estimators_))
+            len(rusboost.estimators_))
 
     # check the consistency of the feature importances
     assert len(rusboost.feature_importances_) == imbalanced_dataset[0].shape[1]
