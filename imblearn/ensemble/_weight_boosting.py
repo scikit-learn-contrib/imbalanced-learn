@@ -203,10 +203,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
             random_state=random_state)
 
         X_res, y_res, idx_res = sampler.fit_resample(X, y)
-        if sample_weight is not None:
-            sample_weight_res = safe_indexing(sample_weight, idx_res)
-        else:
-            sample_weight_res = None
+        sample_weight_res = safe_indexing(sample_weight, idx_res)
         estimator.fit(X_res, y_res, sample_weight=sample_weight_res)
 
         y_predict_proba = estimator.predict_proba(X)
@@ -267,10 +264,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
             random_state=random_state)
 
         X_res, y_res, idx_res = sampler.fit_resample(X, y)
-        if sample_weight is not None:
-            sample_weight_res = safe_indexing(sample_weight, idx_res)
-        else:
-            sample_weight_res = None
+        sample_weight_res = safe_indexing(sample_weight, idx_res)
         estimator.fit(X_res, y_res, sample_weight=sample_weight_res)
 
         y_predict = estimator.predict(X)
