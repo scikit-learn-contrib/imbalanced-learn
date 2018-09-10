@@ -39,8 +39,6 @@ class EasyEnsemble(BaseEnsembleSampler):
        ``EasyEnsemble`` is deprecated in 0.4 and will be removed in 0.6. Use
        ``EasyEnsembleClassifier`` instead.
 
-    Read more in the :ref:`User Guide <ensemble_samplers>`.
-
     Parameters
     ----------
     {sampling_strategy}
@@ -151,7 +149,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
     ensemble of AdaBoost learners trained on different balanced boostrap
     samples. The balancing is achieved by random under-sampling.
 
-    Read more in the :ref:`User Guide <ensemble_samplers>`.
+    Read more in the :ref:`User Guide <boosting>`.
 
     Parameters
     ----------
@@ -203,7 +201,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
 
     See also
     --------
-    BalanceCascade, BalancedBaggingClassifier
+    BalancedBaggingClassifier, BalancedRandomForestClassifier
 
     References
     ----------

@@ -37,6 +37,10 @@ New features
   each bootstrap provided to each tree of the forest.
   :issue:`459` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add :class:`imblearn.ensemble.RUSBoostClassifier` which applied a random
+  under-sampling stage before each boosting iteration of AdaBoost.
+  :issue:`469` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancement
 ...........
 

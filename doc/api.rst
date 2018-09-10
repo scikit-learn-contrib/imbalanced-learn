@@ -112,6 +112,7 @@ Prototype selection
    ensemble.BalancedRandomForestClassifier
    ensemble.EasyEnsemble
    ensemble.EasyEnsembleClassifier
+   ensemble.RUSBoostClassifier
 
 .. _keras_ref:
 
