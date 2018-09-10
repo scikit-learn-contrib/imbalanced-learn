@@ -3,8 +3,8 @@ import pytest
 import numpy as np
 
 from sklearn.datasets import make_classification
-from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import balanced_accuracy_score
+from sklearn.model_selection import train_test_split
 from sklearn.utils.testing import assert_array_equal
 
 from imblearn.ensemble import RUSBoostClassifier
@@ -22,18 +22,14 @@ def imbalanced_dataset():
 @pytest.mark.parametrize('algorithm', ['SAMME', 'SAMME.R'])
 def test_rusboost(imbalanced_dataset, algorithm):
     X, y = imbalanced_dataset
+    X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y)
     classes = np.unique(y)
 
-    n_estimators = 200
+    n_estimators = 100
     rusboost = RUSBoostClassifier(n_estimators=n_estimators,
                                   algorithm=algorithm,
                                   random_state=0)
-    adaboost = AdaBoostClassifier(n_estimators=n_estimators,
-                                  algorithm=algorithm,
-                                  random_state=0)
-    rusboost.fit(X, y)
-    adaboost.fit(X, y)
-
+    rusboost.fit(X_train, y_train)
     assert_array_equal(classes, rusboost.classes_)
 
     # check that we have an ensemble of samplers and estimators with a
@@ -53,19 +49,14 @@ def test_rusboost(imbalanced_dataset, algorithm):
     assert len(rusboost.feature_importances_) == imbalanced_dataset[0].shape[1]
 
     # check the consistency of the prediction outpus
-    y_pred = rusboost.predict_proba(X)
+    y_pred = rusboost.predict_proba(X_test)
     assert y_pred.shape[1] == len(classes)
-    assert rusboost.decision_function(X).shape[1] == len(classes)
+    assert rusboost.decision_function(X_test).shape[1] == len(classes)
 
-    score = rusboost.score(X, y)
-    assert score > 0.8, "Failed with algorithm {} and score {}".format(
+    score = rusboost.score(X_test, y_test)
+    assert score > 0.7, "Failed with algorithm {} and score {}".format(
         algorithm, score)
 
-    y_pred = rusboost.predict(X)
-    assert y_pred.shape == y.shape
+    y_pred = rusboost.predict(X_test)
+    assert y_pred.shape == y_test.shape
 
-    # check that the balanced accuracy score of RUSBoost is better than
-    # AdaBoost
-    bal_acc_rusboost = balanced_accuracy_score(y, y_pred)
-    bal_acc_adaboost = balanced_accuracy_score(y, adaboost.predict(X))
-    assert bal_acc_rusboost > bal_acc_adaboost
