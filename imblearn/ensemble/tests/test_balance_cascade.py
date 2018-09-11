@@ -5,6 +5,7 @@
 
 import numpy as np
 
+import pytest
 from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
@@ -30,6 +31,7 @@ X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
 Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
 def test_fit_resample_auto():
     sampling_strategy = 'auto'
     bc = BalanceCascade(
@@ -68,6 +70,7 @@ def test_fit_resample_auto():
     assert_array_equal(idx_under, idx_gt)
 
 
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
 def test_fit_resample_half():
     sampling_strategy = {0: 8, 1: 10}
     bc = BalanceCascade(
@@ -89,6 +92,7 @@ def test_fit_resample_half():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
 def test_fit_resample_auto_early_stop():
     sampling_strategy = 'auto'
     estimator = LinearSVC(random_state=RND_SEED)
@@ -114,6 +118,7 @@ def test_fit_resample_auto_early_stop():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
 def test_give_classifier_obj():
     sampling_strategy = 'auto'
     estimator = RandomForestClassifier(n_estimators=10, random_state=RND_SEED)
@@ -138,6 +143,7 @@ def test_give_classifier_obj():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
 def test_give_classifier_wrong_obj():
     sampling_strategy = 'auto'
     classifier = 2
