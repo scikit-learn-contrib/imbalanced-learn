@@ -62,13 +62,13 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         The number of trees in the forest.
 
     criterion : string, optional (default="gini")
-
         The function to measure the quality of a split. Supported criteria are
         "gini" for the Gini impurity and "entropy" for the information gain.
         Note: this parameter is tree-specific.
 
     max_features : int, float, string or None, optional (default="auto")
         The number of features to consider when looking for the best split:
+
         - If int, then consider `max_features` features at each split.
         - If float, then `max_features` is a percentage and
           `int(max_features * n_features)` features are considered at each
@@ -77,6 +77,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         - If "sqrt", then `max_features=sqrt(n_features)` (same as "auto").
         - If "log2", then `max_features=log2(n_features)`.
         - If None, then `max_features=n_features`.
+
         Note: the search for a split does not stop until at least one
         valid partition of the node samples is found, even if it requires to
         effectively inspect more than ``max_features`` features.
@@ -88,6 +89,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     min_samples_split : int, float, optional (default=2)
         The minimum number of samples required to split an internal node:
+
         - If int, then consider `min_samples_split` as the minimum number.
         - If float, then `min_samples_split` is a percentage and
           `ceil(min_samples_split * n_samples)` are the minimum
@@ -95,6 +97,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     min_samples_leaf : int, float, optional (default=1)
         The minimum number of samples required to be at a leaf node:
+
         - If int, then consider ``min_samples_leaf`` as the minimum number.
         - If float, then ``min_samples_leaf`` is a fraction and
           `ceil(min_samples_leaf * n_samples)` are the minimum
@@ -119,14 +122,15 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         A node will be split if this split induces a decrease of the impurity
         greater than or equal to this value.
         The weighted impurity decrease equation is the following::
+
             N_t / N * (impurity - N_t_R / N_t * right_impurity
                                 - N_t_L / N_t * left_impurity)
+
         where ``N`` is the total number of samples, ``N_t`` is the number of
         samples at the current node, ``N_t_L`` is the number of samples in the
         left child, and ``N_t_R`` is the number of samples in the right child.
         ``N``, ``N_t``, ``N_t_R`` and ``N_t_L`` all refer to the weighted sum,
         if ``sample_weight`` is passed.
-        .. versionadded:: 0.19
 
     bootstrap : boolean, optional (default=True)
         Whether bootstrap samples are used when building trees.
@@ -212,11 +216,6 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         set. If n_estimators is small it might be possible that a data point
         was never left out during the bootstrap. In this case,
         `oob_decision_function_` might contain NaN.
-
-    Notes
-    -----
-    See
-    :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_ensemble_classifier.py`.
 
     See also
     --------

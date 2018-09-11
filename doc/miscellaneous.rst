@@ -149,3 +149,7 @@ will be passed to ``fit_generator``::
   ...     X, y, sampler=RandomUnderSampler(), batch_size=10, random_state=42)
   >>> callback_history = model.fit_generator(generator=training_generator,
   ...                                        epochs=10, verbose=0)
+
+.. topic:: References
+
+  * :ref:`sphx_glr_auto_examples_applications_porto_seguro_keras_under_sampling.py`

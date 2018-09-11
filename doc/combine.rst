@@ -50,6 +50,9 @@ noisy samples than :class:`SMOTETomek`.
    :scale: 60
    :align: center
 
+.. topic:: Examples
+
+  * :ref:`sphx_glr_auto_examples_combine_plot_comparison_combine.py`
 
 .. topic:: References
 

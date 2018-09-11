@@ -9,6 +9,9 @@ Over-sampling
 A practical guide
 =================
 
+You can refer to
+:ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`.
+
 .. _random_over_sampler:
 
 Naive random over-sampling
@@ -75,7 +78,7 @@ From random over-sampling to SMOTE and ADASYN
 
 Apart from the random sampling with replacement, there are two popular methods
 to over-sample minority classes: (i) the Synthetic Minority Oversampling
-Technique (SMOTE) [CBHK2002] and (ii) the Adaptive Synthetic (ADASYN)
+Technique (SMOTE) [CBHK2002]_ and (ii) the Adaptive Synthetic (ADASYN)
 [HBGL2008]_ sampling method. These algorithms can be used in the same manner::
 
   >>> from imblearn.over_sampling import SMOTE, ADASYN

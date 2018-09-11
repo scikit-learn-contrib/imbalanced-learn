@@ -6,6 +6,9 @@ Under-sampling
 
 .. currentmodule:: imblearn.under_sampling
 
+You can refer to
+:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`.
+
 .. _cluster_centroids:
 
 Prototype generation
@@ -201,7 +204,7 @@ which will clean the dataset.
 Tomek's links
 ^^^^^^^^^^^^^
 
-:class:`TomekLinks` detects the so-called Tomek's links [T2010])_. A Tomek's
+:class:`TomekLinks` detects the so-called Tomek's links [T2010]_. A Tomek's
 link between two samples of different class :math:`x` and :math:`y` is defined
 such that there is no example :math:`z` such that:
 
@@ -378,7 +381,7 @@ Instance hardness threshold
 
 :class:`InstanceHardnessThreshold` is a specific algorithm in which a
 classifier is trained on the data and the samples with lower probabilities are
-removed. The class can be used as::
+removed [SMMG2014]_. The class can be used as::
 
   >>> from sklearn.linear_model import LogisticRegression
   >>> from imblearn.under_sampling import InstanceHardnessThreshold
