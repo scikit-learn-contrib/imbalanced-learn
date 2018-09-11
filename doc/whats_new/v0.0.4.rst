@@ -144,3 +144,6 @@ Deprecation
   :class:`imblearn.ensemble.EasyEnsembleClassifier` which follow the exact
   algorithm described in the literature.
   :issue:`455` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Deprecate :class:`imblearn.ensemble.BalanceCascade`.
+  :issue:`472` by :user:`Guillaume Lemaitre <glemaitre>`.
