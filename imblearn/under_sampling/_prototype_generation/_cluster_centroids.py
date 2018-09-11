@@ -72,8 +72,6 @@ class ClusterCentroids(BaseUnderSampler):
     -----
     Supports multi-class resampling by sampling each class independently.
 
-    See :ref:`sphx_glr_auto_examples_under-sampling_plot_cluster_centroids.py`.
-
     Examples
     --------
 

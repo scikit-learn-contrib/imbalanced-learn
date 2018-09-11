@@ -64,9 +64,6 @@ KNeighborsClassifier(n_neighbors=1))
     a class as proposed in [1]_. For each class to be sampled, all samples of
     this class and the minority class are used during the sampling procedure.
 
-    See
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_one_sided_selection.py`
-
     References
     ----------
     .. [1] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training

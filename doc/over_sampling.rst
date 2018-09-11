@@ -9,6 +9,9 @@ Over-sampling
 A practical guide
 =================
 
+You can refer to
+:ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`.
+
 .. _random_over_sampler:
 
 Naive random over-sampling
@@ -68,18 +71,15 @@ In addition, :class:`RandomOverSampler` allows to sample heterogeneous data
   >>> print(y_resampled)
   [0 0 1 1]
 
-See :ref:`sphx_glr_auto_examples_over-sampling_plot_random_over_sampling.py`
-for usage example.
-
 .. _smote_adasyn:
 
 From random over-sampling to SMOTE and ADASYN
 ---------------------------------------------
 
 Apart from the random sampling with replacement, there are two popular methods
-to over-sample minority classes: (i) the Synthetic Minority Oversampling Technique
-(SMOTE) and (ii) the Adaptive Synthetic (ADASYN) sampling method. These algorithms
-can be used in the same manner::
+to over-sample minority classes: (i) the Synthetic Minority Oversampling
+Technique (SMOTE) [CBHK2002]_ and (ii) the Adaptive Synthetic (ADASYN)
+[HBGL2008]_ sampling method. These algorithms can be used in the same manner::
 
   >>> from imblearn.over_sampling import SMOTE, ADASYN
   >>> X_resampled, y_resampled = SMOTE().fit_resample(X, y)
@@ -91,16 +91,25 @@ can be used in the same manner::
   [(0, 4673), (1, 4662), (2, 4674)]
   >>> clf_adasyn = LinearSVC().fit(X_resampled, y_resampled)
 
-The figure below illustrates the major difference of the different over-sampling
-methods.
+The figure below illustrates the major difference of the different
+over-sampling methods.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_003.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :scale: 60
    :align: center
 
-See :ref:`sphx_glr_auto_examples_over-sampling_plot_smote.py` and
-:ref:`sphx_glr_auto_examples_over-sampling_plot_adasyn.py` for usage example.
+.. topic:: References
+
+  .. [HBGL2008] He, Haibo, Yang Bai, Edwardo A. Garcia, and Shutao Li. "ADASYN:
+                Adaptive synthetic sampling approach for imbalanced learning,"
+                In IEEE International Joint Conference on Neural Networks (IEEE
+                World Congress on Computational Intelligence), pp. 1322-1328,
+                2008.
+
+  .. [CBHK2002] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer,
+                "SMOTE: synthetic minority over-sampling technique," Journal of
+                artificial intelligence research, 321-357, 2002.
 
 Ill-posed examples
 ------------------
@@ -143,16 +152,24 @@ nearest neighbors class. Those variants are presented in the figure below.
    :align: center
 
 
-The :class:`BorderlineSMOTE` and :class:`SVMSMOTE` offer some variant of the SMOTE
-algorithm::
+The :class:`BorderlineSMOTE` [HWB2005]_ and :class:`SVMSMOTE` [NCK2009]_ offer
+some variant of the SMOTE algorithm::
 
   >>> from imblearn.over_sampling import BorderlineSMOTE
   >>> X_resampled, y_resampled = BorderlineSMOTE().fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4674), (1, 4674), (2, 4674)]
 
-See :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`
-to see a comparison between the different over-sampling methods.
+.. topic:: References
+
+  .. [HWB2005] H. Han, W. Wen-Yuan, M. Bing-Huan, "Borderline-SMOTE: a new
+               over-sampling method in imbalanced data sets learning," Advances
+               in intelligent computing, 878-887, 2005.
+
+  .. [NCK2009] H. M. Nguyen, E. W. Cooper, K. Kamei, "Borderline over-sampling
+               for imbalanced data classification," International Journal of
+               Knowledge Engineering and Soft Data Paradigms, 3(1), pp.4-21,
+               2009.
 
 Mathematical formulation
 ========================
@@ -160,8 +177,8 @@ Mathematical formulation
 Sample generation
 -----------------
 
-Both SMOTE and ADASYN use the same algorithm to generate new
-samples. Considering a sample :math:`x_i`, a new sample :math:`x_{new}` will be
+Both SMOTE and ADASYN use the same algorithm to generate new samples.
+Considering a sample :math:`x_i`, a new sample :math:`x_{new}` will be
 generated considering its k neareast-neighbors (corresponding to
 ``k_neighbors``). For instance, the 3 nearest-neighbors are included in the
 blue circle as illustrated in the figure below. Then, one of these

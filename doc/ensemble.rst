@@ -50,7 +50,6 @@ takes the same parameters than the scikit-learn
 ``sampling_strategy`` and ``replacement`` to control the behaviour of the
 random under-sampler::
 
-
   >>> from imblearn.ensemble import BalancedBaggingClassifier
   >>> bbc = BalancedBaggingClassifier(base_estimator=DecisionTreeClassifier(),
   ...                                 sampling_strategy='auto',
@@ -115,8 +114,9 @@ ensemble as::
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
   0.62484778593026025
 
-See
-:ref:`sphx_glr_auto_examples_ensemble_plot_comparison_ensemble_classifier.py`.
+.. topic:: Examples
+
+  * :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_ensemble_classifier.py`
 
 .. topic:: References
 

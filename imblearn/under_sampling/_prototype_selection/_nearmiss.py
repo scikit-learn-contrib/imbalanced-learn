@@ -73,11 +73,6 @@ class NearMiss(BaseUnderSampler):
 
     Supports multi-class resampling.
 
-    See
-    :ref:`sphx_glr_auto_examples_applications_plot_multi_class_under_sampling.py`
-    and
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_nearmiss.py`.
-
     References
     ----------
     .. [1] I. Mani, I. Zhang. "kNN approach to unbalanced data distributions:

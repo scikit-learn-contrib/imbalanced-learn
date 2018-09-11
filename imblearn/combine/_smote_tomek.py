@@ -58,9 +58,6 @@ class SMOTETomek(BaseSampler):
     Supports multi-class resampling. Refer to SMOTE and TomekLinks regarding
     the scheme which used.
 
-    See :ref:`sphx_glr_auto_examples_combine_plot_smote_tomek.py` and
-    :ref:`sphx_glr_auto_examples_combine_plot_comparison_combine.py`.
-
     See also
     --------
     SMOTEENN : Over-sample using SMOTE followed by under-sampling using Edited
