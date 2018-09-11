@@ -113,9 +113,9 @@ In addition, :class:`RandomUnderSampler` allows to sample heterogeneous data
   >>> print(y_resampled)
   [0 1]
 
-:class:`NearMiss` adds some heuristic rules to select
-samples. :class:`NearMiss` implements 3 different types of heuristic which can
-be selected with the parameter ``version``::
+:class:`NearMiss` adds some heuristic rules to select samples [MZ2003]_.
+:class:`NearMiss` implements 3 different types of heuristic which can be
+selected with the parameter ``version``::
 
   >>> from imblearn.under_sampling import NearMiss
   >>> nm1 = NearMiss(version=1)
@@ -129,6 +129,13 @@ and ``n_neighbors_ver3`` accept classifier derived from ``KNeighborsMixin``
 from scikit-learn. The former parameter is used to compute the average distance
 to the neighbors while the latter is used for the pre-selection of the samples
 of interest.
+
+.. topic:: References
+
+  .. [MZ2003] I. Mani, I. Zhang. "kNN approach to unbalanced data
+              distributions: a case study involving information extraction," In
+              Proceedings of workshop on learning from imbalanced datasets,
+              2003.
 
 Mathematical formulation
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -194,9 +201,9 @@ which will clean the dataset.
 Tomek's links
 ^^^^^^^^^^^^^
 
-:class:`TomekLinks` detects the so-called Tomek's links. A Tomek's link
-between two samples of different class :math:`x` and :math:`y` is defined such
-that there is no example :math:`z` such that:
+:class:`TomekLinks` detects the so-called Tomek's links [T2010])_. A Tomek's
+link between two samples of different class :math:`x` and :math:`y` is defined
+such that there is no example :math:`z` such that:
 
 .. math::
 
@@ -223,6 +230,11 @@ figure illustrates this behaviour.
    :scale: 60
    :align: center
 
+.. topic:: References
+
+  .. [T2010] I. Tomek, "Two modifications of CNN," In Systems, Man, and
+             Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 2010.
+
 .. _edited_nearest_neighbors:
 
 Edited data set using nearest neighbours
@@ -230,7 +242,7 @@ Edited data set using nearest neighbours
 
 :class:`EditedNearestNeighbours` applies a nearest-neighbors algorithm and
 "edit" the dataset by removing samples which do not agree "enough" with their
-neighboorhood. For each sample in the class to be under-sampled, the
+neighboorhood [W1972]_. For each sample in the class to be under-sampled, the
 nearest-neighbours are computed and if the selection criterion is not
 fulfilled, the sample is removed. Two selection criteria are currently
 available: (i) the majority (i.e., ``kind_sel='mode'``) or (ii) all (i.e.,
@@ -250,8 +262,8 @@ The parameter ``n_neighbors`` allows to give a classifier subclassed from
 the decision to keep a given sample or not.
 
 :class:`RepeatedEditedNearestNeighbours` extends
-:class:`EditedNearestNeighbours` by repeating the algorithm multiple times.
-Generally, repeating the algorithm will delete more data::
+:class:`EditedNearestNeighbours` by repeating the algorithm multiple times
+[T1976]_. Generally, repeating the algorithm will delete more data::
 
    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
    >>> renn = RepeatedEditedNearestNeighbours()
@@ -261,7 +273,7 @@ Generally, repeating the algorithm will delete more data::
 
 :class:`AllKNN` differs from the previous
 :class:`RepeatedEditedNearestNeighbours` since the number of neighbors of the
-internal nearest neighbors algorithm is increased at each iteration::
+internal nearest neighbors algorithm is increased at each iteration [T1976]_::
 
   >>> from imblearn.under_sampling import AllKNN
   >>> allknn = AllKNN()
@@ -277,14 +289,24 @@ impact by cleaning noisy samples next to the boundaries of the classes.
    :scale: 60
    :align: center
 
+.. topic:: References
+
+  .. [W1972] D. Wilson, Asymptotic" Properties of Nearest Neighbor Rules Using
+             Edited Data," In IEEE Transactions on Systems, Man, and
+             Cybernetrics, vol. 2 (3), pp. 408-421, 1972.
+
+  .. [T1976] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
+             Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol.
+             6(6), pp. 448-452, June 1976.
+
 .. _condensed_nearest_neighbors:
 
 Condensed nearest neighbors and derived algorithms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 :class:`CondensedNearestNeighbour` uses a 1 nearest neighbor rule to
-iteratively decide if a sample should be removed or not. The algorithm is
-running as followed:
+iteratively decide if a sample should be removed or not [H1968]_. The algorithm
+is running as followed:
 
 1. Get all minority samples in a set :math:`C`.
 2. Add a sample from the targeted class (class to be under-sampled) in
@@ -306,10 +328,10 @@ However as illustrated in the figure below, :class:`CondensedNearestNeighbour`
 is sensitive to noise and will add noisy samples.
 
 In the contrary, :class:`OneSidedSelection` will use :class:`TomekLinks` to
-remove noisy samples.  In addition, the 1 nearest neighbor rule is applied to
-all samples and the one which are misclassified will be added to the set
-:math:`C`. No iteration on the set :math:`S` will take place. The class can be
-used as::
+remove noisy samples [KM1997]_. In addition, the 1 nearest neighbor rule is
+applied to all samples and the one which are misclassified will be added to the
+set :math:`C`. No iteration on the set :math:`S` will take place. The class can
+be used as::
 
   >>> from imblearn.under_sampling import OneSidedSelection
   >>> oss = OneSidedSelection(random_state=0)
@@ -321,9 +343,9 @@ Our implementation offer to set the number of seeds to put in the set :math:`C`
 originally by setting the parameter ``n_seeds_S``.
 
 :class:`NeighbourhoodCleaningRule` will focus on cleaning the data than
-condensing them. Therefore, it will used the union of samples to be rejected
-between the :class:`EditedNearestNeighbours` and the output a 3 nearest
-neighbors classifier. The class can be used as::
+condensing them [J2001]_. Therefore, it will used the union of samples to be
+rejected between the :class:`EditedNearestNeighbours` and the output a 3
+nearest neighbors classifier. The class can be used as::
 
   >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
   >>> ncr = NeighbourhoodCleaningRule()
@@ -335,6 +357,19 @@ neighbors classifier. The class can be used as::
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
    :scale: 60
    :align: center
+
+.. topic:: References
+
+  .. [H1968] P. Hart, "The condensed nearest neighbor rule,"
+             In Information Theory, IEEE Transactions on, vol. 14(3), pp.
+             515-516, 1968.
+
+  .. [KM1997] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training
+              sets: one-sided selection," In ICML, vol. 97, pp. 179-186, 1997.
+
+  .. [J2001] J. Laurikkala, "Improving identification of difficult small
+             classes by balancing class distribution," Springer Berlin
+             Heidelberg, 2001.
 
 .. _instance_hardness_threshold:
 
@@ -371,3 +406,9 @@ The figure below gives another examples on some toy data.
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
    :scale: 60
    :align: center
+
+.. topic:: References
+
+  .. [SMMG2014] D. Smith, Michael R., Tony Martinez, and Christophe
+                Giraud-Carrier. "An instance level analysis of data
+                complexity." Machine learning 95.2 (2014): 225-256.
