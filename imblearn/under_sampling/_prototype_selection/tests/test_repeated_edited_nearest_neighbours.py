@@ -3,8 +3,6 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
 import numpy as np
 from pytest import raises
 
@@ -57,12 +55,12 @@ def test_renn_iter_wrong():
     max_iter = -1
     renn = RepeatedEditedNearestNeighbours(max_iter=max_iter)
     with raises(ValueError):
-        renn.fit_sample(X, Y)
+        renn.fit_resample(X, Y)
 
 
-def test_renn_fit_sample():
+def test_renn_fit_resample():
     renn = RepeatedEditedNearestNeighbours()
-    X_resampled, y_resampled = renn.fit_sample(X, Y)
+    X_resampled, y_resampled = renn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.53171468, -0.53735182], [-0.88864036, -0.33782387], [
         -0.46226554, -0.50481004
@@ -88,9 +86,9 @@ def test_renn_fit_sample():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_renn_fit_sample_with_indices():
+def test_renn_fit_resample_with_indices():
     renn = RepeatedEditedNearestNeighbours(return_indices=True)
-    X_resampled, y_resampled, idx_under = renn.fit_sample(X, Y)
+    X_resampled, y_resampled, idx_under = renn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.53171468, -0.53735182], [-0.88864036, -0.33782387], [
         -0.46226554, -0.50481004
@@ -121,9 +119,9 @@ def test_renn_fit_sample_with_indices():
     assert_array_equal(idx_under, idx_gt)
 
 
-def test_renn_fit_sample_mode_object():
+def test_renn_fit_resample_mode_object():
     renn = RepeatedEditedNearestNeighbours(kind_sel='mode')
-    X_resampled, y_resampled = renn.fit_sample(X, Y)
+    X_resampled, y_resampled = renn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.53171468, -0.53735182], [-0.88864036, -0.33782387], [
         -0.46226554, -0.50481004
@@ -155,10 +153,10 @@ def test_renn_fit_sample_mode_object():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_renn_fit_sample_mode():
+def test_renn_fit_resample_mode():
     nn = NearestNeighbors(n_neighbors=4)
     renn = RepeatedEditedNearestNeighbours(n_neighbors=nn, kind_sel='mode')
-    X_resampled, y_resampled = renn.fit_sample(X, Y)
+    X_resampled, y_resampled = renn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.53171468, -0.53735182], [-0.88864036, -0.33782387], [
         -0.46226554, -0.50481004
@@ -194,11 +192,11 @@ def test_renn_not_good_object():
     nn = 'rnd'
     renn = RepeatedEditedNearestNeighbours(n_neighbors=nn, kind_sel='mode')
     with raises(ValueError):
-        renn.fit_sample(X, Y)
+        renn.fit_resample(X, Y)
 
 
 def test_deprecation_random_state():
     renn = RepeatedEditedNearestNeighbours(random_state=0)
     with warns(
             DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        renn.fit_sample(X, Y)
+        renn.fit_resample(X, Y)

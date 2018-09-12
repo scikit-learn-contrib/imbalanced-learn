@@ -3,13 +3,10 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
 import numpy as np
 from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
-
 from sklearn.neighbors import KNeighborsClassifier
 
 from imblearn.under_sampling import OneSidedSelection
@@ -35,9 +32,9 @@ def test_oss_init():
     assert oss.random_state == RND_SEED
 
 
-def test_oss_fit_sample():
+def test_oss_fit_resample():
     oss = OneSidedSelection(random_state=RND_SEED)
-    X_resampled, y_resampled = oss.fit_sample(X, Y)
+    X_resampled, y_resampled = oss.fit_resample(X, Y)
 
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
@@ -51,9 +48,9 @@ def test_oss_fit_sample():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_oss_fit_sample_with_indices():
+def test_oss_fit_resample_with_indices():
     oss = OneSidedSelection(return_indices=True, random_state=RND_SEED)
-    X_resampled, y_resampled, idx_under = oss.fit_sample(X, Y)
+    X_resampled, y_resampled, idx_under = oss.fit_resample(X, Y)
 
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
@@ -72,7 +69,7 @@ def test_oss_fit_sample_with_indices():
 def test_oss_with_object():
     knn = KNeighborsClassifier(n_neighbors=1)
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
-    X_resampled, y_resampled = oss.fit_sample(X, Y)
+    X_resampled, y_resampled = oss.fit_resample(X, Y)
 
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
@@ -86,7 +83,7 @@ def test_oss_with_object():
     assert_array_equal(y_resampled, y_gt)
     knn = 1
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
-    X_resampled, y_resampled = oss.fit_sample(X, Y)
+    X_resampled, y_resampled = oss.fit_resample(X, Y)
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -95,4 +92,4 @@ def test_oss_with_wrong_object():
     knn = 'rnd'
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
     with raises(ValueError, match="has to be a int"):
-        oss.fit_sample(X, Y)
+        oss.fit_resample(X, Y)

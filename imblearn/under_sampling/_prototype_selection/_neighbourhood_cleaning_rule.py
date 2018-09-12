@@ -4,7 +4,7 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
 from collections import Counter
 
@@ -75,9 +75,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
-    See
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_neighbourhood_cleaning_rule.py`.
-
     References
     ----------
     .. [1] J. Laurikkala, "Improving identification of difficult small classes
@@ -96,7 +93,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> ncr = NeighbourhoodCleaningRule()
-    >>> X_res, y_res = ncr.fit_sample(X, y)
+    >>> X_res, y_res = ncr.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 877, 0: 100}})
 
@@ -139,7 +136,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                 "'threshold_cleaning' is a value between 0 and 1."
                 " Got {} instead.".format(self.threshold_cleaning))
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
         enn = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
@@ -148,7 +145,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
             kind_sel='mode',
             n_jobs=self.n_jobs,
             ratio=self.ratio)
-        _, _, index_not_a1 = enn.fit_sample(X, y)
+        _, _, index_not_a1 = enn.fit_resample(X, y)
         index_a1 = np.ones(y.shape, dtype=bool)
         index_a1[index_not_a1] = False
         index_a1 = np.flatnonzero(index_a1)

@@ -5,7 +5,6 @@
 from __future__ import division
 
 import warnings
-from collections import Counter
 from collections import OrderedDict
 from numbers import Integral, Real
 
@@ -14,14 +13,14 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
-from sklearn.externals import six, joblib
+from sklearn.externals import six
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.deprecation import deprecated
 
 from ..exceptions import raise_isinstance_error
 
 SAMPLING_KIND = ('over-sampling', 'under-sampling', 'clean-sampling',
-                 'ensemble')
+                 'ensemble', 'bypass')
 TARGET_KIND = ('binary', 'multiclass', 'multilabel-indicator')
 
 
@@ -55,6 +54,11 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
         return clone(nn_object)
     else:
         raise_isinstance_error(nn_name, [int, KNeighborsMixin], nn_object)
+
+
+def _count_class_sample(y):
+    unique, counts = np.unique(y, return_counts=True)
+    return dict(zip(unique, counts))
 
 
 def check_target_type(y, indicate_one_vs_all=False):
@@ -95,44 +99,9 @@ def check_target_type(y, indicate_one_vs_all=False):
         return y.argmax(axis=1) if type_y == 'multilabel-indicator' else y
 
 
-def hash_X_y(X, y, n_samples=10, n_features=5):
-    """Compute hash of the input arrays.
-
-    Parameters
-    ----------
-    X : array_like, shape (n_samples, n_features)
-        The ``X`` array.
-
-    y : ndarray, shape (n_samples)
-        The ``y`` array.
-
-    n_samples : int, optional
-        The number of samples to use to compute the hash. Default is 100.
-
-    n_features : int, optional
-        The number of features to use to compute the hash. Default is 10.
-
-    Returns
-    -------
-    X_hash: str
-        Hash identifier of the ``X`` matrix.
-    y_hash: str
-        Hash identifier of the ``y`` matrix.
-    """
-    row_idx = slice(None, None, max(1, X.shape[0] // n_samples))
-    col_idx = slice(None, None, max(1, X.shape[1] // n_features))
-
-    X_subset = (X.iloc[row_idx, col_idx]
-                if hasattr(X, 'iloc') else X[row_idx, col_idx])
-    y_subset = (y.iloc[row_idx]
-                if hasattr(y, 'iloc') else y[row_idx])
-
-    return joblib.hash(X_subset), joblib.hash(y_subset)
-
-
 def _sampling_strategy_all(y, sampling_type):
     """Returns sampling target by targeting all classes."""
-    target_stats = Counter(y)
+    target_stats = _count_class_sample(y)
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         sampling_strategy = {
@@ -159,7 +128,7 @@ def _sampling_strategy_majority(y, sampling_type):
                          " over-sampler.")
     elif (sampling_type == 'under-sampling' or
           sampling_type == 'clean-sampling'):
-        target_stats = Counter(y)
+        target_stats = _count_class_sample(y)
         class_majority = max(target_stats, key=target_stats.get)
         n_sample_minority = min(target_stats.values())
         sampling_strategy = {
@@ -175,7 +144,7 @@ def _sampling_strategy_majority(y, sampling_type):
 def _sampling_strategy_not_majority(y, sampling_type):
     """Returns sampling target by targeting all classes but not the
     majority."""
-    target_stats = Counter(y)
+    target_stats = _count_class_sample(y)
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)
@@ -200,7 +169,7 @@ def _sampling_strategy_not_majority(y, sampling_type):
 def _sampling_strategy_not_minority(y, sampling_type):
     """Returns sampling target by targeting all classes but not the
     minority."""
-    target_stats = Counter(y)
+    target_stats = _count_class_sample(y)
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
@@ -224,7 +193,7 @@ def _sampling_strategy_not_minority(y, sampling_type):
 
 def _sampling_strategy_minority(y, sampling_type):
     """Returns sampling target by targeting the minority class only."""
-    target_stats = Counter(y)
+    target_stats = _count_class_sample(y)
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
@@ -255,7 +224,7 @@ def _sampling_strategy_auto(y, sampling_type):
 def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
     """Returns sampling target by converting the dictionary depending of the
     sampling."""
-    target_stats = Counter(y)
+    target_stats = _count_class_sample(y)
     # check that all keys in sampling_strategy are also in y
     set_diff_sampling_strategy_target = (
         set(sampling_strategy.keys()) - set(target_stats.keys()))
@@ -321,7 +290,7 @@ def _sampling_strategy_list(sampling_strategy, y, sampling_type):
         raise ValueError("'sampling_strategy' cannot be a list for samplers "
                          "which are not cleaning methods.")
 
-    target_stats = Counter(y)
+    target_stats = _count_class_sample(y)
     # check that all keys in sampling_strategy are also in y
     set_diff_sampling_strategy_target = (
         set(sampling_strategy) - set(target_stats.keys()))
@@ -343,7 +312,7 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
         raise ValueError(
             '"sampling_strategy" can be a float only when the type '
             'of target is binary. For multi-class, use a dict.')
-    target_stats = Counter(y)
+    target_stats = _count_class_sample(y)
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)
@@ -461,7 +430,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
         raise ValueError("The target 'y' needs to have more than 1 class."
                          " Got {} class instead".format(np.unique(y).size))
 
-    if sampling_type == 'ensemble':
+    if sampling_type in ('ensemble', 'bypass'):
         return sampling_strategy
 
     if isinstance(sampling_strategy, six.string_types):

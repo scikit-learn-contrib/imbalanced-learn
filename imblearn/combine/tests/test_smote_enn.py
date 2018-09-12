@@ -3,10 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 
@@ -34,7 +32,7 @@ R_TOL = 1e-4
 
 def test_sample_regular():
     smote = SMOTEENN(random_state=RND_SEED)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
 
     X_gt = np.array([[1.52091956, -0.49283504], [0.84976473, -0.15570176], [
         0.61319159, -0.11571667
@@ -48,10 +46,9 @@ def test_sample_regular():
 def test_sample_regular_pass_smote_enn():
     smote = SMOTEENN(
         smote=SMOTE(sampling_strategy='auto', random_state=RND_SEED),
-        enn=EditedNearestNeighbours(
-            sampling_strategy='all', random_state=RND_SEED),
+        enn=EditedNearestNeighbours(sampling_strategy='all'),
         random_state=RND_SEED)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
 
     X_gt = np.array([[1.52091956, -0.49283504], [0.84976473, -0.15570176], [
         0.61319159, -0.11571667
@@ -66,7 +63,7 @@ def test_sample_regular_half():
     sampling_strategy = {0: 10, 1: 12}
     smote = SMOTEENN(
         sampling_strategy=sampling_strategy, random_state=RND_SEED)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
 
     X_gt = np.array([[1.52091956, -0.49283504], [-0.28162401, -2.10400981],
                      [0.83680821, 1.72827342], [0.08711622, 0.93259929]])
@@ -77,10 +74,9 @@ def test_sample_regular_half():
 
 def test_validate_estimator_init():
     smote = SMOTE(random_state=RND_SEED)
-    enn = EditedNearestNeighbours(
-        random_state=RND_SEED, sampling_strategy='all')
+    enn = EditedNearestNeighbours(sampling_strategy='all')
     smt = SMOTEENN(smote=smote, enn=enn, random_state=RND_SEED)
-    X_resampled, y_resampled = smt.fit_sample(X, Y)
+    X_resampled, y_resampled = smt.fit_resample(X, Y)
     X_gt = np.array([[1.52091956, -0.49283504], [0.84976473, -0.15570176], [
         0.61319159, -0.11571667
     ], [0.66052536, -0.28246518], [-0.28162401, -2.10400981],
@@ -92,7 +88,7 @@ def test_validate_estimator_init():
 
 def test_validate_estimator_default():
     smt = SMOTEENN(random_state=RND_SEED)
-    X_resampled, y_resampled = smt.fit_sample(X, Y)
+    X_resampled, y_resampled = smt.fit_resample(X, Y)
     X_gt = np.array([[1.52091956, -0.49283504], [0.84976473, -0.15570176], [
         0.61319159, -0.11571667
     ], [0.66052536, -0.28246518], [-0.28162401, -2.10400981],
@@ -102,12 +98,12 @@ def test_validate_estimator_default():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_error_wrong_object():
-    smote = 'rnd'
-    enn = 'rnd'
-    smt = SMOTEENN(smote=smote, random_state=RND_SEED)
-    with raises(ValueError, match="smote needs to be a SMOTE"):
-        smt.fit_sample(X, Y)
-    smt = SMOTEENN(enn=enn, random_state=RND_SEED)
-    with raises(ValueError, match="enn needs to be an "):
-        smt.fit_sample(X, Y)
+@pytest.mark.parametrize(
+    "smote_params, err_msg",
+    [({'smote': 'rnd'}, "smote needs to be a SMOTE"),
+     ({'enn': 'rnd'}, "enn needs to be an ")]
+)
+def test_error_wrong_object(smote_params, err_msg):
+    smt = SMOTEENN(**smote_params)
+    with pytest.raises(ValueError, match=err_msg):
+        smt.fit_resample(X, Y)

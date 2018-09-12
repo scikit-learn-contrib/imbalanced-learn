@@ -28,7 +28,7 @@ to retain the 10 first elements of the array ``X`` and ``y``::
   >>> def func(X, y):
   ...   return X[:10], y[:10]
   >>> sampler = FunctionSampler(func=func)
-  >>> X_res, y_res = sampler.fit_sample(X, y)
+  >>> X_res, y_res = sampler.fit_resample(X, y)
   >>> np.all(X_res == X[:10])
   True
   >>> np.all(y_res == y[:10])
@@ -149,3 +149,7 @@ will be passed to ``fit_generator``::
   ...     X, y, sampler=RandomUnderSampler(), batch_size=10, random_state=42)
   >>> callback_history = model.fit_generator(generator=training_generator,
   ...                                        epochs=10, verbose=0)
+
+.. topic:: References
+
+  * :ref:`sphx_glr_auto_examples_applications_porto_seguro_keras_under_sampling.py`

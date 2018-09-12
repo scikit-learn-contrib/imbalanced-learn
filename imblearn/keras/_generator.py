@@ -24,6 +24,10 @@ from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 from ..tensorflow import balanced_batch_generator as tf_bbg
 
+DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
+                          'RepeatedEditedNearestNeighbours', 'AllKNN',
+                          'NeighbourhoodCleaningRule', 'TomekLinks')
+
 
 class BalancedBatchGenerator(ParentClass):
     """Create balanced batches when training a keras model.
@@ -58,7 +62,8 @@ class BalancedBatchGenerator(ParentClass):
         dense.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        Control the randomization of the algorithm
+        Control the randomization of the algorithm:
+
         - If int, ``random_state`` is the seed used by the random number
           generator;
         - If ``RandomState`` instance, random_state is the random number
@@ -122,9 +127,11 @@ class BalancedBatchGenerator(ParentClass):
                                  "which has an attribute 'return_indices'.")
             self.sampler_ = clone(self.sampler)
             self.sampler_.set_params(return_indices=True)
-            set_random_state(self.sampler_, random_state)
+            # FIXME: Remove in 0.6
+            if self.sampler_.__class__.__name__ not in DONT_HAVE_RANDOM_STATE:
+                set_random_state(self.sampler_, random_state)
 
-        _, _, self.indices_ = self.sampler_.fit_sample(self.X, self.y)
+        _, _, self.indices_ = self.sampler_.fit_resample(self.X, self.y)
         # shuffle the indices since the sampler are packing them by class
         random_state.shuffle(self.indices_)
 

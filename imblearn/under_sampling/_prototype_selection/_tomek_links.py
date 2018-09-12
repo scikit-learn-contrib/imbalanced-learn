@@ -5,7 +5,7 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
@@ -53,9 +53,6 @@ class TomekLinks(BaseCleaningSampler):
     Supports multi-class resampling. A one-vs.-rest scheme is used as
     originally proposed in [1]_.
 
-    See
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_tomek_links.py`.
-
     References
     ----------
     .. [1] I. Tomek, "Two modifications of CNN," In Systems, Man, and
@@ -74,7 +71,7 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> tl = TomekLinks()
-    >>> X_res, y_res = tl.fit_sample(X, y)
+    >>> X_res, y_res = tl.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 897, 0: 100}})
 
@@ -134,7 +131,7 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
         return links
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         # check for deprecated random_state
         if self.random_state is not None:
             deprecate_parameter(self, '0.4', 'random_state')

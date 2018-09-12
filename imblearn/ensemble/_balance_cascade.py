@@ -12,10 +12,11 @@ from sklearn.base import ClassifierMixin, clone
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_random_state, safe_indexing
 from sklearn.model_selection import cross_val_predict
+from sklearn.utils.deprecation import deprecated
 
 from .base import BaseEnsembleSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import check_sampling_strategy, check_target_type
+from ..utils import check_sampling_strategy
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
@@ -23,14 +24,13 @@ from ..utils._docstring import _random_state_docstring
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring)
+@deprecated('BalanceCascade is deprecated in 0.4 and will be removed in 0.6.')
 class BalanceCascade(BaseEnsembleSampler):
     """Create an ensemble of balanced sets by iteratively under-sampling the
     imbalanced dataset using an estimator.
 
     This method iteratively select subset and make an ensemble of the
     different sets. The selection is performed using a specific classifier.
-
-    Read more in the :ref:`User Guide <ensemble_samplers>`.
 
     Parameters
     ----------
@@ -66,8 +66,6 @@ class BalanceCascade(BaseEnsembleSampler):
     Supports multi-class resampling. A one-vs.-rest scheme is used as
     originally proposed in [1]_.
 
-    See :ref:`sphx_glr_auto_examples_ensemble_plot_balance_cascade.py`.
-
     See also
     --------
     BalancedBaggingClassifier, EasyEnsemble
@@ -92,7 +90,7 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> bc = BalanceCascade(random_state=42)
-    >>> X_res, y_res = bc.fit_sample(X, y)
+    >>> X_res, y_res = bc.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res[0])) \
     # doctest: +ELLIPSIS
     Resampled dataset shape Counter({{...}})
@@ -113,29 +111,6 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
         self.estimator = estimator
         self.n_max_subset = n_max_subset
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
-        super(BalanceCascade, self).fit(X, y)
-        y = check_target_type(y)
-        self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, 'under-sampling')
-        return self
-
     def _validate_estimator(self):
         """Private function to create the classifier"""
 
@@ -149,10 +124,11 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
                 type(self.estimator)))
 
-        self.logger.debug(self.estimator_)
-
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
+
+        self.sampling_strategy_ = check_sampling_strategy(
+            self.sampling_strategy, y, 'under-sampling')
 
         random_state = check_random_state(self.random_state)
 
@@ -168,9 +144,9 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             target_stats = Counter(
                 safe_indexing(y, np.flatnonzero(samples_mask)))
             # store the index of the data to under-sample
-            index_under_sample = np.empty((0, ), dtype=y.dtype)
+            index_under_sample = np.empty((0, ), dtype=np.int)
             # value which will be picked at each round
-            index_constant = np.empty((0, ), dtype=y.dtype)
+            index_constant = np.empty((0, ), dtype=np.int)
             for target_class in target_stats.keys():
                 if target_class in self.sampling_strategy_.keys():
                     n_samples = self.sampling_strategy_[target_class]
@@ -201,7 +177,7 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
             # fit and predict using cross validation
             X_subset = safe_indexing(X, subset_indices)
             y_subset = safe_indexing(y, subset_indices)
-            pred = cross_val_predict(self.estimator_, X_subset, y_subset)
+            pred = cross_val_predict(self.estimator_, X_subset, y_subset, cv=3)
             # extract the prediction about the targeted classes only
             pred_target = pred[:index_under_sample.size]
             index_classified = index_under_sample[pred_target == safe_indexing(

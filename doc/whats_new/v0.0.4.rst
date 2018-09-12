@@ -18,6 +18,11 @@ API
 - Enable to use a ``list`` for the cleaning methods to specify the class to
   sample. :issue:`411` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Replace ``fit_sample`` by ``fit_resample``. An alias is still available for
+  backward compatibility. In addition, ``sample`` has been removed to avoid
+  resampling on different set of data.
+  :issue:`462` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 New features
 ............
 
@@ -27,6 +32,14 @@ New features
 - Add :class:`imblearn.ensemble.EasyEnsembleClassifier` which create a bag of
   AdaBoost classifier trained on balanced bootstrap samples.
   :issue:`455` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Add :class:`imblearn.ensemble.BalancedRandomForestClassifier` which balanced
+  each bootstrap provided to each tree of the forest.
+  :issue:`459` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Add :class:`imblearn.ensemble.RUSBoostClassifier` which applied a random
+  under-sampling stage before each boosting iteration of AdaBoost.
+  :issue:`469` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Enhancement
 ...........
@@ -52,7 +65,7 @@ Enhancement
 - Allow :class:`imblearn.under_sampling.RandomUnderSampler` and
   :class:`imblearn.over_sampling.RandomOverSampler` to sample object array
   containing strings.
-  :issue:`448` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :issue:`451` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Bug fixes
 .........
@@ -74,9 +87,9 @@ Bug fixes
 
 - Fix bug which was not preserving the dtype of X and y when generating
   samples.
-  :issue:`448` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :issue:`450` by :user:`Guillaume Lemaitre <glemaitre>`.
 
-- Add the option to pass a ``Memory`` object to :func:`make_pipeline` like 
+- Add the option to pass a ``Memory`` object to :func:`make_pipeline` like
   in :class:`pipeline.Pipeline` class.
   :issue:`458` by :user:`Christos Aridas <chkoar>`.
 
@@ -88,6 +101,15 @@ Maintenance
 
 - Make some modules private.
   :issue:`452` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Upgrade requirements to scikit-learn 0.20.
+  :issue:`379` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Catch deprecation warning in testing.
+  :issue:`441` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Refactor and impose `pytest` style tests.
+  :issue:`470` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Documentation
 .............
@@ -122,3 +144,6 @@ Deprecation
   :class:`imblearn.ensemble.EasyEnsembleClassifier` which follow the exact
   algorithm described in the literature.
   :issue:`455` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Deprecate :class:`imblearn.ensemble.BalanceCascade`.
+  :issue:`472` by :user:`Guillaume Lemaitre <glemaitre>`.

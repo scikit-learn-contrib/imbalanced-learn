@@ -6,6 +6,9 @@ Under-sampling
 
 .. currentmodule:: imblearn.under_sampling
 
+You can refer to
+:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`.
+
 .. _cluster_centroids:
 
 Prototype generation
@@ -32,7 +35,7 @@ K-means method instead of the original samples::
   [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.under_sampling import ClusterCentroids
   >>> cc = ClusterCentroids(random_state=0)
-  >>> X_resampled, y_resampled = cc.fit_sample(X, y)
+  >>> X_resampled, y_resampled = cc.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
@@ -54,9 +57,6 @@ original one.
    :class:`ClusterCentroids` supports sparse matrices. However, the new samples
    generated are not specifically sparse. Therefore, even if the resulting
    matrix will be sparse, the algorithm will be inefficient in this regard.
-
-See :ref:`sphx_glr_auto_examples_under-sampling_plot_cluster_centroids.py` and
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`.
 
 Prototype selection
 ===================
@@ -82,7 +82,7 @@ randomly selecting a subset of data for the targeted classes::
 
   >>> from imblearn.under_sampling import RandomUnderSampler
   >>> rus = RandomUnderSampler(random_state=0)
-  >>> X_resampled, y_resampled = rus.fit_sample(X, y)
+  >>> X_resampled, y_resampled = rus.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
@@ -99,7 +99,7 @@ by considering independently each targeted class::
   >>> print(np.vstack({tuple(row) for row in X_resampled}).shape)
   (192, 2)
   >>> rus = RandomUnderSampler(random_state=0, replacement=True)
-  >>> X_resampled, y_resampled = rus.fit_sample(X, y)
+  >>> X_resampled, y_resampled = rus.fit_resample(X, y)
   >>> print(np.vstack({tuple(row) for row in X_resampled}).shape)
   (181, 2)
 
@@ -109,24 +109,20 @@ In addition, :class:`RandomUnderSampler` allows to sample heterogeneous data
   >>> X_hetero = np.array([['xxx', 1, 1.0], ['yyy', 2, 2.0], ['zzz', 3, 3.0]],
   ...                     dtype=np.object)
   >>> y_hetero = np.array([0, 0, 1])
-  >>> X_resampled, y_resampled = rus.fit_sample(X_hetero, y_hetero)
+  >>> X_resampled, y_resampled = rus.fit_resample(X_hetero, y_hetero)
   >>> print(X_resampled)
   [['xxx' 1 1.0]
    ['zzz' 3 3.0]]
   >>> print(y_resampled)
   [0 1]
 
-See :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py`.,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
-and :ref:`sphx_glr_auto_examples_under-sampling_plot_random_under_sampler.py`.
-
-:class:`NearMiss` adds some heuristic rules to select
-samples. :class:`NearMiss` implements 3 different types of heuristic which can
-be selected with the parameter ``version``::
+:class:`NearMiss` adds some heuristic rules to select samples [MZ2003]_.
+:class:`NearMiss` implements 3 different types of heuristic which can be
+selected with the parameter ``version``::
 
   >>> from imblearn.under_sampling import NearMiss
   >>> nm1 = NearMiss(version=1)
-  >>> X_resampled_nm1, y_resampled = nm1.fit_sample(X, y)
+  >>> X_resampled_nm1, y_resampled = nm1.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
@@ -137,10 +133,12 @@ from scikit-learn. The former parameter is used to compute the average distance
 to the neighbors while the latter is used for the pre-selection of the samples
 of interest.
 
-See
-:ref:`sphx_glr_auto_examples_applications_plot_multi_class_under_sampling.py`,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
-and :ref:`sphx_glr_auto_examples_under-sampling_plot_nearmiss.py`.
+.. topic:: References
+
+  .. [MZ2003] I. Mani, I. Zhang. "kNN approach to unbalanced data
+              distributions: a case study involving information extraction," In
+              Proceedings of workshop on learning from imbalanced datasets,
+              2003.
 
 Mathematical formulation
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -194,9 +192,6 @@ affected by noise due to the first step sample selection.
    :scale: 60
    :align: center
 
-See
-:ref:`sphx_glr_auto_examples_under-sampling_plot_illustration_nearmiss.py`.
-
 Cleaning under-sampling techniques
 ----------------------------------
 
@@ -209,9 +204,9 @@ which will clean the dataset.
 Tomek's links
 ^^^^^^^^^^^^^
 
-:class:`TomekLinks` detects the so-called Tomek's links. A Tomek's link
-between two samples of different class :math:`x` and :math:`y` is defined such
-that there is no example :math:`z` such that:
+:class:`TomekLinks` detects the so-called Tomek's links [T2010]_. A Tomek's
+link between two samples of different class :math:`x` and :math:`y` is defined
+such that there is no example :math:`z` such that:
 
 .. math::
 
@@ -238,10 +233,10 @@ figure illustrates this behaviour.
    :scale: 60
    :align: center
 
-See
-:ref:`sphx_glr_auto_examples_under-sampling_plot_illustration_tomek_links.py`
-and
-:ref:`sphx_glr_auto_examples_under-sampling_plot_tomek_links.py`.
+.. topic:: References
+
+  .. [T2010] I. Tomek, "Two modifications of CNN," In Systems, Man, and
+             Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 2010.
 
 .. _edited_nearest_neighbors:
 
@@ -250,7 +245,7 @@ Edited data set using nearest neighbours
 
 :class:`EditedNearestNeighbours` applies a nearest-neighbors algorithm and
 "edit" the dataset by removing samples which do not agree "enough" with their
-neighboorhood. For each sample in the class to be under-sampled, the
+neighboorhood [W1972]_. For each sample in the class to be under-sampled, the
 nearest-neighbours are computed and if the selection criterion is not
 fulfilled, the sample is removed. Two selection criteria are currently
 available: (i) the majority (i.e., ``kind_sel='mode'``) or (ii) all (i.e.,
@@ -261,7 +256,7 @@ the sample inspected to keep it in the dataset::
   [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.under_sampling import EditedNearestNeighbours
   >>> enn = EditedNearestNeighbours()
-  >>> X_resampled, y_resampled = enn.fit_sample(X, y)
+  >>> X_resampled, y_resampled = enn.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 213), (2, 4568)]
 
@@ -270,22 +265,22 @@ The parameter ``n_neighbors`` allows to give a classifier subclassed from
 the decision to keep a given sample or not.
 
 :class:`RepeatedEditedNearestNeighbours` extends
-:class:`EditedNearestNeighbours` by repeating the algorithm multiple times.
-Generally, repeating the algorithm will delete more data::
+:class:`EditedNearestNeighbours` by repeating the algorithm multiple times
+[T1976]_. Generally, repeating the algorithm will delete more data::
 
    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
    >>> renn = RepeatedEditedNearestNeighbours()
-   >>> X_resampled, y_resampled = renn.fit_sample(X, y)
+   >>> X_resampled, y_resampled = renn.fit_resample(X, y)
    >>> print(sorted(Counter(y_resampled).items()))
    [(0, 64), (1, 208), (2, 4551)]
 
 :class:`AllKNN` differs from the previous
 :class:`RepeatedEditedNearestNeighbours` since the number of neighbors of the
-internal nearest neighbors algorithm is increased at each iteration::
+internal nearest neighbors algorithm is increased at each iteration [T1976]_::
 
   >>> from imblearn.under_sampling import AllKNN
   >>> allknn = AllKNN()
-  >>> X_resampled, y_resampled = allknn.fit_sample(X, y)
+  >>> X_resampled, y_resampled = allknn.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 220), (2, 4601)]
 
@@ -297,10 +292,15 @@ impact by cleaning noisy samples next to the boundaries of the classes.
    :scale: 60
    :align: center
 
-See
-:ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py`,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
-and :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
+.. topic:: References
+
+  .. [W1972] D. Wilson, Asymptotic" Properties of Nearest Neighbor Rules Using
+             Edited Data," In IEEE Transactions on Systems, Man, and
+             Cybernetrics, vol. 2 (3), pp. 408-421, 1972.
+
+  .. [T1976] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
+             Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol.
+             6(6), pp. 448-452, June 1976.
 
 .. _condensed_nearest_neighbors:
 
@@ -308,8 +308,8 @@ Condensed nearest neighbors and derived algorithms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 :class:`CondensedNearestNeighbour` uses a 1 nearest neighbor rule to
-iteratively decide if a sample should be removed or not. The algorithm is
-running as followed:
+iteratively decide if a sample should be removed or not [H1968]_. The algorithm
+is running as followed:
 
 1. Get all minority samples in a set :math:`C`.
 2. Add a sample from the targeted class (class to be under-sampled) in
@@ -323,7 +323,7 @@ The :class:`CondensedNearestNeighbour` can be used in the following manner::
 
   >>> from imblearn.under_sampling import CondensedNearestNeighbour
   >>> cnn = CondensedNearestNeighbour(random_state=0)
-  >>> X_resampled, y_resampled = cnn.fit_sample(X, y)
+  >>> X_resampled, y_resampled = cnn.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 24), (2, 115)]
 
@@ -331,28 +331,28 @@ However as illustrated in the figure below, :class:`CondensedNearestNeighbour`
 is sensitive to noise and will add noisy samples.
 
 In the contrary, :class:`OneSidedSelection` will use :class:`TomekLinks` to
-remove noisy samples.  In addition, the 1 nearest neighbor rule is applied to
-all samples and the one which are misclassified will be added to the set
-:math:`C`. No iteration on the set :math:`S` will take place. The class can be
-used as::
+remove noisy samples [KM1997]_. In addition, the 1 nearest neighbor rule is
+applied to all samples and the one which are misclassified will be added to the
+set :math:`C`. No iteration on the set :math:`S` will take place. The class can
+be used as::
 
   >>> from imblearn.under_sampling import OneSidedSelection
   >>> oss = OneSidedSelection(random_state=0)
-  >>> X_resampled, y_resampled = oss.fit_sample(X, y)
+  >>> X_resampled, y_resampled = oss.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
-  [(0, 64), (1, 174), (2, 4403)]
+  [(0, 64), (1, 174), (2, 4404)]
 
 Our implementation offer to set the number of seeds to put in the set :math:`C`
 originally by setting the parameter ``n_seeds_S``.
 
 :class:`NeighbourhoodCleaningRule` will focus on cleaning the data than
-condensing them. Therefore, it will used the union of samples to be rejected
-between the :class:`EditedNearestNeighbours` and the output a 3 nearest
-neighbors classifier. The class can be used as::
+condensing them [J2001]_. Therefore, it will used the union of samples to be
+rejected between the :class:`EditedNearestNeighbours` and the output a 3
+nearest neighbors classifier. The class can be used as::
 
   >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
   >>> ncr = NeighbourhoodCleaningRule()
-  >>> X_resampled, y_resampled = ncr.fit_sample(X, y)
+  >>> X_resampled, y_resampled = ncr.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 234), (2, 4666)]
 
@@ -361,11 +361,18 @@ neighbors classifier. The class can be used as::
    :scale: 60
    :align: center
 
-See
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_condensed_nearest_neighbour.py`,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_one_sided_selection.py`, and
-:ref:`sphx_glr_auto_examples_under-sampling_plot_neighbourhood_cleaning_rule.py`.
+.. topic:: References
+
+  .. [H1968] P. Hart, "The condensed nearest neighbor rule,"
+             In Information Theory, IEEE Transactions on, vol. 14(3), pp.
+             515-516, 1968.
+
+  .. [KM1997] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training
+              sets: one-sided selection," In ICML, vol. 97, pp. 179-186, 1997.
+
+  .. [J2001] J. Laurikkala, "Improving identification of difficult small
+             classes by balancing class distribution," Springer Berlin
+             Heidelberg, 2001.
 
 .. _instance_hardness_threshold:
 
@@ -374,13 +381,14 @@ Instance hardness threshold
 
 :class:`InstanceHardnessThreshold` is a specific algorithm in which a
 classifier is trained on the data and the samples with lower probabilities are
-removed. The class can be used as::
+removed [SMMG2014]_. The class can be used as::
 
   >>> from sklearn.linear_model import LogisticRegression
   >>> from imblearn.under_sampling import InstanceHardnessThreshold
   >>> iht = InstanceHardnessThreshold(random_state=0,
-  ...                                 estimator=LogisticRegression())
-  >>> X_resampled, y_resampled = iht.fit_sample(X, y)
+  ...                                 estimator=LogisticRegression(
+  ...                                     solver='lbfgs', multi_class='auto'))
+  >>> X_resampled, y_resampled = iht.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
@@ -402,6 +410,8 @@ The figure below gives another examples on some toy data.
    :scale: 60
    :align: center
 
-See
-:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`,
-:ref:`sphx_glr_auto_examples_under-sampling_plot_instance_hardness_threshold.py`.
+.. topic:: References
+
+  .. [SMMG2014] D. Smith, Michael R., Tony Martinez, and Christophe
+                Giraud-Carrier. "An instance level analysis of data
+                complexity." Machine learning 95.2 (2014): 225-256.

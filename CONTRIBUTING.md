@@ -98,8 +98,8 @@ tools:
 
 -  Code with good unittest coverage (at least 80%), check with:
 
-        $ pip install nose coverage
-        $ nosetests --with-coverage path/to/tests_for_package
+        $ pip install pytest pytest-cov
+        $ pytest --cov=imblearn imblearn
 
 -  No pyflakes warnings, check with:
 

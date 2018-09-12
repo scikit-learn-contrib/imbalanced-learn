@@ -15,7 +15,6 @@ the lower the better
 from __future__ import division
 
 import warnings
-import logging
 import functools
 
 from inspect import getcallargs
@@ -32,8 +31,6 @@ try:
     from inspect import signature
 except ImportError:
     from sklearn.externals.funcsigs import signature
-
-LOGGER = logging.getLogger(__name__)
 
 
 def sensitivity_specificity_support(y_true,
@@ -591,8 +588,6 @@ def geometric_mean_score(y_true,
             warn_for=('specificity', 'specificity'),
             sample_weight=sample_weight)
 
-        LOGGER.debug('The sensitivity and specificity are : %s - %s' % (sen,
-                                                                        spe))
         return np.sqrt(sen * spe)
     else:
         present_labels = unique_labels(y_true, y_pred)
@@ -637,11 +632,13 @@ def geometric_mean_score(y_true,
         tp_sum = tp_sum[indices]
         true_sum = true_sum[indices]
 
-        recall = _prf_divide(tp_sum, true_sum, "recall", "true", None,
-                             "recall")
+        with np.errstate(divide='ignore', invalid='ignore'):
+            recall = _prf_divide(tp_sum, true_sum, "recall", "true", None,
+                                 "recall")
         recall[recall == 0] = correction
 
-        gmean = sp.stats.gmean(recall)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            gmean = sp.stats.gmean(recall)
         # old version of scipy return MaskedConstant instead of 0.0
         if isinstance(gmean, np.ma.core.MaskedConstant):
             return 0.0

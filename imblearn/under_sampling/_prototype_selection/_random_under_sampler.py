@@ -8,7 +8,10 @@ from __future__ import division
 
 import numpy as np
 
-from sklearn.utils import check_X_y, check_random_state, safe_indexing
+from sklearn.utils import check_array
+from sklearn.utils import check_consistent_length
+from sklearn.utils import check_random_state
+from sklearn.utils import safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import check_target_type
@@ -51,10 +54,6 @@ class RandomUnderSampler(BaseUnderSampler):
     Supports heterogeneous data as object array containing string and numeric
     data.
 
-    See
-    :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py` and
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_random_under_sampler.py`
-
     Examples
     --------
 
@@ -68,7 +67,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> rus = RandomUnderSampler(random_state=42)
-    >>> X_res, y_res = rus.fit_sample(X, y)
+    >>> X_res, y_res = rus.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 100, 1: 100}})
 
@@ -89,10 +88,13 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     @staticmethod
     def _check_X_y(X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
+        X = check_array(X, accept_sparse=['csr', 'csc'], dtype=None)
+        y = check_array(y, accept_sparse=['csr', 'csc'], dtype=None,
+                        ensure_2d=False)
+        check_consistent_length(X, y)
         return X, y, binarize_y
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
 
         idx_under = np.empty((0, ), dtype=int)

@@ -75,10 +75,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
-    See
-    :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py` and
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
-
     See also
     --------
     CondensedNearestNeighbour, RepeatedEditedNearestNeighbours, AllKNN
@@ -102,7 +98,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> enn = EditedNearestNeighbours()
-    >>> X_res, y_res = enn.fit_sample(X, y)
+    >>> X_res, y_res = enn.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 887, 0: 100}})
 
@@ -138,7 +134,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
 
         idx_under = np.empty((0, ), dtype=int)
@@ -230,10 +226,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     Supports multi-class resampling.
 
-    See
-    :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py` and
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
-
     See also
     --------
     CondensedNearestNeighbour, EditedNearestNeighbours, AllKNN
@@ -257,7 +249,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> renn = RepeatedEditedNearestNeighbours()
-    >>> X_res, y_res = renn.fit_sample(X, y)
+    >>> X_res, y_res = renn.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 887, 0: 100}})
 
@@ -303,7 +295,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             n_jobs=self.n_jobs,
             ratio=self.ratio)
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
 
         X_, y_ = X, y
@@ -316,9 +308,9 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
             prev_len = y_.shape[0]
             if self.return_indices:
-                X_enn, y_enn, idx_enn = self.enn_.fit_sample(X_, y_)
+                X_enn, y_enn, idx_enn = self.enn_.fit_resample(X_, y_)
             else:
-                X_enn, y_enn = self.enn_.fit_sample(X_, y_)
+                X_enn, y_enn = self.enn_.fit_resample(X_, y_)
 
             # Check the stopping criterion
             # 1. If there is no changes for the vector y
@@ -418,8 +410,6 @@ class AllKNN(BaseCleaningSampler):
     Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
 
-    See :ref:`sphx_glr_auto_examples_under-sampling_plot_enn_renn_allknn.py`.
-
     See also
     --------
     CondensedNearestNeighbour, EditedNearestNeighbours,
@@ -444,7 +434,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> allknn = AllKNN()
-    >>> X_res, y_res = allknn.fit_sample(X, y)
+    >>> X_res, y_res = allknn.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 887, 0: 100}})
 
@@ -489,7 +479,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             n_jobs=self.n_jobs,
             ratio=self.ratio)
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
 
         X_, y_ = X, y
@@ -503,9 +493,9 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             self.enn_.n_neighbors = curr_size_ngh
 
             if self.return_indices:
-                X_enn, y_enn, idx_enn = self.enn_.fit_sample(X_, y_)
+                X_enn, y_enn, idx_enn = self.enn_.fit_resample(X_, y_)
             else:
-                X_enn, y_enn = self.enn_.fit_sample(X_, y_)
+                X_enn, y_enn = self.enn_.fit_resample(X_, y_)
 
             # Check the stopping criterion
             # 1. If the number of samples in the other class become inferior to

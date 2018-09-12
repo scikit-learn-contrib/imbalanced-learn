@@ -64,9 +64,6 @@ KNeighborsClassifier(n_neighbors=1))
     a class as proposed in [1]_. For each class to be sampled, all samples of
     this class and the minority class are used during the sampling procedure.
 
-    See
-    :ref:`sphx_glr_auto_examples_under-sampling_plot_one_sided_selection.py`
-
     References
     ----------
     .. [1] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training
@@ -85,9 +82,9 @@ KNeighborsClassifier(n_neighbors=1))
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> oss = OneSidedSelection(random_state=42)
-    >>> X_res, y_res = oss.fit_sample(X, y)
+    >>> X_res, y_res = oss.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
-    Resampled dataset shape Counter({{1: 495, 0: 100}})
+    Resampled dataset shape Counter({{1: 496, 0: 100}})
 
     """
 
@@ -119,10 +116,10 @@ KNeighborsClassifier(n_neighbors=1))
             self.estimator_ = clone(self.n_neighbors)
         else:
             raise ValueError('`n_neighbors` has to be a int or an object'
-                             ' inhereited from KNeighborsClassifier.'
+                             ' inherited from KNeighborsClassifier.'
                              ' Got {} instead.'.format(type(self.n_neighbors)))
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
 
         random_state = check_random_state(self.random_state)
@@ -135,10 +132,10 @@ KNeighborsClassifier(n_neighbors=1))
             if target_class in self.sampling_strategy_.keys():
                 # select a sample from the current class
                 idx_maj = np.flatnonzero(y == target_class)
-                idx_maj_sample = idx_maj[random_state.randint(
-                    low=0,
-                    high=target_stats[target_class],
-                    size=self.n_seeds_S)]
+                sel_idx_maj = random_state.randint(
+                    low=0, high=target_stats[target_class],
+                    size=self.n_seeds_S)
+                idx_maj_sample = idx_maj[sel_idx_maj]
 
                 minority_class_indices = np.flatnonzero(y == class_minority)
                 C_indices = np.append(minority_class_indices, idx_maj_sample)
@@ -150,7 +147,7 @@ KNeighborsClassifier(n_neighbors=1))
 
                 # create the set S with removing the seed from S
                 # since that it will be added anyway
-                idx_maj_extracted = np.delete(idx_maj, idx_maj_sample, axis=0)
+                idx_maj_extracted = np.delete(idx_maj, sel_idx_maj, axis=0)
                 S_x = safe_indexing(X, idx_maj_extracted)
                 S_y = safe_indexing(y, idx_maj_extracted)
                 self.estimator_.fit(C_x, C_y)
@@ -169,8 +166,9 @@ KNeighborsClassifier(n_neighbors=1))
 
         # apply Tomek cleaning
         tl = TomekLinks(
-            sampling_strategy=self.sampling_strategy_, return_indices=True)
-        X_cleaned, y_cleaned, idx_cleaned = tl.fit_sample(
+            sampling_strategy=list(self.sampling_strategy_.keys()),
+            return_indices=True)
+        X_cleaned, y_cleaned, idx_cleaned = tl.fit_resample(
             X_resampled, y_resampled)
 
         idx_under = safe_indexing(idx_under, idx_cleaned)

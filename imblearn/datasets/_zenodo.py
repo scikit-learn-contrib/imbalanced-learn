@@ -47,7 +47,6 @@ References
 from collections import OrderedDict
 import tarfile
 from io import BytesIO
-import logging
 from os.path import join, isfile
 try:
     from urllib2 import urlopen
@@ -82,14 +81,13 @@ for v, k in enumerate(MAP_NAME_ID_KEYS):
     MAP_NAME_ID[k] = v + 1
     MAP_ID_NAME[v + 1] = k
 
-logger = logging.getLogger()
-
 
 def fetch_datasets(data_home=None,
                    filter_data=None,
                    download_if_missing=True,
                    random_state=None,
-                   shuffle=False):
+                   shuffle=False,
+                   verbose=False):
     """Load the benchmark datasets from Zenodo, downloading it if necessary.
 
     Parameters
@@ -115,6 +113,9 @@ def fetch_datasets(data_home=None,
 
     shuffle : bool, optional (default=False)
         Whether to shuffle dataset.
+
+    verbose : bool, optional (default=False)
+        Show information regarding the fetching.
 
     Returns
     -------
@@ -238,7 +239,8 @@ def fetch_datasets(data_home=None,
 
         if download_if_missing and not available:
             makedirs(zenodo_dir, exist_ok=True)
-            logger.warning("Downloading %s" % URL)
+            if verbose:
+                print("Downloading %s" % URL)
             f = BytesIO(urlopen(URL).read())
             tar = tarfile.open(fileobj=f)
             tar.extractall(path=zenodo_dir)

@@ -8,18 +8,24 @@ from sklearn.datasets import load_iris
 
 from imblearn.datasets import make_imbalance
 from imblearn.under_sampling import NearMiss
+from imblearn.over_sampling import RandomOverSampler
 
 from imblearn.tensorflow import balanced_batch_generator
 
 tf = pytest.importorskip('tensorflow')
 
 
-@pytest.mark.parametrize("sampler", [None, NearMiss()])
-def test_balanced_batch_generator(sampler):
+@pytest.fixture
+def data():
     X, y = load_iris(return_X_y=True)
     X, y = make_imbalance(X, y, {0: 30, 1: 50, 2: 40})
     X = X.astype(np.float32)
+    return X, y
 
+
+@pytest.mark.parametrize("sampler", [None, NearMiss(), RandomOverSampler()])
+def test_balanced_batch_generator(data, sampler):
+    X, y = data
     batch_size = 10
     training_generator, steps_per_epoch = balanced_batch_generator(
         X, y, sample_weight=None, sampler=sampler,
@@ -73,10 +79,8 @@ def test_balanced_batch_generator(sampler):
 
 
 @pytest.mark.parametrize("keep_sparse", [True, False])
-def test_balanced_batch_generator_function_sparse(keep_sparse):
-    X, y = load_iris(return_X_y=True)
-    X, y = make_imbalance(X, y, {0: 30, 1: 50, 2: 40})
-    X = X.astype(np.float32)
+def test_balanced_batch_generator_function_sparse(data, keep_sparse):
+    X, y = data
 
     training_generator, steps_per_epoch = balanced_batch_generator(
         sparse.csr_matrix(X), y, keep_sparse=keep_sparse, batch_size=10,

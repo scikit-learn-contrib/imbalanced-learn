@@ -3,12 +3,10 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
 import numpy as np
-from sklearn.utils.testing import assert_array_equal
 from pytest import raises
 
+from sklearn.utils.testing import assert_array_equal
 from sklearn.neighbors import KNeighborsClassifier
 
 from imblearn.under_sampling import CondensedNearestNeighbour
@@ -37,9 +35,9 @@ def test_cnn_init():
     assert cnn.n_jobs == 1
 
 
-def test_cnn_fit_sample():
+def test_cnn_fit_resample():
     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
-    X_resampled, y_resampled = cnn.fit_sample(X, Y)
+    X_resampled, y_resampled = cnn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828], [
         0.05230552, 0.09043907
@@ -52,9 +50,9 @@ def test_cnn_fit_sample():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_cnn_fit_sample_with_indices():
+def test_cnn_fit_resample_with_indices():
     cnn = CondensedNearestNeighbour(return_indices=True, random_state=RND_SEED)
-    X_resampled, y_resampled, idx_under = cnn.fit_sample(X, Y)
+    X_resampled, y_resampled, idx_under = cnn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828], [
         0.05230552, 0.09043907
@@ -69,10 +67,10 @@ def test_cnn_fit_sample_with_indices():
     assert_array_equal(idx_under, idx_gt)
 
 
-def test_cnn_fit_sample_with_object():
+def test_cnn_fit_resample_with_object():
     knn = KNeighborsClassifier(n_neighbors=1)
     cnn = CondensedNearestNeighbour(random_state=RND_SEED, n_neighbors=knn)
-    X_resampled, y_resampled = cnn.fit_sample(X, Y)
+    X_resampled, y_resampled = cnn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828], [
         0.05230552, 0.09043907
@@ -85,13 +83,13 @@ def test_cnn_fit_sample_with_object():
     assert_array_equal(y_resampled, y_gt)
 
     cnn = CondensedNearestNeighbour(random_state=RND_SEED, n_neighbors=1)
-    X_resampled, y_resampled = cnn.fit_sample(X, Y)
+    X_resampled, y_resampled = cnn.fit_resample(X, Y)
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_cnn_fit_sample_with_wrong_object():
+def test_cnn_fit_resample_with_wrong_object():
     knn = 'rnd'
     cnn = CondensedNearestNeighbour(random_state=RND_SEED, n_neighbors=knn)
     with raises(ValueError, match="has to be a int or an "):
-        cnn.fit_sample(X, Y)
+        cnn.fit_resample(X, Y)

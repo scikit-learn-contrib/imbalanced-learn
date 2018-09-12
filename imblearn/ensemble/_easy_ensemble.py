@@ -39,8 +39,6 @@ class EasyEnsemble(BaseEnsembleSampler):
        ``EasyEnsemble`` is deprecated in 0.4 and will be removed in 0.6. Use
        ``EasyEnsembleClassifier`` instead.
 
-    Read more in the :ref:`User Guide <ensemble_samplers>`.
-
     Parameters
     ----------
     {sampling_strategy}
@@ -68,8 +66,6 @@ class EasyEnsemble(BaseEnsembleSampler):
 
     Supports multi-class resampling by sampling each class independently.
 
-    See :ref:`sphx_glr_auto_examples_ensemble_plot_easy_ensemble.py`.
-
     See also
     --------
     BalanceCascade, BalancedBaggingClassifier
@@ -93,9 +89,9 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
-    >>> ee = EasyEnsemble(random_state=42)
-    >>> X_res, y_res = ee.fit_sample(X, y)
-    >>> print('Resampled dataset shape %s' % Counter(y_res[0]))
+    >>> ee = EasyEnsemble(random_state=42) # doctest: +SKIP
+    >>> X_res, y_res = ee.fit_resample(X, y) # doctest: +SKIP
+    >>> print('Resampled dataset shape %s' % Counter(y_res[0])) # doctest: +SKIP
     Resampled dataset shape Counter({{0: 100, 1: 100}})
 
     """
@@ -114,7 +110,7 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
         self.replacement = replacement
         self.n_subsets = n_subsets
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
 
         X_resampled = []
@@ -128,7 +124,7 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
                 return_indices=True,
                 random_state=random_state.randint(MAX_INT),
                 replacement=self.replacement)
-            sel_x, sel_y, sel_idx = rus.fit_sample(X, y)
+            sel_x, sel_y, sel_idx = rus.fit_resample(X, y)
             X_resampled.append(sel_x)
             y_resampled.append(sel_y)
             if self.return_indices:
@@ -151,7 +147,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
     ensemble of AdaBoost learners trained on different balanced boostrap
     samples. The balancing is achieved by random under-sampling.
 
-    Read more in the :ref:`User Guide <ensemble_samplers>`.
+    Read more in the :ref:`User Guide <boosting>`.
 
     Parameters
     ----------
@@ -203,7 +199,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
 
     See also
     --------
-    BalanceCascade, BalancedBaggingClassifier
+    BalancedBaggingClassifier, BalancedRandomForestClassifier
 
     References
     ----------

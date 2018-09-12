@@ -3,8 +3,6 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
 import numpy as np
 from pytest import raises
 
@@ -39,9 +37,9 @@ def test_enn_init():
     assert enn.n_jobs == 1
 
 
-def test_enn_fit_sample():
+def test_enn_fit_resample():
     enn = EditedNearestNeighbours()
-    X_resampled, y_resampled = enn.fit_sample(X, Y)
+    X_resampled, y_resampled = enn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828], [
         2.59928271, 0.93323465
@@ -52,9 +50,9 @@ def test_enn_fit_sample():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_enn_fit_sample_with_indices():
+def test_enn_fit_resample_with_indices():
     enn = EditedNearestNeighbours(return_indices=True)
-    X_resampled, y_resampled, idx_under = enn.fit_sample(X, Y)
+    X_resampled, y_resampled, idx_under = enn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828], [
         2.59928271, 0.93323465
@@ -67,9 +65,9 @@ def test_enn_fit_sample_with_indices():
     assert_array_equal(idx_under, idx_gt)
 
 
-def test_enn_fit_sample_mode():
+def test_enn_fit_resample_mode():
     enn = EditedNearestNeighbours(kind_sel='mode')
-    X_resampled, y_resampled = enn.fit_sample(X, Y)
+    X_resampled, y_resampled = enn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828], [
         2.59928271, 0.93323465
@@ -84,10 +82,10 @@ def test_enn_fit_sample_mode():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_enn_fit_sample_with_nn_object():
+def test_enn_fit_resample_with_nn_object():
     nn = NearestNeighbors(n_neighbors=4)
     enn = EditedNearestNeighbours(n_neighbors=nn, kind_sel='mode')
-    X_resampled, y_resampled = enn.fit_sample(X, Y)
+    X_resampled, y_resampled = enn.fit_resample(X, Y)
 
     X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828], [
         2.59928271, 0.93323465
@@ -106,11 +104,11 @@ def test_enn_not_good_object():
     nn = 'rnd'
     enn = EditedNearestNeighbours(n_neighbors=nn, kind_sel='mode')
     with raises(ValueError, match="has to be one of"):
-        enn.fit_sample(X, Y)
+        enn.fit_resample(X, Y)
 
 
 def test_deprecation_random_state():
     enn = EditedNearestNeighbours(random_state=0)
     with warns(
             DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        enn.fit_sample(X, Y)
+        enn.fit_resample(X, Y)

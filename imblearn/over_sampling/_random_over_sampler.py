@@ -48,12 +48,6 @@ class RandomOverSampler(BaseOverSampler):
     Supports heterogeneous data as object array containing string and numeric
     data.
 
-    See
-    :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
-    :ref:`sphx_glr_auto_examples_over-sampling_plot_random_over_sampling.py`,
-    and
-    :ref:`sphx_glr_auto_examples_applications_plot_over_sampling_benchmark_lfw.py`.
-
     Examples
     --------
 
@@ -67,7 +61,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> ros = RandomOverSampler(random_state=42)
-    >>> X_res, y_res = ros.fit_sample(X, y)
+    >>> X_res, y_res = ros.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
 
@@ -88,7 +82,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
         return X, y, binarize_y
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
         target_stats = Counter(y)
 

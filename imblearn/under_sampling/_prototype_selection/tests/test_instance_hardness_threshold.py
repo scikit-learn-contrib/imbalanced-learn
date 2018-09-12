@@ -3,8 +3,6 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
 import numpy as np
 from pytest import raises
 
@@ -36,9 +34,9 @@ def test_iht_init():
     assert iht.random_state == RND_SEED
 
 
-def test_iht_fit_sample():
+def test_iht_fit_resample():
     iht = InstanceHardnessThreshold(ESTIMATOR, random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_sample(X, Y)
+    X_resampled, y_resampled = iht.fit_resample(X, Y)
 
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
@@ -52,10 +50,10 @@ def test_iht_fit_sample():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_iht_fit_sample_with_indices():
+def test_iht_fit_resample_with_indices():
     iht = InstanceHardnessThreshold(
         ESTIMATOR, return_indices=True, random_state=RND_SEED)
-    X_resampled, y_resampled, idx_under = iht.fit_sample(X, Y)
+    X_resampled, y_resampled, idx_under = iht.fit_resample(X, Y)
 
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
@@ -71,11 +69,11 @@ def test_iht_fit_sample_with_indices():
     assert_array_equal(idx_under, idx_gt)
 
 
-def test_iht_fit_sample_half():
+def test_iht_fit_resample_half():
     sampling_strategy = {0: 6, 1: 8}
     iht = InstanceHardnessThreshold(
         ESTIMATOR, sampling_strategy=sampling_strategy, random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_sample(X, Y)
+    X_resampled, y_resampled = iht.fit_resample(X, Y)
 
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
@@ -90,10 +88,10 @@ def test_iht_fit_sample_half():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_iht_fit_sample_class_obj():
+def test_iht_fit_resample_class_obj():
     est = GradientBoostingClassifier(random_state=RND_SEED)
     iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)
-    X_resampled, y_resampled = iht.fit_sample(X, Y)
+    X_resampled, y_resampled = iht.fit_resample(X, Y)
 
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
@@ -107,9 +105,9 @@ def test_iht_fit_sample_class_obj():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_iht_fit_sample_wrong_class_obj():
+def test_iht_fit_resample_wrong_class_obj():
     from sklearn.cluster import KMeans
     est = KMeans()
     iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)
     with raises(ValueError, match="Invalid parameter `estimator`"):
-        iht.fit_sample(X, Y)
+        iht.fit_resample(X, Y)

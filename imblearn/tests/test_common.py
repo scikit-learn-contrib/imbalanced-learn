@@ -2,37 +2,71 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
-from sklearn.utils.testing import _named_check
+
+import pytest
 
 from imblearn.utils.estimator_checks import check_estimator, _yield_all_checks
 from imblearn.utils.testing import all_estimators
 
 
-def test_all_estimator_no_base_class():
+@pytest.mark.parametrize(
+    'name, Estimator',
+    all_estimators()
+)
+def test_all_estimator_no_base_class(name, Estimator):
     # test that all_estimators doesn't find abstract classes.
+    msg = ("Base estimators such as {0} should not be included"
+           " in all_estimators").format(name)
+    assert not name.lower().startswith('base'), msg
+
+
+@pytest.mark.filterwarnings("ignore:'ratio' is deprecated from 0.4")
+@pytest.mark.filterwarnings("ignore:'sampling_strategy' as a dict for")
+@pytest.mark.filterwarnings("ignore:Class EasyEnsemble is deprecated")
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
+@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"out_step" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings("ignore:'y' should be of types")
+@pytest.mark.parametrize(
+    'name, Estimator',
+    all_estimators(include_meta_estimators=True)
+)
+def test_all_estimators(name, Estimator):
+    # don't run twice the sampler tests. Meta-estimator do not have a
+    # fit_resample method.
+    check_estimator(Estimator, run_sampler_tests=False)
+
+
+def _tested_non_meta_estimators():
     for name, Estimator in all_estimators():
-        msg = ("Base estimators such as {0} should not be included"
-               " in all_estimators").format(name)
-        assert not name.lower().startswith('base'), msg
-
-
-def test_all_estimators():
-    estimators = all_estimators(include_meta_estimators=True)
-    assert len(estimators) > 0
-    for name, Estimator in estimators:
-        # some can just not be sensibly default constructed
-        yield (_named_check(check_estimator, name), Estimator)
-
-
-def test_non_meta_estimators():
-    # input validation etc for non-meta estimators
-    estimators = all_estimators()
-    for name, Estimator in estimators:
         if name.startswith("_"):
             continue
-        for check in _yield_all_checks(name, Estimator):
-            yield _named_check(check, name), name, Estimator
+        yield name, Estimator
 
-            logger_name = Estimator().logger.name
-            class_module_name = Estimator.__module__
-            assert logger_name == class_module_name
+
+def _generate_checks_per_estimator(check_generator, estimators):
+    for name, Estimator in estimators:
+        estimator = Estimator()
+        for check in check_generator(name, estimator):
+            yield name, Estimator, check
+
+
+@pytest.mark.filterwarnings("ignore:'ratio' is deprecated from 0.4")
+@pytest.mark.filterwarnings("ignore:'sampling_strategy' as a dict for")
+@pytest.mark.filterwarnings("ignore:Class EasyEnsemble is deprecated")
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
+@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
+@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"out_step" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
+@pytest.mark.filterwarnings("ignore:'y' should be of types")
+@pytest.mark.parametrize(
+    'name, Estimator, check',
+    _generate_checks_per_estimator(_yield_all_checks,
+                                   _tested_non_meta_estimators())
+)
+def test_samplers(name, Estimator, check):
+    # input validation etc for non-meta estimators
+    check(name, Estimator)

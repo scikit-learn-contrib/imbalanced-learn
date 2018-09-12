@@ -13,6 +13,10 @@ from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
+DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
+                          'RepeatedEditedNearestNeighbours', 'AllKNN',
+                          'NeighbourhoodCleaningRule', 'TomekLinks')
+
 
 @Substitution(random_state=_random_state_docstring)
 def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
@@ -127,9 +131,11 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
                              "which has an attribute 'return_indices'.")
         sampler_ = clone(sampler)
         sampler_.set_params(return_indices=True)
-        set_random_state(sampler_, random_state)
+        # FIXME: Remove in 0.6
+        if sampler_.__class__.__name__ not in DONT_HAVE_RANDOM_STATE:
+            set_random_state(sampler_, random_state)
 
-    _, _, indices = sampler_.fit_sample(X, y)
+    _, _, indices = sampler_.fit_resample(X, y)
     # shuffle the indices since the sampler are packing them by class
     random_state.shuffle(indices)
 

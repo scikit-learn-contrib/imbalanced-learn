@@ -6,7 +6,7 @@ clustering."""
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
 import numpy as np
 from scipy import sparse
@@ -72,8 +72,6 @@ class ClusterCentroids(BaseUnderSampler):
     -----
     Supports multi-class resampling by sampling each class independently.
 
-    See :ref:`sphx_glr_auto_examples_under-sampling_plot_cluster_centroids.py`.
-
     Examples
     --------
 
@@ -87,7 +85,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> cc = ClusterCentroids(random_state=42)
-    >>> X_res, y_res = cc.fit_sample(X, y)
+    >>> X_res, y_res = cc.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     ... # doctest: +ELLIPSIS
     Resampled dataset shape Counter({{...}})
@@ -135,7 +133,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
 
         return X_new, y_new
 
-    def _sample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
 
         if self.voting == 'auto':

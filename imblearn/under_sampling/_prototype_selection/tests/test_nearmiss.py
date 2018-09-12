@@ -3,10 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
 from sklearn.neighbors import NearestNeighbors
@@ -28,36 +26,20 @@ Y = np.array([1, 2, 1, 0, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 VERSION_NEARMISS = (1, 2, 3)
 
 
-def test_nearmiss_wrong_version():
-    version = 1000
-    nm = NearMiss(version=version)
-    with raises(ValueError, match="must be 1, 2 or 3"):
-        nm.fit_sample(X, Y)
+@pytest.mark.parametrize(
+    "nearmiss_params, err_msg",
+    [({"version": 1000}, "must be 1, 2 or 3"),
+     ({"version": 1, "n_neighbors": 'rnd'}, "has to be one of"),
+     ({"version": 3, "n_neighbors": NearestNeighbors(n_neighbors=3),
+       "n_neighbors_ver3": "rnd"}, "has to be one of")]
+)
+def test_nearmiss_error(nearmiss_params, err_msg):
+    nm = NearMiss(**nearmiss_params)
+    with pytest.raises(ValueError, match=err_msg):
+        nm.fit_resample(X, Y)
 
 
-def test_nm_wrong_nn_obj():
-    sampling_strategy = 'auto'
-    nn = 'rnd'
-    nm = NearMiss(
-        sampling_strategy=sampling_strategy,
-        version=VERSION_NEARMISS,
-        return_indices=True,
-        n_neighbors=nn)
-    with raises(ValueError, match="has to be one of"):
-        nm.fit_sample(X, Y)
-    nn3 = 'rnd'
-    nn = NearestNeighbors(n_neighbors=3)
-    nm3 = NearMiss(
-        sampling_strategy=sampling_strategy,
-        version=3,
-        return_indices=True,
-        n_neighbors=nn,
-        n_neighbors_ver3=nn3)
-    with raises(ValueError, match="has to be one of"):
-        nm3.fit_sample(X, Y)
-
-
-def test_nm_fit_sample_auto():
+def test_nm_fit_resample_auto():
     sampling_strategy = 'auto'
     X_gt = [
         np.array([[0.91464286, 1.61369212], [-0.80809175, -1.09917302], [
@@ -83,12 +65,12 @@ def test_nm_fit_sample_auto():
     ]
     for version_idx, version in enumerate(VERSION_NEARMISS):
         nm = NearMiss(sampling_strategy=sampling_strategy, version=version)
-        X_resampled, y_resampled = nm.fit_sample(X, Y)
+        X_resampled, y_resampled = nm.fit_resample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
         assert_array_equal(y_resampled, y_gt[version_idx])
 
 
-def test_nm_fit_sample_auto_indices():
+def test_nm_fit_resample_auto_indices():
     sampling_strategy = 'auto'
     X_gt = [
         np.array([[0.91464286, 1.61369212], [-0.80809175, -1.09917302], [
@@ -122,13 +104,13 @@ def test_nm_fit_sample_auto_indices():
             sampling_strategy=sampling_strategy,
             version=version,
             return_indices=True)
-        X_resampled, y_resampled, idx_under = nm.fit_sample(X, Y)
+        X_resampled, y_resampled, idx_under = nm.fit_resample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
         assert_array_equal(y_resampled, y_gt[version_idx])
         assert_array_equal(idx_under, idx_gt[version_idx])
 
 
-def test_nm_fit_sample_float_sampling_strategy():
+def test_nm_fit_resample_float_sampling_strategy():
     sampling_strategy = {0: 3, 1: 4, 2: 4}
     X_gt = [
         np.array([[-0.20497017, -0.26630228], [-0.80809175, -1.09917302], [
@@ -158,12 +140,12 @@ def test_nm_fit_sample_float_sampling_strategy():
 
     for version_idx, version in enumerate(VERSION_NEARMISS):
         nm = NearMiss(sampling_strategy=sampling_strategy, version=version)
-        X_resampled, y_resampled = nm.fit_sample(X, Y)
+        X_resampled, y_resampled = nm.fit_resample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
         assert_array_equal(y_resampled, y_gt[version_idx])
 
 
-def test_nm_fit_sample_nn_obj():
+def test_nm_fit_resample_nn_obj():
     sampling_strategy = 'auto'
     nn = NearestNeighbors(n_neighbors=3)
     X_gt = [
@@ -193,7 +175,7 @@ def test_nm_fit_sample_nn_obj():
             sampling_strategy=sampling_strategy,
             version=version,
             n_neighbors=nn)
-        X_resampled, y_resampled = nm.fit_sample(X, Y)
+        X_resampled, y_resampled = nm.fit_resample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
         assert_array_equal(y_resampled, y_gt[version_idx])
 
@@ -202,4 +184,4 @@ def test_deprecation_random_state():
     nm = NearMiss(random_state=0)
     with warns(
             DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        nm.fit_sample(X, Y)
+        nm.fit_resample(X, Y)

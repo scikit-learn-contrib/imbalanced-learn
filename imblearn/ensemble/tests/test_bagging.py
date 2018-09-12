@@ -16,7 +16,8 @@ from sklearn.svm import SVC
 from sklearn.feature_selection import SelectKBest
 from sklearn.utils.testing import (assert_array_equal,
                                    assert_array_almost_equal, assert_raises,
-                                   assert_warns, assert_warns_message)
+                                   assert_warns, assert_warns_message,
+                                   assert_allclose)
 
 from imblearn.datasets import make_imbalance
 from imblearn.ensemble import BalancedBaggingClassifier
@@ -46,10 +47,10 @@ def test_balanced_bagging_classifier():
     for base_estimator in [
             None,
             DummyClassifier(),
-            Perceptron(),
+            Perceptron(max_iter=1000, tol=1e-3),
             DecisionTreeClassifier(),
             KNeighborsClassifier(),
-            SVC()
+            SVC(gamma='scale')
     ]:
         for params in grid:
             BalancedBaggingClassifier(
@@ -154,8 +155,10 @@ def test_probability():
 
         # Degenerate case, where some classes are missing
         ensemble = BalancedBaggingClassifier(
-            base_estimator=LogisticRegression(), random_state=0,
-            max_samples=5).fit(X_train, y_train)
+            base_estimator=LogisticRegression(solver='lbfgs',
+                                              multi_class='auto'),
+            random_state=0, max_samples=5)
+        ensemble.fit(X_train, y_train)
 
         assert_array_almost_equal(
             np.sum(ensemble.predict_proba(X_test), axis=1),
@@ -178,7 +181,7 @@ def test_oob_score_classification():
         random_state=0)
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
-    for base_estimator in [DecisionTreeClassifier(), SVC()]:
+    for base_estimator in [DecisionTreeClassifier(), SVC(gamma='scale')]:
         clf = BalancedBaggingClassifier(
             base_estimator=base_estimator,
             n_estimators=100,
@@ -281,8 +284,8 @@ def test_gridsearch():
     parameters = {'n_estimators': (1, 2), 'base_estimator__C': (1, 2)}
 
     GridSearchCV(
-        BalancedBaggingClassifier(SVC()), parameters, scoring="roc_auc").fit(
-            X, y)
+        BalancedBaggingClassifier(SVC(gamma='scale')), parameters, cv=3,
+        scoring="roc_auc").fit(X, y)
 
 
 def test_base_estimator():
@@ -310,7 +313,8 @@ def test_base_estimator():
                       DecisionTreeClassifier)
 
     ensemble = BalancedBaggingClassifier(
-        Perceptron(), n_jobs=3, random_state=0).fit(X_train, y_train)
+        Perceptron(max_iter=1000, tol=1e-3), n_jobs=3, random_state=0).fit(
+            X_train, y_train)
 
     assert isinstance(ensemble.base_estimator_.steps[-1][1], Perceptron)
 
@@ -436,45 +440,45 @@ def test_oob_score_consistency():
     assert bagging.fit(X, y).oob_score_ == bagging.fit(X, y).oob_score_
 
 
-# FIXME: uncomment when #9723 is merged in scikit-learn
-# def test_estimators_samples():
-#     # Check that format of estimators_samples_ is correct and that results
-#     # generated at fit time can be identically reproduced at a later time
-#     # using data saved in object attributes.
-#     X, y = make_hastie_10_2(n_samples=200, random_state=1)
+def test_estimators_samples():
+    # Check that format of estimators_samples_ is correct and that results
+    # generated at fit time can be identically reproduced at a later time
+    # using data saved in object attributes.
+    X, y = make_hastie_10_2(n_samples=200, random_state=1)
 
-#     # remap the y outside of the BalancedBaggingclassifier
-#     # _, y = np.unique(y, return_inverse=True)
-#     bagging = BalancedBaggingClassifier(LogisticRegression(),
-#                                         max_samples=0.5,
-#                                         max_features=0.5, random_state=1,
-#                                         bootstrap=False)
-#     bagging.fit(X, y)
+    # remap the y outside of the BalancedBaggingclassifier
+    # _, y = np.unique(y, return_inverse=True)
+    bagging = BalancedBaggingClassifier(LogisticRegression(solver='lbfgs',
+                                                           multi_class='auto'),
+                                        max_samples=0.5,
+                                        max_features=0.5, random_state=1,
+                                        bootstrap=False)
+    bagging.fit(X, y)
 
-#     # Get relevant attributes
-#     estimators_samples = bagging.estimators_samples_
-#     estimators_features = bagging.estimators_features_
-#     estimators = bagging.estimators_
+    # Get relevant attributes
+    estimators_samples = bagging.estimators_samples_
+    estimators_features = bagging.estimators_features_
+    estimators = bagging.estimators_
 
-#     # Test for correct formatting
-#     assert len(estimators_samples) == len(estimators)
-#     assert len(estimators_samples[0]) == len(X)
-#     assert estimators_samples[0].dtype.kind == 'b'
+    # Test for correct formatting
+    assert len(estimators_samples) == len(estimators)
+    assert len(estimators_samples[0]) == len(X) // 2
+    assert estimators_samples[0].dtype.kind == 'i'
 
-#     # Re-fit single estimator to test for consistent sampling
-#     estimator_index = 0
-#     estimator_samples = estimators_samples[estimator_index]
-#     estimator_features = estimators_features[estimator_index]
-#     estimator = estimators[estimator_index]
+    # Re-fit single estimator to test for consistent sampling
+    estimator_index = 0
+    estimator_samples = estimators_samples[estimator_index]
+    estimator_features = estimators_features[estimator_index]
+    estimator = estimators[estimator_index]
 
-#     X_train = (X[estimator_samples])[:, estimator_features]
-#     y_train = y[estimator_samples]
+    X_train = (X[estimator_samples])[:, estimator_features]
+    y_train = y[estimator_samples]
 
-#     orig_coefs = estimator.steps[-1][1].coef_
-#     estimator.fit(X_train, y_train)
-#     new_coefs = estimator.steps[-1][1].coef_
+    orig_coefs = estimator.steps[-1][1].coef_
+    estimator.fit(X_train, y_train)
+    new_coefs = estimator.steps[-1][1].coef_
 
-#     assert_array_almost_equal(orig_coefs, new_coefs)
+    assert_allclose(orig_coefs, new_coefs)
 
 
 def test_max_samples_consistency():

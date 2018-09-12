@@ -7,8 +7,6 @@ links."""
 
 from __future__ import division
 
-import logging
-
 from sklearn.base import clone
 from sklearn.utils import check_X_y
 
@@ -16,7 +14,7 @@ from ..base import BaseSampler
 from ..over_sampling import SMOTE
 from ..over_sampling.base import BaseOverSampler
 from ..under_sampling import TomekLinks
-from ..utils import check_target_type, hash_X_y
+from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
@@ -60,9 +58,6 @@ class SMOTETomek(BaseSampler):
     Supports multi-class resampling. Refer to SMOTE and TomekLinks regarding
     the scheme which used.
 
-    See :ref:`sphx_glr_auto_examples_combine_plot_smote_tomek.py` and
-    :ref:`sphx_glr_auto_examples_combine_plot_comparison_combine.py`.
-
     See also
     --------
     SMOTEENN : Over-sample using SMOTE followed by under-sampling using Edited
@@ -86,11 +81,13 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> smt = SMOTETomek(random_state=42)
-    >>> X_res, y_res = smt.fit_sample(X, y)
+    >>> X_res, y_res = smt.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
 
     """
+
+    _sampling_type = 'over-sampling'
 
     def __init__(self,
                  sampling_strategy='auto',
@@ -104,7 +101,6 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
         self.smote = smote
         self.tomek = tomek
         self.ratio = ratio
-        self.logger = logging.getLogger(__name__)
 
     def _validate_estimator(self):
         "Private function to validate SMOTE and ENN objects"
@@ -132,32 +128,11 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
         else:
             self.tomek_ = TomekLinks(sampling_strategy='all')
 
-    def fit(self, X, y):
-        """Find the classes statistics before to perform sampling.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Matrix containing the data which have to be sampled.
-
-        y : array-like, shape (n_samples,)
-            Corresponding label for each sample in X.
-
-        Returns
-        -------
-        self : object,
-            Return self.
-
-        """
+    def _fit_resample(self, X, y):
+        self._validate_estimator()
         y = check_target_type(y)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         self.sampling_strategy_ = self.sampling_strategy
-        self.X_hash_, self.y_hash_ = hash_X_y(X, y)
 
-        return self
-
-    def _sample(self, X, y):
-        self._validate_estimator()
-
-        X_res, y_res = self.smote_.fit_sample(X, y)
-        return self.tomek_.fit_sample(X_res, y_res)
+        X_res, y_res = self.smote_.fit_resample(X, y)
+        return self.tomek_.fit_resample(X_res, y_res)
