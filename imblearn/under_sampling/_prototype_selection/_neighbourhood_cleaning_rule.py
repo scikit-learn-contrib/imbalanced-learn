@@ -38,7 +38,11 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
-        selected from the majority class.
+        selected.
+
+        .. deprecated:: 0.4
+           ``return_indices`` is deprecated. Use the attribute
+           ``sample_indices_`` instead.
 
     {random_state}
 
@@ -67,6 +71,14 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         .. deprecated:: 0.4
            Use the parameter ``sampling_strategy`` instead. It will be removed
            in 0.6.
+
+    Attributes
+    ----------
+    sample_indices_ : ndarray, shape (n_new_samples)
+        Indices of the samples selected.
+
+        .. versionadded:: 0.4
+           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -137,6 +149,9 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                 " Got {} instead.".format(self.threshold_cleaning))
 
     def _fit_resample(self, X, y):
+        if self.return_indices:
+            deprecate_parameter(self, '0.4', 'return_indices',
+                                'sample_indices_')
         self._validate_estimator()
         enn = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
@@ -181,11 +196,10 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         union_a1_a2 = np.union1d(index_a1, index_a2).astype(int)
         selected_samples = np.ones(y.shape, dtype=bool)
         selected_samples[union_a1_a2] = False
-        index_target_class = np.flatnonzero(selected_samples)
+        self.sample_indices_ = np.flatnonzero(selected_samples)
 
         if self.return_indices:
-            return (safe_indexing(X, index_target_class), safe_indexing(
-                y, index_target_class), index_target_class)
-        else:
-            return (safe_indexing(X, index_target_class), safe_indexing(
-                y, index_target_class))
+            return (safe_indexing(X, self.sample_indices_),
+                    safe_indexing(y, index_target_class), self.sample_indices_)
+        return (safe_indexing(X, self.sample_indices_),
+                safe_indexing(y, self.sample_indices_))

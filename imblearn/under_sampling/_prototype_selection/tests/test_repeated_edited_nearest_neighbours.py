@@ -3,8 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
 from sklearn.neighbors import NearestNeighbors
@@ -54,7 +54,7 @@ def test_renn_init():
 def test_renn_iter_wrong():
     max_iter = -1
     renn = RepeatedEditedNearestNeighbours(max_iter=max_iter)
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         renn.fit_resample(X, Y)
 
 
@@ -86,6 +86,7 @@ def test_renn_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_renn_fit_resample_with_indices():
     renn = RepeatedEditedNearestNeighbours(return_indices=True)
     X_resampled, y_resampled, idx_under = renn.fit_resample(X, Y)
@@ -191,7 +192,7 @@ def test_renn_fit_resample_mode():
 def test_renn_not_good_object():
     nn = 'rnd'
     renn = RepeatedEditedNearestNeighbours(n_neighbors=nn, kind_sel='mode')
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         renn.fit_resample(X, Y)
 
 

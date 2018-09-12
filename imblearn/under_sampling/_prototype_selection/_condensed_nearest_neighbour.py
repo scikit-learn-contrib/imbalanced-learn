@@ -19,6 +19,7 @@ from sklearn.utils import check_random_state, safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import Substitution
+from ...utils.deprecation import deprecate_parameter
 from ...utils._docstring import _random_state_docstring
 
 
@@ -37,7 +38,11 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
-        selected from the majority class.
+        selected.
+
+        .. deprecated:: 0.4
+           ``return_indices`` is deprecated. Use the attribute
+           ``sample_indices_`` instead.
 
     {random_state}
 
@@ -58,6 +63,14 @@ KNeighborsClassifier(n_neighbors=1))
         .. deprecated:: 0.4
            Use the parameter ``sampling_strategy`` instead. It will be removed
            in 0.6.
+
+    Attributes
+    ----------
+    sample_indices_ : ndarray, shape (n_new_samples)
+        Indices of the samples selected.
+
+        .. versionadded:: 0.4
+           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -126,6 +139,9 @@ CondensedNearestNeighbour # doctest: +SKIP
                              ' Got {} instead.'.format(type(self.n_neighbors)))
 
     def _fit_resample(self, X, y):
+        if self.return_indices:
+            deprecate_parameter(self, '0.4', 'return_indices',
+                                'sample_indices_')
         self._validate_estimator()
 
         random_state = check_random_state(self.random_state)
@@ -198,8 +214,9 @@ CondensedNearestNeighbour # doctest: +SKIP
                 idx_under = np.concatenate(
                     (idx_under, np.flatnonzero(y == target_class)), axis=0)
 
+        self.sample_indices_ = idx_under
+
         if self.return_indices:
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
                     idx_under)
-        else:
-            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)

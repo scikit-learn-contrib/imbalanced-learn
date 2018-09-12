@@ -3,8 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.neighbors import NearestNeighbors
@@ -94,6 +94,7 @@ def test_all_knn_allow_minority():
     assert len(y_res_1) < len(y_res_2)
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_allknn_fit_resample_with_indices():
     allknn = AllKNN(return_indices=True)
     X_resampled, y_resampled, idx_under = allknn.fit_resample(X, Y)
@@ -196,7 +197,7 @@ def test_allknn_fit_resample_with_nn_object():
 def test_alknn_not_good_object():
     nn = 'rnd'
     allknn = AllKNN(n_neighbors=nn, kind_sel='mode')
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         allknn.fit_resample(X, Y)
 
 

@@ -36,9 +36,9 @@ def _local_parallel_build_trees(sampler, tree, forest, X, y, sample_weight,
                                 tree_idx, n_trees, verbose=0,
                                 class_weight=None):
     # resample before to fit the tree
-    X_resampled, y_resampled, selected_idx = sampler.fit_sample(X, y)
+    X_resampled, y_resampled = sampler.fit_sample(X, y)
     if sample_weight is not None:
-        sample_weight = safe_indexing(sample_weight, selected_idx)
+        sample_weight = safe_indexing(sample_weight, sampler.sample_indices_)
     tree = _parallel_build_trees(tree, forest, X_resampled, y_resampled,
                                  sample_weight, tree_idx, n_trees,
                                  verbose=verbose, class_weight=class_weight)
@@ -306,8 +306,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self.sampling_strategy,
-            replacement=self.replacement,
-            return_indices=True)
+            replacement=self.replacement)
 
     def _make_sampler_estimator(self, random_state=None):
         """Make and configure a copy of the `base_estimator_` attribute.
@@ -450,9 +449,6 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             # Create pipeline with the fitted samplers and trees
             self.pipelines_.extend([make_pipeline(deepcopy(s), deepcopy(t))
                                     for s, t in zip(samplers, trees)])
-            for idx in range(len(self.pipelines_)):
-                self.pipelines_[idx].named_steps[
-                    'randomundersampler'].set_params(return_indices=False)
 
         if self.oob_score:
             self._set_oob_score(X, y)
