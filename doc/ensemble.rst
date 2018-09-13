@@ -80,7 +80,7 @@ provides all functionality of the
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
   0.80...
   >>> brf.feature_importances_  # doctest: +ELLIPSIS
-  array([ 0.55...,  0.44...])
+  array([ 0.57...,  0.42...])
 
 .. _boosting:
 
