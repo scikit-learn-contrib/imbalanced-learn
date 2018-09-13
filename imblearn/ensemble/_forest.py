@@ -66,22 +66,6 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         "gini" for the Gini impurity and "entropy" for the information gain.
         Note: this parameter is tree-specific.
 
-    max_features : int, float, string or None, optional (default="auto")
-        The number of features to consider when looking for the best split:
-
-        - If int, then consider `max_features` features at each split.
-        - If float, then `max_features` is a percentage and
-          `int(max_features * n_features)` features are considered at each
-          split.
-        - If "auto", then `max_features=sqrt(n_features)`.
-        - If "sqrt", then `max_features=sqrt(n_features)` (same as "auto").
-        - If "log2", then `max_features=log2(n_features)`.
-        - If None, then `max_features=n_features`.
-
-        Note: the search for a split does not stop until at least one
-        valid partition of the node samples is found, even if it requires to
-        effectively inspect more than ``max_features`` features.
-
     max_depth : integer or None, optional (default=None)
         The maximum depth of the tree. If None, then nodes are expanded until
         all leaves are pure or until all leaves contain less than
@@ -108,10 +92,21 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         the input samples) required to be at a leaf node. Samples have
         equal weight when sample_weight is not provided.
 
-        .. deprecated:: 0.20
-           The parameter ``min_weight_fraction_leaf`` is deprecated in version
-           0.20. Its implementation, like ``min_samples_leaf``, is ineffective
-           for regularization.
+    max_features : int, float, string or None, optional (default="auto")
+        The number of features to consider when looking for the best split:
+
+        - If int, then consider `max_features` features at each split.
+        - If float, then `max_features` is a percentage and
+          `int(max_features * n_features)` features are considered at each
+          split.
+        - If "auto", then `max_features=sqrt(n_features)`.
+        - If "sqrt", then `max_features=sqrt(n_features)` (same as "auto").
+        - If "log2", then `max_features=log2(n_features)`.
+        - If None, then `max_features=n_features`.
+
+        Note: the search for a split does not stop until at least one
+        valid partition of the node samples is found, even if it requires to
+        effectively inspect more than ``max_features`` features.
 
     max_leaf_nodes : int or None, optional (default=None)
         Grow trees with ``max_leaf_nodes`` in best-first fashion.
@@ -239,10 +234,10 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     >>> clf.fit(X, y)  # doctest: +ELLIPSIS
     BalancedRandomForestClassifier(...)
     >>> print(clf.feature_importances_)
-    [ 0.21521153  0.01054557  0.00689419  0.17404434  0.00414734  0.00704686
-      0.19761999  0.01865445  0.00608294  0.00490484  0.00866699  0.0046718
-      0.00359038  0.01168016  0.09392572  0.04978297  0.0033278   0.01008566
-      0.15534173  0.01377474]
+    [ 0.21506735  0.0104961   0.00706549  0.17414694  0.00556422  0.00704686
+      0.19779549  0.01865445  0.00608294  0.00490484  0.00866699  0.00251414
+      0.00339721  0.01174379  0.09380596  0.05049964  0.0033278   0.01008566
+      0.15534173  0.01379241]
     >>> print(clf.predict([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ...                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]))
     [1]
@@ -253,8 +248,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                  criterion="gini",
                  max_depth=None,
                  min_samples_split=2,
-                 min_samples_leaf='deprecated',
-                 min_weight_fraction_leaf='deprecated',
+                 min_samples_leaf=2,
+                 min_weight_fraction_leaf=0.,
                  max_features="auto",
                  max_leaf_nodes=None,
                  min_impurity_decrease=0.,
