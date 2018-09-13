@@ -182,12 +182,10 @@ KNeighborsClassifier(n_neighbors=1))
 
         # apply Tomek cleaning
         tl = TomekLinks(
-            sampling_strategy=list(self.sampling_strategy_.keys()),
-            return_indices=True)
-        X_cleaned, y_cleaned, idx_cleaned = tl.fit_resample(
-            X_resampled, y_resampled)
+            sampling_strategy=list(self.sampling_strategy_.keys()))
+        X_cleaned, y_cleaned = tl.fit_resample(X_resampled, y_resampled)
 
-        self.sample_indices_ = safe_indexing(idx_under, idx_cleaned)
+        self.sample_indices_ = safe_indexing(idx_under, tl.sample_indices_)
         if self.return_indices:
             return (X_cleaned, y_cleaned, self.sample_indices_)
         return X_cleaned, y_cleaned

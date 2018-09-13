@@ -155,12 +155,12 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         self._validate_estimator()
         enn = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
-            return_indices=True,
             n_neighbors=self.n_neighbors,
             kind_sel='mode',
             n_jobs=self.n_jobs,
             ratio=self.ratio)
-        _, _, index_not_a1 = enn.fit_resample(X, y)
+        enn.fit_resample(X, y)
+        index_not_a1 = enn.sample_indices_
         index_a1 = np.ones(y.shape, dtype=bool)
         index_a1[index_not_a1] = False
         index_a1 = np.flatnonzero(index_a1)
@@ -200,6 +200,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
         if self.return_indices:
             return (safe_indexing(X, self.sample_indices_),
-                    safe_indexing(y, index_target_class), self.sample_indices_)
+                    safe_indexing(y, self.sample_indices_), self.sample_indices_)
         return (safe_indexing(X, self.sample_indices_),
                 safe_indexing(y, self.sample_indices_))

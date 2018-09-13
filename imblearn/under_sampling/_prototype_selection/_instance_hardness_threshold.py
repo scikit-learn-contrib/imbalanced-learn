@@ -139,7 +139,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     def _fit_resample(self, X, y):
         if self.return_indices:
             deprecate_parameter(self, '0.4', 'return_indices',
-                               'sample_indices_')
+                                'sample_indices_')
         self._validate_estimator()
 
         target_stats = Counter(y)

@@ -35,7 +35,7 @@ class BalancedBatchGenerator(ParentClass):
     Create a keras ``Sequence`` which is given to ``fit_generator``. The
     sampler defines the sampling strategy used to balance the dataset ahead of
     creating the batch. The sampler should have an attribute
-    ``return_indices``.
+    ``sample_indices_``.
 
     Parameters
     ----------
@@ -49,7 +49,7 @@ class BalancedBatchGenerator(ParentClass):
         Sample weight.
 
     sampler : object or None, optional (default=RandomUnderSampler)
-        A sampler instance which has an attribute ``return_indices``.
+        A sampler instance which has an attribute ``sample_indices_``.
         By default, the sampler used is a
         :class:`imblearn.under_sampling.RandomUnderSampler`.
 
@@ -118,20 +118,18 @@ class BalancedBatchGenerator(ParentClass):
     def _sample(self):
         random_state = check_random_state(self.random_state)
         if self.sampler is None:
-            self.sampler_ = RandomUnderSampler(return_indices=True,
-                                               random_state=random_state)
+            self.sampler_ = RandomUnderSampler(random_state=random_state)
         else:
-            if not hasattr(self.sampler, 'return_indices'):
-                raise ValueError("'sampler' needs to return the indices of "
-                                 "the samples selected. Provide a sampler "
-                                 "which has an attribute 'return_indices'.")
             self.sampler_ = clone(self.sampler)
-            self.sampler_.set_params(return_indices=True)
             # FIXME: Remove in 0.6
             if self.sampler_.__class__.__name__ not in DONT_HAVE_RANDOM_STATE:
                 set_random_state(self.sampler_, random_state)
 
-        _, _, self.indices_ = self.sampler_.fit_resample(self.X, self.y)
+        self.sampler_.fit_resample(self.X, self.y)
+        if not hasattr(self.sampler_, 'sample_indices_'):
+            raise ValueError("'sampler' needs to have an attribute "
+                             "'sample_indices_'.")
+        self.indices_ = self.sampler_.sample_indices_
         # shuffle the indices since the sampler are packing them by class
         random_state.shuffle(self.indices_)
 
@@ -168,7 +166,7 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
     Returns a generator --- as well as the number of step per epoch --- which
     is given to ``fit_generator``. The sampler defines the sampling strategy
     used to balance the dataset ahead of creating the batch. The sampler should
-    have an attribute ``return_indices``.
+    have an attribute ``sample_indices_``.
 
     Parameters
     ----------
@@ -182,7 +180,7 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
         Sample weight.
 
     sampler : object or None, optional (default=RandomUnderSampler)
-        A sampler instance which has an attribute ``return_indices``.
+        A sampler instance which has an attribute ``sample_indices_``.
         By default, the sampler used is a
         :class:`imblearn.under_sampling.RandomUnderSampler`.
 
