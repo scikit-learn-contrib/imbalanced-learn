@@ -5,6 +5,7 @@
 
 from collections import Counter
 
+import pytest
 import numpy as np
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_array_equal
@@ -59,6 +60,7 @@ def test_ros_fit_resample_half():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_random_over_sampling_return_indices():
     ros = RandomOverSampler(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, sample_indices = ros.fit_resample(X, Y)

@@ -36,7 +36,7 @@ def _build_keras_model(n_classes, n_features):
 
 
 def test_balanced_batch_generator_class_no_return_indices(data):
-    with pytest.raises(ValueError, match='needs to return the indices'):
+    with pytest.raises(ValueError, match='needs to have an attribute'):
         BalancedBatchGenerator(*data, sampler=ClusterCentroids(), batch_size=10)
 
 
@@ -75,7 +75,7 @@ def test_balanced_batch_generator_class_sparse(data, keep_sparse):
 
 
 def test_balanced_batch_generator_function_no_return_indices(data):
-    with pytest.raises(ValueError, match='needs to return the indices'):
+    with pytest.raises(ValueError, match='needs to have an attribute'):
         balanced_batch_generator(
             *data, sampler=ClusterCentroids(), batch_size=10, random_state=42)
 

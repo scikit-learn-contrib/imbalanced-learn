@@ -37,6 +37,11 @@ from imblearn.utils.testing import warns
 
 DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE']
 SUPPORT_STRING = ['RandomUnderSampler', 'RandomOverSampler']
+HAVE_SAMPLE_INDICES = [
+    'RandomOverSampler', 'RandomUnderSampler', 'InstanceHardnessThreshold',
+    'NearMiss', 'TomekLinks', 'EditedNearestNeighbours',
+    'RepeatedEditedNearestNeighbours', 'AllKNN', 'OneSidedSelection',
+    'CondensedNearestNeighbour', 'NeighbourhoodCleaningRule']
 # FIXME: remove in 0.6
 DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
                           'RepeatedEditedNearestNeighbours', 'AllKNN',
@@ -77,6 +82,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_pandas
     yield check_samplers_multiclass_ova
     yield check_samplers_preserve_dtype
+    yield check_samplers_sample_indices
 
 
 def _yield_all_checks(name, estimator):
@@ -158,12 +164,8 @@ def check_samplers_fit(name, Sampler):
 
 def check_samplers_fit_resample(name, Sampler):
     sampler = Sampler()
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0)
+    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
+                                weights=[0.2, 0.3, 0.5], random_state=0)
     target_stats = Counter(y)
     X_res, y_res = sampler.fit_resample(X, y)
     if isinstance(sampler, BaseOverSampler):
@@ -196,12 +198,9 @@ def check_samplers_fit_resample(name, Sampler):
 def check_samplers_ratio_fit_resample(name, Sampler):
     if name not in DONT_SUPPORT_RATIO:
         # in this test we will force all samplers to not change the class 1
-        X, y = make_classification(
-            n_samples=1000,
-            n_classes=3,
-            n_informative=4,
-            weights=[0.2, 0.3, 0.5],
-            random_state=0)
+        X, y = make_classification(n_samples=1000, n_classes=3,
+                                   n_informative=4, weights=[0.2, 0.3, 0.5],
+                                   random_state=0)
         sampler = Sampler()
         expected_stat = Counter(y)[1]
         if isinstance(sampler, BaseOverSampler):
@@ -229,12 +228,8 @@ def check_samplers_ratio_fit_resample(name, Sampler):
 
 def check_samplers_sampling_strategy_fit_resample(name, Sampler):
     # in this test we will force all samplers to not change the class 1
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0)
+    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
+                               weights=[0.2, 0.3, 0.5], random_state=0)
     sampler = Sampler()
     expected_stat = Counter(y)[1]
     if isinstance(sampler, BaseOverSampler):
@@ -263,12 +258,8 @@ def check_samplers_sampling_strategy_fit_resample(name, Sampler):
 def check_samplers_sparse(name, Sampler):
     # check that sparse matrices can be passed through the sampler leading to
     # the same results than dense
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0)
+    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
+                               weights=[0.2, 0.3, 0.5], random_state=0)
     X_sparse = sparse.csr_matrix(X)
     if isinstance(Sampler(), SMOTE):
         samplers = [
@@ -309,12 +300,8 @@ def check_samplers_sparse(name, Sampler):
 def check_samplers_pandas(name, Sampler):
     pd = pytest.importorskip("pandas")
     # Check that the samplers handle pandas dataframe and pandas series
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0)
+    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
+                               weights=[0.2, 0.3, 0.5], random_state=0)
     X_pd = pd.DataFrame(X)
     sampler = Sampler()
     if isinstance(Sampler(), SMOTE):
@@ -341,12 +328,8 @@ def check_samplers_pandas(name, Sampler):
 
 def check_samplers_multiclass_ova(name, Sampler):
     # Check that multiclass target lead to the same results than OVA encoding
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0)
+    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
+                               weights=[0.2, 0.3, 0.5], random_state=0)
     y_ova = label_binarize(y, np.unique(y))
     sampler = Sampler()
     # FIXME: in 0.6 set the random_state for all
@@ -365,12 +348,8 @@ def check_samplers_multiclass_ova(name, Sampler):
 
 
 def check_samplers_preserve_dtype(name, Sampler):
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0)
+    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
+                               weights=[0.2, 0.3, 0.5], random_state=0)
     # Cast X and y to not default dtype
     X = X.astype(np.float32)
     y = y.astype(np.int32)
@@ -381,3 +360,14 @@ def check_samplers_preserve_dtype(name, Sampler):
     X_res, y_res = sampler.fit_resample(X, y)
     assert X.dtype == X_res.dtype, "X dtype is not preserved"
     assert y.dtype == y_res.dtype, "y dtype is not preserved"
+
+
+def check_samplers_sample_indices(name, Sampler):
+    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
+                               weights=[0.2, 0.3, 0.5], random_state=0)
+    sampler = Sampler()
+    sampler.fit_resample(X, y)
+    if name in HAVE_SAMPLE_INDICES:
+        assert hasattr(sampler, 'sample_indices_')
+    else:
+        assert not hasattr(sampler, 'sample_indices_')

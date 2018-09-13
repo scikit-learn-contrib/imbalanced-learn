@@ -67,7 +67,7 @@ def test_balanced_random_forest_attributes(imbalanced_dataset):
     brf.fit(X, y)
 
     for idx in range(n_estimators):
-        X_res, y_res, _ = brf.samplers_[idx].fit_resample(X, y)
+        X_res, y_res = brf.samplers_[idx].fit_resample(X, y)
         X_res_2, y_res_2 = brf.pipelines_[idx].named_steps[
             'randomundersampler'].fit_resample(X, y)
         assert_allclose(X_res, X_res_2)

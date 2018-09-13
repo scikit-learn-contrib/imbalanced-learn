@@ -147,3 +147,8 @@ Deprecation
 
 - Deprecate :class:`imblearn.ensemble.BalanceCascade`.
   :issue:`472` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Deprecate ``return_indices`` in all samplers. Instead, an attribute
+  ``sample_indices_`` is created whenever the sampler is selecting a subset of
+  the original samples.
+  :issue:`474` by :user:`Guillaume Lemaitre <glemaitre`.

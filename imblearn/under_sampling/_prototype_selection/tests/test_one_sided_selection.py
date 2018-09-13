@@ -3,8 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
 from sklearn.neighbors import KNeighborsClassifier
@@ -48,6 +48,7 @@ def test_oss_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_oss_fit_resample_with_indices():
     oss = OneSidedSelection(return_indices=True, random_state=RND_SEED)
     X_resampled, y_resampled, idx_under = oss.fit_resample(X, Y)
@@ -91,5 +92,5 @@ def test_oss_with_object():
 def test_oss_with_wrong_object():
     knn = 'rnd'
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
-    with raises(ValueError, match="has to be a int"):
+    with pytest.raises(ValueError, match="has to be a int"):
         oss.fit_resample(X, Y)

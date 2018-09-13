@@ -169,8 +169,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self.sampling_strategy,
-            replacement=self.replacement,
-            return_indices=True)
+            replacement=self.replacement)
 
     def _make_sampler_estimator(self, append=True, random_state=None):
         """Make and configure a copy of the `base_estimator_` attribute.
@@ -191,9 +190,6 @@ class RUSBoostClassifier(AdaBoostClassifier):
             self.samplers_.append(sampler)
             self.pipelines_.append(make_pipeline(deepcopy(sampler),
                                                  deepcopy(estimator)))
-            # do not return the indices within a pipeline
-            self.pipelines_[-1].named_steps['randomundersampler'].set_params(
-                return_indices=False)
 
         return estimator, sampler
 
@@ -202,8 +198,9 @@ class RUSBoostClassifier(AdaBoostClassifier):
         estimator, sampler = self._make_sampler_estimator(
             random_state=random_state)
 
-        X_res, y_res, idx_res = sampler.fit_resample(X, y)
-        sample_weight_res = safe_indexing(sample_weight, idx_res)
+        X_res, y_res = sampler.fit_resample(X, y)
+        sample_weight_res = safe_indexing(sample_weight,
+                                          sampler.sample_indices_)
         estimator.fit(X_res, y_res, sample_weight=sample_weight_res)
 
         y_predict_proba = estimator.predict_proba(X)
@@ -263,8 +260,9 @@ class RUSBoostClassifier(AdaBoostClassifier):
         estimator, sampler = self._make_sampler_estimator(
             random_state=random_state)
 
-        X_res, y_res, idx_res = sampler.fit_resample(X, y)
-        sample_weight_res = safe_indexing(sample_weight, idx_res)
+        X_res, y_res = sampler.fit_resample(X, y)
+        sample_weight_res = safe_indexing(sample_weight,
+                                          sampler.sample_indices_)
         estimator.fit(X_res, y_res, sample_weight=sample_weight_res)
 
         y_predict = estimator.predict(X)

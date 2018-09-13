@@ -5,6 +5,7 @@
 
 from collections import Counter
 
+import pytest
 import numpy as np
 from sklearn.utils.testing import assert_array_equal
 
@@ -32,6 +33,7 @@ def test_rus_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_rus_fit_resample_with_indices():
     rus = RandomUnderSampler(
         return_indices=True, random_state=RND_SEED, replacement=True)

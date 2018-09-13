@@ -121,14 +121,13 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
         for _ in range(self.n_subsets):
             rus = RandomUnderSampler(
                 sampling_strategy=self.sampling_strategy_,
-                return_indices=True,
                 random_state=random_state.randint(MAX_INT),
                 replacement=self.replacement)
-            sel_x, sel_y, sel_idx = rus.fit_resample(X, y)
+            sel_x, sel_y = rus.fit_resample(X, y)
             X_resampled.append(sel_x)
             y_resampled.append(sel_y)
             if self.return_indices:
-                idx_under.append(sel_idx)
+                idx_under.append(rus.sample_indices_)
 
         if self.return_indices:
             return (np.array(X_resampled), np.array(y_resampled),
