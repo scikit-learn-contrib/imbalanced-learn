@@ -12,7 +12,7 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.base import clone
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, MiniBatchKMeans
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import safe_indexing
 
@@ -62,6 +62,7 @@ class ClusterCentroids(BaseUnderSampler):
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
+         It works when mini_batch is False.
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
@@ -98,6 +99,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                  estimator=None,
                  voting='auto',
                  n_jobs=1,
+                 mini_batch=False,
+                 batch_size=100,
                  ratio=None):
         super(ClusterCentroids, self).__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
@@ -105,13 +108,20 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         self.estimator = estimator
         self.voting = voting
         self.n_jobs = n_jobs
+        self.mini_batch = mini_batch
+        self.batch_size = batch_size
 
     def _validate_estimator(self):
         """Private function to create the KMeans estimator"""
         if self.estimator is None:
-            self.estimator_ = KMeans(
-                random_state=self.random_state, n_jobs=self.n_jobs)
-        elif isinstance(self.estimator, KMeans):
+            if self.mini_batch:
+                self.estimator_ = MiniBatchKMeans(
+                    random_state=self.random_state, batch_size=self.batch_size)
+            else:
+                self.estimator_ = KMeans(
+                    random_state=self.random_state, n_jobs=self.n_jobs)
+        elif isinstance(self.estimator, KMeans) or \
+                isinstance(self.estimator, MiniBatchKMeans):
             self.estimator_ = clone(self.estimator)
         else:
             raise ValueError('`estimator` has to be a KMeans clustering.'
@@ -153,6 +163,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
                 self.estimator_.set_params(**{'n_clusters': n_samples})
+                if self.mini_batch:
+                    self.estimator_.set_params(**{'init_size': 3*n_samples})
                 self.estimator_.fit(X[y == target_class])
                 X_new, y_new = self._generate_sample(
                     X, y, self.estimator_.cluster_centers_, target_class)
