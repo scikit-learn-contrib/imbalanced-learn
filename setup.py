@@ -21,8 +21,6 @@ URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 LICENSE = 'MIT'
 DOWNLOAD_URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 
-VERSION = __version__
-
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
                'License :: OSI Approved',
