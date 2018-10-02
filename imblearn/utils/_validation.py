@@ -5,7 +5,7 @@
 from __future__ import division
 
 import warnings
-from collections import Counter
+
 from collections import OrderedDict
 from numbers import Integral, Real
 
@@ -57,6 +57,13 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
         raise_isinstance_error(nn_name, [int, KNeighborsMixin], nn_object)
 
 
+
+def _count_class_sample(y):
+    unique, counts = np.unique(y, return_counts=True)
+    return dict(zip(unique, counts))
+
+
+
 def check_target_type(y, indicate_one_vs_all=False):
     """Check the target types to be conform to the current samplers.
 
@@ -97,7 +104,9 @@ def check_target_type(y, indicate_one_vs_all=False):
 
 def _sampling_strategy_all(y, sampling_type):
     """Returns sampling target by targeting all classes."""
-    target_stats = Counter(y)
+
+    target_stats = _count_class_sample(y)
+
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         sampling_strategy = {
@@ -124,7 +133,9 @@ def _sampling_strategy_majority(y, sampling_type):
                          " over-sampler.")
     elif (sampling_type == 'under-sampling' or
           sampling_type == 'clean-sampling'):
-        target_stats = Counter(y)
+
+        target_stats = _count_class_sample(y)
+
         class_majority = max(target_stats, key=target_stats.get)
         n_sample_minority = min(target_stats.values())
         sampling_strategy = {
@@ -140,7 +151,9 @@ def _sampling_strategy_majority(y, sampling_type):
 def _sampling_strategy_not_majority(y, sampling_type):
     """Returns sampling target by targeting all classes but not the
     majority."""
-    target_stats = Counter(y)
+
+    target_stats = _count_class_sample(y)
+
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)
@@ -165,7 +178,9 @@ def _sampling_strategy_not_majority(y, sampling_type):
 def _sampling_strategy_not_minority(y, sampling_type):
     """Returns sampling target by targeting all classes but not the
     minority."""
-    target_stats = Counter(y)
+
+    target_stats = _count_class_sample(y)
+
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
@@ -189,7 +204,9 @@ def _sampling_strategy_not_minority(y, sampling_type):
 
 def _sampling_strategy_minority(y, sampling_type):
     """Returns sampling target by targeting the minority class only."""
-    target_stats = Counter(y)
+
+    target_stats = _count_class_sample(y)
+
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
@@ -220,7 +237,9 @@ def _sampling_strategy_auto(y, sampling_type):
 def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
     """Returns sampling target by converting the dictionary depending of the
     sampling."""
-    target_stats = Counter(y)
+
+    target_stats = _count_class_sample(y)
+
     # check that all keys in sampling_strategy are also in y
     set_diff_sampling_strategy_target = (
         set(sampling_strategy.keys()) - set(target_stats.keys()))
@@ -286,7 +305,9 @@ def _sampling_strategy_list(sampling_strategy, y, sampling_type):
         raise ValueError("'sampling_strategy' cannot be a list for samplers "
                          "which are not cleaning methods.")
 
-    target_stats = Counter(y)
+
+    target_stats = _count_class_sample(y)
+
     # check that all keys in sampling_strategy are also in y
     set_diff_sampling_strategy_target = (
         set(sampling_strategy) - set(target_stats.keys()))
@@ -308,7 +329,9 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
         raise ValueError(
             '"sampling_strategy" can be a float only when the type '
             'of target is binary. For multi-class, use a dict.')
-    target_stats = Counter(y)
+
+    target_stats = _count_class_sample(y)
+
     if sampling_type == 'over-sampling':
         n_sample_majority = max(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)

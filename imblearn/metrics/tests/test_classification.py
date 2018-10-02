@@ -4,13 +4,13 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division, print_function
+from __future__ import division
 
 from functools import partial
 
 import numpy as np
 
-from pytest import approx, raises
+import pytest
 
 from sklearn import datasets
 from sklearn import svm
@@ -20,7 +20,6 @@ from sklearn.utils.fixes import np_version
 from sklearn.utils.validation import check_random_state
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.utils.testing import assert_no_warnings
-from sklearn.utils.testing import ignore_warnings
 from sklearn.metrics import accuracy_score, average_precision_score
 from sklearn.metrics import brier_score_loss, cohen_kappa_score
 from sklearn.metrics import jaccard_similarity_score, precision_score
@@ -103,52 +102,42 @@ def test_sensitivity_specificity_score_binary():
     # individual scoring function that can be used for grid search: in the
     # binary class case the score is the value of the measure for the positive
     # class (e.g. label == 1). This is deprecated for average != 'binary'.
-    for kwargs, my_assert in [({}, assert_no_warnings), ({
-            'average': 'binary'
-    }, assert_no_warnings)]:
-        sen = my_assert(sensitivity_score, y_true, y_pred, **kwargs)
-        assert_allclose(sen, 0.68, rtol=R_TOL)
+    for kwargs in ({}, {'average': 'binary'}):
+        sen = assert_no_warnings(sensitivity_score, y_true, y_pred, **kwargs)
+        assert sen == pytest.approx(0.68, rel=R_TOL)
 
-        spe = my_assert(specificity_score, y_true, y_pred, **kwargs)
-        assert_allclose(spe, 0.88, rtol=R_TOL)
+        spe = assert_no_warnings(specificity_score, y_true, y_pred, **kwargs)
+        assert spe == pytest.approx(0.88, rel=R_TOL)
 
 
-def test_sensitivity_specificity_f_binary_single_class():
+@pytest.mark.filterwarnings("ignore:Specificity is ill-defined")
+@pytest.mark.parametrize(
+    "y_pred, expected_sensitivity, expected_specificity",
+    [(([1, 1], [1, 1]), 1.0, 0.0),
+     (([-1, -1], [-1, -1]), 0.0, 0.0)]
+)
+def test_sensitivity_specificity_f_binary_single_class(
+        y_pred, expected_sensitivity, expected_specificity):
     # Such a case may occur with non-stratified cross-validation
-    assert sensitivity_score([1, 1], [1, 1]) == 1.
-    assert specificity_score([1, 1], [1, 1]) == 0.
-
-    assert sensitivity_score([-1, -1], [-1, -1]) == 0.
-    assert specificity_score([-1, -1], [-1, -1]) == 0.
+    assert sensitivity_score(*y_pred) == expected_sensitivity
+    assert specificity_score(*y_pred) == expected_specificity
 
 
-@ignore_warnings
-def test_sensitivity_specificity_extra_labels():
+@pytest.mark.parametrize(
+    "average, expected_specificty",
+    [(None, [1., 0.67, 1., 1., 1.]),
+     ('macro', np.mean([1., 0.67, 1., 1., 1.])),
+     ('micro', 15 / 16)]
+)
+def test_sensitivity_specificity_extra_labels(average, expected_specificty):
     y_true = [1, 3, 3, 2]
     y_pred = [1, 1, 3, 2]
 
-    # No average: zeros in array
     actual = specificity_score(
-        y_true, y_pred, labels=[0, 1, 2, 3, 4], average=None)
-    assert_allclose([1., 0.67, 1., 1., 1.], actual, rtol=R_TOL)
-
-    # Macro average is changed
-    actual = specificity_score(
-        y_true, y_pred, labels=[0, 1, 2, 3, 4], average='macro')
-    assert_allclose(np.mean([1., 0.67, 1., 1., 1.]), actual, rtol=R_TOL)
-
-    # Check for micro
-    actual = specificity_score(
-        y_true, y_pred, labels=[0, 1, 2, 3, 4], average='micro')
-    assert_allclose(15. / 16., actual, rtol=R_TOL)
-
-    # Check for weighted
-    actual = specificity_score(
-        y_true, y_pred, labels=[0, 1, 2, 3, 4], average='macro')
-    assert_allclose(np.mean([1., 0.67, 1., 1., 1.]), actual, rtol=R_TOL)
+        y_true, y_pred, labels=[0, 1, 2, 3, 4], average=average)
+    assert_allclose(expected_specificty, actual, rtol=R_TOL)
 
 
-@ignore_warnings
 def test_sensitivity_specificity_ignored_labels():
     y_true = [1, 1, 2, 3]
     y_pred = [1, 3, 3, 3]
@@ -177,21 +166,20 @@ def test_sensitivity_specificity_error_multilabels():
     y_true_bin = label_binarize(y_true, classes=np.arange(5))
     y_pred_bin = label_binarize(y_pred, classes=np.arange(5))
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         sensitivity_score(y_true_bin, y_pred_bin)
 
 
-@ignore_warnings
 def test_sensitivity_specificity_support_errors():
     y_true, y_pred, _ = make_prediction(binary=True)
 
     # Bad pos_label
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         sensitivity_specificity_support(
             y_true, y_pred, pos_label=2, average='binary')
 
     # Bad average option
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         sensitivity_specificity_support([0, 1, 2], [1, 2, 0], average='mega')
 
 
@@ -211,105 +199,60 @@ def test_geometric_mean_support_binary():
     assert_allclose(geo_mean, 0.77, rtol=R_TOL)
 
 
-def test_geometric_mean_multiclass():
-    y_true = [0, 0, 1, 1]
-    y_pred = [0, 0, 1, 1]
-    assert_allclose(geometric_mean_score(y_true, y_pred), 1.0, rtol=R_TOL)
+@pytest.mark.filterwarnings("ignore:Recall is ill-defined")
+@pytest.mark.parametrize(
+    "y_true, y_pred, correction, expected_gmean",
+    [([0, 0, 1, 1], [0, 0, 1, 1], 0.0, 1.0),
+     ([0, 0, 0, 0], [1, 1, 1, 1], 0.0, 0.0),
+     ([0, 0, 0, 0], [0, 0, 0, 0], 0.001, 1.0),
+     ([0, 0, 0, 0], [1, 1, 1, 1], 0.001, 0.001),
+     ([0, 0, 1, 1], [0, 1, 1, 0], 0.001, 0.5),
+     ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], 0.001, (0.001 ** 2) ** (1 / 3)),
+     ([0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5], 0.001, 1),
+     ([0, 1, 1, 1, 1, 0], [0, 0, 1, 1, 1, 1], 0.001, (0.5 * 0.75) ** 0.5)]
+)
+def test_geometric_mean_multiclass(y_true, y_pred, correction, expected_gmean):
+    gmean = geometric_mean_score(y_true, y_pred, correction=correction)
+    assert gmean == pytest.approx(expected_gmean, rel=R_TOL)
 
-    y_true = [0, 0, 0, 0]
-    y_pred = [1, 1, 1, 1]
-    assert_allclose(geometric_mean_score(y_true, y_pred), 0.0, rtol=R_TOL)
 
-    cor = 0.001
-    y_true = [0, 0, 0, 0]
-    y_pred = [0, 0, 0, 0]
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, correction=cor), 1.0, rtol=R_TOL)
+@pytest.mark.filterwarnings("ignore:Recall is ill-defined")
+@pytest.mark.parametrize(
+    "y_true, y_pred, average, expected_gmean",
+    [([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], 'macro', 0.471),
+     ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], 'micro', 0.471),
+     ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], 'weighted', 0.471),
+     ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], None, [0.8660254, 0.0, 0.0])]
+)
+def test_geometric_mean_average(y_true, y_pred, average, expected_gmean):
+    gmean = geometric_mean_score(y_true, y_pred, average=average)
+    assert gmean == pytest.approx(expected_gmean, rel=R_TOL)
 
-    y_true = [0, 0, 0, 0]
-    y_pred = [1, 1, 1, 1]
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, correction=cor), cor, rtol=R_TOL)
 
-    y_true = [0, 0, 1, 1]
-    y_pred = [0, 1, 1, 0]
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, correction=cor), 0.5, rtol=R_TOL)
+@pytest.mark.parametrize(
+    "y_true, y_pred, sample_weight, average, expected_gmean",
+    [([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], None, 'multiclass', 0.707),
+     ([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], [1, 2, 1, 1, 2, 1], 'multiclass', 0.707),
+     ([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], [1, 2, 1, 1, 2, 1], 'weighted', 0.333)]
+)
+def test_geometric_mean_sample_weight(y_true, y_pred, sample_weight, average,
+                                      expected_gmean):
+    gmean = geometric_mean_score(y_true, y_pred, labels=[0, 1],
+                                 sample_weight=sample_weight,
+                                 average=average)
+    assert gmean == pytest.approx(expected_gmean, rel=R_TOL)
 
-    y_true = [0, 1, 2, 0, 1, 2]
-    y_pred = [0, 2, 1, 0, 0, 1]
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, correction=cor),
-        (1 * cor * cor) ** (1.0 / 3.0),
-        rtol=R_TOL)
 
-    y_true = [0, 1, 2, 3, 4, 5]
-    y_pred = [0, 1, 2, 3, 4, 5]
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, correction=cor), 1, rtol=R_TOL)
-
-    y_true = [0, 1, 1, 1, 1, 0]
-    y_pred = [0, 0, 1, 1, 1, 1]
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, correction=cor),
-        (0.5 * 0.75) ** 0.5,
-        rtol=R_TOL)
-
-    y_true = [0, 1, 2, 0, 1, 2]
-    y_pred = [0, 2, 1, 0, 0, 1]
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, average='macro'),
-        0.47140452079103168,
-        rtol=R_TOL)
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, average='micro'),
-        0.47140452079103168,
-        rtol=R_TOL)
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, average='weighted'),
-        0.47140452079103168,
-        rtol=R_TOL)
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, average=None),
-        [0.8660254, 0.0, 0.0],
-        rtol=R_TOL)
-
-    y_true = [0, 1, 2, 0, 1, 2]
-    y_pred = [0, 1, 1, 0, 0, 1]
-    assert_allclose(
-        geometric_mean_score(y_true, y_pred, labels=[0, 1]),
-        0.70710678118654752,
-        rtol=R_TOL)
-    assert_allclose(
-        geometric_mean_score(
-            y_true, y_pred, labels=[0, 1], sample_weight=[1, 2, 1, 1, 2, 1]),
-        0.70710678118654752,
-        rtol=R_TOL)
-    assert_allclose(
-        geometric_mean_score(
-            y_true,
-            y_pred,
-            labels=[0, 1],
-            sample_weight=[1, 2, 1, 1, 2, 1],
-            average='weighted'),
-        0.3333333333,
-        rtol=R_TOL)
-
+@pytest.mark.parametrize(
+    "average, expected_gmean",
+    [('multiclass', 0.41), (None, [0.85, 0.29, 0.7]),
+     ('macro', 0.68), ('weighted', 0.65)]
+)
+def test_geometric_mean_score_prediction(average, expected_gmean):
     y_true, y_pred, _ = make_prediction(binary=False)
 
-    geo_mean = geometric_mean_score(y_true, y_pred)
-    assert_allclose(geo_mean, 0.41, rtol=R_TOL)
-
-    # Compute the geometric mean for each of the classes
-    geo_mean = geometric_mean_score(y_true, y_pred, average=None)
-    assert_allclose(geo_mean, [0.85, 0.29, 0.7], rtol=R_TOL)
-
-    # average tests
-    geo_mean = geometric_mean_score(y_true, y_pred, average='macro')
-    assert_allclose(geo_mean, 0.68, rtol=R_TOL)
-
-    geo_mean = geometric_mean_score(y_true, y_pred, average='weighted')
-    assert_allclose(geo_mean, 0.65, rtol=R_TOL)
+    gmean = geometric_mean_score(y_true, y_pred, average=average)
+    assert gmean == pytest.approx(expected_gmean, rel=R_TOL)
 
 
 def test_iba_geo_mean_binary():
@@ -413,7 +356,7 @@ def test_classification_report_imbalanced_multiclass_with_unicode_label():
                        u'red¢ 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total '
                        u'0.51 0.53 0.80 0.47 0.58 0.40 75')
     if np_version[:3] < (1, 7, 0):
-        with raises(RuntimeError, match="NumPy < 1.7.0"):
+        with pytest.raises(RuntimeError, match="NumPy < 1.7.0"):
             classification_report_imbalanced(y_true, y_pred)
     else:
         report = classification_report_imbalanced(y_true, y_pred)
@@ -436,46 +379,28 @@ def test_classification_report_imbalanced_multiclass_with_long_string_label():
     assert _format_report(report) == expected_report
 
 
-def test_iba_sklearn_metrics():
+@pytest.mark.parametrize(
+    "score, expected_score",
+    [(accuracy_score, 0.54756), (jaccard_similarity_score, 0.54756),
+     (precision_score, 0.65025), (recall_score, 0.41616)]
+)
+def test_iba_sklearn_metrics(score, expected_score):
     y_true, y_pred, _ = make_prediction(binary=True)
 
-    acc = make_index_balanced_accuracy(alpha=0.5, squared=True)(accuracy_score)
-    score = acc(y_true, y_pred)
-    assert score == approx(0.54756)
-
-    jss = make_index_balanced_accuracy(
-        alpha=0.5, squared=True)(jaccard_similarity_score)
-    score = jss(y_true, y_pred)
-    assert score == approx(0.54756)
-
-    pre = make_index_balanced_accuracy(
-        alpha=0.5, squared=True)(precision_score)
-    score = pre(y_true, y_pred)
-    assert score == approx(0.65025)
-
-    rec = make_index_balanced_accuracy(alpha=0.5, squared=True)(recall_score)
-    score = rec(y_true, y_pred)
-    assert score == approx(0.41616000000000009)
+    score_iba = make_index_balanced_accuracy(alpha=0.5, squared=True)(score)
+    score = score_iba(y_true, y_pred)
+    assert score == pytest.approx(expected_score)
 
 
-def test_iba_error_y_score_prob():
+@pytest.mark.parametrize(
+    "score_loss",
+    [average_precision_score, brier_score_loss,
+     cohen_kappa_score, roc_auc_score]
+)
+def test_iba_error_y_score_prob_error(score_loss):
     y_true, y_pred, _ = make_prediction(binary=True)
 
     aps = make_index_balanced_accuracy(
-        alpha=0.5, squared=True)(average_precision_score)
-    with raises(AttributeError):
+        alpha=0.5, squared=True)(score_loss)
+    with pytest.raises(AttributeError):
         aps(y_true, y_pred)
-
-    brier = make_index_balanced_accuracy(
-        alpha=0.5, squared=True)(brier_score_loss)
-    with raises(AttributeError):
-        brier(y_true, y_pred)
-
-    kappa = make_index_balanced_accuracy(
-        alpha=0.5, squared=True)(cohen_kappa_score)
-    with raises(AttributeError):
-        kappa(y_true, y_pred)
-
-    ras = make_index_balanced_accuracy(alpha=0.5, squared=True)(roc_auc_score)
-    with raises(AttributeError):
-        ras(y_true, y_pred)

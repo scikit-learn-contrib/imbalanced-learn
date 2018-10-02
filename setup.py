@@ -20,7 +20,9 @@ MAINTAINER_EMAIL = 'g.lemaitre58@gmail.com, ichkoar@gmail.com'
 URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 LICENSE = 'MIT'
 DOWNLOAD_URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
-INSTALL_REQUIRES = ['numpy', 'scipy', 'scikit-learn']
+
+VERSION = __version__
+
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
                'License :: OSI Approved',
@@ -33,8 +35,25 @@ CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Operating System :: Unix',
                'Operating System :: MacOS',
                'Programming Language :: Python :: 2.7',
-               'Programming Language :: Python :: 3.5',
-               'Programming Language :: Python :: 3.6']
+               'Programming Language :: Python :: 3.6',
+               'Programming Language :: Python :: 3.7']
+INSTALL_REQUIRES = ['numpy>=1.8.2', 'scipy>=0.13.3', 'scikit-learn>=0.20rc1']
+EXTRAS_REQUIRE = {
+    'tests': [
+        'pytest',
+        'pytest-cov'],
+    'docs': [
+        'sphinx',
+        'sphinx-gallery',
+        'sphinx_rtd_theme',
+        'numpydoc',
+        'matplotlib',
+        'pandas',
+        'keras',
+        'tensorflow'
+    ]
+}
+
 
 
 def version(package, encoding='utf-8'):
@@ -118,3 +137,4 @@ def setup_package():
 
 if __name__ == '__main__':
     setup_package()
+

@@ -3,10 +3,9 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
 import numpy as np
 
+import pytest
 from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
@@ -32,13 +31,14 @@ X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
 Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 
-def test_fit_sample_auto():
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
+def test_fit_resample_auto():
     sampling_strategy = 'auto'
     bc = BalanceCascade(
         sampling_strategy=sampling_strategy,
         random_state=RND_SEED,
         return_indices=True)
-    X_resampled, y_resampled, idx_under = bc.fit_sample(X, Y)
+    X_resampled, y_resampled, idx_under = bc.fit_resample(X, Y)
     X_gt = np.array(
         [[[1.15514042, 0.0129463], [0.08711622, 0.93259929],
           [0.70472253,
@@ -70,11 +70,12 @@ def test_fit_sample_auto():
     assert_array_equal(idx_under, idx_gt)
 
 
-def test_fit_sample_half():
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
+def test_fit_resample_half():
     sampling_strategy = {0: 8, 1: 10}
     bc = BalanceCascade(
         sampling_strategy=sampling_strategy, random_state=RND_SEED)
-    X_resampled, y_resampled = bc.fit_sample(X, Y)
+    X_resampled, y_resampled = bc.fit_resample(X, Y)
     X_gt = np.array([[[-0.41635887, -0.38299653], [0.53366841, -0.30312976], [
         1.25192108, -0.22367336
     ], [1.70580611, -0.11219234], [1.52091956, -0.49283504], [
@@ -91,7 +92,8 @@ def test_fit_sample_half():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_fit_sample_auto_early_stop():
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
+def test_fit_resample_auto_early_stop():
     sampling_strategy = 'auto'
     estimator = LinearSVC(random_state=RND_SEED)
     bc = BalanceCascade(
@@ -100,7 +102,7 @@ def test_fit_sample_auto_early_stop():
         return_indices=False,
         estimator=estimator,
         n_max_subset=1)
-    X_resampled, y_resampled = bc.fit_sample(X, Y)
+    X_resampled, y_resampled = bc.fit_resample(X, Y)
     X_gt = np.array([[[1.15514042, 0.0129463], [0.08711622, 0.93259929], [
         0.70472253, -0.73309052
     ], [-0.14374509, 0.27370049], [0.83680821, 1.72827342], [
@@ -116,15 +118,16 @@ def test_fit_sample_auto_early_stop():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
 def test_give_classifier_obj():
     sampling_strategy = 'auto'
-    estimator = RandomForestClassifier(random_state=RND_SEED)
+    estimator = RandomForestClassifier(n_estimators=10, random_state=RND_SEED)
     bc = BalanceCascade(
         sampling_strategy=sampling_strategy,
         random_state=RND_SEED,
         return_indices=False,
         estimator=estimator)
-    X_resampled, y_resampled = bc.fit_sample(X, Y)
+    X_resampled, y_resampled = bc.fit_resample(X, Y)
     X_gt = np.array([[[1.15514042, 0.0129463], [0.08711622, 0.93259929], [
         0.70472253, -0.73309052
     ], [-0.14374509, 0.27370049], [0.83680821, 1.72827342], [
@@ -140,6 +143,7 @@ def test_give_classifier_obj():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings('ignore:Class BalanceCascade is deprecated')
 def test_give_classifier_wrong_obj():
     sampling_strategy = 'auto'
     classifier = 2
@@ -149,4 +153,4 @@ def test_give_classifier_wrong_obj():
         return_indices=True,
         estimator=classifier)
     with raises(ValueError, match="Invalid parameter `estimator`"):
-        bc.fit_sample(X, Y)
+        bc.fit_resample(X, Y)

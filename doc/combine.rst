@@ -15,11 +15,11 @@ from over-sampling.
 
 In this regard, Tomek's link and edited nearest-neighbours are the two cleaning
 methods that have been added to the pipeline after applying SMOTE over-sampling
-to obtain a cleaner space. The two ready-to use classes imbalanced-learn implements
-for combining over- and undersampling methods are: (i) :class:`SMOTETomek`
-and (ii) :class:`SMOTEENN`.
+to obtain a cleaner space. The two ready-to use classes imbalanced-learn
+implements for combining over- and undersampling methods are: (i)
+:class:`SMOTETomek` [BPM2004]_ and (ii) :class:`SMOTEENN` [BBM2003]_.
 
-Those two classes can be used like any other sampler with parameters identical 
+Those two classes can be used like any other sampler with parameters identical
 to their former samplers::
 
   >>> from collections import Counter
@@ -50,7 +50,16 @@ noisy samples than :class:`SMOTETomek`.
    :scale: 60
    :align: center
 
-See :ref:`sphx_glr_auto_examples_combine_plot_smote_enn.py`,
-:ref:`sphx_glr_auto_examples_combine_plot_smote_tomek.py`,
-and
-:ref:`sphx_glr_auto_examples_combine_plot_comparison_combine.py`.
+.. topic:: Examples
+
+  * :ref:`sphx_glr_auto_examples_combine_plot_comparison_combine.py`
+
+.. topic:: References
+
+  .. [BPM2004] G. Batista, R. C. Prati, M. C. Monard. "A study of the behavior
+               of several methods for balancing machine learning training
+               data," ACM Sigkdd Explorations Newsletter 6 (1), 20-29, 2004.
+
+  .. [BBM2003] G. Batista, B. Bazzan, M. Monard, "Balancing Training Data for
+               Automated Annotation of Keywords: a Case Study," In WOB, 10-18,
+               2003.

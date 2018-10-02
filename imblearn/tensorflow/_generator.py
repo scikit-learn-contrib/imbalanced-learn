@@ -14,6 +14,12 @@ from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
 
+DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
+                          'RepeatedEditedNearestNeighbours', 'AllKNN',
+                          'NeighbourhoodCleaningRule', 'TomekLinks')
+
+
+
 @Substitution(random_state=_random_state_docstring)
 def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
                              batch_size=32, keep_sparse=False,
@@ -23,7 +29,9 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
     Returns a generator --- as well as the number of step per epoch --- which
     is given to ``fit_generator``. The sampler defines the sampling strategy
     used to balance the dataset ahead of creating the batch. The sampler should
-    have an attribute ``return_indices``.
+
+    have an attribute ``sample_indices_``.
+
 
     Parameters
     ----------
@@ -37,7 +45,9 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
         Sample weight.
 
     sampler : object or None, optional (default=RandomUnderSampler)
-        A sampler instance which has an attribute ``return_indices``.
+
+        A sampler instance which has an attribute ``sample_indices_``.
+
         By default, the sampler used is a
         :class:`imblearn.under_sampling.RandomUnderSampler`.
 
@@ -118,18 +128,19 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
 
     random_state = check_random_state(random_state)
     if sampler is None:
-        sampler_ = RandomUnderSampler(return_indices=True,
-                                      random_state=random_state)
-    else:
-        if not hasattr(sampler, 'return_indices'):
-            raise ValueError("'sampler' needs to return the indices of "
-                             "the samples selected. Provide a sampler "
-                             "which has an attribute 'return_indices'.")
-        sampler_ = clone(sampler)
-        sampler_.set_params(return_indices=True)
-        set_random_state(sampler_, random_state)
 
-    _, _, indices = sampler_.fit_resample(X, y)
+        sampler_ = RandomUnderSampler(random_state=random_state)
+    else:
+        sampler_ = clone(sampler)
+        # FIXME: Remove in 0.6
+        if sampler_.__class__.__name__ not in DONT_HAVE_RANDOM_STATE:
+            set_random_state(sampler_, random_state)
+    sampler_.fit_resample(X, y)
+    if not hasattr(sampler_, 'sample_indices_'):
+        raise ValueError("'sampler' needs to have an attribute "
+                         "'sample_indices_'.")
+    indices = sampler_.sample_indices_
+
     # shuffle the indices since the sampler are packing them by class
     random_state.shuffle(indices)
 

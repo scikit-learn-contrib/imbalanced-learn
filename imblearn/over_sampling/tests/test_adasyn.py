@@ -3,10 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.neighbors import NearestNeighbors
@@ -37,15 +35,9 @@ def test_ada_init():
     assert ada.random_state == RND_SEED
 
 
-def test_ada_fit():
+def test_ada_fit_resample():
     ada = ADASYN(random_state=RND_SEED)
-    ada.fit(X, Y)
-    assert ada.sampling_strategy_ == {0: 4}
-
-
-def test_ada_fit_sample():
-    ada = ADASYN(random_state=RND_SEED)
-    X_resampled, y_resampled = ada.fit_sample(X, Y)
+    X_resampled, y_resampled = ada.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
     ], [0.53366841, -0.30312976], [1.52091956, -0.49283504], [
@@ -68,17 +60,10 @@ def test_ada_fit_sample():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_ada_fit_sampling_strategy_error():
-    sampling_strategy = {0: 9, 1: 12}
-    ada = ADASYN(sampling_strategy=sampling_strategy, random_state=RND_SEED)
-    with raises(ValueError, match="No samples will be generated."):
-        ada.fit_sample(X, Y)
-
-
-def test_ada_fit_sample_nn_obj():
+def test_ada_fit_resample_nn_obj():
     nn = NearestNeighbors(n_neighbors=6)
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
-    X_resampled, y_resampled = ada.fit_sample(X, Y)
+    X_resampled, y_resampled = ada.fit_resample(X, Y)
     X_gt = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141], [
         1.25192108, -0.22367336
     ], [0.53366841, -0.30312976], [1.52091956, -0.49283504], [
@@ -101,8 +86,12 @@ def test_ada_fit_sample_nn_obj():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_ada_wrong_nn_obj():
-    nn = 'rnd'
-    ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
-    with raises(ValueError, match="has to be one of"):
-        ada.fit_sample(X, Y)
+@pytest.mark.parametrize(
+    "adasyn_params, err_msg",
+    [({"sampling_strategy": {0: 9, 1: 12}}, "No samples will be generated."),
+     ({"n_neighbors": 'rnd'}, "has to be one of")]
+)
+def test_adasyn_error(adasyn_params, err_msg):
+    adasyn = ADASYN(**adasyn_params)
+    with pytest.raises(ValueError, match=err_msg):
+        adasyn.fit_resample(X, Y)

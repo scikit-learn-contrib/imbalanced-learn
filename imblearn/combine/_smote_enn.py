@@ -1,0 +1,129 @@
+"""Class to perform over-sampling using SMOTE and cleaning using ENN."""
+
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+#          Christos Aridas
+# License: MIT
+
+from __future__ import division
+
+from sklearn.base import clone
+from sklearn.utils import check_X_y
+
+from ..base import BaseSampler
+from ..over_sampling import SMOTE
+from ..over_sampling.base import BaseOverSampler
+from ..under_sampling import EditedNearestNeighbours
+from ..utils import check_target_type
+from ..utils import Substitution
+from ..utils._docstring import _random_state_docstring
+
+
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
+class SMOTEENN(BaseSampler):
+    """Class to perform over-sampling using SMOTE and cleaning using ENN.
+
+    Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.
+
+    Read more in the :ref:`User Guide <combine>`.
+
+    Parameters
+    ----------
+    {sampling_strategy}
+
+    {random_state}
+
+    smote : object, optional (default=SMOTE())
+        The :class:`imblearn.over_sampling.SMOTE` object to use. If not given,
+        a :class:`imblearn.over_sampling.SMOTE` object with default parameters
+        will be given.
+
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
+
+    Notes
+    -----
+    The method is presented in [1]_.
+
+    Supports multi-class resampling. Refer to SMOTE and ENN regarding the
+    scheme which used.
+
+    See also
+    --------
+    SMOTETomek : Over-sample using SMOTE followed by under-sampling removing
+        the Tomek's links.
+
+    References
+    ----------
+    .. [1] G. Batista, R. C. Prati, M. C. Monard. "A study of the behavior of
+       several methods for balancing machine learning training data," ACM
+       Sigkdd Explorations Newsletter 6 (1), 20-29, 2004.
+
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from sklearn.datasets import make_classification
+    >>> from imblearn.combine import SMOTEENN # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
+    >>> sme = SMOTEENN(random_state=42)
+    >>> X_res, y_res = sme.fit_resample(X, y)
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{0: 900, 1: 881}})
+
+    """
+    _sampling_type = 'over-sampling'
+
+    def __init__(self,
+                 sampling_strategy='auto',
+                 random_state=None,
+                 smote=None,
+                 enn=None,
+                 ratio=None):
+        super(SMOTEENN, self).__init__()
+        self.sampling_strategy = sampling_strategy
+        self.random_state = random_state
+        self.smote = smote
+        self.enn = enn
+        self.ratio = ratio
+
+    def _validate_estimator(self):
+        "Private function to validate SMOTE and ENN objects"
+        if self.smote is not None:
+            if isinstance(self.smote, SMOTE):
+                self.smote_ = clone(self.smote)
+            else:
+                raise ValueError('smote needs to be a SMOTE object.'
+                                 'Got {} instead.'.format(type(self.smote)))
+        # Otherwise create a default SMOTE
+        else:
+            self.smote_ = SMOTE(
+                sampling_strategy=self.sampling_strategy,
+                random_state=self.random_state,
+                ratio=self.ratio)
+
+        if self.enn is not None:
+            if isinstance(self.enn, EditedNearestNeighbours):
+                self.enn_ = clone(self.enn)
+            else:
+                raise ValueError('enn needs to be an EditedNearestNeighbours.'
+                                 ' Got {} instead.'.format(type(self.enn)))
+        # Otherwise create a default EditedNearestNeighbours
+        else:
+            self.enn_ = EditedNearestNeighbours(sampling_strategy='all')
+
+    def _fit_resample(self, X, y):
+        self._validate_estimator()
+        y = check_target_type(y)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
+        self.sampling_strategy_ = self.sampling_strategy
+
+        X_res, y_res = self.smote_.fit_resample(X, y)
+        return self.enn_.fit_resample(X_res, y_res)

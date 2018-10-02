@@ -68,6 +68,7 @@ target/
 *.pyproj
 *.suo
 *.vs
+.vscode/
 
 # PyCharm
 .idea/
@@ -76,3 +77,48 @@ target/
 *.c
 *.cpp
 cythonize.dat
+*.pyc
+*.pyo
+__pycache__
+*.so
+*.o
+
+*.egg
+*.egg-info
+
+Cython/Compiler/*.c
+Cython/Plex/*.c
+Cython/Runtime/refnanny.c
+Cython/Tempita/*.c
+Cython/*.c
+
+Tools/*.elc
+
+/TEST_TMP/
+/build/
+/wheelhouse*/
+!tests/build/
+/dist/
+.gitrev
+.coverage
+*.orig
+*.rej
+*.dep
+*.swp
+*~
+
+.ipynb_checkpoints
+docs/build
+
+tags
+TAGS
+MANIFEST
+
+.tox
+
+cythonize.dat
+
+# build documentation
+doc/_build/
+doc/auto_examples/
+doc/generated/

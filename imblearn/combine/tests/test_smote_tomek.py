@@ -3,10 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import print_function
-
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 
@@ -34,7 +32,7 @@ R_TOL = 1e-4
 
 def test_sample_regular():
     smote = SMOTETomek(random_state=RND_SEED)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.68481731, 0.51935141], [1.34192108, -0.13367336], [
         0.62366841, -0.21312976
     ], [1.61091956, -0.40283504], [-0.37162401,
@@ -54,7 +52,7 @@ def test_sample_regular_half():
     sampling_strategy = {0: 9, 1: 12}
     smote = SMOTETomek(
         sampling_strategy=sampling_strategy, random_state=RND_SEED)
-    X_resampled, y_resampled = smote.fit_sample(X, Y)
+    X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array([[0.68481731, 0.51935141], [0.62366841, -0.21312976], [
         1.61091956, -0.40283504
     ], [-0.37162401, -2.19400981], [0.74680821,
@@ -70,9 +68,9 @@ def test_sample_regular_half():
 
 def test_validate_estimator_init():
     smote = SMOTE(random_state=RND_SEED)
-    tomek = TomekLinks(random_state=RND_SEED, sampling_strategy='all')
+    tomek = TomekLinks(sampling_strategy='all')
     smt = SMOTETomek(smote=smote, tomek=tomek, random_state=RND_SEED)
-    X_resampled, y_resampled = smt.fit_sample(X, Y)
+    X_resampled, y_resampled = smt.fit_resample(X, Y)
     X_gt = np.array([[0.68481731, 0.51935141], [1.34192108, -0.13367336], [
         0.62366841, -0.21312976
     ], [1.61091956, -0.40283504], [-0.37162401,
@@ -90,7 +88,7 @@ def test_validate_estimator_init():
 
 def test_validate_estimator_default():
     smt = SMOTETomek(random_state=RND_SEED)
-    X_resampled, y_resampled = smt.fit_sample(X, Y)
+    X_resampled, y_resampled = smt.fit_resample(X, Y)
     X_gt = np.array([[0.68481731, 0.51935141], [1.34192108, -0.13367336], [
         0.62366841, -0.21312976
     ], [1.61091956, -0.40283504], [-0.37162401,
@@ -106,12 +104,12 @@ def test_validate_estimator_default():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_error_wrong_object():
-    smote = 'rnd'
-    tomek = 'rnd'
-    smt = SMOTETomek(smote=smote, random_state=RND_SEED)
-    with raises(ValueError, match="smote needs to be a SMOTE"):
-        smt.fit_sample(X, Y)
-    smt = SMOTETomek(tomek=tomek, random_state=RND_SEED)
-    with raises(ValueError, match="tomek needs to be a TomekLinks"):
-        smt.fit_sample(X, Y)
+@pytest.mark.parametrize(
+    "smote_params, err_msg",
+    [({'smote': 'rnd'}, "smote needs to be a SMOTE"),
+     ({'tomek': 'rnd'}, "tomek needs to be a TomekLinks")]
+)
+def test_error_wrong_object(smote_params, err_msg):
+    smt = SMOTETomek(**smote_params)
+    with pytest.raises(ValueError, match=err_msg):
+        smt.fit_resample(X, Y)

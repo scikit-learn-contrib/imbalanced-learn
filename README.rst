@@ -4,7 +4,7 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_
+|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |ReadTheDocs|_ |PythonVersion|_ |Pypi|_ |Gitter|_
 
 .. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn.svg?branch=master
 .. _Travis: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn
@@ -17,6 +17,9 @@
 
 .. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield&circle-token=:circle-token
 .. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn/tree/master
+
+.. |ReadTheDocs| image:: https://readthedocs.org/projects/imbalanced-learn/badge/?version=latest
+.. _ReadTheDocs: https://imbalanced-learn.readthedocs.io/en/latest/?badge=latest
 
 .. |PythonVersion| image:: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
 .. _PythonVersion: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
@@ -49,17 +52,20 @@ Installation
 Dependencies
 ~~~~~~~~~~~~
 
-imbalanced-learn is tested to work under Python 2.7 and Python 3.5, and
-3.6. The dependency requirements are based on the last scikit-learn release:
+imbalanced-learn is tested to work under Python 2.7 and Python 3.6, and
+3.7. The dependency requirements are based on the last scikit-learn release:
 
 * scipy(>=0.13.3)
 * numpy(>=1.8.2)
-* scikit-learn(>=0.19.0)
+
+* scikit-learn(>=0.20)
 * keras 2 (optional)
 * tensorflow (optional)
 
 Additionally, to run the examples, you need matplotlib(>=2.0.0) and
 pandas(>=0.22).
+
+**imbalanced-learn 0.4 is the last version to support Python 2.7**
 
 Installation
 ~~~~~~~~~~~~
@@ -87,7 +93,7 @@ Or install using pip and GitHub::
 Testing
 ~~~~~~~
 
-After installation, you can use `nose` to run the test suite::
+After installation, you can use `pytest` to run the test suite::
 
   make coverage
 
@@ -157,9 +163,11 @@ Below is a list of the methods currently implemented in this module.
     1. SMOTE + Tomek links [12]_
     2. SMOTE + ENN [11]_
 
-* Ensemble sampling
+* Ensemble classifier using samplers internally
     1. EasyEnsemble [13]_
     2. BalanceCascade [13]_
+    3. Balanced Random Forest [16]_
+    4. Balanced Bagging
 
 The different algorithms are presented in the sphinx-gallery_.
 
@@ -198,3 +206,5 @@ References:
 .. [14] : I. Tomek, “An experiment with the edited nearest-neighbor rule,” IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6), pp. 448-452, 1976. [`bib <references.bib#L158>`_]
 
 .. [15] : H. He, Y. Bai, E. A. Garcia, S. Li, “ADASYN: Adaptive synthetic sampling approach for imbalanced learning,” In Proceedings of the 5th IEEE International Joint Conference on Neural Networks, pp. 1322-1328, 2008. [`pdf <https://pdfs.semanticscholar.org/4823/4756b7cf798bfeb47328f7c5d597fd4838c2.pdf>`_] [`bib <references.bib#L62>`_] 
+
+.. [16] : C. Chao, A. Liaw, and L. Breiman. "Using random forest to learn imbalanced data." University of California, Berkeley 110 (2004): 1-12.

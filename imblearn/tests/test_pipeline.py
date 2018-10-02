@@ -31,6 +31,7 @@ from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (RandomUnderSampler,
                                      EditedNearestNeighbours as ENN)
 
+
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
     "the pizza burger beer copyright",
@@ -141,18 +142,12 @@ class DummyTransf(Transf):
 class DummySampler(NoTrans):
     """Samplers which returns a balanced number of samples"""
 
-    def fit(self, X, y):
+    def fit_resample(self, X, y):
         self.means_ = np.mean(X, axis=0)
         # store timestamp to figure out whether the result of 'fit' has been
         # cached or not
         self.timestamp_ = time.time()
-        return self
-
-    def sample(self, X, y):
         return X, y
-
-    def fit_sample(self, X, y):
-        return self.fit(X, y).sample(X, y)
 
 
 class FitTransformSample(NoTrans):
@@ -162,8 +157,11 @@ class FitTransformSample(NoTrans):
     def fit(self, X, y, should_succeed=False):
         pass
 
-    def sample(self, X, y=None):
+    def fit_resample(self, X, y=None):
         return X, y
+
+    def fit_transform(self, X, y=None):
+        return self.fit(X, y).transform(X)
 
     def transform(self, X, y=None):
         return X
@@ -193,7 +191,7 @@ def test_pipeline_init():
     repr(pipe)
 
     # Test with two objects
-    clf = SVC()
+    clf = SVC(gamma='scale')
     filter1 = SelectKBest(f_classif)
     pipe = Pipeline([('anova', filter1), ('svc', clf)])
 
@@ -241,7 +239,7 @@ def test_pipeline_methods_anova():
     X = iris.data
     y = iris.target
     # Test with Anova + LogisticRegression
-    clf = LogisticRegression()
+    clf = LogisticRegression(solver='lbfgs', multi_class='auto')
     filter1 = SelectKBest(f_classif, k=2)
     pipe = Pipeline([('anova', filter1), ('logistic', clf)])
     pipe.fit(X, y)
@@ -304,7 +302,7 @@ def test_pipeline_methods_pca_svm():
     X = iris.data
     y = iris.target
     # Test with PCA + SVC
-    clf = SVC(probability=True, random_state=0)
+    clf = SVC(gamma='scale', probability=True, random_state=0)
     pca = PCA(svd_solver='full', n_components='mle', whiten=True)
     pipe = Pipeline([('pca', pca), ('svc', clf)])
     pipe.fit(X, y)
@@ -323,7 +321,8 @@ def test_pipeline_methods_preprocessing_svm():
     n_classes = len(np.unique(y))
     scaler = StandardScaler()
     pca = PCA(n_components=2, svd_solver='randomized', whiten=True)
-    clf = SVC(probability=True, random_state=0, decision_function_shape='ovr')
+    clf = SVC(gamma='scale', probability=True, random_state=0,
+              decision_function_shape='ovr')
 
     for preprocessing in [scaler, pca]:
         pipe = Pipeline([('preprocess', preprocessing), ('svc', clf)])
@@ -579,7 +578,9 @@ def test_classes_property():
     with raises(AttributeError):
         getattr(reg, "classes_")
 
-    clf = make_pipeline(SelectKBest(k=1), LogisticRegression(random_state=0))
+    clf = make_pipeline(SelectKBest(k=1),
+                        LogisticRegression(solver='lbfgs', multi_class='auto',
+                                           random_state=0))
     with raises(AttributeError):
         getattr(clf, "classes_")
     clf.fit(X, y)
@@ -595,9 +596,9 @@ def test_pipeline_wrong_memory():
     # Define memory as an integer
     memory = 1
     cached_pipe = Pipeline(
-        [('transf', DummyTransf()), ('svc', SVC())], memory=memory)
-    error_regex = ("'memory' should either be a string or a joblib.Memory"
-                   " instance, got 'memory=1' instead.")
+        [('transf', DummyTransf()), ('svc', SVC(gamma='scale'))],
+        memory=memory)
+    error_regex = ("string or have the same interface as sklearn.utils.Memory")
     with raises(ValueError, match=error_regex):
         cached_pipe.fit(X, y)
 
@@ -608,9 +609,9 @@ def test_pipeline_memory_transformer():
     y = iris.target
     cachedir = mkdtemp()
     try:
-        memory = Memory(cachedir=cachedir, verbose=10)
+        memory = Memory(cachedir, verbose=10)
         # Test with Transformer + SVC
-        clf = SVC(probability=True, random_state=0)
+        clf = SVC(gamma='scale', probability=True, random_state=0)
         transf = DummyTransf()
         pipe = Pipeline([('transf', clone(transf)), ('svc', clf)])
         cached_pipe = Pipeline(
@@ -644,7 +645,7 @@ def test_pipeline_memory_transformer():
         assert cached_pipe.named_steps['transf'].timestamp_ == expected_ts
         # Create a new pipeline with cloned estimators
         # Check that even changing the name step does not affect the cache hit
-        clf_2 = SVC(probability=True, random_state=0)
+        clf_2 = SVC(gamma='scale', probability=True, random_state=0)
         transf_2 = DummyTransf()
         cached_pipe_2 = Pipeline(
             [('transf_2', transf_2), ('svc', clf_2)], memory=memory)
@@ -678,9 +679,9 @@ def test_pipeline_memory_sampler():
         random_state=0)
     cachedir = mkdtemp()
     try:
-        memory = Memory(cachedir=cachedir, verbose=10)
+        memory = Memory(cachedir, verbose=10)
         # Test with Transformer + SVC
-        clf = SVC(probability=True, random_state=0)
+        clf = SVC(gamma='scale', probability=True, random_state=0)
         transf = DummySampler()
         pipe = Pipeline([('transf', clone(transf)), ('svc', clf)])
         cached_pipe = Pipeline(
@@ -714,7 +715,7 @@ def test_pipeline_memory_sampler():
         assert cached_pipe.named_steps['transf'].timestamp_ == expected_ts
         # Create a new pipeline with cloned estimators
         # Check that even changing the name step does not affect the cache hit
-        clf_2 = SVC(probability=True, random_state=0)
+        clf_2 = SVC(gamma='scale', probability=True, random_state=0)
         transf_2 = DummySampler()
         cached_pipe_2 = Pipeline(
             [('transf_2', transf_2), ('svc', clf_2)], memory=memory)
@@ -749,7 +750,7 @@ def test_pipeline_methods_pca_rus_svm():
         random_state=0)
 
     # Test with PCA + SVC
-    clf = SVC(probability=True, random_state=0)
+    clf = SVC(gamma='scale', probability=True, random_state=0)
     pca = PCA()
     rus = RandomUnderSampler(random_state=0)
     pipe = Pipeline([('pca', pca), ('rus', rus), ('svc', clf)])
@@ -775,7 +776,7 @@ def test_pipeline_methods_rus_pca_svm():
         random_state=0)
 
     # Test with PCA + SVC
-    clf = SVC(probability=True, random_state=0)
+    clf = SVC(gamma='scale', probability=True, random_state=0)
     pca = PCA()
     rus = RandomUnderSampler(random_state=0)
     pipe = Pipeline([('rus', rus), ('pca', pca), ('svc', clf)])
@@ -805,20 +806,17 @@ def test_pipeline_sample():
     pipeline = Pipeline([('rus', rus)])
 
     # test transform and fit_transform:
-    X_trans, y_trans = pipeline.fit(X, y).sample(X, y)
-    X_trans2, y_trans2 = pipeline.fit_sample(X, y)
-    X_trans3, y_trans3 = rus.fit_sample(X, y)
+    X_trans, y_trans = pipeline.fit_resample(X, y)
+    X_trans2, y_trans2 = rus.fit_resample(X, y)
     assert_allclose(X_trans, X_trans2, rtol=R_TOL)
-    assert_allclose(X_trans, X_trans3, rtol=R_TOL)
     assert_allclose(y_trans, y_trans2, rtol=R_TOL)
-    assert_allclose(y_trans, y_trans3, rtol=R_TOL)
 
     pca = PCA()
     pipeline = Pipeline([('pca', PCA()), ('rus', rus)])
 
-    X_trans, y_trans = pipeline.fit(X, y).sample(X, y)
+    X_trans, y_trans = pipeline.fit_resample(X, y)
     X_pca = pca.fit_transform(X)
-    X_trans2, y_trans2 = rus.fit_sample(X_pca, y)
+    X_trans2, y_trans2 = rus.fit_resample(X_pca, y)
     # We round the value near to zero. It seems that PCA has some issue
     # with that
     X_trans[np.bitwise_and(X_trans < R_TOL, X_trans > -R_TOL)] = 0
@@ -863,7 +861,7 @@ def test_pipeline_none_classifier():
         n_clusters_per_class=1,
         n_samples=5000,
         random_state=0)
-    clf = LogisticRegression(random_state=0)
+    clf = LogisticRegression(solver='lbfgs', random_state=0)
     pipe = make_pipeline(None, clf)
     pipe.fit(X, y)
     pipe.predict(X)
@@ -885,7 +883,7 @@ def test_pipeline_none_sampler_classifier():
         n_clusters_per_class=1,
         n_samples=5000,
         random_state=0)
-    clf = LogisticRegression(random_state=0)
+    clf = LogisticRegression(solver='lbfgs', random_state=0)
     rus = RandomUnderSampler(random_state=0)
     pipe = make_pipeline(None, rus, clf)
     pipe.fit(X, y)
@@ -908,7 +906,7 @@ def test_pipeline_sampler_none_classifier():
         n_clusters_per_class=1,
         n_samples=5000,
         random_state=0)
-    clf = LogisticRegression(random_state=0)
+    clf = LogisticRegression(solver='lbfgs', random_state=0)
     rus = RandomUnderSampler(random_state=0)
     pipe = make_pipeline(rus, None, clf)
     pipe.fit(X, y)
@@ -934,8 +932,7 @@ def test_pipeline_none_sampler_sample():
 
     rus = RandomUnderSampler(random_state=0)
     pipe = make_pipeline(None, rus)
-    pipe.fit(X, y)
-    pipe.sample(X, y)
+    pipe.fit_resample(X, y)
 
 
 def test_pipeline_none_transformer():
@@ -975,7 +972,7 @@ def test_pipeline_methods_anova_rus():
         n_samples=5000,
         random_state=0)
     # Test with RandomUnderSampling + Anova + LogisticRegression
-    clf = LogisticRegression()
+    clf = LogisticRegression(solver='lbfgs')
     rus = RandomUnderSampler(random_state=0)
     filter1 = SelectKBest(f_classif, k=2)
     pipe = Pipeline([('rus', rus), ('anova', filter1), ('logistic', clf)])
@@ -1000,7 +997,7 @@ def test_pipeline_with_step_that_implements_both_sample_and_transform():
         n_samples=5000,
         random_state=0)
 
-    clf = LogisticRegression()
+    clf = LogisticRegression(solver='lbfgs')
     with raises(TypeError):
         Pipeline([('step', FitTransformSample()), ('logistic', clf)])
 
@@ -1019,7 +1016,7 @@ def test_pipeline_with_step_that_it_is_pipeline():
         n_samples=5000,
         random_state=0)
     # Test with RandomUnderSampling + Anova + LogisticRegression
-    clf = LogisticRegression()
+    clf = LogisticRegression(solver='lbfgs')
     rus = RandomUnderSampler(random_state=0)
     filter1 = SelectKBest(f_classif, k=2)
     pipe1 = Pipeline([('rus', rus), ('anova', filter1)])
@@ -1043,12 +1040,13 @@ def test_pipeline_fit_then_sample_with_sampler_last_estimator():
     rus = RandomUnderSampler(random_state=42)
     enn = ENN()
     pipeline = make_pipeline(rus, enn)
-    X_fit_sample_resampled, y_fit_sample_resampled = pipeline.fit_sample(X, y)
+    X_fit_resample_resampled, y_fit_resample_resampled = \
+        pipeline.fit_resample(X, y)
     pipeline = make_pipeline(rus, enn)
     pipeline.fit(X, y)
-    X_fit_then_sample_res, y_fit_then_sample_res = pipeline.sample(X, y)
-    assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_res)
-    assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_res)
+    X_fit_then_sample_res, y_fit_then_sample_res = pipeline.fit_resample(X, y)
+    assert_array_equal(X_fit_resample_resampled, X_fit_then_sample_res)
+    assert_array_equal(y_fit_resample_resampled, y_fit_then_sample_res)
 
 
 def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
@@ -1067,9 +1065,23 @@ def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
     rus = RandomUnderSampler(random_state=42)
     enn = ENN()
     pipeline = make_pipeline(rus, enn, rus)
-    X_fit_sample_resampled, y_fit_sample_resampled = pipeline.fit_sample(X, y)
+    X_fit_resample_resampled, y_fit_resample_resampled = \
+        pipeline.fit_resample(X, y)
     pipeline = make_pipeline(rus, enn, rus)
     pipeline.fit(X, y)
-    X_fit_then_sample_res, y_fit_then_sample_res = pipeline.sample(X, y)
-    assert_array_equal(X_fit_sample_resampled, X_fit_then_sample_res)
-    assert_array_equal(y_fit_sample_resampled, y_fit_then_sample_res)
+    X_fit_then_sample_res, y_fit_then_sample_res = pipeline.fit_resample(X, y)
+    assert_array_equal(X_fit_resample_resampled, X_fit_then_sample_res)
+    assert_array_equal(y_fit_resample_resampled, y_fit_then_sample_res)
+
+
+def test_make_pipeline_memory():
+    cachedir = mkdtemp()
+    try:
+        memory = Memory(cachedir, verbose=10)
+        pipeline = make_pipeline(DummyTransf(), SVC(gamma='scale'),
+                                 memory=memory)
+        assert pipeline.memory is memory
+        pipeline = make_pipeline(DummyTransf(), SVC(gamma='scale'))
+        assert pipeline.memory is None
+    finally:
+        shutil.rmtree(cachedir)
