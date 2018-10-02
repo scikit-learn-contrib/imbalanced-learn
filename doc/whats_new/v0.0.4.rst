@@ -18,21 +18,6 @@ API
 - Enable to use a ``list`` for the cleaning methods to specify the class to
   sample. :issue:`411` by :user:`Guillaume Lemaitre <glemaitre>`.
 
-- Replace ``fit_sample`` by ``fit_resample``. An alias is still available for
-  backward compatibility. In addition, ``sample`` has been removed to avoid
-  resampling on different set of data.
-  :issue:`462` by :user:`Guillaume Lemaitre <glemaitre>`.
-
-New features
-............
-
-- Add a ``keras`` and ``tensorflow`` modules to create balanced mini-batches
-  generator. :issue:`409` by :user:`Guillaume Lemaitre <glemaitre>`.
-
-- Add :class:`imblearn.ensemble.EasyEnsembleClassifier` which create a bag of
-  AdaBoost classifier trained on balanced bootstrap samples.
-  :issue:`455` by :user:`Guillaume Lemaitre <glemaitre>`.
-
 Enhancement
 ...........
 
@@ -49,16 +34,6 @@ Enhancement
   :class:`BorderlineSMOTE` and :class:`SVMSMOTE`.
   :issue:`440` by :user:`Guillaume Lemaitre <glemaitre>`.
 
-- Allow :class:`imblearn.over_sampling.RandomOverSampler` can return indices
-  using the attributes ``return_indices``.
-  :issue:`439` by :user:`Hugo Gascon<hgascon>` and
-  :user:`Guillaume Lemaitre <glemaitre>`.
-
-- Allow :class:`imblearn.under_sampling.RandomUnderSampler` and
-  :class:`imblearn.over_sampling.RandomOverSampler` to sample object array
-  containing strings.
-  :issue:`451` by :user:`Guillaume Lemaitre <glemaitre>`.
-  
 - Add support for Hellinger Distance as sklearn classification tree split criterion.
   By :user: `Evgeni Dubov <EvgeniDubov>`.
   
@@ -73,28 +48,11 @@ Bug fixes
   generating new samples. :issue:`354` by :user:`Guillaume Lemaitre
   <glemaitre>`.
 
-- Fix bug which allow for sorted behavior of ``sampling_strategy`` dictionary
-  and thus to obtain a deterministic results when using the same random state.
-  :issue:`447` by :user:`Guillaume Lemaitre <glemaitre>`.
-- Force to clone scikit-learn estimator passed as attributes to samplers.
-  :issue:`446` by :user:`Guillaume Lemaitre <glemaitre>`.
-- Fix bug which was not preserving the dtype of X and y when generating
-  samples.
-  :issue:`450` by :user:`Guillaume Lemaitre <glemaitre>`.
-- Add the option to pass a ``Memory`` object to :func:`make_pipeline` like 
-  in :class:`pipeline.Pipeline` class.
-  :issue:`458` by :user:`Christos Aridas <chkoar>`.
 Maintenance
 ...........
 
 - Remove deprecated parameters in 0.2 - :issue:`331` by :user:`Guillaume
   Lemaitre <glemaitre>`.
-- Make some modules private.
-  :issue:`452` by :user:`Guillaume Lemaitre <glemaitre>`.
-Documentation
-.............
-- Remove some docstring which are not necessary.
-  :issue:`454` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Deprecation
 ...........
@@ -118,8 +76,3 @@ Deprecation
   :class:`imblearn.over_sampling.SVMSMOTE` and
   :class:`imblearn.over_sampling.BorderlineSMOTE`.
   :issue:`440` by :user:`Guillaume Lemaitre <glemaitre>`.
-
-- Deprecate :class:`imblearn.ensemble.EasyEnsemble` in favor of meta-estimator
-  :class:`imblearn.ensemble.EasyEnsembleClassifier` which follow the exact
-  algorithm described in the literature.
-  :issue:`455` by :user:`Guillaume Lemaitre <glemaitre>`.
