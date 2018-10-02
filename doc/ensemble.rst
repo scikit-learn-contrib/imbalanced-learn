@@ -11,6 +11,10 @@ Ensemble of samplers
 Samplers
 --------
 
+.. warning::
+   Note that those:class:`EasyEnsemble` is deprecated and you should use
+   :class:`EasyEnsembleClassifier` instead. :class:`EasyEnsembleClassifier` is
+   presented in the next section.
 An imbalanced data set can be balanced by creating several balanced
 subsets. The module :mod:`imblearn.ensemble` allows to create such sets.
 
@@ -28,7 +32,7 @@ under-sampling the original set::
   [(0, 64), (1, 262), (2, 4674)]
   >>> from imblearn.ensemble import EasyEnsemble
   >>> ee = EasyEnsemble(random_state=0, n_subsets=10)
-  >>> X_resampled, y_resampled = ee.fit_sample(X, y)
+  >>> X_resampled, y_resampled = ee.fit_resample(X, y)
   >>> print(X_resampled.shape)
   (10, 192, 2)
   >>> print(sorted(Counter(y_resampled[0]).items()))
@@ -50,7 +54,7 @@ parameter ``n_max_subset`` and an additional bootstraping can be activated with
   >>> bc = BalanceCascade(random_state=0,
   ...                     estimator=LogisticRegression(random_state=0),
   ...                     n_max_subset=4)
-  >>> X_resampled, y_resampled = bc.fit_sample(X, y)
+  >>> X_resampled, y_resampled = bc.fit_resample(X, y)
   >>> print(X_resampled.shape)
   (4, 192, 2)
   >>> print(sorted(Counter(y_resampled[0]).items()))

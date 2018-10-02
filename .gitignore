@@ -71,3 +71,8 @@ target/
 
 # PyCharm
 .idea/
+
+# Cython
+*.c
+*.cpp
+cythonize.dat

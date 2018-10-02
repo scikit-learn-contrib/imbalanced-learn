@@ -5,7 +5,7 @@ This code was adapted from scikit-learn's check_build utility.
 """
 import os
 
-PACKAGE_NAME = 'cython_template'
+PACKAGE_NAME = 'imblearn'
 
 INPLACE_MSG = """
 It appears that you are importing {package} from within the source tree.

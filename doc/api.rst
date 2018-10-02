@@ -18,7 +18,7 @@ This is the full API documentation of the `imbalanced-learn` toolbox.
 Prototype generation
 --------------------
 
-.. automodule:: imblearn.under_sampling.prototype_generation
+.. automodule:: imblearn.under_sampling._prototype_generation
    :no-members:
    :no-inherited-members:
 
@@ -33,7 +33,7 @@ Prototype generation
 Prototype selection
 -------------------
 
-.. automodule:: imblearn.under_sampling.prototype_selection
+.. automodule:: imblearn.under_sampling._prototype_selection
    :no-members:
    :no-inherited-members:
 
@@ -110,6 +110,33 @@ Prototype selection
    ensemble.BalanceCascade
    ensemble.BalancedBaggingClassifier
    ensemble.EasyEnsemble
+   ensemble.EasyEnsembleClassifier
+.. _keras_ref:
+:mod:`imblearn.keras`: Batch generator for Keras
+================================================
+.. automodule:: imblearn.keras
+    :no-members:
+    :no-inherited-members:
+.. currentmodule:: imblearn
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+   keras.BalancedBatchGenerator
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+   keras.balanced_batch_generator
+.. _tensorflow_ref:
+:mod:`imblearn.tensorflow`: Batch generator for TensorFlow
+==========================================================
+.. automodule:: imblearn.tensorflow
+    :no-members:
+    :no-inherited-members:
+.. currentmodule:: imblearn
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+   tensorflow.balanced_batch_generator
 
 .. _misc_ref:
    
@@ -229,4 +256,3 @@ Imbalance-learn provides some fast-prototyping tools.
    utils.check_neighbors_object
    utils.check_ratio
    utils.check_sampling_strategy
-   utils.hash_X_y
