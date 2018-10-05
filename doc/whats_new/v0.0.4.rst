@@ -117,6 +117,10 @@ Documentation
 - Remove some docstring which are not necessary.
   :issue:`454` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Fix the documentation of the ``sampling_strategy`` parameters when used as a
+  float.
+  :issue:`480` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 
