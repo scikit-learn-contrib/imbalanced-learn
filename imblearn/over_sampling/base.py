@@ -21,11 +21,13 @@ class BaseOverSampler(BaseSampler):
         """sampling_strategy : float, str, dict or callable, (default='auto')
         Sampling information to resample the data set.
 
-        - When ``float``, it corresponds to the ratio :math:`\\alpha_{os}`
-          defined by :math:`N_{rm} = \\alpha_{os} \\times N_{m}` where
-          :math:`N_{rm}` and :math:`N_{M}` are the number of samples in the
-          minority class after resampling and the number of samples in the
-          majority class, respectively.
+        - When ``float``, it corresponds to the desired ratio of the number of
+          samples in the majority class over the number of samples in the
+          minority class after resampling. Therefore, the ratio is expressed as
+          :math:`\\alpha_{os} = N_{M} / N_{rm}` where :math:`N_{rm}` and
+          :math:`N_{M}` are the number of samples in the minority class after
+          resampling and the number of samples in the majority class,
+          respectively.
 
             .. warning::
                ``float`` is only available for **binary** classification. An
