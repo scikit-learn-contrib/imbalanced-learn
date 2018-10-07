@@ -52,7 +52,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
         conda install --yes cython
         pip install -U git+https://github.com/scikit-learn/scikit-learn.git
     else
-        conda install --yes scikit-learn=$SKLEARN_VERSION -c conda-forge/label/rc -c conda-forge
+        conda install --yes scikit-learn=$SKLEARN_VERSION
     fi
 
     conda install --yes pytest pytest-cov
@@ -67,7 +67,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     virtualenv --system-site-packages testvenv
     source testvenv/bin/activate
 
-    pip install --pre scikit-learn
+    pip install scikit-learn
     pip install pandas keras tensorflow
     pip install pytest pytest-cov codecov sphinx numpydoc
 
