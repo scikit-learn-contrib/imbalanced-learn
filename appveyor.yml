@@ -20,7 +20,7 @@ environment:
     - PYTHON: "C:\\Miniconda36-x64"
       PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "64"
-      OPTIONAL_DEP: "pandas keras tensorflow"
+      OPTIONAL_DEP: "pandas keras tensorflow Cython"
 
     - PYTHON: "C:\\Miniconda36-x64"
       PYTHON_VERSION: "3.7"
