@@ -41,7 +41,7 @@ install:
   - conda create -n testenv --yes python=%PYTHON_VERSION% pip
   - activate testenv
   - conda install scipy numpy -y -q
-  - pip install --pre scikit-learn
+  - conda install scikit-learn -y -q
   - conda install %OPTIONAL_DEP% -y -q
   - conda install pytest pytest-cov -y -q
   - pip install codecov
