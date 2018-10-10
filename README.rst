@@ -44,7 +44,7 @@ Documentation
 Installation documentation, API documentation, and examples can be found on the
 documentation_.
 
-.. _documentation: http://contrib.scikit-learn.org/imbalanced-learn/
+.. _documentation: https://imbalanced-learn.readthedocs.io/en/stable/
 
 Installation
 ------------
@@ -170,7 +170,7 @@ Below is a list of the methods currently implemented in this module.
 
 The different algorithms are presented in the sphinx-gallery_.
 
-.. _sphinx-gallery: http://contrib.scikit-learn.org/imbalanced-learn/stable/auto_examples/index.html
+.. _sphinx-gallery: https://imbalanced-learn.readthedocs.io/en/stable/auto_examples/index.html
 
 
 References:
