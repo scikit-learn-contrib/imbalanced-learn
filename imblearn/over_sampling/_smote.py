@@ -18,13 +18,17 @@ from scipy import sparse
 from sklearn.base import clone
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.svm import SVC
-from sklearn.utils import check_random_state, safe_indexing, check_array
+from sklearn.utils import check_random_state
+from sklearn.utils import safe_indexing
+from sklearn.utils import check_array
+from sklearn.utils import check_X_y
 from sklearn.utils.sparsefuncs_fast import csr_mean_variance_axis0
 from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
 
 from .base import BaseOverSampler
 from ..exceptions import raise_isinstance_error
 from ..utils import check_neighbors_object
+from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
@@ -901,6 +905,15 @@ class SMOTENC(SMOTE):
                                       ratio=None)
         self.categorical_features = categorical_features
 
+    @staticmethod
+    def _check_X_y(X, y):
+        """Overwrite the checking to let pass some string for categorical
+        features.
+        """
+        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
+        return X, y, binarize_y
+
     def _validate_estimator(self):
         super(SMOTENC, self)._validate_estimator()
         categorical_features = np.asarray(self.categorical_features)
@@ -925,6 +938,7 @@ class SMOTENC(SMOTE):
         class_minority = min(target_stats, key=target_stats.get)
 
         X_continuous = X[:, self.continuous_features_]
+        X_continuous = check_array(X_continuous, accept_sparse=['csr', 'csc'])
         X_minority = safe_indexing(X_continuous,
                                    np.flatnonzero(y == class_minority))
 
@@ -937,9 +951,9 @@ class SMOTENC(SMOTE):
         else:
             self.median_std_ = np.median(X_minority.std(axis=0))
 
+        X_categorical = X[:, self.categorical_features_]
         self.ohe_ = OneHotEncoder(sparse=sparse.issparse(X),
                                   handle_unknown='ignore')
-        X_categorical = X[:, self.categorical_features_]
         X_ohe = self.ohe_.fit_transform(
             X_categorical.toarray() if sparse.issparse(X_categorical)
             else X_categorical)
@@ -955,10 +969,9 @@ class SMOTENC(SMOTE):
             X_ohe[indices] = self.median_std_
 
         if sparse.issparse(X):
-            X = sparse.hstack((X[:, self.continuous_features_], X_ohe),
-                              format='csr')
+            X = sparse.hstack((X_continuous, X_ohe), format='csr')
         else:
-            X = np.hstack((X[:, self.continuous_features_], X_ohe))
+            X = np.hstack((X_continuous, X_ohe))
 
         # call the SMOTE sampling
         X_resampled, y_resampled = super(SMOTENC, self)._fit_resample(X, y)
@@ -978,7 +991,7 @@ class SMOTENC(SMOTE):
             X_res_cat[indices] = 1
             X_resampled = np.hstack(
                 (X_resampled[:, :self.continuous_features_.size],
-                self.ohe_.inverse_transform(X_res_cat))
+                 self.ohe_.inverse_transform(X_res_cat))
             )
 
         indices_reordered = np.hstack((self.continuous_features_,
