@@ -952,8 +952,7 @@ class SMOTENC(SMOTE):
             self.median_std_ = np.median(X_minority.std(axis=0))
 
         X_categorical = X[:, self.categorical_features_]
-        self.ohe_ = OneHotEncoder(sparse=sparse.issparse(X),
-                                  handle_unknown='ignore')
+        self.ohe_ = OneHotEncoder(sparse=True, handle_unknown='ignore')
         X_ohe = self.ohe_.fit_transform(
             X_categorical.toarray() if sparse.issparse(X_categorical)
             else X_categorical)
@@ -962,93 +961,51 @@ class SMOTENC(SMOTE):
         # median of the standard deviation. It will ensure that whenever
         # distance is computed between 2 samples, the difference will be equal
         # to the median of the standard deviation as in the original paper.
-        if sparse.issparse(X_ohe):
-            X_ohe.data = np.ones_like(X_ohe.data) * self.median_std_
-        else:
-            indices = np.isclose(X_ohe, 1)
-            X_ohe[indices] = self.median_std_
-
-        if sparse.issparse(X):
-            X = sparse.hstack((X_continuous, X_ohe), format='csr')
-        else:
-            X = np.hstack((X_continuous, X_ohe))
+        X_ohe.data = np.ones_like(X_ohe.data) * self.median_std_
+        X_encoded = sparse.hstack((X_continuous, X_ohe), format='csr')
 
         # call the SMOTE sampling
-        X_resampled, y_resampled = super(SMOTENC, self)._fit_resample(X, y)
+        X_resampled, y_resampled = super(SMOTENC, self)._fit_resample(
+            X_encoded, y)
 
         # reverse the encoding of the categorical features
         X_res_cat = X_resampled[:, self.continuous_features_.size:]
-        if sparse.issparse(X_res_cat):
-            X_res_cat.data = np.ones_like(X_res_cat.data)
-            X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
+        X_res_cat.data = np.ones_like(X_res_cat.data)
+        X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat.toarray())
+
+        if sparse.issparse(X):
             X_resampled = sparse.hstack(
                 (X_resampled[:, :self.continuous_features_.size],
-                 sparse.csr_matrix(X_res_cat_dec)),
-                format='csr'
+                 X_res_cat_dec), format='csr'
             )
         else:
-            indices = np.isclose(X_res_cat, 1)
-            X_res_cat[indices] = 1
             X_resampled = np.hstack(
-                (X_resampled[:, :self.continuous_features_.size],
-                 self.ohe_.inverse_transform(X_res_cat))
+                (X_resampled[:, :self.continuous_features_.size].toarray(),
+                 X_res_cat_dec)
             )
 
-        indices_reordered = np.hstack((self.continuous_features_,
-                                       self.categorical_features_))
+        indices_reordered = np.argsort(
+            np.hstack((self.continuous_features_, self.categorical_features_))
+        )
         if sparse.issparse(X_resampled):
             # the matrix is supposed to be in the CSR format after the stacking
             col_indices = X_resampled.indices.copy()
-            for col_idx in range(indices_reordered.size):
+            for idx, col_idx in enumerate(indices_reordered):
                 mask = X_resampled.indices == col_idx
-                col_indices[mask] = indices_reordered[col_idx]
+                col_indices[mask] = idx
             X_resampled.indices = col_indices
         else:
-            X_resampled[:, indices_reordered] = X_resampled
+            X_resampled = X_resampled[:, indices_reordered]
+
         return X_resampled, y_resampled
 
     def _generate_sample(self, X, nn_data, nn_num, row, col, step):
-        r"""Generate a synthetic sample.
+        """Generate a synthetic sample with an additional steps for the
+        categorical features.
 
-        The rule for the generation is:
-
-        .. math::
-           \mathbf{s_{s}} = \mathbf{s_{i}} + \mathcal{u}(0, 1) \times
-           (\mathbf{s_{i}} - \mathbf{s_{nn}}) \,
-
-        where \mathbf{s_{s}} is the new synthetic samples, \mathbf{s_{i}} is
-        the current sample, \mathbf{s_{nn}} is a randomly selected neighbors of
-        \mathbf{s_{i}} and \mathcal{u}(0, 1) is a random number between [0, 1).
-        For categorical feature, the new sample will be affected to the most
-        frequent categories in the neighborhood.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
-            Points from which the points will be created.
-
-        nn_data : ndarray, shape (n_samples_all, n_features)
-            Data set carrying all the neighbours to be used.
-
-        nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)
-            The nearest neighbours of each sample in `nn_data`.
-
-        row : int
-            Index pointing at feature vector in X which will be used
-            as a base for creating new sample.
-
-        col : int
-            Index pointing at which nearest neighbor of base feature vector
-            will be used when creating new sample.
-
-        step : float
-            Step size for new sample.
-
-        Returns
-        -------
-        X_new : {ndarray, sparse matrix}, shape (n_features,)
-            Single synthetically generated sample.
-
+        Each new sample is generated the same way than in SMOTE. However, the
+        categorical features are mapped to the most frequent nearest neighbors
+        of the majority class.
         """
         sample = super(SMOTENC, self)._generate_sample(X, nn_data, nn_num,
                                                        row, col, step)
