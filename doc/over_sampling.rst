@@ -223,7 +223,7 @@ parameter of the SVM classifier allows to select more or less support vectors.
 For both borderline and SVM SMOTE, a neighborhood is defined using the
 parameter ``m_neighbors`` to decide if a sample is in danger, safe, or noise.
 
-ADASYN is working similarly to the regular SMOTE. However, the number of
+ADASYN works similarly to the regular SMOTE. However, the number of
 samples generated for each :math:`x_i` is proportional to the number of samples
 which are not from the same class than :math:`x_i` in a given
 neighborhood. Therefore, more samples will be generated in the area that the
