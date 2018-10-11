@@ -41,6 +41,12 @@ New features
   under-sampling stage before each boosting iteration of AdaBoost.
   :issue:`469` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add :class:`imblern.over_sampling.SMOTENC` which generate synthetic samples
+  on data set with heterogeneous data type (continuous and categorical
+  features).
+  :issue:`412` by :user:`Denis Dudnik <ddudnik>` and
+  :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancement
 ...........
 

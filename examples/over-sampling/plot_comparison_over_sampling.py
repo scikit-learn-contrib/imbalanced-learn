@@ -21,7 +21,7 @@ from sklearn.svm import LinearSVC
 
 from imblearn.pipeline import make_pipeline
 from imblearn.over_sampling import ADASYN
-from imblearn.over_sampling import SMOTE, BorderlineSMOTE, SVMSMOTE
+from imblearn.over_sampling import SMOTE, BorderlineSMOTE, SVMSMOTE, SMOTENC
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.base import BaseSampler
 
@@ -225,5 +225,30 @@ for ax, sampler in zip(ax_arr,
     plot_resampling(X, y, sampler, ax[1])
     ax[1].set_title('Resampling using {}'.format(sampler.__class__.__name__))
 fig.tight_layout()
+
+###############################################################################
+# When dealing with a mixed of continuous and categorical features, SMOTE-NC
+# is the only method which can handle this case.
+
+# create a synthetic data set with continuous and categorical features
+rng = np.random.RandomState(42)
+n_samples = 50
+X = np.empty((n_samples, 3), dtype=object)
+X[:, 0] = rng.choice(['A', 'B', 'C'], size=n_samples).astype(object)
+X[:, 1] = rng.randn(n_samples)
+X[:, 2] = rng.randint(3, size=n_samples)
+y = np.array([0] * 20 + [1] * 30)
+
+print('The original imbalanced dataset')
+print(sorted(Counter(y).items()))
+print('The first and last columns are containing categorical features:')
+print(X[:5])
+
+smote_nc = SMOTENC(categorical_features=[0, 2], random_state=0)
+X_resampled, y_resampled = smote_nc.fit_resample(X, y)
+print('Dataset after resampling:')
+print(sorted(Counter(y_resampled).items()))
+print('SMOTE-NC will generate categories for the categorical features:')
+print(X_resampled[-5:])
 
 plt.show()
