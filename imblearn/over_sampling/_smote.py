@@ -958,7 +958,12 @@ class SMOTENC(SMOTE):
             self.median_std_ = np.median(X_minority.std(axis=0))
 
         X_categorical = X[:, self.categorical_features_]
-        self.ohe_ = OneHotEncoder(sparse=True, handle_unknown='ignore')
+        if X_continuous.dtype.name != 'object':
+            dtype_ohe = X_continuous.dtype
+        else:
+            dtype_ohe = np.float64
+        self.ohe_ = OneHotEncoder(sparse=True, handle_unknown='ignore',
+                                  dtype=dtype_ohe)
         X_ohe = self.ohe_.fit_transform(
             X_categorical.toarray() if sparse.issparse(X_categorical)
             else X_categorical)
@@ -967,7 +972,8 @@ class SMOTENC(SMOTE):
         # median of the standard deviation. It will ensure that whenever
         # distance is computed between 2 samples, the difference will be equal
         # to the median of the standard deviation as in the original paper.
-        X_ohe.data = np.ones_like(X_ohe.data) * self.median_std_
+        X_ohe.data = (np.ones_like(X_ohe.data, dtype=X_ohe.dtype) *
+                      self.median_std_)
         X_encoded = sparse.hstack((X_continuous, X_ohe), format='csr')
 
         # call the SMOTE sampling
