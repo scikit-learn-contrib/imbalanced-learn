@@ -10,15 +10,17 @@ from __future__ import division
 
 import types
 import warnings
+from collections import Counter
 
 import numpy as np
-
 from scipy import sparse
 
 from sklearn.base import clone
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.svm import SVC
 from sklearn.utils import check_random_state, safe_indexing, check_array
+from sklearn.utils.sparsefuncs_fast import csr_mean_variance_axis0
+from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
 
 from .base import BaseOverSampler
 from ..exceptions import raise_isinstance_error
@@ -127,15 +129,17 @@ class BaseSMOTE(BaseOverSampler):
             return X_new, y_new
 
     def _generate_sample(self, X, nn_data, nn_num, row, col, step):
-        """Generate a synthetic sample.
+        r"""Generate a synthetic sample.
 
         The rule for the generation is:
 
-        .. math:: \mathbf{s_{s}} = \mathbf{s_{i}} + \mathcal{u}(0, 1) \times (\mathbf{s_{i}} - \mathbf{s_{nn}}) \,
+        .. math::
+           \mathbf{s_{s}} = \mathbf{s_{i}} + \mathcal{u}(0, 1) \times
+           (\mathbf{s_{i}} - \mathbf{s_{nn}}) \,
 
-        where \mathbf{s_{s}} is the new synthetic samples, \mathbf{s_{i}} is the current sample,
-        \mathbf{s_{nn}} is a randomly selected neighbors of \mathbf{s_{i}} and \mathcal{u}(0, 1)
-        is a random number between [0, 1).
+        where \mathbf{s_{s}} is the new synthetic samples, \mathbf{s_{i}} is
+        the current sample, \mathbf{s_{nn}} is a randomly selected neighbors of
+        \mathbf{s_{i}} and \mathcal{u}(0, 1) is a random number between [0, 1).
 
         Parameters
         ----------
@@ -214,12 +218,6 @@ class BaseSMOTE(BaseOverSampler):
             return n_maj == nn_estimator.n_neighbors - 1
         else:
             raise NotImplementedError
-
-    def _fit_nn_k(self, X):
-        self.nn_k_.fit(X)
-
-    def _nn_k_neighbors(self, X):
-        return self.nn_k_.kneighbors(X, return_distance=False)[:, 1:]
 
 
 @Substitution(
@@ -342,14 +340,15 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
             target_class_indices = np.flatnonzero(y == class_sample)
             X_class = safe_indexing(X, target_class_indices)
 
-            self._fit_nn_m(X)
+            self.nn_m_.fit(X)
             danger_index = self._in_danger_noise(
                 self.nn_m_, X_class, class_sample, y, kind='danger')
             if not any(danger_index):
                 continue
 
-            self._fit_nn_k(X_class)
-            nns = self._nn_k_neighbors(safe_indexing(X_class, danger_index))
+            self.nn_k_.fit(X_class)
+            nns = self.nn_k_.kneighbors(safe_indexing(X_class, danger_index),
+                                        return_distance=False)[:, 1:]
 
             # divergence between borderline-1 and borderline-2
             if self.kind == 'borderline-1':
@@ -397,9 +396,6 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                 y_resampled = np.hstack((y_resampled, y_new_1, y_new_2))
 
         return X_resampled, y_resampled
-
-    def _fit_nn_m(self, X):
-        self.nn_m_.fit(X)
 
 
 @Substitution(
@@ -535,7 +531,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                 self.svm_estimator_.support_] == class_sample]
             support_vector = safe_indexing(X, support_index)
 
-            self._fit_nn_m(X)
+            self.nn_m_.fit(X)
             noise_bool = self._in_danger_noise(
                 self.nn_m_, support_vector, class_sample, y, kind='noise')
             support_vector = safe_indexing(
@@ -544,12 +540,13 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                 self.nn_m_, support_vector, class_sample, y, kind='danger')
             safety_bool = np.logical_not(danger_bool)
 
-            self._fit_nn_k(X_class)
+            self.nn_k_.fit(X_class)
             fractions = random_state.beta(10, 10)
             n_generated_samples = int(fractions * (n_samples + 1))
             if np.count_nonzero(danger_bool) > 0:
-                nns = self._nn_k_neighbors(
-                    safe_indexing(support_vector, np.flatnonzero(danger_bool)))
+                nns = self.nn_k_.kneighbors(
+                    safe_indexing(support_vector, np.flatnonzero(danger_bool)),
+                    return_distance=False)[:, 1:]
 
                 X_new_1, y_new_1 = self._make_samples(
                     safe_indexing(support_vector, np.flatnonzero(danger_bool)),
@@ -561,8 +558,9 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                     step_size=1.)
 
             if np.count_nonzero(safety_bool) > 0:
-                nns = self._nn_k_neighbors(
-                    safe_indexing(support_vector, np.flatnonzero(safety_bool)))
+                nns = self.nn_k_.kneighbors(
+                    safe_indexing(support_vector, np.flatnonzero(safety_bool)),
+                    return_distance=False)[:, 1:]
 
                 X_new_2, y_new_2 = self._make_samples(
                     safe_indexing(support_vector, np.flatnonzero(safety_bool)),
@@ -596,9 +594,6 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                 y_resampled = np.concatenate((y_resampled, y_new_1), axis=0)
 
         return X_resampled, y_resampled
-
-    def _fit_nn_m(self, X):
-        self.nn_m_.fit(X)
 
 
 # FIXME: In 0.6, SMOTE should inherit only from BaseSMOTE.
@@ -803,8 +798,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             target_class_indices = np.flatnonzero(y == class_sample)
             X_class = safe_indexing(X, target_class_indices)
 
-            self._fit_nn_k(X_class)
-            nns = self._nn_k_neighbors(X_class)
+            self.nn_k_.fit(X_class)
+            nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
             X_new, y_new = self._make_samples(X_class, y.dtype, class_sample,
                                               X_class, nns, n_samples, 1.0)
 
@@ -818,56 +813,35 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
 
 class SMOTENC(SMOTE):
-    """Class to perform over-sampling using SMOTE-NC.
+    """Synthetic Minority Over-sampling Technique for Nominal and Continuous
+    (SMOTE-NC).
 
-    Implementation of the Synthetic Minority Over-sampling Technique
-    for Nominal and Continuous (SMOTE-NC) features. SMOTE-NC is intended
-    to deal with mixed datasets of categorical and numerical data.
-
-    SMOTE-NC requires to one-hot encode the categorical features before
-    sampling, i.e. using :class:`sklearn.preprocessing.OneHotEncoder`.
+    Unlike :class:`SMOTE`, SMOTE-NC for dataset containing continuous and
+    categorical features.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
     Parameters
     ----------
+    categorical_features : ndarray, shape (n_cat_features,) or (n_features,)
+        Specified which features are categorical. Can either be:
+
+        - array of indices specifying the categorical features;
+        - mask array of shape (n_features, ) and ``bool`` dtype for which
+          ``True`` indicates the categorical features.
+
     {sampling_strategy}
 
     {random_state}
 
-    {k_neighbors}
+    k_neighbors : int or object, optional (default=5)
+        If ``int``, number of nearest neighbours to used to construct synthetic
+        samples.  If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
 
-    {m_neighbors}
-
-    {out_step}
-
-    {kind}
-
-    {svm_estimator}
-
-    {n_jobs}
-
-    {ratio}
-
-    categorical_feature_indices : array-like, shape (n_categorical_features,)
-        Indices to categorical feature ranges.
-        Value of
-        :attr:`sklearn.preprocessing.OneHotEncoder.feature_indices_`
-        can be plugged directly.
-        See :class:`sklearn.preprocessing.OneHotEncoder` for details.
-
-    Attributes
-    ----------
-    std_median_ : float
-        Median of standard deviations of continuous features.
-
-    categorical_feature_indices_ : array of shape (n_categorical_features,)
-        Indices to categorical feature ranges.
-        Feature ``i`` in the original data is mapped to features
-        from ``categorical_feature_indices_[i]`` to ``categorical_feature_indices_[i+1]``.
-
-    continuous_feature_indices_ : array of shape (n_continuous_features,)
-        Indices of columns with continuous features.
+    n_jobs : int, optional (default=1)
+        The number of threads to open if possible.
 
     Notes
     -----
@@ -886,6 +860,8 @@ class SMOTENC(SMOTE):
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
 
+    BorderlineSMOTE : Over-sample using Borderline-SMOTE variant.
+
     ADASYN : Over-sample using ADASYN.
 
     References
@@ -900,9 +876,7 @@ class SMOTENC(SMOTE):
     >>> from collections import Counter
     >>> from numpy.random import RandomState
     >>> from sklearn.datasets import make_classification
-    >>> from sklearn.preprocessing import OneHotEncoder
-    >>> from imblearn.over_sampling import \
-SMOTENC # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.over_sampling import SMOTENC
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -910,91 +884,130 @@ SMOTENC # doctest: +NORMALIZE_WHITESPACE
     Original dataset shape (1000, 20)
     >>> print('Original dataset samples per class {}'.format(Counter(y)))
     Original dataset samples per class Counter({1: 900, 0: 100})
-    >>> # replace two last columns with categorical features encoded as integers
+    >>> # simulate the 2 last columns to be categorical features
     >>> X[:, -2:] = RandomState(10).randint(0, 4, size=(1000, 2))
-    >>> # One-hot encode the categorical columns
-    >>> encoder = OneHotEncoder(n_values=[4, 4], categorical_features=[18, 19])
-    >>> X = encoder.fit_transform(X)
-    >>> print('One-hot encoded dataset shape (%s, %s)' % X.shape)
-    One-hot encoded dataset shape (1000, 26)
-    >>> sm = SMOTENC(random_state=42, categorical_feature_indices=encoder.feature_indices_)
+    >>> sm = SMOTENC(random_state=42, categorical_features=[18, 19])
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset samples per class {}'.format(Counter(y_res)))
     Resampled dataset samples per class Counter({0: 900, 1: 900})
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 random_state=None,
-                 k_neighbors=5,
-                 m_neighbors='deprecated',
-                 out_step='deprecated',
-                 kind='deprecated',
-                 svm_estimator='deprecated',
-                 n_jobs=1,
-                 ratio=None,
-                 categorical_feature_indices=None):
+    def __init__(self, categorical_features, sampling_strategy='auto',
+                 random_state=None, k_neighbors=5, n_jobs=1):
         super(SMOTENC, self).__init__(sampling_strategy=sampling_strategy,
                                       random_state=random_state,
                                       k_neighbors=k_neighbors,
-                                      m_neighbors=m_neighbors,
-                                      out_step=out_step,
-                                      kind=kind,
-                                      svm_estimator=svm_estimator,
-                                      n_jobs=n_jobs,
-                                      ratio=ratio)
-        self.categorical_feature_indices = categorical_feature_indices
+                                      ratio=None)
+        self.categorical_features = categorical_features
+
+    def _validate_estimator(self):
+        super(SMOTENC, self)._validate_estimator()
+        categorical_features = np.asarray(self.categorical_features)
+        if categorical_features.dtype.name == 'bool':
+            self.categorical_features_ = np.flatnonzero(categorical_features)
+        else:
+            if any([cat not in np.arange(self.n_features_)
+                    for cat in categorical_features]):
+                raise ValueError(
+                    'Some of the categorical indices are out of range. Indices '
+                    'should be between 0 and {}'.format(self.n_features_))
+            self.categorical_features_ = categorical_features
+        self.continuous_features_ = np.setdiff1d(np.arange(self.n_features_),
+                                                 self.categorical_features_)
 
     def _fit_resample(self, X, y):
-        if self.categorical_feature_indices is None:
-            warnings.warn('No "categorical_feature_indices" were specified when '
-                          'this instance was created. Will fall back '
-                          'to normal SMOTE', RuntimeWarning)
-            return super(SMOTENC, self)._fit_resample(X, y)
+        self.n_features_ = X.shape[1]
+        self._validate_estimator()
 
-        feature_indices = check_array(self.categorical_feature_indices, ensure_2d=False,
-                                      ensure_min_samples=2, estimator=self)
-        n_features = X.shape[1]
+        # compute the median of the standard deviation of the minority class
+        target_stats = Counter(y)
+        class_minority = min(target_stats, key=target_stats.get)
 
-        if np.any(feature_indices > n_features):
-            raise ValueError('Indices of categorical features have to be less '
-                             'than number of features in X: X.shape=(%s, %s)'
-                             % X.shape)
-
-        self.categorical_feature_indices_ = feature_indices
-        self.continuous_feature_indices_ = np.setdiff1d(
-            np.arange(n_features), np.arange(self.categorical_feature_indices_[0],
-                                             self.categorical_feature_indices_[-1]))
-
-        if self.continuous_feature_indices_.size == 0:
-            raise ValueError('Looks like all features in X are '
-                             'categorical which is not supported. '
-                             'For this method to work X should have '
-                             'at least 1 continuous feature.')
+        X_continuous = X[:, self.continuous_features_]
+        X_minority = safe_indexing(X_continuous,
+                                   np.flatnonzero(y == class_minority))
 
         if sparse.issparse(X):
-            scaler = StandardScaler(with_mean=False,
-                                    with_std=True,
-                                    copy=False)
-            scaler.fit(X.tocsc()[:, self.continuous_feature_indices_])
-            self.std_median_ = np.median(np.sqrt(scaler.var_))
+            if X.format == 'csr':
+                _, var = csr_mean_variance_axis0(X_minority)
+            else:
+                _, var = csc_mean_variance_axis0(X_minority)
+            self.median_std_ = np.median(np.sqrt(var))
         else:
-            std = np.std(X[:, self.continuous_feature_indices_], axis=0)
-            self.std_median_ = np.median(std)
+            self.median_std_ = np.median(X_minority.std(axis=0))
 
-        return super(SMOTENC, self)._fit_resample(X, y)
+        self.ohe_ = OneHotEncoder(sparse=sparse.issparse(X),
+                                  handle_unknown='ignore')
+        X_categorical = X[:, self.categorical_features_]
+        X_ohe = self.ohe_.fit_transform(
+            X_categorical.toarray() if sparse.issparse(X_categorical)
+            else X_categorical)
+
+        # we can replace the 1 entries of the categorical features with the
+        # median of the standard deviation. It will ensure that whenever
+        # distance is computed between 2 samples, the difference will be equal
+        # to the median of the standard deviation as in the original paper.
+        if sparse.issparse(X_ohe):
+            X_ohe.data = np.ones_like(X_ohe.data) * self.median_std_
+        else:
+            indices = np.isclose(X_ohe, 1)
+            X_ohe[indices] = self.median_std_
+
+        if sparse.issparse(X):
+            X = sparse.hstack((X[:, self.continuous_features_], X_ohe),
+                              format='csr')
+        else:
+            X = np.hstack((X[:, self.continuous_features_], X_ohe))
+
+        # call the SMOTE sampling
+        X_resampled, y_resampled = super(SMOTENC, self)._fit_resample(X, y)
+
+        # reverse the encoding of the categorical features
+        X_res_cat = X_resampled[:, self.continuous_features_.size:]
+        if sparse.issparse(X_res_cat):
+            X_res_cat.data = np.ones_like(X_res_cat.data)
+            X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
+            X_resampled = sparse.hstack(
+                (X_resampled[:, :self.continuous_features_.size],
+                 sparse.csr_matrix(X_res_cat_dec)),
+                format='csr'
+            )
+        else:
+            indices = np.isclose(X_res_cat, 1)
+            X_res_cat[indices] = 1
+            X_resampled = np.hstack(
+                (X_resampled[:, :self.continuous_features_.size],
+                self.ohe_.inverse_transform(X_res_cat))
+            )
+
+        indices_reordered = np.hstack((self.continuous_features_,
+                                       self.categorical_features_))
+        if sparse.issparse(X_resampled):
+            # the matrix is supposed to be in the CSR format after the stacking
+            col_indices = X_resampled.indices.copy()
+            for col_idx in range(indices_reordered.size):
+                mask = X_resampled.indices == col_idx
+                col_indices[mask] = indices_reordered[col_idx]
+            X_resampled.indices = col_indices
+        else:
+            X_resampled[:, indices_reordered] = X_resampled
+        return X_resampled, y_resampled
 
     def _generate_sample(self, X, nn_data, nn_num, row, col, step):
-        """Generate a synthetic sample.
+        r"""Generate a synthetic sample.
 
         The rule for the generation is:
 
-        .. math:: \mathbf{s_{s}} = \mathbf{s_{i}} + \mathcal{u}(0, 1) \times (\mathbf{s_{i}} - \mathbf{s_{nn}}) \,
+        .. math::
+           \mathbf{s_{s}} = \mathbf{s_{i}} + \mathcal{u}(0, 1) \times
+           (\mathbf{s_{i}} - \mathbf{s_{nn}}) \,
 
-        where \mathbf{s_{s}} is the new synthetic samples, \mathbf{s_{i}} is the current sample,
-        \mathbf{s_{nn}} is a randomly selected neighbors of \mathbf{s_{i}} and \mathcal{u}(0, 1)
-        is a random number between [0, 1).
+        where \mathbf{s_{s}} is the new synthetic samples, \mathbf{s_{i}} is
+        the current sample, \mathbf{s_{nn}} is a randomly selected neighbors of
+        \mathbf{s_{i}} and \mathcal{u}(0, 1) is a random number between [0, 1).
+        For categorical feature, the new sample will be affected to the most
+        frequent categories in the neighborhood.
 
         Parameters
         ----------
@@ -1026,77 +1039,20 @@ SMOTENC # doctest: +NORMALIZE_WHITESPACE
         """
         sample = super(SMOTENC, self)._generate_sample(X, nn_data, nn_num,
                                                        row, col, step)
-        if not hasattr(self, "categorical_feature_indices_"):
-            warnings.warn('No "categorical_feature_indices" were specified when '
-                          'this instance was created. Will fall back '
-                          'to normal SMOTE', RuntimeWarning)
-            return sample
-
-        is_sparse = sparse.issparse(nn_data)
-        if is_sparse:
-            nn_data = nn_data.tocsr()
-
+        # To avoid conversion and since there is only few samples used, we
+        # convert those samples to dense array.
+        sample = (sample.toarray().squeeze()
+                  if sparse.issparse(sample) else sample)
         all_neighbors = nn_data[nn_num[row]]
-        if is_sparse:
-            all_neighbors = all_neighbors.tocsc()
-            sample = sample.tolil()
+        all_neighbors = (all_neighbors.toarray()
+                         if sparse.issparse(all_neighbors) else all_neighbors)
 
-        feature_idx_pairs = list(zip(self.categorical_feature_indices_[:-1],
-                                     self.categorical_feature_indices_[1:]))
-        for start, end in feature_idx_pairs:
-            # FIXME: should sample for which neighbors were found be also
-            # FIXME:  ... included when calculating most frequent nominal
-            # FIXME:  ... feature values?
-            nominal_values = all_neighbors[:, start:end]
-            # FIXME: break ties randomly when several nominal values are
-            # FIXME:  ... used by equal number of neighbors?
-            most_used_value = np.argmax(np.sum(nominal_values, axis=0))
-            new_nominal_value = np.zeros(nominal_values.shape[1])
-            new_nominal_value[most_used_value] = 1
-            if is_sparse:
-                sample[:, start:end] = new_nominal_value
-            else:
-                sample[start:end] = new_nominal_value
+        categories_size = ([self.continuous_features_.size] +
+                           [cat.size for cat in self.ohe_.categories_])
+        for start_idx, end_idx in zip(np.cumsum(categories_size)[:-1],
+                                      np.cumsum(categories_size)[1:]):
+            col_sel = all_neighbors[:, start_idx:end_idx].sum(axis=0).argmax()
+            sample[start_idx:end_idx] = 0
+            sample[start_idx + col_sel] = 1
 
-        return sample.tocsr() if is_sparse else sample
-
-    def _fit_nn_k(self, X):
-        """Calls original method but on a modified copy if input."""
-        return super(SMOTENC, self)._fit_nn_k(self._with_std_median(X))
-
-    def _nn_k_neighbors(self, X):
-        """Calls original method but on a modified copy if input."""
-        return super(SMOTENC, self)._nn_k_neighbors(self._with_std_median(X))
-
-    def _fit_nn_m(self, X):
-        """Calls original method but on a modified copy if input."""
-        return super(SMOTENC, self)._fit_nn_m(self._with_std_median(X))
-
-    def _in_danger_noise(self, nn_estimator, samples, target_class, y,
-                         kind='danger'):
-        """Calls original method but on a modified copy if input."""
-        return super(SMOTENC, self)._in_danger_noise(nn_estimator,
-                                                     self._with_std_median(samples),
-                                                     target_class, y, kind=kind)
-
-    def _with_std_median(self, X):
-        """
-        Given that all categorical features are assumed to be one-hot encoded,
-        their values are either 0 or 1. We replace values in original input
-        which are equal to 1 with calculated median of standard deviations
-        divided by 2. It will ensure that whenever distance is calculated
-        between two feature vectors, the difference of two different categorical
-        features will always equal to median standard deviation.
-        """
-        if not hasattr(self, "categorical_feature_indices_"):
-            warnings.warn('No "categorical_feature_indices" were specified when '
-                          'this instance was created. Will fallback '
-                          'to normal SMOTE', RuntimeWarning)
-            return X
-
-        X_copy = X.copy().tolil() if sparse.issparse(X) else X.copy()
-        start = self.categorical_feature_indices_[0]
-        end = self.categorical_feature_indices_[-1]
-        mask = X_copy[:, start:end] == 1
-        X_copy[:, start:end][mask] = self.std_median_ / 2.0
-        return X_copy.tocoo() if sparse.issparse(X_copy) else X_copy
+        return sparse.csr_matrix(sample) if sparse.issparse(X) else sample
