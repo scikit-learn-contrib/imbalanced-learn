@@ -45,6 +45,20 @@ def data_heterogneous_unordered():
     return X, y, [0, 3]
 
 
+def data_heterogneous_masked():
+    rng = np.random.RandomState(42)
+    X = np.empty((30, 4), dtype=object)
+    # create 2 random continuous feature
+    X[:, [1, 2]] = rng.randn(30, 2)
+    # create a categorical feature using some string
+    X[:, 0] = rng.choice(['a', 'b', 'c'], size=30).astype(object)
+    # create a categorical feature using some integer
+    X[:, 3] = rng.randint(3, size=30)
+    y = np.array([0] * 10 + [1] * 20)
+    # return the categories
+    return X, y, [True, False, True]
+
+
 def data_heterogneous_unordered_multiclass():
     rng = np.random.RandomState(42)
     X = np.empty((50, 4), dtype=object)
@@ -73,9 +87,18 @@ def data_sparse(format):
     return X, y, [0, 3]
 
 
+def test_smotenc_error():
+    X, y, _ = data_heterogneous_unordered()
+    categorical_features = [0, 10]
+    smote = SMOTENC(random_state=0, categorical_features=categorical_features)
+    with pytest.raises(ValueError, match="indices are out of range"):
+        smote.fit_resample(X, y)
+
+
 @pytest.mark.parametrize(
     "data",
     [data_heterogneous_ordered(), data_heterogneous_unordered(),
+     data_heterogneous_masked(),
      data_sparse('csr'), data_sparse('csc')]
 )
 def test_smotenc(data):
@@ -85,6 +108,8 @@ def test_smotenc(data):
 
     assert X_resampled.dtype == X.dtype
 
+    if np.asarray(categorical_features).dtype == bool:
+        categorical_features = np.flatnonzero(categorical_features)
     for cat_idx in categorical_features:
         if sparse.issparse(X):
             assert set(X[:, cat_idx].data) == set(X_resampled[:, cat_idx].data)
