@@ -20,7 +20,7 @@ import imblearn
 # meta-estimators need another estimator to be instantiated.
 META_ESTIMATORS = []
 # estimators that there is no way to default-construct sensibly
-OTHER = ["Pipeline", "FeatureUnion"]
+OTHER = ["Pipeline", "FeatureUnion", "SMOTENC"]
 # some strange ones
 DONT_TEST = []
 
