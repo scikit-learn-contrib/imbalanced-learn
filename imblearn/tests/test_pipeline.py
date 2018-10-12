@@ -138,6 +138,7 @@ class DummyTransf(Transf):
         self.timestamp_ = time.time()
         return self
 
+
 class DummyEstimatorParams(BaseEstimator):
     """Mock classifier that takes params on predict"""
     def fit(self, X, y):
@@ -1102,4 +1103,4 @@ def test_predict_with_predict_params():
     pipe = Pipeline([('transf', Transf()), ('clf', DummyEstimatorParams())])
     pipe.fit(None, None)
     pipe.predict(X=None, got_attribute=True)
-    assert_true(pipe.named_steps['clf'].got_attribute)
+    assert pipe.named_steps['clf'].got_attribute
