@@ -1,7 +1,46 @@
 .. _changes_0_4:
 
-Version 0.4 (under development)
-===============================
+Version 0.4
+===========
+
+**October, 2018**
+
+.. warning::
+
+    Version 0.4 is the last version of imbalanced-learn to support Python 2.7
+    and Python 3.4. Imbalanced-learn 0.5 will require Python 3.5 or higher.
+
+Highlights
+----------
+
+This release brings its set of new feature as well as some API changes to
+strengthen the foundation of imbalanced-learn.
+
+As new feature, 2 new modules :mod:`imblearn.keras` and
+:mod:`imblearn.tensorflow` have been added in which imbalanced-learn samplers
+can be used to generate balanced mini-batches.
+
+The module :mod:`imblearn.ensemble` has been consolidated with new classifier:
+:class:`imblearn.ensemble.BalancedRandomForestClassifier`,
+:class:`imblearn.ensemble.EasyEnsembleClassifier`,
+:class:`imblearn.ensemble.RUSBoostClassifier`.
+
+Support for string has been added in
+:class:`imblearn.over_sampling.RandomOverSampler` and
+:class:`imblearn.under_sampling.RandomUnderSampler`. In addition, a new class
+:class:`imblearn.over_sampling.SMOTENC` allows to generate sample with data
+sets containing both continuous and categorical features.
+
+The :class:`imblearn.over_sampling.SMOTE` has been simplified and break down
+to 2 additional classes:
+:class:`imblearn.over_sampling.SVMSMOTE` and
+:class:`imblearn.over_sampling.BorderlineSMOTE`.
+
+There is also some changes regarding the API:
+the parameter ``sampling_strategy`` has been introduced to replace the
+``ratio`` parameter. In addition, the ``return_indices`` argument has been
+deprecated and all samplers will exposed a ``sample_indices_`` whenever this is
+possible.
 
 Changelog
 ---------
@@ -26,8 +65,9 @@ API
 New features
 ............
 
-- Add a ``keras`` and ``tensorflow`` modules to create balanced mini-batches
-  generator. :issue:`409` by :user:`Guillaume Lemaitre <glemaitre>`.
+- Add a :mod:`keras` and :mod:`tensorflow` modules to create balanced
+  mini-batches generator.
+  :issue:`409` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - Add :class:`imblearn.ensemble.EasyEnsembleClassifier` which create a bag of
   AdaBoost classifier trained on balanced bootstrap samples.
