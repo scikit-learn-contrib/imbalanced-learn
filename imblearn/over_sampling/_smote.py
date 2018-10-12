@@ -929,8 +929,8 @@ class SMOTENC(SMOTE):
             if any([cat not in np.arange(self.n_features_)
                     for cat in categorical_features]):
                 raise ValueError(
-                    'Some of the categorical indices are out of range. Indices '
-                    'should be between 0 and {}'.format(self.n_features_))
+                    'Some of the categorical indices are out of range. Indices'
+                    ' should be between 0 and {}'.format(self.n_features_))
             self.categorical_features_ = categorical_features
         self.continuous_features_ = np.setdiff1d(np.arange(self.n_features_),
                                                  self.categorical_features_)
@@ -1019,6 +1019,7 @@ class SMOTENC(SMOTE):
         categorical features are mapped to the most frequent nearest neighbors
         of the majority class.
         """
+        rng = check_random_state(self.random_state)
         sample = super(SMOTENC, self)._generate_sample(X, nn_data, nn_num,
                                                        row, col, step)
         # To avoid conversion and since there is only few samples used, we
@@ -1033,7 +1034,9 @@ class SMOTENC(SMOTE):
                            [cat.size for cat in self.ohe_.categories_])
         for start_idx, end_idx in zip(np.cumsum(categories_size)[:-1],
                                       np.cumsum(categories_size)[1:]):
-            col_sel = all_neighbors[:, start_idx:end_idx].sum(axis=0).argmax()
+            col_max = all_neighbors[:, start_idx:end_idx].sum(axis=0)
+            # tie breaking argmax
+            col_sel = rng.choice(col_max == col_max.max())
             sample[start_idx:end_idx] = 0
             sample[start_idx + col_sel] = 1
 
