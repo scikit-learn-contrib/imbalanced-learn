@@ -108,7 +108,8 @@ def test_smotenc(data):
 
     assert X_resampled.dtype == X.dtype
 
-    if np.asarray(categorical_features).dtype == bool:
+    categorical_features = np.array(categorical_features)
+    if categorical_features.dtype == bool:
         categorical_features = np.flatnonzero(categorical_features)
     for cat_idx in categorical_features:
         if sparse.issparse(X):
