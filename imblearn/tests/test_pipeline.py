@@ -139,6 +139,16 @@ class DummyTransf(Transf):
         return self
 
 
+class DummyEstimatorParams(BaseEstimator):
+    """Mock classifier that takes params on predict"""
+    def fit(self, X, y):
+        return self
+
+    def predict(self, X, got_attribute=False):
+        self.got_attribute = got_attribute
+        return self
+
+
 class DummySampler(NoTrans):
     """Samplers which returns a balanced number of samples"""
 
@@ -1085,3 +1095,12 @@ def test_make_pipeline_memory():
         assert pipeline.memory is None
     finally:
         shutil.rmtree(cachedir)
+
+
+def test_predict_with_predict_params():
+    # tests that Pipeline passes predict_params to the final estimator
+    # when predict is invoked
+    pipe = Pipeline([('transf', Transf()), ('clf', DummyEstimatorParams())])
+    pipe.fit(None, None)
+    pipe.predict(X=None, got_attribute=True)
+    assert pipe.named_steps['clf'].got_attribute
