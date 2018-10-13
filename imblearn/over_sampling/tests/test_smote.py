@@ -11,8 +11,7 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 
 from imblearn.over_sampling import SMOTE
-from imblearn.over_sampling import BorderlineSMOTE
-from imblearn.over_sampling import SVMSMOTE
+
 
 RND_SEED = 0
 X = np.array([[0.11622591, -0.0317206], [0.77481731, 0.60935141],
@@ -287,37 +286,3 @@ def test_sample_with_nn_svm():
                      1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0])
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_borderline_smote_wrong_kind():
-    bsmote = BorderlineSMOTE(kind='rand')
-    with pytest.raises(ValueError, match='The possible "kind" of algorithm'):
-        bsmote.fit_resample(X, Y)
-
-
-@pytest.mark.parametrize('kind', ['borderline-1', 'borderline-2'])
-def test_borderline_smote(kind):
-    bsmote = BorderlineSMOTE(kind=kind, random_state=42)
-    bsmote_nn = BorderlineSMOTE(kind=kind, random_state=42,
-                                k_neighbors=NearestNeighbors(n_neighbors=6),
-                                m_neighbors=NearestNeighbors(n_neighbors=11))
-
-    X_res_1, y_res_1 = bsmote.fit_resample(X, Y)
-    X_res_2, y_res_2 = bsmote_nn.fit_resample(X, Y)
-
-    assert_allclose(X_res_1, X_res_2)
-    assert_array_equal(y_res_1, y_res_2)
-
-
-def test_svm_smote():
-    svm_smote = SVMSMOTE(random_state=42)
-    svm_smote_nn = SVMSMOTE(random_state=42,
-                            k_neighbors=NearestNeighbors(n_neighbors=6),
-                            m_neighbors=NearestNeighbors(n_neighbors=11),
-                            svm_estimator=SVC(gamma='scale', random_state=42))
-
-    X_res_1, y_res_1 = svm_smote.fit_resample(X, Y)
-    X_res_2, y_res_2 = svm_smote_nn.fit_resample(X, Y)
-
-    assert_allclose(X_res_1, X_res_2)
-    assert_array_equal(y_res_1, y_res_2)

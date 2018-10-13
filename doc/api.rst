@@ -72,6 +72,7 @@ Prototype selection
    over_sampling.ADASYN
    over_sampling.RandomOverSampler
    over_sampling.SMOTE
+   over_sampling.SMOTENC
 
 
 .. _combine_ref:

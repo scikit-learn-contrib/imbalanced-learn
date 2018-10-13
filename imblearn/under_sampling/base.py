@@ -19,11 +19,13 @@ class BaseUnderSampler(BaseSampler):
         """sampling_strategy : float, str, dict, callable, (default='auto')
         Sampling information to sample the data set.
 
-        - When ``float``, it corresponds to the ratio :math:`\\alpha_{us}`
-          defined by :math:`N_{rM} = \\alpha_{us} \\times N_{m}` where
-          :math:`N_{rM}` and :math:`N_{m}` are the number of samples in the
-          majority class after resampling and the number of samples in the
-          minority class, respectively.
+        - When ``float``, it corresponds to the desired ratio of the number of
+          samples in the majority class over the number of samples in the
+          minority class after resampling. Therefore, the ratio is expressed as
+          :math:`\\alpha_{us} = N_{rM} / N_{m}` where :math:`N_{rM}` and
+          :math:`N_{m}` are the number of samples in the majority class after
+          resampling and the number of samples in the minority class,
+          respectively.
 
           .. warning::
              ``float`` is only available for **binary** classification. An
