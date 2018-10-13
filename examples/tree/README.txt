@@ -1,4 +1,4 @@
-.. _tree_split_examples:
+.. _tree_examples:
 
 Example using Hellinger Distance as tree split criterion 
 ========================================================

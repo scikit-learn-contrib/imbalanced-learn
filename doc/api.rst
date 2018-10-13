@@ -197,10 +197,10 @@ Imbalance-learn provides some fast-prototyping tools.
 
 .. _metrics_ref:
 
-:mod:`imblearn.tree_split`: Tree split criterion
+:mod:`imblearn.tree`: Tree split criterion
 ==================================
 
-.. automodule:: imblearn.tree_split
+.. automodule:: imblearn.tree
     :no-members:
     :no-inherited-members:
 
@@ -210,7 +210,7 @@ Imbalance-learn provides some fast-prototyping tools.
    :toctree: generated/
    :template: class.rst
 
-   tree_split.HellingerDistanceCriterion
+   tree.criterion.HellingerDistanceCriterion
 
 .. autosummary::
    :toctree: generated/
