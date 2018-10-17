@@ -93,7 +93,7 @@ def check_target_type(y, indicate_one_vs_all=False):
             TARGET_KIND, type_of_target(y)))
 
     if type_y == 'multilabel-indicator':
-        if np.any(y.sum(axis=1)):
+        if np.any(y.sum(axis=1) > 1):
             raise ValueError(
                 "When 'y' corresponds to '{}', 'y' should encode the multiclass"
                 " (a single 1 by row).".format(type_y))

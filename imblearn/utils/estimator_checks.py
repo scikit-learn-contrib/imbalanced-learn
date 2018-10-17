@@ -331,6 +331,7 @@ def check_samplers_multiclass_ova(name, Sampler):
     X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
                                weights=[0.2, 0.3, 0.5], random_state=0)
     y_ova = label_binarize(y, np.unique(y))
+    print(y_ova)
     sampler = Sampler()
     # FIXME: in 0.6 set the random_state for all
     if name not in DONT_HAVE_RANDOM_STATE:
