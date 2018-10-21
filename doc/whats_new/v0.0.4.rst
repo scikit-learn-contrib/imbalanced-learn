@@ -1,5 +1,19 @@
 .. _changes_0_4:
 
+Version 0.4.2
+=============
+
+Changelog
+---------
+
+Bug fixes
+.........
+
+- Fix a bug in :class:`imblearn.over_sampling.SMOTENC` in which the the median
+  of the standard deviation instead of half of the median of the standard
+  deviation.
+  By :user:`Guillaume Lemaitre <glemaitre>` in :issue:`491`.
+
 Version 0.4
 ===========
 
