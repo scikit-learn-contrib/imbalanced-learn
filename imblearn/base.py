@@ -15,6 +15,7 @@ from sklearn.base import BaseEstimator
 from sklearn.externals import six
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
+from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
 from .utils.deprecation import deprecate_parameter
@@ -77,6 +78,7 @@ class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
         """
         self._deprecate_ratio()
 
+        check_classification_targets(y)
         X, y, binarize_y = self._check_X_y(X, y)
 
         self.sampling_strategy_ = check_sampling_strategy(

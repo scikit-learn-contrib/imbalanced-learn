@@ -86,17 +86,14 @@ def check_target_type(y, indicate_one_vs_all=False):
 
     """
     type_y = type_of_target(y)
-    if type_y not in TARGET_KIND:
-        # FIXME: perfectly we should raise an error but the sklearn API does
-        # not allow for it
-        warnings.warn("'y' should be of types {} only. Got {} instead.".format(
-            TARGET_KIND, type_of_target(y)))
+    if type_y == 'multilabel-indicator':
+        if np.any(y.sum(axis=1) > 1):
+            raise ValueError(
+                "When 'y' corresponds to '{}', 'y' should encode the "
+                "multiclass (a single 1 by row).".format(type_y))
+        y = y.argmax(axis=1)
 
-    if indicate_one_vs_all:
-        return (y.argmax(axis=1) if type_y == 'multilabel-indicator' else y,
-                type_y == 'multilabel-indicator')
-    else:
-        return y.argmax(axis=1) if type_y == 'multilabel-indicator' else y
+    return (y, type_y == 'multilabel-indicator') if indicate_one_vs_all else y
 
 
 def _sampling_strategy_all(y, sampling_type):

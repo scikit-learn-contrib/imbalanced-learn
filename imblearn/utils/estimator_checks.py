@@ -33,8 +33,6 @@ from imblearn.ensemble.base import BaseEnsembleSampler
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import NearMiss, ClusterCentroids
 
-from imblearn.utils.testing import warns
-
 DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE']
 SUPPORT_STRING = ['RandomUnderSampler', 'RandomOverSampler']
 HAVE_SAMPLE_INDICES = [
@@ -54,7 +52,6 @@ def monkey_patch_check_dtype_object(name, estimator_orig):
     X = rng.rand(40, 10).astype(object)
     y = np.array([0] * 10 + [1] * 30, dtype=np.int)
     estimator = clone(estimator_orig)
-
     estimator.fit(X, y)
 
     try:
@@ -123,14 +120,20 @@ def check_estimator(Estimator, run_sampler_tests=True):
 
 
 def check_target_type(name, Estimator):
+    # should raise warning if the target is continuous (we cannot raise error)
     X = np.random.random((20, 2))
     y = np.linspace(0, 1, 20)
     estimator = Estimator()
     # FIXME: in 0.6 set the random_state for all
     if name not in DONT_HAVE_RANDOM_STATE:
         set_random_state(estimator)
-    with warns(UserWarning, match='should be of types'):
-        estimator.fit(X, y)
+    with pytest.raises(ValueError, match="Unknown label type: 'continuous'"):
+        estimator.fit_resample(X, y)
+    # if the target is multilabel then we should raise an error
+    rng = np.random.RandomState(42)
+    y = rng.randint(2, size=(20, 3))
+    with pytest.raises(ValueError, match="'y' should encode the multiclass"):
+        estimator.fit_resample(X, y)
 
 
 def check_samplers_one_label(name, Sampler):
@@ -139,7 +142,7 @@ def check_samplers_one_label(name, Sampler):
     X = np.random.random((20, 2))
     y = np.zeros(20)
     try:
-        sampler.fit(X, y)
+        sampler.fit_resample(X, y)
     except ValueError as e:
         if 'class' not in repr(e):
             print(error_string_fit, Sampler, e)
@@ -157,7 +160,7 @@ def check_samplers_fit(name, Sampler):
     sampler = Sampler()
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
-    sampler.fit(X, y)
+    sampler.fit_resample(X, y)
     assert hasattr(sampler, 'sampling_strategy_'), \
         "No fitted attribute sampling_strategy_"
 
@@ -165,7 +168,7 @@ def check_samplers_fit(name, Sampler):
 def check_samplers_fit_resample(name, Sampler):
     sampler = Sampler()
     X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
-                                weights=[0.2, 0.3, 0.5], random_state=0)
+                               weights=[0.2, 0.3, 0.5], random_state=0)
     target_stats = Counter(y)
     X_res, y_res = sampler.fit_resample(X, y)
     if isinstance(sampler, BaseOverSampler):

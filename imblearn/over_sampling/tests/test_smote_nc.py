@@ -127,9 +127,12 @@ def test_smotenc_check_target_type():
     y = np.linspace(0, 1, 30)
     smote = SMOTENC(categorical_features=categorical_features,
                     random_state=0)
-    with pytest.warns(UserWarning, match='should be of types'):
+    with pytest.raises(ValueError, match="Unknown label type: 'continuous'"):
         smote.fit_resample(X, y)
-
+    rng = np.random.RandomState(42)
+    y = rng.randint(2, size=(20, 3))
+    with pytest.raises(ValueError, match="'y' should encode the multiclass"):
+        smote.fit_resample(X, y)
 
 def test_smotenc_samplers_one_label():
     X, _, categorical_features = data_heterogneous_unordered()
