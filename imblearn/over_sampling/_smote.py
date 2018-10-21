@@ -974,7 +974,7 @@ class SMOTENC(SMOTE):
         # distance is computed between 2 samples, the difference will be equal
         # to the median of the standard deviation as in the original paper.
         X_ohe.data = (np.ones_like(X_ohe.data, dtype=X_ohe.dtype) *
-                      self.median_std_)
+                      self.median_std_ / 2)
         X_encoded = sparse.hstack((X_continuous, X_ohe), format='csr')
 
         X_resampled, y_resampled = super(SMOTENC, self)._fit_resample(
