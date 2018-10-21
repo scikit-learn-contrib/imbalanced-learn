@@ -168,7 +168,7 @@ def check_samplers_fit(name, Sampler):
 def check_samplers_fit_resample(name, Sampler):
     sampler = Sampler()
     X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
-                                weights=[0.2, 0.3, 0.5], random_state=0)
+                               weights=[0.2, 0.3, 0.5], random_state=0)
     target_stats = Counter(y)
     X_res, y_res = sampler.fit_resample(X, y)
     if isinstance(sampler, BaseOverSampler):
