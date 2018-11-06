@@ -188,11 +188,11 @@ features or a boolean mask marking these features::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 30), (1, 30)]
   >>> print(X_resampled[-5:])
-  [['B' 0.5246469549655818 0]
-   ['A' -0.3657680728116921 0]
-   ['B' 0.9344237230779993 0]
-   ['A' 0.3710891618824609 0]
-   ['A' 0.3327240726719727 0]]
+  [['A' 0.5246469549655818 2]
+   ['B' -0.3657680728116921 2]
+   ['A' 0.9344237230779993 2]
+   ['B' 0.3710891618824609 2]
+   ['B' 0.3327240726719727 2]]
 
 Therefore, it can be seen that the samples generated in the first and last
 columns are belonging to the same categories originally presented without any

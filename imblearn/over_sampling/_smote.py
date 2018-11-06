@@ -1032,11 +1032,13 @@ class SMOTENC(SMOTE):
 
         categories_size = ([self.continuous_features_.size] +
                            [cat.size for cat in self.ohe_.categories_])
+
         for start_idx, end_idx in zip(np.cumsum(categories_size)[:-1],
                                       np.cumsum(categories_size)[1:]):
             col_max = all_neighbors[:, start_idx:end_idx].sum(axis=0)
             # tie breaking argmax
-            col_sel = rng.choice(col_max == col_max.max())
+            col_sel = rng.choice(np.flatnonzero(
+                np.isclose(col_max, col_max.max())))
             sample[start_idx:end_idx] = 0
             sample[start_idx + col_sel] = 1
 
