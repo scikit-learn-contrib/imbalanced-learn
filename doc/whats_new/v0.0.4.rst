@@ -14,6 +14,14 @@ Bug fixes
   deviation.
   By :user:`Guillaume Lemaitre <glemaitre>` in :issue:`491`.
 
+- Raise an error when passing target  which is not supported, i.e. regression
+  target or multilabel targets. Imbalanced-learn does not support this case.
+  By :user:`Guillaume Lemaitre <glemaitre>` in :issue:`490`.
+
+- Fix a bug in :class:`imblearn.over_sampling.SMOTENC` in which an sparse
+  matrices were densify during ``inverse_transform``.
+  By :user:`Guillaume Lemaitre <glemaitre>` in :issue:`495`.
+
 Version 0.4
 ===========
 
