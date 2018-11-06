@@ -67,8 +67,8 @@ Forest of randomized trees
 --------------------------
 
 :class:`BalancedRandomForestClassifier` is another ensemble method in which
-each tre1vided a balanced boostrap sample [1CLB2004]_. This class
-provides all functionality of the
+each tree of the forest will be provided a balanced bootstrap sample
+[1CLB2004]_. This class provides all functionality of the
 :class:`sklearn.ensemble.RandomForestClassifier` and notably the
 `feature_importances_` attributes::
 
