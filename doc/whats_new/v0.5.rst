@@ -1,0 +1,13 @@
+.. _changes_0_5:
+
+Version 0.5 (under development)
+===============================
+
+Changelog
+---------
+
+Maintenance
+...........
+
+- Make it possible to ``import imblearn`` and access submodule.
+  :issue:`500` by :user:`Guillaume Lemaitre <glemaitre>`.
