@@ -70,10 +70,18 @@ def test_check_sampling_strategy_warning():
         }, multiclass_target, 'clean-sampling')
 
 
-def test_check_sampling_strategy_float_error():
-    msg = "'clean-sampling' methods do let the user specify the sampling ratio"
-    with pytest.raises(ValueError, match=msg):
-        check_sampling_strategy(0.5, binary_target, 'clean-sampling')
+@pytest.mark.parametrize(
+    "ratio, y, type, err_msg",
+    [(0.5, binary_target, 'clean-sampling',
+      "'clean-sampling' methods do let the user specify the sampling ratio"),
+      (0.1, np.array([0] * 10 + [1] * 20), 'over-sampling',
+       "remove samples from the minority class while trying to generate new"),
+      (0.1, np.array([0] * 10 + [1] * 20), 'under-sampling',
+       "generate new samples in the majority class while trying to remove")]
+)
+def test_check_sampling_strategy_float_error(ratio, y, type, err_msg):
+    with pytest.raises(ValueError, match=err_msg):
+        check_sampling_strategy(ratio, y, type)
 
 
 def test_check_sampling_strategy_error():
