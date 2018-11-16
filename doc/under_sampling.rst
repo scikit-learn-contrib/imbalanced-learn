@@ -210,7 +210,7 @@ such that there is no example :math:`z` such that:
 
 .. math::
 
-   d(x, y) < d(x, z) \text{ or } d(y, z) < d(x, y)
+   d(x, y) > d(x, z) \text{ or } d(x, y) > d(y, z)
 
 where :math:`d(.)` is the distance between the two samples. In some other
 words, a Tomek's link exist if the two samples are the nearest neighbors of
