@@ -333,7 +333,7 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
                for target, n_samples in sampling_strategy_.items()]):
             raise ValueError("The specified ratio required to generate new "
                              "sample in the majority class while trying to "
-                             " remove samples. Please increase the ratio.")
+                             "remove samples. Please increase the ratio.")
     else:
         raise ValueError("'clean-sampling' methods do let the user "
                          "specify the sampling ratio.")
