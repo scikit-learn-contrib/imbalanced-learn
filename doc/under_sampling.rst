@@ -206,11 +206,11 @@ Tomek's links
 
 :class:`TomekLinks` detects the so-called Tomek's links [T2010]_. A Tomek's
 link between two samples of different class :math:`x` and :math:`y` is defined
-such that there is no example :math:`z` such that:
+such that for any sample :math:`z`:
 
 .. math::
 
-   d(x, y) < d(x, z) \text{ or } d(y, z) < d(x, y)
+   d(x, y) < d(x, z) \text{ and } d(x, y) < d(y, z)
 
 where :math:`d(.)` is the distance between the two samples. In some other
 words, a Tomek's link exist if the two samples are the nearest neighbors of
