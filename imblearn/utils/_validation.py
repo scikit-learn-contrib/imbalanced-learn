@@ -317,6 +317,11 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
             key: int(n_sample_majority * sampling_strategy - value)
             for (key, value) in target_stats.items() if key != class_majority
         }
+        if any([n_samples <= 0 for n_samples in sampling_strategy_.values()]):
+            raise ValueError("The specified ratio required to remove samples "
+                             "from the minority class while trying to "
+                             "generate new samples. Please increase the "
+                             "ratio.")
     elif (sampling_type == 'under-sampling'):
         n_sample_minority = min(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
@@ -324,6 +329,11 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
             key: int(n_sample_minority / sampling_strategy)
             for (key, value) in target_stats.items() if key != class_minority
         }
+        if any([n_samples > target_stats[target]
+               for target, n_samples in sampling_strategy_.items()]):
+            raise ValueError("The specified ratio required to generate new "
+                             "sample in the majority class while trying to "
+                             "remove samples. Please increase the ratio.")
     else:
         raise ValueError("'clean-sampling' methods do let the user "
                          "specify the sampling ratio.")

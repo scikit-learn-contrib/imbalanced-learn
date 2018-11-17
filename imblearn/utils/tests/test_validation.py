@@ -70,10 +70,18 @@ def test_check_sampling_strategy_warning():
         }, multiclass_target, 'clean-sampling')
 
 
-def test_check_sampling_strategy_float_error():
-    msg = "'clean-sampling' methods do let the user specify the sampling ratio"
-    with pytest.raises(ValueError, match=msg):
-        check_sampling_strategy(0.5, binary_target, 'clean-sampling')
+@pytest.mark.parametrize(
+    "ratio, y, type, err_msg",
+    [(0.5, binary_target, 'clean-sampling',
+      "'clean-sampling' methods do let the user specify the sampling ratio"),
+     (0.1, np.array([0] * 10 + [1] * 20), 'over-sampling',
+      "remove samples from the minority class while trying to generate new"),
+     (0.1, np.array([0] * 10 + [1] * 20), 'under-sampling',
+      "generate new sample in the majority class while trying to remove")]
+)
+def test_check_sampling_strategy_float_error(ratio, y, type, err_msg):
+    with pytest.raises(ValueError, match=err_msg):
+        check_sampling_strategy(ratio, y, type)
 
 
 def test_check_sampling_strategy_error():
@@ -329,9 +337,9 @@ def test_check_ratio(ratio, sampling_type, expected_ratio, target):
 def test_sampling_strategy_dict_over_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     sampling_strategy = {1: 70, 2: 140, 3: 70}
-    expected_msg = ("After over-sampling, the number of samples \(140\) in"
-                    " class 2 will be larger than the number of samples in the"
-                    " majority class \(class #2 -> 100\)")
+    expected_msg = (r"After over-sampling, the number of samples \(140\) in"
+                    r" class 2 will be larger than the number of samples in"
+                    r" the majority class \(class #2 -> 100\)")
     with warns(UserWarning, expected_msg):
         check_sampling_strategy(sampling_strategy, y, 'over-sampling')
 
