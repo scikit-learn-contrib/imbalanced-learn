@@ -159,7 +159,7 @@ class Pipeline(pipeline.Pipeline):
                             "the string 'passthrough'. '%s' (type %s) doesn't"
                             % (estimator, type(estimator)))
 
-    #TODO: Remove this function after release of scikit-learn 0.20.2
+    # TODO: Remove this function after release of scikit-learn 0.20.2
     def _iter(self, with_final=True):
         """
         Generate (name, trans) tuples excluding 'passthrough' transformers
