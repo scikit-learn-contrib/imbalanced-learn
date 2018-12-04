@@ -1,5 +1,14 @@
 .. _changes_0_4:
 
+Version 0.4.4
+=============
+
+Bug fixes
+.........
+
+- Fix bug in test of :class:`imblearn.pipeline.Pipeline`. The regex was not
+  valid after the last release of ``scikit-learn``.
+
 Version 0.4.2
 =============
 
