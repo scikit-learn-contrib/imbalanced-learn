@@ -15,6 +15,7 @@ composite estimator, as a chain of transforms, samples and estimators.
 
 from __future__ import division
 
+from collections import defaultdict
 from itertools import islice
 
 from sklearn import pipeline
@@ -158,18 +159,6 @@ class Pipeline(pipeline.Pipeline):
             raise TypeError("Last step of Pipeline should implement fit or be "
                             "the string 'passthrough'. '%s' (type %s) doesn't"
                             % (estimator, type(estimator)))
-
-    # TODO: Remove this function after release of scikit-learn 0.20.2
-    def _iter(self, with_final=True):
-        """
-        Generate (name, trans) tuples excluding 'passthrough' transformers
-        """
-        stop = len(self.steps)
-        if not with_final:
-            stop -= 1
-        for idx, (name, trans) in enumerate(islice(self.steps, 0, stop)):
-            if trans is not None and trans != 'passthrough':
-                yield idx, name, trans
 
     # Estimator interface
 
