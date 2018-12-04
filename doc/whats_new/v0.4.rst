@@ -1,15 +1,5 @@
 .. _changes_0_4:
 
-Version 0.4.4
-=============
-
-Bug fixes
-.........
-
-- Fix bug :class:`imblearn.pipeline.Pipeline`. Synchronize with the version
-  from ``scikit-learn``.
-  By :user:`Guillaume Lemaitre <glemaitre>` in :issue:`514`.
-
 Version 0.4.2
 =============
 
