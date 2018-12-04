@@ -10,6 +10,7 @@ import shutil
 import time
 
 import numpy as np
+import pytest
 from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
@@ -177,13 +178,25 @@ class FitTransformSample(NoTrans):
         return X
 
 
+def test_pipeline_init_tuple():
+    # Pipeline accepts steps as tuple
+    X = np.array([[1, 2]])
+    pipe = Pipeline((('transf', Transf()), ('clf', FitParamT())))
+    pipe.fit(X, y=None)
+    pipe.score(X)
+    pipe.set_params(transf='passthrough')
+    pipe.fit(X, y=None)
+    pipe.score(X)
+
+
 def test_pipeline_init():
     # Test the various init parameters of the pipeline.
     with raises(TypeError):
         Pipeline()
     # Check that we can't instantiate pipelines with objects without fit
     # method
-    error_regex = 'Last step of Pipeline should implement fit. .*NoFit.*'
+    error_regex = ("Last step of Pipeline should implement fit or be the "
+                   "string 'passthrough'")
     with raises(TypeError, match=error_regex):
         Pipeline([('clf', NoFit())])
     # Smoke test with only an estimator
@@ -207,7 +220,7 @@ def test_pipeline_init():
 
     # Check that we can't instantiate with non-transformers on the way
     # Note that NoTrans implements fit, but not transform
-    error_regex = 'implement fit and transform or sample'
+    error_regex = 'implement fit and transform or fit_resample'
     with raises(TypeError, match=error_regex):
         Pipeline([('t', NoTrans()), ('svc', clf)])
 
@@ -462,7 +475,27 @@ def test_set_pipeline_steps():
         pipeline.fit_transform([[1]], [1])
 
 
-def test_set_pipeline_step_none():
+@pytest.mark.parametrize('passthrough', [None, 'passthrough'])
+def test_pipeline_correctly_adjusts_steps(passthrough):
+    X = np.array([[1]])
+    y = np.array([1])
+    mult2 = Mult(mult=2)
+    mult3 = Mult(mult=3)
+    mult5 = Mult(mult=5)
+    pipeline = Pipeline([
+        ('m2', mult2),
+        ('bad', passthrough),
+        ('m3', mult3),
+        ('m5', mult5)
+    ])
+    pipeline.fit(X, y)
+    expected_names = ['m2', 'bad', 'm3', 'm5']
+    actual_names = [name for name, _ in pipeline.steps]
+    assert expected_names == actual_names
+
+
+@pytest.mark.parametrize('passthrough', [None, 'passthrough'])
+def test_set_pipeline_step_passthrough(passthrough):
     # Test setting Pipeline steps to None
     X = np.array([[1]])
     y = np.array([1])
@@ -480,7 +513,7 @@ def test_set_pipeline_step_none():
     assert_array_equal([exp], pipeline.fit(X).predict(X))
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
 
-    pipeline.set_params(m3=None)
+    pipeline.set_params(m3=passthrough)
     exp = 2 * 5
     assert_array_equal([[exp]], pipeline.fit_transform(X, y))
     assert_array_equal([exp], pipeline.fit(X).predict(X))
@@ -488,7 +521,7 @@ def test_set_pipeline_step_none():
     expected_params = {
         'steps': pipeline.steps,
         'm2': mult2,
-        'm3': None,
+        'm3': passthrough,
         'last': mult5,
         'memory': None,
         'm2__mult': 2,
@@ -496,7 +529,7 @@ def test_set_pipeline_step_none():
     }
     assert pipeline.get_params(deep=True) == expected_params
 
-    pipeline.set_params(m2=None)
+    pipeline.set_params(m2=passthrough)
     exp = 5
     assert_array_equal([[exp]], pipeline.fit_transform(X, y))
     assert_array_equal([exp], pipeline.fit(X).predict(X))
@@ -517,7 +550,7 @@ def test_set_pipeline_step_none():
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
 
     pipeline = make()
-    pipeline.set_params(last=None)
+    pipeline.set_params(last=passthrough)
     # mult2 and mult3 are active
     exp = 6
     pipeline.fit(X, y)
@@ -528,9 +561,9 @@ def test_set_pipeline_step_none():
     with raises(AttributeError, match="has no attribute 'predict'"):
         getattr(pipeline, 'predict')
 
-    # Check None step at construction time
+    # Check 'passthrough' step at construction time
     exp = 2 * 5
-    pipeline = Pipeline([('m2', mult2), ('m3', None), ('last', mult5)])
+    pipeline = Pipeline([('m2', mult2), ('m3', passthrough), ('last', mult5)])
     assert_array_equal([[exp]], pipeline.fit_transform(X, y))
     assert_array_equal([exp], pipeline.fit(X).predict(X))
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
@@ -547,7 +580,9 @@ def test_pipeline_ducktyping():
     pipeline.transform
     pipeline.inverse_transform
 
-    pipeline = make_pipeline(None)
+    pipeline = make_pipeline('passthrough')
+    pipeline = make_pipeline('passthrough')
+    assert pipeline.steps[0] == ('passthrough', 'passthrough')
     assert not hasattr(pipeline, 'predict')
     pipeline.transform
     pipeline.inverse_transform
