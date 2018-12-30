@@ -1,4 +1,4 @@
-build: true
+build: false
 
 environment:
   # There is no need to run the build for all the Python version /
