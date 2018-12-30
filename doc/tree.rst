@@ -8,6 +8,7 @@ Tree-split
 
 .. _cluster_centroids:
 
+
 Hellinger Distance split
 ====================
 
