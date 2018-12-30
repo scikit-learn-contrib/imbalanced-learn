@@ -18,6 +18,7 @@ addons:
     packages:
       - python-numpy
       - python-scipy
+      - python-Cython
 env:
   global:
     # Directory where tests are run from
@@ -33,16 +34,16 @@ matrix:
     - env: DISTRIB="ubuntu"
     # Latest release
     - env: DISTRIB="conda" PYTHON_VERSION="2.7"
-           NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" SKLEARN_VERSION="0.20"
+           NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" CYTHON_VERSION="0.29.1" SKLEARN_VERSION="0.20"
     - env: DISTRIB="conda" PYTHON_VERSION="3.6"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.20"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" CYTHON_VERSION="0.29.1" SKLEARN_VERSION="0.20"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" SKLEARN_VERSION="0.20"
+           NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" CYTHON_VERSION="0.29.1" SKLEARN_VERSION="0.20"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" CYTHON_VERSION="0.29.1" SKLEARN_VERSION="master"
   allow_failures:
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" CYTHON_VERSION="0.29.1" SKLEARN_VERSION="master"
 
 install: source build_tools/travis/install.sh
 script: bash build_tools/travis/test_script.sh
