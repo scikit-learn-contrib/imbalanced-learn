@@ -38,7 +38,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     # provided versions
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
-    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION pandas=$PANDAS_VERSION
+    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
     conda install --yes -c anaconda cython=$CYTHON_VERSION
 
     if [[ $PYTHON_VERSION == "3.6" ]]; then
