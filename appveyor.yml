@@ -10,12 +10,12 @@ environment:
     - PYTHON: "C:\\Miniconda-x64"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "64"
-      OPTIONAL_DEP: "pandas"
+      OPTIONAL_DEP: "pandas Cython"
 
     - PYTHON: "C:\\Miniconda"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
-      OPTIONAL_DEP: "pandas"
+      OPTIONAL_DEP: "pandas Cython"
 
     - PYTHON: "C:\\Miniconda36-x64"
       PYTHON_VERSION: "3.6"
@@ -25,7 +25,7 @@ environment:
     - PYTHON: "C:\\Miniconda36-x64"
       PYTHON_VERSION: "3.7"
       PYTHON_ARCH: "64"
-      OPTIONAL_DEP: "pandas"
+      OPTIONAL_DEP: "pandas Cython"
 
     - PYTHON: "C:\\Miniconda36"
       PYTHON_VERSION: "3.7"
