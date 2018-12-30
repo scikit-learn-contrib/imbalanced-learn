@@ -608,7 +608,7 @@ def test_pipeline_wrong_memory():
     cached_pipe = Pipeline(
         [('transf', DummyTransf()), ('svc', SVC(gamma='scale'))],
         memory=memory)
-    error_regex = ("string or have the same interface as sklearn.utils.Memory")
+    error_regex = ("string or have the same interface as")
     with raises(ValueError, match=error_regex):
         cached_pipe.fit(X, y)
 

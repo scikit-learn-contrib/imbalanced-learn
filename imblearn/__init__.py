@@ -31,8 +31,20 @@ utils
 pipeline
     Module which allowing to create pipeline with scikit-learn estimators.
 """
+from . import combine
+from . import ensemble
+from . import exceptions
+from . import keras
+from . import metrics
+from . import over_sampling
+from . import tensorflow
+from . import under_sampling
+from . import utils
+from . import pipeline
 
 from .base import FunctionSampler
 from ._version import __version__
 
-__all__ = ['FunctionSampler', '__version__']
+__all__ = ['combine', 'ensemble', 'exceptions', 'keras', 'metrics',
+           'over_sampling', 'tensorflow', 'under_sampling',
+           'utils', 'pipeline', 'FunctionSampler', '__version__']

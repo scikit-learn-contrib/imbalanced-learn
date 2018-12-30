@@ -974,7 +974,7 @@ class SMOTENC(SMOTE):
         # distance is computed between 2 samples, the difference will be equal
         # to the median of the standard deviation as in the original paper.
         X_ohe.data = (np.ones_like(X_ohe.data, dtype=X_ohe.dtype) *
-                      self.median_std_)
+                      self.median_std_ / 2)
         X_encoded = sparse.hstack((X_continuous, X_ohe), format='csr')
 
         X_resampled, y_resampled = super(SMOTENC, self)._fit_resample(
@@ -983,7 +983,7 @@ class SMOTENC(SMOTE):
         # reverse the encoding of the categorical features
         X_res_cat = X_resampled[:, self.continuous_features_.size:]
         X_res_cat.data = np.ones_like(X_res_cat.data)
-        X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat.toarray())
+        X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
 
         if sparse.issparse(X):
             X_resampled = sparse.hstack(
@@ -1032,11 +1032,13 @@ class SMOTENC(SMOTE):
 
         categories_size = ([self.continuous_features_.size] +
                            [cat.size for cat in self.ohe_.categories_])
+
         for start_idx, end_idx in zip(np.cumsum(categories_size)[:-1],
                                       np.cumsum(categories_size)[1:]):
             col_max = all_neighbors[:, start_idx:end_idx].sum(axis=0)
             # tie breaking argmax
-            col_sel = rng.choice(col_max == col_max.max())
+            col_sel = rng.choice(np.flatnonzero(
+                np.isclose(col_max, col_max.max())))
             sample[start_idx:end_idx] = 0
             sample[start_idx + col_sel] = 1
 
