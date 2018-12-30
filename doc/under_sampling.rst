@@ -388,7 +388,6 @@ removed [SMMG2014]_. The class can be used as::
   >>> from sklearn.linear_model import LogisticRegression
   >>> from imblearn.under_sampling import InstanceHardnessThreshold
   >>> iht = InstanceHardnessThreshold(random_state=0,
-
   ...                                 estimator=LogisticRegression(
   ...                                     solver='lbfgs', multi_class='auto'))
 
