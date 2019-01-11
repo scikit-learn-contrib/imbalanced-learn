@@ -22,12 +22,11 @@ class BaseOverSampler(BaseSampler):
         Sampling information to resample the data set.
 
         - When ``float``, it corresponds to the desired ratio of the number of
-          samples in the majority class over the number of samples in the
-          minority class after resampling. Therefore, the ratio is expressed as
-          :math:`\\alpha_{os} = N_{M} / N_{rm}` where :math:`N_{rm}` and
-          :math:`N_{M}` are the number of samples in the minority class after
-          resampling and the number of samples in the majority class,
-          respectively.
+          samples in the minority class over the number of samples in the
+          mayority class after resampling. Therefore, the ratio is expressed as
+          :math:`\\alpha_{us} = N_{rm} / N_{M}` where :math:`N_{rm}` is the
+          number of samples in the minority class after resampling and
+          :math:`N_{M}` is the number of samples in the majority class.
 
             .. warning::
                ``float`` is only available for **binary** classification. An

@@ -20,12 +20,12 @@ class BaseUnderSampler(BaseSampler):
         Sampling information to sample the data set.
 
         - When ``float``, it corresponds to the desired ratio of the number of
-          samples in the majority class over the number of samples in the
-          minority class after resampling. Therefore, the ratio is expressed as
-          :math:`\\alpha_{us} = N_{rM} / N_{m}` where :math:`N_{rM}` and
-          :math:`N_{m}` are the number of samples in the majority class after
-          resampling and the number of samples in the minority class,
-          respectively.
+          samples in the minority class over the number of samples in the
+          mayority class after resampling. Therefore, the ratio is expressed as
+          :math:`\\alpha_{us} = N_{m} / N_{rM}` where :math:`N_{m}` is the
+          number of samples in the minority class and
+          :math:`N_{rM}` is the number of samples in the majority class
+          after resampling.
 
           .. warning::
              ``float`` is only available for **binary** classification. An
