@@ -22,3 +22,11 @@ Maintenance
 
 - Make it possible to ``import imblearn`` and access submodule.
   :issue:`500` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+
+Bug
+...
+
+- Allow to import ``keras`` directly from ``tensorflow`` in the
+  :mod:`imblearn.keras`.
+  :issue:`352` by :user:`Guillaume Lemaitre <glemaitre>`.

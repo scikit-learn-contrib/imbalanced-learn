@@ -5,12 +5,19 @@ from __future__ import division
 # avoid the error when importing the package raise the error at the moment of
 # creating the instance.
 try:
-    import keras
+    # try to import keras from tensorflow
+    from tensorflow import keras
     ParentClass = keras.utils.Sequence
     HAS_KERAS = True
 except ImportError:
-    ParentClass = object
-    HAS_KERAS = False
+    try:
+        # if no present in tensorflow, try to import keras directly
+        import keras
+        ParentClass = keras.utils.Sequence
+        HAS_KERAS = True
+    except ImportError:
+        ParentClass = object
+        HAS_KERAS = False
 
 from scipy.sparse import issparse
 
