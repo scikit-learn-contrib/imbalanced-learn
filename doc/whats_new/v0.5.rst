@@ -6,6 +6,13 @@ Version 0.5 (under development)
 Changelog
 ---------
 
+Documentation
+.............
+
+- Correct the definition of the ratio when using a ``float`` in sampling
+  strategy for the over-sampling and under-sampling.
+  :issue:`525` by :user:`Ariel Rossanigo <arielrossanigo>`.
+
 Maintenance
 ...........
 

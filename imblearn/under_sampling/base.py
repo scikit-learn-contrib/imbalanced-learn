@@ -21,7 +21,7 @@ class BaseUnderSampler(BaseSampler):
 
         - When ``float``, it corresponds to the desired ratio of the number of
           samples in the minority class over the number of samples in the
-          mayority class after resampling. Therefore, the ratio is expressed as
+          majority class after resampling. Therefore, the ratio is expressed as
           :math:`\\alpha_{us} = N_{m} / N_{rM}` where :math:`N_{m}` is the
           number of samples in the minority class and
           :math:`N_{rM}` is the number of samples in the majority class
