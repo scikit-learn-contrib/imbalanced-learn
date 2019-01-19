@@ -23,9 +23,14 @@ Maintenance
 - Make it possible to ``import imblearn`` and access submodule.
   :issue:`500` by :user:`Guillaume Lemaitre <glemaitre>`.
 
-
 Bug
 ...
+
+- Fix wrong usage of :class:`keras.layers.BatchNormalization` in
+  ``porto_seguro_keras_under_sampling.py`` example. The batch normalization
+  was moved before the activation function and the bias was removed from the
+  dense layer.
+  :issue:`531` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - Allow to import ``keras`` directly from ``tensorflow`` in the
   :mod:`imblearn.keras`.
