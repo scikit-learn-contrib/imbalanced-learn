@@ -109,6 +109,10 @@ class BalancedBatchGenerator(ParentClass):
     ...                                        epochs=10, verbose=0)
 
     """
+
+    # flag for keras sequence duck-typing
+    use_sequence_api = True
+
     def __init__(self, X, y, sample_weight=None, sampler=None, batch_size=32,
                  keep_sparse=False, random_state=None):
         if not HAS_KERAS:
