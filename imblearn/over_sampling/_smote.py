@@ -1023,8 +1023,7 @@ class SMOTENC(SMOTE):
         X_ohe.data = (np.ones_like(X_ohe.data, dtype=X_ohe.dtype) *
                       self.median_std_ / 2)
         X_encoded = sparse.hstack((X_continuous, X_ohe), format='csr')
-        print(type(X_encoded))
-
+        
         X_resampled, y_resampled = super(SMOTENC, self)._fit_resample(
             X_encoded, y)
 
