@@ -815,6 +815,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
             if sparse.issparse(X_new):
                 X_resampled = sparse.vstack([X_resampled, X_new])
+                sparse_func = 'tocsc' if X.format == 'csc' else 'tocsr'
+                X_resampled = getattr(X_resampled, sparse_func)()
             else:
                 X_resampled = np.vstack((X_resampled, X_new))
             y_resampled = np.hstack((y_resampled, y_new))
