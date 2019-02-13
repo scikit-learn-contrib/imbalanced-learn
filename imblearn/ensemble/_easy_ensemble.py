@@ -289,7 +289,7 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         self : object
             Returns self.
         """
-        _is_multilabel_or_multioutput(y)
+        check_target_type(y)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return self._fit(X, y, self.max_samples, sample_weight=None)
