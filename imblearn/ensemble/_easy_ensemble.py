@@ -19,6 +19,7 @@ from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import _is_multilabel_or_multioutput
 from ..pipeline import Pipeline
 
 MAX_INT = np.iinfo(np.int32).max
@@ -289,6 +290,7 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         self : object
             Returns self.
         """
+        _is_multilabel_or_multioutput(y)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return self._fit(X, y, self.max_samples, sample_weight=None)
