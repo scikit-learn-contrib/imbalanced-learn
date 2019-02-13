@@ -132,7 +132,8 @@ def check_target_type(name, Estimator):
     # if the target is multilabel then we should raise an error
     rng = np.random.RandomState(42)
     y = rng.randint(2, size=(20, 3))
-    with pytest.raises(ValueError, match="'y' should encode the multiclass"):
+    msg = "Multilabel and mutlioutput targets is not supported."
+    with pytest.raises(ValueError, match=msg):
         estimator.fit_resample(X, y)
 
 

@@ -3,6 +3,7 @@
 #          Christos Aridas
 # License: MIT
 
+import pytest
 import numpy as np
 
 from sklearn.datasets import load_iris, make_hastie_10_2
@@ -493,3 +494,12 @@ def test_max_samples_consistency():
         random_state=1)
     bagging.fit(X, y)
     assert bagging._max_samples == max_samples
+
+
+def test_bagging_multioutput_multilabel_error():
+    from sklearn.datasets import make_multilabel_classification
+    X, y = make_multilabel_classification(n_samples=30)
+    model = BalancedBaggingClassifier()
+    msg = "Multilabel and mutlioutput targets is not supported."
+    with pytest.raises(ValueError, match=msg):
+        model.fit(X, y)
