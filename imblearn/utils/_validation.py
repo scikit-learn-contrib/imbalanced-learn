@@ -87,18 +87,14 @@ def check_target_type(y, indicate_one_vs_all=False):
     """
     type_y = type_of_target(y)
     if type_y == 'multilabel-indicator':
-        _is_multilabel_or_multioutput(y)
+        if np.any(y.sum(axis=1) > 1):
+            raise ValueError(
+                "Imbalanced-learn currently supports binary, multiclass and "
+                "binrarized encoded multiclasss targets. Multilabel and "
+                "mutlioutput targets is not supported.")
         y = y.argmax(axis=1)
 
     return (y, type_y == 'multilabel-indicator') if indicate_one_vs_all else y
-
-
-def _is_multilabel_or_multioutput(y):
-    if np.any(y.sum(axis=1) > 1):
-        raise ValueError(
-            "Imbalanced-learn currently supports binary, multiclass and "
-            "binrarized encoded multiclasss targets. Multilabel and "
-            "mutlioutput targets is not supported yet.")
 
 
 def _sampling_strategy_all(y, sampling_type):

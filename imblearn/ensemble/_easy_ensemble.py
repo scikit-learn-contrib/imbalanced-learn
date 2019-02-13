@@ -17,9 +17,8 @@ from sklearn.utils.deprecation import deprecated
 from .base import BaseEnsembleSampler
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import Substitution
+from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _is_multilabel_or_multioutput
 from ..pipeline import Pipeline
 
 MAX_INT = np.iinfo(np.int32).max
