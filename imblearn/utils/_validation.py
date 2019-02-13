@@ -90,7 +90,7 @@ def check_target_type(y, indicate_one_vs_all=False):
         if np.any(y.sum(axis=1) > 1):
             raise ValueError(
                 "Imbalanced-learn currently supports binary, multiclass and "
-                "binrarized encoded multiclasss targets. Multilabel and "
+                "binarized encoded multiclasss targets. Multilabel and "
                 "mutlioutput targets is not supported.")
         y = y.argmax(axis=1)
 
