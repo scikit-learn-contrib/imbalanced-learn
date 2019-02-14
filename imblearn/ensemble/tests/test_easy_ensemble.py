@@ -295,7 +295,7 @@ def test_easy_ensemble_classifier_grid_search():
         parameters, cv=5, iid=False)
     grid_search.fit(X, y)
 
-    
+
 def test_easy_ensemble_classifier_multioutput_multilabel_error():
     from sklearn.datasets import make_multilabel_classification
     X, y = make_multilabel_classification(n_samples=30)

@@ -23,8 +23,7 @@ def imbalanced_dataset():
     [({"n_estimators": 'whatever'}, "n_estimators must be an integer"),
      ({"n_estimators": -100}, "n_estimators must be greater than zero")]
 )
-def test_rusboost_error(imbalanced_dataset, boosting_params,
-                                      err_msg):
+def test_rusboost_error(imbalanced_dataset, boosting_params, err_msg):
     rusboost = RUSBoostClassifier(**boosting_params)
     with pytest.raises(ValueError, message=err_msg):
         rusboost.fit(*imbalanced_dataset)
