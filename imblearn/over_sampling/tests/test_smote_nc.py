@@ -135,6 +135,7 @@ def test_smotenc_check_target_type():
     with pytest.raises(ValueError, match=msg):
         smote.fit_resample(X, y)
 
+
 def test_smotenc_samplers_one_label():
     X, _, categorical_features = data_heterogneous_unordered()
     y = np.zeros(30)
