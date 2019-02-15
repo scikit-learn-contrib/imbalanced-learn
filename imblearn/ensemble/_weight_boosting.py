@@ -152,21 +152,11 @@ class RUSBoostClassifier(AdaBoostClassifier):
         super(RUSBoostClassifier, self).fit(X, y, sample_weight)
         return self
 
-    def _validate_estimator(self, default=DecisionTreeClassifier(max_depth=1)):
+    def _validate_estimator(self):
         """Check the estimator and the n_estimator attribute, set the
         `base_estimator_` attribute."""
-        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError("n_estimators must be an integer, "
-                             "got {0}.".format(type(self.n_estimators)))
-
-        if self.n_estimators <= 0:
-            raise ValueError("n_estimators must be greater than zero, "
-                             "got {0}.".format(self.n_estimators))
-
-        if self.base_estimator is not None:
-            self.base_estimator_ = clone(self.base_estimator)
-        else:
-            self.base_estimator_ = clone(default)
+        
+        super(RUSBoostClassifier, self)._validate_estimator()
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self.sampling_strategy,
