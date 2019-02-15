@@ -90,4 +90,3 @@ def test_rusboost_sample_weight(imbalanced_dataset, algorithm):
 
     with pytest.raises(AssertionError):
         assert_array_equal(y_pred_no_sample_weight, y_pred_sample_weight)
-

@@ -17,7 +17,7 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.base import clone
-from sklearn.datasets import make_classification, make_multilabel_classification #noqa
+from sklearn.datasets import make_classification, make_multilabel_classification  # noqa
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import label_binarize
 from sklearn.utils.estimator_checks import check_estimator \

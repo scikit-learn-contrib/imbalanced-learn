@@ -493,4 +493,3 @@ def test_max_samples_consistency():
         random_state=1)
     bagging.fit(X, y)
     assert bagging._max_samples == max_samples
-
