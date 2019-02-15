@@ -91,7 +91,7 @@ def check_target_type(y, indicate_one_vs_all=False):
             raise ValueError(
                 "Imbalanced-learn currently supports binary, multiclass and "
                 "binarized encoded multiclasss targets. Multilabel and "
-                "multioutput targets is not supported.")
+                "multioutput targets are not supported.")
         y = y.argmax(axis=1)
 
     return (y, type_y == 'multilabel-indicator') if indicate_one_vs_all else y
