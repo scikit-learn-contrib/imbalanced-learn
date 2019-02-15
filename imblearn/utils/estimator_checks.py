@@ -81,13 +81,19 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_multiclass_ova
     yield check_samplers_preserve_dtype
     yield check_samplers_sample_indices
-    yield check_fail_on_multilabel_or_multioutput_targets
+
+
+def _yield_classifier_checks(name, Estimator):
+    yield check_classifier_on_multilabel_or_multioutput_targets
 
 
 def _yield_all_checks(name, estimator):
     # trigger our checks if this is a SamplerMixin
     if hasattr(estimator, 'fit_resample'):
         for check in _yield_sampler_checks(name, estimator):
+            yield check
+    if hasattr(estimator, 'predict'):
+        for check in _yield_classifier_checks(name, estimator):
             yield check
 
 
@@ -379,12 +385,9 @@ def check_samplers_sample_indices(name, Sampler):
         assert not hasattr(sampler, 'sample_indices_')
 
 
-def check_fail_on_multilabel_or_multioutput_targets(name, Estimator):
+def check_classifier_on_multilabel_or_multioutput_targets(name, Estimator):
     estimator = Estimator()
     X, y = make_multilabel_classification(n_samples=30)
     msg = "Multilabel and multioutput targets are not supported."
     with pytest.raises(ValueError, match=msg):
-        if isinstance(estimator, BaseSampler):
-            estimator.fit_resample(X, y)
-        else:
-            estimator.fit(X, y)
+        estimator.fit(X, y)
