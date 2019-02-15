@@ -500,6 +500,6 @@ def test_bagging_multioutput_multilabel_error():
     from sklearn.datasets import make_multilabel_classification
     X, y = make_multilabel_classification(n_samples=30)
     model = BalancedBaggingClassifier()
-    msg = "Multilabel and mutlioutput targets is not supported."
+    msg = "Multilabel and multioutput targets are not supported."
     with pytest.raises(ValueError, match=msg):
         model.fit(X, y)
