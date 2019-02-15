@@ -495,11 +495,3 @@ def test_max_samples_consistency():
     bagging.fit(X, y)
     assert bagging._max_samples == max_samples
 
-
-def test_bagging_multioutput_multilabel_error():
-    from sklearn.datasets import make_multilabel_classification
-    X, y = make_multilabel_classification(n_samples=30)
-    model = BalancedBaggingClassifier()
-    msg = "Multilabel and multioutput targets are not supported."
-    with pytest.raises(ValueError, match=msg):
-        model.fit(X, y)

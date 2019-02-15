@@ -91,11 +91,3 @@ def test_rusboost_sample_weight(imbalanced_dataset, algorithm):
     with pytest.raises(AssertionError):
         assert_array_equal(y_pred_no_sample_weight, y_pred_sample_weight)
 
-
-def test_rusboost_multioutput_multilabel_error():
-    from sklearn.datasets import make_multilabel_classification
-    X, y = make_multilabel_classification(n_samples=30)
-    model = RUSBoostClassifier()
-    msg = "Multilabel and multioutput targets are not supported."
-    with pytest.raises(ValueError, match=msg):
-        model.fit(X, y)

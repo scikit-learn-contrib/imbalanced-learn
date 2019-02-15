@@ -17,7 +17,7 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.base import clone
-from sklearn.datasets import make_classification
+from sklearn.datasets import make_classification, make_multilabel_classification #noqa
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import label_binarize
 from sklearn.utils.estimator_checks import check_estimator \
@@ -27,6 +27,7 @@ from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.testing import set_random_state
 from sklearn.utils.multiclass import type_of_target
 
+from imblearn.base import BaseSampler
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
@@ -80,6 +81,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_multiclass_ova
     yield check_samplers_preserve_dtype
     yield check_samplers_sample_indices
+    yield check_fail_on_multilabel_or_multioutput_targets
 
 
 def _yield_all_checks(name, estimator):
@@ -375,3 +377,14 @@ def check_samplers_sample_indices(name, Sampler):
         assert hasattr(sampler, 'sample_indices_')
     else:
         assert not hasattr(sampler, 'sample_indices_')
+
+
+def check_fail_on_multilabel_or_multioutput_targets(name, Estimator):
+    estimator = Estimator()
+    X, y = make_multilabel_classification(n_samples=30)
+    msg = "Multilabel and multioutput targets are not supported."
+    with pytest.raises(ValueError, match=msg):
+        if isinstance(estimator, BaseSampler):
+            estimator.fit_resample(X, y)
+        else:
+            estimator.fit(X, y)
