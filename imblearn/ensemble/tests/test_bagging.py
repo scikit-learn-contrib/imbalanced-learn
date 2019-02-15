@@ -3,7 +3,6 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
 
 from sklearn.datasets import load_iris, make_hastie_10_2
