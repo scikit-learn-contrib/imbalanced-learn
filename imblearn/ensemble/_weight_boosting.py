@@ -30,10 +30,11 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
     Parameters
     ----------
-    base_estimator : object, optional (default=DecisionTreeClassifier)
+    base_estimator : object, optional (default=None)
         The base estimator from which the boosted ensemble is built.
-        Support for sample weighting is required, as well as proper `classes_`
-        and `n_classes_` attributes.
+        Support for sample weighting is required, as well as proper
+        ``classes_`` and ``n_classes_`` attributes. If ``None``, then
+        the base estimator is ``DecisionTreeClassifier(max_depth=1)``
 
     n_estimators : integer, optional (default=50)
         The maximum number of estimators at which boosting is terminated.
@@ -151,7 +152,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
         super(RUSBoostClassifier, self).fit(X, y, sample_weight)
         return self
 
-    def _validate_estimator(self, default=DecisionTreeClassifier()):
+    def _validate_estimator(self, default=DecisionTreeClassifier(max_depth=1)):
         """Check the estimator and the n_estimator attribute, set the
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
