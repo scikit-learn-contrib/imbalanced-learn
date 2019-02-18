@@ -39,6 +39,17 @@ class SMOTEENN(BaseSampler):
         a :class:`imblearn.over_sampling.SMOTE` object with default parameters
         will be given.
 
+    enn : object, optional (default=\
+EditedNearestNeighbours(sampling_strategy='all'))
+        The :class:`imblearn.under_sampling.EditedNearestNeighbours` object
+        to use. If not given, a
+        :class:`imblearn.under_sampling.EditedNearestNeighbours` object with
+        sampling strategy='all' will be given.
+
+    n_jobs : int, optional (default=1)
+        The number of threads to open if possible.
+        Will not apply to smote and enn given by the user.
+
     ratio : str, dict, or callable
         .. deprecated:: 0.4
            Use the parameter ``sampling_strategy`` instead. It will be removed
@@ -86,12 +97,14 @@ class SMOTEENN(BaseSampler):
                  random_state=None,
                  smote=None,
                  enn=None,
+                 n_jobs=1,
                  ratio=None):
         super(SMOTEENN, self).__init__()
         self.sampling_strategy = sampling_strategy
         self.random_state = random_state
         self.smote = smote
         self.enn = enn
+        self.n_jobs = n_jobs
         self.ratio = ratio
 
     def _validate_estimator(self):
@@ -107,6 +120,7 @@ class SMOTEENN(BaseSampler):
             self.smote_ = SMOTE(
                 sampling_strategy=self.sampling_strategy,
                 random_state=self.random_state,
+                n_jobs=self.n_jobs,
                 ratio=self.ratio)
 
         if self.enn is not None:
@@ -117,7 +131,9 @@ class SMOTEENN(BaseSampler):
                                  ' Got {} instead.'.format(type(self.enn)))
         # Otherwise create a default EditedNearestNeighbours
         else:
-            self.enn_ = EditedNearestNeighbours(sampling_strategy='all')
+            self.enn_ = EditedNearestNeighbours(
+                            sampling_strategy='all',
+                            n_jobs=self.n_jobs)
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
