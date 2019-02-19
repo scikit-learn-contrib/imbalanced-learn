@@ -8,6 +8,11 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble.base import _set_random_states
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import safe_indexing
+from sklearn.externals.joblib import Parallel, delayed
+from sklearn.ensemble.forest import BaseForest
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.tree.tree import BaseDecisionTree
+from sklearn.tree._tree import DTYPE
 
 from ..under_sampling.base import BaseUnderSampler
 from ..under_sampling import RandomUnderSampler
@@ -57,6 +62,9 @@ class RUSBoostClassifier(AdaBoostClassifier):
         Whether or not to sample randomly with replacement or not.
 
     {random_state}
+
+    verbose : int, optional (default=0)
+        Controls the verbosity of the building process.
 
     Attributes
     ----------
@@ -114,7 +122,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
     def __init__(self, base_estimator=None, n_estimators=50, learning_rate=1.,
                  algorithm='SAMME.R', sampling_strategy='auto',
-                 replacement=False, random_state=None):
+                 replacement=False, random_state=None, verbose=0):
         super(RUSBoostClassifier, self).__init__(
             base_estimator=base_estimator,
             n_estimators=n_estimators,
@@ -123,6 +131,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
             random_state=random_state)
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
+        self.verbose = verbose
 
     def fit(self, X, y, sample_weight=None):
         """Build a boosted classifier from the training set (X, y).
@@ -146,9 +155,88 @@ class RUSBoostClassifier(AdaBoostClassifier):
             Returns self.
 
         """
+        # Check parameters
+        if self.learning_rate <= 0:
+            raise ValueError("learning_rate must be greater than zero")
+
+        if (self.base_estimator is None or
+                isinstance(self.base_estimator, (BaseDecisionTree,
+                                                 BaseForest))):
+            dtype = DTYPE
+            accept_sparse = 'csc'
+        else:
+            dtype = None
+            accept_sparse = ['csr', 'csc']
+
+        X, y = check_X_y(X, y, accept_sparse=accept_sparse, dtype=dtype,
+                         y_numeric=is_regressor(self))
+
+        if sample_weight is None:
+            # Initialize weights to 1 / n_samples
+            sample_weight = np.empty(X.shape[0], dtype=np.float64)
+            sample_weight[:] = 1. / X.shape[0]
+        else:
+            sample_weight = check_array(sample_weight, ensure_2d=False)
+            # Normalize existing weights
+            sample_weight = sample_weight / sample_weight.sum(dtype=np.float64)
+
+            # Check that the sample weights sum is positive
+            if sample_weight.sum() <= 0:
+                raise ValueError(
+                    "Attempting to fit with a non-positive "
+                    "weighted number of samples.")
+
+        # Check parameters
+        self._validate_estimator()
+
+        # Clear any previous fit results
         self.samplers_ = []
         self.pipelines_ = []
-        super(RUSBoostClassifier, self).fit(X, y, sample_weight)
+        self.estimators_ = []
+        self.estimator_weights_ = np.zeros(self.n_estimators, dtype=np.float64)
+        self.estimator_errors_ = np.ones(self.n_estimators, dtype=np.float64)
+
+        random_state = check_random_state(self.random_state)
+
+        for iboost in range(self.n_estimators):
+            if verbose > 0:
+                print(f'Fitting {iboost + 1} out of {self.n_estimators}\
+                      estimators')
+            # Boosting step
+            sample_weight, estimator_weight, estimator_error = super(
+                RUSBoostClassifier, self)._boost(iboost, X, y, sample_weight,
+                                                 random_state)
+
+            if verbose > 1:
+                print('\tEstimator error: {estimator_error:.4f}\
+                       ------------------------------')
+
+            # Early termination
+            if sample_weight is None:
+                break
+
+            self.estimator_weights_[iboost] = estimator_weight
+            self.estimator_errors_[iboost] = estimator_error
+
+            # Stop if error is zero
+            if estimator_error == 0:
+                if verbose > 0:
+                    print('-------------DONE-------------')
+                break
+
+            sample_weight_sum = np.sum(sample_weight)
+
+            # Stop if the sum of sample weights has become non-positive
+            if sample_weight_sum <= 0:
+                if verbose > 0:
+                    print('-------------DONE-------------\
+                          MSG: sum of sample weights has become non-positive')
+                break
+
+            if iboost < self.n_estimators - 1:
+                # Normalize
+                sample_weight /= sample_weight_sum
+
         return self
 
     def _validate_estimator(self, default=DecisionTreeClassifier()):
