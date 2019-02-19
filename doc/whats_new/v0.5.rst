@@ -21,7 +21,7 @@ Enhancement
 ...........
 
 - Add Parallelisation for SMOTEENN and SMOTETomek.
-  :issue:`541` by :user:`Michael Hsieh <Microsheep>`.
+  :issue:`547` by :user:`Michael Hsieh <Microsheep>`.
 
 Maintenance
 ...........
