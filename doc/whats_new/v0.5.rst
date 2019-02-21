@@ -17,6 +17,12 @@ Documentation
   :class:`imblearn.over_sampling.SVMSMOTE` in the API documenation.
   :issue:`530` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+Enhancement
+...........
+
+- Add Parallelisation for SMOTEENN and SMOTETomek.
+  :issue:`547` by :user:`Michael Hsieh <Microsheep>`.
+
 Maintenance
 ...........
 
