@@ -1105,6 +1105,7 @@ def test_predict_with_predict_params():
     pipe.predict(X=None, got_attribute=True)
     assert pipe.named_steps['clf'].got_attribute
 
+
 def test_resampler_last_stage_passthrough():
 
     X, y = make_classification(

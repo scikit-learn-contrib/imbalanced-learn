@@ -529,7 +529,7 @@ class Pipeline(pipeline.Pipeline):
     @property
     def _final_estimator(self):
         estimator = self.steps[-1][1]
-        return  estimator
+        return estimator
 
     @if_delegate_has_method(delegate='_final_estimator')
     def score(self, X, y=None, sample_weight=None):
