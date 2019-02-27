@@ -276,7 +276,6 @@ class Pipeline(pipeline.Pipeline):
         else:
             return last_step.fit(Xt, yt, **fit_params).transform(Xt)
 
-    @if_delegate_has_method(delegate='_final_estimator')
     def fit_resample(self, X, y=None, **fit_params):
         """Fit the model and sample with the final estimator
 
@@ -524,6 +523,13 @@ class Pipeline(pipeline.Pipeline):
             else:
                 Xt = transform.inverse_transform(Xt)
         return Xt
+
+    # need to overwrite sklearn's _final_estimator since sklearn supports
+    # 'passthrough', but imblearn does not.
+    @property
+    def _final_estimator(self):
+        estimator = self.steps[-1][1]
+        return  estimator
 
     @if_delegate_has_method(delegate='_final_estimator')
     def score(self, X, y=None, sample_weight=None):
