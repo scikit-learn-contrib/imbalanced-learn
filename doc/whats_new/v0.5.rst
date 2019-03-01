@@ -41,3 +41,7 @@ Bug
 - Fix bug which converting to COO format sparse when stacking the matrices in
   :class:`imblearn.over_sampling.SMOTENC`. This bug was only old scipy version.
   :issue:`539` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix bug in :class:`imblearn.pipeline.Pipeline` where None could be the final
+  estimator.
+  :issue:`554` by :user:`Oliver Rausch <orausch>`.
