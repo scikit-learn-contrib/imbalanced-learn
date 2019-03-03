@@ -66,6 +66,7 @@ def test_ncr_fit_resample_mode():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_ncr_fit_resample_with_indices():
     ncr = NeighbourhoodCleaningRule(return_indices=True)
     X_resampled, y_resampled, idx_under = ncr.fit_resample(X, Y)
@@ -83,6 +84,7 @@ def test_ncr_fit_resample_with_indices():
     assert_array_equal(idx_under, idx_gt)
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_ncr_fit_resample_nn_obj():
     nn = NearestNeighbors(n_neighbors=4)
     ncr = NeighbourhoodCleaningRule(return_indices=True, n_neighbors=nn)

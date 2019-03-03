@@ -36,6 +36,10 @@ class NearMiss(BaseUnderSampler):
         Whether or not to return the indices of the samples randomly
         selected from the majority class.
 
+        .. deprecated:: 0.4
+           ``return_indices`` is deprecated. Use the attribute
+           ``sample_indices_`` instead.
+
     {random_state}
 
         .. deprecated:: 0.4
@@ -66,6 +70,14 @@ class NearMiss(BaseUnderSampler):
         .. deprecated:: 0.4
            Use the parameter ``sampling_strategy`` instead. It will be removed
            in 0.6.
+
+    Attributes
+    ----------
+    sample_indices_ : ndarray, shape (n_new_samples)
+        Indices of the samples selected.
+
+        .. versionadded:: 0.4
+           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -207,6 +219,9 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                              ' {}'.format(self.version))
 
     def _fit_resample(self, X, y):
+        if self.return_indices:
+            deprecate_parameter(self, '0.4', 'return_indices',
+                                'sample_indices_')
         self._validate_estimator()
 
         idx_under = np.empty((0, ), dtype=int)
@@ -272,8 +287,9 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                  np.flatnonzero(y == target_class)[index_target_class]),
                 axis=0)
 
+        self.sample_indices_ = idx_under
+
         if self.return_indices:
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
                     idx_under)
-        else:
-            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)

@@ -3,6 +3,7 @@
 #          Christos Aridas
 # License: MIT
 
+import pytest
 import numpy as np
 from sklearn.utils.testing import assert_array_equal
 
@@ -49,6 +50,7 @@ def test_tl_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_tl_fit_resample_with_indices():
     tl = TomekLinks(return_indices=True)
     X_resampled, y_resampled, idx_under = tl.fit_resample(X, Y)

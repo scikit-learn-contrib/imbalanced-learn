@@ -13,6 +13,7 @@ from sklearn.utils import check_X_y, check_random_state, safe_indexing
 from .base import BaseOverSampler
 from ..utils import check_target_type
 from ..utils import Substitution
+from ..utils.deprecation import deprecate_parameter
 from ..utils._docstring import _random_state_docstring
 
 
@@ -37,10 +38,22 @@ class RandomOverSampler(BaseOverSampler):
         Whether or not to return the indices of the samples randomly selected
         in the corresponding classes.
 
+        .. deprecated:: 0.4
+           ``return_indices`` is deprecated. Use the attribute
+           ``sample_indices_`` instead.
+
     ratio : str, dict, or callable
         .. deprecated:: 0.4
            Use the parameter ``sampling_strategy`` instead. It will be removed
            in 0.6.
+
+    Attributes
+    ----------
+    sample_indices_ : ndarray, shape (n_new_samples)
+        Indices of the samples selected.
+
+        .. versionadded:: 0.4
+           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -83,6 +96,10 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):
+        if self.return_indices:
+            deprecate_parameter(self, '0.4', 'return_indices',
+                                'sample_indices_')
+
         random_state = check_random_state(self.random_state)
         target_stats = Counter(y)
 
@@ -95,10 +112,10 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
 
             sample_indices = np.append(sample_indices,
                                        target_class_indices[indices])
+        self.sample_indices_ = np.array(sample_indices)
 
         if self.return_indices:
-            return (safe_indexing(X, sample_indices), safe_indexing(
-                    y, sample_indices), sample_indices)
-        else:
-            return (safe_indexing(X, sample_indices), safe_indexing(
-                    y, sample_indices))
+            return (safe_indexing(X, sample_indices),
+                    safe_indexing(y, sample_indices), sample_indices)
+        return (safe_indexing(X, sample_indices),
+                safe_indexing(y, sample_indices))

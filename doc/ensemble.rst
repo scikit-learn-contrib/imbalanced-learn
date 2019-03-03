@@ -67,8 +67,8 @@ Forest of randomized trees
 --------------------------
 
 :class:`BalancedRandomForestClassifier` is another ensemble method in which
-each tre1vided a balanced boostrap sample [1CLB2004]_. This class
-provides all functionality of the
+each tree of the forest will be provided a balanced bootstrap sample
+[1CLB2004]_. This class provides all functionality of the
 :class:`sklearn.ensemble.RandomForestClassifier` and notably the
 `feature_importances_` attributes::
 
@@ -78,9 +78,9 @@ provides all functionality of the
   BalancedRandomForestClassifier(...)
   >>> y_pred = brf.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.81...
+  0.80...
   >>> brf.feature_importances_  # doctest: +ELLIPSIS
-  array([ 0.55...,  0.44...])
+  array([ 0.57...,  0.42...])
 
 .. _boosting:
 
@@ -98,7 +98,7 @@ a boosting iteration [SKHN2010]_::
   RUSBoostClassifier(...)
   >>> y_pred = rusboost.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.74770070758043261
+  0.74...
 
 A specific method which uses ``AdaBoost`` as learners in the bagging classifier
 is called EasyEnsemble. The :class:`EasyEnsembleClassifier` allows to bag
@@ -112,7 +112,7 @@ ensemble as::
   EasyEnsembleClassifier(...)
   >>> y_pred = eec.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.62484778593026025
+  0.62...
 
 .. topic:: Examples
 

@@ -44,7 +44,7 @@ Documentation
 Installation documentation, API documentation, and examples can be found on the
 documentation_.
 
-.. _documentation: http://contrib.scikit-learn.org/imbalanced-learn/
+.. _documentation: https://imbalanced-learn.readthedocs.io/en/stable/
 
 Installation
 ------------
@@ -170,40 +170,40 @@ Below is a list of the methods currently implemented in this module.
 
 The different algorithms are presented in the sphinx-gallery_.
 
-.. _sphinx-gallery: http://contrib.scikit-learn.org/imbalanced-learn/stable/auto_examples/index.html
+.. _sphinx-gallery: https://imbalanced-learn.readthedocs.io/en/stable/auto_examples/index.html
 
 
 References:
 -----------
 
-.. [1] : I. Tomek, “Two modifications of CNN,” IEEE Transactions on Systems, Man, and Cybernetics, vol. 6, pp. 769-772, 1976. [`bib <references.bib#L148>`_]
+.. [1] : I. Tomek, “Two modifications of CNN,” IEEE Transactions on Systems, Man, and Cybernetics, vol. 6, pp. 769-772, 1976.
 
-.. [2] : I. Mani, J. Zhang. “kNN approach to unbalanced data distributions: A case study involving information extraction,” In Proceedings of the Workshop on Learning from Imbalanced Data Sets, pp. 1-7, 2003. [`pdf <https://www.site.uottawa.ca/~nat/Workshop2003/jzhang.pdf>`_] [`bib <references.bib#L113>`_]
+.. [2] : I. Mani, J. Zhang. “kNN approach to unbalanced data distributions: A case study involving information extraction,” In Proceedings of the Workshop on Learning from Imbalanced Data Sets, pp. 1-7, 2003.
 
-.. [3] : P. E. Hart, “The condensed nearest neighbor rule,” IEEE Transactions on Information Theory, vol. 14(3), pp. 515-516, 1968. [`pdf <http://sci2s.ugr.es/keel/pdf/algorithm/articulo/hart1968.pdf>`_] [`bib <references.bib#L51>`_]
+.. [3] : P. E. Hart, “The condensed nearest neighbor rule,” IEEE Transactions on Information Theory, vol. 14(3), pp. 515-516, 1968.
 
-.. [4] : M. Kubat, S. Matwin, “Addressing the curse of imbalanced training sets: One-sided selection,” In Proceedings of the 14th International Conference on Machine Learning, vol. 97, pp. 179-186, 1997. [`pdf <http://sci2s.ugr.es/keel/pdf/algorithm/congreso/kubat97addressing.pdf>`_] [`bib <references.bib#L76>`_]
+.. [4] : M. Kubat, S. Matwin, “Addressing the curse of imbalanced training sets: One-sided selection,” In Proceedings of the 14th International Conference on Machine Learning, vol. 97, pp. 179-186, 1997.
 
-.. [5] : J. Laurikkala, “Improving identification of difficult small classes by balancing class distribution,” Proceedings of the 8th Conference on Artificial Intelligence in Medicine in Europe, pp. 63-66, 2001. [`pdf <https://pdfs.semanticscholar.org/0e75/4db8253e84cde4ade4b6f5ba768a6150569a.pdf>`_] [`bib <references.bib#L89>`_]
+.. [5] : J. Laurikkala, “Improving identification of difficult small classes by balancing class distribution,” Proceedings of the 8th Conference on Artificial Intelligence in Medicine in Europe, pp. 63-66, 2001.
 
-.. [6] : D. Wilson, “Asymptotic Properties of Nearest Neighbor Rules Using Edited Data,” IEEE Transactions on Systems, Man, and Cybernetrics, vol. 2(3), pp. 408-421, 1972. [`pdf <http://sci2s.ugr.es/keel/pdf/algorithm/articulo/1972-Wilson-IEEETSMC.pdf>`_] [`bib <references.bib#L168>`_]
+.. [6] : D. Wilson, “Asymptotic Properties of Nearest Neighbor Rules Using Edited Data,” IEEE Transactions on Systems, Man, and Cybernetrics, vol. 2(3), pp. 408-421, 1972.
 
-.. [7] : M. R. Smith, T. Martinez, C. Giraud-Carrier, “An instance level analysis of data complexity,” Machine learning, vol. 95(2), pp. 225-256, 2014. [`pdf <https://pdfs.semanticscholar.org/5796/8c07abe6a734977db47b08cf4c567733aede.pdf>`_] [`bib <references.bib#L136>`_]
+.. [7] : M. R. Smith, T. Martinez, C. Giraud-Carrier, “An instance level analysis of data complexity,” Machine learning, vol. 95(2), pp. 225-256, 2014.
 
-.. [8] : N. V. Chawla, K. W. Bowyer, L. O. Hall, W. P. Kegelmeyer, “SMOTE: Synthetic minority over-sampling technique,” Journal of Artificial Intelligence Research, vol. 16, pp. 321-357, 2002. [`pdf <http://www.jair.org/media/953/live-953-2037-jair.pdf>`_] [`bib <references.bib#L28>`_]
+.. [8] : N. V. Chawla, K. W. Bowyer, L. O. Hall, W. P. Kegelmeyer, “SMOTE: Synthetic minority over-sampling technique,” Journal of Artificial Intelligence Research, vol. 16, pp. 321-357, 2002.
 
-.. [9] : H. Han, W.-Y. Wang, B.-H. Mao, “Borderline-SMOTE: A new over-sampling method in imbalanced data sets learning,” In Proceedings of the 1st International Conference on Intelligent Computing, pp. 878-887, 2005. [`pdf <http://sci2s.ugr.es/keel/pdf/specific/congreso/han_borderline_smote.pdf>`_] [`bib <references.bib#L38>`_]
+.. [9] : H. Han, W.-Y. Wang, B.-H. Mao, “Borderline-SMOTE: A new over-sampling method in imbalanced data sets learning,” In Proceedings of the 1st International Conference on Intelligent Computing, pp. 878-887, 2005.
 
-.. [10] : H. M. Nguyen, E. W. Cooper, K. Kamei, “Borderline over-sampling for imbalanced data classification,” In Proceedings of the 5th International Workshop on computational Intelligence and Applications, pp. 24-29, 2009. [`pdf <http://ousar.lib.okayama-u.ac.jp/files/public/1/19617/20160528004522391723/IWCIA2009_A1005.pdf>`_] [`bib <references.bib#L126>`_]
+.. [10] : H. M. Nguyen, E. W. Cooper, K. Kamei, “Borderline over-sampling for imbalanced data classification,” In Proceedings of the 5th International Workshop on computational Intelligence and Applications, pp. 24-29, 2009.
 
-.. [11] : G. E. A. P. A. Batista, R. C. Prati, M. C. Monard, “A study of the behavior of several methods for balancing machine learning training data,” ACM Sigkdd Explorations Newsletter, vol. 6(1), pp. 20-29, 2004. [`pdf <http://sci2s.ugr.es/keel/dataset/includes/catImbFiles/2004-Batista-SIGKDD.pdf>`_] [`bib <references.bib#L15>`_]
+.. [11] : G. E. A. P. A. Batista, R. C. Prati, M. C. Monard, “A study of the behavior of several methods for balancing machine learning training data,” ACM Sigkdd Explorations Newsletter, vol. 6(1), pp. 20-29, 2004.
 
-.. [12] : G. E. A. P. A. Batista, A. L. C. Bazzan, M. C. Monard, “Balancing training data for automated annotation of keywords: A case study,” In Proceedings of the 2nd Brazilian Workshop on Bioinformatics, pp. 10-18, 2003. [`pdf <http://www.inf.ufrgs.br/maslab/pergamus/pubs/balancing-training-data-for.pdf>`_] [`bib <references.bib#L2>`_]
+.. [12] : G. E. A. P. A. Batista, A. L. C. Bazzan, M. C. Monard, “Balancing training data for automated annotation of keywords: A case study,” In Proceedings of the 2nd Brazilian Workshop on Bioinformatics, pp. 10-18, 2003.
 
-.. [13] : X.-Y. Liu, J. Wu and Z.-H. Zhou, “Exploratory undersampling for class-imbalance learning,” IEEE Transactions on Systems, Man, and Cybernetics, vol. 39(2), pp. 539-550, 2009. [`pdf <https://pdfs.semanticscholar.org/beac/3afc6a2cbdefe8dae03de25a139193ef6021.pdf>`_] [`bib <references.bib#L102>`_]
+.. [13] : X.-Y. Liu, J. Wu and Z.-H. Zhou, “Exploratory undersampling for class-imbalance learning,” IEEE Transactions on Systems, Man, and Cybernetics, vol. 39(2), pp. 539-550, 2009.
 
-.. [14] : I. Tomek, “An experiment with the edited nearest-neighbor rule,” IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6), pp. 448-452, 1976. [`bib <references.bib#L158>`_]
+.. [14] : I. Tomek, “An experiment with the edited nearest-neighbor rule,” IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6), pp. 448-452, 1976.
 
-.. [15] : H. He, Y. Bai, E. A. Garcia, S. Li, “ADASYN: Adaptive synthetic sampling approach for imbalanced learning,” In Proceedings of the 5th IEEE International Joint Conference on Neural Networks, pp. 1322-1328, 2008. [`pdf <https://pdfs.semanticscholar.org/4823/4756b7cf798bfeb47328f7c5d597fd4838c2.pdf>`_] [`bib <references.bib#L62>`_] 
+.. [15] : H. He, Y. Bai, E. A. Garcia, S. Li, “ADASYN: Adaptive synthetic sampling approach for imbalanced learning,” In Proceedings of the 5th IEEE International Joint Conference on Neural Networks, pp. 1322-1328, 2008.
 
 .. [16] : C. Chao, A. Liaw, and L. Breiman. "Using random forest to learn imbalanced data." University of California, Berkeley 110 (2004): 1-12.

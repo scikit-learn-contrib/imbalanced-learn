@@ -70,8 +70,11 @@ Prototype selection
    :template: class.rst
 
    over_sampling.ADASYN
+   over_sampling.BorderlineSMOTE
    over_sampling.RandomOverSampler
    over_sampling.SMOTE
+   over_sampling.SMOTENC
+   over_sampling.SVMSMOTE
 
 
 .. _combine_ref:

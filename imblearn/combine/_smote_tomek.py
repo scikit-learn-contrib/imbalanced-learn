@@ -41,10 +41,14 @@ class SMOTETomek(BaseSampler):
         a :class:`imblearn.over_sampling.SMOTE` object with default parameters
         will be given.
 
-    tomek : object, optional (default=Tomek())
-        The :class:`imblearn.under_sampling.Tomek` object to use. If not given,
-        a :class:`imblearn.under_sampling.Tomek` object with default parameters
-        will be given.
+    tomek : object, optional (default=TomekLinks(sampling_strategy='all'))
+        The :class:`imblearn.under_sampling.TomekLinks` object to use. If not
+        given, a :class:`imblearn.under_sampling.TomekLinks` object with
+        sampling strategy='all' will be given.
+
+    n_jobs : int, optional (default=1)
+        The number of threads to open if possible.
+        Will not apply to smote and tomek given by the user.
 
     ratio : str, dict, or callable
         .. deprecated:: 0.4
@@ -94,12 +98,14 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
                  random_state=None,
                  smote=None,
                  tomek=None,
+                 n_jobs=1,
                  ratio=None):
         super(SMOTETomek, self).__init__()
         self.sampling_strategy = sampling_strategy
         self.random_state = random_state
         self.smote = smote
         self.tomek = tomek
+        self.n_jobs = n_jobs
         self.ratio = ratio
 
     def _validate_estimator(self):
@@ -116,6 +122,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
             self.smote_ = SMOTE(
                 sampling_strategy=self.sampling_strategy,
                 random_state=self.random_state,
+                n_jobs=self.n_jobs,
                 ratio=self.ratio)
 
         if self.tomek is not None:
@@ -126,7 +133,9 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
                                  'Got {} instead.'.format(type(self.tomek)))
         # Otherwise create a default TomekLinks
         else:
-            self.tomek_ = TomekLinks(sampling_strategy='all')
+            self.tomek_ = TomekLinks(
+                            sampling_strategy='all',
+                            n_jobs=self.n_jobs)
 
     def _fit_resample(self, X, y):
         self._validate_estimator()

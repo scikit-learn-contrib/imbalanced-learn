@@ -39,7 +39,11 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
-        selected from the majority class.
+        selected.
+
+        .. deprecated:: 0.4
+           ``return_indices`` is deprecated. Use the attribute
+           ``sample_indices_`` instead.
 
     {random_state}
 
@@ -67,6 +71,14 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         .. deprecated:: 0.4
            Use the parameter ``sampling_strategy`` instead. It will be removed
            in 0.6.
+
+    Attributes
+    ----------
+    sample_indices_ : ndarray, shape (n_new_samples)
+        Indices of the samples selected.
+
+        .. versionadded:: 0.4
+           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -135,6 +147,9 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
             raise NotImplementedError
 
     def _fit_resample(self, X, y):
+        if self.return_indices:
+            deprecate_parameter(self, '0.4', 'return_indices',
+                                'sample_indices_')
         self._validate_estimator()
 
         idx_under = np.empty((0, ), dtype=int)
@@ -164,11 +179,12 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                  np.flatnonzero(y == target_class)[index_target_class]),
                 axis=0)
 
+        self.sample_indices_ = idx_under
+
         if self.return_indices:
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
                     idx_under)
-        else:
-            return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
 
 @Substitution(
@@ -186,7 +202,11 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
-        selected from the majority class.
+        selected.
+
+        .. deprecated:: 0.4
+           ``return_indices`` is deprecated. Use the attribute
+           ``sample_indices_`` instead.
 
     {random_state}
 
@@ -218,6 +238,14 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         .. deprecated:: 0.4
            Use the parameter ``sampling_strategy`` instead. It will be removed
            in 0.6.
+
+    Attributes
+    ----------
+    sample_indices_ : ndarray, shape (n_new_samples)
+        Indices of the samples selected.
+
+        .. versionadded:: 0.4
+           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -289,28 +317,27 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
         self.enn_ = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
-            return_indices=self.return_indices,
+            return_indices=False,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
             n_jobs=self.n_jobs,
             ratio=self.ratio)
 
     def _fit_resample(self, X, y):
+        if self.return_indices:
+            deprecate_parameter(self, '0.4', 'return_indices',
+                                'sample_indices_')
         self._validate_estimator()
 
         X_, y_ = X, y
-        if self.return_indices:
-            idx_under = np.arange(X.shape[0], dtype=int)
+        self.sample_indices_ = np.arange(X.shape[0], dtype=int)
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
 
         for n_iter in range(self.max_iter):
 
             prev_len = y_.shape[0]
-            if self.return_indices:
-                X_enn, y_enn, idx_enn = self.enn_.fit_resample(X_, y_)
-            else:
-                X_enn, y_enn = self.enn_.fit_resample(X_, y_)
+            X_enn, y_enn = self.enn_.fit_resample(X_, y_)
 
             # Check the stopping criterion
             # 1. If there is no changes for the vector y
@@ -334,24 +361,21 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             b_remove_maj_class = (len(stats_enn) < len(target_stats))
 
             X_, y_, = X_enn, y_enn
-            if self.return_indices:
-                idx_under = idx_under[idx_enn]
+            self.sample_indices_ = self.sample_indices_[
+                self.enn_.sample_indices_]
 
             if b_conv or b_min_bec_maj or b_remove_maj_class:
                 if b_conv:
-                    if self.return_indices:
-                        X_, y_, = X_enn, y_enn
-                        idx_under = idx_under[idx_enn]
-                    else:
-                        X_, y_, = X_enn, y_enn
+                    X_, y_, = X_enn, y_enn
+                    self.sample_indices_ = self.sample_indices_[
+                        self.enn_.sample_indices_]
                 break
 
         X_resampled, y_resampled = X_, y_
 
         if self.return_indices:
-            return X_resampled, y_resampled, idx_under
-        else:
-            return X_resampled, y_resampled
+            return X_resampled, y_resampled, self.sample_indices_
+        return X_resampled, y_resampled
 
 
 @Substitution(
@@ -368,7 +392,11 @@ class AllKNN(BaseCleaningSampler):
 
     return_indices : bool, optional (default=False)
         Whether or not to return the indices of the samples randomly
-        selected from the majority class.
+        selected.
+
+        .. deprecated:: 0.4
+           ``return_indices`` is deprecated. Use the attribute
+           ``sample_indices_`` instead.
 
     {random_state}
 
@@ -402,6 +430,14 @@ class AllKNN(BaseCleaningSampler):
         .. deprecated:: 0.4
            Use the parameter ``sampling_strategy`` instead. It will be removed
            in 0.6.
+
+    Attributes
+    ----------
+    sample_indices_ : ndarray, shape (n_new_samples)
+        Indices of the samples selected.
+
+        .. versionadded:: 0.4
+           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -473,35 +509,35 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
         self.enn_ = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
-            return_indices=self.return_indices,
+            return_indices=False,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
             n_jobs=self.n_jobs,
             ratio=self.ratio)
 
     def _fit_resample(self, X, y):
+        if self.return_indices:
+            deprecate_parameter(self, '0.4', 'return_indices',
+                                'sample_indices_')
         self._validate_estimator()
 
         X_, y_ = X, y
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
 
-        if self.return_indices:
-            idx_under = np.arange(X.shape[0], dtype=int)
+        self.sample_indices_ = np.arange(X.shape[0], dtype=int)
 
         for curr_size_ngh in range(1, self.nn_.n_neighbors):
             self.enn_.n_neighbors = curr_size_ngh
 
-            if self.return_indices:
-                X_enn, y_enn, idx_enn = self.enn_.fit_resample(X_, y_)
-            else:
-                X_enn, y_enn = self.enn_.fit_resample(X_, y_)
+            X_enn, y_enn = self.enn_.fit_resample(X_, y_)
 
             # Check the stopping criterion
             # 1. If the number of samples in the other class become inferior to
             # the number of samples in the majority class
             # 2. If one of the class is disappearing
-            # Case 1
+            # Case 1else:
+
             stats_enn = Counter(y_enn)
             count_non_min = np.array([
                 val for val, key in zip(stats_enn.values(), stats_enn.keys())
@@ -517,8 +553,8 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             b_remove_maj_class = (len(stats_enn) < len(target_stats))
 
             X_, y_, = X_enn, y_enn
-            if self.return_indices:
-                idx_under = idx_under[idx_enn]
+            self.sample_indices_ = self.sample_indices_[
+                self.enn_.sample_indices_]
 
             if b_min_bec_maj or b_remove_maj_class:
                 break
@@ -526,6 +562,5 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
         X_resampled, y_resampled = X_, y_
 
         if self.return_indices:
-            return X_resampled, y_resampled, idx_under
-        else:
-            return X_resampled, y_resampled
+            return X_resampled, y_resampled, self.sample_indices_
+        return X_resampled, y_resampled

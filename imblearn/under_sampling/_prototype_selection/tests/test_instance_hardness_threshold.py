@@ -3,8 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
 from sklearn.ensemble import GradientBoostingClassifier
@@ -50,6 +50,7 @@ def test_iht_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_iht_fit_resample_with_indices():
     iht = InstanceHardnessThreshold(
         ESTIMATOR, return_indices=True, random_state=RND_SEED)
@@ -109,5 +110,5 @@ def test_iht_fit_resample_wrong_class_obj():
     from sklearn.cluster import KMeans
     est = KMeans()
     iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)
-    with raises(ValueError, match="Invalid parameter `estimator`"):
+    with pytest.raises(ValueError, match="Invalid parameter `estimator`"):
         iht.fit_resample(X, Y)

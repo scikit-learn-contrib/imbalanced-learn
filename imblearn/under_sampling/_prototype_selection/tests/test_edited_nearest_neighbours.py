@@ -3,8 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
+import pytest
 import numpy as np
-from pytest import raises
 
 from sklearn.utils.testing import assert_array_equal
 
@@ -50,6 +50,7 @@ def test_enn_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_enn_fit_resample_with_indices():
     enn = EditedNearestNeighbours(return_indices=True)
     X_resampled, y_resampled, idx_under = enn.fit_resample(X, Y)
@@ -103,7 +104,7 @@ def test_enn_fit_resample_with_nn_object():
 def test_enn_not_good_object():
     nn = 'rnd'
     enn = EditedNearestNeighbours(n_neighbors=nn, kind_sel='mode')
-    with raises(ValueError, match="has to be one of"):
+    with pytest.raises(ValueError, match="has to be one of"):
         enn.fit_resample(X, Y)
 
 

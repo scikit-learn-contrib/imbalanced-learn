@@ -70,6 +70,7 @@ def test_nm_fit_resample_auto():
         assert_array_equal(y_resampled, y_gt[version_idx])
 
 
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 def test_nm_fit_resample_auto_indices():
     sampling_strategy = 'auto'
     X_gt = [

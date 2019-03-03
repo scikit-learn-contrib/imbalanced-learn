@@ -1,0 +1,47 @@
+.. _changes_0_5:
+
+Version 0.5 (under development)
+===============================
+
+Changelog
+---------
+
+Documentation
+.............
+
+- Correct the definition of the ratio when using a ``float`` in sampling
+  strategy for the over-sampling and under-sampling.
+  :issue:`525` by :user:`Ariel Rossanigo <arielrossanigo>`.
+
+- Add :class:`imblearn.over_sampling.BorderlineSMOTE` and
+  :class:`imblearn.over_sampling.SVMSMOTE` in the API documenation.
+  :issue:`530` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Enhancement
+...........
+
+- Add Parallelisation for SMOTEENN and SMOTETomek.
+  :issue:`547` by :user:`Michael Hsieh <Microsheep>`.
+
+Maintenance
+...........
+
+- Make it possible to ``import imblearn`` and access submodule.
+  :issue:`500` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Bug
+...
+
+- Fix wrong usage of :class:`keras.layers.BatchNormalization` in
+  ``porto_seguro_keras_under_sampling.py`` example. The batch normalization
+  was moved before the activation function and the bias was removed from the
+  dense layer.
+  :issue:`531` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix bug which converting to COO format sparse when stacking the matrices in
+  :class:`imblearn.over_sampling.SMOTENC`. This bug was only old scipy version.
+  :issue:`539` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix bug in :class:`imblearn.pipeline.Pipeline` where None could be the final
+  estimator.
+  :issue:`554` by :user:`Oliver Rausch <orausch>`.

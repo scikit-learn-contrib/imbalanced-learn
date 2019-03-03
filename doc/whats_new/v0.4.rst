@@ -1,7 +1,72 @@
 .. _changes_0_4:
 
-Version 0.4 (under development)
-===============================
+Version 0.4.2
+=============
+
+Changelog
+---------
+
+Bug fixes
+.........
+
+- Fix a bug in :class:`imblearn.over_sampling.SMOTENC` in which the the median
+  of the standard deviation instead of half of the median of the standard
+  deviation.
+  By :user:`Guillaume Lemaitre <glemaitre>` in :issue:`491`.
+
+- Raise an error when passing target  which is not supported, i.e. regression
+  target or multilabel targets. Imbalanced-learn does not support this case.
+  By :user:`Guillaume Lemaitre <glemaitre>` in :issue:`490`.
+
+- Fix a bug in :class:`imblearn.over_sampling.SMOTENC` in which a sparse
+  matrices were densify during ``inverse_transform``.
+  By :user:`Guillaume Lemaitre <glemaitre>` in :issue:`495`.
+
+- Fix a bug in :class:`imblearn.over_sampling.SMOTE_NC` in which a the tie
+  breaking was wrongly sampling.
+  By :user:`Guillaume Lemaitre <glemaitre>` in :issue:`497`.
+
+Version 0.4
+===========
+
+**October, 2018**
+
+.. warning::
+
+    Version 0.4 is the last version of imbalanced-learn to support Python 2.7
+    and Python 3.4. Imbalanced-learn 0.5 will require Python 3.5 or higher.
+
+Highlights
+----------
+
+This release brings its set of new feature as well as some API changes to
+strengthen the foundation of imbalanced-learn.
+
+As new feature, 2 new modules :mod:`imblearn.keras` and
+:mod:`imblearn.tensorflow` have been added in which imbalanced-learn samplers
+can be used to generate balanced mini-batches.
+
+The module :mod:`imblearn.ensemble` has been consolidated with new classifier:
+:class:`imblearn.ensemble.BalancedRandomForestClassifier`,
+:class:`imblearn.ensemble.EasyEnsembleClassifier`,
+:class:`imblearn.ensemble.RUSBoostClassifier`.
+
+Support for string has been added in
+:class:`imblearn.over_sampling.RandomOverSampler` and
+:class:`imblearn.under_sampling.RandomUnderSampler`. In addition, a new class
+:class:`imblearn.over_sampling.SMOTENC` allows to generate sample with data
+sets containing both continuous and categorical features.
+
+The :class:`imblearn.over_sampling.SMOTE` has been simplified and break down
+to 2 additional classes:
+:class:`imblearn.over_sampling.SVMSMOTE` and
+:class:`imblearn.over_sampling.BorderlineSMOTE`.
+
+There is also some changes regarding the API:
+the parameter ``sampling_strategy`` has been introduced to replace the
+``ratio`` parameter. In addition, the ``return_indices`` argument has been
+deprecated and all samplers will exposed a ``sample_indices_`` whenever this is
+possible.
 
 Changelog
 ---------
@@ -26,8 +91,9 @@ API
 New features
 ............
 
-- Add a ``keras`` and ``tensorflow`` modules to create balanced mini-batches
-  generator. :issue:`409` by :user:`Guillaume Lemaitre <glemaitre>`.
+- Add a :mod:`keras` and :mod:`tensorflow` modules to create balanced
+  mini-batches generator.
+  :issue:`409` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - Add :class:`imblearn.ensemble.EasyEnsembleClassifier` which create a bag of
   AdaBoost classifier trained on balanced bootstrap samples.
@@ -40,6 +106,12 @@ New features
 - Add :class:`imblearn.ensemble.RUSBoostClassifier` which applied a random
   under-sampling stage before each boosting iteration of AdaBoost.
   :issue:`469` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Add :class:`imblern.over_sampling.SMOTENC` which generate synthetic samples
+  on data set with heterogeneous data type (continuous and categorical
+  features).
+  :issue:`412` by :user:`Denis Dudnik <ddudnik>` and
+  :user:`Guillaume Lemaitre <glemaitre>`.
 
 Enhancement
 ...........
@@ -117,6 +189,10 @@ Documentation
 - Remove some docstring which are not necessary.
   :issue:`454` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Fix the documentation of the ``sampling_strategy`` parameters when used as a
+  float.
+  :issue:`480` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 
@@ -147,3 +223,8 @@ Deprecation
 
 - Deprecate :class:`imblearn.ensemble.BalanceCascade`.
   :issue:`472` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Deprecate ``return_indices`` in all samplers. Instead, an attribute
+  ``sample_indices_`` is created whenever the sampler is selecting a subset of
+  the original samples.
+  :issue:`474` by :user:`Guillaume Lemaitre <glemaitre`.

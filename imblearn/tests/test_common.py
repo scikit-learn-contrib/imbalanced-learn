@@ -62,6 +62,7 @@ def _generate_checks_per_estimator(check_generator, estimators):
 @pytest.mark.filterwarnings('ignore:"out_step" is deprecated in 0.4 and')
 @pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
 @pytest.mark.filterwarnings("ignore:'y' should be of types")
+@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
 @pytest.mark.parametrize(
     'name, Estimator, check',
     _generate_checks_per_estimator(_yield_all_checks,

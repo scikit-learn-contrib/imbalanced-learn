@@ -104,6 +104,22 @@ def test_validate_estimator_default():
     assert_array_equal(y_resampled, y_gt)
 
 
+def test_parallelisation():
+    # Check if default job count is 1
+    smt = SMOTETomek(random_state=RND_SEED)
+    smt._validate_estimator()
+    assert smt.n_jobs == 1
+    assert smt.smote_.n_jobs == 1
+    assert smt.tomek_.n_jobs == 1
+
+    # Check if job count is set
+    smt = SMOTETomek(random_state=RND_SEED, n_jobs=8)
+    smt._validate_estimator()
+    assert smt.n_jobs == 8
+    assert smt.smote_.n_jobs == 8
+    assert smt.tomek_.n_jobs == 8
+
+
 @pytest.mark.parametrize(
     "smote_params, err_msg",
     [({'smote': 'rnd'}, "smote needs to be a SMOTE"),

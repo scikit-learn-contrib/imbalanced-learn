@@ -139,6 +139,16 @@ class DummyTransf(Transf):
         return self
 
 
+class DummyEstimatorParams(BaseEstimator):
+    """Mock classifier that takes params on predict"""
+    def fit(self, X, y):
+        return self
+
+    def predict(self, X, got_attribute=False):
+        self.got_attribute = got_attribute
+        return self
+
+
 class DummySampler(NoTrans):
     """Samplers which returns a balanced number of samples"""
 
@@ -598,7 +608,7 @@ def test_pipeline_wrong_memory():
     cached_pipe = Pipeline(
         [('transf', DummyTransf()), ('svc', SVC(gamma='scale'))],
         memory=memory)
-    error_regex = ("string or have the same interface as sklearn.utils.Memory")
+    error_regex = ("string or have the same interface as")
     with raises(ValueError, match=error_regex):
         cached_pipe.fit(X, y)
 
@@ -1085,3 +1095,31 @@ def test_make_pipeline_memory():
         assert pipeline.memory is None
     finally:
         shutil.rmtree(cachedir)
+
+
+def test_predict_with_predict_params():
+    # tests that Pipeline passes predict_params to the final estimator
+    # when predict is invoked
+    pipe = Pipeline([('transf', Transf()), ('clf', DummyEstimatorParams())])
+    pipe.fit(None, None)
+    pipe.predict(X=None, got_attribute=True)
+    assert pipe.named_steps['clf'].got_attribute
+
+
+def test_resampler_last_stage_passthrough():
+
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=50000,
+        random_state=0)
+
+    rus = RandomUnderSampler(random_state=42)
+    pipe = make_pipeline(rus, None)
+    pipe.fit_resample(X, y)
