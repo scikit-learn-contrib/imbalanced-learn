@@ -21,7 +21,8 @@ from sklearn.svm import LinearSVC
 
 from imblearn.pipeline import make_pipeline
 from imblearn.over_sampling import ADASYN
-from imblearn.over_sampling import SMOTE, BorderlineSMOTE, SVMSMOTE, SMOTENC
+from imblearn.over_sampling import (SMOTE, BorderlineSMOTE, SVMSMOTE, SMOTENC,
+                                   KMeansSMOTE)
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.base import BaseSampler
 
@@ -218,6 +219,7 @@ for ax, sampler in zip(ax_arr,
                        (SMOTE(random_state=0),
                         BorderlineSMOTE(random_state=0, kind='borderline-1'),
                         BorderlineSMOTE(random_state=0, kind='borderline-2'),
+                        KMeansSMOTE(random_state=0, kmeans_estimator=25),
                         SVMSMOTE(random_state=0))):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
