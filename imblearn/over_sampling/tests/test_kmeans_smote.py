@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_array_equal
 
+from sklearn.datasets import make_classification
+
 from imblearn.over_sampling import (KMeansSMOTE, SMOTE)
 
 
@@ -24,7 +26,10 @@ def data():
 
 def test_kmeans_smote(data):
     X, y = data
-    kmeans_smote = KMeansSMOTE(kmeans_estimator=1, random_state=42)
+    kmeans_smote = KMeansSMOTE(kmeans_estimator=1,
+                               random_state=42,
+                               cluster_balance_threshold=0.0,
+                               k_neighbors=5)
     smote = SMOTE(random_state=42)
 
     X_res_1, y_res_1 = kmeans_smote.fit_sample(X, y)

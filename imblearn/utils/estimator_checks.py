@@ -158,6 +158,7 @@ def check_samplers_one_label(name, Sampler):
 
 def check_samplers_fit(name, Sampler):
     sampler = Sampler()
+    np.random.seed(42)  # Make this test reproducible
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
     sampler.fit_resample(X, y)

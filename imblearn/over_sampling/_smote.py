@@ -1095,9 +1095,9 @@ class SMOTENC(SMOTE):
         return sparse.csr_matrix(sample) if sparse.issparse(X) else sample
 
 
-# @Substitution(
-#     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-#     random_state=_random_state_docstring)
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring)
 class KMeansSMOTE(BaseSMOTE):
     """Apply a KMeans clustering before to over-sample using SMOTE.
 
@@ -1111,7 +1111,7 @@ class KMeansSMOTE(BaseSMOTE):
 
     {random_state}
 
-    k_neighbors : int or object, optional (default=5)
+    k_neighbors : int or object, optional (default=2)
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
@@ -1121,28 +1121,38 @@ class KMeansSMOTE(BaseSMOTE):
         The number of threads to open if possible.
 
     kmeans_estimator : int or object, optional (default=KMeans())
-        A KMeans instance or the number of clusters.
+        A KMeans instance or the number of clusters to be used.
 
-    cluster_balance_threshold: float, optional (default=0.5)
+    cluster_balance_threshold: str or float, optional (default="auto")
         The threshold at which a cluster is called balanced and where samples
-        of the class selected for SMOTE will be oversampled.
+        of the class selected for SMOTE will be oversampled. If "auto", this
+        will be determined by the ratio for each class, or it can be set
+        manually.
 
     density_exponent: str or float, optional (default="auto")
         This exponent is used to determine the density of a cluster. Leaving it
         to 'auto' will use a feature-length based exponent.
 
+    ratio : str, dict, or callable
+        .. deprecated:: 0.4
+           Use the parameter ``sampling_strategy`` instead. It will be removed
+           in 0.6.
+
     """
     def __init__(self,
                  sampling_strategy='auto',
                  random_state=None,
-                 k_neighbors=5,
+                 k_neighbors=2,
                  n_jobs=1,
                  kmeans_estimator=None,
-                 cluster_balance_threshold=0.5,
+                 ratio=None,
+                 cluster_balance_threshold="auto",
                  density_exponent="auto"):
+
         super(KMeansSMOTE, self).__init__(
             sampling_strategy=sampling_strategy, random_state=random_state,
-            k_neighbors=k_neighbors, n_jobs=n_jobs, ratio=None)
+            k_neighbors=k_neighbors, n_jobs=n_jobs)
+
         self.kmeans_estimator = kmeans_estimator
         self.cluster_balance_threshold = cluster_balance_threshold
         self.density_exponent = density_exponent
@@ -1171,9 +1181,9 @@ class KMeansSMOTE(BaseSMOTE):
         for ind in range(X.shape[0]):
             euclidean_distances[ind, ind] = 0
 
-        non_diag_elements = (len(X) ** 2) - len(X)
+        non_diag_elements = (X.shape[0] ** 2) - X.shape[0]
         mean_distance = euclidean_distances.sum() / non_diag_elements
-        exponent = (math.log(len(X), 1.6) ** 1.8 * 0.16
+        exponent = (math.log(X.shape[0], 1.6) ** 1.8 * 0.16
                     if self.density_exponent == 'auto'
                     else self.density_exponent)
         return (mean_distance ** exponent) / X.shape[0]
@@ -1183,13 +1193,14 @@ class KMeansSMOTE(BaseSMOTE):
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
-        random_state = check_random_state(self.random_state)
+        check_random_state(self.random_state)
         X_resampled = X.copy()
         y_resampled = y.copy()
 
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
                 continue
+
             target_class_indices = np.flatnonzero(y == class_sample)
             X_class = safe_indexing(X, target_class_indices)
 
@@ -1207,7 +1218,17 @@ class KMeansSMOTE(BaseSMOTE):
 
                 cluster_class_mean = (y_cluster == class_sample).mean()
 
-                if cluster_class_mean < self.cluster_balance_threshold_:
+                if self.cluster_balance_threshold == "auto":
+                    balance_threshold = n_samples / sum(self.sampling_strategy_.values()) / 2
+                else:
+                    balance_threshold = self.cluster_balance_threshold
+
+                print(cluster_class_mean, balance_threshold, cluster_class_mean < balance_threshold, X_cluster.shape)
+
+                if cluster_class_mean < balance_threshold:
+                    continue
+
+                if cluster_class_mean * X_cluster.shape[0] < self.nn_k_.n_neighbors:
                     continue
 
                 X_cluster_class = safe_indexing(
@@ -1232,16 +1253,16 @@ class KMeansSMOTE(BaseSMOTE):
                 X_cluster_class = safe_indexing(
                     X_cluster, np.flatnonzero(y_cluster == class_sample))
 
-                cluster_k_neighbours = min(self.nn_k_.n_neighbors,
-                                           len(X_cluster_class) + 1)
-                self.nn_k_.set_params(n_neighbors=cluster_k_neighbours)
-
                 self.nn_k_.fit(X_cluster_class)
+
                 nns = self.nn_k_.kneighbors(X_cluster_class,
                                             return_distance=False)[:, 1:]
 
-                cluster_n_samples = int(
+                cluster_n_samples = math.ceil(
                     n_samples * cluster_weights[valid_cluster_idx])
+
+                if cluster_n_samples < 1:
+                    continue  # Weight of this cluster is not high enough
 
                 X_new, y_new = self._make_samples(X_cluster_class,
                                                   y.dtype,
@@ -1254,5 +1275,10 @@ class KMeansSMOTE(BaseSMOTE):
                 stack = [np.vstack, sparse.vstack][int(sparse.issparse(X_new))]
                 X_resampled = stack((X_resampled, X_new))
                 y_resampled = np.hstack((y_resampled, y_new))
+
+
+        print(self.sampling_strategy_)
+        print(Counter(y_resampled))
+        print(X_resampled.shape, y_resampled.shape)
 
         return X_resampled, y_resampled

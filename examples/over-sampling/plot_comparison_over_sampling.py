@@ -219,7 +219,7 @@ for ax, sampler in zip(ax_arr,
                        (SMOTE(random_state=0),
                         BorderlineSMOTE(random_state=0, kind='borderline-1'),
                         BorderlineSMOTE(random_state=0, kind='borderline-2'),
-                        KMeansSMOTE(random_state=0, kmeans_estimator=25),
+                        KMeansSMOTE(random_state=0),
                         SVMSMOTE(random_state=0))):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
