@@ -1223,8 +1223,6 @@ class KMeansSMOTE(BaseSMOTE):
                 else:
                     balance_threshold = self.cluster_balance_threshold
 
-                print(cluster_class_mean, balance_threshold, cluster_class_mean < balance_threshold, X_cluster.shape)
-
                 if cluster_class_mean < balance_threshold:
                     continue
 
@@ -1258,8 +1256,8 @@ class KMeansSMOTE(BaseSMOTE):
                 nns = self.nn_k_.kneighbors(X_cluster_class,
                                             return_distance=False)[:, 1:]
 
-                cluster_n_samples = math.ceil(
-                    n_samples * cluster_weights[valid_cluster_idx])
+                cluster_n_samples = int(math.ceil(
+                    n_samples * cluster_weights[valid_cluster_idx]))
 
                 if cluster_n_samples < 1:
                     continue  # Weight of this cluster is not high enough
@@ -1276,9 +1274,5 @@ class KMeansSMOTE(BaseSMOTE):
                 X_resampled = stack((X_resampled, X_new))
                 y_resampled = np.hstack((y_resampled, y_new))
 
-
-        print(self.sampling_strategy_)
-        print(Counter(y_resampled))
-        print(X_resampled.shape, y_resampled.shape)
 
         return X_resampled, y_resampled
