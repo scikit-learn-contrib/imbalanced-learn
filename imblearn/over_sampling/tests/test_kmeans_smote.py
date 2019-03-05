@@ -68,7 +68,7 @@ def test_sample_kmeans_custom(data):
     assert_array_equal(y_resampled, y_gt)
 
 def test_sample_kmeans_not_enough_clusters(data):
-    np.random.seed(42)  # Make this test reproducible
+    np.random.seed(42) 
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
 

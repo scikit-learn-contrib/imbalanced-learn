@@ -1259,6 +1259,9 @@ class KMeansSMOTE(BaseSMOTE):
                 cluster_n_samples = int(math.ceil(
                     n_samples * cluster_weights[valid_cluster_idx]))
 
+                if cluster_n_samples < 1:
+                    continue  # Weight of this cluster is not high enough
+
                 X_new, y_new = self._make_samples(X_cluster_class,
                                                   y.dtype,
                                                   class_sample,
