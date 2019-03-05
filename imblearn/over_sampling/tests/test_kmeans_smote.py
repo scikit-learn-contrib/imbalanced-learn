@@ -42,7 +42,7 @@ def test_kmeans_smote(data):
 def test_sample_kmeans_custom(data):
     X, y = data
     smote = KMeansSMOTE(random_state=42,
-                        kmeans_estimator=MiniBatchKMeans(n_clusters=3),
+                        kmeans_estimator=MiniBatchKMeans(n_clusters=3, random_state=42),
                         k_neighbors=2)
     X_resampled, y_resampled = smote.fit_sample(X, y)
     X_gt = np.array([
@@ -68,7 +68,7 @@ def test_sample_kmeans_custom(data):
     assert_array_equal(y_resampled, y_gt)
 
 def test_sample_kmeans_not_enough_clusters(data):
-    np.random.seed(42) 
+    np.random.seed(42)
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
 

@@ -1188,10 +1188,11 @@ class KMeansSMOTE(BaseSMOTE):
                     else self.density_exponent)
         return (mean_distance ** exponent) / X.shape[0]
 
-    def _sample(self, X, y):
-        return self._fit_resample(X, y)
-
+    # FIXME: rename _sample -> _fit_resample in 0.6
     def _fit_resample(self, X, y):
+        return self._sample(X, y)
+
+    def _sample(self, X, y):
         self._validate_estimator()
         check_random_state(self.random_state)
         X_resampled = X.copy()
