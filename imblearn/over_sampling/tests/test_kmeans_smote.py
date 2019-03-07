@@ -3,7 +3,7 @@ import numpy as np
 
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_array_equal
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import KMeans
 
 from sklearn.datasets import make_classification
 
@@ -42,7 +42,7 @@ def test_kmeans_smote(data):
 def test_sample_kmeans_custom(data):
     X, y = data
     smote = KMeansSMOTE(random_state=42,
-                        kmeans_estimator=MiniBatchKMeans(n_clusters=3, random_state=42),
+                        kmeans_estimator=KMeans(n_clusters=3, random_state=42),
                         k_neighbors=2)
     X_resampled, y_resampled = smote.fit_sample(X, y)
     X_gt = np.array([
