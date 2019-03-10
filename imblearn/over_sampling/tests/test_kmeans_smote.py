@@ -5,8 +5,6 @@ from sklearn.utils.testing import assert_allclose
 from sklearn.utils.testing import assert_array_equal
 from sklearn.cluster import MiniBatchKMeans
 
-from sklearn.datasets import make_classification
-
 from imblearn.over_sampling import (KMeansSMOTE, SMOTE)
 
 
@@ -25,6 +23,7 @@ def data():
     y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
     return X, y
 
+
 def test_kmeans_smote(data):
     X, y = data
     kmeans_smote = KMeansSMOTE(kmeans_estimator=1,
@@ -38,6 +37,7 @@ def test_kmeans_smote(data):
 
     assert_allclose(X_res_1, X_res_2)
     assert_array_equal(y_res_1, y_res_2)
+
 
 def test_sample_kmeans_custom(data):
     X, y = data
@@ -66,6 +66,7 @@ def test_sample_kmeans_custom(data):
 
     assert_allclose(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
 
 def test_sample_kmeans_not_enough_clusters(data):
     np.random.seed(42)

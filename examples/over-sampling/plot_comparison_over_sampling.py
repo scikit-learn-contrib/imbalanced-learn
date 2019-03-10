@@ -22,7 +22,7 @@ from sklearn.svm import LinearSVC
 from imblearn.pipeline import make_pipeline
 from imblearn.over_sampling import ADASYN
 from imblearn.over_sampling import (SMOTE, BorderlineSMOTE, SVMSMOTE, SMOTENC,
-                                   KMeansSMOTE)
+                                    KMeansSMOTE)
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.base import BaseSampler
 

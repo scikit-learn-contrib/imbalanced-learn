@@ -1197,6 +1197,7 @@ class KMeansSMOTE(BaseSMOTE):
         check_random_state(self.random_state)
         X_resampled = X.copy()
         y_resampled = y.copy()
+        total_inp_samples = sum(self.sampling_strategy_.values())
 
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
@@ -1220,14 +1221,15 @@ class KMeansSMOTE(BaseSMOTE):
                 cluster_class_mean = (y_cluster == class_sample).mean()
 
                 if self.cluster_balance_threshold == "auto":
-                    balance_threshold = n_samples / sum(self.sampling_strategy_.values()) / 2
+                    balance_threshold = n_samples / total_inp_samples / 2
                 else:
                     balance_threshold = self.cluster_balance_threshold
 
                 if cluster_class_mean < balance_threshold:
                     continue
 
-                if cluster_class_mean * X_cluster.shape[0] < self.nn_k_.n_neighbors:
+                anticipated_samples = cluster_class_mean * X_cluster.shape[0]
+                if total_inp_samples < self.nn_k_.n_neighbors:
                     continue
 
                 X_cluster_class = safe_indexing(
@@ -1260,7 +1262,6 @@ class KMeansSMOTE(BaseSMOTE):
                 cluster_n_samples = int(math.ceil(
                     n_samples * cluster_weights[valid_cluster_idx]))
 
-
                 X_new, y_new = self._make_samples(X_cluster_class,
                                                   y.dtype,
                                                   class_sample,
@@ -1272,6 +1273,5 @@ class KMeansSMOTE(BaseSMOTE):
                 stack = [np.vstack, sparse.vstack][int(sparse.issparse(X_new))]
                 X_resampled = stack((X_resampled, X_new))
                 y_resampled = np.hstack((y_resampled, y_new))
-
 
         return X_resampled, y_resampled
