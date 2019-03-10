@@ -1229,7 +1229,7 @@ class KMeansSMOTE(BaseSMOTE):
                     continue
 
                 anticipated_samples = cluster_class_mean * X_cluster.shape[0]
-                if total_inp_samples < self.nn_k_.n_neighbors:
+                if anticipated_samples < self.nn_k_.n_neighbors:
                     continue
 
                 X_cluster_class = safe_indexing(
