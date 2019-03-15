@@ -135,14 +135,9 @@ following rules before submitting:
 -  Please include your operating system type and version number, as well
    as your Python, scikit-learn, numpy, and scipy versions. This information
    can be found by runnning the following code snippet:
-
-   ```python
-   import platform; print(platform.platform())
-   import sys; print("Python", sys.version)
-   import numpy; print("NumPy", numpy.__version__)
-   import scipy; print("SciPy", scipy.__version__)
-   import sklearn; print("Scikit-Learn", sklearn.__version__)
-   import imblearn; print("Imbalanced-Learn", imblearn.__version__)
+   
+   ```bash
+   python -c "from imblearn import show_versions; show_versions(github=True)"
    ```
 
 -  Please be specific about what estimators and/or functions are involved
