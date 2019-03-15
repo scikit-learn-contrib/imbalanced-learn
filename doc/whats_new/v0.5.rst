@@ -23,6 +23,10 @@ Enhancement
 - Add Parallelisation for SMOTEENN and SMOTETomek.
   :issue:`547` by :user:`Michael Hsieh <Microsheep>`.
 
+- Add :class:`imblearn.utils._show_versions`. Updated the contribution guide
+  and issue template showing how to print system and dependency information
+  from the command line. :issue:`557` by :user:`Alexander L. Hayes <batflyer>`.
+
 Maintenance
 ...........
 
