@@ -35,6 +35,8 @@ def test_show_versions_default(capsys):
     assert "scipy" in out
     assert "Cython" in out
     assert "pandas" in out
+    assert "keras" in out
+    assert "tensorflow" in out
 
 
 def test_show_versions_github(capsys):
@@ -58,4 +60,6 @@ def test_show_versions_github(capsys):
     assert "* scipy" in out
     assert "* Cython" in out
     assert "* pandas" in out
+    assert "* keras" in out
+    assert "* tensorflow" in out
     assert "</details>" in out

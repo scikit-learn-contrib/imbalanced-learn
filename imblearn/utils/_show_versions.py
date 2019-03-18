@@ -28,6 +28,8 @@ def _get_deps_info():
         "scipy",
         "Cython",
         "pandas",
+        "keras",
+        "tensorflow",
     ]
 
     def get_version(module):
