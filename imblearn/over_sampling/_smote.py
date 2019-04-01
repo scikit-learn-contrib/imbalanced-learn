@@ -1176,7 +1176,6 @@ class KMeansSMOTE(BaseSMOTE):
     def _find_cluster_sparsity(self, X):
         euclidean_distances = pairwise_distances(X, metric="euclidean",
                                                  n_jobs=self.n_jobs)
-
         # negate diagonal elements
         for ind in range(X.shape[0]):
             euclidean_distances[ind, ind] = 0
@@ -1265,7 +1264,7 @@ class KMeansSMOTE(BaseSMOTE):
                 X_new, y_new = self._make_samples(X_cluster_class,
                                                   y.dtype,
                                                   class_sample,
-                                                  X_class,
+                                                  X_cluster_class,
                                                   nns,
                                                   cluster_n_samples,
                                                   1.0)
