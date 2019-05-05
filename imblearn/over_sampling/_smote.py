@@ -1197,27 +1197,28 @@ class SMOTEN(SMOTE):
     >>> from imblearn.over_sampling import SMOTEN
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
-    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
+    ... n_features=5, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape (%s, %s)' % X.shape)
     Original dataset shape (1000, 20)
     >>> print('Original dataset samples per class {}'.format(Counter(y)))
     Original dataset samples per class Counter({1: 900, 0: 100})
     >>> # simulate the 2 last columns to be categorical features
-    >>> X[:, ] = RandomState(10).randint(0, 4, size=(1000, 2))
-    >>> sm = SMOTEN(random_state=42, categorical_features=[18, 19])
+    >>> X[:, ] = RandomState(10).randint(0, 4, size=(1000, 5))
+    >>> sm = SMOTEN(random_state=42)
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset samples per class {}'.format(Counter(y_res)))
     Resampled dataset samples per class Counter({0: 900, 1: 900})
 
     """
 
-    def __init__(self, sampling_strategy='auto',
+    def __init__(self, sampling_strategy='auto', kind='regular',
                  random_state=None, k_neighbors=5, n_jobs=1):
         super(SMOTEN, self).__init__(sampling_strategy=sampling_strategy,
                                      random_state=random_state,
                                      k_neighbors=k_neighbors,
                                      ratio=None,
-                                     n_jobs=n_jobs)
+                                     n_jobs=n_jobs,
+                                     kind=kind)
 
     @staticmethod
     def _check_X_y(X, y):
