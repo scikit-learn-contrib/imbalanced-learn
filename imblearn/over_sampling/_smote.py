@@ -1090,3 +1090,195 @@ class SMOTENC(SMOTE):
             sample[start_idx + col_sel] = 1
 
         return sparse.csr_matrix(sample) if sparse.issparse(X) else sample
+
+
+# @Substitution(
+#     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+#     random_state=_random_state_docstring)
+class SMOTEN(SMOTE):
+    """Synthetic Minority Over-sampling Technique for Nominal
+    (SMOTE-NC).
+
+    Unlike :class:`SMOTE`, SMOTE-N operates on datasets containing categorical
+    features.
+
+    Read more in the :ref:`User Guide <smote_adasyn>`.
+
+    Parameters
+    ----------
+    sampling_strategy : float, str, dict or callable, (default='auto')
+        Sampling information to resample the data set.
+
+        - When ``float``, it corresponds to the desired ratio of the number of
+          samples in the minority class over the number of samples in the
+          majority class after resampling. Therefore, the ratio is expressed as
+          :math:`\\alpha_{os} = N_{rm} / N_{M}` where :math:`N_{rm}` is the
+          number of samples in the minority class after resampling and
+          :math:`N_{M}` is the number of samples in the majority class.
+
+            .. warning::
+               ``float`` is only available for **binary** classification. An
+               error is raised for multi-class classification.
+
+        - When ``str``, specify the class targeted by the resampling. The
+          number of samples in the different classes will be equalized.
+          Possible choices are:
+
+            ``'minority'``: resample only the minority class;
+
+            ``'not minority'``: resample all classes but the minority class;
+
+            ``'not majority'``: resample all classes but the majority class;
+
+            ``'all'``: resample all classes;
+
+            ``'auto'``: equivalent to ``'not majority'``.
+
+        - When ``dict``, the keys correspond to the targeted classes. The
+          values correspond to the desired number of samples for each targeted
+          class.
+
+        - When callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples for each class.
+
+    random_state : int, RandomState instance or None, optional (default=None)
+        Control the randomization of the algorithm.
+
+        - If int, ``random_state`` is the seed used by the random number
+          generator;
+        - If ``RandomState`` instance, random_state is the random number
+          generator;
+        - If ``None``, the random number generator is the ``RandomState``
+          instance used by ``np.random``.
+
+    k_neighbors : int or object, optional (default=5)
+        If ``int``, number of nearest neighbours to used to construct synthetic
+        samples.  If object, an estimator that inherits from
+        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
+
+    n_jobs : int, optional (default=1)
+        The number of threads to open if possible.
+
+    Notes
+    -----
+    See the original paper [1]_ for more details.
+
+    Supports mutli-class resampling. A one-vs.-rest scheme is used as
+    originally proposed in [1]_.
+
+    See
+    :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
+    and :ref:`sphx_glr_auto_examples_over-sampling_plot_smote.py`.
+
+    See also
+    --------
+    SMOTE : Over-sample using SMOTE.
+
+    SVMSMOTE : Over-sample using SVM-SMOTE variant.
+
+    BorderlineSMOTE : Over-sample using Borderline-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
+
+    References
+    ----------
+    .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
+       synthetic minority over-sampling technique," Journal of artificial
+       intelligence research, 321-357, 2002.
+
+    Examples
+    --------
+
+    >>> from collections import Counter
+    >>> from numpy.random import RandomState
+    >>> from sklearn.datasets import make_classification
+    >>> from imblearn.over_sampling import SMOTEN
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
+    >>> print('Original dataset shape (%s, %s)' % X.shape)
+    Original dataset shape (1000, 20)
+    >>> print('Original dataset samples per class {}'.format(Counter(y)))
+    Original dataset samples per class Counter({1: 900, 0: 100})
+    >>> # simulate the 2 last columns to be categorical features
+    >>> X[:, ] = RandomState(10).randint(0, 4, size=(1000, 2))
+    >>> sm = SMOTEN(random_state=42, categorical_features=[18, 19])
+    >>> X_res, y_res = sm.fit_resample(X, y)
+    >>> print('Resampled dataset samples per class {}'.format(Counter(y_res)))
+    Resampled dataset samples per class Counter({0: 900, 1: 900})
+
+    """
+
+    def __init__(self, sampling_strategy='auto',
+                 random_state=None, k_neighbors=5, n_jobs=1):
+        super(SMOTEN, self).__init__(sampling_strategy=sampling_strategy,
+                                      random_state=random_state,
+                                      k_neighbors=k_neighbors,
+                                      ratio=None,
+                                      n_jobs=n_jobs)
+
+    @staticmethod
+    def _check_X_y(X, y):
+        """Overwrite the checking to let pass some string for categorical
+        features.
+        """
+        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
+        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
+        return X, y, binarize_y
+
+    def _validate_estimator(self):
+        super(SMOTEN, self)._validate_estimator()
+
+    def _fit_resample(self, X, y):
+        self.n_features_ = X.shape[1]
+        self._validate_estimator()
+
+        self.ohe_ = OneHotEncoder(sparse=True, handle_unknown='ignore',
+                                  dtype=np.float64)
+        # the input of the OneHotEncoder needs to be dense
+        X_ohe = self.ohe_.fit_transform(
+            X.toarray() if sparse.issparse(X)
+            else X)
+
+        X_resampled, y_resampled = super(SMOTEN, self)._fit_resample(
+            X_ohe, y)
+        X_resampled = self.ohe_.inverse_transform(X_resampled)
+
+        if sparse.issparse(X):
+            X_resampled = sparse.csr_matrix(X_resampled)
+
+        return X_resampled, y_resampled
+
+    def _generate_sample(self, X, nn_data, nn_num, row, col, step):
+        """Generate a synthetic sample with an additional steps for the
+        categorical features.
+
+        Each new sample is generated the same way than in SMOTE. However, the
+        categorical features are mapped to the most frequent nearest neighbors
+        of the majority class.
+        """
+        rng = check_random_state(self.random_state)
+        sample = super(SMOTEN, self)._generate_sample(X, nn_data, nn_num,
+                                                       row, col, step)
+        # To avoid conversion and since there is only few samples used, we
+        # convert those samples to dense array.
+        sample = (sample.toarray().squeeze()
+                  if sparse.issparse(sample) else sample)
+        all_neighbors = nn_data[nn_num[row]]
+        all_neighbors = (all_neighbors.toarray()
+                         if sparse.issparse(all_neighbors) else all_neighbors)
+
+        categories_size = [cat.size for cat in self.ohe_.categories_]
+
+        for start_idx, end_idx in zip(np.cumsum(categories_size)[:-1],
+                                      np.cumsum(categories_size)[1:]):
+            col_max = all_neighbors[:, start_idx:end_idx].sum(axis=0)
+            # tie breaking argmax
+            col_sel = rng.choice(np.flatnonzero(
+                np.isclose(col_max, col_max.max())))
+            sample[start_idx:end_idx] = 0
+            sample[start_idx + col_sel] = 1
+
+        return sparse.csr_matrix(sample) if sparse.issparse(X) else sample

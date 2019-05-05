@@ -9,6 +9,7 @@ from ._smote import SMOTE
 from ._smote import BorderlineSMOTE
 from ._smote import SVMSMOTE
 from ._smote import SMOTENC
+from ._smote import SMOTEN
 
 __all__ = ['ADASYN', 'RandomOverSampler',
-           'SMOTE', 'BorderlineSMOTE', 'SVMSMOTE', 'SMOTENC']
+           'SMOTE', 'BorderlineSMOTE', 'SVMSMOTE', 'SMOTEN', 'SMOTENC']
