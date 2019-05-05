@@ -1096,8 +1096,8 @@ class SMOTENC(SMOTE):
 #     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
 #     random_state=_random_state_docstring)
 class SMOTEN(SMOTE):
-    """Synthetic Minority Over-sampling Technique for Nominal
-    (SMOTE-NC).
+    """Synthetic Minority Over-sampling Technique for Nominal data
+    (SMOTE-N).
 
     Unlike :class:`SMOTE`, SMOTE-N operates on datasets containing categorical
     features.
@@ -1200,14 +1200,13 @@ class SMOTEN(SMOTE):
     ... n_features=5, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape (%s, %s)' % X.shape)
     Original dataset shape (1000, 5)
-    >>> print('Original dataset samples per class {}'.format(Counter(y)))
-    Original dataset samples per class Counter({1: 900, 0: 100})
-    >>> # simulate the 2 last columns to be categorical features
+    >>> print('Original dataset samples in class 0: {}'.format(sum(y == 0)))
+    Original dataset samples in class 0: 100
     >>> X[:, ] = RandomState(10).randint(0, 4, size=(1000, 5))
     >>> sm = SMOTEN(random_state=42)
     >>> X_res, y_res = sm.fit_resample(X, y)
-    >>> print('Resampled dataset samples per class {}'.format(Counter(y_res)))
-    Resampled dataset samples per class Counter({1: 900, 0: 900})
+    >>> print('Resampled dataset samples in class 0: {}'.format(sum(y_res == 0)))
+    Resampled dataset samples in class 0: 900
 
     """
 
