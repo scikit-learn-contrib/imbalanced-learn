@@ -1207,7 +1207,7 @@ class SMOTEN(SMOTE):
     >>> sm = SMOTEN(random_state=42)
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset samples per class {}'.format(Counter(y_res)))
-    Resampled dataset samples per class Counter({0: 900, 1: 900})
+    Resampled dataset samples per class Counter({1: 900, 0: 900})
 
     """
 
