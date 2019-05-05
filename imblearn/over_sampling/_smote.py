@@ -1214,10 +1214,10 @@ class SMOTEN(SMOTE):
     def __init__(self, sampling_strategy='auto',
                  random_state=None, k_neighbors=5, n_jobs=1):
         super(SMOTEN, self).__init__(sampling_strategy=sampling_strategy,
-                                      random_state=random_state,
-                                      k_neighbors=k_neighbors,
-                                      ratio=None,
-                                      n_jobs=n_jobs)
+                                     random_state=random_state,
+                                     k_neighbors=k_neighbors,
+                                     ratio=None,
+                                     n_jobs=n_jobs)
 
     @staticmethod
     def _check_X_y(X, y):
@@ -1261,7 +1261,7 @@ class SMOTEN(SMOTE):
         """
         rng = check_random_state(self.random_state)
         sample = super(SMOTEN, self)._generate_sample(X, nn_data, nn_num,
-                                                       row, col, step)
+                                                      row, col, step)
         # To avoid conversion and since there is only few samples used, we
         # convert those samples to dense array.
         sample = (sample.toarray().squeeze()
