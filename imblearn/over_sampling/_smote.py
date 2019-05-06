@@ -1130,13 +1130,35 @@ class KMeansSMOTE(BaseSMOTE):
         manually.
 
     density_exponent: str or float, optional (default="auto")
-        This exponent is used to determine the density of a cluster. Leaving it
-        to 'auto' will use a feature-length based exponent.
+        This exponent is used to determine the density of a cluster. Leaving
+        this to 'auto' will use a feature-length based exponent.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
+    References
+    ----------
+    .. [3] Felix Last, Georgios Douzas, Fernando Bacao, "Oversampling for
+       Imbalanced Learning Based on K-Means and SMOTE"
+       https://arxiv.org/abs/1711.00837
+
+    Examples
+    --------
+
+    >>> from imblearn.over_sampling import KMeansSMOTE
+    >>> from sklearn.datasets import make_blobs
+    >>> blob_sizes = [100, 800, 100]
+    >>> X, y  = make_blobs(blob_sizes,
+    ... centers=[(-10, 0), (0,0), (10, 0)])
+    >>> # Make this a binary classification problem
+    >>> y = y == 1
+    >>> sm = KMeansSMOTE(random_state=42)
+    >>> X_res, y_res = sm.fit_resample(X, y)
+    >>> # Find the number of new samples in the middle blob
+    >>> n_res_in_middle = ((X_res[:, 0] > -5) & (X_res[:, 0] < 5)).sum()
+    >>> print("Samples in the middle blob: %s" % n_res_in_middle)
+    Samples in the middle blob: 800
+    >>> print("Same as middle blob: %s" % (n_res_in_middle == blob_sizes[1]))
+    Same samples in middle blob: True
+    >>> print("More 0 samples: %s " % ((y_res == 0).sum() > (y == 0).sum()))
+    More 0 samples: True
 
     """
     def __init__(self,
@@ -1145,7 +1167,6 @@ class KMeansSMOTE(BaseSMOTE):
                  k_neighbors=2,
                  n_jobs=1,
                  kmeans_estimator=None,
-                 ratio=None,
                  cluster_balance_threshold="auto",
                  density_exponent="auto"):
 
