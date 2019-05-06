@@ -1142,11 +1142,15 @@ class KMeansSMOTE(BaseSMOTE):
     Examples
     --------
 
+    >>> import numpy as np
     >>> from imblearn.over_sampling import KMeansSMOTE
     >>> from sklearn.datasets import make_blobs
-    >>> blob_sizes = [100, 800, 100]
-    >>> X, y  = make_blobs(blob_sizes,
+    >>> blobs = [100, 800, 100]
+    >>> X, y  = make_blobs(blobs,
     ... centers=[(-10, 0), (0,0), (10, 0)])
+    >>> # Add a single 0 sample in the middle blob
+    >>> X = np.concatenate([X, [[0, 0]]])
+    >>> y = np.append(y, 0)
     >>> # Make this a binary classification problem
     >>> y = y == 1
     >>> sm = KMeansSMOTE(random_state=42)
@@ -1155,8 +1159,8 @@ class KMeansSMOTE(BaseSMOTE):
     >>> n_res_in_middle = ((X_res[:, 0] > -5) & (X_res[:, 0] < 5)).sum()
     >>> print("Samples in the middle blob: %s" % n_res_in_middle)
     Samples in the middle blob: 800
-    >>> print("Same as middle blob: %s" % (n_res_in_middle == blob_sizes[1]))
-    Same samples in middle blob: True
+    >>> print("Middle blob unchanged: %s" % (n_res_in_middle == blobs[1] + 1))
+    Middle blob unchanged: True
     >>> print("More 0 samples: %s " % ((y_res == 0).sum() > (y == 0).sum()))
     More 0 samples: True
 
