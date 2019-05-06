@@ -1161,7 +1161,7 @@ class KMeansSMOTE(BaseSMOTE):
     Samples in the middle blob: 801
     >>> print("Middle blob unchanged: %s" % (n_res_in_middle == blobs[1] + 1))
     Middle blob unchanged: True
-    >>> print("More 0 samples: %s " % ((y_res == 0).sum() > (y == 0).sum()))
+    >>> print("More 0 samples: %s" % ((y_res == 0).sum() > (y == 0).sum()))
     More 0 samples: True
 
     """
@@ -1172,8 +1172,7 @@ class KMeansSMOTE(BaseSMOTE):
                  n_jobs=1,
                  kmeans_estimator=None,
                  cluster_balance_threshold="auto",
-                 density_exponent="auto",
-                 ratio=None):
+                 density_exponent="auto"):
 
         super(KMeansSMOTE, self).__init__(
             sampling_strategy=sampling_strategy, random_state=random_state,

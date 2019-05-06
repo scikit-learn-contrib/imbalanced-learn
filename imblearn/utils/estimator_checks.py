@@ -33,7 +33,7 @@ from imblearn.ensemble.base import BaseEnsembleSampler
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import NearMiss, ClusterCentroids
 
-DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE']
+DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE', 'KMeansSMOTE']
 SUPPORT_STRING = ['RandomUnderSampler', 'RandomOverSampler']
 HAVE_SAMPLE_INDICES = [
     'RandomOverSampler', 'RandomUnderSampler', 'InstanceHardnessThreshold',
