@@ -1172,7 +1172,8 @@ class KMeansSMOTE(BaseSMOTE):
                  n_jobs=1,
                  kmeans_estimator=None,
                  cluster_balance_threshold="auto",
-                 density_exponent="auto"):
+                 density_exponent="auto",
+                 ratio=None):
 
         super(KMeansSMOTE, self).__init__(
             sampling_strategy=sampling_strategy, random_state=random_state,
