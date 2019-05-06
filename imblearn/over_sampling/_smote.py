@@ -1158,7 +1158,7 @@ class KMeansSMOTE(BaseSMOTE):
     >>> # Find the number of new samples in the middle blob
     >>> n_res_in_middle = ((X_res[:, 0] > -5) & (X_res[:, 0] < 5)).sum()
     >>> print("Samples in the middle blob: %s" % n_res_in_middle)
-    Samples in the middle blob: 800
+    Samples in the middle blob: 801
     >>> print("Middle blob unchanged: %s" % (n_res_in_middle == blobs[1] + 1))
     Middle blob unchanged: True
     >>> print("More 0 samples: %s " % ((y_res == 0).sum() > (y == 0).sum()))
