@@ -157,11 +157,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             self.estimator_.fit(X_train, y_train)
 
             probs = self.estimator_.predict_proba(X_test)
-            classes = self.estimator_.classes_
-            probabilities[test_index] = [
-                probs[l, np.where(classes == c)[0][0]]
-                for l, c in enumerate(y_test)
-            ]
+            probabilities[test_index] = probs[range(len(y_test)), y_test]
 
         idx_under = np.empty((0, ), dtype=int)
 
