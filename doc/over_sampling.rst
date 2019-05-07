@@ -198,6 +198,15 @@ Therefore, it can be seen that the samples generated in the first and last
 columns are belonging to the same categories originally presented without any
 other extra interpolation.
 
+Furthermore, if the dataset solely consists of categorical features one may use the :class:`SMOTEN` class. This class generates samples in an identical fashion to :class:`SMOTENC` - however - only categorical features are permitted. Each feature is treated as a categorical feature and therefore it is not advised to use `SMOTEN` for datasets that contain both categorical and continious features::
+
+  >>> from imblearn.over_sampling import SMOTEN
+  >>> smote_n = SMOTEN(random_state=0)
+  >>> X[:, 1] = rng.randint(2, size=n_samples)
+  >>> X_resampled, y_resampled = smote_n.fit_resample(X, y)
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 30), (1, 30)]
+
 .. topic:: References
 
   .. [HWB2005] H. Han, W. Wen-Yuan, M. Bing-Huan, "Borderline-SMOTE: a new

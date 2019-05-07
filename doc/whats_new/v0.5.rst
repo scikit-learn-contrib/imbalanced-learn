@@ -27,6 +27,9 @@ Enhancement
   and issue template showing how to print system and dependency information
   from the command line. :issue:`557` by :user:`Alexander L. Hayes <batflyer>`.
 
+- Add :class:`SMOTEN`. Add ability to use SMOTE on pure categorical features.
+  by :user:`Thomas Kluiters <ThomasKluiters`.
+
 Maintenance
 ...........
 
