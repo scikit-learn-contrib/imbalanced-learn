@@ -950,11 +950,13 @@ class SMOTENC(SMOTE):
 
     """
 
-    def __init__(self, categorical_features, sampling_strategy='auto',
+    def __init__(self, categorical_features, sampling_strategy='auto', kind='regular',
                  random_state=None, k_neighbors=5, n_jobs=1):
         super(SMOTENC, self).__init__(sampling_strategy=sampling_strategy,
                                       random_state=random_state,
                                       k_neighbors=k_neighbors,
+                                      n_jobs=n_jobs,
+                                      kind=kind,
                                       ratio=None)
         self.categorical_features = categorical_features
 
@@ -986,6 +988,15 @@ class SMOTENC(SMOTE):
         self.n_features_ = X.shape[1]
         self._validate_estimator()
 
+        X_encoded = self._encode(X, y)
+
+        X_resampled, y_resampled = super(SMOTENC, self)._fit_resample(
+            X_encoded, y)
+        X_resampled = self._decode(X, X_resampled)
+
+        return X_resampled, y_resampled
+
+    def _encode(self, X, y):
         # compute the median of the standard deviation of the minority class
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
@@ -1015,18 +1026,15 @@ class SMOTENC(SMOTE):
         X_ohe = self.ohe_.fit_transform(
             X_categorical.toarray() if sparse.issparse(X_categorical)
             else X_categorical)
-
         # we can replace the 1 entries of the categorical features with the
         # median of the standard deviation. It will ensure that whenever
         # distance is computed between 2 samples, the difference will be equal
         # to the median of the standard deviation as in the original paper.
         X_ohe.data = (np.ones_like(X_ohe.data, dtype=X_ohe.dtype) *
                       self.median_std_ / 2)
-        X_encoded = sparse.hstack((X_continuous, X_ohe), format='csr')
+        return sparse.hstack((X_continuous, X_ohe), format='csr')
 
-        X_resampled, y_resampled = super(SMOTENC, self)._fit_resample(
-            X_encoded, y)
-
+    def _decode(self, X, X_resampled):
         # reverse the encoding of the categorical features
         X_res_cat = X_resampled[:, self.continuous_features_.size:]
         X_res_cat.data = np.ones_like(X_res_cat.data)
@@ -1055,8 +1063,7 @@ class SMOTENC(SMOTE):
             X_resampled.indices = col_indices
         else:
             X_resampled = X_resampled[:, indices_reordered]
-
-        return X_resampled, y_resampled
+        return X_resampled
 
     def _generate_sample(self, X, nn_data, nn_num, row, col, step):
         """Generate a synthetic sample with an additional steps for the
@@ -1095,7 +1102,7 @@ class SMOTENC(SMOTE):
 # @Substitution(
 #     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
 #     random_state=_random_state_docstring)
-class SMOTEN(SMOTE):
+class SMOTEN(SMOTENC):
     """Synthetic Minority Over-sampling Technique for Nominal data
     (SMOTE-N).
 
@@ -1212,73 +1219,30 @@ class SMOTEN(SMOTE):
 
     def __init__(self, sampling_strategy='auto', kind='regular',
                  random_state=None, k_neighbors=5, n_jobs=1):
-        super(SMOTEN, self).__init__(sampling_strategy=sampling_strategy,
+        super(SMOTEN, self).__init__(categorical_features=[],
+                                     sampling_strategy=sampling_strategy,
                                      random_state=random_state,
                                      k_neighbors=k_neighbors,
-                                     ratio=None,
                                      n_jobs=n_jobs,
                                      kind=kind)
 
-    @staticmethod
-    def _check_X_y(X, y):
-        """Overwrite the checking to let pass some string for categorical
-        features.
-        """
-        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
-        return X, y, binarize_y
-
     def _validate_estimator(self):
+        self.categorical_features = np.asarray(range(self.n_features_))
+        self.continuous_features_ = np.asarray([])
         super(SMOTEN, self)._validate_estimator()
 
-    def _fit_resample(self, X, y):
-        self.n_features_ = X.shape[1]
-        self._validate_estimator()
+    def _decode(self, X, X_resampled):
+        X_unstacked = self.ohe_.inverse_transform(X_resampled)
+        if sparse.issparse(X):
+            X_unstacked = sparse.csr_matrix(X_unstacked)
+        return X_unstacked
 
+    def _encode(self, X, y):
         self.ohe_ = OneHotEncoder(sparse=True, handle_unknown='ignore',
                                   dtype=np.float64)
         # the input of the OneHotEncoder needs to be dense
-        X_ohe = self.ohe_.fit_transform(
+        return self.ohe_.fit_transform(
             X.toarray() if sparse.issparse(X)
             else X)
 
-        X_resampled, y_resampled = super(SMOTEN, self)._fit_resample(
-            X_ohe, y)
-        X_resampled = self.ohe_.inverse_transform(X_resampled)
 
-        if sparse.issparse(X):
-            X_resampled = sparse.csr_matrix(X_resampled)
-
-        return X_resampled, y_resampled
-
-    def _generate_sample(self, X, nn_data, nn_num, row, col, step):
-        """Generate a synthetic sample with an additional steps for the
-        categorical features.
-
-        Each new sample is generated the same way than in SMOTE. However, the
-        categorical features are mapped to the most frequent nearest neighbors
-        of the majority class.
-        """
-        rng = check_random_state(self.random_state)
-        sample = super(SMOTEN, self)._generate_sample(X, nn_data, nn_num,
-                                                      row, col, step)
-        # To avoid conversion and since there is only few samples used, we
-        # convert those samples to dense array.
-        sample = (sample.toarray().squeeze()
-                  if sparse.issparse(sample) else sample)
-        all_neighbors = nn_data[nn_num[row]]
-        all_neighbors = (all_neighbors.toarray()
-                         if sparse.issparse(all_neighbors) else all_neighbors)
-
-        categories_size = [cat.size for cat in self.ohe_.categories_]
-
-        for start_idx, end_idx in zip(np.cumsum(categories_size)[:-1],
-                                      np.cumsum(categories_size)[1:]):
-            col_max = all_neighbors[:, start_idx:end_idx].sum(axis=0)
-            # tie breaking argmax
-            col_sel = rng.choice(np.flatnonzero(
-                np.isclose(col_max, col_max.max())))
-            sample[start_idx:end_idx] = 0
-            sample[start_idx + col_sel] = 1
-
-        return sparse.csr_matrix(sample) if sparse.issparse(X) else sample
