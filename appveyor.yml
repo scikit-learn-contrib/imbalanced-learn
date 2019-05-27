@@ -46,7 +46,7 @@ install:
   - conda install %OPTIONAL_DEP% -y -q
   - conda install pytest pytest-cov -y -q
   - pip install codecov
-  - pip install .
+  - python setup.py install
 
 test_script:
   - mkdir for_test
