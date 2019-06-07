@@ -57,5 +57,5 @@ class NotPreservingDtypeSampler(BaseSampler):
      (NotPreservingDtypeSampler, AssertionError, "X dytype is not preserved")]
 )
 def test_check_estimator(Estimator, err_type, err_msg):
-    with pytest.raises(err_type, message=err_msg):
+    with pytest.raises(err_type, match=err_msg):
         check_estimator(Estimator)

@@ -22,7 +22,7 @@ from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.utils.testing import assert_no_warnings
 from sklearn.metrics import accuracy_score, average_precision_score
 from sklearn.metrics import brier_score_loss, cohen_kappa_score
-from sklearn.metrics import jaccard_similarity_score, precision_score
+from sklearn.metrics import jaccard_score, precision_score
 from sklearn.metrics import recall_score, roc_auc_score
 
 from imblearn.metrics import sensitivity_specificity_support
@@ -383,7 +383,7 @@ def test_classification_report_imbalanced_multiclass_with_long_string_label():
 
 @pytest.mark.parametrize(
     "score, expected_score",
-    [(accuracy_score, 0.54756), (jaccard_similarity_score, 0.54756),
+    [(accuracy_score, 0.54756), (jaccard_score, 0.54756),
      (precision_score, 0.65025), (recall_score, 0.41616)]
 )
 def test_iba_sklearn_metrics(score, expected_score):

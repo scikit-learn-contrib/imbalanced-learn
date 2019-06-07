@@ -733,7 +733,7 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
             # We do not support multilabel so the only average supported
             # is binary
             elif (scoring_func.__name__ == 'accuracy_score' or
-                  scoring_func.__name__ == 'jaccard_similarity_score'):
+                  scoring_func.__name__ == 'jaccard_score'):
                 tags_scoring_func['average'] = 'binary'
             # Create the list of parameters through signature binding
             tags_sens_spec = sens_spec_sig.bind(**tags_scoring_func)
