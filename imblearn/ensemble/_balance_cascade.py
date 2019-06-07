@@ -104,7 +104,7 @@ BalanceCascade # doctest: +NORMALIZE_WHITESPACE
                  n_max_subset=None,
                  estimator=None,
                  ratio=None):
-        super(BalanceCascade, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices

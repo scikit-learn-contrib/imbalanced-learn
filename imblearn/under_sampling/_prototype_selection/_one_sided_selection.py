@@ -109,7 +109,7 @@ KNeighborsClassifier(n_neighbors=1))
                  n_seeds_S=1,
                  n_jobs=1,
                  ratio=None):
-        super(OneSidedSelection, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices

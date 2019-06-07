@@ -17,7 +17,6 @@ from __future__ import division
 
 from sklearn import pipeline
 from sklearn.base import clone
-from sklearn.externals import six
 from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_memory
 
@@ -102,7 +101,7 @@ class Pipeline(pipeline.Pipeline):
                0       0.87      1.00      0.93        26
                1       1.00      0.98      0.99       224
     <BLANKLINE>
-       micro avg       0.98      0.98      0.98       250
+        accuracy                           0.98       250
        macro avg       0.93      0.99      0.96       250
     weighted avg       0.99      0.98      0.98       250
     <BLANKLINE>
@@ -162,9 +161,9 @@ class Pipeline(pipeline.Pipeline):
         fit_transform_one_cached = memory.cache(_fit_transform_one)
         fit_resample_one_cached = memory.cache(_fit_resample_one)
 
-        fit_params_steps = dict((name, {}) for name, step in self.steps
-                                if step is not None)
-        for pname, pval in six.iteritems(fit_params):
+        fit_params_steps = {name: {} for name, step in self.steps
+                            if step is not None}
+        for pname, pval in fit_params.items():
             step, param = pname.split('__', 1)
             fit_params_steps[step][param] = pval
         Xt = X
@@ -624,7 +623,8 @@ def make_pipeline(*steps, **kwargs):
              steps=[('standardscaler',
                      StandardScaler(copy=True, with_mean=True, with_std=True)),
                     ('gaussiannb',
-                     GaussianNB(priors=None, var_smoothing=1e-09))])
+                     GaussianNB(priors=None, var_smoothing=1e-09))],
+             verbose=False)
     """
     memory = kwargs.pop('memory', None)
     if kwargs:

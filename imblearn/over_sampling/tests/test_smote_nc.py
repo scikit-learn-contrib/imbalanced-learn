@@ -134,6 +134,7 @@ def test_smotenc_check_target_type():
     with pytest.raises(ValueError, match="'y' should encode the multiclass"):
         smote.fit_resample(X, y)
 
+
 def test_smotenc_samplers_one_label():
     X, _, categorical_features = data_heterogneous_unordered()
     y = np.zeros(30)
@@ -157,8 +158,8 @@ def test_smotenc_fit_resample():
     target_stats = Counter(y)
     smote = SMOTENC(categorical_features=categorical_features,
                     random_state=0)
-    X_res, y_res = smote.fit_resample(X, y)
-    target_stats_res = Counter(y_res)
+    _, y_res = smote.fit_resample(X, y)
+    _ = Counter(y_res)
     n_samples = max(target_stats.values())
     assert all(value >= n_samples for value in Counter(y_res).values())
 

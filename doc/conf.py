@@ -15,7 +15,6 @@
 import os
 import sys
 import sphinx_rtd_theme
-from sklearn.externals.six import u
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -76,8 +75,8 @@ plot_gallery = True
 master_doc = 'index'
 
 # General information about the project.
-project = u('imbalanced-learn')
-copyright = u('2016 - 2017, G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas')
+project = 'imbalanced-learn'
+copyright = '2016 - 2017, G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -231,8 +230,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'imbalanced-learn.tex', u('imbalanced-learn Documentation'),
-     u('G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'), 'manual'),
+    ('index', 'imbalanced-learn.tex', 'imbalanced-learn Documentation',
+     'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -278,8 +277,8 @@ sphinx_gallery_conf = {
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [('index', 'imbalanced-learn', u'imbalanced-learn Documentation',
-              [u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'], 1)]
+man_pages = [('index', 'imbalanced-learn', 'imbalanced-learn Documentation',
+              ['G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -290,8 +289,8 @@ man_pages = [('index', 'imbalanced-learn', u'imbalanced-learn Documentation',
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'imbalanced-learn', u'imbalanced-learn Documentation',
-     u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas', 'imbalanced-learn',
+    ('index', 'imbalanced-learn', 'imbalanced-learn Documentation',
+     'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas', 'imbalanced-learn',
      'Toolbox for imbalanced dataset in machine learning.', 'Miscellaneous'),
 ]
 
@@ -332,6 +331,6 @@ def setup(app):
 
 # The following is used by sphinx.ext.linkcode to provide links to github
 linkcode_resolve = make_linkcode_resolve('imblearn',
-                                         u'https://github.com/scikit-learn-contrib/'
+                                         'https://github.com/scikit-learn-contrib/'
                                          'imbalanced-learn/blob/{revision}/'
                                          '{package}/{path}#L{lineno}')
