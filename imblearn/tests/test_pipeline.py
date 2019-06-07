@@ -43,7 +43,7 @@ JUNK_FOOD_DOCS = (
 R_TOL = 1e-4
 
 
-class NoFit(object):
+class NoFit:
     """Small class to test parameter dispatching.
     """
 

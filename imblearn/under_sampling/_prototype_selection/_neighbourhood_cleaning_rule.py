@@ -120,7 +120,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                  threshold_cleaning=0.5,
                  n_jobs=1,
                  ratio=None):
-        super(NeighbourhoodCleaningRule, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices

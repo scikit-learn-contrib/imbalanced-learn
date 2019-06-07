@@ -723,8 +723,8 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
             # Make the intersection between the parameters
             sel_params = params_sens_spec.intersection(set(tags_scoring_func))
             # Create a sub dictionary
-            tags_scoring_func = dict((k, tags_scoring_func[k])
-                                     for k in sel_params)
+            tags_scoring_func = {k: tags_scoring_func[k]
+                                     for k in sel_params}
             # Check if the metric is the geometric mean
             if scoring_func.__name__ == 'geometric_mean_score':
                 if 'average' in tags_scoring_func:
@@ -883,7 +883,7 @@ def classification_report_imbalanced(y_true,
         for v in (precision[i], recall[i], specificity[i], f1[i], geo_mean[i],
                   iba[i]):
             values += ["{0:0.{1}f}".format(v, digits)]
-        values += ["{0}".format(support[i])]
+        values += ["{}".format(support[i])]
         report += fmt % tuple(values)
 
     report += '\n'
@@ -896,6 +896,6 @@ def classification_report_imbalanced(y_true,
                   geo_mean, weights=support), np.average(iba,
                                                          weights=support)):
         values += ["{0:0.{1}f}".format(v, digits)]
-    values += ['{0}'.format(np.sum(support))]
+    values += ['{}'.format(np.sum(support))]
     report += fmt % tuple(values)
     return report

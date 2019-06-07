@@ -84,7 +84,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                  return_indices=False,
                  random_state=None,
                  ratio=None):
-        super(RandomOverSampler, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.return_indices = return_indices
         self.random_state = random_state

@@ -278,8 +278,8 @@ sphinx_gallery_conf = {
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [('index', 'imbalanced-learn', u'imbalanced-learn Documentation',
-              [u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'], 1)]
+man_pages = [('index', 'imbalanced-learn', 'imbalanced-learn Documentation',
+              ['G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -290,8 +290,8 @@ man_pages = [('index', 'imbalanced-learn', u'imbalanced-learn Documentation',
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'imbalanced-learn', u'imbalanced-learn Documentation',
-     u'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas', 'imbalanced-learn',
+    ('index', 'imbalanced-learn', 'imbalanced-learn Documentation',
+     'G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas', 'imbalanced-learn',
      'Toolbox for imbalanced dataset in machine learning.', 'Miscellaneous'),
 ]
 
@@ -332,6 +332,6 @@ def setup(app):
 
 # The following is used by sphinx.ext.linkcode to provide links to github
 linkcode_resolve = make_linkcode_resolve('imblearn',
-                                         u'https://github.com/scikit-learn-contrib/'
+                                         'https://github.com/scikit-learn-contrib/'
                                          'imbalanced-learn/blob/{revision}/'
                                          '{package}/{path}#L{lineno}')

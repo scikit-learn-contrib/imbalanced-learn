@@ -44,7 +44,7 @@ class BaseSMOTE(BaseOverSampler):
                  k_neighbors=5,
                  n_jobs=1,
                  ratio=None):
-        super(BaseSMOTE, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.k_neighbors = k_neighbors
@@ -314,14 +314,14 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                  n_jobs=1,
                  m_neighbors=10,
                  kind='borderline-1'):
-        super(BorderlineSMOTE, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, random_state=random_state,
             k_neighbors=k_neighbors, n_jobs=n_jobs, ratio=None)
         self.m_neighbors = m_neighbors
         self.kind = kind
 
     def _validate_estimator(self):
-        super(BorderlineSMOTE, self)._validate_estimator()
+        super()._validate_estimator()
         self.nn_m_ = check_neighbors_object(
             'k_neighbors', self.k_neighbors, additional_neighbor=1)
         self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
@@ -496,7 +496,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                  m_neighbors=10,
                  svm_estimator=None,
                  out_step=0.5):
-        super(SVMSMOTE, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, random_state=random_state,
             k_neighbors=k_neighbors, n_jobs=n_jobs, ratio=None)
         self.m_neighbors = m_neighbors
@@ -504,7 +504,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
         self.out_step = out_step
 
     def _validate_estimator(self):
-        super(SVMSMOTE, self)._validate_estimator()
+        super()._validate_estimator()
         self.nn_m_ = check_neighbors_object(
             'k_neighbors', self.k_neighbors, additional_neighbor=1)
         self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
@@ -952,7 +952,7 @@ class SMOTENC(SMOTE):
 
     def __init__(self, categorical_features, sampling_strategy='auto',
                  random_state=None, k_neighbors=5, n_jobs=1):
-        super(SMOTENC, self).__init__(sampling_strategy=sampling_strategy,
+        super().__init__(sampling_strategy=sampling_strategy,
                                       random_state=random_state,
                                       k_neighbors=k_neighbors,
                                       ratio=None)
@@ -968,7 +968,7 @@ class SMOTENC(SMOTE):
         return X, y, binarize_y
 
     def _validate_estimator(self):
-        super(SMOTENC, self)._validate_estimator()
+        super()._validate_estimator()
         categorical_features = np.asarray(self.categorical_features)
         if categorical_features.dtype.name == 'bool':
             self.categorical_features_ = np.flatnonzero(categorical_features)
@@ -1024,7 +1024,7 @@ class SMOTENC(SMOTE):
                       self.median_std_ / 2)
         X_encoded = sparse.hstack((X_continuous, X_ohe), format='csr')
 
-        X_resampled, y_resampled = super(SMOTENC, self)._fit_resample(
+        X_resampled, y_resampled = super()._fit_resample(
             X_encoded, y)
 
         # reverse the encoding of the categorical features
@@ -1067,7 +1067,7 @@ class SMOTENC(SMOTE):
         of the majority class.
         """
         rng = check_random_state(self.random_state)
-        sample = super(SMOTENC, self)._generate_sample(X, nn_data, nn_num,
+        sample = super()._generate_sample(X, nn_data, nn_num,
                                                        row, col, step)
         # To avoid conversion and since there is only few samples used, we
         # convert those samples to dense array.

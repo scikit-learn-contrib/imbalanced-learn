@@ -4,7 +4,7 @@
 # License: MIT
 
 
-class Substitution(object):
+class Substitution:
     """Decorate a function's or a class' docstring to perform string
     substitution on it.
 

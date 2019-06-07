@@ -115,7 +115,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
     def __init__(self, base_estimator=None, n_estimators=50, learning_rate=1.,
                  algorithm='SAMME.R', sampling_strategy='auto',
                  replacement=False, random_state=None):
-        super(RUSBoostClassifier, self).__init__(
+        super().__init__(
             base_estimator=base_estimator,
             n_estimators=n_estimators,
             learning_rate=learning_rate,
@@ -148,7 +148,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
         """
         self.samplers_ = []
         self.pipelines_ = []
-        super(RUSBoostClassifier, self).fit(X, y, sample_weight)
+        super().fit(X, y, sample_weight)
         return self
 
     def _validate_estimator(self, default=DecisionTreeClassifier()):
@@ -156,11 +156,11 @@ class RUSBoostClassifier(AdaBoostClassifier):
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
             raise ValueError("n_estimators must be an integer, "
-                             "got {0}.".format(type(self.n_estimators)))
+                             "got {}.".format(type(self.n_estimators)))
 
         if self.n_estimators <= 0:
             raise ValueError("n_estimators must be greater than zero, "
-                             "got {0}.".format(self.n_estimators))
+                             "got {}.".format(self.n_estimators))
 
         if self.base_estimator is not None:
             self.base_estimator_ = clone(self.base_estimator)
@@ -177,8 +177,8 @@ class RUSBoostClassifier(AdaBoostClassifier):
         sub-estimators.
         """
         estimator = clone(self.base_estimator_)
-        estimator.set_params(**dict((p, getattr(self, p))
-                                    for p in self.estimator_params))
+        estimator.set_params(**{p: getattr(self, p)
+                                    for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
         if random_state is not None:

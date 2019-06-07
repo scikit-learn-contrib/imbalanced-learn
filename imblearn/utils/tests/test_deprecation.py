@@ -7,7 +7,7 @@ from imblearn.utils.deprecation import deprecate_parameter
 from imblearn.utils.testing import warns
 
 
-class Sampler(object):
+class Sampler:
     def __init__(self):
         self.a = 'something'
         self.b = 'something'

@@ -130,7 +130,7 @@ def all_estimators(include_meta_estimators=False,
 
 @contextmanager
 def warns(expected_warning, match=None):
-    """Assert that a warning is raised with an optional matching pattern
+    r"""Assert that a warning is raised with an optional matching pattern
 
     Assert that a code block/function call warns ``expected_warning``
     and raise a failure exception otherwise. It can be used within a context

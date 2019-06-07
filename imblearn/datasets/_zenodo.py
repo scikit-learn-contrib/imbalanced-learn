@@ -47,18 +47,14 @@ References
 from collections import OrderedDict
 import tarfile
 from io import BytesIO
+from os import makedirs
 from os.path import join, isfile
-try:
-    from urllib2 import urlopen
-except ImportError:
-    from urllib.request import urlopen
+from urllib.request import urlopen
 
 import numpy as np
 
 from sklearn.datasets import get_data_home
 from sklearn.datasets.base import Bunch
-from sklearn.utils.fixes import makedirs
-from sklearn.externals import six
 from sklearn.utils import check_random_state
 
 URL = ('https://zenodo.org/record/61452/files/'
@@ -211,7 +207,7 @@ def fetch_datasets(data_home=None,
         list_data = MAP_NAME_ID.keys()
         filter_data_ = []
         for it in filter_data:
-            if isinstance(it, six.string_types):
+            if isinstance(it, str):
                 if it not in list_data:
                     raise ValueError('{} is not a dataset available. '
                                      'The available datasets are {}'.format(

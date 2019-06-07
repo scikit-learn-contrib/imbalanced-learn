@@ -103,7 +103,7 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
                  replacement=False,
                  n_subsets=10,
                  ratio=None):
-        super(EasyEnsemble, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
@@ -235,7 +235,7 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
     def __init__(self, n_estimators=10, base_estimator=None, warm_start=False,
                  sampling_strategy='auto', replacement=False, n_jobs=1,
                  random_state=None, verbose=0):
-        super(EasyEnsembleClassifier, self).__init__(
+        super().__init__(
             base_estimator,
             n_estimators=n_estimators,
             max_samples=1.0,
@@ -255,11 +255,11 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
             raise ValueError("n_estimators must be an integer, "
-                             "got {0}.".format(type(self.n_estimators)))
+                             "got {}.".format(type(self.n_estimators)))
 
         if self.n_estimators <= 0:
             raise ValueError("n_estimators must be greater than zero, "
-                             "got {0}.".format(self.n_estimators))
+                             "got {}.".format(self.n_estimators))
 
         if self.base_estimator is not None:
             base_estimator = clone(self.base_estimator)
