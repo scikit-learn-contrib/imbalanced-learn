@@ -26,7 +26,7 @@ def imbalanced_dataset():
 def test_balanced_random_forest_error(imbalanced_dataset, boosting_params,
                                       err_msg):
     rusboost = RUSBoostClassifier(**boosting_params)
-    with pytest.raises(ValueError, message=err_msg):
+    with pytest.raises(ValueError, match=err_msg):
         rusboost.fit(*imbalanced_dataset)
 
 
