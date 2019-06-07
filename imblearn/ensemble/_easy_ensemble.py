@@ -91,7 +91,8 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> ee = EasyEnsemble(random_state=42) # doctest: +SKIP
     >>> X_res, y_res = ee.fit_resample(X, y) # doctest: +SKIP
-    >>> print('Resampled dataset shape %s' % Counter(y_res[0])) # doctest: +SKIP
+    >>> print('Resampled dataset shape %s' % Counter(y_res[0]))
+    ... # doctest: +SKIP
     Resampled dataset shape Counter({{0: 100, 1: 100}})
 
     """

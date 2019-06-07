@@ -200,6 +200,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
         if self.return_indices:
             return (safe_indexing(X, self.sample_indices_),
-                    safe_indexing(y, self.sample_indices_), self.sample_indices_)
+                    safe_indexing(y, self.sample_indices_),
+                    self.sample_indices_)
         return (safe_indexing(X, self.sample_indices_),
                 safe_indexing(y, self.sample_indices_))

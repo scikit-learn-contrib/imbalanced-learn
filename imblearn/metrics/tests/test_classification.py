@@ -232,8 +232,10 @@ def test_geometric_mean_average(y_true, y_pred, average, expected_gmean):
 @pytest.mark.parametrize(
     "y_true, y_pred, sample_weight, average, expected_gmean",
     [([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], None, 'multiclass', 0.707),
-     ([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], [1, 2, 1, 1, 2, 1], 'multiclass', 0.707),
-     ([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], [1, 2, 1, 1, 2, 1], 'weighted', 0.333)]
+     ([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], [1, 2, 1, 1, 2, 1],
+      'multiclass', 0.707),
+     ([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], [1, 2, 1, 1, 2, 1],
+      'weighted', 0.333)]
 )
 def test_geometric_mean_sample_weight(y_true, y_pred, sample_weight, average,
                                       expected_gmean):

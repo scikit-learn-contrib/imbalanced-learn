@@ -311,7 +311,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         """
         estimator = clone(self.base_estimator_)
         estimator.set_params(**{p: getattr(self, p)
-                                    for p in self.estimator_params})
+                                for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
         if random_state is not None:

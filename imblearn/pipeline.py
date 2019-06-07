@@ -162,7 +162,7 @@ class Pipeline(pipeline.Pipeline):
         fit_resample_one_cached = memory.cache(_fit_resample_one)
 
         fit_params_steps = {name: {} for name, step in self.steps
-                                if step is not None}
+                            if step is not None}
         for pname, pval in fit_params.items():
             step, param = pname.split('__', 1)
             fit_params_steps[step][param] = pval
@@ -622,7 +622,8 @@ def make_pipeline(*steps, **kwargs):
     Pipeline(memory=None,
              steps=[('standardscaler',
                      StandardScaler(copy=True, with_mean=True, with_std=True)),
-                    ('gaussiannb', GaussianNB(priors=None, var_smoothing=1e-09))],
+                    ('gaussiannb',
+                     GaussianNB(priors=None, var_smoothing=1e-09))],
              verbose=False)
     """
     memory = kwargs.pop('memory', None)

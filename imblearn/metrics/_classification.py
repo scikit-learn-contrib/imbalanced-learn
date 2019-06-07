@@ -724,7 +724,7 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
             sel_params = params_sens_spec.intersection(set(tags_scoring_func))
             # Create a sub dictionary
             tags_scoring_func = {k: tags_scoring_func[k]
-                                     for k in sel_params}
+                                 for k in sel_params}
             # Check if the metric is the geometric mean
             if scoring_func.__name__ == 'geometric_mean_score':
                 if 'average' in tags_scoring_func:
