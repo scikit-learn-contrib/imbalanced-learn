@@ -12,7 +12,6 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 from sklearn.base import BaseEstimator
-from sklearn.externals import six
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets

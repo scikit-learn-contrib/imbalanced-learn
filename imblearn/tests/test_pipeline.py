@@ -12,6 +12,8 @@ import time
 import numpy as np
 from pytest import raises
 
+from joblib import Memory
+
 from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_array_almost_equal
 from sklearn.utils.testing import assert_allclose
@@ -25,7 +27,6 @@ from sklearn.cluster import KMeans
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.datasets import load_iris, make_classification
 from sklearn.preprocessing import StandardScaler
-from sklearn.externals.joblib import Memory
 
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (RandomUnderSampler,
@@ -492,7 +493,8 @@ def test_set_pipeline_step_none():
         'last': mult5,
         'memory': None,
         'm2__mult': 2,
-        'last__mult': 5
+        'last__mult': 5,
+        'verbose': False
     }
     assert pipeline.get_params(deep=True) == expected_params
 

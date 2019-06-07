@@ -12,13 +12,14 @@ from numpy import float32 as DTYPE
 from numpy import float64 as DOUBLE
 from scipy.sparse import issparse
 
+from joblib import Parallel, delayed
+
 from sklearn.base import clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble.base import _set_random_states
 from sklearn.ensemble.forest import _parallel_build_trees
 from sklearn.exceptions import DataConversionWarning
-from sklearn.externals.joblib import Parallel, delayed
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import safe_indexing
