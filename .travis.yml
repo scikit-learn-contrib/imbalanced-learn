@@ -18,7 +18,6 @@ addons:
     packages:
       - python3-numpy
       - python3-scipy
-      - python3-pandas
 env:
   global:
     # Directory where tests are run from

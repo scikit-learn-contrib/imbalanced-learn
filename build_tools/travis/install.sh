@@ -68,7 +68,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     source testvenv/bin/activate
 
     pip3 install scikit-learn
-    pip3 install keras tensorflow
+    pip3 install pandas keras tensorflow
     pip3 install pytest pytest-cov codecov sphinx numpydoc
 
 fi

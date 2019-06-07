@@ -383,7 +383,7 @@ def test_classification_report_imbalanced_multiclass_with_long_string_label():
 
 @pytest.mark.parametrize(
     "score, expected_score",
-    [(accuracy_score, 0.54756), (jaccard_score, 0.54756),
+    [(accuracy_score, 0.54756), (jaccard_score, 0.33176),
      (precision_score, 0.65025), (recall_score, 0.41616)]
 )
 def test_iba_sklearn_metrics(score, expected_score):
