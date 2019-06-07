@@ -170,3 +170,6 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         y_resampled = np.hstack(y_resampled)
 
         return X_resampled, np.array(y_resampled, dtype=y.dtype)
+
+    def _more_tags(self):
+        return {'sample_indices': False}
