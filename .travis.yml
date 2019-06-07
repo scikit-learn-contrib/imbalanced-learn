@@ -16,8 +16,10 @@ cache:
 addons:
   apt:
     packages:
-      - python-numpy
-      - python-scipy
+      - python3-numpy
+      - python3-scipy
+      - python3-sklearn
+      - python3-pandas
 env:
   global:
     # Directory where tests are run from

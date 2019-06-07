@@ -67,9 +67,8 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     virtualenv --system-site-packages --python=python3 testvenv
     source testvenv/bin/activate
 
-    pip install scikit-learn
-    pip install pandas keras tensorflow
-    pip install pytest pytest-cov codecov sphinx numpydoc
+    pip3 install keras tensorflow
+    pip3 install pytest pytest-cov codecov sphinx numpydoc
 
 fi
 
