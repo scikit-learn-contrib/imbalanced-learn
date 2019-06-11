@@ -64,6 +64,11 @@ Bug
   estimator.
   :pr:`554` by :user:`Oliver Rausch <orausch>`.
 
+- Fix bug in :class:`imblearn.over_sampling.SVMSMOTE` and
+  :class:`imblearn.over_sampling.BorderlineSMOTE` where the default parameter
+  of ``n_neighbors`` was not set properly.
+  :pr:`578` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 - Fix bug by changing the default depth in
   :class:`imblearn.ensemble.RUSBoostClassifier` to get a decision stump as a
   weak learner as in the original paper.
