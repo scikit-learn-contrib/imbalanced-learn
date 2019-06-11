@@ -175,8 +175,6 @@ class Pipeline(pipeline.Pipeline):
         for pname, pval in fit_params.items():
             step, param = pname.split('__', 1)
             fit_params_steps[step][param] = pval
-        Xt = X
-        yt = y
         for step_idx, name, transformer in self._iter(with_final=False):
             if hasattr(memory, 'location'):
                 # joblib >= 0.12
@@ -197,19 +195,19 @@ class Pipeline(pipeline.Pipeline):
             # Fit or load from cache the current transfomer
             if (hasattr(cloned_transformer, "transform") or
                     hasattr(cloned_transformer, "fit_transform")):
-                Xt, fitted_transformer = fit_transform_one_cached(
-                    cloned_transformer, None, Xt, yt,
+                X, fitted_transformer = fit_transform_one_cached(
+                    cloned_transformer, None, X, y,
                     **fit_params_steps[name])
             elif hasattr(cloned_transformer, "fit_resample"):
-                Xt, yt, fitted_transformer = fit_resample_one_cached(
-                    cloned_transformer, Xt, yt, **fit_params_steps[name])
+                X, y, fitted_transformer = fit_resample_one_cached(
+                    cloned_transformer, X, y, **fit_params_steps[name])
             # Replace the transformer of the step with the fitted
             # transformer. This is necessary when loading the transformer
             # from the cache.
             self.steps[step_idx] = (name, fitted_transformer)
         if self._final_estimator == 'passthrough':
-            return Xt, yt, {}
-        return Xt, yt, fit_params_steps[self.steps[-1][0]]
+            return X, y, {}
+        return X, y, fit_params_steps[self.steps[-1][0]]
 
     def fit(self, X, y=None, **fit_params):
         """Fit the model
@@ -406,6 +404,26 @@ class Pipeline(pipeline.Pipeline):
         return self.steps[-1][-1].predict_proba(Xt)
 
     @if_delegate_has_method(delegate='_final_estimator')
+    def score_samples(self, X):
+        """Apply transforms, and score_samples of the final estimator.
+        Parameters
+        ----------
+        X : iterable
+            Data to predict on. Must fulfill input requirements of first step
+            of the pipeline.
+        Returns
+        -------
+        y_score : ndarray, shape (n_samples,)
+        """
+        Xt = X
+        for _, _, transformer in self._iter(with_final=False):
+            if hasattr(transformer, "fit_resample"):
+                pass
+            else:
+                Xt = transformer.transform(Xt)
+        return self.steps[-1][-1].score_samples(Xt)
+
+    @if_delegate_has_method(delegate='_final_estimator')
     def decision_function(self, X):
         """Apply transformers/samplers, and decision_function of the final
         estimator
@@ -517,13 +535,6 @@ class Pipeline(pipeline.Pipeline):
                 Xt = transform.inverse_transform(Xt)
         return Xt
 
-    # need to overwrite sklearn's _final_estimator since sklearn supports
-    # 'passthrough', but imblearn does not.
-    @property
-    def _final_estimator(self):
-        estimator = self.steps[-1][1]
-        return estimator
-
     @if_delegate_has_method(delegate='_final_estimator')
     def score(self, X, y=None, sample_weight=None):
         """Apply transformers/samplers, and score with the final estimator
@@ -610,7 +621,7 @@ def make_pipeline(*steps, **kwargs):
     >>> from sklearn.naive_bayes import GaussianNB
     >>> from sklearn.preprocessing import StandardScaler
     >>> make_pipeline(StandardScaler(), GaussianNB(priors=None))
-    ...     # doctest: +NORMALIZE_WHITESPACE
+    ... # doctest: +NORMALIZE_WHITESPACE
     Pipeline(memory=None,
              steps=[('standardscaler',
                      StandardScaler(copy=True, with_mean=True, with_std=True)),

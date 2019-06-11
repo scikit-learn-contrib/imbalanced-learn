@@ -21,6 +21,7 @@ from sklearn.utils.testing import assert_allclose
 
 from sklearn.base import clone, BaseEstimator
 from sklearn.svm import SVC
+from sklearn.neighbors import LocalOutlierFactor
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import LinearRegression
@@ -1159,3 +1160,44 @@ def test_resampler_last_stage_passthrough():
     rus = RandomUnderSampler(random_state=42)
     pipe = make_pipeline(rus, None)
     pipe.fit_resample(X, y)
+
+
+def test_pipeline_score_samples_pca_lof():
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.3, 0.7],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=500,
+        random_state=0)
+    # Test that the score_samples method is implemented on a pipeline.
+    # Test that the score_samples method on pipeline yields same results as
+    # applying transform and score_samples steps separately.
+    rus = RandomUnderSampler(random_state=42)
+    pca = PCA(svd_solver='full', n_components='mle', whiten=True)
+    lof = LocalOutlierFactor(novelty=True)
+    pipe = Pipeline([('rus', rus), ('pca', pca), ('lof', lof)])
+    pipe.fit(X, y)
+    # Check the shapes
+    assert pipe.score_samples(X).shape == (X.shape[0],)
+    # Check the values
+    X_res, _ = rus.fit_resample(X, y)
+    lof.fit(pca.fit_transform(X_res))
+    assert_allclose(pipe.score_samples(X), lof.score_samples(pca.transform(X)))
+
+
+def test_score_samples_on_pipeline_without_score_samples():
+    X = np.array([[1], [2]])
+    y = np.array([1, 2])
+    # Test that a pipeline does not have score_samples method when the final
+    # step of the pipeline does not have score_samples defined.
+    pipe = make_pipeline(LogisticRegression())
+    pipe.fit(X, y)
+    with pytest.raises(AttributeError,
+                       match="'LogisticRegression' object has no attribute "
+                             "'score_samples'"):
+        pipe.score_samples(X)
