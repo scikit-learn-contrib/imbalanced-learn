@@ -186,6 +186,9 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                     idx_under)
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
+    def _more_tags(self):
+        return {'sample_indices': True}
+
 
 @Substitution(
     sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
@@ -377,6 +380,9 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             return X_resampled, y_resampled, self.sample_indices_
         return X_resampled, y_resampled
 
+    def _more_tags(self):
+        return {'sample_indices': True}
+
 
 @Substitution(
     sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
@@ -564,3 +570,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
         if self.return_indices:
             return X_resampled, y_resampled, self.sample_indices_
         return X_resampled, y_resampled
+
+    def _more_tags(self):
+        return {'sample_indices': True}

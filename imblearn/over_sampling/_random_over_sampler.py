@@ -119,3 +119,9 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                     safe_indexing(y, sample_indices), sample_indices)
         return (safe_indexing(X, sample_indices),
                 safe_indexing(y, sample_indices))
+
+    def _more_tags(self):
+        # TODO: remove the str tag once the following PR is merged:
+        # https://github.com/scikit-learn/scikit-learn/pull/14043
+        return {'X_types': ['2darray', 'str', 'string'],
+                'sample_indices': True}
