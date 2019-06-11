@@ -34,38 +34,10 @@ from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import NearMiss, ClusterCentroids
 
 DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE']
-SUPPORT_STRING = ['RandomUnderSampler', 'RandomOverSampler']
-HAVE_SAMPLE_INDICES = [
-    'RandomOverSampler', 'RandomUnderSampler', 'InstanceHardnessThreshold',
-    'NearMiss', 'TomekLinks', 'EditedNearestNeighbours',
-    'RepeatedEditedNearestNeighbours', 'AllKNN', 'OneSidedSelection',
-    'CondensedNearestNeighbour', 'NeighbourhoodCleaningRule']
 # FIXME: remove in 0.6
 DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
                           'RepeatedEditedNearestNeighbours', 'AllKNN',
                           'NeighbourhoodCleaningRule', 'TomekLinks')
-
-
-def monkey_patch_check_dtype_object(name, estimator_orig):
-    # check that estimators treat dtype object as numeric if possible
-    rng = np.random.RandomState(0)
-    X = rng.rand(40, 10).astype(object)
-    y = np.array([0] * 10 + [1] * 30, dtype=np.int)
-    estimator = clone(estimator_orig)
-    estimator.fit(X, y)
-
-    try:
-        estimator.fit(X, y.astype(object))
-    except Exception as e:
-        if "Unknown label type" not in str(e):
-            raise
-
-    if name not in SUPPORT_STRING:
-        X[0, 0] = {'foo': 'bar'}
-        msg = "argument must be a string or a number"
-        assert_raises_regex(TypeError, msg, estimator.fit, X, y)
-    else:
-        estimator.fit(X, y)
 
 
 def _yield_sampler_checks(name, Estimator):
@@ -106,10 +78,6 @@ def check_estimator(Estimator, run_sampler_tests=True):
         Will run or not the samplers tests.
     """
     name = Estimator.__name__
-    # monkey patch check_dtype_object for the sampler allowing strings
-    import sklearn.utils.estimator_checks
-    sklearn.utils.estimator_checks.check_dtype_object = \
-        monkey_patch_check_dtype_object
     # scikit-learn common tests
     sklearn_check_estimator(Estimator)
     check_parameters_default_constructible(name, Estimator)
@@ -369,7 +337,8 @@ def check_samplers_sample_indices(name, Sampler):
                                weights=[0.2, 0.3, 0.5], random_state=0)
     sampler = Sampler()
     sampler.fit_resample(X, y)
-    if name in HAVE_SAMPLE_INDICES:
-        assert hasattr(sampler, 'sample_indices_')
+    sample_indices = sampler._get_tags().get('sample_indices', None)
+    if sample_indices:
+        assert hasattr(sampler, 'sample_indices_') is sample_indices
     else:
         assert not hasattr(sampler, 'sample_indices_')

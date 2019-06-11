@@ -189,3 +189,6 @@ KNeighborsClassifier(n_neighbors=1))
         if self.return_indices:
             return (X_cleaned, y_cleaned, self.sample_indices_)
         return X_cleaned, y_cleaned
+
+    def _more_tags(self):
+        return {'sample_indices': True}

@@ -220,3 +220,6 @@ CondensedNearestNeighbour # doctest: +SKIP
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
                     idx_under)
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+
+    def _more_tags(self):
+        return {'sample_indices': True}
