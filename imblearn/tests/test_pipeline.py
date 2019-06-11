@@ -10,6 +10,7 @@ import shutil
 import time
 
 import numpy as np
+import pytest
 from pytest import raises
 
 from joblib import Memory
@@ -20,6 +21,7 @@ from sklearn.utils.testing import assert_allclose
 
 from sklearn.base import clone, BaseEstimator
 from sklearn.svm import SVC
+from sklearn.neighbors import LocalOutlierFactor
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import LinearRegression
@@ -178,13 +180,25 @@ class FitTransformSample(NoTrans):
         return X
 
 
+def test_pipeline_init_tuple():
+    # Pipeline accepts steps as tuple
+    X = np.array([[1, 2]])
+    pipe = Pipeline((('transf', Transf()), ('clf', FitParamT())))
+    pipe.fit(X, y=None)
+    pipe.score(X)
+    pipe.set_params(transf='passthrough')
+    pipe.fit(X, y=None)
+    pipe.score(X)
+
+
 def test_pipeline_init():
     # Test the various init parameters of the pipeline.
     with raises(TypeError):
         Pipeline()
     # Check that we can't instantiate pipelines with objects without fit
     # method
-    error_regex = 'Last step of Pipeline should implement fit. .*NoFit.*'
+    error_regex = ("Last step of Pipeline should implement fit or be the "
+                   "string 'passthrough'")
     with raises(TypeError, match=error_regex):
         Pipeline([('clf', NoFit())])
     # Smoke test with only an estimator
@@ -208,7 +222,7 @@ def test_pipeline_init():
 
     # Check that we can't instantiate with non-transformers on the way
     # Note that NoTrans implements fit, but not transform
-    error_regex = 'implement fit and transform or sample'
+    error_regex = 'implement fit and transform or fit_resample'
     with raises(TypeError, match=error_regex):
         Pipeline([('t', NoTrans()), ('svc', clf)])
 
@@ -463,7 +477,27 @@ def test_set_pipeline_steps():
         pipeline.fit_transform([[1]], [1])
 
 
-def test_set_pipeline_step_none():
+@pytest.mark.parametrize('passthrough', [None, 'passthrough'])
+def test_pipeline_correctly_adjusts_steps(passthrough):
+    X = np.array([[1]])
+    y = np.array([1])
+    mult2 = Mult(mult=2)
+    mult3 = Mult(mult=3)
+    mult5 = Mult(mult=5)
+    pipeline = Pipeline([
+        ('m2', mult2),
+        ('bad', passthrough),
+        ('m3', mult3),
+        ('m5', mult5)
+    ])
+    pipeline.fit(X, y)
+    expected_names = ['m2', 'bad', 'm3', 'm5']
+    actual_names = [name for name, _ in pipeline.steps]
+    assert expected_names == actual_names
+
+
+@pytest.mark.parametrize('passthrough', [None, 'passthrough'])
+def test_set_pipeline_step_passthrough(passthrough):
     # Test setting Pipeline steps to None
     X = np.array([[1]])
     y = np.array([1])
@@ -481,7 +515,7 @@ def test_set_pipeline_step_none():
     assert_array_equal([exp], pipeline.fit(X).predict(X))
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
 
-    pipeline.set_params(m3=None)
+    pipeline.set_params(m3=passthrough)
     exp = 2 * 5
     assert_array_equal([[exp]], pipeline.fit_transform(X, y))
     assert_array_equal([exp], pipeline.fit(X).predict(X))
@@ -489,7 +523,7 @@ def test_set_pipeline_step_none():
     expected_params = {
         'steps': pipeline.steps,
         'm2': mult2,
-        'm3': None,
+        'm3': passthrough,
         'last': mult5,
         'memory': None,
         'm2__mult': 2,
@@ -498,7 +532,7 @@ def test_set_pipeline_step_none():
     }
     assert pipeline.get_params(deep=True) == expected_params
 
-    pipeline.set_params(m2=None)
+    pipeline.set_params(m2=passthrough)
     exp = 5
     assert_array_equal([[exp]], pipeline.fit_transform(X, y))
     assert_array_equal([exp], pipeline.fit(X).predict(X))
@@ -519,7 +553,7 @@ def test_set_pipeline_step_none():
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
 
     pipeline = make()
-    pipeline.set_params(last=None)
+    pipeline.set_params(last=passthrough)
     # mult2 and mult3 are active
     exp = 6
     pipeline.fit(X, y)
@@ -530,9 +564,9 @@ def test_set_pipeline_step_none():
     with raises(AttributeError, match="has no attribute 'predict'"):
         getattr(pipeline, 'predict')
 
-    # Check None step at construction time
+    # Check 'passthrough' step at construction time
     exp = 2 * 5
-    pipeline = Pipeline([('m2', mult2), ('m3', None), ('last', mult5)])
+    pipeline = Pipeline([('m2', mult2), ('m3', passthrough), ('last', mult5)])
     assert_array_equal([[exp]], pipeline.fit_transform(X, y))
     assert_array_equal([exp], pipeline.fit(X).predict(X))
     assert_array_equal(X, pipeline.inverse_transform([[exp]]))
@@ -549,7 +583,8 @@ def test_pipeline_ducktyping():
     pipeline.transform
     pipeline.inverse_transform
 
-    pipeline = make_pipeline(None)
+    pipeline = make_pipeline('passthrough')
+    assert pipeline.steps[0] == ('passthrough', 'passthrough')
     assert not hasattr(pipeline, 'predict')
     pipeline.transform
     pipeline.inverse_transform
@@ -610,7 +645,7 @@ def test_pipeline_wrong_memory():
     cached_pipe = Pipeline(
         [('transf', DummyTransf()), ('svc', SVC(gamma='scale'))],
         memory=memory)
-    error_regex = ("string or have the same interface as")
+    error_regex = "string or have the same interface as"
     with raises(ValueError, match=error_regex):
         cached_pipe.fit(X, y)
 
@@ -1125,3 +1160,44 @@ def test_resampler_last_stage_passthrough():
     rus = RandomUnderSampler(random_state=42)
     pipe = make_pipeline(rus, None)
     pipe.fit_resample(X, y)
+
+
+def test_pipeline_score_samples_pca_lof():
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.3, 0.7],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=500,
+        random_state=0)
+    # Test that the score_samples method is implemented on a pipeline.
+    # Test that the score_samples method on pipeline yields same results as
+    # applying transform and score_samples steps separately.
+    rus = RandomUnderSampler(random_state=42)
+    pca = PCA(svd_solver='full', n_components='mle', whiten=True)
+    lof = LocalOutlierFactor(novelty=True)
+    pipe = Pipeline([('rus', rus), ('pca', pca), ('lof', lof)])
+    pipe.fit(X, y)
+    # Check the shapes
+    assert pipe.score_samples(X).shape == (X.shape[0],)
+    # Check the values
+    X_res, _ = rus.fit_resample(X, y)
+    lof.fit(pca.fit_transform(X_res))
+    assert_allclose(pipe.score_samples(X), lof.score_samples(pca.transform(X)))
+
+
+def test_score_samples_on_pipeline_without_score_samples():
+    X = np.array([[1], [2]])
+    y = np.array([1, 2])
+    # Test that a pipeline does not have score_samples method when the final
+    # step of the pipeline does not have score_samples defined.
+    pipe = make_pipeline(LogisticRegression())
+    pipe.fit(X, y)
+    with pytest.raises(AttributeError,
+                       match="'LogisticRegression' object has no attribute "
+                             "'score_samples'"):
+        pipe.score_samples(X)

@@ -15,6 +15,9 @@ composite estimator, as a chain of transforms, samples and estimators.
 
 from __future__ import division
 
+from collections import defaultdict
+from itertools import islice
+
 from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.utils.metaestimators import if_delegate_has_method
@@ -38,6 +41,9 @@ class Pipeline(pipeline.Pipeline):
     cross-validated together while setting different parameters.
     For this, it enables setting parameters of the various steps using their
     names and the parameter name separated by a '__', as in the example below.
+    A step's estimator may be replaced entirely by setting the parameter
+    with its name to another estimator, or a transformer removed by setting
+    it to 'passthrough' or ``None``.
 
     Parameters
     ----------
@@ -121,7 +127,7 @@ class Pipeline(pipeline.Pipeline):
         estimator = estimators[-1]
 
         for t in transformers:
-            if t is None:
+            if t is None or t == 'passthrough':
                 continue
             if (not (hasattr(t, "fit") or
                      hasattr(t, "fit_transform") or
@@ -130,8 +136,9 @@ class Pipeline(pipeline.Pipeline):
                          hasattr(t, "fit_resample"))):
                 raise TypeError(
                     "All intermediate steps of the chain should "
-                    "be estimators that implement fit and transform or sample "
-                    "(but not both) '%s' (type %s) doesn't)" % (t, type(t)))
+                    "be estimators that implement fit and transform or "
+                    "fit_resample (but not both) or be a string 'passthrough' "
+                    "'%s' (type %s) doesn't)" % (t, type(t)))
 
             if (hasattr(t, "fit_resample") and (hasattr(t, "fit_transform") or
                                                 hasattr(t, "transform"))):
@@ -146,14 +153,16 @@ class Pipeline(pipeline.Pipeline):
                     " Pipelines")
 
         # We allow last estimator to be None as an identity transformation
-        if estimator is not None and not hasattr(estimator, "fit"):
-            raise TypeError("Last step of Pipeline should implement fit. "
-                            "'%s' (type %s) doesn't" % (estimator,
-                                                        type(estimator)))
+        if (estimator is not None and estimator != 'passthrough'
+                and not hasattr(estimator, "fit")):
+            raise TypeError("Last step of Pipeline should implement fit or be "
+                            "the string 'passthrough'. '%s' (type %s) doesn't"
+                            % (estimator, type(estimator)))
 
     # Estimator interface
 
     def _fit(self, X, y=None, **fit_params):
+        self.steps = list(self.steps)
         self._validate_steps()
         # Setup the memory
         memory = check_memory(self.memory)
@@ -166,44 +175,39 @@ class Pipeline(pipeline.Pipeline):
         for pname, pval in fit_params.items():
             step, param = pname.split('__', 1)
             fit_params_steps[step][param] = pval
-        Xt = X
-        yt = y
-        for step_idx, (name, transformer) in enumerate(self.steps[:-1]):
-            if transformer is None:
-                pass
-            else:
-                if hasattr(memory, 'location'):
-                    # joblib >= 0.12
-                    if memory.location is None:
-                        # we do not clone when caching is disabled to
-                        # preserve backward compatibility
-                        cloned_transformer = transformer
-                    else:
-                        cloned_transformer = clone(transformer)
-                elif hasattr(memory, 'cachedir'):
-                    # joblib < 0.11
-                    if memory.cachedir is None:
-                        # we do not clone when caching is disabled to
-                        # preserve backward compatibility
-                        cloned_transformer = transformer
+        for step_idx, name, transformer in self._iter(with_final=False):
+            if hasattr(memory, 'location'):
+                # joblib >= 0.12
+                if memory.location is None:
+                    # we do not clone when caching is disabled to
+                    # preserve backward compatibility
+                    cloned_transformer = transformer
                 else:
                     cloned_transformer = clone(transformer)
-                # Fit or load from cache the current transfomer
-                if (hasattr(cloned_transformer, "transform") or
-                        hasattr(cloned_transformer, "fit_transform")):
-                    Xt, fitted_transformer = fit_transform_one_cached(
-                        cloned_transformer, None, Xt, yt,
-                        **fit_params_steps[name])
-                elif hasattr(cloned_transformer, "fit_resample"):
-                    Xt, yt, fitted_transformer = fit_resample_one_cached(
-                        cloned_transformer, Xt, yt, **fit_params_steps[name])
-                # Replace the transformer of the step with the fitted
-                # transformer. This is necessary when loading the transformer
-                # from the cache.
-                self.steps[step_idx] = (name, fitted_transformer)
-        if self._final_estimator is None:
-            return Xt, yt, {}
-        return Xt, yt, fit_params_steps[self.steps[-1][0]]
+            elif hasattr(memory, 'cachedir'):
+                # joblib < 0.11
+                if memory.cachedir is None:
+                    # we do not clone when caching is disabled to
+                    # preserve backward compatibility
+                    cloned_transformer = transformer
+            else:
+                cloned_transformer = clone(transformer)
+            # Fit or load from cache the current transfomer
+            if (hasattr(cloned_transformer, "transform") or
+                    hasattr(cloned_transformer, "fit_transform")):
+                X, fitted_transformer = fit_transform_one_cached(
+                    cloned_transformer, None, X, y,
+                    **fit_params_steps[name])
+            elif hasattr(cloned_transformer, "fit_resample"):
+                X, y, fitted_transformer = fit_resample_one_cached(
+                    cloned_transformer, X, y, **fit_params_steps[name])
+            # Replace the transformer of the step with the fitted
+            # transformer. This is necessary when loading the transformer
+            # from the cache.
+            self.steps[step_idx] = (name, fitted_transformer)
+        if self._final_estimator == 'passthrough':
+            return X, y, {}
+        return X, y, fit_params_steps[self.steps[-1][0]]
 
     def fit(self, X, y=None, **fit_params):
         """Fit the model
@@ -234,7 +238,7 @@ class Pipeline(pipeline.Pipeline):
 
         """
         Xt, yt, fit_params = self._fit(X, y, **fit_params)
-        if self._final_estimator is not None:
+        if self._final_estimator != 'passthrough':
             self._final_estimator.fit(Xt, yt, **fit_params)
         return self
 
@@ -268,7 +272,7 @@ class Pipeline(pipeline.Pipeline):
         """
         last_step = self._final_estimator
         Xt, yt, fit_params = self._fit(X, y, **fit_params)
-        if last_step is None:
+        if last_step == 'passthrough':
             return Xt
         elif hasattr(last_step, 'fit_transform'):
             return last_step.fit_transform(Xt, yt, **fit_params)
@@ -308,7 +312,7 @@ class Pipeline(pipeline.Pipeline):
         """
         last_step = self._final_estimator
         Xt, yt, fit_params = self._fit(X, y, **fit_params)
-        if last_step is None:
+        if last_step == 'passthrough':
             return Xt
         elif hasattr(last_step, 'fit_resample'):
             return last_step.fit_resample(Xt, yt, **fit_params)
@@ -338,9 +342,7 @@ class Pipeline(pipeline.Pipeline):
 
         """
         Xt = X
-        for _, transform in self.steps[:-1]:
-            if transform is None:
-                continue
+        for _, _, transform in self._iter(with_final=False):
             if hasattr(transform, "fit_resample"):
                 pass
             else:
@@ -394,14 +396,32 @@ class Pipeline(pipeline.Pipeline):
 
         """
         Xt = X
-        for _, transform in self.steps[:-1]:
-            if transform is None:
-                continue
+        for _, _, transform in self._iter(with_final=False):
             if hasattr(transform, "fit_resample"):
                 pass
             else:
                 Xt = transform.transform(Xt)
         return self.steps[-1][-1].predict_proba(Xt)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def score_samples(self, X):
+        """Apply transforms, and score_samples of the final estimator.
+        Parameters
+        ----------
+        X : iterable
+            Data to predict on. Must fulfill input requirements of first step
+            of the pipeline.
+        Returns
+        -------
+        y_score : ndarray, shape (n_samples,)
+        """
+        Xt = X
+        for _, _, transformer in self._iter(with_final=False):
+            if hasattr(transformer, "fit_resample"):
+                pass
+            else:
+                Xt = transformer.transform(Xt)
+        return self.steps[-1][-1].score_samples(Xt)
 
     @if_delegate_has_method(delegate='_final_estimator')
     def decision_function(self, X):
@@ -420,9 +440,7 @@ class Pipeline(pipeline.Pipeline):
 
         """
         Xt = X
-        for _, transform in self.steps[:-1]:
-            if transform is None:
-                continue
+        for _, _, transform in self._iter(with_final=False):
             if hasattr(transform, "fit_resample"):
                 pass
             else:
@@ -446,9 +464,7 @@ class Pipeline(pipeline.Pipeline):
 
         """
         Xt = X
-        for _, transform in self.steps[:-1]:
-            if transform is None:
-                continue
+        for _, _, transform in self._iter(with_final=False):
             if hasattr(transform, "fit_resample"):
                 pass
             else:
@@ -473,15 +489,13 @@ class Pipeline(pipeline.Pipeline):
         Xt : array-like, shape = [n_samples, n_transformed_features]
         """
         # _final_estimator is None or has transform, otherwise attribute error
-        if self._final_estimator is not None:
+        if self._final_estimator != 'passthrough':
             self._final_estimator.transform
         return self._transform
 
     def _transform(self, X):
         Xt = X
-        for name, transform in self.steps:
-            if transform is None:
-                continue
+        for _, _, transform in self._iter():
             if hasattr(transform, "fit_resample"):
                 pass
             else:
@@ -507,28 +521,19 @@ class Pipeline(pipeline.Pipeline):
         Xt : array-like, shape = [n_samples, n_features]
         """
         # raise AttributeError if necessary for hasattr behaviour
-        for name, transform in self.steps:
-            if transform is not None:
-                transform.inverse_transform
+        for _, _, transform in self._iter():
+            transform.inverse_transform
         return self._inverse_transform
 
     def _inverse_transform(self, X):
         Xt = X
-        for name, transform in self.steps[::-1]:
-            if transform is None:
-                continue
+        reverse_iter = reversed(list(self._iter()))
+        for _, _, transform in reverse_iter:
             if hasattr(transform, "fit_resample"):
                 pass
             else:
                 Xt = transform.inverse_transform(Xt)
         return Xt
-
-    # need to overwrite sklearn's _final_estimator since sklearn supports
-    # 'passthrough', but imblearn does not.
-    @property
-    def _final_estimator(self):
-        estimator = self.steps[-1][1]
-        return estimator
 
     @if_delegate_has_method(delegate='_final_estimator')
     def score(self, X, y=None, sample_weight=None):
@@ -553,9 +558,7 @@ class Pipeline(pipeline.Pipeline):
         score : float
         """
         Xt = X
-        for _, transform in self.steps[:-1]:
-            if transform is None:
-                continue
+        for _, _, transform in self._iter(with_final=False):
             if hasattr(transform, "fit_resample"):
                 pass
             else:
@@ -618,7 +621,7 @@ def make_pipeline(*steps, **kwargs):
     >>> from sklearn.naive_bayes import GaussianNB
     >>> from sklearn.preprocessing import StandardScaler
     >>> make_pipeline(StandardScaler(), GaussianNB(priors=None))
-    ...     # doctest: +NORMALIZE_WHITESPACE
+    ... # doctest: +NORMALIZE_WHITESPACE
     Pipeline(memory=None,
              steps=[('standardscaler',
                      StandardScaler(copy=True, with_mean=True, with_std=True)),
