@@ -33,7 +33,7 @@ def test_balanced_random_forest_error(imbalanced_dataset, boosting_params,
 @pytest.mark.parametrize('algorithm', ['SAMME', 'SAMME.R'])
 def test_rusboost(imbalanced_dataset, algorithm):
     X, y = imbalanced_dataset
-    X_train, X_test, y_train, y_test = train_test_split(X, y, 
+    X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         stratify=y,
                                                         random_state=1)
     classes = np.unique(y)
