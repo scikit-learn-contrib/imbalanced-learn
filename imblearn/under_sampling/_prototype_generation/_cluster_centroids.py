@@ -99,7 +99,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                  voting='auto',
                  n_jobs=1,
                  ratio=None):
-        super(ClusterCentroids, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.estimator = estimator

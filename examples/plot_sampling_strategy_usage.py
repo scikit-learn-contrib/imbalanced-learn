@@ -96,7 +96,7 @@ plot_pie(y_res)
 
 ###############################################################################
 # For **over-sampling methods**, it correspond to the ratio
-# :math:`\\alpha_{os}` defined by :math:`N_{rm} = \\alpha_{os} \\times N_{m}`
+# :math:`\\alpha_{os}` defined by :math:`N_{rm} = \\alpha_{os} \\times N_{M}`
 # where :math:`N_{rm}` and :math:`N_{M}` are the number of samples in the
 # minority class after resampling and the number of samples in the majority
 # class, respectively.

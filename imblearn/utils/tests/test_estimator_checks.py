@@ -51,11 +51,11 @@ class NotPreservingDtypeSampler(BaseSampler):
 @pytest.mark.filterwarnings("ignore: Can't check dok sparse matrix for nan")
 @pytest.mark.parametrize(
     'Estimator, err_type, err_msg',
-    [(BaseBadSampler, AssertionError, "TypeError not raised by fit"),
+    [(BaseBadSampler, AssertionError, "ValueError not raised by fit"),
      (NotFittedSampler, AssertionError, "No fitted attribute"),
      (NoAcceptingSparseSampler, TypeError, "A sparse matrix was passed"),
-     (NotPreservingDtypeSampler, AssertionError, "X dytype is not preserved")]
+     (NotPreservingDtypeSampler, AssertionError, "X dtype is not preserved")]
 )
 def test_check_estimator(Estimator, err_type, err_msg):
-    with pytest.raises(err_type, message=err_msg):
+    with pytest.raises(err_type, match=err_msg):
         check_estimator(Estimator)

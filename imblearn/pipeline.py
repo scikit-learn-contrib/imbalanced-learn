@@ -20,7 +20,6 @@ from itertools import islice
 
 from sklearn import pipeline
 from sklearn.base import clone
-from sklearn.externals import six
 from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_memory
 
@@ -108,7 +107,7 @@ class Pipeline(pipeline.Pipeline):
                0       0.87      1.00      0.93        26
                1       1.00      0.98      0.99       224
     <BLANKLINE>
-       micro avg       0.98      0.98      0.98       250
+        accuracy                           0.98       250
        macro avg       0.93      0.99      0.96       250
     weighted avg       0.99      0.98      0.98       250
     <BLANKLINE>
@@ -171,9 +170,9 @@ class Pipeline(pipeline.Pipeline):
         fit_transform_one_cached = memory.cache(_fit_transform_one)
         fit_resample_one_cached = memory.cache(_fit_resample_one)
 
-        fit_params_steps = dict((name, {}) for name, step in self.steps
-                                if step is not None)
-        for pname, pval in six.iteritems(fit_params):
+        fit_params_steps = {name: {} for name, step in self.steps
+                            if step is not None}
+        for pname, pval in fit_params.items():
             step, param = pname.split('__', 1)
             fit_params_steps[step][param] = pval
         Xt = X
@@ -282,7 +281,6 @@ class Pipeline(pipeline.Pipeline):
         else:
             return last_step.fit(Xt, yt, **fit_params).transform(Xt)
 
-    @if_delegate_has_method(delegate='_final_estimator')
     def fit_resample(self, X, y=None, **fit_params):
         """Fit the model and sample with the final estimator
 
@@ -519,6 +517,13 @@ class Pipeline(pipeline.Pipeline):
                 Xt = transform.inverse_transform(Xt)
         return Xt
 
+    # need to overwrite sklearn's _final_estimator since sklearn supports
+    # 'passthrough', but imblearn does not.
+    @property
+    def _final_estimator(self):
+        estimator = self.steps[-1][1]
+        return estimator
+
     @if_delegate_has_method(delegate='_final_estimator')
     def score(self, X, y=None, sample_weight=None):
         """Apply transformers/samplers, and score with the final estimator
@@ -610,7 +615,8 @@ def make_pipeline(*steps, **kwargs):
              steps=[('standardscaler',
                      StandardScaler(copy=True, with_mean=True, with_std=True)),
                     ('gaussiannb',
-                     GaussianNB(priors=None, var_smoothing=1e-09))])
+                     GaussianNB(priors=None, var_smoothing=1e-09))],
+             verbose=False)
     """
     memory = kwargs.pop('memory', None)
     if kwargs:

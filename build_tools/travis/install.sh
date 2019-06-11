@@ -64,12 +64,12 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # install.
     deactivate
     # Create a new virtualenv using system site packages for python, numpy
-    virtualenv --system-site-packages testvenv
+    virtualenv --system-site-packages --python=python3 testvenv
     source testvenv/bin/activate
 
-    pip install scikit-learn
-    pip install pandas keras tensorflow
-    pip install pytest pytest-cov codecov sphinx numpydoc
+    pip3 install scikit-learn
+    pip3 install pandas keras tensorflow
+    pip3 install pytest pytest-cov codecov sphinx numpydoc
 
 fi
 

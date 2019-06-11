@@ -1,5 +1,5 @@
 # make it explicit that we favor the new container-based travis workers
-dist: trusty
+dist: xenial
 sudo: false
 
 language: python
@@ -16,8 +16,8 @@ cache:
 addons:
   apt:
     packages:
-      - python-numpy
-      - python-scipy
+      - python3-numpy
+      - python3-scipy
 env:
   global:
     # Directory where tests are run from
@@ -32,12 +32,10 @@ matrix:
     # Ubuntu 14.04 environment
     - env: DISTRIB="ubuntu"
     # Latest release
-    - env: DISTRIB="conda" PYTHON_VERSION="2.7"
-           NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" SKLEARN_VERSION="0.20"
     - env: DISTRIB="conda" PYTHON_VERSION="3.6"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.20"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.21"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" SKLEARN_VERSION="0.20"
+           NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" SKLEARN_VERSION="0.21"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
   allow_failures:

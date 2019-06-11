@@ -13,6 +13,8 @@ import numpy as np
 import pytest
 from pytest import raises
 
+from joblib import Memory
+
 from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_array_almost_equal
 from sklearn.utils.testing import assert_allclose
@@ -26,7 +28,6 @@ from sklearn.cluster import KMeans
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.datasets import load_iris, make_classification
 from sklearn.preprocessing import StandardScaler
-from sklearn.externals.joblib import Memory
 
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (RandomUnderSampler,
@@ -44,7 +45,7 @@ JUNK_FOOD_DOCS = (
 R_TOL = 1e-4
 
 
-class NoFit(object):
+class NoFit:
     """Small class to test parameter dispatching.
     """
 
@@ -525,7 +526,8 @@ def test_set_pipeline_step_passthrough(passthrough):
         'last': mult5,
         'memory': None,
         'm2__mult': 2,
-        'last__mult': 5
+        'last__mult': 5,
+        'verbose': False
     }
     assert pipeline.get_params(deep=True) == expected_params
 
@@ -1138,3 +1140,22 @@ def test_predict_with_predict_params():
     pipe.fit(None, None)
     pipe.predict(X=None, got_attribute=True)
     assert pipe.named_steps['clf'].got_attribute
+
+
+def test_resampler_last_stage_passthrough():
+
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=50000,
+        random_state=0)
+
+    rus = RandomUnderSampler(random_state=42)
+    pipe = make_pipeline(rus, None)
+    pipe.fit_resample(X, y)

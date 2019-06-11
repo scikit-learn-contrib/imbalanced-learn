@@ -8,7 +8,6 @@ import pytest
 from sklearn.datasets import make_blobs
 from sklearn.metrics import make_scorer
 from sklearn.svm import LinearSVC
-from sklearn.utils.testing import assert_allclose
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 
@@ -33,7 +32,7 @@ def data():
      (geometric_mean_score, 0.92),
      (make_index_balanced_accuracy()(geometric_mean_score), 0.85)]
 )
-@pytest.mark.parametrize("average",['macro', 'weighted', 'micro'])
+@pytest.mark.parametrize("average", ['macro', 'weighted', 'micro'])
 def test_scorer_common_average(data, score, expected_score, average):
     X_train, X_test, y_train, _ = data
 
@@ -51,7 +50,8 @@ def test_scorer_common_average(data, score, expected_score, average):
     [(sensitivity_score, 'binary', 0.92),
      (specificity_score, 'binary', 0.95),
      (geometric_mean_score, 'multiclass', 0.92),
-     (make_index_balanced_accuracy()(geometric_mean_score), 'multiclass', 0.84)]
+     (make_index_balanced_accuracy()(geometric_mean_score),
+      'multiclass', 0.84)]
 )
 def test_scorer_default_average(data, score, average, expected_score):
     X_train, X_test, y_train, _ = data

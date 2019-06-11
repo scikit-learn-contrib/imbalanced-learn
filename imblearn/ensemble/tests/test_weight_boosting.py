@@ -26,7 +26,7 @@ def imbalanced_dataset():
 def test_balanced_random_forest_error(imbalanced_dataset, boosting_params,
                                       err_msg):
     rusboost = RUSBoostClassifier(**boosting_params)
-    with pytest.raises(ValueError, message=err_msg):
+    with pytest.raises(ValueError, match=err_msg):
         rusboost.fit(*imbalanced_dataset)
 
 
@@ -50,10 +50,10 @@ def test_rusboost(imbalanced_dataset, algorithm):
     assert len(rusboost.pipelines_) == len(rusboost.samplers_)
 
     # each sampler in the ensemble should have different random state
-    assert (len(set(sampler.random_state for sampler in rusboost.samplers_)) ==
+    assert (len({sampler.random_state for sampler in rusboost.samplers_}) ==
             len(rusboost.samplers_))
     # each estimator in the ensemble should have different random state
-    assert (len(set(est.random_state for est in rusboost.estimators_)) ==
+    assert (len({est.random_state for est in rusboost.estimators_}) ==
             len(rusboost.estimators_))
 
     # check the consistency of the feature importances

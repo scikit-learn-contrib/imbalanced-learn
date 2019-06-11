@@ -85,8 +85,7 @@ def _yield_sampler_checks(name, Estimator):
 def _yield_all_checks(name, estimator):
     # trigger our checks if this is a SamplerMixin
     if hasattr(estimator, 'fit_resample'):
-        for check in _yield_sampler_checks(name, estimator):
-            yield check
+        yield from _yield_sampler_checks(name, estimator)
 
 
 def check_estimator(Estimator, run_sampler_tests=True):
