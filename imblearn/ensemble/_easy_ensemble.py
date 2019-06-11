@@ -17,7 +17,7 @@ from sklearn.utils.deprecation import deprecated
 from .base import BaseEnsembleSampler
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import Substitution
+from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
 from ..pipeline import Pipeline
 
@@ -290,6 +290,7 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         self : object
             Returns self.
         """
+        check_target_type(y)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return self._fit(X, y, self.max_samples, sample_weight=None)

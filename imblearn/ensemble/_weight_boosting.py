@@ -12,7 +12,7 @@ from sklearn.utils import safe_indexing
 from ..under_sampling.base import BaseUnderSampler
 from ..under_sampling import RandomUnderSampler
 from ..pipeline import make_pipeline
-from ..utils import Substitution
+from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
 
 
@@ -146,6 +146,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
             Returns self.
 
         """
+        check_target_type(y)
         self.samplers_ = []
         self.pipelines_ = []
         super().fit(X, y, sample_weight)

@@ -15,7 +15,7 @@ from sklearn.tree import DecisionTreeClassifier
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import Substitution
+from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
 
 
@@ -240,6 +240,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         self : object
             Returns self.
         """
+        check_target_type(y)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return self._fit(X, y, self.max_samples, sample_weight=None)
