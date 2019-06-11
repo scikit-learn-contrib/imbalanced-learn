@@ -53,3 +53,8 @@ Bug
 - Fix bug in :class:`imblearn.pipeline.Pipeline` where None could be the final
   estimator.
   :pr:`554` by :user:`Oliver Rausch <orausch>`.
+
+- Fix bug in :class:`imblearn.over_sampling.SVMSMOTE` and
+  :class:`imblearn.over_sampling.BorderlineSMOTE` where the default parameter
+  of ``n_neighbors`` was not set properly.
+  :pr:`578` by :user:`Guillaume Lemaitre <glemaitre>`.

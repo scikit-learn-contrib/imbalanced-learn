@@ -323,7 +323,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         super()._validate_estimator()
         self.nn_m_ = check_neighbors_object(
-            'k_neighbors', self.k_neighbors, additional_neighbor=1)
+            'm_neighbors', self.m_neighbors, additional_neighbor=1)
         self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
         if self.kind not in ('borderline-1', 'borderline-2'):
             raise ValueError('The possible "kind" of algorithm are '
@@ -506,7 +506,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         super()._validate_estimator()
         self.nn_m_ = check_neighbors_object(
-            'k_neighbors', self.k_neighbors, additional_neighbor=1)
+            'm_neighbors', self.m_neighbors, additional_neighbor=1)
         self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
 
         if self.svm_estimator is None:
