@@ -12,17 +12,12 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 from sklearn.base import BaseEstimator
-from sklearn.base import _DEFAULT_TAGS
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
 from .utils.deprecation import deprecate_parameter
-
-_DEFAULT_TAGS.update(
-    {'sample_indices': False}
-)
 
 
 class SamplerMixin(BaseEstimator, metaclass=ABCMeta):

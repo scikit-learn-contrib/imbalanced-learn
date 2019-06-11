@@ -27,10 +27,6 @@ from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.testing import set_random_state
 from sklearn.utils.multiclass import type_of_target
 
-# import the _safe_tags from sklearn and then the updated _DEFAULT_TAG
-from sklearn.utils.estimator_checks import _safe_tags
-from imblearn.base import _DEFAULT_TAGS
-
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
@@ -341,7 +337,8 @@ def check_samplers_sample_indices(name, Sampler):
                                weights=[0.2, 0.3, 0.5], random_state=0)
     sampler = Sampler()
     sampler.fit_resample(X, y)
-    if _safe_tags(sampler, 'sample_indices'):
-        assert hasattr(sampler, 'sample_indices_')
+    sample_indices = sampler._get_tags().get('sample_indices', None)
+    if sample_indices:
+        assert hasattr(sampler, 'sample_indices_') is sample_indices
     else:
         assert not hasattr(sampler, 'sample_indices_')
