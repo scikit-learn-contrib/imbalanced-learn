@@ -109,7 +109,7 @@ over-sampling methods.
 
   .. [CBHK2002] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer,
                 "SMOTE: synthetic minority over-sampling technique," Journal of
-                artificial intelligence research, 321-357, 2002.
+                artificial intelligence research, 16, 321-357, 2002.
 
 Ill-posed examples
 ------------------
