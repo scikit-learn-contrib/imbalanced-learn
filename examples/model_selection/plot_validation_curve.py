@@ -53,7 +53,7 @@ ax.fill_between(param_range, test_scores_mean + test_scores_std,
                 test_scores_mean - test_scores_std, alpha=0.2)
 idx_max = np.argmax(test_scores_mean)
 plt.scatter(param_range[idx_max], test_scores_mean[idx_max],
-            label=r'Cohen Kappa: ${0:.2f}\pm{1:.2f}$'.format(
+            label=r'Cohen Kappa: ${:.2f}\pm{:.2f}$'.format(
                 test_scores_mean[idx_max], test_scores_std[idx_max]))
 
 plt.title("Validation Curve with SMOTE-CART")

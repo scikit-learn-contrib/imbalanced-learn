@@ -116,7 +116,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
     def __init__(self, base_estimator=None, n_estimators=50, learning_rate=1.,
                  algorithm='SAMME.R', sampling_strategy='auto',
                  replacement=False, random_state=None):
-        super(RUSBoostClassifier, self).__init__(
+        super().__init__(
             base_estimator=base_estimator,
             n_estimators=n_estimators,
             learning_rate=learning_rate,
@@ -149,13 +149,12 @@ class RUSBoostClassifier(AdaBoostClassifier):
         """
         self.samplers_ = []
         self.pipelines_ = []
-        super(RUSBoostClassifier, self).fit(X, y, sample_weight)
+        super().fit(X, y, sample_weight)
         return self
 
     def _validate_estimator(self):
         """Check the estimator and the n_estimator attribute, set the
         `base_estimator_` attribute."""
-
         super(RUSBoostClassifier, self)._validate_estimator()
 
         self.base_sampler_ = RandomUnderSampler(
@@ -168,8 +167,8 @@ class RUSBoostClassifier(AdaBoostClassifier):
         sub-estimators.
         """
         estimator = clone(self.base_estimator_)
-        estimator.set_params(**dict((p, getattr(self, p))
-                                    for p in self.estimator_params))
+        estimator.set_params(**{p: getattr(self, p)
+                                for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
         if random_state is not None:

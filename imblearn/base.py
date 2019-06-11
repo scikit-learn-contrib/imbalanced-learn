@@ -12,7 +12,6 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 from sklearn.base import BaseEstimator
-from sklearn.externals import six
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
@@ -21,7 +20,7 @@ from .utils import check_sampling_strategy, check_target_type
 from .utils.deprecation import deprecate_parameter
 
 
-class SamplerMixin(six.with_metaclass(ABCMeta, BaseEstimator)):
+class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
     """Mixin class for samplers with abstract method.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -225,7 +224,7 @@ class FunctionSampler(BaseSampler):
     _sampling_type = 'bypass'
 
     def __init__(self, func=None, accept_sparse=True, kw_args=None):
-        super(FunctionSampler, self).__init__()
+        super().__init__()
         self.func = func
         self.accept_sparse = accept_sparse
         self.kw_args = kw_args
