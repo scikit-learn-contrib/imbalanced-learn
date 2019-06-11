@@ -155,7 +155,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
     def _validate_estimator(self):
         """Check the estimator and the n_estimator attribute, set the
         `base_estimator_` attribute."""
-        super(RUSBoostClassifier, self)._validate_estimator()
+        super()._validate_estimator()
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self.sampling_strategy,
