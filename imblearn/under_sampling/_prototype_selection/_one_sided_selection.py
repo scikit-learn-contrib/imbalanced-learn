@@ -109,7 +109,7 @@ KNeighborsClassifier(n_neighbors=1))
                  n_seeds_S=1,
                  n_jobs=1,
                  ratio=None):
-        super(OneSidedSelection, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
@@ -189,3 +189,6 @@ KNeighborsClassifier(n_neighbors=1))
         if self.return_indices:
             return (X_cleaned, y_cleaned, self.sample_indices_)
         return X_cleaned, y_cleaned
+
+    def _more_tags(self):
+        return {'sample_indices': True}

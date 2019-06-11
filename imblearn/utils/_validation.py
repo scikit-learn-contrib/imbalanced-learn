@@ -13,7 +13,6 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
-from sklearn.externals import six
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.deprecation import deprecated
 
@@ -441,7 +440,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
     if sampling_type in ('ensemble', 'bypass'):
         return sampling_strategy
 
-    if isinstance(sampling_strategy, six.string_types):
+    if isinstance(sampling_strategy, str):
         if sampling_strategy not in SAMPLING_TARGET_KIND.keys():
             raise ValueError("When 'sampling_strategy' is a string, it needs"
                              " to be one of {}. Got '{}' instead.".format(

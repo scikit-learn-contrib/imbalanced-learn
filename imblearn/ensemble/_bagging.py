@@ -186,7 +186,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
                  verbose=0,
                  ratio=None):
 
-        super(BalancedBaggingClassifier, self).__init__(
+        super().__init__(
             base_estimator,
             n_estimators=n_estimators,
             max_samples=max_samples,
@@ -207,11 +207,11 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
             raise ValueError("n_estimators must be an integer, "
-                             "got {0}.".format(type(self.n_estimators)))
+                             "got {}.".format(type(self.n_estimators)))
 
         if self.n_estimators <= 0:
             raise ValueError("n_estimators must be greater than zero, "
-                             "got {0}.".format(self.n_estimators))
+                             "got {}.".format(self.n_estimators))
 
         if self.base_estimator is not None:
             base_estimator = clone(self.base_estimator)

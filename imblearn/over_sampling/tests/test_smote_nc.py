@@ -159,8 +159,8 @@ def test_smotenc_fit_resample():
     target_stats = Counter(y)
     smote = SMOTENC(categorical_features=categorical_features,
                     random_state=0)
-    X_res, y_res = smote.fit_resample(X, y)
-    target_stats_res = Counter(y_res)
+    _, y_res = smote.fit_resample(X, y)
+    _ = Counter(y_res)
     n_samples = max(target_stats.values())
     assert all(value >= n_samples for value in Counter(y_res).values())
 

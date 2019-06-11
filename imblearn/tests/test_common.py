@@ -29,6 +29,7 @@ def test_all_estimator_no_base_class(name, Estimator):
 @pytest.mark.filterwarnings('ignore:"out_step" is deprecated in 0.4 and')
 @pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
 @pytest.mark.filterwarnings("ignore:'y' should be of types")
+@pytest.mark.filterwarnings("ignore:The number of the samples to")
 @pytest.mark.parametrize(
     'name, Estimator',
     all_estimators(include_meta_estimators=True)

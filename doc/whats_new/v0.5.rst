@@ -17,11 +17,25 @@ Documentation
   :class:`imblearn.over_sampling.SVMSMOTE` in the API documenation.
   :issue:`530` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+Enhancement
+...........
+
+- Add Parallelisation for SMOTEENN and SMOTETomek.
+  :pr:`547` by :user:`Michael Hsieh <Microsheep>`.
+
+- Add :class:`imblearn.utils._show_versions`. Updated the contribution guide
+  and issue template showing how to print system and dependency information
+  from the command line. :pr:`557` by :user:`Alexander L. Hayes <batflyer>`.
+
 Maintenance
 ...........
 
 - Make it possible to ``import imblearn`` and access submodule.
-  :issue:`500` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`500` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Remove support for Python 2, remove deprecation warning from
+  scikit-learn 0.21.
+  :pr:`576` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Bug
 ...
@@ -30,8 +44,12 @@ Bug
   ``porto_seguro_keras_under_sampling.py`` example. The batch normalization
   was moved before the activation function and the bias was removed from the
   dense layer.
-  :issue:`531` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`531` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - Fix bug which converting to COO format sparse when stacking the matrices in
   :class:`imblearn.over_sampling.SMOTENC`. This bug was only old scipy version.
-  :issue:`539` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`539` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix bug in :class:`imblearn.pipeline.Pipeline` where None could be the final
+  estimator.
+  :pr:`554` by :user:`Oliver Rausch <orausch>`.
