@@ -131,7 +131,8 @@ def test_smotenc_check_target_type():
         smote.fit_resample(X, y)
     rng = np.random.RandomState(42)
     y = rng.randint(2, size=(20, 3))
-    with pytest.raises(ValueError, match="'y' should encode the multiclass"):
+    msg = "Multilabel and multioutput targets are not supported."
+    with pytest.raises(ValueError, match=msg):
         smote.fit_resample(X, y)
 
 

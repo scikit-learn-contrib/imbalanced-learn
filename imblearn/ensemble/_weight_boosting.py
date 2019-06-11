@@ -12,7 +12,7 @@ from sklearn.utils import safe_indexing
 from ..under_sampling.base import BaseUnderSampler
 from ..under_sampling import RandomUnderSampler
 from ..pipeline import make_pipeline
-from ..utils import Substitution
+from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
 
 
@@ -30,10 +30,11 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
     Parameters
     ----------
-    base_estimator : object, optional (default=DecisionTreeClassifier)
+    base_estimator : object, optional (default=None)
         The base estimator from which the boosted ensemble is built.
-        Support for sample weighting is required, as well as proper `classes_`
-        and `n_classes_` attributes.
+        Support for sample weighting is required, as well as proper
+        ``classes_`` and ``n_classes_`` attributes. If ``None``, then
+        the base estimator is ``DecisionTreeClassifier(max_depth=1)``
 
     n_estimators : integer, optional (default=50)
         The maximum number of estimators at which boosting is terminated.
@@ -146,26 +147,16 @@ class RUSBoostClassifier(AdaBoostClassifier):
             Returns self.
 
         """
+        check_target_type(y)
         self.samplers_ = []
         self.pipelines_ = []
         super().fit(X, y, sample_weight)
         return self
 
-    def _validate_estimator(self, default=DecisionTreeClassifier()):
+    def _validate_estimator(self):
         """Check the estimator and the n_estimator attribute, set the
         `base_estimator_` attribute."""
-        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError("n_estimators must be an integer, "
-                             "got {}.".format(type(self.n_estimators)))
-
-        if self.n_estimators <= 0:
-            raise ValueError("n_estimators must be greater than zero, "
-                             "got {}.".format(self.n_estimators))
-
-        if self.base_estimator is not None:
-            self.base_estimator_ = clone(self.base_estimator)
-        else:
-            self.base_estimator_ = clone(default)
+        super()._validate_estimator()
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self.sampling_strategy,

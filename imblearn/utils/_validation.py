@@ -88,8 +88,9 @@ def check_target_type(y, indicate_one_vs_all=False):
     if type_y == 'multilabel-indicator':
         if np.any(y.sum(axis=1) > 1):
             raise ValueError(
-                "When 'y' corresponds to '{}', 'y' should encode the "
-                "multiclass (a single 1 by row).".format(type_y))
+                "Imbalanced-learn currently supports binary, multiclass and "
+                "binarized encoded multiclasss targets. Multilabel and "
+                "multioutput targets are not supported.")
         y = y.argmax(axis=1)
 
     return (y, type_y == 'multilabel-indicator') if indicate_one_vs_all else y

@@ -6,6 +6,16 @@ Version 0.5 (under development)
 Changelog
 ---------
 
+Changed models
+..............
+
+The following models or function might give different results even if the
+same data ``X`` and ``y`` are the same.
+
+* :class:`imblearn.ensemble.RUSBoostClassifier` default estimator changed from
+  :class:`sklearn.tree.DecisionTreeClassifier` with full depth to a decision
+  stump (i.e., tree with ``max_depth=1``).
+
 Documentation
 .............
 
@@ -58,3 +68,8 @@ Bug
   :class:`imblearn.over_sampling.BorderlineSMOTE` where the default parameter
   of ``n_neighbors`` was not set properly.
   :pr:`578` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix bug by changing the default depth in
+  :class:`imblearn.ensemble.RUSBoostClassifier` to get a decision stump as a
+  weak learner as in the original paper.
+  :pr:`545` by :user:`Christos Aridas <chkoar>`.
