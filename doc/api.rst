@@ -71,6 +71,7 @@ Prototype selection
 
    over_sampling.ADASYN
    over_sampling.BorderlineSMOTE
+   over_sampling.KMeansSMOTE
    over_sampling.RandomOverSampler
    over_sampling.SMOTE
    over_sampling.SMOTENC
