@@ -201,8 +201,8 @@ def test_warm_start(random_state=42):
         n_estimators=10, random_state=random_state, warm_start=False)
     clf_no_ws.fit(X, y)
 
-    assert (set([pipe.steps[-1][1].random_state for pipe in clf_ws]) == set(
-        [pipe.steps[-1][1].random_state for pipe in clf_no_ws]))
+    assert ({pipe.steps[-1][1].random_state for pipe in clf_ws} == {
+        pipe.steps[-1][1].random_state for pipe in clf_no_ws})
 
 
 def test_warm_start_smaller_n_estimators():

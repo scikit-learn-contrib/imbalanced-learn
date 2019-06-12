@@ -28,7 +28,7 @@ def imbalanced_dataset():
 def test_balanced_random_forest_error(imbalanced_dataset, forest_params,
                                       err_msg):
     brf = BalancedRandomForestClassifier(**forest_params)
-    with pytest.raises(ValueError, message=err_msg):
+    with pytest.raises(ValueError, match=err_msg):
         brf.fit(*imbalanced_dataset)
 
 
@@ -36,7 +36,7 @@ def test_balanced_random_forest_error_warning_warm_start(imbalanced_dataset):
     brf = BalancedRandomForestClassifier(n_estimators=5)
     brf.fit(*imbalanced_dataset)
 
-    with pytest.raises(ValueError, message="must be larger or equal to"):
+    with pytest.raises(ValueError, match="must be larger or equal to"):
         brf.set_params(warm_start=True, n_estimators=2)
         brf.fit(*imbalanced_dataset)
 

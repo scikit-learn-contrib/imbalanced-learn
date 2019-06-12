@@ -52,19 +52,17 @@ Installation
 Dependencies
 ~~~~~~~~~~~~
 
-imbalanced-learn is tested to work under Python 2.7 and Python 3.6, and
-3.7. The dependency requirements are based on the last scikit-learn release:
+imbalanced-learn is tested to work under Python 3.6+.
+The dependency requirements are based on the last scikit-learn release:
 
-* scipy(>=0.13.3)
-* numpy(>=1.8.2)
-* scikit-learn(>=0.20)
+* scipy(>=0.17)
+* numpy(>=1.11)
+* scikit-learn(>=0.21)
 * keras 2 (optional)
 * tensorflow (optional)
 
 Additionally, to run the examples, you need matplotlib(>=2.0.0) and
 pandas(>=0.22).
-
-**imbalanced-learn 0.4 is the last version to support Python 2.7**
 
 Installation
 ~~~~~~~~~~~~

@@ -12,13 +12,14 @@ from numpy import float32 as DTYPE
 from numpy import float64 as DOUBLE
 from scipy.sparse import issparse
 
+from joblib import Parallel, delayed
+
 from sklearn.base import clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble.base import _set_random_states
 from sklearn.ensemble.forest import _parallel_build_trees
 from sklearn.exceptions import DataConversionWarning
-from sklearn.externals.joblib import Parallel, delayed
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import safe_indexing
@@ -262,7 +263,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                  verbose=0,
                  warm_start=False,
                  class_weight=None):
-        super(BalancedRandomForestClassifier, self).__init__(
+        super().__init__(
             criterion=criterion,
             max_depth=max_depth,
             n_estimators=n_estimators,
@@ -288,11 +289,11 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
             raise ValueError("n_estimators must be an integer, "
-                             "got {0}.".format(type(self.n_estimators)))
+                             "got {}.".format(type(self.n_estimators)))
 
         if self.n_estimators <= 0:
             raise ValueError("n_estimators must be greater than zero, "
-                             "got {0}.".format(self.n_estimators))
+                             "got {}.".format(self.n_estimators))
 
         if self.base_estimator is not None:
             self.base_estimator_ = clone(self.base_estimator)
@@ -309,8 +310,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         sub-estimators.
         """
         estimator = clone(self.base_estimator_)
-        estimator.set_params(**dict((p, getattr(self, p))
-                                    for p in self.estimator_params))
+        estimator.set_params(**{p: getattr(self, p)
+                                for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
         if random_state is not None:

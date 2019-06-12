@@ -31,7 +31,7 @@ LW = 2
 RANDOM_STATE = 42
 
 
-class DummySampler(object):
+class DummySampler:
 
     def sample(self, X, y):
         return X, y

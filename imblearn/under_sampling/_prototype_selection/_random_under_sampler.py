@@ -91,7 +91,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                  random_state=None,
                  replacement=False,
                  ratio=None):
-        super(RandomUnderSampler, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
@@ -135,3 +135,9 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
                     idx_under)
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+
+    def _more_tags(self):
+        # TODO: remove the str tag once the following PR is merged:
+        # https://github.com/scikit-learn/scikit-learn/pull/14043
+        return {'X_types': ['2darray', 'str', 'string'],
+                'sample_indices': True}

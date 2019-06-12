@@ -17,6 +17,7 @@ func_docstring = \
     yyy
     """
 
+
 def func(param_1, param_2):
     """A function.
 

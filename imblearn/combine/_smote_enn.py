@@ -99,7 +99,7 @@ EditedNearestNeighbours(sampling_strategy='all'))
                  enn=None,
                  n_jobs=1,
                  ratio=None):
-        super(SMOTEENN, self).__init__()
+        super().__init__()
         self.sampling_strategy = sampling_strategy
         self.random_state = random_state
         self.smote = smote
