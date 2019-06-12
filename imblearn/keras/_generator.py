@@ -33,7 +33,7 @@ def import_keras():
     if has_keras:
         ParentClass = (ParentClassKeras + ParentClassTensorflow)
     else:
-        ParentClass = tuple(object)
+        ParentClass = (object,)
     return ParentClass, has_keras
 
 
