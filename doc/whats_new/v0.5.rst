@@ -77,3 +77,7 @@ Bug
   :class:`imblearn.ensemble.RUSBoostClassifier` to get a decision stump as a
   weak learner as in the original paper.
   :pr:`545` by :user:`Christos Aridas <chkoar>`.
+
+- Allow to import ``keras`` directly from ``tensorflow`` in the
+  :mod:`imblearn.keras`.
+  :pr:`531` by :user:`Guillaume Lemaitre <glemaitre>`.
