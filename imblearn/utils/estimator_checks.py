@@ -17,7 +17,7 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.base import clone
-from sklearn.datasets import make_classification
+from sklearn.datasets import make_classification, make_multilabel_classification  # noqa
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import label_binarize
 from sklearn.utils.estimator_checks import check_estimator \
@@ -27,45 +27,18 @@ from sklearn.utils.testing import assert_raises_regex
 from sklearn.utils.testing import set_random_state
 from sklearn.utils.multiclass import type_of_target
 
+from imblearn.base import BaseSampler
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import NearMiss, ClusterCentroids
 
-DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE']
-SUPPORT_STRING = ['RandomUnderSampler', 'RandomOverSampler']
-HAVE_SAMPLE_INDICES = [
-    'RandomOverSampler', 'RandomUnderSampler', 'InstanceHardnessThreshold',
-    'NearMiss', 'TomekLinks', 'EditedNearestNeighbours',
-    'RepeatedEditedNearestNeighbours', 'AllKNN', 'OneSidedSelection',
-    'CondensedNearestNeighbour', 'NeighbourhoodCleaningRule']
+DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE', 'KMeansSMOTE']
 # FIXME: remove in 0.6
 DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
                           'RepeatedEditedNearestNeighbours', 'AllKNN',
                           'NeighbourhoodCleaningRule', 'TomekLinks')
-
-
-def monkey_patch_check_dtype_object(name, estimator_orig):
-    # check that estimators treat dtype object as numeric if possible
-    rng = np.random.RandomState(0)
-    X = rng.rand(40, 10).astype(object)
-    y = np.array([0] * 10 + [1] * 30, dtype=np.int)
-    estimator = clone(estimator_orig)
-    estimator.fit(X, y)
-
-    try:
-        estimator.fit(X, y.astype(object))
-    except Exception as e:
-        if "Unknown label type" not in str(e):
-            raise
-
-    if name not in SUPPORT_STRING:
-        X[0, 0] = {'foo': 'bar'}
-        msg = "argument must be a string or a number"
-        assert_raises_regex(TypeError, msg, estimator.fit, X, y)
-    else:
-        estimator.fit(X, y)
 
 
 def _yield_sampler_checks(name, Estimator):
@@ -82,10 +55,17 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_sample_indices
 
 
+def _yield_classifier_checks(name, Estimator):
+    yield check_classifier_on_multilabel_or_multioutput_targets
+
+
 def _yield_all_checks(name, estimator):
     # trigger our checks if this is a SamplerMixin
     if hasattr(estimator, 'fit_resample'):
         for check in _yield_sampler_checks(name, estimator):
+            yield check
+    if hasattr(estimator, 'predict'):
+        for check in _yield_classifier_checks(name, estimator):
             yield check
 
 
@@ -107,10 +87,6 @@ def check_estimator(Estimator, run_sampler_tests=True):
         Will run or not the samplers tests.
     """
     name = Estimator.__name__
-    # monkey patch check_dtype_object for the sampler allowing strings
-    import sklearn.utils.estimator_checks
-    sklearn.utils.estimator_checks.check_dtype_object = \
-        monkey_patch_check_dtype_object
     # scikit-learn common tests
     sklearn_check_estimator(Estimator)
     check_parameters_default_constructible(name, Estimator)
@@ -132,7 +108,8 @@ def check_target_type(name, Estimator):
     # if the target is multilabel then we should raise an error
     rng = np.random.RandomState(42)
     y = rng.randint(2, size=(20, 3))
-    with pytest.raises(ValueError, match="'y' should encode the multiclass"):
+    msg = "Multilabel and multioutput targets are not supported."
+    with pytest.raises(ValueError, match=msg):
         estimator.fit_resample(X, y)
 
 
@@ -158,6 +135,7 @@ def check_samplers_one_label(name, Sampler):
 
 def check_samplers_fit(name, Sampler):
     sampler = Sampler()
+    np.random.seed(42)  # Make this test reproducible
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
     sampler.fit_resample(X, y)
@@ -370,7 +348,16 @@ def check_samplers_sample_indices(name, Sampler):
                                weights=[0.2, 0.3, 0.5], random_state=0)
     sampler = Sampler()
     sampler.fit_resample(X, y)
-    if name in HAVE_SAMPLE_INDICES:
-        assert hasattr(sampler, 'sample_indices_')
+    sample_indices = sampler._get_tags().get('sample_indices', None)
+    if sample_indices:
+        assert hasattr(sampler, 'sample_indices_') is sample_indices
     else:
         assert not hasattr(sampler, 'sample_indices_')
+
+
+def check_classifier_on_multilabel_or_multioutput_targets(name, Estimator):
+    estimator = Estimator()
+    X, y = make_multilabel_classification(n_samples=30)
+    msg = "Multilabel and multioutput targets are not supported."
+    with pytest.raises(ValueError, match=msg):
+        estimator.fit(X, y)

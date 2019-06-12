@@ -17,7 +17,7 @@ from sklearn.utils.deprecation import deprecated
 from .base import BaseEnsembleSampler
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import Substitution
+from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
 from ..pipeline import Pipeline
 
@@ -91,7 +91,8 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> ee = EasyEnsemble(random_state=42) # doctest: +SKIP
     >>> X_res, y_res = ee.fit_resample(X, y) # doctest: +SKIP
-    >>> print('Resampled dataset shape %s' % Counter(y_res[0])) # doctest: +SKIP
+    >>> print('Resampled dataset shape %s' % Counter(y_res[0]))
+    ... # doctest: +SKIP
     Resampled dataset shape Counter({{0: 100, 1: 100}})
 
     """
@@ -103,7 +104,7 @@ EasyEnsemble # doctest: +NORMALIZE_WHITESPACE
                  replacement=False,
                  n_subsets=10,
                  ratio=None):
-        super(EasyEnsemble, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
@@ -235,7 +236,7 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
     def __init__(self, n_estimators=10, base_estimator=None, warm_start=False,
                  sampling_strategy='auto', replacement=False, n_jobs=1,
                  random_state=None, verbose=0):
-        super(EasyEnsembleClassifier, self).__init__(
+        super().__init__(
             base_estimator,
             n_estimators=n_estimators,
             max_samples=1.0,
@@ -255,11 +256,11 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
             raise ValueError("n_estimators must be an integer, "
-                             "got {0}.".format(type(self.n_estimators)))
+                             "got {}.".format(type(self.n_estimators)))
 
         if self.n_estimators <= 0:
             raise ValueError("n_estimators must be greater than zero, "
-                             "got {0}.".format(self.n_estimators))
+                             "got {}.".format(self.n_estimators))
 
         if self.base_estimator is not None:
             base_estimator = clone(self.base_estimator)
@@ -289,6 +290,7 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         self : object
             Returns self.
         """
+        check_target_type(y)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return self._fit(X, y, self.max_samples, sample_weight=None)

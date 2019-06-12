@@ -100,8 +100,8 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> iht = InstanceHardnessThreshold(random_state=42)
     >>> X_res, y_res = iht.fit_resample(X, y)
-    >>> print('Resampled dataset shape %s' % Counter(y_res))
-    Resampled dataset shape Counter({{1: 574, 0: 100}})
+    >>> print('Resampled dataset shape %s' % Counter(y_res))  # doctest: +ELLIPSIS
+    Resampled dataset shape Counter({{1: 5..., 0: 100}})
 
     """
 
@@ -113,7 +113,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
                  cv=5,
                  n_jobs=1,
                  ratio=None):
-        super(InstanceHardnessThreshold, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.estimator = estimator
@@ -157,11 +157,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             self.estimator_.fit(X_train, y_train)
 
             probs = self.estimator_.predict_proba(X_test)
-            classes = self.estimator_.classes_
-            probabilities[test_index] = [
-                probs[l, np.where(classes == c)[0][0]]
-                for l, c in enumerate(y_test)
-            ]
+            probabilities[test_index] = probs[range(len(y_test)), y_test]
 
         idx_under = np.empty((0, ), dtype=int)
 
@@ -187,3 +183,6 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
                     idx_under)
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+
+    def _more_tags(self):
+        return {'sample_indices': True}

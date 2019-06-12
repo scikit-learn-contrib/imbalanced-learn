@@ -7,16 +7,6 @@ environment:
   # We run the tests on 2 different target platforms for testing purpose only.
   # We use miniconda versions of Python provided by appveyor windows images
   matrix:
-    - PYTHON: "C:\\Miniconda-x64"
-      PYTHON_VERSION: "2.7"
-      PYTHON_ARCH: "64"
-      OPTIONAL_DEP: "pandas"
-
-    - PYTHON: "C:\\Miniconda"
-      PYTHON_VERSION: "2.7"
-      PYTHON_ARCH: "32"
-      OPTIONAL_DEP: "pandas"
-
     - PYTHON: "C:\\Miniconda36-x64"
       PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "64"

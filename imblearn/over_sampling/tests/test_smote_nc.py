@@ -131,8 +131,10 @@ def test_smotenc_check_target_type():
         smote.fit_resample(X, y)
     rng = np.random.RandomState(42)
     y = rng.randint(2, size=(20, 3))
-    with pytest.raises(ValueError, match="'y' should encode the multiclass"):
+    msg = "Multilabel and multioutput targets are not supported."
+    with pytest.raises(ValueError, match=msg):
         smote.fit_resample(X, y)
+
 
 def test_smotenc_samplers_one_label():
     X, _, categorical_features = data_heterogneous_unordered()
@@ -157,8 +159,8 @@ def test_smotenc_fit_resample():
     target_stats = Counter(y)
     smote = SMOTENC(categorical_features=categorical_features,
                     random_state=0)
-    X_res, y_res = smote.fit_resample(X, y)
-    target_stats_res = Counter(y_res)
+    _, y_res = smote.fit_resample(X, y)
+    _ = Counter(y_res)
     n_samples = max(target_stats.values())
     assert all(value >= n_samples for value in Counter(y_res).values())
 

@@ -47,18 +47,14 @@ References
 from collections import OrderedDict
 import tarfile
 from io import BytesIO
+from os import makedirs
 from os.path import join, isfile
-try:
-    from urllib2 import urlopen
-except ImportError:
-    from urllib.request import urlopen
+from urllib.request import urlopen
 
 import numpy as np
 
 from sklearn.datasets import get_data_home
 from sklearn.datasets.base import Bunch
-from sklearn.utils.fixes import makedirs
-from sklearn.externals import six
 from sklearn.utils import check_random_state
 
 URL = ('https://zenodo.org/record/61452/files/'
@@ -189,7 +185,7 @@ def fetch_datasets(data_home=None,
     +--+--------------+-------------------------------+-------+---------+-----+
     |25|mammography   | UCI, target: minority         | 42:1  | 11,183  | 6   |
     +--+--------------+-------------------------------+-------+---------+-----+
-    |26|protein_homo  | KDD CUP 2004, minority        | 11:1  | 145,751 | 74  |
+    |26|protein_homo  | KDD CUP 2004, minority        | 111:1 | 145,751 | 74  |
     +--+--------------+-------------------------------+-------+---------+-----+
     |27|abalone_19    | UCI, target: 19               | 130:1 | 4,177   | 10  |
     +--+--------------+-------------------------------+-------+---------+-----+
@@ -211,7 +207,7 @@ def fetch_datasets(data_home=None,
         list_data = MAP_NAME_ID.keys()
         filter_data_ = []
         for it in filter_data:
-            if isinstance(it, six.string_types):
+            if isinstance(it, str):
                 if it not in list_data:
                     raise ValueError('{} is not a dataset available. '
                                      'The available datasets are {}'.format(
