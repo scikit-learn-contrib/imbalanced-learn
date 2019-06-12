@@ -234,11 +234,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     >>> clf = BalancedRandomForestClassifier(max_depth=2, random_state=0)
     >>> clf.fit(X, y)  # doctest: +ELLIPSIS
     BalancedRandomForestClassifier(...)
-    >>> print(clf.feature_importances_)
-    [ 0.21506735  0.0104961   0.00706549  0.17414694  0.00556422  0.00704686
-      0.19779549  0.01865445  0.00608294  0.00490484  0.00866699  0.00251414
-      0.00339721  0.01174379  0.09380596  0.05049964  0.0033278   0.01008566
-      0.15534173  0.01379241]
+    >>> print(clf.feature_importances_)  # doctest: +ELLIPSIS
+    [...]
     >>> print(clf.predict([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ...                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]))
     [1]
