@@ -12,8 +12,6 @@ the lower the better
 #          Dariusz Brzezinski
 # License: MIT
 
-from __future__ import division
-
 import warnings
 import functools
 

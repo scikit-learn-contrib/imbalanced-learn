@@ -5,8 +5,6 @@ links."""
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division
-
 from sklearn.base import clone
 from sklearn.utils import check_X_y
 

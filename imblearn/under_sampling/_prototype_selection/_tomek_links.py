@@ -5,8 +5,6 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division
-
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import safe_indexing

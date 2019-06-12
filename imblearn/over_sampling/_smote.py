@@ -6,8 +6,6 @@
 #          Dzianis Dudnik
 # License: MIT
 
-from __future__ import division
-
 import math
 import types
 import warnings
@@ -1217,7 +1215,6 @@ class KMeansSMOTE(BaseSMOTE):
             self.cluster_balance_threshold
             if self.kmeans_estimator_.n_clusters != 1 else -np.inf
         )
-
 
     def _find_cluster_sparsity(self, X):
         """Compute the cluster sparsity."""

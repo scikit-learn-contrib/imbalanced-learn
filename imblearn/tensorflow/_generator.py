@@ -1,7 +1,5 @@
 """Implement generators for ``tensorflow`` which will balance the data."""
 
-from __future__ import division
-
 from scipy.sparse import issparse
 
 from sklearn.base import clone

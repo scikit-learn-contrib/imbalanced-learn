@@ -13,8 +13,6 @@ composite estimator, as a chain of transforms, samples and estimators.
 #         Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: BSD
 
-from __future__ import division
-
 from collections import defaultdict
 from itertools import islice
 

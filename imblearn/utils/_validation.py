@@ -2,7 +2,6 @@
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
-from __future__ import division
 
 import warnings
 from collections import OrderedDict

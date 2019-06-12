@@ -4,8 +4,6 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division
-
 from collections import Counter
 
 import numpy as np
