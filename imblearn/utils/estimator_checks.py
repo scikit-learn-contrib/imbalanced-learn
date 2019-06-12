@@ -34,7 +34,7 @@ from imblearn.ensemble.base import BaseEnsembleSampler
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import NearMiss, ClusterCentroids
 
-DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE']
+DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE', 'KMeansSMOTE']
 # FIXME: remove in 0.6
 DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
                           'RepeatedEditedNearestNeighbours', 'AllKNN',
@@ -135,6 +135,7 @@ def check_samplers_one_label(name, Sampler):
 
 def check_samplers_fit(name, Sampler):
     sampler = Sampler()
+    np.random.seed(42)  # Make this test reproducible
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
     sampler.fit_resample(X, y)
