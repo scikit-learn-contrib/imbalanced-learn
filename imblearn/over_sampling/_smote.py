@@ -17,7 +17,7 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.base import clone
-from sklearn.cluster import MiniBatchKMeans as KMeans
+from sklearn.cluster import MiniBatchKMeans
 from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.svm import SVC
@@ -1120,22 +1120,35 @@ class KMeansSMOTE(BaseSMOTE):
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
-    kmeans_estimator : int or object, optional (default=KMeans())
-        A KMeans instance or the number of clusters to be used.
+    kmeans_estimator : int or object, optional (default=MiniBatchKMeans())
+        A KMeans instance or the number of clusters to be used. By default,
+        we used a :class:`sklearn.cluster.MiniBatchKMeans` which tend to be
+        better with large number of samples.
 
-    cluster_balance_threshold: str or float, optional (default="auto")
+    cluster_balance_threshold : str or float, optional (default="auto")
         The threshold at which a cluster is called balanced and where samples
         of the class selected for SMOTE will be oversampled. If "auto", this
         will be determined by the ratio for each class, or it can be set
         manually.
 
-    density_exponent: str or float, optional (default="auto")
+    density_exponent : str or float, optional (default="auto")
         This exponent is used to determine the density of a cluster. Leaving
-        this to 'auto' will use a feature-length based exponent.
+        this to "auto" will use a feature-length based exponent.
+
+    Attributes
+    ----------
+    kmeans_estimator_ : estimator
+        The fitted clustering method used before to apply SMOTE.
+
+    nn_k_ : estimator
+        The fitted k-NN estimator used in SMOTE.
+
+    cluster_balance_threshold_ : float
+        The threshold used during ``fit`` for calling a cluster balanced.
 
     References
     ----------
-    .. [3] Felix Last, Georgios Douzas, Fernando Bacao, "Oversampling for
+    .. [1] Felix Last, Georgios Douzas, Fernando Bacao, "Oversampling for
        Imbalanced Learning Based on K-Means and SMOTE"
        https://arxiv.org/abs/1711.00837
 
@@ -1146,8 +1159,7 @@ class KMeansSMOTE(BaseSMOTE):
     >>> from imblearn.over_sampling import KMeansSMOTE
     >>> from sklearn.datasets import make_blobs
     >>> blobs = [100, 800, 100]
-    >>> X, y  = make_blobs(blobs,
-    ... centers=[(-10, 0), (0,0), (10, 0)])
+    >>> X, y  = make_blobs(blobs, centers=[(-10, 0), (0,0), (10, 0)])
     >>> # Add a single 0 sample in the middle blob
     >>> X = np.concatenate([X, [[0, 0]]])
     >>> y = np.append(y, 0)
@@ -1173,32 +1185,42 @@ class KMeansSMOTE(BaseSMOTE):
                  kmeans_estimator=None,
                  cluster_balance_threshold="auto",
                  density_exponent="auto"):
-
-        super(KMeansSMOTE, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, random_state=random_state,
             k_neighbors=k_neighbors, n_jobs=n_jobs)
-
         self.kmeans_estimator = kmeans_estimator
         self.cluster_balance_threshold = cluster_balance_threshold
         self.density_exponent = density_exponent
 
     def _validate_estimator(self):
-        super(KMeansSMOTE, self)._validate_estimator()
+        super()._validate_estimator()
         if self.kmeans_estimator is None:
-            self.kmeans_estimator_ = KMeans(
+            self.kmeans_estimator_ = MiniBatchKMeans(
                 random_state=self.random_state)
         elif isinstance(self.kmeans_estimator, int):
-            self.kmeans_estimator_ = KMeans(
+            self.kmeans_estimator_ = MiniBatchKMeans(
                 n_clusters=self.kmeans_estimator,
                 random_state=self.random_state)
         else:
             self.kmeans_estimator_ = clone(self.kmeans_estimator)
 
+        # validate the parameters
+        for param_name in ('cluster_balance_threshold', 'density_exponent'):
+            param = getattr(self, param_name)
+            if isinstance(param, str) and param != 'auto':
+                raise ValueError(
+                    "'{}' should be 'auto' when a string is passed. "
+                    "Got {} instead.".format(param_name, repr(param))
+                )
+
         self.cluster_balance_threshold_ = (
             self.cluster_balance_threshold
-            if self.kmeans_estimator_.n_clusters != 1 else -np.inf)
+            if self.kmeans_estimator_.n_clusters != 1 else -np.inf
+        )
+
 
     def _find_cluster_sparsity(self, X):
+        """Compute the cluster sparsity."""
         euclidean_distances = pairwise_distances(X, metric="euclidean",
                                                  n_jobs=self.n_jobs)
         # negate diagonal elements
@@ -1218,7 +1240,6 @@ class KMeansSMOTE(BaseSMOTE):
 
     def _sample(self, X, y):
         self._validate_estimator()
-        check_random_state(self.random_state)
         X_resampled = X.copy()
         y_resampled = y.copy()
         total_inp_samples = sum(self.sampling_strategy_.values())
@@ -1227,41 +1248,44 @@ class KMeansSMOTE(BaseSMOTE):
             if n_samples == 0:
                 continue
 
-            target_class_indices = np.flatnonzero(y == class_sample)
-            X_class = safe_indexing(X, target_class_indices)
+            # target_class_indices = np.flatnonzero(y == class_sample)
+            # X_class = safe_indexing(X, target_class_indices)
 
             X_clusters = self.kmeans_estimator_.fit_predict(X)
-
             valid_clusters = []
             cluster_sparsities = []
 
-            # Identify valid clusters
+            # identify cluster which are answering the requirements
             for cluster_idx in range(self.kmeans_estimator_.n_clusters):
-                cluster_mask = np.flatnonzero(X_clusters == cluster_idx)
 
+                cluster_mask = np.flatnonzero(X_clusters == cluster_idx)
                 X_cluster = safe_indexing(X, cluster_mask)
                 y_cluster = safe_indexing(y, cluster_mask)
 
                 cluster_class_mean = (y_cluster == class_sample).mean()
 
-                if self.cluster_balance_threshold == "auto":
+                if self.cluster_balance_threshold_ == "auto":
                     balance_threshold = n_samples / total_inp_samples / 2
                 else:
-                    balance_threshold = self.cluster_balance_threshold
+                    balance_threshold = self.cluster_balance_threshold_
 
+                # the cluster is already considered balanced
                 if cluster_class_mean < balance_threshold:
                     continue
 
+                # not enough samples to apply SMOTE
                 anticipated_samples = cluster_class_mean * X_cluster.shape[0]
                 if anticipated_samples < self.nn_k_.n_neighbors:
                     continue
 
                 X_cluster_class = safe_indexing(
-                    X_cluster, np.flatnonzero(y_cluster == class_sample))
+                    X_cluster, np.flatnonzero(y_cluster == class_sample)
+                )
 
                 valid_clusters.append(cluster_mask)
                 cluster_sparsities.append(
-                    self._find_cluster_sparsity(X_cluster_class))
+                    self._find_cluster_sparsity(X_cluster_class)
+                )
 
             cluster_sparsities = np.array(cluster_sparsities)
             cluster_weights = cluster_sparsities / cluster_sparsities.sum()
@@ -1278,15 +1302,16 @@ class KMeansSMOTE(BaseSMOTE):
                 y_cluster = safe_indexing(y, valid_cluster)
 
                 X_cluster_class = safe_indexing(
-                    X_cluster, np.flatnonzero(y_cluster == class_sample))
+                    X_cluster, np.flatnonzero(y_cluster == class_sample)
+                )
 
                 self.nn_k_.fit(X_cluster_class)
-
                 nns = self.nn_k_.kneighbors(X_cluster_class,
                                             return_distance=False)[:, 1:]
 
                 cluster_n_samples = int(math.ceil(
-                    n_samples * cluster_weights[valid_cluster_idx]))
+                    n_samples * cluster_weights[valid_cluster_idx])
+                )
 
                 X_new, y_new = self._make_samples(X_cluster_class,
                                                   y.dtype,

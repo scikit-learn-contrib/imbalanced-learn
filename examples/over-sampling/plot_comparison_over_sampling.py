@@ -205,7 +205,9 @@ fig.tight_layout()
 # SMOTE proposes several variants by identifying specific samples to consider
 # during the resampling. The borderline version will detect which point to
 # select which are in the border between two classes. The SVM version will use
-# the support vectors found using an SVM algorithm to create new samples.
+# the support vectors found using an SVM algorithm to create new sample while
+# the KMeans version will make a clustering before to generate samples in each
+# cluster independently depending each cluster density.
 
 fig, ((ax1, ax2), (ax3, ax4),
       (ax5, ax6), (ax7, ax8),
