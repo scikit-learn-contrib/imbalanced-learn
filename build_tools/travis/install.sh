@@ -39,7 +39,6 @@ if [[ "$DISTRIB" == "conda" ]]; then
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
     conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
-    conda install --yes joblib
 
     if [[ $PYTHON_VERSION == "3.6" ]]; then
         # Tensorflow is not available in Python 3.7 yet.
@@ -68,7 +67,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     virtualenv --system-site-packages --python=python3 testvenv
     source testvenv/bin/activate
 
-    pip3 install scikit-learn joblib
+    pip3 install scikit-learn
     pip3 install pandas keras tensorflow
     pip3 install pytest pytest-cov codecov sphinx numpydoc
 
