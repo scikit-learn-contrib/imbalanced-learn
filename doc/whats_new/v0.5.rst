@@ -1,7 +1,7 @@
 .. _changes_0_5:
 
-Version 0.5 (under development)
-===============================
+Version 0.5.0
+=============
 
 Changelog
 ---------
