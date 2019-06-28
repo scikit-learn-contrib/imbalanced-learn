@@ -33,14 +33,18 @@ matrix:
     - env: DISTRIB="ubuntu"
     # Latest release
     - env: DISTRIB="conda" PYTHON_VERSION="3.6"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.21"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.21.2"
+           OPTIONAL_DEPS="true"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="1.14.6" SCIPY_VERSION="1.1.0" SKLEARN_VERSION="0.21"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.21.2"
+           OPTIONAL_DEPS="false"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
+           OPTIONAL_DEPS="false"
   allow_failures:
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
+           OPTIONAL_DEPS="false"
 
 install: source build_tools/travis/install.sh
 script: bash build_tools/travis/test_script.sh
