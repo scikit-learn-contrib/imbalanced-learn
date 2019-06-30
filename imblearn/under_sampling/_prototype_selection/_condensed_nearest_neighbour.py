@@ -5,8 +5,6 @@ method."""
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division
-
 from collections import Counter
 
 import numpy as np
@@ -115,7 +113,7 @@ CondensedNearestNeighbour # doctest: +SKIP
                  n_seeds_S=1,
                  n_jobs=1,
                  ratio=None):
-        super(CondensedNearestNeighbour, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
@@ -220,3 +218,6 @@ CondensedNearestNeighbour # doctest: +SKIP
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
                     idx_under)
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+
+    def _more_tags(self):
+        return {'sample_indices': True}

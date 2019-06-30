@@ -20,7 +20,8 @@ def iris():
 
 def test_make_imbalanced_backcompat(iris):
     # check an error is raised with we don't pass sampling_strategy and ratio
-    with pytest.raises(TypeError, match="missing 1 required positional argument"):
+    err_msg = "missing 1 required positional argument"
+    with pytest.raises(TypeError, match=err_msg):
         make_imbalance(*iris)
 
 

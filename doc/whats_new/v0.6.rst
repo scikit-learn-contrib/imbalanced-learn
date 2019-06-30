@@ -1,0 +1,8 @@
+.. _changes_0_6:
+
+Version 0.6.0 (under-development)
+================================+
+
+Changelog
+---------
+

@@ -11,6 +11,8 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 
 from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling import SVMSMOTE
+from imblearn.over_sampling import BorderlineSMOTE
 
 
 RND_SEED = 0
@@ -286,3 +288,14 @@ def test_sample_with_nn_svm():
                      1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0])
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
+
+
+@pytest.mark.parametrize(
+    "smote", [BorderlineSMOTE(), SVMSMOTE()], ids=['borderline', 'svm']
+)
+def test_smote_m_neighbors(smote):
+    # check that m_neighbors is properly set. Regression test for:
+    # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/568
+    _ = smote.fit_resample(X, Y)
+    assert smote.nn_k_.n_neighbors == 6
+    assert smote.nn_m_.n_neighbors == 11

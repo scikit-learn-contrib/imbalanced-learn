@@ -1,16 +1,43 @@
 """Implement generators for ``keras`` which will balance the data."""
-from __future__ import division
+
 
 # This is a trick to avoid an error during tests collection with pytest. We
 # avoid the error when importing the package raise the error at the moment of
 # creating the instance.
-try:
-    import keras
-    ParentClass = keras.utils.Sequence
-    HAS_KERAS = True
-except ImportError:
-    ParentClass = object
-    HAS_KERAS = False
+def import_keras():
+    """Try to import keras from keras and tensorflow.
+
+    This is possible to import the sequence from keras or tensorflow.
+    Keras is not ducktyping ``Sequence`` before 2.3 and we need import from
+    all possible library to ensure that the ``isinstance(...)`` is not going
+    to fail. This function can be modified when we support Keras 2.3.
+    """
+
+    def import_from_keras():
+        try:
+            import keras
+            return (keras.utils.Sequence,), True
+        except ImportError:
+            return tuple(), False
+
+    def import_from_tensforflow():
+        try:
+            from tensorflow import keras
+            return (keras.utils.Sequence,), True
+        except ImportError:
+            return tuple(), False
+
+    ParentClassKeras, has_keras_k = import_from_keras()
+    ParentClassTensorflow, has_keras_tf = import_from_tensforflow()
+    has_keras = has_keras_k or has_keras_tf
+    if has_keras:
+        ParentClass = (ParentClassKeras + ParentClassTensorflow)
+    else:
+        ParentClass = (object,)
+    return ParentClass, has_keras
+
+
+ParentClass, HAS_KERAS = import_keras()
 
 from scipy.sparse import issparse
 
@@ -24,22 +51,18 @@ from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 from ..tensorflow import balanced_batch_generator as tf_bbg
 
-
 DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
                           'RepeatedEditedNearestNeighbours', 'AllKNN',
                           'NeighbourhoodCleaningRule', 'TomekLinks')
 
 
-
-class BalancedBatchGenerator(ParentClass):
+class BalancedBatchGenerator(*ParentClass):
     """Create balanced batches when training a keras model.
 
     Create a keras ``Sequence`` which is given to ``fit_generator``. The
     sampler defines the sampling strategy used to balance the dataset ahead of
     creating the batch. The sampler should have an attribute
-
     ``sample_indices_``.
-
 
     Parameters
     ----------
@@ -53,9 +76,7 @@ class BalancedBatchGenerator(ParentClass):
         Sample weight.
 
     sampler : object or None, optional (default=RandomUnderSampler)
-
         A sampler instance which has an attribute ``sample_indices_``.
-
         By default, the sampler used is a
         :class:`imblearn.under_sampling.RandomUnderSampler`.
 
@@ -68,9 +89,7 @@ class BalancedBatchGenerator(ParentClass):
         dense.
 
     random_state : int, RandomState instance or None, optional (default=None)
-
         Control the randomization of the algorithm:
-
 
         - If int, ``random_state`` is the seed used by the random number
           generator;
@@ -110,6 +129,10 @@ class BalancedBatchGenerator(ParentClass):
     ...                                        epochs=10, verbose=0)
 
     """
+
+    # flag for keras sequence duck-typing
+    use_sequence_api = True
+
     def __init__(self, X, y, sample_weight=None, sampler=None, batch_size=32,
                  keep_sparse=False, random_state=None):
         if not HAS_KERAS:
@@ -126,7 +149,6 @@ class BalancedBatchGenerator(ParentClass):
     def _sample(self):
         random_state = check_random_state(self.random_state)
         if self.sampler is None:
-
             self.sampler_ = RandomUnderSampler(random_state=random_state)
         else:
             self.sampler_ = clone(self.sampler)
@@ -139,7 +161,6 @@ class BalancedBatchGenerator(ParentClass):
             raise ValueError("'sampler' needs to have an attribute "
                              "'sample_indices_'.")
         self.indices_ = self.sampler_.sample_indices_
-
         # shuffle the indices since the sampler are packing them by class
         random_state.shuffle(self.indices_)
 
@@ -176,9 +197,7 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
     Returns a generator --- as well as the number of step per epoch --- which
     is given to ``fit_generator``. The sampler defines the sampling strategy
     used to balance the dataset ahead of creating the batch. The sampler should
-
     have an attribute ``sample_indices_``.
-
 
     Parameters
     ----------
@@ -192,9 +211,7 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
         Sample weight.
 
     sampler : object or None, optional (default=RandomUnderSampler)
-
         A sampler instance which has an attribute ``sample_indices_``.
-
         By default, the sampler used is a
         :class:`imblearn.under_sampling.RandomUnderSampler`.
 

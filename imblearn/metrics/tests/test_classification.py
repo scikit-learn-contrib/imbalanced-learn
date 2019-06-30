@@ -4,8 +4,6 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division
-
 from functools import partial
 
 import numpy as np
@@ -22,7 +20,7 @@ from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.utils.testing import assert_no_warnings
 from sklearn.metrics import accuracy_score, average_precision_score
 from sklearn.metrics import brier_score_loss, cohen_kappa_score
-from sklearn.metrics import jaccard_similarity_score, precision_score
+from sklearn.metrics import jaccard_score, precision_score
 from sklearn.metrics import recall_score, roc_auc_score
 
 from imblearn.metrics import sensitivity_specificity_support
@@ -185,7 +183,7 @@ def test_sensitivity_specificity_support_errors():
 
 def test_sensitivity_specificity_unused_pos_label():
     # but average != 'binary'; even if data is binary
-    with warns(UserWarning, "use labels=\[pos_label\] to specify a single"):
+    with warns(UserWarning, r"use labels=\[pos_label\] to specify a single"):
         sensitivity_specificity_support(
             [1, 2, 1], [1, 2, 2], pos_label=2, average='macro')
 
@@ -232,8 +230,10 @@ def test_geometric_mean_average(y_true, y_pred, average, expected_gmean):
 @pytest.mark.parametrize(
     "y_true, y_pred, sample_weight, average, expected_gmean",
     [([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], None, 'multiclass', 0.707),
-     ([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], [1, 2, 1, 1, 2, 1], 'multiclass', 0.707),
-     ([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], [1, 2, 1, 1, 2, 1], 'weighted', 0.333)]
+     ([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], [1, 2, 1, 1, 2, 1],
+      'multiclass', 0.707),
+     ([0, 1, 2, 0, 1, 2], [0, 1, 1, 0, 0, 1], [1, 2, 1, 1, 2, 1],
+      'weighted', 0.333)]
 )
 def test_geometric_mean_sample_weight(y_true, y_pred, sample_weight, average,
                                       expected_gmean):
@@ -347,14 +347,14 @@ def test_classification_report_imbalanced_multiclass_with_string_label():
 def test_classification_report_imbalanced_multiclass_with_unicode_label():
     y_true, y_pred, _ = make_prediction(binary=False)
 
-    labels = np.array([u"blue\xa2", u"green\xa2", u"red\xa2"])
+    labels = np.array(["blue\xa2", "green\xa2", "red\xa2"])
     y_true = labels[y_true]
     y_pred = labels[y_pred]
 
-    expected_report = (u'pre rec spe f1 geo iba sup blue¢ 0.83 0.79 0.92 0.81 '
-                       u'0.85 0.72 24 green¢ 0.33 0.10 0.86 0.15 0.29 0.08 31 '
-                       u'red¢ 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total '
-                       u'0.51 0.53 0.80 0.47 0.58 0.40 75')
+    expected_report = ('pre rec spe f1 geo iba sup blue¢ 0.83 0.79 0.92 0.81 '
+                       '0.85 0.72 24 green¢ 0.33 0.10 0.86 0.15 0.29 0.08 31 '
+                       'red¢ 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total '
+                       '0.51 0.53 0.80 0.47 0.58 0.40 75')
     if np_version[:3] < (1, 7, 0):
         with pytest.raises(RuntimeError, match="NumPy < 1.7.0"):
             classification_report_imbalanced(y_true, y_pred)
@@ -381,7 +381,7 @@ def test_classification_report_imbalanced_multiclass_with_long_string_label():
 
 @pytest.mark.parametrize(
     "score, expected_score",
-    [(accuracy_score, 0.54756), (jaccard_similarity_score, 0.54756),
+    [(accuracy_score, 0.54756), (jaccard_score, 0.33176),
      (precision_score, 0.65025), (recall_score, 0.41616)]
 )
 def test_iba_sklearn_metrics(score, expected_score):

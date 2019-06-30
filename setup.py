@@ -32,10 +32,14 @@ CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Operating System :: POSIX',
                'Operating System :: Unix',
                'Operating System :: MacOS',
-               'Programming Language :: Python :: 2.7',
                'Programming Language :: Python :: 3.6',
                'Programming Language :: Python :: 3.7']
-INSTALL_REQUIRES = ['numpy>=1.8.2', 'scipy>=0.13.3', 'scikit-learn>=0.20']
+INSTALL_REQUIRES = [
+    'numpy>=1.11',
+    'scipy>=0.17',
+    'scikit-learn>=0.21',
+    'joblib>=0.11'
+]
 EXTRAS_REQUIRE = {
     'tests': [
         'pytest',

@@ -4,8 +4,6 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division
-
 import numpy as np
 from scipy import sparse
 
@@ -89,7 +87,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                  n_neighbors=5,
                  n_jobs=1,
                  ratio=None):
-        super(ADASYN, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.n_neighbors = n_neighbors

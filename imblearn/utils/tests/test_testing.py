@@ -43,7 +43,7 @@ def test_warns():
         warnings.warn("aaaaaaaaaa", UserWarning)
 
     a, b, c = ('aaa', 'bbbbbbbbbb', 'cccccccccc')
-    expected_msg = "'{}' pattern not found in \['{}', '{}'\]".format(a, b, c)
+    expected_msg = r"'{}' pattern not found in \['{}', '{}'\]".format(a, b, c)
     with raises(AssertionError, match=expected_msg):
         with warns(UserWarning, match=r'aaa'):
             warnings.warn("bbbbbbbbbb", UserWarning)

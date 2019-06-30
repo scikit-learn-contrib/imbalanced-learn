@@ -3,7 +3,6 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
-from __future__ import division
 
 from collections import Counter
 
@@ -84,7 +83,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                  return_indices=False,
                  random_state=None,
                  ratio=None):
-        super(RandomOverSampler, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.return_indices = return_indices
         self.random_state = random_state
@@ -119,3 +118,9 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                     safe_indexing(y, sample_indices), sample_indices)
         return (safe_indexing(X, sample_indices),
                 safe_indexing(y, sample_indices))
+
+    def _more_tags(self):
+        # TODO: remove the str tag once the following PR is merged:
+        # https://github.com/scikit-learn/scikit-learn/pull/14043
+        return {'X_types': ['2darray', 'str', 'string'],
+                'sample_indices': True}

@@ -4,8 +4,6 @@
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division
-
 from collections import Counter
 
 import numpy as np
@@ -120,7 +118,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                  threshold_cleaning=0.5,
                  n_jobs=1,
                  ratio=None):
-        super(NeighbourhoodCleaningRule, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
@@ -200,6 +198,10 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
         if self.return_indices:
             return (safe_indexing(X, self.sample_indices_),
-                    safe_indexing(y, self.sample_indices_), self.sample_indices_)
+                    safe_indexing(y, self.sample_indices_),
+                    self.sample_indices_)
         return (safe_indexing(X, self.sample_indices_),
                 safe_indexing(y, self.sample_indices_))
+
+    def _more_tags(self):
+        return {'sample_indices': True}

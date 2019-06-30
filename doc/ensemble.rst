@@ -95,12 +95,13 @@ Several methods taking advantage of boosting have been designed.
 a boosting iteration [SKHN2010]_::
 
   >>> from imblearn.ensemble import RUSBoostClassifier
-  >>> rusboost = RUSBoostClassifier(random_state=0)
+  >>> rusboost = RUSBoostClassifier(n_estimators=200, algorithm='SAMME.R',
+  ...                               random_state=0)
   >>> rusboost.fit(X_train, y_train)  # doctest: +ELLIPSIS
   RUSBoostClassifier(...)
   >>> y_pred = rusboost.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.74...
+  0.66...
 
 A specific method which uses ``AdaBoost`` as learners in the bagging classifier
 is called EasyEnsemble. The :class:`EasyEnsembleClassifier` allows to bag

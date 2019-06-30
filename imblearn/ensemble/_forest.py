@@ -12,13 +12,14 @@ from numpy import float32 as DTYPE
 from numpy import float64 as DOUBLE
 from scipy.sparse import issparse
 
+from joblib import Parallel, delayed
+
 from sklearn.base import clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble.base import _set_random_states
 from sklearn.ensemble.forest import _parallel_build_trees
 from sklearn.exceptions import DataConversionWarning
-from sklearn.externals.joblib import Parallel, delayed
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import safe_indexing
@@ -233,11 +234,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     >>> clf = BalancedRandomForestClassifier(max_depth=2, random_state=0)
     >>> clf.fit(X, y)  # doctest: +ELLIPSIS
     BalancedRandomForestClassifier(...)
-    >>> print(clf.feature_importances_)
-    [ 0.21506735  0.0104961   0.00706549  0.17414694  0.00556422  0.00704686
-      0.19779549  0.01865445  0.00608294  0.00490484  0.00866699  0.00251414
-      0.00339721  0.01174379  0.09380596  0.05049964  0.0033278   0.01008566
-      0.15534173  0.01379241]
+    >>> print(clf.feature_importances_)  # doctest: +ELLIPSIS
+    [...]
     >>> print(clf.predict([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ...                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]))
     [1]
@@ -262,7 +260,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                  verbose=0,
                  warm_start=False,
                  class_weight=None):
-        super(BalancedRandomForestClassifier, self).__init__(
+        super().__init__(
             criterion=criterion,
             max_depth=max_depth,
             n_estimators=n_estimators,
@@ -288,11 +286,11 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
             raise ValueError("n_estimators must be an integer, "
-                             "got {0}.".format(type(self.n_estimators)))
+                             "got {}.".format(type(self.n_estimators)))
 
         if self.n_estimators <= 0:
             raise ValueError("n_estimators must be greater than zero, "
-                             "got {0}.".format(self.n_estimators))
+                             "got {}.".format(self.n_estimators))
 
         if self.base_estimator is not None:
             self.base_estimator_ = clone(self.base_estimator)
@@ -309,8 +307,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         sub-estimators.
         """
         estimator = clone(self.base_estimator_)
-        estimator.set_params(**dict((p, getattr(self, p))
-                                    for p in self.estimator_params))
+        estimator.set_params(**{p: getattr(self, p)
+                                for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
         if random_state is not None:

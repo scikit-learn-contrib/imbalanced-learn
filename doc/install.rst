@@ -7,17 +7,11 @@ Prerequisites
 
 The imbalanced-learn package requires the following dependencies:
 
-* numpy (>=1.8.2)
-* scipy (>=0.13.3)
-
-* scikit-learn (>=0.20)
-
+* numpy (>=1.11)
+* scipy (>=0.17)
+* scikit-learn (>=0.21)
 * keras 2 (optional)
 * tensorflow (optional)
-
-Our release policy is to follow the scikit-learn releases in order to
-synchronize the new feature. **imbalanced-learn 0.4 is the last version to
-support Python 2.7**
 
 Install
 =======

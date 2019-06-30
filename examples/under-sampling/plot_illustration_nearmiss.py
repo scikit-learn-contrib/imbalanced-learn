@@ -73,7 +73,7 @@ for positive_idx, (neighbors, distance, color) in enumerate(
         ax.plot([X_majority[positive_idx, 0], X_minority[sample_idx, 0]],
                 [X_majority[positive_idx, 1], X_minority[sample_idx, 1]],
                 '--' + color, alpha=0.3,
-                label='Avg. dist.={0:.2f}'.format(distance)
+                label='Avg. dist.={:.2f}'.format(distance)
                 if make_plot == 0 else "")
 ax.set_title('NearMiss-1')
 make_plot_despine(ax)
@@ -108,7 +108,7 @@ for positive_idx, (neighbors, distance, color) in enumerate(
         ax.plot([X_majority[positive_idx, 0], X_minority[sample_idx, 0]],
                 [X_majority[positive_idx, 1], X_minority[sample_idx, 1]],
                 '--' + color, alpha=0.3,
-                label='Avg. dist.={0:.2f}'.format(distance)
+                label='Avg. dist.={:.2f}'.format(distance)
                 if make_plot == 0 else "")
 ax.set_title('NearMiss-2')
 make_plot_despine(ax)
@@ -148,7 +148,7 @@ for positive_idx, (neighbors, distance, color) in enumerate(
         ax.plot([X_majority[positive_idx, 0], X_minority[sample_idx, 0]],
                 [X_majority[positive_idx, 1], X_minority[sample_idx, 1]],
                 '--' + color, alpha=0.3,
-                label='Avg. dist.={0:.2f}'.format(distance)
+                label='Avg. dist.={:.2f}'.format(distance)
                 if make_plot == 0 else "")
 ax.set_title('NearMiss-3')
 make_plot_despine(ax)

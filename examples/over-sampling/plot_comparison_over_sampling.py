@@ -21,7 +21,8 @@ from sklearn.svm import LinearSVC
 
 from imblearn.pipeline import make_pipeline
 from imblearn.over_sampling import ADASYN
-from imblearn.over_sampling import SMOTE, BorderlineSMOTE, SVMSMOTE, SMOTENC
+from imblearn.over_sampling import (SMOTE, BorderlineSMOTE, SVMSMOTE, SMOTENC,
+                                    KMeansSMOTE)
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.base import BaseSampler
 
@@ -204,18 +205,23 @@ fig.tight_layout()
 # SMOTE proposes several variants by identifying specific samples to consider
 # during the resampling. The borderline version will detect which point to
 # select which are in the border between two classes. The SVM version will use
-# the support vectors found using an SVM algorithm to create new samples.
+# the support vectors found using an SVM algorithm to create new sample while
+# the KMeans version will make a clustering before to generate samples in each
+# cluster independently depending each cluster density.
 
 fig, ((ax1, ax2), (ax3, ax4),
-      (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, figsize=(15, 30))
+      (ax5, ax6), (ax7, ax8),
+      (ax9, ax10)) = plt.subplots(5, 2, figsize=(15, 30))
 X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94),
                       class_sep=0.8)
 
-ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8))
+
+ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10))
 for ax, sampler in zip(ax_arr,
                        (SMOTE(random_state=0),
                         BorderlineSMOTE(random_state=0, kind='borderline-1'),
                         BorderlineSMOTE(random_state=0, kind='borderline-2'),
+                        KMeansSMOTE(random_state=0),
                         SVMSMOTE(random_state=0))):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)

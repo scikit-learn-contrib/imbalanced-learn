@@ -5,8 +5,6 @@ links."""
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division
-
 from sklearn.base import clone
 from sklearn.utils import check_X_y
 
@@ -100,7 +98,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
                  tomek=None,
                  n_jobs=1,
                  ratio=None):
-        super(SMOTETomek, self).__init__()
+        super().__init__()
         self.sampling_strategy = sampling_strategy
         self.random_state = random_state
         self.smote = smote

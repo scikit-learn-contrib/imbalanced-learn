@@ -6,8 +6,6 @@ method."""
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division
-
 from collections import Counter
 
 import numpy as np
@@ -124,7 +122,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                  kind_sel='all',
                  n_jobs=1,
                  ratio=None):
-        super(EditedNearestNeighbours, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
@@ -185,6 +183,9 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
             return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
                     idx_under)
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+
+    def _more_tags(self):
+        return {'sample_indices': True}
 
 
 @Substitution(
@@ -292,7 +293,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                  kind_sel='all',
                  n_jobs=1,
                  ratio=None):
-        super(RepeatedEditedNearestNeighbours, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
@@ -376,6 +377,9 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
         if self.return_indices:
             return X_resampled, y_resampled, self.sample_indices_
         return X_resampled, y_resampled
+
+    def _more_tags(self):
+        return {'sample_indices': True}
 
 
 @Substitution(
@@ -485,7 +489,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                  allow_minority=False,
                  n_jobs=1,
                  ratio=None):
-        super(AllKNN, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.return_indices = return_indices
@@ -564,3 +568,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
         if self.return_indices:
             return X_resampled, y_resampled, self.sample_indices_
         return X_resampled, y_resampled
+
+    def _more_tags(self):
+        return {'sample_indices': True}

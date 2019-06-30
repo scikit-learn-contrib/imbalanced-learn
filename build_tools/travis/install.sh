@@ -10,10 +10,6 @@
 
 set -e
 
-echo 'List files from cached directories'
-echo 'pip:'
-ls $HOME/.cache/pip
-
 export CC=/usr/lib/ccache/gcc
 export CXX=/usr/lib/ccache/g++
 # Useful for debugging how ccache is used
@@ -32,7 +28,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     MINICONDA_PATH=/home/travis/miniconda
     chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
     export PATH=$MINICONDA_PATH/bin:$PATH
-    conda update --yes conda
+    conda install --yes conda=4.6
 
     # Configure the conda environment and put it in the path using the
     # provided versions
@@ -41,11 +37,8 @@ if [[ "$DISTRIB" == "conda" ]]; then
     conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
     conda install --yes -c anaconda cython=$CYTHON_VERSION
 
-    if [[ $PYTHON_VERSION == "3.6" ]]; then
-
-        # Tensorflow is not available in Python 3.7 yet.
+    if [[ "$OPTIONAL_DEPS" == "true" ]]; then
         conda install --yes pandas keras tensorflow
-
         KERAS_BACKEND=tensorflow
         python -c "import keras.backend"
         sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
@@ -67,14 +60,13 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # install.
     deactivate
     # Create a new virtualenv using system site packages for python, numpy
-    virtualenv --system-site-packages testvenv
+    virtualenv --system-site-packages --python=python3 testvenv
     source testvenv/bin/activate
 
-    pip install scikit-learn
-    pip install pandas keras tensorflow
-    pip install pytest pytest-cov codecov sphinx numpydoc
-    pip install cython
-
+    pip3 install scikit-learn
+    pip3 install pandas keras tensorflow
+    pip3 install pytest pytest-cov codecov sphinx numpydoc
+    pip3 install cython
 
 fi
 

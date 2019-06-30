@@ -6,8 +6,6 @@ clustering."""
 #          Christos Aridas
 # License: MIT
 
-from __future__ import division
-
 import numpy as np
 from scipy import sparse
 
@@ -99,7 +97,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                  voting='auto',
                  n_jobs=1,
                  ratio=None):
-        super(ClusterCentroids, self).__init__(
+        super().__init__(
             sampling_strategy=sampling_strategy, ratio=ratio)
         self.random_state = random_state
         self.estimator = estimator
@@ -170,3 +168,6 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         y_resampled = np.hstack(y_resampled)
 
         return X_resampled, np.array(y_resampled, dtype=y.dtype)
+
+    def _more_tags(self):
+        return {'sample_indices': False}

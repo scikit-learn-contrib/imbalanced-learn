@@ -2,7 +2,6 @@
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
-from __future__ import division
 
 import warnings
 
@@ -14,7 +13,6 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
-from sklearn.externals import six
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.deprecation import deprecated
 
@@ -92,8 +90,9 @@ def check_target_type(y, indicate_one_vs_all=False):
     if type_y == 'multilabel-indicator':
         if np.any(y.sum(axis=1) > 1):
             raise ValueError(
-                "When 'y' corresponds to '{}', 'y' should encode the "
-                "multiclass (a single 1 by row).".format(type_y))
+                "Imbalanced-learn currently supports binary, multiclass and "
+                "binarized encoded multiclasss targets. Multilabel and "
+                "multioutput targets are not supported.")
         y = y.argmax(axis=1)
 
     return (y, type_y == 'multilabel-indicator') if indicate_one_vs_all else y
@@ -459,7 +458,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
     if sampling_type in ('ensemble', 'bypass'):
         return sampling_strategy
 
-    if isinstance(sampling_strategy, six.string_types):
+    if isinstance(sampling_strategy, str):
         if sampling_strategy not in SAMPLING_TARGET_KIND.keys():
             raise ValueError("When 'sampling_strategy' is a string, it needs"
                              " to be one of {}. Got '{}' instead.".format(
