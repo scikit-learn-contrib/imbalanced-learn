@@ -15,7 +15,7 @@ Prototype generation
 ====================
 
 Given an original data set :math:`S`, prototype generation algorithms will
-generate a new set :math:`S'` where :math:`|S'| < |S|` and :math:`S' \not\in
+generate a new set :math:`S'` where :math:`|S'| < |S|` and :math:`S' \not\subset
 S`. In other words, prototype generation technique will reduce the number of
 samples in the targeted classes but the remaining samples are generated --- and
 not selected --- from the original set.
