@@ -368,10 +368,9 @@ def specificity_score(y_true,
                       sample_weight=None):
     """Compute the specificity
 
-    The specificity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
-    of true positives and ``fn`` the number of false negatives. The specificity
-    is intuitively the ability of the classifier to find all the positive
-    samples.
+    The specificity is the ratio ``tn / (tn + fp)`` where ``tn`` is the number
+    of true negatives and ``fn`` the number of false negatives. The specificity
+    quantifies the ability to avoid false positives_[1].
 
     The best value is 1 and the worst value is 0.
 
