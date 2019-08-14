@@ -65,7 +65,7 @@ def show_versions(github=False):
     _deps_info = _get_deps_info()
     _github_markup = (
         "<details>"
-        "<summary>System and Dependency Information</summary>\n\n"
+        "<summary>System, Dependency Information</summary>\n\n"
         "**System Information**\n\n"
         "{0}\n"
         "**Python Dependencies**\n\n"

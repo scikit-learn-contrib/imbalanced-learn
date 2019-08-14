@@ -39,7 +39,7 @@ def test_show_versions_default(capsys):
 def test_show_versions_github(capsys):
     show_versions(github=True)
     out, err = capsys.readouterr()
-    assert "<details><summary>System and Dependency Information</summary>" in out
+    assert "<details><summary>System, Dependency Information</summary>" in out
     assert "**System Information**" in out
     assert "* python" in out
     assert "* executable" in out
