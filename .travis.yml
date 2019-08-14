@@ -33,10 +33,10 @@ matrix:
     - env: DISTRIB="ubuntu"
     # Latest release
     - env: DISTRIB="conda" PYTHON_VERSION="3.6"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.21.3"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.21.2"
            OPTIONAL_DEPS="true"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.21.3"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.21.2"
            OPTIONAL_DEPS="false"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
