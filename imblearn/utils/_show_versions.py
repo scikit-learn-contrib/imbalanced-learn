@@ -59,7 +59,7 @@ def show_versions(github=False):
         If true, wrap system info with GitHub markup.
     """
 
-	from sklearn.utils._show_versions import _get_sys_info
+    from sklearn.utils._show_versions import _get_sys_info
 
     _sys_info = _get_sys_info()
     _deps_info = _get_deps_info()
