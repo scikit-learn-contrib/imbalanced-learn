@@ -3,13 +3,18 @@
 
 import io
 import re
+import codecs
 import os
 import sys
 import subprocess
-import codecs
 from setuptools import find_packages
 
 PACKAGE_NAME = 'imblearn'
+
+# get __version__ from _version.py
+ver_file = os.path.join('imblearn', '_version.py')
+with open(ver_file) as f:
+    exec(f.read())
 
 DISTNAME = 'imbalanced-learn'
 DESCRIPTION = 'Toolbox for imbalanced dataset in machine learning.'
@@ -20,7 +25,7 @@ MAINTAINER_EMAIL = 'g.lemaitre58@gmail.com, ichkoar@gmail.com'
 URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
 LICENSE = 'MIT'
 DOWNLOAD_URL = 'https://github.com/scikit-learn-contrib/imbalanced-learn'
-
+VERSION = __version__
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
                'License :: OSI Approved',
@@ -115,20 +120,19 @@ def setup_package():
 
     try:
         setup(name=DISTNAME,
-              author=MAINTAINER,
-              author_email=MAINTAINER_EMAIL,
               maintainer=MAINTAINER,
               maintainer_email=MAINTAINER_EMAIL,
               description=DESCRIPTION,
               license=LICENSE,
               url=URL,
-              version=version(PACKAGE_NAME),
+              version=VERSION,
               download_url=DOWNLOAD_URL,
               long_description=LONG_DESCRIPTION,
               zip_safe=False,  # the package can run out of an .egg file
               classifiers=CLASSIFIERS,
               packages=find_packages(),
               install_requires=INSTALL_REQUIRES,
+			  extras_require=EXTRAS_REQUIRE,
               configuration=configuration)
     finally:
         del sys.path[0]

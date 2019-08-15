@@ -19,7 +19,7 @@ run_tests(){
     python --version
     python -c "import numpy; print('numpy %s' % numpy.__version__)"
     python -c "import scipy; print('scipy %s' % scipy.__version__)"
-	python -c "import Cython; print('Cython %s' % Cython.__version__)"
+    python -c "import Cython; print('Cython %s' % Cython.__version__)"
     python -c "import multiprocessing as mp; print('%d CPUs' % mp.cpu_count())"
 
     pytest --cov=$MODULE -r sx --pyargs $MODULE

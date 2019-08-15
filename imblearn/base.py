@@ -137,12 +137,6 @@ class BaseSampler(SamplerMixin):
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         return X, y, binarize_y
 
-    @staticmethod
-    def _check_X_y(X, y):
-        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
-        return X, y, binarize_y
-
     @property
     def ratio_(self):
         # FIXME: remove in 0.6
@@ -156,7 +150,6 @@ class BaseSampler(SamplerMixin):
         if self.ratio is not None:
             deprecate_parameter(self, '0.4', 'ratio', 'sampling_strategy')
             self.sampling_strategy = self.ratio
-
 
 
 def _identity(X, y):
@@ -233,7 +226,6 @@ class FunctionSampler(BaseSampler):
         self.func = func
         self.accept_sparse = accept_sparse
         self.kw_args = kw_args
-
 
     def _fit_resample(self, X, y):
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']

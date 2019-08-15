@@ -116,7 +116,6 @@ Prototype selection
    ensemble.BalancedRandomForestClassifier
    ensemble.EasyEnsemble
    ensemble.EasyEnsembleClassifier
-
    ensemble.RUSBoostClassifier
 
 .. _keras_ref:
@@ -157,7 +156,6 @@ Prototype selection
    :toctree: generated/
    :template: function.rst
               
-
    tensorflow.balanced_batch_generator
 
 .. _misc_ref:

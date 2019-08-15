@@ -94,7 +94,6 @@ source activate $CONDA_ENV_NAME
 conda install --yes pip numpy scipy pillow matplotlib sphinx \
       sphinx_rtd_theme numpydoc pandas keras
 pip install --pre scikit-learn
-
 pip install -U git+https://github.com/sphinx-gallery/sphinx-gallery.git
 
 # Build and install imbalanced-learn in dev mode
