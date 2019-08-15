@@ -83,7 +83,7 @@ def show_versions(github=False):
         for k, stat in _deps_info.items():
             _deps_markup += "* {k:<10}: `{stat}`\n".format(k=k, stat=stat)
 
-        print(_github_markup.format(_sys_markup, _blas_markup))
+        print(_github_markup.format(_sys_markup, _deps_markup))
 
     else:
 
