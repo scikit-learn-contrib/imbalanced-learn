@@ -1052,7 +1052,7 @@ class SMOTENC(SMOTE):
 
         return X_resampled, y_resampled
 
-    def _generate_sample(self, X, nn_data, nn_num, row, col, step):
+    def _generate_samples(self, X, nn_data, nn_num, rows, cols, steps):
         """Generate a synthetic sample with an additional steps for the
         categorical features.
 
@@ -1061,13 +1061,15 @@ class SMOTENC(SMOTE):
         of the majority class.
         """
         rng = check_random_state(self.random_state)
-        X_new = super()._generate_samples(X, nn_data, nn_num, rows, cols, steps)
+        X_new = super()._generate_samples(
+            X, nn_data, nn_num, rows, cols, steps)
         # change in sparsity structure more efficient with LIL than CSR
         X_new = (X_new.tolil() if sparse.issparse(X_new) else X_new)
+
         # convert to dense array since scipy.sparse doesn't handle 3D
         nn_data = (nn_data.toarray() if sparse.issparse(nn_data) else nn_data)
         all_neighbors = nn_data[nn_num[rows]]
-        
+
         categories_size = ([self.continuous_features_.size] +
                            [cat.size for cat in self.ohe_.categories_])
 
