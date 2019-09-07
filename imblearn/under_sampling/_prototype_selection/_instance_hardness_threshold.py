@@ -12,7 +12,7 @@ import numpy as np
 
 from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold,cross_val_predict
 from sklearn.utils import safe_indexing
 
 from ..base import BaseUnderSampler
@@ -126,6 +126,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
                 isinstance(self.estimator, ClassifierMixin) and
                 hasattr(self.estimator, 'predict_proba')):
             self.estimator_ = clone(self.estimator)
+            self.estimator_.set_params(n_jobs=1,random_state=self.random_state)
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
                 n_estimators=100, random_state=self.random_state,
@@ -143,19 +144,10 @@ class InstanceHardnessThreshold(BaseUnderSampler):
         target_stats = Counter(y)
         skf = StratifiedKFold(
             n_splits=self.cv, shuffle=False,
-            random_state=self.random_state).split(X, y)
-        probabilities = np.zeros(y.shape[0], dtype=float)
-
-        for train_index, test_index in skf:
-            X_train = safe_indexing(X, train_index)
-            X_test = safe_indexing(X, test_index)
-            y_train = safe_indexing(y, train_index)
-            y_test = safe_indexing(y, test_index)
-
-            self.estimator_.fit(X_train, y_train)
-
-            probs = self.estimator_.predict_proba(X_test)
-            probabilities[test_index] = probs[range(len(y_test)), y_test]
+            random_state=self.random_state)
+        probabilities = cross_val_predict(self.estimator_, X, y, cv=skf,
+                                      n_jobs=self.n_jobs, method='predict_proba')
+        probabilities = probabilities[range(len(y)), y]
 
         idx_under = np.empty((0, ), dtype=int)
 
