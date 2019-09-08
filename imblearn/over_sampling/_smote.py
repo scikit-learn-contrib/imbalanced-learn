@@ -114,7 +114,7 @@ class BaseSMOTE(BaseOverSampler):
         cols = np.mod(samples_indices, nn_num.shape[1])
 
         X_new = self._generate_samples(X, nn_data, nn_num, rows, cols, steps)
-        y_new = np.full(len(samples_indices), fill_value=y_type, dtype=y_dtype)
+        y_new = np.full(n_samples, fill_value=y_type, dtype=y_dtype)
         return X_new, y_new
 
     def _generate_samples(self, X, nn_data, nn_num, rows, cols, steps):
