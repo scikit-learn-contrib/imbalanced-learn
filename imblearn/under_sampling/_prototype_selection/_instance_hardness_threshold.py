@@ -12,8 +12,9 @@ import numpy as np
 
 from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble.base import _set_random_states
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
-from sklearn.utils import safe_indexing
+from sklearn.utils import safe_indexing, check_random_state
 
 from ..base import BaseUnderSampler
 from ...utils import Substitution
@@ -119,16 +120,18 @@ class InstanceHardnessThreshold(BaseUnderSampler):
         self.cv = cv
         self.n_jobs = n_jobs
 
-    def _validate_estimator(self):
+    def _validate_estimator(self, random_state):
         """Private function to create the classifier"""
 
         if (self.estimator is not None and
                 isinstance(self.estimator, ClassifierMixin) and
                 hasattr(self.estimator, 'predict_proba')):
             self.estimator_ = clone(self.estimator)
-            self.estimator_.set_params(random_state=self.random_state)
-            if 'n_jobs' in self.estimator_.get_params().keys():
+            _set_random_states(self.estimator_, random_state)
+            try:
                 self.estimator_.set_params(n_jobs=1)
+            except ValueError:
+                pass
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
                 n_estimators=100, random_state=self.random_state,
@@ -141,14 +144,16 @@ class InstanceHardnessThreshold(BaseUnderSampler):
         if self.return_indices:
             deprecate_parameter(self, '0.4', 'return_indices',
                                 'sample_indices_')
-        self._validate_estimator()
+        random_state = check_random_state(self.random_state)
+        self._validate_estimator(random_state)
 
         target_stats = Counter(y)
         skf = StratifiedKFold(
             n_splits=self.cv, shuffle=False,
-            random_state=self.random_state)
-        probabilities = cross_val_predict(self.estimator_, X, y, cv=skf,
-                                          n_jobs=self.n_jobs, method='predict_proba')
+            random_state=random_state)
+        probabilities = cross_val_predict(
+            self.estimator_, X, y, cv=skf,
+            n_jobs=self.n_jobs, method='predict_proba')
         probabilities = probabilities[range(len(y)), y]
 
         idx_under = np.empty((0,), dtype=int)

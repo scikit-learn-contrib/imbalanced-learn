@@ -6,7 +6,7 @@
 import pytest
 import numpy as np
 
-from sklearn.utils.testing import assert_array_equal, all_estimators
+from sklearn.utils.testing import assert_array_equal
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 
 from imblearn.under_sampling import InstanceHardnessThreshold
@@ -15,10 +15,10 @@ RND_SEED = 0
 X = np.array([[-0.3879569, 0.6894251], [-0.09322739, 1.28177189], [
     -0.77740357, 0.74097941
 ], [0.91542919, -0.65453327], [-0.03852113, 0.40910479], [
-                  -0.43877303, 1.07366684
-              ], [-0.85795321, 0.82980738], [-0.18430329, 0.52328473], [
-                  -0.30126957, -0.66268378
-              ], [-0.65571327, 0.42412021], [-0.28305528, 0.30284991],
+    -0.43877303, 1.07366684
+], [-0.85795321, 0.82980738], [-0.18430329, 0.52328473], [
+    -0.30126957, -0.66268378
+], [-0.65571327, 0.42412021], [-0.28305528, 0.30284991],
               [0.20246714, -0.34727125], [1.06446472, -1.09279772],
               [0.30543283, -0.02589502], [-0.00717161, 0.00318087]])
 Y = np.array([0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0])
@@ -27,17 +27,11 @@ ESTIMATOR = GradientBoostingClassifier(random_state=RND_SEED)
 
 def test_iht_init():
     sampling_strategy = 'auto'
-    for name, class_ in all_estimators():
-        if not hasattr(class_, 'predict_proba'):
-            continue
-        try:
-            class_()
-        except TypeError:
-            continue
-        iht = InstanceHardnessThreshold(
-            class_(), sampling_strategy=sampling_strategy, random_state=RND_SEED)
-        assert iht.sampling_strategy == sampling_strategy
-        assert iht.random_state == RND_SEED
+    iht = InstanceHardnessThreshold(
+        ESTIMATOR, sampling_strategy=sampling_strategy, random_state=RND_SEED)
+
+    assert iht.sampling_strategy == sampling_strategy
+    assert iht.random_state == RND_SEED
 
 
 def test_iht_fit_resample():
@@ -47,8 +41,8 @@ def test_iht_fit_resample():
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
     ], [1.06446472, -1.09279772], [0.30543283, -0.02589502], [
-                         -0.00717161, 0.00318087
-                     ], [-0.09322739, 1.28177189], [-0.77740357, 0.74097941],
+        -0.00717161, 0.00318087
+    ], [-0.09322739, 1.28177189], [-0.77740357, 0.74097941],
                      [-0.43877303, 1.07366684], [-0.85795321, 0.82980738],
                      [-0.18430329, 0.52328473], [-0.28305528, 0.30284991]])
     y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
@@ -65,8 +59,8 @@ def test_iht_fit_resample_with_indices():
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
     ], [1.06446472, -1.09279772], [0.30543283, -0.02589502], [
-                         -0.00717161, 0.00318087
-                     ], [-0.09322739, 1.28177189], [-0.77740357, 0.74097941],
+        -0.00717161, 0.00318087
+    ], [-0.09322739, 1.28177189], [-0.77740357, 0.74097941],
                      [-0.43877303, 1.07366684], [-0.85795321, 0.82980738],
                      [-0.18430329, 0.52328473], [-0.28305528, 0.30284991]])
     y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
@@ -85,8 +79,8 @@ def test_iht_fit_resample_half():
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
     ], [1.06446472, -1.09279772], [0.30543283, -0.02589502], [
-                         -0.00717161, 0.00318087
-                     ], [-0.09322739, 1.28177189], [-0.77740357, 0.74097941],
+        -0.00717161, 0.00318087
+    ], [-0.09322739, 1.28177189], [-0.77740357, 0.74097941],
                      [-0.03852113, 0.40910479], [-0.43877303, 1.07366684],
                      [-0.85795321, 0.82980738], [-0.18430329, 0.52328473],
                      [-0.30126957, -0.66268378], [-0.28305528, 0.30284991]])
@@ -103,8 +97,8 @@ def test_iht_fit_resample_class_obj():
     X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
         -0.65571327, 0.42412021
     ], [1.06446472, -1.09279772], [0.30543283, -0.02589502], [
-                         -0.00717161, 0.00318087
-                     ], [-0.09322739, 1.28177189], [-0.77740357, 0.74097941],
+        -0.00717161, 0.00318087
+    ], [-0.09322739, 1.28177189], [-0.77740357, 0.74097941],
                      [-0.43877303, 1.07366684], [-0.85795321, 0.82980738],
                      [-0.18430329, 0.52328473], [-0.28305528, 0.30284991]])
     y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
@@ -126,9 +120,8 @@ def test_iht_reproducibility():
     idx_sampled = []
     for seed in range(5):
         est = RandomForestClassifier(n_estimators=10, random_state=seed)
-        iht = InstanceHardnessThreshold(
-            estimator=est,
-            random_state=RND_SEED, return_indices=True)
-        idx_sampled.append(iht.fit_resample(X_digits, y_digits)[2])
+        iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)
+        iht.fit_resample(X_digits, y_digits)
+        idx_sampled.append(iht.sample_indices_.copy())
     for idx_1, idx_2 in zip(idx_sampled, idx_sampled[1:]):
         assert_array_equal(idx_1, idx_2)
