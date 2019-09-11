@@ -1290,7 +1290,7 @@ class KMeansSMOTE(BaseSMOTE):
             if not valid_clusters:
                 raise RuntimeError(
                     "No clusters found with sufficient samples of "
-                    "class {}. Try lowering the cluster_balance_threshold or "
+                    "class {}. Try lowering the cluster_balance_threshold "
                     "or increasing the number of "
                     "clusters.".format(class_sample))
 
