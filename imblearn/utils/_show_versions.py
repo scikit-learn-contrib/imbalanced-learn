@@ -59,49 +59,36 @@ def show_versions(github=False):
         If true, wrap system info with GitHub markup.
     """
 
-    from sklearn.utils._show_versions import (
-        _get_sys_info,
-        _get_blas_info,
-    )
+    from sklearn.utils._show_versions import _get_sys_info
 
     _sys_info = _get_sys_info()
-    _blas_info = _get_blas_info()
     _deps_info = _get_deps_info()
     _github_markup = (
         "<details>"
-        "<summary>System, BLAS, and Dependencies</summary>\n\n"
+        "<summary>System, Dependency Information</summary>\n\n"
         "**System Information**\n\n"
         "{0}\n"
-        "**BLAS**\n\n"
-        "{1}\n"
         "**Python Dependencies**\n\n"
-        "{2}\n"
+        "{1}\n"
         "</details>"
     )
 
     if github:
 
         _sys_markup = ""
-        _blas_markup = ""
         _deps_markup = ""
 
         for k, stat in _sys_info.items():
             _sys_markup += "* {k:<10}: `{stat}`\n".format(k=k, stat=stat)
-        for k, stat in _blas_info.items():
-            _blas_markup += "* {k:<10}: `{stat}`\n".format(k=k, stat=stat)
         for k, stat in _deps_info.items():
             _deps_markup += "* {k:<10}: `{stat}`\n".format(k=k, stat=stat)
 
-        print(_github_markup.format(_sys_markup, _blas_markup, _deps_markup))
+        print(_github_markup.format(_sys_markup, _deps_markup))
 
     else:
 
         print("\nSystem:")
         for k, stat in _sys_info.items():
-            print("{k:>11}: {stat}".format(k=k, stat=stat))
-
-        print("\nBLAS:")
-        for k, stat in _blas_info.items():
             print("{k:>11}: {stat}".format(k=k, stat=stat))
 
         print("\nPython dependencies:")
