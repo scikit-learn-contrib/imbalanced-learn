@@ -60,10 +60,11 @@ R_TOL = 1e-4
 
 @pytest.mark.parametrize('fmt', ['lil', 'csr', 'csc'])
 def test_dense_sparse(fmt):
-    # Need density large enough to prevent NearestNeighbors having to choose
-    # between ties with rows full of 0s that have different corresponding
-    # y-values to ensure that sparse and dense yield same results.
-    X_spr = sparse.random(100, 10, density=0.2 format=fmt, random_state=0)
+    # Need density/size large enough to prevent NearestNeighbors having to
+    # choose between ties with rows full of 0s that have different
+    # corresponding y-values to ensure that sparse and dense yield same
+    # results.
+    X_spr = sparse.random(100, 20, density=0.2, format=fmt, random_state=0)
     X_arr = X_spr.toarray()
 
     random_state = np.random.RandomState(0)
@@ -72,10 +73,10 @@ def test_dense_sparse(fmt):
     spider = SPIDER()
     X_resampled_spr, y_resampled_spr = spider.fit_resample(X_spr, y)
     X_resampled_spr = X_resampled_spr.toarray()
-    sort_spr_idxs = np.argsort(X_resampled_spr[:, 0], axis=0)
+    sort_spr_idxs = np.lexsort(X_resampled_spr.T)
 
     X_resampled_arr, y_resampled_arr = spider.fit_resample(X_arr, y)
-    sort_arr_idxs = np.argsort(X_resampled_arr[:, 0], axis=0)
+    sort_arr_idxs = np.lexsort(X_resampled_arr.T)
 
     # sparse implementation amplifies in different order than dense
     assert_allclose(
