@@ -58,11 +58,12 @@ RND_SEED = 0
 R_TOL = 1e-4
 
 
-#FIXME: failing test
-#TODO: also parametrize 'kind'
 @pytest.mark.parametrize('fmt', ['lil', 'csr', 'csc'])
 def test_dense_sparse(fmt):
-    X_spr = sparse.random(100, 10, format=fmt, random_state=0)
+    # Need density large enough to prevent NearestNeighbors having to choose
+    # between ties with rows full of 0s that have different corresponding
+    # y-values to ensure that sparse and dense yield same results.
+    X_spr = sparse.random(100, 10, density=0.2 format=fmt, random_state=0)
     X_arr = X_spr.toarray()
 
     random_state = np.random.RandomState(0)

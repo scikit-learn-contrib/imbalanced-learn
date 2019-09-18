@@ -4,6 +4,8 @@
 # License: MIT
 
 
+from numbers import Integral
+
 import numpy as np
 from scipy import sparse
 from scipy import stats
@@ -25,6 +27,9 @@ class SPIDER(BasePreprocessSampler):
     Parameters
     ----------
     {sampling_strategy}
+    #TODO see dict vs list sampling_strategy of other samplers
+    #       to see if applicable to this
+    #       NCR would be good to check
 
     kind : str (default='weak')
         Possible choices are:
@@ -53,36 +58,27 @@ class SPIDER(BasePreprocessSampler):
     n_jobs : int, optional (default=1)
         Number of threads to run the algorithm when it is possible.
 
-    # Attributes
-    # ----------
-    # discarded_ : TODO
-    #     TODO
-
-    # relabeled_ : TODO
-    #     TODO
-
     Notes
     -----
-    The implementation is based on [1]_, [2]_ and [3]_.
+    The implementation is based on [1]_ and [2]_.
 
-    TODO Supports multi-class resampling. A one-vs.-rest scheme is used.
+    # TODO verify this will work
+    Supports multi-class resampling. A one-vs.-rest scheme is used.
 
     See also
     --------
-    SMOTE : Over-sample using SMOTE.
+    NCR : Clean-sample using NeighborhoodClearingRule.
+
+    ROS : Over-sample using RandomOverSampling
 
     References
     ----------
-    .. [1] Stefanowski, J., & Wilk, S, "Improving rule based classifiers
-       induced by MODLEM by selective pre-processing of imbalanced data," In:
-       Proc. of the RSKD Workshop at ECML/PKDD, pp. 54–65, 2007.
-
-    .. [2] Stefanowski, J., & Wilk, S, "Selective pre-processing of imbalanced
+    .. [1] Stefanowski, J., & Wilk, S, "Selective pre-processing of imbalanced
        data for improving classification performance," In: Song, I.-Y., Eder,
        J., Nguyen, T.M. (Eds.): DaWaK 2008, LNCS, vol. 5182, pp. 283–292.
        Springer, Heidelberg, 2008.
 
-    .. [3] Błaszczyński, J., Deckert, M., Stefanowski, J., & Wilk, S,
+    .. [2] Błaszczyński, J., Deckert, M., Stefanowski, J., & Wilk, S,
        "Integrating Selective Pre-processing of Imbalanced Data with Ivotes
        Ensemble," In: M. Szczuka et al. (Eds.): RSCTC 2010, LNAI 6086, pp.
        148–157, 2010.
@@ -103,7 +99,7 @@ class SPIDER(BasePreprocessSampler):
         super().__init__(sampling_strategy=sampling_strategy)
         self.kind = kind
         self.n_neighbors = n_neighbors
-        self.additional_neighbors = max(1, int(additional_neighbors))
+        self.additional_neighbors = additional_neighbors
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
@@ -117,6 +113,12 @@ class SPIDER(BasePreprocessSampler):
                              '"weak", "relabel", and "strong".'
                              'Got {} instead.'.format(self.kind))
 
+        if self.additional_neighbors < 1:
+            raise ValueError('additional_neighbors must be at least 1.')
+
+        if not isinstance(self.additional_neighbors, Integral):
+            raise TypeError('additional_neighbors must be an integer.')
+
     def _locate_neighbors(self, X, additional=False):
         """Find nearest neighbors for samples.
 
@@ -126,7 +128,8 @@ class SPIDER(BasePreprocessSampler):
             The feature samples to find neighbors for.
 
         additional : bool, optional (defaul=False)
-            Flag to indicate whether to increase ``n_neighbors`` by ``additional_neighbors``.
+            Flag to indicate whether to increase ``n_neighbors`` by
+            ``additional_neighbors``.
 
         Returns
         -------
@@ -137,7 +140,8 @@ class SPIDER(BasePreprocessSampler):
         if additional:
             n_neighbors += self.additional_neighbors
 
-        nn_indices = self.nn_.kneighbors(X, n_neighbors, return_distance=False)[:, 1:]
+        nn_indices = self.nn_.kneighbors(
+            X, n_neighbors, return_distance=False)[:, 1:]
         return nn_indices
 
     def _knn_correct(self, X, y, additional=False):
@@ -152,7 +156,8 @@ class SPIDER(BasePreprocessSampler):
             The label samples to classify.
 
         additional : bool, optional (defaul=False)
-            Flag to indicate whether to increase ``n_neighbors`` by ``additional_neighbors``.
+            Flag to indicate whether to increase ``n_neighbors`` by 
+            additional_neighbors``.
 
         Returns
         -------
@@ -162,7 +167,7 @@ class SPIDER(BasePreprocessSampler):
         try:
             nn_indices = self._locate_neighbors(X, additional)
         except ValueError:
-            return np.empty(0, dtype=bool) # TODO: check if this works
+            return np.empty(0, dtype=bool)
         mode, _ = stats.mode(self._y[nn_indices], axis=1)
         is_correct = (y == mode.ravel())
         return is_correct
@@ -192,11 +197,9 @@ class SPIDER(BasePreprocessSampler):
             nn_indices = self._locate_neighbors(X, additional)
         except ValueError:
             return np.empty(0, dtype=int)
-        
-        amplify_amounts = np.isin(nn_indices, self._amplify_indices).sum(axis=1)
 
-        # if additional:
-        #     amplify_amounts += self.additional_neighbors
+        amplify_amounts = np.isin(
+            nn_indices, self._amplify_indices).sum(axis=1)
 
         if sparse.issparse(X):
             X_parts = []
@@ -226,26 +229,20 @@ class SPIDER(BasePreprocessSampler):
 
         self._X_resampled = []
         self._y_resampled = []
-        # self._X = X # do I need this one for X?
         self._y = y.copy()
 
         self.nn_.fit(X)
         is_safe = self._knn_correct(X, y)
 
         strategy = self.sampling_strategy_
-        #TODO: double check that class_sample means the value that indicates which class
         for class_sample in filter(strategy.get, strategy):
             is_class = (y == class_sample)
             self._amplify_indices = np.flatnonzero(~is_class & is_safe)
-            #TODO see what some cleaning samplers call idxs that are to be removed
             discard_indices = np.flatnonzero(~is_class & ~is_safe)
 
             class_noisy_indices = np.flatnonzero(is_class & ~is_safe)
             X_class_noisy = safe_indexing(X, class_noisy_indices)
             y_class_noisy = y[class_noisy_indices]
-            # y_class_noisy = safe_indexing(y, class_noisy_indices)
-
-            # self.relabeled_ = np.empty(0, dtype=int)
 
             if self.kind in ('weak', 'relabel'):
                 nn_indices = self._amplify(X_class_noisy, y_class_noisy)
@@ -253,27 +250,26 @@ class SPIDER(BasePreprocessSampler):
                 if self.kind == 'relabel':
                     relabel_mask = np.isin(nn_indices, discard_indices)
                     relabel_indices = np.unique(nn_indices[relabel_mask])
-                    # breakpoint()
                     self._y[relabel_indices] = class_sample
-                    discard_indices = np.setdiff1d(discard_indices, relabel_indices)
-                    # self.relabeled_ = relabel_indices                    
+                    discard_indices = np.setdiff1d(
+                        discard_indices, relabel_indices)
 
             elif self.kind == 'strong':
                 class_safe_indices = np.flatnonzero(is_class & is_safe)
                 X_class_safe = safe_indexing(X, class_safe_indices)
                 y_class_safe = y[class_safe_indices]
-                # y_class_safe = safe_indexing(y, class_safe_indices)
                 self._amplify(X_class_safe, y_class_safe)
 
-                is_correct = self._knn_correct(X_class_noisy, y_class_noisy, additional=True)
+                is_correct = self._knn_correct(
+                    X_class_noisy, y_class_noisy, additional=True)
 
-                X_correct = X_class_noisy[safe_mask(X_class_noisy, is_correct)]
-                # X_correct = X_class_noisy[is_correct]
+                X_correct = X_class_noisy[
+                    safe_mask(X_class_noisy, is_correct)]
                 y_correct = y_class_noisy[is_correct]
                 self._amplify(X_correct, y_correct)
 
-                X_incorrect = X_class_noisy[safe_mask(X_class_noisy, ~is_correct)]
-                # X_incorrect = X_class_noisy[~is_correct]
+                X_incorrect = X_class_noisy[
+                    safe_mask(X_class_noisy, ~is_correct)]
                 y_incorrect = y_class_noisy[~is_correct]
                 self._amplify(X_incorrect, y_incorrect, additional=True)
             else:
@@ -281,13 +277,11 @@ class SPIDER(BasePreprocessSampler):
 
         discard_mask = np.ones_like(y, dtype=bool)
         discard_mask[discard_indices] = False
-        # self.discarded_ = ~discard_mask
 
         X_resampled = self._X_resampled
         y_resampled = self._y_resampled
 
         X_resampled.append(X[safe_mask(X, discard_mask)])
-        # y_resampled.append(y[discard_mask])
         y_resampled.append(self._y[discard_mask])
 
         if sparse.issparse(X):
@@ -297,4 +291,5 @@ class SPIDER(BasePreprocessSampler):
         y_resampled = np.hstack(y_resampled)
 
         del self._X_resampled, self._y_resampled
+        del self._y, self._amplify_indices
         return X_resampled, y_resampled
