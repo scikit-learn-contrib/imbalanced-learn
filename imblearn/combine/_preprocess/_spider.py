@@ -19,7 +19,8 @@ from ...utils import Substitution
 SEL_KIND = ('weak', 'relabel', 'strong')
 
 
-@Substitution(sampling_strategy=BasePreprocessSampler._sampling_strategy_docstring)
+@Substitution(
+    sampling_strategy=BasePreprocessSampler._sampling_strategy_docstring)
 class SPIDER(BasePreprocessSampler):
     """Perform filtering and over-sampling using Selective Pre-processing of
     Imbalanced Data (SPIDER) sampling approach for imbalanced datasets.
@@ -81,7 +82,7 @@ class SPIDER(BasePreprocessSampler):
 
     Examples
     --------
-    
+
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.combine import \
@@ -166,7 +167,7 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
             The label samples to classify.
 
         additional : bool, optional (default=False)
-            Flag to indicate whether to increase ``n_neighbors`` by 
+            Flag to indicate whether to increase ``n_neighbors`` by
             additional_neighbors``.
 
         Returns
@@ -230,7 +231,7 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
         else:
             X_new = np.repeat(X, amplify_amounts, axis=0)
             y_new = np.repeat(y, amplify_amounts)
-        
+
         self._X_resampled.append(X_new)
         self._y_resampled.append(y_new)
         return nn_indices

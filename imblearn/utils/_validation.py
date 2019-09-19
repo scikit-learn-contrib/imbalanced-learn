@@ -369,8 +369,8 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
 
         - When ``str``, specify the class targeted by the resampling. For
           **under- and over-sampling methods**, the number of samples in the
-          different classes will be equalized. For **cleaning and 
-          preprocessing methods**, the number of samples will not be equal. 
+          different classes will be equalized. For **cleaning and
+          preprocessing methods**, the number of samples will not be equal.
           Possible choices are:
 
             ``'minority'``: resample only the minority class;
