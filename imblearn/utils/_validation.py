@@ -193,7 +193,7 @@ def _sampling_strategy_minority(y, sampling_type):
             key: n_sample_majority - value
             for (key, value) in target_stats.items() if key == class_minority
         }
-    elif sampling_strategy in ('under-sampling', 'clean-sampling'):
+    elif sampling_type in ('under-sampling', 'clean-sampling'):
         raise ValueError("'sampling_strategy'='minority' cannot be used with"
                          " under-sampler and clean-sampler.")
     else:
@@ -279,9 +279,9 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
 def _sampling_strategy_list(sampling_strategy, y, sampling_type):
     """With cleaning methods, sampling_strategy can be a list to target the
  class of interest."""
-    if sampling_type != 'clean-sampling':
+    if sampling_type not in ('clean-sampling', 'preprocess-sampling'):
         raise ValueError("'sampling_strategy' cannot be a list for samplers "
-                         "which are not cleaning methods.")
+                         "which are not cleaning or preprocess methods.")
 
     target_stats = _count_class_sample(y)
     # check that all keys in sampling_strategy are also in y
@@ -400,8 +400,8 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
           for **cleaning methods**.
 
           .. warning::
-             ``list`` is available for **cleaning methods**. An error is raised
-             with **under-, over-, and preprocess-sampling methods**.
+             ``list`` is available for **cleaning and preprocess methods**. An
+            error is raised with **under- and over-sampling methods**.
 
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the

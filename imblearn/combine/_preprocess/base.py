@@ -32,6 +32,9 @@ class BasePreprocessSampler(BaseSampler):
 
             ``'auto'``: equivalent to ``'not majority'``.
 
+        - When ``list``, the list contains the classes targeted by the
+          resampling.
+
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.

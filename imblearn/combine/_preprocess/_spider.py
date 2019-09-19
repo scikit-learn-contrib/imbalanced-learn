@@ -16,6 +16,8 @@ from .base import BasePreprocessSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
 
+SEL_KIND = ('weak', 'relabel', 'strong')
+
 
 @Substitution(sampling_strategy=BasePreprocessSampler._sampling_strategy_docstring)
 class SPIDER(BasePreprocessSampler):
@@ -27,9 +29,6 @@ class SPIDER(BasePreprocessSampler):
     Parameters
     ----------
     {sampling_strategy}
-    #TODO see dict vs list sampling_strategy of other samplers
-    #       to see if applicable to this
-    #       NCR would be good to check
 
     kind : str (default='weak')
         Possible choices are:
@@ -62,14 +61,11 @@ class SPIDER(BasePreprocessSampler):
     -----
     The implementation is based on [1]_ and [2]_.
 
-    # TODO verify this will work
     Supports multi-class resampling. A one-vs.-rest scheme is used.
 
     See also
     --------
-    NCR : Clean-sample using NeighborhoodClearingRule.
-
-    ROS : Over-sample using RandomOverSampling
+    NeighborhoodClearingRule and RandomOverSampler
 
     References
     ----------
@@ -85,7 +81,21 @@ class SPIDER(BasePreprocessSampler):
 
     Examples
     --------
-    TODO
+    
+    >>> from collections import Counter
+    >>> from sklearn.datasets import make_classification
+    >>> from imblearn.combine import \
+SPIDER # doctest: +NORMALIZE_WHITESPACE
+    >>> X, y = make_classification(n_classes=2, class_sep=2,
+    ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=1000,
+    ... random_state=10)
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({{1: 900, 0: 100}})
+    >>> spider = SPIDER()
+    >>> X_res, y_res = spider.fit_resample(X, y)
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({{1: 897, 0: 115}})
     """
 
     def __init__(
@@ -108,7 +118,7 @@ class SPIDER(BasePreprocessSampler):
             'n_neighbors', self.n_neighbors, additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
 
-        if self.kind not in ('weak', 'relabel', 'strong'):
+        if self.kind not in SEL_KIND:
             raise ValueError('The possible "kind" of algorithm are '
                              '"weak", "relabel", and "strong".'
                              'Got {} instead.'.format(self.kind))
@@ -124,16 +134,16 @@ class SPIDER(BasePreprocessSampler):
 
         Parameters
         ----------
-        X : ndarray, size(m_samples, n_features)
+        X : ndarray, shape (n_samples, n_features)
             The feature samples to find neighbors for.
 
-        additional : bool, optional (defaul=False)
+        additional : bool, optional (default=False)
             Flag to indicate whether to increase ``n_neighbors`` by
             ``additional_neighbors``.
 
         Returns
         -------
-        nn_indices : ndarray, size(TODO)
+        nn_indices : ndarray, shape (n_samples, n_neighbors)
             Indices of the nearest neighbors for the subset.
         """
         n_neighbors = self.nn_.n_neighbors
@@ -149,25 +159,26 @@ class SPIDER(BasePreprocessSampler):
 
         Parameters
         ----------
-        X : ndarray, size(m_samples, n_features)
+        X : ndarray, shape (n_samples, n_features)
             The feature samples to classify.
 
-        y : ndarray, size(m_samples,)
+        y : ndarray, shape (n_samples,)
             The label samples to classify.
 
-        additional : bool, optional (defaul=False)
+        additional : bool, optional (default=False)
             Flag to indicate whether to increase ``n_neighbors`` by 
             additional_neighbors``.
 
         Returns
         -------
-        is_correct : ndarray[bool], size(m_samples,)
+        is_correct : ndarray[bool], shape (n_samples,)
             Mask that indicates if KNN classifed samples correctly.
         """
         try:
             nn_indices = self._locate_neighbors(X, additional)
         except ValueError:
             return np.empty(0, dtype=bool)
+
         mode, _ = stats.mode(self._y[nn_indices], axis=1)
         is_correct = (y == mode.ravel())
         return is_correct
@@ -179,19 +190,19 @@ class SPIDER(BasePreprocessSampler):
 
         Parameters
         ----------
-        X : ndarray, size(m_samples, n_features)
+        X : ndarray, shape (n_samples, n_features)
             The feature samples to amplify.
 
-        y : ndarray, size(m_samples,)
+        y : ndarray, shape (n_samples,)
             The label samples to amplify.
 
-        additional : bool, optional (defaul=False)
+        additional : bool, optional (default=False)
             Flag to indicate whether to amplify with ``additional_neighbors``.
 
         Returns
         -------
-        nn_indices : TODO
-            TODO
+        nn_indices : ndarray, shape (n_samples, n_neighbors)
+            Indices of the nearest neighbors for the subset.
         """
         try:
             nn_indices = self._locate_neighbors(X, additional)
@@ -276,7 +287,10 @@ class SPIDER(BasePreprocessSampler):
                 raise NotImplementedError(self.kind)
 
         discard_mask = np.ones_like(y, dtype=bool)
-        discard_mask[discard_indices] = False
+        try:
+            discard_mask[discard_indices] = False
+        except UnboundLocalError:
+            pass
 
         X_resampled = self._X_resampled
         y_resampled = self._y_resampled
@@ -290,6 +304,6 @@ class SPIDER(BasePreprocessSampler):
             X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
 
-        del self._X_resampled, self._y_resampled
-        del self._y, self._amplify_indices
+        del self._X_resampled, self._y_resampled, self._y
+        self._amplify_indices = None
         return X_resampled, y_resampled
