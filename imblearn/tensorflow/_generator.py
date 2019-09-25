@@ -65,7 +65,6 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
     --------
     >>> import numpy as np
     >>> from sklearn.datasets import load_iris
-    >>> from imblearn.tensorflow import balanced_batch_generator
     >>> X, y = load_iris(return_X_y=True)
     >>> class_dict = dict()
     >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
@@ -73,6 +72,7 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
     >>> X, y = make_imbalance(X, y, class_dict)
     >>> X = X.astype(np.float32)
     >>> batch_size, learning_rate, epochs = 10, 0.01, 10
+    >>> from imblearn.tensorflow import balanced_batch_generator
     >>> training_generator, steps_per_epoch = balanced_batch_generator(
     ...     X, y, sample_weight=None, sampler=None,
     ...     batch_size=batch_size, random_state=42)
