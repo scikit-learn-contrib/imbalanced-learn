@@ -20,7 +20,7 @@ DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
 def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
                              batch_size=32, keep_sparse=False,
                              random_state=None):
-    """Create a balanced batch generator to train keras model.
+    """Create a balanced batch generator to train tensorflow model.
 
     Returns a generator --- as well as the number of step per epoch --- which
     is given to ``fit_generator``. The sampler defines the sampling strategy
