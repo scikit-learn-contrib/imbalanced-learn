@@ -57,6 +57,7 @@ y = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0,
 RND_SEED = 0
 R_TOL = 1e-4
 
+
 def test_weak():
     X_expected = np.array([
         [3.03, -4.15],

@@ -28,8 +28,10 @@ print(__doc__)
 
 Neighborhood = namedtuple('Neighborhood', 'radius, neighbors')
 
+
 def plot_X(X, ax, **kwargs):
     ax.scatter(X[:, 0], X[:, 1], **kwargs)
+
 
 def correct(nn, y_fit, X, y, additional=False):
     n_neighbors = nn.n_neighbors
@@ -39,12 +41,13 @@ def correct(nn, y_fit, X, y, additional=False):
     y_pred, _ = mode(y_fit[nn_idxs], axis=1)
     return (y == y_pred.ravel())
 
+
 def get_neighborhoods(spider, X_fit, y_fit, X_flagged, y_flagged, idx):
     point = X_flagged[idx]
 
     additional = (spider.kind == 'strong')
-    if correct(spider.nn_, y_fit, point[np.newaxis], y_flagged[idx][np.newaxis],
-               additional=additional):
+    if correct(spider.nn_, y_fit, point[np.newaxis],
+               y_flagged[idx][np.newaxis], additional=additional):
         additional = False
 
     idxs_k = spider._locate_neighbors(point[np.newaxis])
@@ -60,6 +63,7 @@ def get_neighborhoods(spider, X_fit, y_fit, X_flagged, y_flagged, idx):
     neighborhood_k2 = Neighborhood(radius_k2, neighbors_k2)
 
     return neighborhood_k, neighborhood_k2, point, additional
+
 
 def draw_neighborhoods(spider, neighborhood_k, neighborhood_k2, point,
                        additional, ax, outer=True, alpha=0.5):
@@ -80,12 +84,14 @@ def draw_neighborhoods(spider, neighborhood_k, neighborhood_k2, point,
     if (spider.kind == 'strong') and outer:
         ax.add_patch(circle_k2)
 
+
 def draw_amplification(X_flagged, point, neighbors, ax):
     for neigh in neighbors:
         arr = np.vstack([point, neigh])
         xs, ys = np.split(arr, 2, axis=1)
         linestyle = 'solid' if neigh in X_flagged else 'dotted'
         ax.plot(xs, ys, color='black', linestyle=linestyle)
+
 
 def plot_spider(kind, X, y):
     if kind == 'strong':
@@ -203,7 +209,7 @@ X = np.array([
 ])
 
 y = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0,
-    0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0])
+              0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0])
 
 
 ###############################################################################
@@ -213,10 +219,10 @@ y = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0,
 ###############################################################################
 # Both SPIDER-Weak and SPIDER-Relabel start by labeling whether samples are
 # 'safe' or 'noisy' by looking at each point's 3-NN and seeing if it would be
-# classified correctly using KNN classification. For each minority-noisy sample,
-# we amplify it by the number of majority-safe samples in its 3-NN. In the
-# diagram below, the amplification amount is indicated by the number of solid
-# lines for a given minority-noisy sample's neighborhood.
+# classified correctly using KNN classification. For each minority-noisy
+# sample, we amplify it by the number of majority-safe samples in its 3-NN. In
+# the diagram below, the amplification amount is indicated by the number of
+# solid lines for a given minority-noisy sample's neighborhood.
 #
 # We can observe that the leftmost minority-noisy sample will be duplicated 3
 # times, the middle one 1 time, and the rightmost one will not be amplified.
@@ -243,11 +249,11 @@ plot_spider('weak', X, y)
 # respectively. The middle minority-noisy sample is classified correctly by
 # using 5-NN, so amplification will be done using 3-NN.
 #
-# Next for each minority-safe sample, the amplification process is applied using
-# 3-NN. In the lower subplot, all but one of these samples will not be amplified
-# since they do not have majority-safe samples in their neighborhoods. The one
-# minority-safe sample to be amplified is indicated in a darker neighborhood
-# with lines.
+# Next for each minority-safe sample, the amplification process is applied
+# using 3-NN. In the lower subplot, all but one of these samples will not be
+# amplified since they do not have majority-safe samples in their
+# neighborhoods. The one minority-safe sample to be amplified is indicated in a
+# darker neighborhood with lines.
 
 plot_spider('strong', X, y)
 
