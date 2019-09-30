@@ -1,6 +1,6 @@
 """Class to perform cleaning and selective pre-processing using SPIDER"""
 
-# Author: Matthew Eding
+# Authors: Matthew Eding
 # License: MIT
 
 
@@ -25,7 +25,7 @@ class SPIDER(BasePreprocessSampler):
     """Perform filtering and over-sampling using Selective Pre-processing of
     Imbalanced Data (SPIDER) sampling approach for imbalanced datasets.
 
-    TODO Read more in the :ref:`User Guide <spider>`.
+    Read more in the :ref:`User Guide <combine>`.
 
     Parameters
     ----------
@@ -213,24 +213,40 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
         amplify_amounts = np.isin(
             nn_indices, self._amplify_indices).sum(axis=1)
 
-        if sparse.issparse(X):
-            X_parts = []
-            y_parts = []
-            for amount in filter(bool, np.unique(amplify_amounts)):
-                mask = safe_mask(X, amplify_amounts == amount)
-                X_part = X[mask]
-                y_part = y[mask]
-                X_parts.extend([X_part] * amount)
-                y_parts.extend([y_part] * amount)
-            try:
+        # if sparse.issparse(X):
+        #     X_parts = []
+        #     y_parts = []
+        #     for amount in filter(bool, np.unique(amplify_amounts)):
+        #         mask = safe_mask(X, amplify_amounts == amount)
+        #         # breakpoint()
+        #         X_part = X[mask]
+        #         y_part = y[mask]
+        #         X_parts.extend([X_part] * amount)
+        #         y_parts.extend([y_part] * amount)
+        #     # try:
+        #     X_new = sparse.vstack(X_parts)
+        #     y_new = np.hstack(y_parts)
+        #     # except ValueError:  # -- bool filter makes this unnecessary
+        #     #     X_new = np.empty(0, dtype=X.dtype)
+        #     #     y_new = np.empty(0, dtype=y.dtype)
+        # else:
+        #     X_new = np.repeat(X, amplify_amounts, axis=0)
+        #     y_new = np.repeat(y, amplify_amounts)
+
+        X_parts = []
+        y_parts = []
+        for amount in filter(bool, np.unique(amplify_amounts)):
+            mask = safe_mask(X, amplify_amounts == amount)
+            X_part = X[mask]
+            y_part = y[mask]
+            X_parts.extend([X_part] * amount)
+            y_parts.extend([y_part] * amount)
+
+            if sparse.issparse(X):
                 X_new = sparse.vstack(X_parts)
-                y_new = np.hstack(y_parts)
-            except ValueError:
-                X_new = np.empty(0, dtype=X.dtype)
-                y_new = np.empty(0, dtype=y.dtype)
-        else:
-            X_new = np.repeat(X, amplify_amounts, axis=0)
-            y_new = np.repeat(y, amplify_amounts)
+            else:
+                X_new = np.vstack(X_parts)
+            y_new = np.hstack(y_parts)
 
         self._X_resampled.append(X_new)
         self._y_resampled.append(y_new)

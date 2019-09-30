@@ -73,7 +73,8 @@ def test_check_sampling_strategy_warning():
 @pytest.mark.parametrize(
     "ratio, y, type, err_msg",
     [(0.5, binary_target, 'clean-sampling',
-      "'clean-sampling' methods do let the user specify the sampling ratio"),
+      "'clean-sampling' and 'preprocess-sampling' methods"
+      " do not let the user specify the sampling ratio."),
      (0.1, np.array([0] * 10 + [1] * 20), 'over-sampling',
       "remove samples from the minority class while trying to generate new"),
      (0.1, np.array([0] * 10 + [1] * 20), 'under-sampling',

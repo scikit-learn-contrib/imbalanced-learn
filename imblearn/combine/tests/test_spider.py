@@ -1,5 +1,5 @@
 """Test the module SPIDER."""
-# Author: Matthew Eding
+# Authors: Matthew Eding
 # License: MIT
 
 import pytest
@@ -51,51 +51,18 @@ X = np.array([
     [11.42, 0.01]
 ])
 y = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0,
-    0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0])
+              0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0])
 
 
 RND_SEED = 0
 R_TOL = 1e-4
 
-
-@pytest.mark.parametrize('fmt', ['lil', 'csr', 'csc'])
-def test_dense_sparse(fmt):
-    # Need density/size large enough to prevent NearestNeighbors having to
-    # choose between ties with rows full of 0s that have different
-    # corresponding y-values to ensure that sparse and dense yield same
-    # results.
-    X_spr = sparse.random(100, 20, density=0.2, format=fmt, random_state=0)
-    X_arr = X_spr.toarray()
-
-    random_state = np.random.RandomState(0)
-    y = random_state.choice([0, 1], size=len(X_arr), p=[0.8, 0.2])
-
-    spider = SPIDER()
-    X_resampled_spr, y_resampled_spr = spider.fit_resample(X_spr, y)
-    X_resampled_spr = X_resampled_spr.toarray()
-    sort_spr_idxs = np.lexsort(X_resampled_spr.T)
-
-    X_resampled_arr, y_resampled_arr = spider.fit_resample(X_arr, y)
-    sort_arr_idxs = np.lexsort(X_resampled_arr.T)
-
-    # sparse implementation amplifies in different order than dense
-    assert_allclose(
-        X_resampled_spr[sort_spr_idxs],
-        X_resampled_arr[sort_arr_idxs],
-        rtol=R_TOL
-    )
-    assert_array_equal(
-        y_resampled_spr[sort_spr_idxs],
-        y_resampled_arr[sort_arr_idxs]
-    )
-
-
 def test_weak():
     X_expected = np.array([
-        [-3.96, 2.67],
-        [-3.96, 2.67],
-        [-3.96, 2.67],
         [3.03, -4.15],
+        [-3.96, 2.67],
+        [-3.96, 2.67],
+        [-3.96, 2.67],
         [-11.83, -6.81],
         [-11.72, -2.34],
         [-11.43, -5.85],
@@ -131,7 +98,8 @@ def test_weak():
         [11.42, 0.01]
     ])
     y_expected = np.array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-        0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0])
+                           0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+                           1, 0, 0])
 
     weak = SPIDER(kind='weak')
     X_resampled, y_resampled = weak.fit_resample(X, y)
@@ -142,10 +110,10 @@ def test_weak():
 
 def test_relabel():
     X_expected = np.array([
-        [-3.96, 2.67],
-        [-3.96, 2.67],
-        [-3.96, 2.67],
         [3.03, -4.15],
+        [-3.96, 2.67],
+        [-3.96, 2.67],
+        [-3.96, 2.67],
         [-11.83, -6.81],
         [-11.72, -2.34],
         [-11.43, -5.85],
@@ -184,7 +152,8 @@ def test_relabel():
         [11.42, 0.01]
     ])
     y_expected = np.array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-        0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0])
+                           0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                           1, 0, 1, 1, 0, 0])
 
     relabel = SPIDER(kind='relabel')
     X_resampled, y_resampled = relabel.fit_resample(X, y)
@@ -197,12 +166,12 @@ def test_strong():
     X_expected = np.array([
         [1.2, -1.53],
         [3.03, -4.15],
-        [-3.96, 2.67],
-        [-3.96, 2.67],
-        [-3.96, 2.67],
-        [-3.96, 2.67],
-        [-3.96, 2.67],
         [8.42, 2.47],
+        [-3.96, 2.67],
+        [-3.96, 2.67],
+        [-3.96, 2.67],
+        [-3.96, 2.67],
+        [-3.96, 2.67],
         [-11.83, -6.81],
         [-11.72, -2.34],
         [-11.43, -5.85],
@@ -238,8 +207,8 @@ def test_strong():
         [11.42, 0.01]
     ])
     y_expected = np.array([1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0,
-        0])
+                           0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1,
+                           1, 1, 1, 0, 1, 0, 0])
 
     strong = SPIDER(kind='strong')
     X_resampled, y_resampled = strong.fit_resample(X, y)
