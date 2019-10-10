@@ -28,17 +28,16 @@ if [[ "$DISTRIB" == "conda" ]]; then
     MINICONDA_PATH=/home/travis/miniconda
     chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
     export PATH=$MINICONDA_PATH/bin:$PATH
-	conda config --set always_yes yes --set changeps1 no
-	conda install conda=4.6
-	conda update -q conda
-
+    conda config --set always_yes yes --set changeps1 no
+    conda install conda=4.6
+    conda update -q conda
+    conda info -a
 
     # Configure the conda environment and put it in the path using the
     # provided versions
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
     conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
-    conda install --yes -c anaconda cython=$CYTHON_VERSION
 
     if [[ "$OPTIONAL_DEPS" == "true" ]]; then
         conda install --yes pandas keras tensorflow
@@ -69,14 +68,12 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     pip3 install scikit-learn
     pip3 install pandas keras tensorflow
     pip3 install pytest pytest-cov codecov sphinx numpydoc
-    pip3 install cython
 
 fi
 
 python --version
 python -c "import numpy; print('numpy %s' % numpy.__version__)"
 python -c "import scipy; print('scipy %s' % scipy.__version__)"
-python -c "import Cython; print('Cython %s' % Cython.__version__)"
 
 pip install -e .
 ccache --show-stats
