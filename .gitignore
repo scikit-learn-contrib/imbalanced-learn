@@ -74,9 +74,6 @@ target/
 .idea/
 
 # Cython
-*.c
-*.cpp
-cythonize.dat
 *.pyc
 *.pyo
 __pycache__

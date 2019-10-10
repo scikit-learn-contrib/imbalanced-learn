@@ -2,6 +2,8 @@
 #
 # License: BSD 3 clause
 
+#cython: language_level=3, boundscheck=False
+
 from libc.math cimport sqrt, pow
 from libc.math cimport abs
 

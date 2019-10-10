@@ -1,7 +1,8 @@
 recursive-include doc *
 recursive-include examples *
 include imblearn/tree *.pyx
+include imblearn/tree *.pyd
 include AUTHORS.rst
-include CONTRIBUTING.ms
+include CONTRIBUTING.md
 include LICENSE
 include README.rst
