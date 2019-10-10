@@ -22,4 +22,5 @@ When used as split criterion in Decision Tree Classifier it makes it skew insens
   >>> hdc = HellingerDistanceCriterion(1, np.array([2],dtype='int64'))
   >>> clf = RandomForestClassifier(criterion=hdc)
 
-:class:`HellingerDistanceCriterion` offers a Cython implementation of Hellinger Distance as a criterion for decision tree split compatible with sklearn tree based classification models.
+:class:`HellingerDistanceCriterion` offers a Cython implementation of Hellinger Distance
+as a criterion for decision tree split compatible with sklearn tree based classification models.
