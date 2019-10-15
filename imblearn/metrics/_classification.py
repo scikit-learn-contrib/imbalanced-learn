@@ -370,7 +370,7 @@ def specificity_score(y_true,
 
     The specificity is the ratio ``tn / (tn + fp)`` where ``tn`` is the number
     of true negatives and ``fp`` the number of false positives. The specificity
-    quantifies the ability to avoid false positives_[1].
+    quantifies the ability to avoid false positives.
 
     The best value is 1 and the worst value is 0.
 
