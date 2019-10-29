@@ -4,6 +4,7 @@
 # License: MIT
 
 import numpy as np
+import pytest
 
 from sklearn.datasets import load_iris, make_hastie_10_2
 from sklearn.model_selection import (GridSearchCV, ParameterGrid,
@@ -15,8 +16,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.feature_selection import SelectKBest
 from sklearn.utils.testing import (assert_array_equal,
-                                   assert_array_almost_equal, assert_raises,
-                                   assert_warns, assert_warns_message,
+                                   assert_array_almost_equal,
                                    assert_allclose)
 
 from imblearn.datasets import make_imbalance
@@ -194,13 +194,13 @@ def test_oob_score_classification():
         assert abs(test_score - clf.oob_score_) < 0.1
 
         # Test with few estimators
-        assert_warns(UserWarning,
-                     BalancedBaggingClassifier(
-                         base_estimator=base_estimator,
-                         n_estimators=1,
-                         bootstrap=True,
-                         oob_score=True,
-                         random_state=0).fit, X_train, y_train)
+        with pytest.warns(UserWarning):
+            BalancedBaggingClassifier(
+                base_estimator=base_estimator,
+                n_estimators=1,
+                bootstrap=True,
+                oob_score=True,
+                random_state=0).fit(X_train, y_train)
 
 
 def test_single_estimator():
@@ -238,36 +238,34 @@ def test_error():
     base = DecisionTreeClassifier()
 
     # Test n_estimators
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, n_estimators=1.5).fit, X, y)
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, n_estimators=-1).fit, X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, n_estimators=1.5).fit(X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, n_estimators=-1).fit(X, y)
 
     # Test max_samples
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, max_samples=-1).fit, X, y)
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, max_samples=0.0).fit, X, y)
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, max_samples=2.0).fit, X, y)
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, max_samples=1000).fit, X, y)
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, max_samples="foobar").fit, X,
-                  y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, max_samples=-1).fit(X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, max_samples=0.0).fit(X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, max_samples=2.0).fit(X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, max_samples=1000).fit(X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, max_samples="foobar").fit(X, y)
 
     # Test max_features
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, max_features=-1).fit, X, y)
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, max_features=0.0).fit, X, y)
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, max_features=2.0).fit, X, y)
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, max_features=5).fit, X, y)
-    assert_raises(ValueError,
-                  BalancedBaggingClassifier(base, max_features="foobar").fit,
-                  X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, max_features=-1).fit(X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, max_features=0.0).fit(X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, max_features=2.0).fit(X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, max_features=5).fit(X, y)
+    with pytest.raises(ValueError):
+        BalancedBaggingClassifier(base, max_features="foobar").fit(X, y)
 
     # Test support of decision_function
     assert not (hasattr(
@@ -364,7 +362,8 @@ def test_warm_start_smaller_n_estimators():
     clf = BalancedBaggingClassifier(n_estimators=5, warm_start=True)
     clf.fit(X, y)
     clf.set_params(n_estimators=4)
-    assert_raises(ValueError, clf.fit, X, y)
+    with pytest.raises(ValueError):
+        clf.fit(X, y)
 
 
 def test_warm_start_equal_n_estimators():
@@ -380,9 +379,9 @@ def test_warm_start_equal_n_estimators():
     # modify X to nonsense values, this should not change anything
     X_train += 1.
 
-    assert_warns_message(UserWarning,
-                         "Warm-start fitting without increasing n_estimators"
-                         " does not", clf.fit, X_train, y_train)
+    warn_msg = "Warm-start fitting without increasing n_estimators does not"
+    with pytest.warns(UserWarning, match=warn_msg):
+        clf.fit(X_train, y_train)
     assert_array_equal(y_pred, clf.predict(X_test))
 
 
@@ -412,7 +411,8 @@ def test_warm_start_with_oob_score_fails():
     X, y = make_hastie_10_2(n_samples=20, random_state=1)
     clf = BalancedBaggingClassifier(
         n_estimators=5, warm_start=True, oob_score=True)
-    assert_raises(ValueError, clf.fit, X, y)
+    with pytest.raises(ValueError):
+        clf.fit(X, y)
 
 
 def test_oob_score_removed_on_warm_start():
@@ -424,7 +424,8 @@ def test_oob_score_removed_on_warm_start():
     clf.set_params(warm_start=True, oob_score=False, n_estimators=100)
     clf.fit(X, y)
 
-    assert_raises(AttributeError, getattr, clf, "oob_score_")
+    with pytest.raises(AttributeError):
+        getattr(clf, "oob_score_")
 
 
 def test_oob_score_consistency():
