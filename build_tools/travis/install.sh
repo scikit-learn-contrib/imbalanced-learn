@@ -28,10 +28,10 @@ if [[ "$DISTRIB" == "conda" ]]; then
     MINICONDA_PATH=/home/travis/miniconda
     chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
     export PATH=$MINICONDA_PATH/bin:$PATH
-    conda config --set always_yes yes --set changeps1 no
-    conda install conda=4.6
-    conda update -q conda
-    conda info -a
+    # conda config --set always_yes yes --set changeps1 no
+    # conda install conda=4.6
+    # conda update -q conda
+    # conda info -a
 
     # Configure the conda environment and put it in the path using the
     # provided versions
