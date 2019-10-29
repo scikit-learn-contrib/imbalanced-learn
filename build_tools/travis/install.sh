@@ -35,12 +35,13 @@ if [[ "$DISTRIB" == "conda" ]]; then
     source activate testenv
     conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
 
-    if [[ "$OPTIONAL_DEPS" == "true" ]]; then
-        conda install --yes pandas keras tensorflow
+    if [[ "$OPTIONAL_DEPS" == "keras" ]]; then
+        conda install --yes pandas keras tensorflow=1
         KERAS_BACKEND=tensorflow
         python -c "import keras.backend"
         sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
-    fi
+    elif [[ "$OPTIONAL_DEPS" == "tensorflow" ]]; then
+        conda install --yes pandas tensorflow
 
     if [[ "$SKLEARN_VERSION" == "master" ]]; then
         pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
