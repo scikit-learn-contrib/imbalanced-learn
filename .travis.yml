@@ -34,7 +34,10 @@ matrix:
     # Latest release
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="*"
-           OPTIONAL_DEPS="true"
+           OPTIONAL_DEPS="keras"
+    - env: DISTRIB="conda" PYTHON_VERSION="3.7"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="*"
+           OPTIONAL_DEPS="tensorflow"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="*"
            OPTIONAL_DEPS="false"
