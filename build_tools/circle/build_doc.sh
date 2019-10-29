@@ -92,7 +92,7 @@ conda create -n $CONDA_ENV_NAME --yes --quiet python=3.7
 source activate $CONDA_ENV_NAME
 
 conda install --yes pip numpy scipy joblib pillow matplotlib sphinx \
-      sphinx_rtd_theme numpydoc pandas keras
+      sphinx_rtd_theme numpydoc pandas tensorflow
 pip install scikit-learn
 pip install -U git+https://github.com/sphinx-gallery/sphinx-gallery.git
 
