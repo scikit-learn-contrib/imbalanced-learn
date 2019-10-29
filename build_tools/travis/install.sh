@@ -28,10 +28,6 @@ if [[ "$DISTRIB" == "conda" ]]; then
     MINICONDA_PATH=/home/travis/miniconda
     chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
     export PATH=$MINICONDA_PATH/bin:$PATH
-    # conda config --set always_yes yes --set changeps1 no
-    # conda install conda=4.6
-    # conda update -q conda
-    # conda info -a
 
     # Configure the conda environment and put it in the path using the
     # provided versions
@@ -47,8 +43,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     fi
 
     if [[ "$SKLEARN_VERSION" == "master" ]]; then
-        conda install --yes cython
-        pip install -U git+https://github.com/scikit-learn/scikit-learn.git
+        pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
     else
         conda install --yes scikit-learn=$SKLEARN_VERSION
     fi
@@ -66,7 +61,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     source testvenv/bin/activate
 
     pip3 install scikit-learn
-    pip3 install pandas keras tensorflow
+    pip3 install pandas
     pip3 install pytest pytest-cov codecov sphinx numpydoc
 
 fi
