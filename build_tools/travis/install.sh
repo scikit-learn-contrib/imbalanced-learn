@@ -42,6 +42,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
         sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
     elif [[ "$OPTIONAL_DEPS" == "tensorflow" ]]; then
         conda install --yes pandas tensorflow
+    fi
 
     if [[ "$SKLEARN_VERSION" == "master" ]]; then
         pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
