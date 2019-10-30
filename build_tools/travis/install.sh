@@ -62,7 +62,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     virtualenv --system-site-packages --python=python3 testvenv
     source testvenv/bin/activate
 
-    pip3 install scikit-learn
+    pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
     pip3 install pandas
     pip3 install pytest pytest-cov codecov sphinx numpydoc
 
