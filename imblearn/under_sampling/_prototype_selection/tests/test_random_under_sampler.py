@@ -33,22 +33,6 @@ def test_rus_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
-@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
-def test_rus_fit_resample_with_indices():
-    rus = RandomUnderSampler(
-        return_indices=True, random_state=RND_SEED, replacement=True)
-    X_resampled, y_resampled, idx_under = rus.fit_resample(X, Y)
-
-    X_gt = np.array([[0.92923648, 0.76103773], [0.47104475, 0.44386323],
-                     [0.13347175, 0.12167502], [0.09125309, -0.85409574],
-                     [0.12372842, 0.6536186], [0.04352327, -0.20515826]])
-    y_gt = np.array([0, 0, 0, 1, 1, 1])
-    idx_gt = np.array([1, 3, 8, 6, 7, 0])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-    assert_array_equal(idx_under, idx_gt)
-
-
 def test_rus_fit_resample_half():
     sampling_strategy = {0: 3, 1: 6}
     rus = RandomUnderSampler(

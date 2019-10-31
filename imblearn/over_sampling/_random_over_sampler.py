@@ -33,21 +33,12 @@ class RandomOverSampler(BaseOverSampler):
 
     {random_state}
 
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly selected
-        in the corresponding classes.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
     Attributes
     ----------
     sample_indices_ : ndarray, shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -75,10 +66,8 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     """
 
     def __init__(self, sampling_strategy='auto',
-                 return_indices=False,
                  random_state=None):
         super().__init__(sampling_strategy=sampling_strategy)
-        self.return_indices = return_indices
         self.random_state = random_state
 
     @staticmethod
@@ -88,10 +77,6 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
-
         random_state = check_random_state(self.random_state)
         target_stats = Counter(y)
 
@@ -106,14 +91,9 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                                        target_class_indices[indices])
         self.sample_indices_ = np.array(sample_indices)
 
-        if self.return_indices:
-            return (safe_indexing(X, sample_indices),
-                    safe_indexing(y, sample_indices), sample_indices)
         return (safe_indexing(X, sample_indices),
                 safe_indexing(y, sample_indices))
 
     def _more_tags(self):
-        # TODO: remove the str tag once the following PR is merged:
-        # https://github.com/scikit-learn/scikit-learn/pull/14043
-        return {'X_types': ['2darray', 'str', 'string'],
+        return {'X_types': ['2darray', 'string'],
                 'sample_indices': True}

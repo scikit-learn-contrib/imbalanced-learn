@@ -48,25 +48,6 @@ def test_oss_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
-@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
-def test_oss_fit_resample_with_indices():
-    oss = OneSidedSelection(return_indices=True, random_state=RND_SEED)
-    X_resampled, y_resampled, idx_under = oss.fit_resample(X, Y)
-
-    X_gt = np.array([[-0.3879569, 0.6894251], [0.91542919, -0.65453327], [
-        -0.65571327, 0.42412021
-    ], [1.06446472, -1.09279772], [0.30543283, -0.02589502], [
-        -0.00717161, 0.00318087
-    ], [-0.09322739, 1.28177189], [-0.77740357, 0.74097941],
-                     [-0.43877303, 1.07366684], [-0.85795321, 0.82980738],
-                     [-0.30126957, -0.66268378], [0.20246714, -0.34727125]])
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
-    idx_gt = np.array([0, 3, 9, 12, 13, 14, 1, 2, 5, 6, 8, 11])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-    assert_array_equal(idx_under, idx_gt)
-
-
 def test_oss_with_object():
     knn = KNeighborsClassifier(n_neighbors=1)
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)

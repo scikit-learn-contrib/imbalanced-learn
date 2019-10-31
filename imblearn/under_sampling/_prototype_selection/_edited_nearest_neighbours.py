@@ -35,14 +35,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
     {random_state}
 
         .. deprecated:: 0.4
@@ -71,7 +63,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -111,14 +102,12 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
-        self.return_indices = return_indices
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
@@ -138,9 +127,6 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
             raise NotImplementedError
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         self._validate_estimator()
 
         idx_under = np.empty((0, ), dtype=int)
@@ -172,9 +158,6 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
         self.sample_indices_ = idx_under
 
-        if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
     def _more_tags(self):
@@ -193,14 +176,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
 
     {random_state}
 
@@ -234,7 +209,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -274,7 +248,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  max_iter=100,
@@ -282,7 +255,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
-        self.return_indices = return_indices
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
@@ -304,15 +276,11 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
         self.enn_ = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
-            return_indices=False,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
             n_jobs=self.n_jobs)
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         self._validate_estimator()
 
         X_, y_ = X, y
@@ -359,8 +327,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
         X_resampled, y_resampled = X_, y_
 
-        if self.return_indices:
-            return X_resampled, y_resampled, self.sample_indices_
         return X_resampled, y_resampled
 
     def _more_tags(self):
@@ -378,14 +344,6 @@ class AllKNN(BaseCleaningSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
 
     {random_state}
 
@@ -421,7 +379,6 @@ class AllKNN(BaseCleaningSampler):
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -462,7 +419,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
@@ -470,7 +426,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
-        self.return_indices = return_indices
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.allow_minority = allow_minority
@@ -491,15 +446,11 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
         self.enn_ = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
-            return_indices=False,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
             n_jobs=self.n_jobs)
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         self._validate_estimator()
 
         X_, y_ = X, y
@@ -542,8 +493,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
         X_resampled, y_resampled = X_, y_
 
-        if self.return_indices:
-            return X_resampled, y_resampled, self.sample_indices_
         return X_resampled, y_resampled
 
     def _more_tags(self):

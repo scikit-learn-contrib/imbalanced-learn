@@ -41,15 +41,6 @@ def test_iht_fit_resample():
     assert y_resampled.shape == (12,)
 
 
-@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
-def test_iht_fit_resample_with_indices():
-    iht = InstanceHardnessThreshold(
-        ESTIMATOR, return_indices=True, random_state=RND_SEED)
-    X_resampled, y_resampled, idx_under = iht.fit_resample(X, Y)
-    assert X_resampled.shape == (12, 2)
-    assert y_resampled.shape == (12,)
-
-
 def test_iht_fit_resample_half():
     sampling_strategy = {0: 6, 1: 8}
     iht = InstanceHardnessThreshold(

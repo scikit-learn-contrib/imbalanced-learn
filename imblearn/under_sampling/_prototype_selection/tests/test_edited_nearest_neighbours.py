@@ -50,22 +50,6 @@ def test_enn_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
-@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
-def test_enn_fit_resample_with_indices():
-    enn = EditedNearestNeighbours(return_indices=True)
-    X_resampled, y_resampled, idx_under = enn.fit_resample(X, Y)
-
-    X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828], [
-        2.59928271, 0.93323465
-    ], [1.92365863, 0.82718767], [0.25738379, 0.95564169],
-                     [0.78318102, 2.59153329], [0.52726792, -0.38735648]])
-    y_gt = np.array([0, 0, 1, 1, 2, 2, 2])
-    idx_gt = np.array([4, 11, 0, 3, 1, 8, 15])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-    assert_array_equal(idx_under, idx_gt)
-
-
 def test_enn_fit_resample_mode():
     enn = EditedNearestNeighbours(kind_sel='mode')
     X_resampled, y_resampled = enn.fit_resample(X, Y)

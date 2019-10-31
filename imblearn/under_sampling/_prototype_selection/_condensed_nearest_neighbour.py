@@ -34,14 +34,6 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
     {random_state}
 
     n_neighbors : int or object, optional (default=\
@@ -63,7 +55,6 @@ KNeighborsClassifier(n_neighbors=1))
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -102,14 +93,12 @@ CondensedNearestNeighbour # doctest: +SKIP
 
     def __init__(self,
                  sampling_strategy='auto',
-                 return_indices=False,
                  random_state=None,
                  n_neighbors=None,
                  n_seeds_S=1,
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
-        self.return_indices = return_indices
         self.n_neighbors = n_neighbors
         self.n_seeds_S = n_seeds_S
         self.n_jobs = n_jobs
@@ -130,9 +119,6 @@ CondensedNearestNeighbour # doctest: +SKIP
                              ' Got {} instead.'.format(type(self.n_neighbors)))
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         self._validate_estimator()
 
         random_state = check_random_state(self.random_state)
@@ -207,9 +193,6 @@ CondensedNearestNeighbour # doctest: +SKIP
 
         self.sample_indices_ = idx_under
 
-        if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
     def _more_tags(self):

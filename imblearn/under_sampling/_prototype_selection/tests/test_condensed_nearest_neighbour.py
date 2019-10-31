@@ -50,24 +50,6 @@ def test_cnn_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
-@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
-def test_cnn_fit_resample_with_indices():
-    cnn = CondensedNearestNeighbour(return_indices=True, random_state=RND_SEED)
-    X_resampled, y_resampled, idx_under = cnn.fit_resample(X, Y)
-
-    X_gt = np.array([[-0.10903849, -0.12085181], [0.01936241, 0.17799828], [
-        0.05230552, 0.09043907
-    ], [-1.25020462, -0.40402054], [0.70524765,
-                                    0.39816382], [0.35831463, 1.33483198],
-                     [-0.284881, -0.62730973], [0.03394306, 0.03986753],
-                     [-0.01252787, 0.34102657], [0.15198585, 0.12512646]])
-    y_gt = np.array([0, 0, 1, 1, 1, 2, 2, 2, 2, 2])
-    idx_gt = np.array([4, 11, 17, 12, 19, 9, 5, 7, 14, 18])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-    assert_array_equal(idx_under, idx_gt)
-
-
 def test_cnn_fit_resample_with_object():
     knn = KNeighborsClassifier(n_neighbors=1)
     cnn = CondensedNearestNeighbour(random_state=RND_SEED, n_neighbors=knn)

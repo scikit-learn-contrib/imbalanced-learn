@@ -27,15 +27,6 @@ class TomekLinks(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
-
     {random_state}
 
         .. deprecated:: 0.4
@@ -50,7 +41,6 @@ class TomekLinks(BaseCleaningSampler):
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -85,12 +75,10 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 return_indices=False,
                  random_state=None,
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
-        self.return_indices = return_indices
         self.n_jobs = n_jobs
 
     @staticmethod
@@ -136,9 +124,6 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         return links
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         # check for deprecated random_state
         if self.random_state is not None:
             deprecate_parameter(self, '0.4', 'random_state')
@@ -151,10 +136,6 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         links = self.is_tomek(y, nns, self.sampling_strategy_)
         self.sample_indices_ = np.flatnonzero(np.logical_not(links))
 
-        if self.return_indices:
-            return (safe_indexing(X, self.sample_indices_),
-                    safe_indexing(y, self.sample_indices_),
-                    self.sample_indices_)
         return (safe_indexing(X, self.sample_indices_),
                 safe_indexing(y, self.sample_indices_))
 

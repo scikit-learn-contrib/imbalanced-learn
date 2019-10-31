@@ -34,14 +34,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
     {random_state}
 
         .. deprecated:: 0.4
@@ -71,7 +63,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -106,7 +97,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 return_indices=False,
                  random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
@@ -114,7 +104,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
-        self.return_indices = return_indices
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.threshold_cleaning = threshold_cleaning
@@ -140,9 +129,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                 " Got {} instead.".format(self.threshold_cleaning))
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         self._validate_estimator()
         enn = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
@@ -188,10 +174,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         selected_samples[union_a1_a2] = False
         self.sample_indices_ = np.flatnonzero(selected_samples)
 
-        if self.return_indices:
-            return (safe_indexing(X, self.sample_indices_),
-                    safe_indexing(y, self.sample_indices_),
-                    self.sample_indices_)
         return (safe_indexing(X, self.sample_indices_),
                 safe_indexing(y, self.sample_indices_))
 

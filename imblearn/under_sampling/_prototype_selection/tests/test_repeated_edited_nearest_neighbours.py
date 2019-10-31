@@ -86,40 +86,6 @@ def test_renn_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
-@pytest.mark.filterwarnings("ignore:'return_indices' is deprecated from 0.4")
-def test_renn_fit_resample_with_indices():
-    renn = RepeatedEditedNearestNeighbours(return_indices=True)
-    X_resampled, y_resampled, idx_under = renn.fit_resample(X, Y)
-
-    X_gt = np.array([[-0.53171468, -0.53735182], [-0.88864036, -0.33782387], [
-        -0.46226554, -0.50481004
-    ], [-0.34474418, 0.21969797], [1.02956816, 0.36061601], [
-        1.12202806, 0.33811558
-    ], [0.73489726, 0.43915195], [0.50307437, 0.498805], [
-        0.84929742, 0.41042894
-    ], [0.62649535, 0.46600596], [0.98382284, 0.37184502], [
-        0.69804044, 0.44810796
-    ], [0.04296502, -0.37981873], [0.28294738, -1.00125525], [
-        0.34218094, -0.58781961
-    ], [0.2096964, -0.61814058], [1.59068979, -0.96622933], [
-        0.73418199, -0.02222847
-    ], [0.79270821, -0.41386668], [1.16606871, -0.25641059],
-                     [1.0304995, -0.16955962], [0.48921682, -1.38504507],
-                     [-0.03918551, -0.68540745], [0.24991051, -1.00864997],
-                     [0.80541964, -0.34465185], [0.1732627, -1.61323172]])
-    y_gt = np.array([
-        0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-        2, 2
-    ])
-    idx_gt = np.array([
-        6, 13, 32, 39, 4, 5, 16, 22, 23, 24, 30, 37, 2, 11, 12, 17, 20, 21, 25,
-        26, 28, 31, 33, 34, 35, 36
-    ])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-    assert_array_equal(idx_under, idx_gt)
-
-
 def test_renn_fit_resample_mode_object():
     renn = RepeatedEditedNearestNeighbours(kind_sel='mode')
     X_resampled, y_resampled = renn.fit_resample(X, Y)
