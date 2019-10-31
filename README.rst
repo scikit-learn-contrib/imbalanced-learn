@@ -162,10 +162,9 @@ Below is a list of the methods currently implemented in this module.
     2. SMOTE + ENN [11]_
 
 * Ensemble classifier using samplers internally
-    1. EasyEnsemble [13]_
-    2. BalanceCascade [13]_
-    3. Balanced Random Forest [16]_
-    4. Balanced Bagging
+    1. Easy Ensemble classifier [13]_
+    2. Balanced Random Forest [16]_
+    3. Balanced Bagging
 
 The different algorithms are presented in the sphinx-gallery_.
 

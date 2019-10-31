@@ -127,7 +127,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     See also
     --------
-    BalanceCascade, EasyEnsemble
+    BalancedRandomForestClassifier, EasyEnsembleClassifier
 
     References
     ----------

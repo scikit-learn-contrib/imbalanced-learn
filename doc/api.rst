@@ -111,10 +111,8 @@ Prototype selection
    :toctree: generated/
    :template: class.rst
 
-   ensemble.BalanceCascade
    ensemble.BalancedBaggingClassifier
    ensemble.BalancedRandomForestClassifier
-   ensemble.EasyEnsemble
    ensemble.EasyEnsembleClassifier
    ensemble.RUSBoostClassifier
 
