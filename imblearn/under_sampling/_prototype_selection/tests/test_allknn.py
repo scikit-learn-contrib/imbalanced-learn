@@ -164,10 +164,3 @@ def test_alknn_not_good_object():
     allknn = AllKNN(n_neighbors=nn, kind_sel='mode')
     with pytest.raises(ValueError):
         allknn.fit_resample(X, Y)
-
-
-def test_deprecation_random_state():
-    allknn = AllKNN(random_state=0)
-    with warns(
-            DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        allknn.fit_resample(X, Y)

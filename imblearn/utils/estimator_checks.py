@@ -199,12 +199,7 @@ def check_samplers_sparse(name, Sampler):
     X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
                                weights=[0.2, 0.3, 0.5], random_state=0)
     X_sparse = sparse.csr_matrix(X)
-    if isinstance(Sampler(), SMOTE):
-        samplers = [
-            Sampler(random_state=0, kind=kind)
-            for kind in ('regular', 'borderline1', 'borderline2', 'svm')
-        ]
-    elif isinstance(Sampler(), NearMiss):
+    if isinstance(Sampler(), NearMiss):
         samplers = [Sampler(version=version) for version in (1, 2, 3)]
     elif isinstance(Sampler(), ClusterCentroids):
         # set KMeans to full since it support sparse and dense
@@ -240,13 +235,7 @@ def check_samplers_pandas(name, Sampler):
                                weights=[0.2, 0.3, 0.5], random_state=0)
     X_pd = pd.DataFrame(X)
     sampler = Sampler()
-    if isinstance(Sampler(), SMOTE):
-        samplers = [
-            Sampler(random_state=0, kind=kind)
-            for kind in ('regular', 'borderline1', 'borderline2', 'svm')
-        ]
-
-    elif isinstance(Sampler(), NearMiss):
+    if isinstance(Sampler(), NearMiss):
         samplers = [Sampler(version=version) for version in (1, 2, 3)]
 
     else:

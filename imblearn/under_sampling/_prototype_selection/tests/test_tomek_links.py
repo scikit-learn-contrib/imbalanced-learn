@@ -48,10 +48,3 @@ def test_tl_fit_resample():
     y_gt = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_deprecation_random_state():
-    tl = TomekLinks(random_state=0)
-    with warns(
-            DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        tl.fit_resample(X, Y)

@@ -64,10 +64,3 @@ def test_ncr_fit_resample_mode():
     y_gt = np.array([1, 1, 1, 2, 2, 0, 0, 2, 1, 2])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_deprecation_random_state():
-    ncr = NeighbourhoodCleaningRule(random_state=0)
-    with warns(
-            DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        ncr.fit_resample(X, Y)

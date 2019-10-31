@@ -90,10 +90,3 @@ def test_enn_not_good_object():
     enn = EditedNearestNeighbours(n_neighbors=nn, kind_sel='mode')
     with pytest.raises(ValueError, match="has to be one of"):
         enn.fit_resample(X, Y)
-
-
-def test_deprecation_random_state():
-    enn = EditedNearestNeighbours(random_state=0)
-    with warns(
-            DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        enn.fit_resample(X, Y)

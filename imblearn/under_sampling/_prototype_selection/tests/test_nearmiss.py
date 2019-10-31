@@ -138,10 +138,3 @@ def test_nm_fit_resample_nn_obj():
         X_resampled, y_resampled = nm.fit_resample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])
         assert_array_equal(y_resampled, y_gt[version_idx])
-
-
-def test_deprecation_random_state():
-    nm = NearMiss(random_state=0)
-    with warns(
-            DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        nm.fit_resample(X, Y)

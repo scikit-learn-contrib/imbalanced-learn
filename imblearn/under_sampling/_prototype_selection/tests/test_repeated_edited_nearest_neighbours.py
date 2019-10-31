@@ -160,10 +160,3 @@ def test_renn_not_good_object():
     renn = RepeatedEditedNearestNeighbours(n_neighbors=nn, kind_sel='mode')
     with pytest.raises(ValueError):
         renn.fit_resample(X, Y)
-
-
-def test_deprecation_random_state():
-    renn = RepeatedEditedNearestNeighbours(random_state=0)
-    with warns(
-            DeprecationWarning, match="'random_state' is deprecated from 0.4"):
-        renn.fit_resample(X, Y)
