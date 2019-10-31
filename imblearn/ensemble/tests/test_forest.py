@@ -131,6 +131,6 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
 def test_balanced_random_forest_grid_search(imbalanced_dataset):
     brf = BalancedRandomForestClassifier()
     grid = GridSearchCV(
-        brf, {"n_estimators": (1, 2), "max_depth": (1, 2)}, cv=3, iid=False
+        brf, {"n_estimators": (1, 2), "max_depth": (1, 2)}, cv=3
     )
     grid.fit(*imbalanced_dataset)

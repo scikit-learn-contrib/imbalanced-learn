@@ -45,7 +45,6 @@ def test_scorer_common_average(data, score, expected_score, average):
         param_grid={"C": [1, 10]},
         scoring=scorer,
         cv=3,
-        iid=False,
     )
     grid.fit(X_train, y_train).predict(X_test)
 
@@ -75,7 +74,6 @@ def test_scorer_default_average(data, score, average, expected_score):
         param_grid={"C": [1, 10]},
         scoring=scorer,
         cv=3,
-        iid=False,
     )
     grid.fit(X_train, y_train).predict(X_test)
 

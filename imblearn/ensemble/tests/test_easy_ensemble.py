@@ -250,6 +250,5 @@ def test_easy_ensemble_classifier_grid_search():
         EasyEnsembleClassifier(base_estimator=AdaBoostClassifier()),
         parameters,
         cv=5,
-        iid=False,
     )
     grid_search.fit(X, y)
