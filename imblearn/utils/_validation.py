@@ -303,17 +303,11 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
             sampling_strategy_[class_sample] = n_samples
     elif sampling_type == "clean-sampling":
         # FIXME: Turn into an error in 0.6
-        warnings.warn(
+        raise ValueError(
             "'sampling_strategy' as a dict for cleaning methods is "
-            "deprecated and will raise an error in version 0.6. "
-            "Please give a list of the classes to be targeted by the"
-            " sampling.",
-            DeprecationWarning,
+            "not supported. Please give a list of the classes to be "
+            "targeted by the sampling."
         )
-        # clean-sampling can be more permissive since those samplers do not
-        # use samples
-        for class_sample, n_samples in sampling_strategy.items():
-            sampling_strategy_[class_sample] = n_samples
     else:
         raise NotImplementedError
 

@@ -69,8 +69,8 @@ def test_check_target_type_ova(target, output_target, is_ova):
 
 
 def test_check_sampling_strategy_warning():
-    msg = "dict for cleaning methods is deprecated"
-    with pytest.warns(DeprecationWarning, match=msg):
+    msg = "dict for cleaning methods is not supported"
+    with pytest.raises(ValueError, match=msg):
         check_sampling_strategy(
             {1: 0, 2: 0, 3: 0}, multiclass_target, "clean-sampling"
         )
