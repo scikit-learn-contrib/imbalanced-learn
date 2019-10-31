@@ -7,8 +7,6 @@
 # License: MIT
 
 import math
-import types
-import warnings
 from collections import Counter
 
 import numpy as np
@@ -32,9 +30,6 @@ from ..utils import check_neighbors_object
 from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
-
-# FIXME: remove in 0.6
-SMOTE_KIND = ('regular', 'borderline1', 'borderline2', 'svm')
 
 
 class BaseSMOTE(BaseOverSampler):
@@ -329,11 +324,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                              '"borderline-1" and "borderline-2".'
                              'Got {} instead.'.format(self.kind))
 
-    # FIXME: rename _sample -> _fit_resample in 0.6
     def _fit_resample(self, X, y):
-        return self._sample(X, y)
-
-    def _sample(self, X, y):
         self._validate_estimator()
 
         X_resampled = X.copy()
@@ -517,11 +508,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
             raise_isinstance_error('svm_estimator', [SVC],
                                    self.svm_estimator)
 
-    # FIXME: rename _sample -> _fit_resample in 0.6
     def _fit_resample(self, X, y):
-        return self._sample(X, y)
-
-    def _sample(self, X, y):
         self._validate_estimator()
         random_state = check_random_state(self.random_state)
         X_resampled = X.copy()
@@ -603,11 +590,10 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
         return X_resampled, y_resampled
 
 
-# FIXME: In 0.6, SMOTE should inherit only from BaseSMOTE.
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring)
-class SMOTE(SVMSMOTE, BorderlineSMOTE):
+class SMOTE(BaseSMOTE):
     """Class to perform over-sampling using SMOTE.
 
     This object is an implementation of SMOTE - Synthetic Minority
@@ -626,42 +612,6 @@ class SMOTE(SVMSMOTE, BorderlineSMOTE):
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
-
-    m_neighbors : int or object, optional (default=10)
-        If int, number of nearest neighbours to use to determine if a minority
-        sample is in danger. Used with ``kind={{'borderline1', 'borderline2',
-        'svm'}}``.  If object, an estimator that inherits
-        from :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used
-        to find the k_neighbors.
-
-        .. deprecated:: 0.4
-           ``m_neighbors`` is deprecated in 0.4 and will be removed in 0.6. Use
-           :class:`BorderlineSMOTE` or :class:`SVMSMOTE` instead to use the
-           intended algorithm.
-
-    out_step : float, optional (default=0.5)
-        Step size when extrapolating. Used with ``kind='svm'``.
-
-        .. deprecated:: 0.4
-           ``out_step`` is deprecated in 0.4 and will be removed in 0.6. Use
-           :class:`SVMSMOTE` instead to use the intended algorithm.
-
-    kind : str, optional (default='regular')
-        The type of SMOTE algorithm to use one of the following options:
-        ``'regular'``, ``'borderline1'``, ``'borderline2'``, ``'svm'``.
-
-        .. deprecated:: 0.4
-           ``kind`` is deprecated in 0.4 and will be removed in 0.6. Use
-           :class:`BorderlineSMOTE` or :class:`SVMSMOTE` instead to use the
-           intended algorithm.
-
-    svm_estimator : object, optional (default=SVC())
-        If ``kind='svm'``, a parametrized :class:`sklearn.svm.SVC`
-        classifier can be passed.
-
-        .. deprecated:: 0.4
-           ``out_step`` is deprecated in 0.4 and will be removed in 0.6. Use
-           :class:`SVMSMOTE` instead to use the intended algorithm.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
@@ -711,86 +661,16 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                  sampling_strategy='auto',
                  random_state=None,
                  k_neighbors=5,
-                 m_neighbors='deprecated',
-                 out_step='deprecated',
-                 kind='deprecated',
-                 svm_estimator='deprecated',
                  n_jobs=1):
-        # FIXME: in 0.6 call super()
-        BaseSMOTE.__init__(self, sampling_strategy=sampling_strategy,
-                           random_state=random_state, k_neighbors=k_neighbors,
-                           n_jobs=n_jobs)
-        self.kind = kind
-        self.m_neighbors = m_neighbors
-        self.out_step = out_step
-        self.svm_estimator = svm_estimator
-        self.n_jobs = n_jobs
+        super().__init__(
+            sampling_strategy=sampling_strategy,
+            random_state=random_state,
+            k_neighbors=k_neighbors,
+            n_jobs=n_jobs
+        )
 
-    def _validate_estimator(self):
-        # FIXME: in 0.6 call super()
-        BaseSMOTE._validate_estimator(self)
-        # FIXME: remove in 0.6 after deprecation cycle
-        if self.kind != 'deprecated' and not (self.kind == 'borderline-1' or
-                                              self.kind == 'borderline-2'):
-            if self.kind not in SMOTE_KIND:
-                raise ValueError('Unknown kind for SMOTE algorithm.'
-                                 ' Choices are {}. Got {} instead.'.format(
-                                     SMOTE_KIND, self.kind))
-            else:
-                warnings.warn('"kind" is deprecated in 0.4 and will be '
-                              'removed in 0.6. Use SMOTE, BorderlineSMOTE or '
-                              'SVMSMOTE instead.', DeprecationWarning)
-
-            if self.kind == 'borderline1' or self.kind == 'borderline2':
-                self._sample = types.MethodType(BorderlineSMOTE._sample, self)
-                self.kind = ('borderline-1' if self.kind == 'borderline1'
-                             else 'borderline-2')
-
-            elif self.kind == 'svm':
-                self._sample = types.MethodType(SVMSMOTE._sample, self)
-
-                if self.out_step == 'deprecated':
-                    self.out_step = 0.5
-                else:
-                    warnings.warn('"out_step" is deprecated in 0.4 and will '
-                                  'be removed in 0.6. Use SVMSMOTE class '
-                                  'instead.', DeprecationWarning)
-
-                if self.svm_estimator == 'deprecated':
-                    warnings.warn('"svm_estimator" is deprecated in 0.4 and '
-                                  'will be removed in 0.6. Use SVMSMOTE class '
-                                  'instead.', DeprecationWarning)
-                if (self.svm_estimator is None or
-                        self.svm_estimator == 'deprecated'):
-                    self.svm_estimator_ = SVC(gamma='scale',
-                                              random_state=self.random_state)
-                elif isinstance(self.svm_estimator, SVC):
-                    self.svm_estimator_ = clone(self.svm_estimator)
-                else:
-                    raise_isinstance_error('svm_estimator', [SVC],
-                                           self.svm_estimator)
-
-            if self.kind != 'regular':
-                if self.m_neighbors == 'deprecated':
-                    self.m_neighbors = 10
-                else:
-                    warnings.warn('"m_neighbors" is deprecated in 0.4 and '
-                                  'will be removed in 0.6. Use SVMSMOTE class '
-                                  'or BorderlineSMOTE instead.',
-                                  DeprecationWarning)
-
-                self.nn_m_ = check_neighbors_object(
-                    'm_neighbors', self.m_neighbors, additional_neighbor=1)
-                self.nn_m_.set_params(**{'n_jobs': self.n_jobs})
-
-    # FIXME: to be removed in 0.6
     def _fit_resample(self, X, y):
         self._validate_estimator()
-        return self._sample(X, y)
-
-    def _sample(self, X, y):
-        # FIXME: uncomment in version 0.6
-        # self._validate_estimator()
 
         X_resampled = X.copy()
         y_resampled = y.copy()
@@ -1222,11 +1102,7 @@ class KMeansSMOTE(BaseSMOTE):
                     else self.density_exponent)
         return (mean_distance ** exponent) / X.shape[0]
 
-    # FIXME: rename _sample -> _fit_resample in 0.6
     def _fit_resample(self, X, y):
-        return self._sample(X, y)
-
-    def _sample(self, X, y):
         self._validate_estimator()
         X_resampled = X.copy()
         y_resampled = y.copy()

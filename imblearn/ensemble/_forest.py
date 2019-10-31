@@ -37,7 +37,7 @@ def _local_parallel_build_trees(sampler, tree, forest, X, y, sample_weight,
                                 tree_idx, n_trees, verbose=0,
                                 class_weight=None):
     # resample before to fit the tree
-    X_resampled, y_resampled = sampler.fit_sample(X, y)
+    X_resampled, y_resampled = sampler.fit_resample(X, y)
     if sample_weight is not None:
         sample_weight = safe_indexing(sample_weight, sampler.sample_indices_)
     tree = _parallel_build_trees(tree, forest, X_resampled, y_resampled,

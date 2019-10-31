@@ -36,8 +36,8 @@ def test_kmeans_smote(data):
                                k_neighbors=5)
     smote = SMOTE(random_state=42)
 
-    X_res_1, y_res_1 = kmeans_smote.fit_sample(X, y)
-    X_res_2, y_res_2 = smote.fit_sample(X, y)
+    X_res_1, y_res_1 = kmeans_smote.fit_resample(X, y)
+    X_res_2, y_res_2 = smote.fit_resample(X, y)
 
     assert_allclose(X_res_1, X_res_2)
     assert_array_equal(y_res_1, y_res_2)
@@ -59,7 +59,7 @@ def test_sample_kmeans_custom(data, k_neighbors, kmeans_estimator):
     kmeans_smote = KMeansSMOTE(random_state=42,
                         kmeans_estimator=kmeans_estimator,
                         k_neighbors=k_neighbors)
-    X_resampled, y_resampled = kmeans_smote.fit_sample(X, y)
+    X_resampled, y_resampled = kmeans_smote.fit_resample(X, y)
     assert X_resampled.shape == (24, 2)
     assert y_resampled.shape == (24,)
 
@@ -75,7 +75,7 @@ def test_sample_kmeans_not_enough_clusters():
                         kmeans_estimator=30,
                         k_neighbors=2)
     with pytest.raises(RuntimeError):
-        smote.fit_sample(X, y)
+        smote.fit_resample(X, y)
 
 
 @pytest.mark.parametrize("density_exponent", ["auto", 2])
@@ -86,7 +86,7 @@ def test_sample_kmeans_density_estimation(data, density_exponent,
     smote = KMeansSMOTE(random_state=42,
                         density_exponent=density_exponent,
                         cluster_balance_threshold=cluster_balance_threshold)
-    smote.fit_sample(X, y)
+    smote.fit_resample(X, y)
 
 
 @pytest.mark.parametrize(
