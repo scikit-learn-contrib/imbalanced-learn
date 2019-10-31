@@ -32,7 +32,11 @@ Maintenance
   :pr:`617` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - Synchronize :mod:`imblearn.pipeline` with :mod:`sklearn.pipeline`.
-  :pr:`617` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`620` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Synchronize :class:`imblearn.ensemble.BalancedRandomForestClassifier` and add
+  parameters `max_samples` and `ccp_alpha`.
+  :pr:`621` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Deprecation
 ...........
