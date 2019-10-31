@@ -10,7 +10,7 @@ from numbers import Integral, Real
 import numpy as np
 
 from sklearn.base import clone
-from sklearn.neighbors.base import KNeighborsMixin
+from sklearn.neighbors._base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.multiclass import type_of_target
 
