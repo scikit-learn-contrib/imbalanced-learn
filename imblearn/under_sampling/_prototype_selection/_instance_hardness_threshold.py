@@ -129,9 +129,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
         self._validate_estimator()
 
         target_stats = Counter(y)
-        skf = StratifiedKFold(
-            n_splits=self.cv, shuffle=False, random_state=self.random_state
-        ).split(X, y)
+        skf = StratifiedKFold(n_splits=self.cv, shuffle=False).split(X, y)
         probabilities = np.zeros(y.shape[0], dtype=float)
 
         for train_index, test_index in skf:

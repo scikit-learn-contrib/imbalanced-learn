@@ -21,7 +21,7 @@ def balanced_batch_generator(
     keep_sparse=False,
     random_state=None,
 ):
-    """Create a balanced batch generator to train keras model.
+    """Create a balanced batch generator to train tensorflow model.
 
     Returns a generator --- as well as the number of step per epoch --- which
     is given to ``fit_generator``. The sampler defines the sampling strategy
