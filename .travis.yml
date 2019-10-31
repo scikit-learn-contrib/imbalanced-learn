@@ -1,5 +1,5 @@
 # make it explicit that we favor the new container-based travis workers
-dist: xenial
+dist: bionic
 sudo: false
 
 language: python
