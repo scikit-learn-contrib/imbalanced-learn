@@ -1,5 +1,5 @@
 # make it explicit that we favor the new container-based travis workers
-dist: xenial
+dist: bionic
 sudo: false
 
 language: python
@@ -32,16 +32,12 @@ matrix:
     # Ubuntu 14.04 environment
     - env: DISTRIB="ubuntu"
     # Latest release
-    - env: DISTRIB="conda" PYTHON_VERSION="3.6"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.21.2"
-           OPTIONAL_DEPS="true"
-    - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="0.21.2"
-           OPTIONAL_DEPS="false"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
-           OPTIONAL_DEPS="false"
-  allow_failures:
+           OPTIONAL_DEPS="keras"
+    - env: DISTRIB="conda" PYTHON_VERSION="3.7"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
+           OPTIONAL_DEPS="tensorflow"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
            OPTIONAL_DEPS="false"

@@ -7,17 +7,15 @@
 
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import Substitution
-from ...utils.deprecation import deprecate_parameter
-from ...utils._docstring import _random_state_docstring
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+)
 class TomekLinks(BaseCleaningSampler):
     """Class to perform under-sampling by removing Tomek's links.
 
@@ -27,27 +25,8 @@ class TomekLinks(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
-
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
 
     Attributes
     ----------
@@ -55,7 +34,6 @@ class TomekLinks(BaseCleaningSampler):
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -88,16 +66,8 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 return_indices=False,
-                 random_state=None,
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
-        self.random_state = random_state
-        self.return_indices = return_indices
+    def __init__(self, sampling_strategy="auto", n_jobs=1):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.n_jobs = n_jobs
 
     @staticmethod
@@ -143,13 +113,6 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         return links
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
         # Find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
         nn.fit(X)
@@ -158,12 +121,10 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         links = self.is_tomek(y, nns, self.sampling_strategy_)
         self.sample_indices_ = np.flatnonzero(np.logical_not(links))
 
-        if self.return_indices:
-            return (safe_indexing(X, self.sample_indices_),
-                    safe_indexing(y, self.sample_indices_),
-                    self.sample_indices_)
-        return (safe_indexing(X, self.sample_indices_),
-                safe_indexing(y, self.sample_indices_))
+        return (
+            _safe_indexing(X, self.sample_indices_),
+            _safe_indexing(y, self.sample_indices_),
+        )
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}

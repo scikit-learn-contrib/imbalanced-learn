@@ -6,10 +6,9 @@
 import warnings
 
 
-def deprecate_parameter(sampler,
-                        version_deprecation,
-                        param_deprecated,
-                        new_param=None):
+def deprecate_parameter(
+    sampler, version_deprecation, param_deprecated, new_param=None
+):
     """Helper to deprecate a parameter by another one.
 
     Parameters
@@ -33,22 +32,31 @@ def deprecate_parameter(sampler,
     None
 
     """
-    x, y = version_deprecation.split('.')
-    version_removed = x + '.' + str(int(y) + 2)
+    x, y = version_deprecation.split(".")
+    version_removed = x + "." + str(int(y) + 2)
     if new_param is None:
         if getattr(sampler, param_deprecated) is not None:
             warnings.warn(
                 "'{}' is deprecated from {} and will be removed in"
-                " {} for the estimator {}."
-                .format(param_deprecated, version_deprecation,
-                        version_removed, sampler.__class__),
-                category=DeprecationWarning)
+                " {} for the estimator {}.".format(
+                    param_deprecated,
+                    version_deprecation,
+                    version_removed,
+                    sampler.__class__,
+                ),
+                category=DeprecationWarning,
+            )
     else:
         if getattr(sampler, param_deprecated) is not None:
             warnings.warn(
                 "'{}' is deprecated from {} and will be removed in"
-                " {} for the estimator {}. Use '{}' instead."
-                .format(param_deprecated, version_deprecation,
-                        version_removed, sampler.__class__, new_param),
-                category=DeprecationWarning)
+                " {} for the estimator {}. Use '{}' instead.".format(
+                    param_deprecated,
+                    version_deprecation,
+                    version_removed,
+                    sampler.__class__,
+                    new_param,
+                ),
+                category=DeprecationWarning,
+            )
             setattr(sampler, new_param, getattr(sampler, param_deprecated))

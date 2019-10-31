@@ -20,8 +20,10 @@ from inspect import getcallargs
 import numpy as np
 import scipy as sp
 
-from sklearn.metrics.classification import (_check_targets, _prf_divide,
-                                            precision_recall_fscore_support)
+from sklearn.metrics import precision_recall_fscore_support
+from sklearn.metrics._classification import _check_targets
+from sklearn.metrics._classification import _prf_divide
+
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.multiclass import unique_labels
 
@@ -31,13 +33,15 @@ except ImportError:
     from sklearn.externals.funcsigs import signature
 
 
-def sensitivity_specificity_support(y_true,
-                                    y_pred,
-                                    labels=None,
-                                    pos_label=1,
-                                    average=None,
-                                    warn_for=('sensitivity', 'specificity'),
-                                    sample_weight=None):
+def sensitivity_specificity_support(
+    y_true,
+    y_pred,
+    labels=None,
+    pos_label=1,
+    average=None,
+    warn_for=("sensitivity", "specificity"),
+    sample_weight=None,
+):
     """Compute sensitivity, specificity, and support for each class
 
     The sensitivity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
@@ -139,32 +143,38 @@ def sensitivity_specificity_support(y_true,
     (0.33333333333333331, 0.66666666666666663, None)
 
     """
-    average_options = (None, 'micro', 'macro', 'weighted', 'samples')
-    if average not in average_options and average != 'binary':
-        raise ValueError('average has to be one of ' + str(average_options))
+    average_options = (None, "micro", "macro", "weighted", "samples")
+    if average not in average_options and average != "binary":
+        raise ValueError("average has to be one of " + str(average_options))
 
     y_type, y_true, y_pred = _check_targets(y_true, y_pred)
     present_labels = unique_labels(y_true, y_pred)
 
-    if average == 'binary':
-        if y_type == 'binary':
+    if average == "binary":
+        if y_type == "binary":
             if pos_label not in present_labels:
                 if len(present_labels) < 2:
                     # Only negative labels
-                    return (0., 0., 0)
+                    return (0.0, 0.0, 0)
                 else:
-                    raise ValueError("pos_label=%r is not a valid label: %r" %
-                                     (pos_label, present_labels))
+                    raise ValueError(
+                        "pos_label=%r is not a valid label: %r"
+                        % (pos_label, present_labels)
+                    )
             labels = [pos_label]
         else:
-            raise ValueError("Target is %s but average='binary'. Please "
-                             "choose another average setting." % y_type)
+            raise ValueError(
+                "Target is %s but average='binary'. Please "
+                "choose another average setting." % y_type
+            )
     elif pos_label not in (None, 1):
         warnings.warn(
             "Note that pos_label (set to %r) is ignored when "
             "average != 'binary' (got %r). You may use "
-            "labels=[pos_label] to specify a single positive class." %
-            (pos_label, average), UserWarning)
+            "labels=[pos_label] to specify a single positive class."
+            % (pos_label, average),
+            UserWarning,
+        )
 
     if labels is None:
         labels = present_labels
@@ -172,17 +182,19 @@ def sensitivity_specificity_support(y_true,
     else:
         n_labels = len(labels)
         labels = np.hstack(
-            [labels,
-             np.setdiff1d(present_labels, labels, assume_unique=True)])
+            [labels, np.setdiff1d(present_labels, labels, assume_unique=True)]
+        )
 
     # Calculate tp_sum, pred_sum, true_sum ###
 
-    if y_type.startswith('multilabel'):
-        raise ValueError('imblearn does not support multilabel')
-    elif average == 'samples':
-        raise ValueError("Sample-based precision, recall, fscore is "
-                         "not meaningful outside multilabel "
-                         "classification. See the accuracy_score instead.")
+    if y_type.startswith("multilabel"):
+        raise ValueError("imblearn does not support multilabel")
+    elif average == "samples":
+        raise ValueError(
+            "Sample-based precision, recall, fscore is "
+            "not meaningful outside multilabel "
+            "classification. See the accuracy_score instead."
+        )
     else:
         le = LabelEncoder()
         le.fit(labels)
@@ -200,16 +212,19 @@ def sensitivity_specificity_support(y_true,
 
         if len(tp_bins):
             tp_sum = np.bincount(
-                tp_bins, weights=tp_bins_weights, minlength=len(labels))
+                tp_bins, weights=tp_bins_weights, minlength=len(labels)
+            )
         else:
             # Pathological case
             true_sum = pred_sum = tp_sum = np.zeros(len(labels))
         if len(y_pred):
             pred_sum = np.bincount(
-                y_pred, weights=sample_weight, minlength=len(labels))
+                y_pred, weights=sample_weight, minlength=len(labels)
+            )
         if len(y_true):
             true_sum = np.bincount(
-                y_true, weights=sample_weight, minlength=len(labels))
+                y_true, weights=sample_weight, minlength=len(labels)
+            )
 
         # Compute the true negative
         tn_sum = y_true.size - (pred_sum + true_sum - tp_sum)
@@ -221,7 +236,7 @@ def sensitivity_specificity_support(y_true,
         pred_sum = pred_sum[indices]
         tn_sum = tn_sum[indices]
 
-    if average == 'micro':
+    if average == "micro":
         tp_sum = np.array([tp_sum.sum()])
         pred_sum = np.array([pred_sum.sum()])
         true_sum = np.array([true_sum.sum()])
@@ -229,30 +244,36 @@ def sensitivity_specificity_support(y_true,
 
     # Finally, we have all our sufficient statistics. Divide! #
 
-    with np.errstate(divide='ignore', invalid='ignore'):
+    with np.errstate(divide="ignore", invalid="ignore"):
         # Divide, and on zero-division, set scores to 0 and warn:
 
         # Oddly, we may get an "invalid" rather than a "divide" error
         # here.
-        specificity = _prf_divide(tn_sum, tn_sum + pred_sum - tp_sum,
-                                  'specificity', 'predicted', average,
-                                  warn_for)
-        sensitivity = _prf_divide(tp_sum, true_sum, 'sensitivity', 'true',
-                                  average, warn_for)
+        specificity = _prf_divide(
+            tn_sum,
+            tn_sum + pred_sum - tp_sum,
+            "specificity",
+            "predicted",
+            average,
+            warn_for,
+        )
+        sensitivity = _prf_divide(
+            tp_sum, true_sum, "sensitivity", "true", average, warn_for
+        )
 
     # Average the results
 
-    if average == 'weighted':
+    if average == "weighted":
         weights = true_sum
         if weights.sum() == 0:
             return 0, 0, None
-    elif average == 'samples':
+    elif average == "samples":
         weights = sample_weight
     else:
         weights = None
 
     if average is not None:
-        assert average != 'binary' or len(specificity) == 1
+        assert average != "binary" or len(specificity) == 1
         specificity = np.average(specificity, weights=weights)
         sensitivity = np.average(sensitivity, weights=weights)
         true_sum = None  # return no support
@@ -260,12 +281,14 @@ def sensitivity_specificity_support(y_true,
     return sensitivity, specificity, true_sum
 
 
-def sensitivity_score(y_true,
-                      y_pred,
-                      labels=None,
-                      pos_label=1,
-                      average='binary',
-                      sample_weight=None):
+def sensitivity_score(
+    y_true,
+    y_pred,
+    labels=None,
+    pos_label=1,
+    average="binary",
+    sample_weight=None,
+):
     """Compute the sensitivity
 
     The sensitivity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
@@ -354,18 +377,21 @@ def sensitivity_score(y_true,
         labels=labels,
         pos_label=pos_label,
         average=average,
-        warn_for=('sensitivity', ),
-        sample_weight=sample_weight)
+        warn_for=("sensitivity",),
+        sample_weight=sample_weight,
+    )
 
     return s
 
 
-def specificity_score(y_true,
-                      y_pred,
-                      labels=None,
-                      pos_label=1,
-                      average='binary',
-                      sample_weight=None):
+def specificity_score(
+    y_true,
+    y_pred,
+    labels=None,
+    pos_label=1,
+    average="binary",
+    sample_weight=None,
+):
     """Compute the specificity
 
     The specificity is the ratio ``tn / (tn + fp)`` where ``tn`` is the number
@@ -454,19 +480,22 @@ def specificity_score(y_true,
         labels=labels,
         pos_label=pos_label,
         average=average,
-        warn_for=('specificity', ),
-        sample_weight=sample_weight)
+        warn_for=("specificity",),
+        sample_weight=sample_weight,
+    )
 
     return s
 
 
-def geometric_mean_score(y_true,
-                         y_pred,
-                         labels=None,
-                         pos_label=1,
-                         average='multiclass',
-                         sample_weight=None,
-                         correction=0.0):
+def geometric_mean_score(
+    y_true,
+    y_pred,
+    labels=None,
+    pos_label=1,
+    average="multiclass",
+    sample_weight=None,
+    correction=0.0,
+):
     """Compute the geometric mean.
 
     The geometric mean (G-mean) is the root of the product of class-wise
@@ -575,15 +604,16 @@ def geometric_mean_score(y_true,
     array([ 0.8660254,  0.       ,  0.       ])
 
     """
-    if average is None or average != 'multiclass':
+    if average is None or average != "multiclass":
         sen, spe, _ = sensitivity_specificity_support(
             y_true,
             y_pred,
             labels=labels,
             pos_label=pos_label,
             average=average,
-            warn_for=('specificity', 'specificity'),
-            sample_weight=sample_weight)
+            warn_for=("specificity", "specificity"),
+            sample_weight=sample_weight,
+        )
 
         return np.sqrt(sen * spe)
     else:
@@ -594,10 +624,12 @@ def geometric_mean_score(y_true,
             n_labels = None
         else:
             n_labels = len(labels)
-            labels = np.hstack([
-                labels,
-                np.setdiff1d(present_labels, labels, assume_unique=True)
-            ])
+            labels = np.hstack(
+                [
+                    labels,
+                    np.setdiff1d(present_labels, labels, assume_unique=True),
+                ]
+            )
 
         le = LabelEncoder()
         le.fit(labels)
@@ -616,25 +648,28 @@ def geometric_mean_score(y_true,
 
         if len(tp_bins):
             tp_sum = np.bincount(
-                tp_bins, weights=tp_bins_weights, minlength=len(labels))
+                tp_bins, weights=tp_bins_weights, minlength=len(labels)
+            )
         else:
             # Pathological case
             true_sum = tp_sum = np.zeros(len(labels))
         if len(y_true):
             true_sum = np.bincount(
-                y_true, weights=sample_weight, minlength=len(labels))
+                y_true, weights=sample_weight, minlength=len(labels)
+            )
 
         # Retain only selected labels
         indices = np.searchsorted(sorted_labels, labels[:n_labels])
         tp_sum = tp_sum[indices]
         true_sum = true_sum[indices]
 
-        with np.errstate(divide='ignore', invalid='ignore'):
-            recall = _prf_divide(tp_sum, true_sum, "recall", "true", None,
-                                 "recall")
+        with np.errstate(divide="ignore", invalid="ignore"):
+            recall = _prf_divide(
+                tp_sum, true_sum, "recall", "true", None, "recall"
+            )
         recall[recall == 0] = correction
 
-        with np.errstate(divide='ignore', invalid='ignore'):
+        with np.errstate(divide="ignore", invalid="ignore"):
             gmean = sp.stats.gmean(recall)
         # old version of scipy return MaskedConstant instead of 0.0
         if isinstance(gmean, np.ma.core.MaskedConstant):
@@ -700,13 +735,17 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
             tags_scoring_func = getcallargs(scoring_func, *args, **kwargs)
             # check that the scoring function does not need a score
             # and only a prediction
-            if ('y_score' in tags_scoring_func or
-                'y_prob' in tags_scoring_func or
-                    'y2' in tags_scoring_func):
-                raise AttributeError('The function {} has an unsupported'
-                                     ' attribute. Metric with`y_pred` are the'
-                                     ' only supported metrics is the only'
-                                     ' supported.')
+            if (
+                "y_score" in tags_scoring_func
+                or "y_prob" in tags_scoring_func
+                or "y2" in tags_scoring_func
+            ):
+                raise AttributeError(
+                    "The function {} has an unsupported"
+                    " attribute. Metric with`y_pred` are the"
+                    " only supported metrics is the only"
+                    " supported."
+                )
             # Compute the score from the scoring function
             _score = scoring_func(*args, **kwargs)
             # Square if desired
@@ -720,39 +759,43 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
             # Make the intersection between the parameters
             sel_params = params_sens_spec.intersection(set(tags_scoring_func))
             # Create a sub dictionary
-            tags_scoring_func = {k: tags_scoring_func[k]
-                                 for k in sel_params}
+            tags_scoring_func = {k: tags_scoring_func[k] for k in sel_params}
             # Check if the metric is the geometric mean
-            if scoring_func.__name__ == 'geometric_mean_score':
-                if 'average' in tags_scoring_func:
-                    if tags_scoring_func['average'] == 'multiclass':
-                        tags_scoring_func['average'] = 'macro'
+            if scoring_func.__name__ == "geometric_mean_score":
+                if "average" in tags_scoring_func:
+                    if tags_scoring_func["average"] == "multiclass":
+                        tags_scoring_func["average"] = "macro"
             # We do not support multilabel so the only average supported
             # is binary
-            elif (scoring_func.__name__ == 'accuracy_score' or
-                  scoring_func.__name__ == 'jaccard_score'):
-                tags_scoring_func['average'] = 'binary'
+            elif (
+                scoring_func.__name__ == "accuracy_score"
+                or scoring_func.__name__ == "jaccard_score"
+            ):
+                tags_scoring_func["average"] = "binary"
             # Create the list of parameters through signature binding
             tags_sens_spec = sens_spec_sig.bind(**tags_scoring_func)
             # Call the sens/spec function
             sen, spe, _ = sensitivity_specificity_support(
-                *tags_sens_spec.args, **tags_sens_spec.kwargs)
+                *tags_sens_spec.args, **tags_sens_spec.kwargs
+            )
             # Compute the dominance
             dom = sen - spe
-            return (1. + alpha * dom) * _score
+            return (1.0 + alpha * dom) * _score
 
         return compute_score
 
     return decorate
 
 
-def classification_report_imbalanced(y_true,
-                                     y_pred,
-                                     labels=None,
-                                     target_names=None,
-                                     sample_weight=None,
-                                     digits=2,
-                                     alpha=0.1):
+def classification_report_imbalanced(
+    y_true,
+    y_pred,
+    labels=None,
+    target_names=None,
+    sample_weight=None,
+    digits=2,
+    alpha=0.1,
+):
     """Build a classification report based on metrics used with imbalanced
     dataset
 
@@ -826,22 +869,22 @@ def classification_report_imbalanced(y_true,
     else:
         labels = np.asarray(labels)
 
-    last_line_heading = 'avg / total'
+    last_line_heading = "avg / total"
 
     if target_names is None:
-        target_names = ['%s' % l for l in labels]
+        target_names = ["%s" % l for l in labels]
     name_width = max(len(cn) for cn in target_names)
     width = max(name_width, len(last_line_heading), digits)
 
     headers = ["pre", "rec", "spe", "f1", "geo", "iba", "sup"]
-    fmt = '%% %ds' % width  # first column: class name
-    fmt += '  '
-    fmt += ' '.join(['% 9s' for _ in headers])
-    fmt += '\n'
+    fmt = "%% %ds" % width  # first column: class name
+    fmt += "  "
+    fmt += " ".join(["% 9s" for _ in headers])
+    fmt += "\n"
 
     headers = [""] + headers
     report = fmt % tuple(headers)
-    report += '\n'
+    report += "\n"
 
     # Compute the different metrics
     # Precision/recall/f1
@@ -850,49 +893,63 @@ def classification_report_imbalanced(y_true,
         y_pred,
         labels=labels,
         average=None,
-        sample_weight=sample_weight)
+        sample_weight=sample_weight,
+    )
     # Specificity
     specificity = specificity_score(
         y_true,
         y_pred,
         labels=labels,
         average=None,
-        sample_weight=sample_weight)
+        sample_weight=sample_weight,
+    )
     # Geometric mean
     geo_mean = geometric_mean_score(
         y_true,
         y_pred,
         labels=labels,
         average=None,
-        sample_weight=sample_weight)
+        sample_weight=sample_weight,
+    )
     # Index balanced accuracy
-    iba_gmean = make_index_balanced_accuracy(
-        alpha=alpha, squared=True)(geometric_mean_score)
+    iba_gmean = make_index_balanced_accuracy(alpha=alpha, squared=True)(
+        geometric_mean_score
+    )
     iba = iba_gmean(
         y_true,
         y_pred,
         labels=labels,
         average=None,
-        sample_weight=sample_weight)
+        sample_weight=sample_weight,
+    )
 
     for i, label in enumerate(labels):
         values = [target_names[i]]
-        for v in (precision[i], recall[i], specificity[i], f1[i], geo_mean[i],
-                  iba[i]):
+        for v in (
+            precision[i],
+            recall[i],
+            specificity[i],
+            f1[i],
+            geo_mean[i],
+            iba[i],
+        ):
             values += ["{0:0.{1}f}".format(v, digits)]
         values += ["{}".format(support[i])]
         report += fmt % tuple(values)
 
-    report += '\n'
+    report += "\n"
 
     # compute averages
     values = [last_line_heading]
-    for v in (np.average(precision, weights=support), np.average(
-            recall, weights=support), np.average(specificity, weights=support),
-              np.average(f1, weights=support), np.average(
-                  geo_mean, weights=support), np.average(iba,
-                                                         weights=support)):
+    for v in (
+        np.average(precision, weights=support),
+        np.average(recall, weights=support),
+        np.average(specificity, weights=support),
+        np.average(f1, weights=support),
+        np.average(geo_mean, weights=support),
+        np.average(iba, weights=support),
+    ):
         values += ["{0:0.{1}f}".format(v, digits)]
-    values += ['{}'.format(np.sum(support))]
+    values += ["{}".format(np.sum(support))]
     report += fmt % tuple(values)
     return report

@@ -4,7 +4,6 @@
 #          Christos Aridas
 # License: MIT
 
-import warnings
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -15,7 +14,6 @@ from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
-from .utils.deprecation import deprecate_parameter
 
 
 class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
@@ -25,7 +23,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
     instead.
     """
 
-    _estimator_type = 'sampler'
+    _estimator_type = "sampler"
 
     def fit(self, X, y):
         """Check inputs and statistics of the sampler.
@@ -46,10 +44,10 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
             Return the instance itself.
 
         """
-        self._deprecate_ratio()
         X, y, _ = self._check_X_y(X, y)
         self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type)
+            self.sampling_strategy, y, self._sampling_type
+        )
         return self
 
     def fit_resample(self, X, y):
@@ -73,13 +71,12 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
             The corresponding label of `X_resampled`.
 
         """
-        self._deprecate_ratio()
-
         check_classification_targets(y)
         X, y, binarize_y = self._check_X_y(X, y)
 
         self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type)
+            self.sampling_strategy, y, self._sampling_type
+        )
 
         output = self._fit_resample(X, y)
 
@@ -126,30 +123,14 @@ class BaseSampler(SamplerMixin):
     instead.
     """
 
-    def __init__(self, sampling_strategy='auto', ratio=None):
+    def __init__(self, sampling_strategy="auto"):
         self.sampling_strategy = sampling_strategy
-        # FIXME: remove in 0.6
-        self.ratio = ratio
 
     @staticmethod
     def _check_X_y(X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
+        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"])
         return X, y, binarize_y
-
-    @property
-    def ratio_(self):
-        # FIXME: remove in 0.6
-        warnings.warn("'ratio' and 'ratio_' are deprecated. Use "
-                      "'sampling_strategy' and 'sampling_strategy_' instead.",
-                      DeprecationWarning)
-        return self.sampling_strategy_
-
-    def _deprecate_ratio(self):
-        # both ratio and sampling_strategy should not be set
-        if self.ratio is not None:
-            deprecate_parameter(self, '0.4', 'ratio', 'sampling_strategy')
-            self.sampling_strategy = self.ratio
 
 
 def _identity(X, y):
@@ -219,7 +200,7 @@ class FunctionSampler(BaseSampler):
 
     """
 
-    _sampling_type = 'bypass'
+    _sampling_type = "bypass"
 
     def __init__(self, func=None, accept_sparse=True, kw_args=None):
         super().__init__()
@@ -228,8 +209,9 @@ class FunctionSampler(BaseSampler):
         self.kw_args = kw_args
 
     def _fit_resample(self, X, y):
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']
-                         if self.accept_sparse else False)
+        X, y = check_X_y(
+            X, y, accept_sparse=["csr", "csc"] if self.accept_sparse else False
+        )
         func = _identity if self.func is None else self.func
         output = func(X, y, **(self.kw_args if self.kw_args else {}))
         return output

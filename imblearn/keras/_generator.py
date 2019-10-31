@@ -16,6 +16,7 @@ def import_keras():
     def import_from_keras():
         try:
             import keras
+
             return (keras.utils.Sequence,), True
         except ImportError:
             return tuple(), False
@@ -23,6 +24,7 @@ def import_keras():
     def import_from_tensforflow():
         try:
             from tensorflow import keras
+
             return (keras.utils.Sequence,), True
         except ImportError:
             return tuple(), False
@@ -31,7 +33,7 @@ def import_keras():
     ParentClassTensorflow, has_keras_tf = import_from_tensforflow()
     has_keras = has_keras_k or has_keras_tf
     if has_keras:
-        ParentClass = (ParentClassKeras + ParentClassTensorflow)
+        ParentClass = ParentClassKeras + ParentClassTensorflow
     else:
         ParentClass = (object,)
     return ParentClass, has_keras
@@ -42,18 +44,13 @@ ParentClass, HAS_KERAS = import_keras()
 from scipy.sparse import issparse
 
 from sklearn.base import clone
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 from sklearn.utils import check_random_state
-from sklearn.utils.testing import set_random_state
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 from ..tensorflow import balanced_batch_generator as tf_bbg
-
-DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
-                          'RepeatedEditedNearestNeighbours', 'AllKNN',
-                          'NeighbourhoodCleaningRule', 'TomekLinks')
 
 
 class BalancedBatchGenerator(*ParentClass):
@@ -133,8 +130,16 @@ class BalancedBatchGenerator(*ParentClass):
     # flag for keras sequence duck-typing
     use_sequence_api = True
 
-    def __init__(self, X, y, sample_weight=None, sampler=None, batch_size=32,
-                 keep_sparse=False, random_state=None):
+    def __init__(
+        self,
+        X,
+        y,
+        sample_weight=None,
+        sampler=None,
+        batch_size=32,
+        keep_sparse=False,
+        random_state=None,
+    ):
         if not HAS_KERAS:
             raise ImportError("'No module named 'keras'")
         self.X = X
@@ -152,14 +157,11 @@ class BalancedBatchGenerator(*ParentClass):
             self.sampler_ = RandomUnderSampler(random_state=random_state)
         else:
             self.sampler_ = clone(self.sampler)
-            # FIXME: Remove in 0.6
-            if self.sampler_.__class__.__name__ not in DONT_HAVE_RANDOM_STATE:
-                set_random_state(self.sampler_, random_state)
-
         self.sampler_.fit_resample(self.X, self.y)
-        if not hasattr(self.sampler_, 'sample_indices_'):
-            raise ValueError("'sampler' needs to have an attribute "
-                             "'sample_indices_'.")
+        if not hasattr(self.sampler_, "sample_indices_"):
+            raise ValueError(
+                "'sampler' needs to have an attribute " "'sample_indices_'."
+            )
         self.indices_ = self.sampler_.sample_indices_
         # shuffle the indices since the sampler are packing them by class
         random_state.shuffle(self.indices_)
@@ -168,19 +170,27 @@ class BalancedBatchGenerator(*ParentClass):
         return int(self.indices_.size // self.batch_size)
 
     def __getitem__(self, index):
-        X_resampled = safe_indexing(
-            self.X, self.indices_[index * self.batch_size:
-                                  (index + 1) * self.batch_size])
-        y_resampled = safe_indexing(
-            self.y, self.indices_[index * self.batch_size:
-                                  (index + 1) * self.batch_size])
+        X_resampled = _safe_indexing(
+            self.X,
+            self.indices_[
+                index * self.batch_size:(index + 1) * self.batch_size
+            ],
+        )
+        y_resampled = _safe_indexing(
+            self.y,
+            self.indices_[
+                index * self.batch_size:(index + 1) * self.batch_size
+            ],
+        )
         if issparse(X_resampled) and not self.keep_sparse:
             X_resampled = X_resampled.toarray()
         if self.sample_weight is not None:
-            sample_weight_resampled = safe_indexing(
+            sample_weight_resampled = _safe_indexing(
                 self.sample_weight,
-                self.indices_[index * self.batch_size:
-                              (index + 1) * self.batch_size])
+                self.indices_[
+                    index * self.batch_size:(index + 1) * self.batch_size
+                ],
+            )
 
         if self.sample_weight is None:
             return X_resampled, y_resampled
@@ -189,9 +199,15 @@ class BalancedBatchGenerator(*ParentClass):
 
 
 @Substitution(random_state=_random_state_docstring)
-def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
-                             batch_size=32, keep_sparse=False,
-                             random_state=None):
+def balanced_batch_generator(
+    X,
+    y,
+    sample_weight=None,
+    sampler=None,
+    batch_size=32,
+    keep_sparse=False,
+    random_state=None,
+):
     """Create a balanced batch generator to train keras model.
 
     Returns a generator --- as well as the number of step per epoch --- which
@@ -261,6 +277,12 @@ def balanced_batch_generator(X, y, sample_weight=None, sampler=None,
 
     """
 
-    return tf_bbg(X=X, y=y, sample_weight=sample_weight,
-                  sampler=sampler, batch_size=batch_size,
-                  keep_sparse=keep_sparse, random_state=random_state)
+    return tf_bbg(
+        X=X,
+        y=y,
+        sample_weight=sample_weight,
+        sampler=sampler,
+        batch_size=batch_size,
+        keep_sparse=keep_sparse,
+        random_state=random_state,
+    )

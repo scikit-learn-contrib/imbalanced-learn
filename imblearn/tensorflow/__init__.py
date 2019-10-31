@@ -3,4 +3,4 @@ dataset in tensorflow."""
 
 from ._generator import balanced_batch_generator
 
-__all__ = ['balanced_batch_generator']
+__all__ = ["balanced_batch_generator"]
