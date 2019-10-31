@@ -17,6 +17,7 @@ from joblib import Parallel, delayed
 from sklearn.base import clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
+from sklearn.ensemble._forest import _get_n_samples_bootstrap
 from sklearn.ensemble._forest import _parallel_build_trees
 from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
@@ -44,6 +45,7 @@ def _local_parallel_build_trees(
     n_trees,
     verbose=0,
     class_weight=None,
+    n_samples_bootstrap=None
 ):
     # resample before to fit the tree
     X_resampled, y_resampled = sampler.fit_resample(X, y)
@@ -59,7 +61,7 @@ def _local_parallel_build_trees(
         n_trees,
         verbose=verbose,
         class_weight=class_weight,
-        n_samples_bootstrap=X_resampled.shape[0],
+        n_samples_bootstrap=n_samples_bootstrap,
     )
     return sampler, tree
 
@@ -195,6 +197,16 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         Note that these weights will be multiplied with sample_weight (passed
         through the fit method) if sample_weight is specified.
 
+    max_samples : int or float, default=None
+        If bootstrap is True, the number of samples to draw from X
+        to train each base estimator.
+            - If None (default), then draw `X.shape[0]` samples.
+            - If int, then draw `max_samples` samples.
+            - If float, then draw `max_samples * X.shape[0]` samples. Thus,
+              `max_samples` should be in the interval `(0, 1)`.
+
+        .. versionadded:: 0.22
+
     Attributes
     ----------
     estimators_ : list of DecisionTreeClassifier
@@ -281,6 +293,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         verbose=0,
         warm_start=False,
         class_weight=None,
+        max_samples=None,
     ):
         super().__init__(
             criterion=criterion,
@@ -299,6 +312,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             max_features=max_features,
             max_leaf_nodes=max_leaf_nodes,
             min_impurity_decrease=min_impurity_decrease,
+            max_samples=max_samples,
         )
 
         self.sampling_strategy = sampling_strategy
@@ -414,6 +428,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             else:
                 sample_weight = expanded_class_weight
 
+        # Get bootstrap sample size
+        n_samples_bootstrap = _get_n_samples_bootstrap(
+            n_samples=X.shape[0],
+            max_samples=self.max_samples
+        )
+
         # Check parameters
         self._validate_estimator()
 
@@ -479,6 +499,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                     len(trees),
                     verbose=self.verbose,
                     class_weight=self.class_weight,
+                    n_samples_bootstrap=n_samples_bootstrap,
                 )
                 for i, (s, t) in enumerate(zip(samplers, trees))
             )
