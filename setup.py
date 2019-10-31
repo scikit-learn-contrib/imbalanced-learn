@@ -51,8 +51,6 @@ EXTRAS_REQUIRE = {
         'numpydoc',
         'matplotlib',
         'pandas',
-        'keras',
-        'tensorflow>=1.0,<2'
     ]
 }
 
