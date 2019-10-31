@@ -17,8 +17,15 @@ from ._prototype_selection import AllKNN
 from ._prototype_selection import InstanceHardnessThreshold
 
 __all__ = [
-    'ClusterCentroids', 'RandomUnderSampler', 'InstanceHardnessThreshold',
-    'NearMiss', 'TomekLinks', 'EditedNearestNeighbours',
-    'RepeatedEditedNearestNeighbours', 'AllKNN', 'OneSidedSelection',
-    'CondensedNearestNeighbour', 'NeighbourhoodCleaningRule'
+    "ClusterCentroids",
+    "RandomUnderSampler",
+    "InstanceHardnessThreshold",
+    "NearMiss",
+    "TomekLinks",
+    "EditedNearestNeighbours",
+    "RepeatedEditedNearestNeighbours",
+    "AllKNN",
+    "OneSidedSelection",
+    "CondensedNearestNeighbour",
+    "NeighbourhoodCleaningRule",
 ]

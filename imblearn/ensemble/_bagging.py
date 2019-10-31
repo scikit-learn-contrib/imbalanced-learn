@@ -21,7 +21,8 @@ from ..utils._docstring import _random_state_docstring
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class BalancedBaggingClassifier(BaggingClassifier):
     """A Bagging classifier with additional balancing.
 
@@ -165,20 +166,22 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 base_estimator=None,
-                 n_estimators=10,
-                 max_samples=1.0,
-                 max_features=1.0,
-                 bootstrap=True,
-                 bootstrap_features=False,
-                 oob_score=False,
-                 warm_start=False,
-                 sampling_strategy='auto',
-                 replacement=False,
-                 n_jobs=1,
-                 random_state=None,
-                 verbose=0):
+    def __init__(
+        self,
+        base_estimator=None,
+        n_estimators=10,
+        max_samples=1.0,
+        max_features=1.0,
+        bootstrap=True,
+        bootstrap_features=False,
+        oob_score=False,
+        warm_start=False,
+        sampling_strategy="auto",
+        replacement=False,
+        n_jobs=1,
+        random_state=None,
+        verbose=0,
+    ):
 
         super().__init__(
             base_estimator,
@@ -191,7 +194,8 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             warm_start=warm_start,
             n_jobs=n_jobs,
             random_state=random_state,
-            verbose=verbose)
+            verbose=verbose,
+        )
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
 
@@ -199,21 +203,34 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         """Check the estimator and the n_estimator attribute, set the
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError("n_estimators must be an integer, "
-                             "got {}.".format(type(self.n_estimators)))
+            raise ValueError(
+                "n_estimators must be an integer, "
+                "got {}.".format(type(self.n_estimators))
+            )
 
         if self.n_estimators <= 0:
-            raise ValueError("n_estimators must be greater than zero, "
-                             "got {}.".format(self.n_estimators))
+            raise ValueError(
+                "n_estimators must be greater than zero, "
+                "got {}.".format(self.n_estimators)
+            )
 
         if self.base_estimator is not None:
             base_estimator = clone(self.base_estimator)
         else:
             base_estimator = clone(default)
 
-        self.base_estimator_ = Pipeline([('sampler', RandomUnderSampler(
-            sampling_strategy=self.sampling_strategy,
-            replacement=self.replacement)), ('classifier', base_estimator)])
+        self.base_estimator_ = Pipeline(
+            [
+                (
+                    "sampler",
+                    RandomUnderSampler(
+                        sampling_strategy=self.sampling_strategy,
+                        replacement=self.replacement,
+                    ),
+                ),
+                ("classifier", base_estimator),
+            ]
+        )
 
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training

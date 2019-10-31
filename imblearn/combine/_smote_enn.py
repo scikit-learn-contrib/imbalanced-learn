@@ -18,7 +18,8 @@ from ..utils._docstring import _random_state_docstring
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class SMOTEENN(BaseSampler):
     """Class to perform over-sampling using SMOTE and cleaning using ENN.
 
@@ -83,14 +84,17 @@ EditedNearestNeighbours(sampling_strategy='all'))
     Resampled dataset shape Counter({{0: 900, 1: 881}})
 
     """
-    _sampling_type = 'over-sampling'
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 random_state=None,
-                 smote=None,
-                 enn=None,
-                 n_jobs=1):
+    _sampling_type = "over-sampling"
+
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        random_state=None,
+        smote=None,
+        enn=None,
+        n_jobs=1,
+    ):
         super().__init__()
         self.sampling_strategy = sampling_strategy
         self.random_state = random_state
@@ -104,31 +108,36 @@ EditedNearestNeighbours(sampling_strategy='all'))
             if isinstance(self.smote, SMOTE):
                 self.smote_ = clone(self.smote)
             else:
-                raise ValueError('smote needs to be a SMOTE object.'
-                                 'Got {} instead.'.format(type(self.smote)))
+                raise ValueError(
+                    "smote needs to be a SMOTE object."
+                    "Got {} instead.".format(type(self.smote))
+                )
         # Otherwise create a default SMOTE
         else:
             self.smote_ = SMOTE(
                 sampling_strategy=self.sampling_strategy,
                 random_state=self.random_state,
-                n_jobs=self.n_jobs)
+                n_jobs=self.n_jobs,
+            )
 
         if self.enn is not None:
             if isinstance(self.enn, EditedNearestNeighbours):
                 self.enn_ = clone(self.enn)
             else:
-                raise ValueError('enn needs to be an EditedNearestNeighbours.'
-                                 ' Got {} instead.'.format(type(self.enn)))
+                raise ValueError(
+                    "enn needs to be an EditedNearestNeighbours."
+                    " Got {} instead.".format(type(self.enn))
+                )
         # Otherwise create a default EditedNearestNeighbours
         else:
             self.enn_ = EditedNearestNeighbours(
-                            sampling_strategy='all',
-                            n_jobs=self.n_jobs)
+                sampling_strategy="all", n_jobs=self.n_jobs
+            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
         y = check_target_type(y)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
+        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"])
         self.sampling_strategy_ = self.sampling_strategy
 
         X_res, y_res = self.smote_.fit_resample(X, y)

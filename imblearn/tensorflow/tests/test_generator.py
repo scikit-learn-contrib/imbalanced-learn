@@ -10,7 +10,7 @@ from imblearn.over_sampling import RandomOverSampler
 
 from imblearn.tensorflow import balanced_batch_generator
 
-tf = pytest.importorskip('tensorflow')
+tf = pytest.importorskip("tensorflow")
 
 
 @pytest.fixture
@@ -26,8 +26,13 @@ def test_balanced_batch_generator(data, sampler):
     X, y = data
     batch_size = 10
     training_generator, steps_per_epoch = balanced_batch_generator(
-        X, y, sample_weight=None, sampler=sampler,
-        batch_size=batch_size, random_state=42)
+        X,
+        y,
+        sample_weight=None,
+        sampler=sampler,
+        batch_size=batch_size,
+        random_state=42,
+    )
 
     learning_rate = 0.01
     epochs = 10
@@ -52,7 +57,8 @@ def test_balanced_batch_generator(data, sampler):
 
     # build the loss, predict, and train operator
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
-        logits=out_act, labels=targets)
+        logits=out_act, labels=targets
+    )
     loss = tf.reduce_sum(cross_entropy)
     optimizer = tf.train.GradientDescentOptimizer(learning_rate)
     train_op = optimizer.minimize(loss)
@@ -67,13 +73,18 @@ def test_balanced_batch_generator(data, sampler):
         for e in range(epochs):
             for i in range(steps_per_epoch):
                 X_batch, y_batch = next(training_generator)
-                sess.run([train_op, loss],
-                         feed_dict={data: X_batch, targets: y_batch})
+                sess.run(
+                    [train_op, loss],
+                    feed_dict={data: X_batch, targets: y_batch},
+                )
 
             # For each epoch, run accuracy on train and test
             predicts_train = sess.run(predict, feed_dict={data: X})
-            print("epoch: {} train accuracy: {:.3f}"
-                  .format(e, accuracy(y, predicts_train)))
+            print(
+                "epoch: {} train accuracy: {:.3f}".format(
+                    e, accuracy(y, predicts_train)
+                )
+            )
 
 
 @pytest.mark.parametrize("keep_sparse", [True, False])
@@ -81,8 +92,12 @@ def test_balanced_batch_generator_function_sparse(data, keep_sparse):
     X, y = data
 
     training_generator, steps_per_epoch = balanced_batch_generator(
-        sparse.csr_matrix(X), y, keep_sparse=keep_sparse, batch_size=10,
-        random_state=42)
+        sparse.csr_matrix(X),
+        y,
+        keep_sparse=keep_sparse,
+        batch_size=10,
+        random_state=42,
+    )
     for idx in range(steps_per_epoch):
         X_batch, y_batch = next(training_generator)
         if keep_sparse:

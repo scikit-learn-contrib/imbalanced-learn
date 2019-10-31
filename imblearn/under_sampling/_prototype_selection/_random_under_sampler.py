@@ -20,7 +20,8 @@ from ...utils._docstring import _random_state_docstring
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class RandomUnderSampler(BaseUnderSampler):
     """Class to perform random under-sampling.
 
@@ -70,10 +71,9 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 random_state=None,
-                 replacement=False):
+    def __init__(
+        self, sampling_strategy="auto", random_state=None, replacement=False
+    ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.replacement = replacement
@@ -81,16 +81,17 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     @staticmethod
     def _check_X_y(X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X = check_array(X, accept_sparse=['csr', 'csc'], dtype=None)
-        y = check_array(y, accept_sparse=['csr', 'csc'], dtype=None,
-                        ensure_2d=False)
+        X = check_array(X, accept_sparse=["csr", "csc"], dtype=None)
+        y = check_array(
+            y, accept_sparse=["csr", "csc"], dtype=None, ensure_2d=False
+        )
         check_consistent_length(X, y)
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
 
-        idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0,), dtype=int)
 
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
@@ -98,19 +99,22 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = random_state.choice(
                     range(np.count_nonzero(y == target_class)),
                     size=n_samples,
-                    replace=self.replacement)
+                    replace=self.replacement,
+                )
             else:
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under,
-                 np.flatnonzero(y == target_class)[index_target_class]),
-                axis=0)
+                (
+                    idx_under,
+                    np.flatnonzero(y == target_class)[index_target_class],
+                ),
+                axis=0,
+            )
 
         self.sample_indices_ = idx_under
 
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
     def _more_tags(self):
-        return {'X_types': ['2darray', 'string'],
-                'sample_indices': True}
+        return {"X_types": ["2darray", "string"], "sample_indices": True}

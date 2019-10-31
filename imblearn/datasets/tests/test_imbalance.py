@@ -20,9 +20,11 @@ def iris():
 
 @pytest.mark.parametrize(
     "sampling_strategy, err_msg",
-    [({0: -100, 1: 50, 2: 50}, "in a class cannot be negative"),
-     ({0: 10, 1: 70}, "should be less or equal to the original"),
-     ('random-string', "has to be a dictionary or a function")]
+    [
+        ({0: -100, 1: 50, 2: 50}, "in a class cannot be negative"),
+        ({0: 10, 1: 70}, "should be less or equal to the original"),
+        ("random-string", "has to be a dictionary or a function"),
+    ],
 )
 def test_make_imbalance_error(iris, sampling_strategy, err_msg):
     # we are reusing part of utils.check_sampling_strategy, however this is not
@@ -41,8 +43,10 @@ def test_make_imbalance_error_single_class(iris):
 
 @pytest.mark.parametrize(
     "sampling_strategy, expected_counts",
-    [({0: 10, 1: 20, 2: 30}, {0: 10, 1: 20, 2: 30}),
-     ({0: 10, 1: 20}, {0: 10, 1: 20, 2: 50})]
+    [
+        ({0: 10, 1: 20, 2: 30}, {0: 10, 1: 20, 2: 30}),
+        ({0: 10, 1: 20}, {0: 10, 1: 20, 2: 50}),
+    ],
 )
 def test_make_imbalance_dict(iris, sampling_strategy, expected_counts):
     X, y = iris

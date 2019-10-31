@@ -23,7 +23,8 @@ from ...utils._docstring import _random_state_docstring
 
 @Substitution(
     sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class CondensedNearestNeighbour(BaseCleaningSampler):
     """Class to perform under-sampling based on the condensed nearest neighbour
     method.
@@ -91,12 +92,14 @@ CondensedNearestNeighbour # doctest: +SKIP
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 random_state=None,
-                 n_neighbors=None,
-                 n_seeds_S=1,
-                 n_jobs=1):
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        random_state=None,
+        n_neighbors=None,
+        n_seeds_S=1,
+        n_jobs=1,
+    ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.n_neighbors = n_neighbors
@@ -107,16 +110,20 @@ CondensedNearestNeighbour # doctest: +SKIP
         """Private function to create the NN estimator"""
         if self.n_neighbors is None:
             self.estimator_ = KNeighborsClassifier(
-                n_neighbors=1, n_jobs=self.n_jobs)
+                n_neighbors=1, n_jobs=self.n_jobs
+            )
         elif isinstance(self.n_neighbors, int):
             self.estimator_ = KNeighborsClassifier(
-                n_neighbors=self.n_neighbors, n_jobs=self.n_jobs)
+                n_neighbors=self.n_neighbors, n_jobs=self.n_jobs
+            )
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
             self.estimator_ = clone(self.n_neighbors)
         else:
-            raise ValueError('`n_neighbors` has to be a int or an object'
-                             ' inhereited from KNeighborsClassifier.'
-                             ' Got {} instead.'.format(type(self.n_neighbors)))
+            raise ValueError(
+                "`n_neighbors` has to be a int or an object"
+                " inhereited from KNeighborsClassifier."
+                " Got {} instead.".format(type(self.n_neighbors))
+            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
@@ -124,21 +131,25 @@ CondensedNearestNeighbour # doctest: +SKIP
         random_state = check_random_state(self.random_state)
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
-        idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0,), dtype=int)
 
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 # Randomly get one sample from the majority class
                 # Generate the index to select
                 idx_maj = np.flatnonzero(y == target_class)
-                idx_maj_sample = idx_maj[random_state.randint(
-                    low=0,
-                    high=target_stats[target_class],
-                    size=self.n_seeds_S)]
+                idx_maj_sample = idx_maj[
+                    random_state.randint(
+                        low=0,
+                        high=target_stats[target_class],
+                        size=self.n_seeds_S,
+                    )
+                ]
 
                 # Create the set C - One majority samples and all minority
                 C_indices = np.append(
-                    np.flatnonzero(y == class_minority), idx_maj_sample)
+                    np.flatnonzero(y == class_minority), idx_maj_sample
+                )
                 C_x = safe_indexing(X, C_indices)
                 C_y = safe_indexing(y, C_indices)
 
@@ -167,8 +178,9 @@ CondensedNearestNeighbour # doctest: +SKIP
                     # append it in C_x
                     if y_sam != pred_y:
                         # Keep the index for later
-                        idx_maj_sample = np.append(idx_maj_sample,
-                                                   idx_maj[idx_sam])
+                        idx_maj_sample = np.append(
+                            idx_maj_sample, idx_maj[idx_sam]
+                        )
 
                         # Update C
                         C_indices = np.append(C_indices, idx_maj[idx_sam])
@@ -183,17 +195,20 @@ CondensedNearestNeighbour # doctest: +SKIP
                         # well classified elements
                         pred_S_y = self.estimator_.predict(S_x)
                         good_classif_label = np.unique(
-                            np.append(idx_maj_sample,
-                                      np.flatnonzero(pred_S_y == S_y)))
+                            np.append(
+                                idx_maj_sample, np.flatnonzero(pred_S_y == S_y)
+                            )
+                        )
 
                 idx_under = np.concatenate((idx_under, idx_maj_sample), axis=0)
             else:
                 idx_under = np.concatenate(
-                    (idx_under, np.flatnonzero(y == target_class)), axis=0)
+                    (idx_under, np.flatnonzero(y == target_class)), axis=0
+                )
 
         self.sample_indices_ = idx_under
 
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}

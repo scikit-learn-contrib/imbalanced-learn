@@ -17,11 +17,12 @@ from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
 
-SEL_KIND = ('all', 'mode')
+SEL_KIND = ("all", "mode")
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+)
 class EditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
@@ -92,11 +93,9 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 n_neighbors=3,
-                 kind_sel='all',
-                 n_jobs=1):
+    def __init__(
+        self, sampling_strategy="auto", n_neighbors=3, kind_sel="all", n_jobs=1
+    ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
@@ -105,8 +104,9 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         """Validate the estimator created in the ENN."""
         self.nn_ = check_neighbors_object(
-            'n_neighbors', self.n_neighbors, additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
+        )
+        self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
@@ -114,7 +114,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     def _fit_resample(self, X, y):
         self._validate_estimator()
 
-        idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0,), dtype=int)
 
         self.nn_.fit(X)
 
@@ -124,12 +124,13 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 X_class = safe_indexing(X, target_class_indices)
                 y_class = safe_indexing(y, target_class_indices)
                 nnhood_idx = self.nn_.kneighbors(
-                    X_class, return_distance=False)[:, 1:]
+                    X_class, return_distance=False
+                )[:, 1:]
                 nnhood_label = y[nnhood_idx]
-                if self.kind_sel == 'mode':
+                if self.kind_sel == "mode":
                     nnhood_label, _ = mode(nnhood_label, axis=1)
                     nnhood_bool = np.ravel(nnhood_label) == y_class
-                elif self.kind_sel == 'all':
+                elif self.kind_sel == "all":
                     nnhood_label = nnhood_label == target_class
                     nnhood_bool = np.all(nnhood_label, axis=1)
                 index_target_class = np.flatnonzero(nnhood_bool)
@@ -137,20 +138,24 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under,
-                 np.flatnonzero(y == target_class)[index_target_class]),
-                axis=0)
+                (
+                    idx_under,
+                    np.flatnonzero(y == target_class)[index_target_class],
+                ),
+                axis=0,
+            )
 
         self.sample_indices_ = idx_under
 
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+)
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
@@ -225,12 +230,14 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 n_neighbors=3,
-                 max_iter=100,
-                 kind_sel='all',
-                 n_jobs=1):
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        n_neighbors=3,
+        max_iter=100,
+        kind_sel="all",
+        n_jobs=1,
+    ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
@@ -240,17 +247,21 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
         if self.max_iter < 2:
-            raise ValueError('max_iter must be greater than 1.'
-                             ' Got {} instead.'.format(type(self.max_iter)))
+            raise ValueError(
+                "max_iter must be greater than 1."
+                " Got {} instead.".format(type(self.max_iter))
+            )
 
         self.nn_ = check_neighbors_object(
-            'n_neighbors', self.n_neighbors, additional_neighbor=1)
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
+        )
 
         self.enn_ = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
-            n_jobs=self.n_jobs)
+            n_jobs=self.n_jobs,
+        )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
@@ -272,29 +283,35 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             # 3. If one of the class is disappearing
 
             # Case 1
-            b_conv = (prev_len == y_enn.shape[0])
+            b_conv = prev_len == y_enn.shape[0]
 
             # Case 2
             stats_enn = Counter(y_enn)
-            count_non_min = np.array([
-                val for val, key in zip(stats_enn.values(), stats_enn.keys())
-                if key != class_minority
-            ])
+            count_non_min = np.array(
+                [
+                    val
+                    for val, key in zip(stats_enn.values(), stats_enn.keys())
+                    if key != class_minority
+                ]
+            )
             b_min_bec_maj = np.any(
-                count_non_min < target_stats[class_minority])
+                count_non_min < target_stats[class_minority]
+            )
 
             # Case 3
-            b_remove_maj_class = (len(stats_enn) < len(target_stats))
+            b_remove_maj_class = len(stats_enn) < len(target_stats)
 
             X_, y_, = X_enn, y_enn
             self.sample_indices_ = self.sample_indices_[
-                self.enn_.sample_indices_]
+                self.enn_.sample_indices_
+            ]
 
             if b_conv or b_min_bec_maj or b_remove_maj_class:
                 if b_conv:
                     X_, y_, = X_enn, y_enn
                     self.sample_indices_ = self.sample_indices_[
-                        self.enn_.sample_indices_]
+                        self.enn_.sample_indices_
+                    ]
                 break
 
         X_resampled, y_resampled = X_, y_
@@ -302,11 +319,12 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
         return X_resampled, y_resampled
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+)
 class AllKNN(BaseCleaningSampler):
     """Class to perform under-sampling based on the AllKNN method.
 
@@ -383,12 +401,14 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 n_neighbors=3,
-                 kind_sel='all',
-                 allow_minority=False,
-                 n_jobs=1):
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        n_neighbors=3,
+        kind_sel="all",
+        allow_minority=False,
+        n_jobs=1,
+    ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
@@ -401,13 +421,15 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             raise NotImplementedError
 
         self.nn_ = check_neighbors_object(
-            'n_neighbors', self.n_neighbors, additional_neighbor=1)
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
+        )
 
         self.enn_ = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
-            n_jobs=self.n_jobs)
+            n_jobs=self.n_jobs,
+        )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
@@ -430,22 +452,27 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             # Case 1else:
 
             stats_enn = Counter(y_enn)
-            count_non_min = np.array([
-                val for val, key in zip(stats_enn.values(), stats_enn.keys())
-                if key != class_minority
-            ])
+            count_non_min = np.array(
+                [
+                    val
+                    for val, key in zip(stats_enn.values(), stats_enn.keys())
+                    if key != class_minority
+                ]
+            )
             b_min_bec_maj = np.any(
-                count_non_min < target_stats[class_minority])
+                count_non_min < target_stats[class_minority]
+            )
             if self.allow_minority:
                 # overwrite b_min_bec_maj
                 b_min_bec_maj = False
 
             # Case 2
-            b_remove_maj_class = (len(stats_enn) < len(target_stats))
+            b_remove_maj_class = len(stats_enn) < len(target_stats)
 
             X_, y_, = X_enn, y_enn
             self.sample_indices_ = self.sample_indices_[
-                self.enn_.sample_indices_]
+                self.enn_.sample_indices_
+            ]
 
             if b_min_bec_maj or b_remove_maj_class:
                 break
@@ -455,4 +482,4 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
         return X_resampled, y_resampled
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}

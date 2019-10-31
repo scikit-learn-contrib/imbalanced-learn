@@ -16,7 +16,8 @@ from ...utils._docstring import _random_state_docstring
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+)
 class TomekLinks(BaseCleaningSampler):
     """Class to perform under-sampling by removing Tomek's links.
 
@@ -67,9 +68,7 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 n_jobs=1):
+    def __init__(self, sampling_strategy="auto", n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_jobs = n_jobs
 
@@ -124,8 +123,10 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         links = self.is_tomek(y, nns, self.sampling_strategy_)
         self.sample_indices_ = np.flatnonzero(np.logical_not(links))
 
-        return (safe_indexing(X, self.sample_indices_),
-                safe_indexing(y, self.sample_indices_))
+        return (
+            safe_indexing(X, self.sample_indices_),
+            safe_indexing(y, self.sample_indices_),
+        )
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}

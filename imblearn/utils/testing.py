@@ -25,10 +25,12 @@ OTHER = ["Pipeline", "FeatureUnion", "SMOTENC"]
 DONT_TEST = []
 
 
-def all_estimators(include_meta_estimators=False,
-                   include_other=False,
-                   type_filter=None,
-                   include_dont_test=False):
+def all_estimators(
+    include_meta_estimators=False,
+    include_other=False,
+    type_filter=None,
+    include_dont_test=False,
+):
     """Get a list of all estimators from imblearn.
 
     This function crawls the module and gets all classes that inherit
@@ -67,7 +69,7 @@ def all_estimators(include_meta_estimators=False,
     """
 
     def is_abstract(c):
-        if not (hasattr(c, '__abstractmethods__')):
+        if not (hasattr(c, "__abstractmethods__")):
             return False
         if not len(c.__abstractmethods__):
             return False
@@ -77,8 +79,9 @@ def all_estimators(include_meta_estimators=False,
     # get parent folder
     path = imblearn.__path__
     for importer, modname, ispkg in pkgutil.walk_packages(
-            path=path, prefix='imblearn.', onerror=lambda x: None):
-        if (".tests." in modname):
+        path=path, prefix="imblearn.", onerror=lambda x: None
+    ):
+        if ".tests." in modname:
             continue
         module = __import__(modname, fromlist="dummy")
         classes = inspect.getmembers(module, inspect.isclass)
@@ -87,8 +90,9 @@ def all_estimators(include_meta_estimators=False,
     all_classes = set(all_classes)
 
     estimators = [
-        c for c in all_classes
-        if (issubclass(c[1], BaseEstimator) and c[0] != 'BaseEstimator')
+        c
+        for c in all_classes
+        if (issubclass(c[1], BaseEstimator) and c[0] != "BaseEstimator")
     ]
     # get rid of abstract base classes
     estimators = [c for c in estimators if not is_abstract(c[1])]
@@ -110,17 +114,20 @@ def all_estimators(include_meta_estimators=False,
         else:
             type_filter = list(type_filter)  # copy
         filtered_estimators = []
-        filters = {'sampler': SamplerMixin}
+        filters = {"sampler": SamplerMixin}
         for name, mixin in filters.items():
             if name in type_filter:
                 type_filter.remove(name)
                 filtered_estimators.extend(
-                    [est for est in estimators if issubclass(est[1], mixin)])
+                    [est for est in estimators if issubclass(est[1], mixin)]
+                )
         estimators = filtered_estimators
         if type_filter:
-            raise ValueError("Parameter type_filter must be 'sampler' or "
-                             "None, got"
-                             " %s." % repr(type_filter))
+            raise ValueError(
+                "Parameter type_filter must be 'sampler' or "
+                "None, got"
+                " %s." % repr(type_filter)
+            )
 
     # drop duplicates, sort for reproducibility
     # itemgetter is used to ensure the sort does not extend to the 2nd item of
@@ -166,7 +173,8 @@ def warns(expected_warning, match=None):
                 break
         else:
             msg = "'{}' pattern not found in {}".format(
-                match, '{}'.format([str(r.message) for r in record]))
+                match, "{}".format([str(r.message) for r in record])
+            )
             assert False, msg
     else:
         pass

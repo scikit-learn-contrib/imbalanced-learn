@@ -17,7 +17,8 @@ from ..utils._docstring import _random_state_docstring
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class ADASYN(BaseOverSampler):
     """Perform over-sampling using Adaptive Synthetic (ADASYN) sampling
     approach for imbalanced datasets.
@@ -76,11 +77,13 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 random_state=None,
-                 n_neighbors=5,
-                 n_jobs=1):
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        random_state=None,
+        n_neighbors=5,
+        n_jobs=1,
+    ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.n_neighbors = n_neighbors
@@ -89,8 +92,9 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         """Create the necessary objects for ADASYN"""
         self.nn_ = check_neighbors_object(
-            'n_neighbors', self.n_neighbors, additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
+        )
+        self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
@@ -110,19 +114,24 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             # The ratio is computed using a one-vs-rest manner. Using majority
             # in multi-class would lead to slightly different results at the
             # cost of introducing a new parameter.
-            ratio_nn = (np.sum(y[nn_index[:, 1:]] != class_sample, axis=1) /
-                        (self.nn_.n_neighbors - 1))
+            ratio_nn = np.sum(y[nn_index[:, 1:]] != class_sample, axis=1) / (
+                self.nn_.n_neighbors - 1
+            )
             if not np.sum(ratio_nn):
-                raise RuntimeError('Not any neigbours belong to the majority'
-                                   ' class. This case will induce a NaN case'
-                                   ' with a division by zero. ADASYN is not'
-                                   ' suited for this specific dataset.'
-                                   ' Use SMOTE instead.')
+                raise RuntimeError(
+                    "Not any neigbours belong to the majority"
+                    " class. This case will induce a NaN case"
+                    " with a division by zero. ADASYN is not"
+                    " suited for this specific dataset."
+                    " Use SMOTE instead."
+                )
             ratio_nn /= np.sum(ratio_nn)
             n_samples_generate = np.rint(ratio_nn * n_samples).astype(int)
             if not np.sum(n_samples_generate):
-                raise ValueError("No samples will be generated with the"
-                                 " provided ratio settings.")
+                raise ValueError(
+                    "No samples will be generated with the"
+                    " provided ratio settings."
+                )
 
             # the nearest neighbors need to be fitted only on the current class
             # to find the class NN to generate new samples
@@ -132,44 +141,56 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             if sparse.issparse(X):
                 row_indices, col_indices, samples = [], [], []
                 n_samples_generated = 0
-                for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
-                                                     n_samples_generate):
+                for x_i, x_i_nn, num_sample_i in zip(
+                    X_class, nn_index, n_samples_generate
+                ):
                     if num_sample_i == 0:
                         continue
                     nn_zs = random_state.randint(
-                        1, high=self.nn_.n_neighbors, size=num_sample_i)
+                        1, high=self.nn_.n_neighbors, size=num_sample_i
+                    )
                     steps = random_state.uniform(size=len(nn_zs))
                     if x_i.nnz:
                         for step, nn_z in zip(steps, nn_zs):
-                            sample = (x_i + step *
-                                      (X_class[x_i_nn[nn_z], :] - x_i))
-                            row_indices += (
-                                [n_samples_generated] * len(sample.indices))
+                            sample = x_i + step * (
+                                X_class[x_i_nn[nn_z], :] - x_i
+                            )
+                            row_indices += [n_samples_generated] * len(
+                                sample.indices
+                            )
                             col_indices += sample.indices.tolist()
                             samples += sample.data.tolist()
                             n_samples_generated += 1
-                X_new = (sparse.csr_matrix(
+                X_new = sparse.csr_matrix(
                     (samples, (row_indices, col_indices)),
-                    [np.sum(n_samples_generate), X.shape[1]], dtype=X.dtype))
-                y_new = np.array([class_sample] * np.sum(n_samples_generate),
-                                 dtype=y.dtype)
+                    [np.sum(n_samples_generate), X.shape[1]],
+                    dtype=X.dtype,
+                )
+                y_new = np.array(
+                    [class_sample] * np.sum(n_samples_generate), dtype=y.dtype
+                )
             else:
                 x_class_gen = []
-                for x_i, x_i_nn, num_sample_i in zip(X_class, nn_index,
-                                                     n_samples_generate):
+                for x_i, x_i_nn, num_sample_i in zip(
+                    X_class, nn_index, n_samples_generate
+                ):
                     if num_sample_i == 0:
                         continue
                     nn_zs = random_state.randint(
-                        1, high=self.nn_.n_neighbors, size=num_sample_i)
+                        1, high=self.nn_.n_neighbors, size=num_sample_i
+                    )
                     steps = random_state.uniform(size=len(nn_zs))
-                    x_class_gen.append([
-                        x_i + step * (X_class[x_i_nn[nn_z], :] - x_i)
-                        for step, nn_z in zip(steps, nn_zs)
-                    ])
+                    x_class_gen.append(
+                        [
+                            x_i + step * (X_class[x_i_nn[nn_z], :] - x_i)
+                            for step, nn_z in zip(steps, nn_zs)
+                        ]
+                    )
 
                 X_new = np.concatenate(x_class_gen).astype(X.dtype)
-                y_new = np.array([class_sample] * np.sum(n_samples_generate),
-                                 dtype=y.dtype)
+                y_new = np.array(
+                    [class_sample] * np.sum(n_samples_generate), dtype=y.dtype
+                )
 
             if sparse.issparse(X_new):
                 X_resampled = sparse.vstack([X_resampled, X_new])

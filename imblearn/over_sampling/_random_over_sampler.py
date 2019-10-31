@@ -18,7 +18,8 @@ from ..utils._docstring import _random_state_docstring
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class RandomOverSampler(BaseOverSampler):
     """Class to perform random over-sampling.
 
@@ -65,15 +66,14 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self, sampling_strategy='auto',
-                 random_state=None):
+    def __init__(self, sampling_strategy="auto", random_state=None):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
 
     @staticmethod
     def _check_X_y(X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
+        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"], dtype=None)
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):
@@ -85,15 +85,18 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         for class_sample, num_samples in self.sampling_strategy_.items():
             target_class_indices = np.flatnonzero(y == class_sample)
             indices = random_state.randint(
-                low=0, high=target_stats[class_sample], size=num_samples)
+                low=0, high=target_stats[class_sample], size=num_samples
+            )
 
-            sample_indices = np.append(sample_indices,
-                                       target_class_indices[indices])
+            sample_indices = np.append(
+                sample_indices, target_class_indices[indices]
+            )
         self.sample_indices_ = np.array(sample_indices)
 
-        return (safe_indexing(X, sample_indices),
-                safe_indexing(y, sample_indices))
+        return (
+            safe_indexing(X, sample_indices),
+            safe_indexing(y, sample_indices),
+        )
 
     def _more_tags(self):
-        return {'X_types': ['2darray', 'string'],
-                'sample_indices': True}
+        return {"X_types": ["2darray", "string"], "sample_indices": True}

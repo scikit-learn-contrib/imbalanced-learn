@@ -9,8 +9,8 @@ from ._forest import BalancedRandomForestClassifier
 from ._weight_boosting import RUSBoostClassifier
 
 __all__ = [
-    'BalancedBaggingClassifier',
-    'BalancedRandomForestClassifier',
-    'EasyEnsembleClassifier',
-    'RUSBoostClassifier',
+    "BalancedBaggingClassifier",
+    "BalancedRandomForestClassifier",
+    "EasyEnsembleClassifier",
+    "RUSBoostClassifier",
 ]

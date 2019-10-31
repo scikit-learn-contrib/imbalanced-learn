@@ -16,11 +16,12 @@ from ._edited_nearest_neighbours import EditedNearestNeighbours
 from ...utils import check_neighbors_object
 from ...utils import Substitution
 
-SEL_KIND = ('all', 'mode')
+SEL_KIND = ("all", "mode")
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+)
 class NeighbourhoodCleaningRule(BaseCleaningSampler):
     """Class performing under-sampling based on the neighbourhood cleaning
     rule.
@@ -87,12 +88,14 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 n_neighbors=3,
-                 kind_sel='all',
-                 threshold_cleaning=0.5,
-                 n_jobs=1):
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        n_neighbors=3,
+        kind_sel="all",
+        threshold_cleaning=0.5,
+        n_jobs=1,
+    ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
@@ -102,8 +105,9 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         """Create the objects required by NCR."""
         self.nn_ = check_neighbors_object(
-            'n_neighbors', self.n_neighbors, additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
+        )
+        self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
@@ -111,15 +115,17 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
             raise ValueError(
                 "'threshold_cleaning' is a value between 0 and 1."
-                " Got {} instead.".format(self.threshold_cleaning))
+                " Got {} instead.".format(self.threshold_cleaning)
+            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
         enn = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
             n_neighbors=self.n_neighbors,
-            kind_sel='mode',
-            n_jobs=self.n_jobs)
+            kind_sel="mode",
+            n_jobs=self.n_jobs,
+        )
         enn.fit_resample(X, y)
         index_not_a1 = enn.sample_indices_
         index_a1 = np.ones(y.shape, dtype=bool)
@@ -131,9 +137,12 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         class_minority = min(target_stats, key=target_stats.get)
         # compute which classes to consider for cleaning for the A2 group
         classes_under_sample = [
-            c for c, n_samples in target_stats.items()
-            if (c in self.sampling_strategy_.keys() and (
-                n_samples > X.shape[0] * self.threshold_cleaning))
+            c
+            for c, n_samples in target_stats.items()
+            if (
+                c in self.sampling_strategy_.keys()
+                and (n_samples > X.shape[0] * self.threshold_cleaning)
+            )
         ]
         self.nn_.fit(X)
         class_minority_indices = np.flatnonzero(y == class_minority)
@@ -141,10 +150,10 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         y_class = safe_indexing(y, class_minority_indices)
         nnhood_idx = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
         nnhood_label = y[nnhood_idx]
-        if self.kind_sel == 'mode':
+        if self.kind_sel == "mode":
             nnhood_label_majority, _ = mode(nnhood_label, axis=1)
             nnhood_bool = np.ravel(nnhood_label_majority) == y_class
-        elif self.kind_sel == 'all':
+        elif self.kind_sel == "all":
             nnhood_label_majority = nnhood_label == class_minority
             nnhood_bool = np.all(nnhood_label, axis=1)
         else:
@@ -152,15 +161,18 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         # compute a2 group
         index_a2 = np.ravel(nnhood_idx[~nnhood_bool])
         index_a2 = np.unique(
-            [index for index in index_a2 if y[index] in classes_under_sample])
+            [index for index in index_a2 if y[index] in classes_under_sample]
+        )
 
         union_a1_a2 = np.union1d(index_a1, index_a2).astype(int)
         selected_samples = np.ones(y.shape, dtype=bool)
         selected_samples[union_a1_a2] = False
         self.sample_indices_ = np.flatnonzero(selected_samples)
 
-        return (safe_indexing(X, self.sample_indices_),
-                safe_indexing(y, self.sample_indices_))
+        return (
+            safe_indexing(X, self.sample_indices_),
+            safe_indexing(y, self.sample_indices_),
+        )
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}

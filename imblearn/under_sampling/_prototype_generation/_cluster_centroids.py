@@ -18,12 +18,13 @@ from ..base import BaseUnderSampler
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
 
-VOTING_KIND = ('auto', 'hard', 'soft')
+VOTING_KIND = ("auto", "hard", "soft")
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class ClusterCentroids(BaseUnderSampler):
     """Perform under-sampling by generating centroids based on
     clustering methods.
@@ -85,12 +86,14 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 random_state=None,
-                 estimator=None,
-                 voting='auto',
-                 n_jobs=1):
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        random_state=None,
+        estimator=None,
+        voting="auto",
+        n_jobs=1,
+    ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.estimator = estimator
@@ -101,19 +104,23 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         """Private function to create the KMeans estimator"""
         if self.estimator is None:
             self.estimator_ = KMeans(
-                random_state=self.random_state, n_jobs=self.n_jobs)
+                random_state=self.random_state, n_jobs=self.n_jobs
+            )
         elif isinstance(self.estimator, KMeans):
             self.estimator_ = clone(self.estimator)
         else:
-            raise ValueError('`estimator` has to be a KMeans clustering.'
-                             ' Got {} instead.'.format(type(self.estimator)))
+            raise ValueError(
+                "`estimator` has to be a KMeans clustering."
+                " Got {} instead.".format(type(self.estimator))
+            )
 
     def _generate_sample(self, X, y, centroids, target_class):
-        if self.voting_ == 'hard':
+        if self.voting_ == "hard":
             nearest_neighbors = NearestNeighbors(n_neighbors=1)
             nearest_neighbors.fit(X, y)
             indices = nearest_neighbors.kneighbors(
-                centroids, return_distance=False)
+                centroids, return_distance=False
+            )
             X_new = safe_indexing(X, np.squeeze(indices))
         else:
             if sparse.issparse(X):
@@ -127,26 +134,29 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     def _fit_resample(self, X, y):
         self._validate_estimator()
 
-        if self.voting == 'auto':
+        if self.voting == "auto":
             if sparse.issparse(X):
-                self.voting_ = 'hard'
+                self.voting_ = "hard"
             else:
-                self.voting_ = 'soft'
+                self.voting_ = "soft"
         else:
             if self.voting in VOTING_KIND:
                 self.voting_ = self.voting
             else:
-                raise ValueError("'voting' needs to be one of {}. Got {}"
-                                 " instead.".format(VOTING_KIND, self.voting))
+                raise ValueError(
+                    "'voting' needs to be one of {}. Got {}"
+                    " instead.".format(VOTING_KIND, self.voting)
+                )
 
         X_resampled, y_resampled = [], []
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
-                self.estimator_.set_params(**{'n_clusters': n_samples})
+                self.estimator_.set_params(**{"n_clusters": n_samples})
                 self.estimator_.fit(X[y == target_class])
                 X_new, y_new = self._generate_sample(
-                    X, y, self.estimator_.cluster_centers_, target_class)
+                    X, y, self.estimator_.cluster_centers_, target_class
+                )
                 X_resampled.append(X_new)
                 y_resampled.append(y_new)
             else:
@@ -163,4 +173,4 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         return X_resampled, np.array(y_resampled, dtype=y.dtype)
 
     def _more_tags(self):
-        return {'sample_indices': False}
+        return {"sample_indices": False}

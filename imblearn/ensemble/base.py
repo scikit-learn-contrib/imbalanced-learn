@@ -19,7 +19,7 @@ class BaseEnsembleSampler(BaseSampler):
     instead.
     """
 
-    _sampling_type = 'ensemble'
+    _sampling_type = "ensemble"
 
     def fit_resample(self, X, y):
         """Resample the dataset.
@@ -47,7 +47,8 @@ class BaseEnsembleSampler(BaseSampler):
         X, y, binarize_y = self._check_X_y(X, y)
 
         self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type)
+            self.sampling_strategy, y, self._sampling_type
+        )
 
         output = self._fit_resample(X, y)
 
@@ -55,7 +56,8 @@ class BaseEnsembleSampler(BaseSampler):
             y_resampled = output[1]
             classes = np.unique(y)
             y_resampled_encoded = np.array(
-                [label_binarize(batch_y, classes) for batch_y in y_resampled])
+                [label_binarize(batch_y, classes) for batch_y in y_resampled]
+            )
             if len(output) == 2:
                 return output[0], y_resampled_encoded
             return output[0], y_resampled_encoded, output[2]

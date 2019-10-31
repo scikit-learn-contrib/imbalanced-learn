@@ -14,12 +14,9 @@ from ..under_sampling import RandomUnderSampler
 from ..utils import check_sampling_strategy
 
 
-def make_imbalance(X,
-                   y,
-                   sampling_strategy=None,
-                   random_state=None,
-                   verbose=False,
-                   **kwargs):
+def make_imbalance(
+    X, y, sampling_strategy=None, random_state=None, verbose=False, **kwargs
+):
     """Turns a dataset into an imbalanced dataset with a specific sampling
     strategy.
 
@@ -97,21 +94,28 @@ def make_imbalance(X,
     # restrict ratio to be a dict or a callable
     if isinstance(sampling_strategy, dict) or callable(sampling_strategy):
         sampling_strategy_ = check_sampling_strategy(
-            sampling_strategy, y, 'under-sampling', **kwargs)
+            sampling_strategy, y, "under-sampling", **kwargs
+        )
     else:
-        raise ValueError("'sampling_strategy' has to be a dictionary or a "
-                         "function returning a dictionary. Got {} instead."
-                         .format(type(sampling_strategy)))
+        raise ValueError(
+            "'sampling_strategy' has to be a dictionary or a "
+            "function returning a dictionary. Got {} instead.".format(
+                type(sampling_strategy)
+            )
+        )
 
     if verbose:
-        print('The original target distribution in the dataset is: %s',
-              target_stats)
+        print(
+            "The original target distribution in the dataset is: %s",
+            target_stats,
+        )
     rus = RandomUnderSampler(
         sampling_strategy=sampling_strategy_,
         replacement=False,
-        random_state=random_state)
+        random_state=random_state,
+    )
     X_resampled, y_resampled = rus.fit_resample(X, y)
     if verbose:
-        print('Make the dataset imbalanced: %s', Counter(y_resampled))
+        print("Make the dataset imbalanced: %s", Counter(y_resampled))
 
     return X_resampled, y_resampled

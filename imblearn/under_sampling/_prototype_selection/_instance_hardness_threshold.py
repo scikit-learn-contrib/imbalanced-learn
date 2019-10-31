@@ -23,7 +23,8 @@ from ...utils._docstring import _random_state_docstring
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class InstanceHardnessThreshold(BaseUnderSampler):
     """Class to perform under-sampling based on the instance hardness
     threshold.
@@ -89,12 +90,14 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
     """
 
-    def __init__(self,
-                 estimator=None,
-                 sampling_strategy='auto',
-                 random_state=None,
-                 cv=5,
-                 n_jobs=1):
+    def __init__(
+        self,
+        estimator=None,
+        sampling_strategy="auto",
+        random_state=None,
+        cv=5,
+        n_jobs=1,
+    ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.estimator = estimator
@@ -104,25 +107,32 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     def _validate_estimator(self):
         """Private function to create the classifier"""
 
-        if (self.estimator is not None and
-                isinstance(self.estimator, ClassifierMixin) and
-                hasattr(self.estimator, 'predict_proba')):
+        if (
+            self.estimator is not None
+            and isinstance(self.estimator, ClassifierMixin)
+            and hasattr(self.estimator, "predict_proba")
+        ):
             self.estimator_ = clone(self.estimator)
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
-                n_estimators=100, random_state=self.random_state,
-                n_jobs=self.n_jobs)
+                n_estimators=100,
+                random_state=self.random_state,
+                n_jobs=self.n_jobs,
+            )
         else:
-            raise ValueError('Invalid parameter `estimator`. Got {}.'.format(
-                type(self.estimator)))
+            raise ValueError(
+                "Invalid parameter `estimator`. Got {}.".format(
+                    type(self.estimator)
+                )
+            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
 
         target_stats = Counter(y)
         skf = StratifiedKFold(
-            n_splits=self.cv, shuffle=False,
-            random_state=self.random_state).split(X, y)
+            n_splits=self.cv, shuffle=False, random_state=self.random_state
+        ).split(X, y)
         probabilities = np.zeros(y.shape[0], dtype=float)
 
         for train_index, test_index in skf:
@@ -136,27 +146,32 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             probs = self.estimator_.predict_proba(X_test)
             probabilities[test_index] = probs[range(len(y_test)), y_test]
 
-        idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0,), dtype=int)
 
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
                 threshold = np.percentile(
                     probabilities[y == target_class],
-                    (1. - (n_samples / target_stats[target_class])) * 100.)
+                    (1.0 - (n_samples / target_stats[target_class])) * 100.0,
+                )
                 index_target_class = np.flatnonzero(
-                    probabilities[y == target_class] >= threshold)
+                    probabilities[y == target_class] >= threshold
+                )
             else:
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under,
-                 np.flatnonzero(y == target_class)[index_target_class]),
-                axis=0)
+                (
+                    idx_under,
+                    np.flatnonzero(y == target_class)[index_target_class],
+                ),
+                axis=0,
+            )
 
         self.sample_indices_ = idx_under
 
         return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}

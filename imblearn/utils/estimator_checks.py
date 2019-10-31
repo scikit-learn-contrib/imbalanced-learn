@@ -15,11 +15,16 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.base import clone
-from sklearn.datasets import make_classification, make_multilabel_classification  # noqa
+from sklearn.datasets import (
+    make_classification,
+    make_multilabel_classification,
+)  # noqa
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import label_binarize
-from sklearn.utils.estimator_checks import check_estimator \
-    as sklearn_check_estimator, check_parameters_default_constructible
+from sklearn.utils.estimator_checks import (
+    check_estimator as sklearn_check_estimator,
+    check_parameters_default_constructible,
+)
 from sklearn.utils.testing import assert_allclose
 from sklearn.utils._testing import assert_raises_regex
 from sklearn.utils._testing import set_random_state
@@ -52,10 +57,10 @@ def _yield_classifier_checks(name, Estimator):
 
 def _yield_all_checks(name, estimator):
     # trigger our checks if this is a SamplerMixin
-    if hasattr(estimator, 'fit_resample'):
+    if hasattr(estimator, "fit_resample"):
         for check in _yield_sampler_checks(name, estimator):
             yield check
-    if hasattr(estimator, 'predict'):
+    if hasattr(estimator, "predict"):
         for check in _yield_classifier_checks(name, estimator):
             yield check
 
@@ -110,7 +115,7 @@ def check_samplers_one_label(name, Sampler):
     try:
         sampler.fit_resample(X, y)
     except ValueError as e:
-        if 'class' not in repr(e):
+        if "class" not in repr(e):
             print(error_string_fit, Sampler, e)
             traceback.print_exc(file=sys.stdout)
             raise e
@@ -128,14 +133,20 @@ def check_samplers_fit(name, Sampler):
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
     sampler.fit_resample(X, y)
-    assert hasattr(sampler, 'sampling_strategy_'), \
-        "No fitted attribute sampling_strategy_"
+    assert hasattr(
+        sampler, "sampling_strategy_"
+    ), "No fitted attribute sampling_strategy_"
 
 
 def check_samplers_fit_resample(name, Sampler):
     sampler = Sampler()
-    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
-                               weights=[0.2, 0.3, 0.5], random_state=0)
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
     target_stats = Counter(y)
     X_res, y_res = sampler.fit_resample(X, y)
     if isinstance(sampler, BaseOverSampler):
@@ -144,30 +155,40 @@ def check_samplers_fit_resample(name, Sampler):
         assert all(value >= n_samples for value in Counter(y_res).values())
     elif isinstance(sampler, BaseUnderSampler):
         n_samples = min(target_stats.values())
-        if name == 'InstanceHardnessThreshold':
+        if name == "InstanceHardnessThreshold":
             # IHT does not enforce the number of samples but provide a number
             # of samples the closest to the desired target.
-            assert all(Counter(y_res)[k] <= target_stats[k]
-                       for k in target_stats.keys())
+            assert all(
+                Counter(y_res)[k] <= target_stats[k]
+                for k in target_stats.keys()
+            )
         else:
             assert all(value == n_samples for value in Counter(y_res).values())
     elif isinstance(sampler, BaseCleaningSampler):
         target_stats_res = Counter(y_res)
         class_minority = min(target_stats, key=target_stats.get)
-        assert all(target_stats[class_sample] > target_stats_res[class_sample]
-                   for class_sample in target_stats.keys()
-                   if class_sample != class_minority)
+        assert all(
+            target_stats[class_sample] > target_stats_res[class_sample]
+            for class_sample in target_stats.keys()
+            if class_sample != class_minority
+        )
     elif isinstance(sampler, BaseEnsembleSampler):
         y_ensemble = y_res[0]
         n_samples = min(target_stats.values())
-        assert all(value == n_samples
-                   for value in Counter(y_ensemble).values())
+        assert all(
+            value == n_samples for value in Counter(y_ensemble).values()
+        )
 
 
 def check_samplers_sampling_strategy_fit_resample(name, Sampler):
     # in this test we will force all samplers to not change the class 1
-    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
-                               weights=[0.2, 0.3, 0.5], random_state=0)
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
     sampler = Sampler()
     expected_stat = Counter(y)[1]
     if isinstance(sampler, BaseOverSampler):
@@ -196,8 +217,13 @@ def check_samplers_sampling_strategy_fit_resample(name, Sampler):
 def check_samplers_sparse(name, Sampler):
     # check that sparse matrices can be passed through the sampler leading to
     # the same results than dense
-    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
-                               weights=[0.2, 0.3, 0.5], random_state=0)
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
     X_sparse = sparse.csr_matrix(X)
     if isinstance(Sampler(), NearMiss):
         samplers = [Sampler(version=version) for version in (1, 2, 3)]
@@ -206,8 +232,9 @@ def check_samplers_sparse(name, Sampler):
         samplers = [
             Sampler(
                 random_state=0,
-                voting='soft',
-                estimator=KMeans(random_state=1, algorithm='full'))
+                voting="soft",
+                estimator=KMeans(random_state=1, algorithm="full"),
+            )
         ]
     else:
         samplers = [Sampler()]
@@ -221,8 +248,9 @@ def check_samplers_sparse(name, Sampler):
             assert_allclose(X_res_sparse.A, X_res)
             assert_allclose(y_res_sparse, y_res)
         else:
-            for x_sp, x, y_sp, y in zip(X_res_sparse, X_res, y_res_sparse,
-                                        y_res):
+            for x_sp, x, y_sp, y in zip(
+                X_res_sparse, X_res, y_res_sparse, y_res
+            ):
                 assert sparse.issparse(x_sp)
                 assert_allclose(x_sp.A, x)
                 assert_allclose(y_sp, y)
@@ -231,8 +259,13 @@ def check_samplers_sparse(name, Sampler):
 def check_samplers_pandas(name, Sampler):
     pd = pytest.importorskip("pandas")
     # Check that the samplers handle pandas dataframe and pandas series
-    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
-                               weights=[0.2, 0.3, 0.5], random_state=0)
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
     X_pd = pd.DataFrame(X)
     sampler = Sampler()
     if isinstance(Sampler(), NearMiss):
@@ -251,8 +284,13 @@ def check_samplers_pandas(name, Sampler):
 
 def check_samplers_multiclass_ova(name, Sampler):
     # Check that multiclass target lead to the same results than OVA encoding
-    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
-                               weights=[0.2, 0.3, 0.5], random_state=0)
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
     y_ova = label_binarize(y, np.unique(y))
     sampler = Sampler()
     set_random_state(sampler)
@@ -269,8 +307,13 @@ def check_samplers_multiclass_ova(name, Sampler):
 
 
 def check_samplers_preserve_dtype(name, Sampler):
-    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
-                               weights=[0.2, 0.3, 0.5], random_state=0)
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
     # Cast X and y to not default dtype
     X = X.astype(np.float32)
     y = y.astype(np.int32)
@@ -282,15 +325,20 @@ def check_samplers_preserve_dtype(name, Sampler):
 
 
 def check_samplers_sample_indices(name, Sampler):
-    X, y = make_classification(n_samples=1000, n_classes=3, n_informative=4,
-                               weights=[0.2, 0.3, 0.5], random_state=0)
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
     sampler = Sampler()
     sampler.fit_resample(X, y)
-    sample_indices = sampler._get_tags().get('sample_indices', None)
+    sample_indices = sampler._get_tags().get("sample_indices", None)
     if sample_indices:
-        assert hasattr(sampler, 'sample_indices_') is sample_indices
+        assert hasattr(sampler, "sample_indices_") is sample_indices
     else:
-        assert not hasattr(sampler, 'sample_indices_')
+        assert not hasattr(sampler, "sample_indices_")
 
 
 def check_classifier_on_multilabel_or_multioutput_targets(name, Estimator):

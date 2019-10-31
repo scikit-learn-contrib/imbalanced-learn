@@ -25,7 +25,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
     instead.
     """
 
-    _estimator_type = 'sampler'
+    _estimator_type = "sampler"
 
     def fit(self, X, y):
         """Check inputs and statistics of the sampler.
@@ -48,7 +48,8 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         """
         X, y, _ = self._check_X_y(X, y)
         self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type)
+            self.sampling_strategy, y, self._sampling_type
+        )
         return self
 
     def fit_resample(self, X, y):
@@ -76,7 +77,8 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         X, y, binarize_y = self._check_X_y(X, y)
 
         self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type)
+            self.sampling_strategy, y, self._sampling_type
+        )
 
         output = self._fit_resample(X, y)
 
@@ -123,14 +125,15 @@ class BaseSampler(SamplerMixin):
     instead.
     """
 
-    def __init__(self, sampling_strategy='auto'):
+    def __init__(self, sampling_strategy="auto"):
         self.sampling_strategy = sampling_strategy
 
     @staticmethod
     def _check_X_y(X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
+        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"])
         return X, y, binarize_y
+
 
 def _identity(X, y):
     return X, y
@@ -199,7 +202,7 @@ class FunctionSampler(BaseSampler):
 
     """
 
-    _sampling_type = 'bypass'
+    _sampling_type = "bypass"
 
     def __init__(self, func=None, accept_sparse=True, kw_args=None):
         super().__init__()
@@ -208,8 +211,9 @@ class FunctionSampler(BaseSampler):
         self.kw_args = kw_args
 
     def _fit_resample(self, X, y):
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc']
-                         if self.accept_sparse else False)
+        X, y = check_X_y(
+            X, y, accept_sparse=["csr", "csc"] if self.accept_sparse else False
+        )
         func = _identity if self.func is None else self.func
         output = func(X, y, **(self.kw_args if self.kw_args else {}))
         return output
