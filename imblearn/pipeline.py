@@ -15,6 +15,7 @@ composite estimator, as a chain of transforms, samples and estimators.
 
 from sklearn import pipeline
 from sklearn.base import clone
+from sklearn.utils import Bunch, _print_elapsed_time
 from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_memory
 
@@ -60,7 +61,7 @@ class Pipeline(pipeline.Pipeline):
 
     Attributes
     ----------
-    named_steps : dict
+    named_steps : bunch object, a dictionary with attribute access
         Read-only attribute to access any step parameter by user given name.
         Keys are step names and values are steps parameters.
 
@@ -178,6 +179,13 @@ class Pipeline(pipeline.Pipeline):
             name: {} for name, step in self.steps if step is not None
         }
         for pname, pval in fit_params.items():
+            if '__' not in pname:
+                raise ValueError(
+                    "Pipeline.fit does not accept the {} parameter. "
+                    "You can pass parameters to specific steps of your "
+                    "pipeline using the stepname__parameter format, e.g. "
+                    "`Pipeline.fit(X, y, logisticregression__sample_weight"
+                    "=sample_weight)`.".format(pname))
             step, param = pname.split("__", 1)
             fit_params_steps[step][param] = pval
         for step_idx, name, transformer in self._iter(with_final=False):
