@@ -13,7 +13,7 @@ from scipy.sparse import issparse
 
 from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils import check_random_state, safe_indexing
+from sklearn.utils import check_random_state, _safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import Substitution
@@ -149,13 +149,13 @@ CondensedNearestNeighbour # doctest: +SKIP
                 C_indices = np.append(
                     np.flatnonzero(y == class_minority), idx_maj_sample
                 )
-                C_x = safe_indexing(X, C_indices)
-                C_y = safe_indexing(y, C_indices)
+                C_x = _safe_indexing(X, C_indices)
+                C_y = _safe_indexing(y, C_indices)
 
                 # Create the set S - all majority samples
                 S_indices = np.flatnonzero(y == target_class)
-                S_x = safe_indexing(X, S_indices)
-                S_y = safe_indexing(y, S_indices)
+                S_x = _safe_indexing(X, S_indices)
+                S_y = _safe_indexing(y, S_indices)
 
                 # fit knn on C
                 self.estimator_.fit(C_x, C_y)
@@ -183,8 +183,8 @@ CondensedNearestNeighbour # doctest: +SKIP
 
                         # Update C
                         C_indices = np.append(C_indices, idx_maj[idx_sam])
-                        C_x = safe_indexing(X, C_indices)
-                        C_y = safe_indexing(y, C_indices)
+                        C_x = _safe_indexing(X, C_indices)
+                        C_y = _safe_indexing(y, C_indices)
 
                         # fit a knn on C
                         self.estimator_.fit(C_x, C_y)
@@ -207,7 +207,7 @@ CondensedNearestNeighbour # doctest: +SKIP
 
         self.sample_indices_ = idx_under
 
-        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     def _more_tags(self):
         return {"sample_indices": True}

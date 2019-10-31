@@ -44,7 +44,7 @@ ParentClass, HAS_KERAS = import_keras()
 from scipy.sparse import issparse
 
 from sklearn.base import clone
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 from sklearn.utils import check_random_state
 
 from ..under_sampling import RandomUnderSampler
@@ -170,13 +170,13 @@ class BalancedBatchGenerator(*ParentClass):
         return int(self.indices_.size // self.batch_size)
 
     def __getitem__(self, index):
-        X_resampled = safe_indexing(
+        X_resampled = _safe_indexing(
             self.X,
             self.indices_[
                 index * self.batch_size:(index + 1) * self.batch_size
             ],
         )
-        y_resampled = safe_indexing(
+        y_resampled = _safe_indexing(
             self.y,
             self.indices_[
                 index * self.batch_size:(index + 1) * self.batch_size
@@ -185,7 +185,7 @@ class BalancedBatchGenerator(*ParentClass):
         if issparse(X_resampled) and not self.keep_sparse:
             X_resampled = X_resampled.toarray()
         if self.sample_weight is not None:
-            sample_weight_resampled = safe_indexing(
+            sample_weight_resampled = _safe_indexing(
                 self.sample_weight,
                 self.indices_[
                     index * self.batch_size:(index + 1) * self.batch_size

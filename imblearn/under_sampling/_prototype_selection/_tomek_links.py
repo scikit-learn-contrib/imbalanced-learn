@@ -7,7 +7,7 @@
 
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import Substitution
@@ -122,8 +122,8 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         self.sample_indices_ = np.flatnonzero(np.logical_not(links))
 
         return (
-            safe_indexing(X, self.sample_indices_),
-            safe_indexing(y, self.sample_indices_),
+            _safe_indexing(X, self.sample_indices_),
+            _safe_indexing(y, self.sample_indices_),
         )
 
     def _more_tags(self):

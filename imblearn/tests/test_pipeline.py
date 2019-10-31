@@ -15,9 +15,9 @@ from pytest import raises
 
 from joblib import Memory
 
-from sklearn.utils.testing import assert_array_equal
-from sklearn.utils.testing import assert_array_almost_equal
-from sklearn.utils.testing import assert_allclose
+from sklearn.utils._testing import assert_array_equal
+from sklearn.utils._testing import assert_array_almost_equal
+from sklearn.utils._testing import assert_allclose
 
 from sklearn.base import clone, BaseEstimator
 from sklearn.svm import SVC

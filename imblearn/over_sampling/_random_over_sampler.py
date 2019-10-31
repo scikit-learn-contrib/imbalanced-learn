@@ -7,7 +7,9 @@
 from collections import Counter
 
 import numpy as np
-from sklearn.utils import check_X_y, check_random_state, safe_indexing
+from sklearn.utils import check_X_y
+from sklearn.utils import check_random_state
+from sklearn.utils import _safe_indexing
 
 from .base import BaseOverSampler
 from ..utils import check_target_type
@@ -93,8 +95,8 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         self.sample_indices_ = np.array(sample_indices)
 
         return (
-            safe_indexing(X, sample_indices),
-            safe_indexing(y, sample_indices),
+            _safe_indexing(X, sample_indices),
+            _safe_indexing(y, sample_indices),
         )
 
     def _more_tags(self):

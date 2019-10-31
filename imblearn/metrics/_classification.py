@@ -20,11 +20,10 @@ from inspect import getcallargs
 import numpy as np
 import scipy as sp
 
-from sklearn.metrics._classification import (
-    _check_targets,
-    _prf_divide,
-    precision_recall_fscore_support,
-)
+from sklearn.metrics._classification import _check_targets
+from sklearn.metrics._classification import _prf_divide
+from sklearn.metrics._classification import precision_recall_fscore_support
+
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.multiclass import unique_labels
 

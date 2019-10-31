@@ -16,13 +16,13 @@ from joblib import Parallel, delayed
 
 from sklearn.base import clone
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.ensemble._forest import _parallel_build_trees
 from sklearn.exceptions import DataConversionWarning
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
@@ -48,7 +48,7 @@ def _local_parallel_build_trees(
     # resample before to fit the tree
     X_resampled, y_resampled = sampler.fit_resample(X, y)
     if sample_weight is not None:
-        sample_weight = safe_indexing(sample_weight, sampler.sample_indices_)
+        sample_weight = _safe_indexing(sample_weight, sampler.sample_indices_)
     tree = _parallel_build_trees(
         tree,
         forest,

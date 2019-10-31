@@ -11,12 +11,10 @@ from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 
-from imblearn.metrics import (
-    sensitivity_score,
-    specificity_score,
-    geometric_mean_score,
-    make_index_balanced_accuracy,
-)
+from imblearn.metrics import sensitivity_score
+from imblearn.metrics import specificity_score
+from imblearn.metrics import geometric_mean_score
+from imblearn.metrics import make_index_balanced_accuracy
 
 R_TOL = 1e-2
 

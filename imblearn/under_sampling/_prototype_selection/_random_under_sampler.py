@@ -9,7 +9,7 @@ import numpy as np
 from sklearn.utils import check_array
 from sklearn.utils import check_consistent_length
 from sklearn.utils import check_random_state
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import check_target_type
@@ -113,7 +113,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
 
         self.sample_indices_ = idx_under
 
-        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     def _more_tags(self):
         return {"X_types": ["2darray", "string"], "sample_indices": True}

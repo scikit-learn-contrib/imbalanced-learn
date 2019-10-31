@@ -18,7 +18,7 @@ from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.svm import SVC
 from sklearn.utils import check_random_state
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 from sklearn.utils import check_array
 from sklearn.utils import check_X_y
 from sklearn.utils.sparsefuncs_fast import csr_mean_variance_axis0
@@ -352,7 +352,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)
-            X_class = safe_indexing(X, target_class_indices)
+            X_class = _safe_indexing(X, target_class_indices)
 
             self.nn_m_.fit(X)
             danger_index = self._in_danger_noise(
@@ -363,14 +363,14 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
 
             self.nn_k_.fit(X_class)
             nns = self.nn_k_.kneighbors(
-                safe_indexing(X_class, danger_index), return_distance=False
+                _safe_indexing(X_class, danger_index), return_distance=False
             )[:, 1:]
 
             # divergence between borderline-1 and borderline-2
             if self.kind == "borderline-1":
                 # Create synthetic samples for borderline points.
                 X_new, y_new = self._make_samples(
-                    safe_indexing(X_class, danger_index),
+                    _safe_indexing(X_class, danger_index),
                     y.dtype,
                     class_sample,
                     X_class,
@@ -389,7 +389,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
 
                 # only minority
                 X_new_1, y_new_1 = self._make_samples(
-                    safe_indexing(X_class, danger_index),
+                    _safe_indexing(X_class, danger_index),
                     y.dtype,
                     class_sample,
                     X_class,
@@ -402,10 +402,10 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                 # new samples will be created considering not only the majority
                 # class but all over classes.
                 X_new_2, y_new_2 = self._make_samples(
-                    safe_indexing(X_class, danger_index),
+                    _safe_indexing(X_class, danger_index),
                     y.dtype,
                     class_sample,
-                    safe_indexing(X, np.flatnonzero(y != class_sample)),
+                    _safe_indexing(X, np.flatnonzero(y != class_sample)),
                     nns,
                     int((1 - fractions) * n_samples),
                     step_size=0.5,
@@ -553,19 +553,19 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)
-            X_class = safe_indexing(X, target_class_indices)
+            X_class = _safe_indexing(X, target_class_indices)
 
             self.svm_estimator_.fit(X, y)
             support_index = self.svm_estimator_.support_[
                 y[self.svm_estimator_.support_] == class_sample
             ]
-            support_vector = safe_indexing(X, support_index)
+            support_vector = _safe_indexing(X, support_index)
 
             self.nn_m_.fit(X)
             noise_bool = self._in_danger_noise(
                 self.nn_m_, support_vector, class_sample, y, kind="noise"
             )
-            support_vector = safe_indexing(
+            support_vector = _safe_indexing(
                 support_vector, np.flatnonzero(np.logical_not(noise_bool))
             )
             danger_bool = self._in_danger_noise(
@@ -578,12 +578,12 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
             n_generated_samples = int(fractions * (n_samples + 1))
             if np.count_nonzero(danger_bool) > 0:
                 nns = self.nn_k_.kneighbors(
-                    safe_indexing(support_vector, np.flatnonzero(danger_bool)),
+                    _safe_indexing(support_vector, np.flatnonzero(danger_bool)),
                     return_distance=False,
                 )[:, 1:]
 
                 X_new_1, y_new_1 = self._make_samples(
-                    safe_indexing(support_vector, np.flatnonzero(danger_bool)),
+                    _safe_indexing(support_vector, np.flatnonzero(danger_bool)),
                     y.dtype,
                     class_sample,
                     X_class,
@@ -594,12 +594,12 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
 
             if np.count_nonzero(safety_bool) > 0:
                 nns = self.nn_k_.kneighbors(
-                    safe_indexing(support_vector, np.flatnonzero(safety_bool)),
+                    _safe_indexing(support_vector, np.flatnonzero(safety_bool)),
                     return_distance=False,
                 )[:, 1:]
 
                 X_new_2, y_new_2 = self._make_samples(
-                    safe_indexing(support_vector, np.flatnonzero(safety_bool)),
+                    _safe_indexing(support_vector, np.flatnonzero(safety_bool)),
                     y.dtype,
                     class_sample,
                     X_class,
@@ -730,7 +730,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)
-            X_class = safe_indexing(X, target_class_indices)
+            X_class = _safe_indexing(X, target_class_indices)
 
             self.nn_k_.fit(X_class)
             nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
@@ -930,7 +930,7 @@ class SMOTENC(SMOTE):
 
         X_continuous = X[:, self.continuous_features_]
         X_continuous = check_array(X_continuous, accept_sparse=["csr", "csc"])
-        X_minority = safe_indexing(
+        X_minority = _safe_indexing(
             X_continuous, np.flatnonzero(y == class_minority)
         )
 
@@ -1207,7 +1207,7 @@ class KMeansSMOTE(BaseSMOTE):
                 continue
 
             # target_class_indices = np.flatnonzero(y == class_sample)
-            # X_class = safe_indexing(X, target_class_indices)
+            # X_class = _safe_indexing(X, target_class_indices)
 
             X_clusters = self.kmeans_estimator_.fit_predict(X)
             valid_clusters = []
@@ -1217,8 +1217,8 @@ class KMeansSMOTE(BaseSMOTE):
             for cluster_idx in range(self.kmeans_estimator_.n_clusters):
 
                 cluster_mask = np.flatnonzero(X_clusters == cluster_idx)
-                X_cluster = safe_indexing(X, cluster_mask)
-                y_cluster = safe_indexing(y, cluster_mask)
+                X_cluster = _safe_indexing(X, cluster_mask)
+                y_cluster = _safe_indexing(y, cluster_mask)
 
                 cluster_class_mean = (y_cluster == class_sample).mean()
 
@@ -1236,7 +1236,7 @@ class KMeansSMOTE(BaseSMOTE):
                 if anticipated_samples < self.nn_k_.n_neighbors:
                     continue
 
-                X_cluster_class = safe_indexing(
+                X_cluster_class = _safe_indexing(
                     X_cluster, np.flatnonzero(y_cluster == class_sample)
                 )
 
@@ -1257,10 +1257,10 @@ class KMeansSMOTE(BaseSMOTE):
                 )
 
             for valid_cluster_idx, valid_cluster in enumerate(valid_clusters):
-                X_cluster = safe_indexing(X, valid_cluster)
-                y_cluster = safe_indexing(y, valid_cluster)
+                X_cluster = _safe_indexing(X, valid_cluster)
+                y_cluster = _safe_indexing(y, valid_cluster)
 
-                X_cluster_class = safe_indexing(
+                X_cluster_class = _safe_indexing(
                     X_cluster, np.flatnonzero(y_cluster == class_sample)
                 )
 

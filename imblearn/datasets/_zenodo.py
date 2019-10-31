@@ -54,7 +54,7 @@ from urllib.request import urlopen
 import numpy as np
 
 from sklearn.datasets import get_data_home
-from sklearn.datasets.base import Bunch
+from sklearn.utils import Bunch
 from sklearn.utils import check_random_state
 
 URL = (

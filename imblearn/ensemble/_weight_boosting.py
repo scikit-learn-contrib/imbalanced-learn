@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble._base import _set_random_states
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..under_sampling.base import BaseUnderSampler
 from ..under_sampling import RandomUnderSampler
@@ -201,7 +201,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
         )
 
         X_res, y_res = sampler.fit_resample(X, y)
-        sample_weight_res = safe_indexing(
+        sample_weight_res = _safe_indexing(
             sample_weight, sampler.sample_indices_
         )
         estimator.fit(X_res, y_res, sample_weight=sample_weight_res)
@@ -271,7 +271,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
         )
 
         X_res, y_res = sampler.fit_resample(X, y)
-        sample_weight_res = safe_indexing(
+        sample_weight_res = _safe_indexing(
             sample_weight, sampler.sample_indices_
         )
         estimator.fit(X_res, y_res, sample_weight=sample_weight_res)

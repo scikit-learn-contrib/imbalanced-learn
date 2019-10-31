@@ -302,7 +302,6 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
                 )
             sampling_strategy_[class_sample] = n_samples
     elif sampling_type == "clean-sampling":
-        # FIXME: Turn into an error in 0.6
         raise ValueError(
             "'sampling_strategy' as a dict for cleaning methods is "
             "not supported. Please give a list of the classes to be "

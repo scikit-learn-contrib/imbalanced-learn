@@ -8,7 +8,7 @@ import pytest
 from scipy import sparse
 
 from sklearn.datasets import load_iris
-from sklearn.utils.testing import assert_array_equal
+from sklearn.utils._testing import assert_array_equal
 from sklearn.utils._testing import assert_allclose_dense_sparse
 
 from imblearn.datasets import make_imbalance

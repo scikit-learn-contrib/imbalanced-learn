@@ -9,7 +9,7 @@ from collections import Counter
 import numpy as np
 from scipy.stats import mode
 
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseCleaningSampler
 from ._edited_nearest_neighbours import EditedNearestNeighbours
@@ -146,8 +146,8 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         ]
         self.nn_.fit(X)
         class_minority_indices = np.flatnonzero(y == class_minority)
-        X_class = safe_indexing(X, class_minority_indices)
-        y_class = safe_indexing(y, class_minority_indices)
+        X_class = _safe_indexing(X, class_minority_indices)
+        y_class = _safe_indexing(y, class_minority_indices)
         nnhood_idx = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
         nnhood_label = y[nnhood_idx]
         if self.kind_sel == "mode":
@@ -170,8 +170,8 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         self.sample_indices_ = np.flatnonzero(selected_samples)
 
         return (
-            safe_indexing(X, self.sample_indices_),
-            safe_indexing(y, self.sample_indices_),
+            _safe_indexing(X, self.sample_indices_),
+            _safe_indexing(y, self.sample_indices_),
         )
 
     def _more_tags(self):

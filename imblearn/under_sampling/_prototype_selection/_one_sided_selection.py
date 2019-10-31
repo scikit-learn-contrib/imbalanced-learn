@@ -10,7 +10,7 @@ import numpy as np
 
 from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils import check_random_state, safe_indexing
+from sklearn.utils import check_random_state, _safe_indexing
 
 from ..base import BaseCleaningSampler
 from ._tomek_links import TomekLinks
@@ -141,14 +141,14 @@ KNeighborsClassifier(n_neighbors=1))
 
                 # create the set composed of all minority samples and one
                 # sample from the current class.
-                C_x = safe_indexing(X, C_indices)
-                C_y = safe_indexing(y, C_indices)
+                C_x = _safe_indexing(X, C_indices)
+                C_y = _safe_indexing(y, C_indices)
 
                 # create the set S with removing the seed from S
                 # since that it will be added anyway
                 idx_maj_extracted = np.delete(idx_maj, sel_idx_maj, axis=0)
-                S_x = safe_indexing(X, idx_maj_extracted)
-                S_y = safe_indexing(y, idx_maj_extracted)
+                S_x = _safe_indexing(X, idx_maj_extracted)
+                S_y = _safe_indexing(y, idx_maj_extracted)
                 self.estimator_.fit(C_x, C_y)
                 pred_S_y = self.estimator_.predict(S_x)
 
@@ -162,14 +162,14 @@ KNeighborsClassifier(n_neighbors=1))
                     (idx_under, np.flatnonzero(y == target_class)), axis=0
                 )
 
-        X_resampled = safe_indexing(X, idx_under)
-        y_resampled = safe_indexing(y, idx_under)
+        X_resampled = _safe_indexing(X, idx_under)
+        y_resampled = _safe_indexing(y, idx_under)
 
         # apply Tomek cleaning
         tl = TomekLinks(sampling_strategy=list(self.sampling_strategy_.keys()))
         X_cleaned, y_cleaned = tl.fit_resample(X_resampled, y_resampled)
 
-        self.sample_indices_ = safe_indexing(idx_under, tl.sample_indices_)
+        self.sample_indices_ = _safe_indexing(idx_under, tl.sample_indices_)
 
         return X_cleaned, y_cleaned
 

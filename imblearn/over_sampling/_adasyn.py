@@ -7,7 +7,8 @@
 import numpy as np
 from scipy import sparse
 
-from sklearn.utils import check_random_state, safe_indexing
+from sklearn.utils import check_random_state
+from sklearn.utils import _safe_indexing
 
 from .base import BaseOverSampler
 from ..utils import check_neighbors_object
@@ -107,7 +108,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             if n_samples == 0:
                 continue
             target_class_indices = np.flatnonzero(y == class_sample)
-            X_class = safe_indexing(X, target_class_indices)
+            X_class = _safe_indexing(X, target_class_indices)
 
             self.nn_.fit(X)
             _, nn_index = self.nn_.kneighbors(X_class)

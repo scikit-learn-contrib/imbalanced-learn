@@ -10,7 +10,7 @@ import numpy as np
 
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble.bagging import BaggingClassifier
+from sklearn.ensemble import BaggingClassifier
 
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler

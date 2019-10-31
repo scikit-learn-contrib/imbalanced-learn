@@ -9,7 +9,7 @@ from collections import Counter
 
 import numpy as np
 
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
@@ -137,7 +137,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         target_class_indices = np.flatnonzero(y == key)
         if (
             dist_vec.shape[0]
-            != safe_indexing(X, target_class_indices).shape[0]
+            != _safe_indexing(X, target_class_indices).shape[0]
         ):
             raise RuntimeError(
                 "The samples to be selected do not correspond"
@@ -200,14 +200,14 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         class_minority = min(target_stats, key=target_stats.get)
         minority_class_indices = np.flatnonzero(y == class_minority)
 
-        self.nn_.fit(safe_indexing(X, minority_class_indices))
+        self.nn_.fit(_safe_indexing(X, minority_class_indices))
 
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
                 target_class_indices = np.flatnonzero(y == target_class)
-                X_class = safe_indexing(X, target_class_indices)
-                y_class = safe_indexing(y, target_class_indices)
+                X_class = _safe_indexing(X, target_class_indices)
+                y_class = _safe_indexing(y, target_class_indices)
 
                 if self.version == 1:
                     dist_vec, idx_vec = self.nn_.kneighbors(
@@ -236,11 +236,11 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                 elif self.version == 3:
                     self.nn_ver3_.fit(X_class)
                     dist_vec, idx_vec = self.nn_ver3_.kneighbors(
-                        safe_indexing(X, minority_class_indices)
+                        _safe_indexing(X, minority_class_indices)
                     )
                     idx_vec_farthest = np.unique(idx_vec.reshape(-1))
-                    X_class_selected = safe_indexing(X_class, idx_vec_farthest)
-                    y_class_selected = safe_indexing(y_class, idx_vec_farthest)
+                    X_class_selected = _safe_indexing(X_class, idx_vec_farthest)
+                    y_class_selected = _safe_indexing(y_class, idx_vec_farthest)
 
                     dist_vec, idx_vec = self.nn_.kneighbors(
                         X_class_selected, n_neighbors=self.nn_.n_neighbors
@@ -269,7 +269,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
 
         self.sample_indices_ = idx_under
 
-        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     def _more_tags(self):
         return {"sample_indices": True}

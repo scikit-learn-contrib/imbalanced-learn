@@ -6,7 +6,7 @@
 import pytest
 import numpy as np
 
-from sklearn.utils.testing import assert_allclose, assert_array_equal
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 from sklearn.neighbors import NearestNeighbors
 from sklearn.datasets import make_classification
 

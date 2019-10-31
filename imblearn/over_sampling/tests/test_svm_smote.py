@@ -4,8 +4,8 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 
-from sklearn.utils.testing import assert_allclose
-from sklearn.utils.testing import assert_array_equal
+from sklearn.utils._testing import assert_allclose
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.over_sampling import SVMSMOTE
 

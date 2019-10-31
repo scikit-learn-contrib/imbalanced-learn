@@ -12,7 +12,7 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.datasets import make_classification
-from sklearn.utils.testing import assert_allclose
+from sklearn.utils._testing import assert_allclose
 
 from imblearn.over_sampling import SMOTENC
 

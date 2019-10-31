@@ -11,7 +11,7 @@ import numpy as np
 
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils.testing import assert_array_equal
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.utils.testing import warns
 from imblearn.utils import check_neighbors_object

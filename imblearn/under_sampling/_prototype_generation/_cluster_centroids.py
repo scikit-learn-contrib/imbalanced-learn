@@ -12,7 +12,7 @@ from scipy import sparse
 from sklearn.base import clone
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import Substitution
@@ -121,7 +121,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             indices = nearest_neighbors.kneighbors(
                 centroids, return_distance=False
             )
-            X_new = safe_indexing(X, np.squeeze(indices))
+            X_new = _safe_indexing(X, np.squeeze(indices))
         else:
             if sparse.issparse(X):
                 X_new = sparse.csr_matrix(centroids, dtype=X.dtype)
@@ -161,8 +161,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                 y_resampled.append(y_new)
             else:
                 target_class_indices = np.flatnonzero(y == target_class)
-                X_resampled.append(safe_indexing(X, target_class_indices))
-                y_resampled.append(safe_indexing(y, target_class_indices))
+                X_resampled.append(_safe_indexing(X, target_class_indices))
+                y_resampled.append(_safe_indexing(y, target_class_indices))
 
         if sparse.issparse(X):
             X_resampled = sparse.vstack(X_resampled)

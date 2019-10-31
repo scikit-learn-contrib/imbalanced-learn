@@ -5,7 +5,8 @@
 
 import pytest
 
-from imblearn.utils.estimator_checks import check_estimator, _yield_all_checks
+from imblearn.utils.estimator_checks import check_estimator
+from imblearn.utils.estimator_checks import _yield_all_checks
 from imblearn.utils.testing import all_estimators
 
 

@@ -18,11 +18,9 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.feature_selection import SelectKBest
-from sklearn.utils.testing import (
-    assert_array_equal,
-    assert_array_almost_equal,
-    assert_allclose,
-)
+from sklearn.utils._testing import assert_array_equal
+from sklearn.utils._testing import assert_array_almost_equal
+from sklearn.utils._testing import assert_allclose
 
 from imblearn.datasets import make_imbalance
 from imblearn.ensemble import BalancedBaggingClassifier

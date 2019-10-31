@@ -13,7 +13,7 @@ import numpy as np
 from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import StratifiedKFold
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import Substitution
@@ -135,10 +135,10 @@ class InstanceHardnessThreshold(BaseUnderSampler):
         probabilities = np.zeros(y.shape[0], dtype=float)
 
         for train_index, test_index in skf:
-            X_train = safe_indexing(X, train_index)
-            X_test = safe_indexing(X, test_index)
-            y_train = safe_indexing(y, train_index)
-            y_test = safe_indexing(y, test_index)
+            X_train = _safe_indexing(X, train_index)
+            X_test = _safe_indexing(X, test_index)
+            y_train = _safe_indexing(y, train_index)
+            y_test = _safe_indexing(y, test_index)
 
             self.estimator_.fit(X_train, y_train)
 
@@ -170,7 +170,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
         self.sample_indices_ = idx_under
 
-        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     def _more_tags(self):
         return {"sample_indices": True}

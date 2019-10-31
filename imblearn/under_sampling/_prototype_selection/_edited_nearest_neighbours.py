@@ -11,7 +11,7 @@ from collections import Counter
 import numpy as np
 from scipy.stats import mode
 
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
@@ -121,8 +121,8 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 target_class_indices = np.flatnonzero(y == target_class)
-                X_class = safe_indexing(X, target_class_indices)
-                y_class = safe_indexing(y, target_class_indices)
+                X_class = _safe_indexing(X, target_class_indices)
+                y_class = _safe_indexing(y, target_class_indices)
                 nnhood_idx = self.nn_.kneighbors(
                     X_class, return_distance=False
                 )[:, 1:]
@@ -147,7 +147,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
         self.sample_indices_ = idx_under
 
-        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     def _more_tags(self):
         return {"sample_indices": True}

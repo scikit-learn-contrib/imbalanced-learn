@@ -8,11 +8,11 @@ import numpy as np
 
 from sklearn.datasets import load_iris, make_hastie_10_2
 from sklearn.ensemble import AdaBoostClassifier
-from sklearn.utils.testing import assert_array_equal
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_selection import SelectKBest
-from sklearn.utils.testing import assert_allclose
+from sklearn.utils._testing import assert_allclose
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.ensemble import EasyEnsembleClassifier
 from imblearn.datasets import make_imbalance
