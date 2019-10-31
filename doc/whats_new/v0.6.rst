@@ -31,6 +31,9 @@ Maintenance
   :class:`sklearn.utils._testing.SkipTest`.
   :pr:`617` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Synchronize :mod:`imblearn.pipeline` with :mod:`sklearn.pipeline`.
+  :pr:`617` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 
