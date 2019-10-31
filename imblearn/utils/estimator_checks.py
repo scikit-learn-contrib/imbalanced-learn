@@ -21,8 +21,8 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils.estimator_checks import check_estimator \
     as sklearn_check_estimator, check_parameters_default_constructible
 from sklearn.utils.testing import assert_allclose
-from sklearn.utils.testing import assert_raises_regex
-from sklearn.utils.testing import set_random_state
+from sklearn.utils._testing import assert_raises_regex
+from sklearn.utils._testing import set_random_state
 from sklearn.utils.multiclass import type_of_target
 
 from imblearn.base import BaseSampler

@@ -17,8 +17,8 @@ from joblib import Parallel, delayed
 from sklearn.base import clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble.base import _set_random_states
-from sklearn.ensemble.forest import _parallel_build_trees
+from sklearn.ensemble._base import _set_random_states
+from sklearn.ensemble._forest import _parallel_build_trees
 from sklearn.exceptions import DataConversionWarning
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state

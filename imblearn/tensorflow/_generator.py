@@ -5,7 +5,7 @@ from scipy.sparse import issparse
 from sklearn.base import clone
 from sklearn.utils import safe_indexing
 from sklearn.utils import check_random_state
-from sklearn.utils.testing import set_random_state
+from sklearn.utils._testing import set_random_state
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
