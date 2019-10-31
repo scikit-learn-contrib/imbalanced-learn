@@ -33,11 +33,10 @@ from sklearn.datasets import load_iris, make_classification
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import FeatureUnion
 
+from imblearn.datasets import make_imbalance
 from imblearn.pipeline import Pipeline, make_pipeline
-from imblearn.under_sampling import (
-    RandomUnderSampler,
-    EditedNearestNeighbours as ENN,
-)
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.under_sampling import EditedNearestNeighbours as ENN
 
 
 JUNK_FOOD_DOCS = (
@@ -1324,3 +1323,22 @@ def test_verbose(est, method, pattern, capsys):
     est.set_params(verbose=True)
     func(X, y)
     assert re.match(pattern, capsys.readouterr().out)
+
+
+def test_pipeline_score_samples_pca_lof():
+    X, y = load_iris(return_X_y=True)
+    sampling_strategy = {0: 50, 1: 30, 2: 20}
+    X, y = make_imbalance(X, y, sampling_strategy=sampling_strategy)
+    # Test that the score_samples method is implemented on a pipeline.
+    # Test that the score_samples method on pipeline yields same results as
+    # applying transform and score_samples steps separately.
+    rus = RandomUnderSampler()
+    pca = PCA(svd_solver='full', n_components='mle', whiten=True)
+    lof = LocalOutlierFactor(novelty=True)
+    pipe = Pipeline([('rus', rus), ('pca', pca), ('lof', lof)])
+    pipe.fit(X, y)
+    # Check the shapes
+    assert pipe.score_samples(X).shape == (X.shape[0],)
+    # Check the values
+    lof.fit(pca.fit_transform(X))
+    assert_allclose(pipe.score_samples(X), lof.score_samples(pca.transform(X)))

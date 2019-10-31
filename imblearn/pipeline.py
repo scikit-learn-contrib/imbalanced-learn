@@ -622,7 +622,7 @@ class Pipeline(pipeline.Pipeline):
         """
         Xt = X
         for _, _, transformer in self._iter(with_final=False):
-            if hasattr(transform, "fit_resample"):
+            if hasattr(transformer, "fit_resample"):
                 pass
             else:
                 Xt = transformer.transform(Xt)
