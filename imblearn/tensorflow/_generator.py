@@ -62,61 +62,6 @@ def balanced_batch_generator(
     steps_per_epoch : int
         The number of samples per epoch.
 
-    Examples
-    --------
-    >>> import numpy as np
-    >>> from sklearn.datasets import load_iris
-    >>> X, y = load_iris(return_X_y=True)
-    >>> class_dict = dict()
-    >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
-    >>> from imblearn.datasets import make_imbalance
-    >>> X, y = make_imbalance(X, y, class_dict)
-    >>> X = X.astype(np.float32)
-    >>> batch_size, learning_rate, epochs = 10, 0.01, 10
-    >>> training_generator, steps_per_epoch = balanced_batch_generator(
-    ...     X, y, sample_weight=None, sampler=None,
-    ...     batch_size=batch_size, random_state=42)
-    >>> input_size, output_size = X.shape[1], 3
-    >>> import tensorflow as tf
-    >>> def init_weights(shape):
-    ...     return tf.Variable(tf.random_normal(shape, stddev=0.01))
-    >>> def accuracy(y_true, y_pred):
-    ...     return np.mean(np.argmax(y_pred, axis=1) == y_true)
-    >>> # input and output
-    >>> data = tf.placeholder("float32", shape=[None, input_size])
-    >>> targets = tf.placeholder("int32", shape=[None])
-    >>> # build the model and weights
-    >>> W = init_weights([input_size, output_size])
-    >>> b = init_weights([output_size])
-    >>> out_act = tf.nn.sigmoid(tf.matmul(data, W) + b)
-    >>> # build the loss, predict, and train operator
-    >>> cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
-    ...     logits=out_act, labels=targets)
-    >>> loss = tf.reduce_sum(cross_entropy)
-    >>> optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    >>> train_op = optimizer.minimize(loss)
-    >>> predict = tf.nn.softmax(out_act)
-    >>> # Initialization of all variables in the graph
-    >>> init = tf.global_variables_initializer()
-    >>> with tf.Session() as sess:
-    ...     print('Starting training')
-    ...     sess.run(init)
-    ...     for e in range(epochs):
-    ...         for i in range(steps_per_epoch):
-    ...             X_batch, y_batch = next(training_generator)
-    ...             feed_dict = dict()
-    ...             feed_dict[data] = X_batch; feed_dict[targets] = y_batch
-    ...             sess.run([train_op, loss], feed_dict=feed_dict)
-    ...         # For each epoch, run accuracy on train and test
-    ...         feed_dict = dict()
-    ...         feed_dict[data] = X
-    ...         predicts_train = sess.run(predict, feed_dict=feed_dict)
-    ...         print("epoch: {{}} train accuracy: {{:.3f}}"
-    ...               .format(e, accuracy(y, predicts_train)))
-    ... # doctest: +ELLIPSIS
-    Starting training
-    [...
-
     """
 
     random_state = check_random_state(random_state)

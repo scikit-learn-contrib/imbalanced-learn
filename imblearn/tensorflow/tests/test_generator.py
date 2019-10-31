@@ -1,3 +1,5 @@
+from distutils.version import LooseVersion
+
 import pytest
 import numpy as np
 from scipy import sparse
@@ -21,9 +23,8 @@ def data():
     return X, y
 
 
-@pytest.mark.parametrize("sampler", [None, NearMiss(), RandomOverSampler()])
-def test_balanced_batch_generator(data, sampler):
-    X, y = data
+def check_balanced_batch_generator_tf_1_X_X(dataset, sampler):
+    X, y = dataset
     batch_size = 10
     training_generator, steps_per_epoch = balanced_batch_generator(
         X,
@@ -85,6 +86,13 @@ def test_balanced_batch_generator(data, sampler):
                     e, accuracy(y, predicts_train)
                 )
             )
+
+
+
+@pytest.mark.parametrize("sampler", [None, NearMiss(), RandomOverSampler()])
+def test_balanced_batch_generator(data, sampler):
+    if LooseVersion(tf.__version__) < '2':
+        check_balanced_batch_generator_tf_1_X_X(data, sampler)
 
 
 @pytest.mark.parametrize("keep_sparse", [True, False])
