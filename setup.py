@@ -52,7 +52,7 @@ EXTRAS_REQUIRE = {
         'matplotlib',
         'pandas',
         'keras',
-        'tensorflow'
+        'tensorflow>=1.0,<2'
     ]
 }
 
