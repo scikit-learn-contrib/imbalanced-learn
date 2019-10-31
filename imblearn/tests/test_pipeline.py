@@ -5,9 +5,11 @@ Test the pipeline module.
 #          Christos Aridas
 # License: MIT
 
-from tempfile import mkdtemp
+import itertools
+import re
 import shutil
 import time
+from tempfile import mkdtemp
 
 import numpy as np
 import pytest
@@ -29,6 +31,7 @@ from sklearn.cluster import KMeans
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.datasets import load_iris, make_classification
 from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import FeatureUnion
 
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import (
@@ -1268,3 +1271,56 @@ def test_pipeline_param_error():
     with pytest.raises(ValueError, match="Pipeline.fit does not accept "
                                          "the sample_weight parameter"):
         clf.fit([[0], [0]], [0, 1], sample_weight=[1, 1])
+
+
+parameter_grid_test_verbose = ((est, pattern, method) for
+                               (est, pattern), method in itertools.product(
+    [
+     (Pipeline([('transf', Transf()), ('clf', FitParamT())]),
+      r'\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n'
+      r'\[Pipeline\].*\(step 2 of 2\) Processing clf.* total=.*\n$'),
+     (Pipeline([('transf', Transf()), ('noop', None),
+               ('clf', FitParamT())]),
+      r'\[Pipeline\].*\(step 1 of 3\) Processing transf.* total=.*\n'
+      r'\[Pipeline\].*\(step 2 of 3\) Processing noop.* total=.*\n'
+      r'\[Pipeline\].*\(step 3 of 3\) Processing clf.* total=.*\n$'),
+     (Pipeline([('transf', Transf()), ('noop', 'passthrough'),
+               ('clf', FitParamT())]),
+      r'\[Pipeline\].*\(step 1 of 3\) Processing transf.* total=.*\n'
+      r'\[Pipeline\].*\(step 2 of 3\) Processing noop.* total=.*\n'
+      r'\[Pipeline\].*\(step 3 of 3\) Processing clf.* total=.*\n$'),
+     (Pipeline([('transf', Transf()), ('clf', None)]),
+      r'\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n'
+      r'\[Pipeline\].*\(step 2 of 2\) Processing clf.* total=.*\n$'),
+     (Pipeline([('transf', None), ('mult', Mult())]),
+      r'\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n'
+      r'\[Pipeline\].*\(step 2 of 2\) Processing mult.* total=.*\n$'),
+     (Pipeline([('transf', 'passthrough'), ('mult', Mult())]),
+      r'\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n'
+      r'\[Pipeline\].*\(step 2 of 2\) Processing mult.* total=.*\n$'),
+     (FeatureUnion([('mult1', Mult()), ('mult2', Mult())]),
+      r'\[FeatureUnion\].*\(step 1 of 2\) Processing mult1.* total=.*\n'
+      r'\[FeatureUnion\].*\(step 2 of 2\) Processing mult2.* total=.*\n$'),
+     (FeatureUnion([('mult1', 'drop'), ('mult2', Mult()), ('mult3', 'drop')]),
+      r'\[FeatureUnion\].*\(step 1 of 1\) Processing mult2.* total=.*\n$')
+    ], ['fit', 'fit_transform', 'fit_predict'])
+    if hasattr(est, method) and not (
+        method == 'fit_transform' and hasattr(est, 'steps') and
+        isinstance(est.steps[-1][1], FitParamT))
+)
+
+
+@pytest.mark.parametrize('est, pattern, method', parameter_grid_test_verbose)
+def test_verbose(est, method, pattern, capsys):
+    func = getattr(est, method)
+
+    X = [[1, 2, 3], [4, 5, 6]]
+    y = [[7], [8]]
+
+    est.set_params(verbose=False)
+    func(X, y)
+    assert not capsys.readouterr().out, 'Got output for verbose=False'
+
+    est.set_params(verbose=True)
+    func(X, y)
+    assert re.match(pattern, capsys.readouterr().out)
