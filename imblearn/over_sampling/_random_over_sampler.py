@@ -41,11 +41,6 @@ class RandomOverSampler(BaseOverSampler):
            ``return_indices`` is deprecated. Use the attribute
            ``sample_indices_`` instead.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Attributes
     ----------
     sample_indices_ : ndarray, shape (n_new_samples)
@@ -81,10 +76,8 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self, sampling_strategy='auto',
                  return_indices=False,
-                 random_state=None,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 random_state=None):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.return_indices = return_indices
         self.random_state = random_state
 

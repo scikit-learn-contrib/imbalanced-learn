@@ -81,11 +81,6 @@ class BalancedBaggingClassifier(BaggingClassifier):
     verbose : int, optional (default=0)
         Controls the verbosity of the building process.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Attributes
     ----------
     base_estimator_ : estimator
@@ -183,8 +178,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
                  replacement=False,
                  n_jobs=1,
                  random_state=None,
-                 verbose=0,
-                 ratio=None):
+                 verbose=0):
 
         super().__init__(
             base_estimator,
@@ -199,7 +193,6 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             random_state=random_state,
             verbose=verbose)
         self.sampling_strategy = sampling_strategy
-        self.ratio = ratio
         self.replacement = replacement
 
     def _validate_estimator(self, default=DecisionTreeClassifier()):
@@ -220,8 +213,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
 
         self.base_estimator_ = Pipeline([('sampler', RandomUnderSampler(
             sampling_strategy=self.sampling_strategy,
-            replacement=self.replacement,
-            ratio=self.ratio)), ('classifier', base_estimator)])
+            replacement=self.replacement)), ('classifier', base_estimator)])
 
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training

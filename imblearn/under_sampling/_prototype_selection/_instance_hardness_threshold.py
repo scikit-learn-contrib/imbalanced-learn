@@ -105,8 +105,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
                  random_state=None,
                  cv=5,
                  n_jobs=1):
-        super().__init__(
-            sampling_strategy=sampling_strategy)
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.estimator = estimator
         self.return_indices = return_indices

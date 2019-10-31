@@ -123,31 +123,14 @@ class BaseSampler(SamplerMixin):
     instead.
     """
 
-    def __init__(self, sampling_strategy='auto', ratio=None):
+    def __init__(self, sampling_strategy='auto'):
         self.sampling_strategy = sampling_strategy
-        # FIXME: remove in 0.6
-        self.ratio = ratio
 
     @staticmethod
     def _check_X_y(X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         return X, y, binarize_y
-
-    @property
-    def ratio_(self):
-        # FIXME: remove in 0.6
-        warnings.warn("'ratio' and 'ratio_' are deprecated. Use "
-                      "'sampling_strategy' and 'sampling_strategy_' instead.",
-                      DeprecationWarning)
-        return self.sampling_strategy_
-
-    def _deprecate_ratio(self):
-        # both ratio and sampling_strategy should not be set
-        if self.ratio is not None:
-            deprecate_parameter(self, '0.4', 'ratio', 'sampling_strategy')
-            self.sampling_strategy = self.ratio
-
 
 def _identity(X, y):
     return X, y

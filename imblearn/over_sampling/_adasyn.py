@@ -39,11 +39,6 @@ class ADASYN(BaseOverSampler):
     n_jobs : int, optional (default=1)
         Number of threads to run the algorithm when it is possible.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Notes
     -----
     The implementation is based on [1]_.
@@ -85,10 +80,8 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                  sampling_strategy='auto',
                  random_state=None,
                  n_neighbors=5,
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 n_jobs=1):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.n_neighbors = n_neighbors
         self.n_jobs = n_jobs
