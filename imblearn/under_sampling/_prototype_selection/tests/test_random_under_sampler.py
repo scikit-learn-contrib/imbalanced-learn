@@ -5,7 +5,6 @@
 
 from collections import Counter
 
-import pytest
 import numpy as np
 from sklearn.utils.testing import assert_array_equal
 

@@ -13,7 +13,6 @@ from sklearn.base import clone
 from sklearn.neighbors.base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.multiclass import type_of_target
-from sklearn.utils.deprecation import deprecated
 
 from ..exceptions import raise_isinstance_error
 

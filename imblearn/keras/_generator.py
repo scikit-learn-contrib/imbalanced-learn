@@ -46,21 +46,11 @@ from scipy.sparse import issparse
 from sklearn.base import clone
 from sklearn.utils import safe_indexing
 from sklearn.utils import check_random_state
-from sklearn.utils._testing import set_random_state
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 from ..tensorflow import balanced_batch_generator as tf_bbg
-
-DONT_HAVE_RANDOM_STATE = (
-    "NearMiss",
-    "EditedNearestNeighbours",
-    "RepeatedEditedNearestNeighbours",
-    "AllKNN",
-    "NeighbourhoodCleaningRule",
-    "TomekLinks",
-)
 
 
 class BalancedBatchGenerator(*ParentClass):
@@ -167,10 +157,6 @@ class BalancedBatchGenerator(*ParentClass):
             self.sampler_ = RandomUnderSampler(random_state=random_state)
         else:
             self.sampler_ = clone(self.sampler)
-            # FIXME: Remove in 0.6
-            if self.sampler_.__class__.__name__ not in DONT_HAVE_RANDOM_STATE:
-                set_random_state(self.sampler_, random_state)
-
         self.sampler_.fit_resample(self.X, self.y)
         if not hasattr(self.sampler_, "sample_indices_"):
             raise ValueError(
@@ -187,13 +173,13 @@ class BalancedBatchGenerator(*ParentClass):
         X_resampled = safe_indexing(
             self.X,
             self.indices_[
-                index * self.batch_size : (index + 1) * self.batch_size
+                index * self.batch_size:(index + 1) * self.batch_size
             ],
         )
         y_resampled = safe_indexing(
             self.y,
             self.indices_[
-                index * self.batch_size : (index + 1) * self.batch_size
+                index * self.batch_size:(index + 1) * self.batch_size
             ],
         )
         if issparse(X_resampled) and not self.keep_sparse:
@@ -202,7 +188,7 @@ class BalancedBatchGenerator(*ParentClass):
             sample_weight_resampled = safe_indexing(
                 self.sample_weight,
                 self.indices_[
-                    index * self.batch_size : (index + 1) * self.batch_size
+                    index * self.batch_size:(index + 1) * self.batch_size
                 ],
             )
 

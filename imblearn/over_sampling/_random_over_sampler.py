@@ -12,7 +12,6 @@ from sklearn.utils import check_X_y, check_random_state, safe_indexing
 from .base import BaseOverSampler
 from ..utils import check_target_type
 from ..utils import Substitution
-from ..utils.deprecation import deprecate_parameter
 from ..utils._docstring import _random_state_docstring
 
 

@@ -8,7 +8,6 @@ import pytest
 
 from sklearn.utils.testing import assert_allclose, assert_array_equal
 from sklearn.neighbors import NearestNeighbors
-from sklearn.svm import SVC
 
 from imblearn.over_sampling import SMOTE
 from imblearn.over_sampling import SVMSMOTE

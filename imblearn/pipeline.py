@@ -13,9 +13,6 @@ composite estimator, as a chain of transforms, samples and estimators.
 #         Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: BSD
 
-from collections import defaultdict
-from itertools import islice
-
 from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.utils.metaestimators import if_delegate_has_method

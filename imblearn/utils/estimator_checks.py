@@ -14,7 +14,6 @@ import pytest
 import numpy as np
 from scipy import sparse
 
-from sklearn.base import clone
 from sklearn.datasets import (
     make_classification,
     make_multilabel_classification,
@@ -26,15 +25,12 @@ from sklearn.utils.estimator_checks import (
     check_parameters_default_constructible,
 )
 from sklearn.utils.testing import assert_allclose
-from sklearn.utils._testing import assert_raises_regex
 from sklearn.utils._testing import set_random_state
 from sklearn.utils.multiclass import type_of_target
 
-from imblearn.base import BaseSampler
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 from imblearn.ensemble.base import BaseEnsembleSampler
-from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import NearMiss, ClusterCentroids
 
 

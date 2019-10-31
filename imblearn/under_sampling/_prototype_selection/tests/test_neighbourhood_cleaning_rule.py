@@ -7,10 +7,8 @@ import pytest
 import numpy as np
 
 from sklearn.utils.testing import assert_array_equal
-from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import NeighbourhoodCleaningRule
-from imblearn.utils.testing import warns
 
 X = np.array(
     [

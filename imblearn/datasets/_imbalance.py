@@ -5,7 +5,6 @@
 #          Christos Aridas
 # License: MIT
 
-import warnings
 from collections import Counter
 
 from sklearn.utils import check_X_y

@@ -83,13 +83,13 @@ def test_check_sampling_strategy_warning():
             0.5,
             binary_target,
             "clean-sampling",
-            "'clean-sampling' methods do let the user specify the sampling ratio",
+            "'clean-sampling' methods do let the user specify the sampling ratio",  # noqa
         ),
         (
             0.1,
             np.array([0] * 10 + [1] * 20),
             "over-sampling",
-            "remove samples from the minority class while trying to generate new",
+            "remove samples from the minority class while trying to generate new",  # noqa
         ),
         (
             0.1,

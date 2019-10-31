@@ -132,7 +132,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         """
 
         # Compute the distance considering the farthest neighbour
-        dist_avg_vec = np.sum(dist_vec[:, -self.nn_.n_neighbors :], axis=1)
+        dist_avg_vec = np.sum(dist_vec[:, -self.nn_.n_neighbors:], axis=1)
 
         target_class_indices = np.flatnonzero(y == key)
         if (

@@ -17,7 +17,6 @@ from sklearn.utils import safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import Substitution
-from ...utils.deprecation import deprecate_parameter
 from ...utils._docstring import _random_state_docstring
 
 
@@ -85,7 +84,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     Original dataset shape Counter({{1: 900, 0: 100}})
     >>> iht = InstanceHardnessThreshold(random_state=42)
     >>> X_res, y_res = iht.fit_resample(X, y)
-    >>> print('Resampled dataset shape %s' % Counter(y_res))  # doctest: +ELLIPSIS
+    >>> print('Resampled dataset shape %s' % Counter(y_res))  # doctest: +ELLIPSIS  # noqa
     Resampled dataset shape Counter({{1: 5..., 0: 100}})
 
     """

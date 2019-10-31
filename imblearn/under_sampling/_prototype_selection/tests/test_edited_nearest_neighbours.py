@@ -11,7 +11,6 @@ from sklearn.utils.testing import assert_array_equal
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import EditedNearestNeighbours
-from imblearn.utils.testing import warns
 
 X = np.array(
     [

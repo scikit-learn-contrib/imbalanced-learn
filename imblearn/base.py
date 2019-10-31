@@ -4,7 +4,6 @@
 #          Christos Aridas
 # License: MIT
 
-import warnings
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -15,7 +14,6 @@ from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
-from .utils.deprecation import deprecate_parameter
 
 
 class SamplerMixin(BaseEstimator, metaclass=ABCMeta):

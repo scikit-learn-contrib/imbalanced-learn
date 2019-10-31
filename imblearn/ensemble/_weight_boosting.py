@@ -1,4 +1,3 @@
-import numbers
 from copy import deepcopy
 
 import numpy as np
@@ -6,7 +5,6 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble._base import _set_random_states
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import safe_indexing
 
 from ..under_sampling.base import BaseUnderSampler

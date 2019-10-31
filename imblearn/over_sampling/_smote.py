@@ -970,7 +970,7 @@ class SMOTENC(SMOTE):
         X_resampled, y_resampled = super()._fit_resample(X_encoded, y)
 
         # reverse the encoding of the categorical features
-        X_res_cat = X_resampled[:, self.continuous_features_.size :]
+        X_res_cat = X_resampled[:, self.continuous_features_.size:]
         X_res_cat.data = np.ones_like(X_res_cat.data)
         X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
 

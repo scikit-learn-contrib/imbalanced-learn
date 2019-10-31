@@ -11,7 +11,6 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.datasets import make_classification
 
 from imblearn.under_sampling import AllKNN
-from imblearn.utils.testing import warns
 
 X = np.array(
     [

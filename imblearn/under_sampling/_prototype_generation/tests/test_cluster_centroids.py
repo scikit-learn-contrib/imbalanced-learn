@@ -5,8 +5,6 @@ import pytest
 import numpy as np
 from scipy import sparse
 
-from sklearn.utils.testing import assert_allclose
-from sklearn.utils.testing import assert_array_equal
 from sklearn.cluster import KMeans
 
 from imblearn.under_sampling import ClusterCentroids

@@ -114,7 +114,7 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
 
     n_samples = X.shape[0]
     est.fit(X[: n_samples // 2, :], y[: n_samples // 2])
-    test_score = est.score(X[n_samples // 2 :, :], y[n_samples // 2 :])
+    test_score = est.score(X[n_samples // 2:, :], y[n_samples // 2:])
 
     assert abs(test_score - est.oob_score_) < 0.1
 

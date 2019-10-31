@@ -5,20 +5,10 @@ from scipy.sparse import issparse
 from sklearn.base import clone
 from sklearn.utils import safe_indexing
 from sklearn.utils import check_random_state
-from sklearn.utils._testing import set_random_state
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
-
-DONT_HAVE_RANDOM_STATE = (
-    "NearMiss",
-    "EditedNearestNeighbours",
-    "RepeatedEditedNearestNeighbours",
-    "AllKNN",
-    "NeighbourhoodCleaningRule",
-    "TomekLinks",
-)
 
 
 @Substitution(random_state=_random_state_docstring)
@@ -134,9 +124,6 @@ def balanced_batch_generator(
         sampler_ = RandomUnderSampler(random_state=random_state)
     else:
         sampler_ = clone(sampler)
-        # FIXME: Remove in 0.6
-        if sampler_.__class__.__name__ not in DONT_HAVE_RANDOM_STATE:
-            set_random_state(sampler_, random_state)
     sampler_.fit_resample(X, y)
     if not hasattr(sampler_, "sample_indices_"):
         raise ValueError(
@@ -149,15 +136,15 @@ def balanced_batch_generator(
     def generator(X, y, sample_weight, indices, batch_size):
         while True:
             for index in range(0, len(indices), batch_size):
-                X_res = safe_indexing(X, indices[index : index + batch_size])
-                y_res = safe_indexing(y, indices[index : index + batch_size])
+                X_res = safe_indexing(X, indices[index:index + batch_size])
+                y_res = safe_indexing(y, indices[index:index + batch_size])
                 if issparse(X_res) and not keep_sparse:
                     X_res = X_res.toarray()
                 if sample_weight is None:
                     yield X_res, y_res
                 else:
                     sw_res = safe_indexing(
-                        sample_weight, indices[index : index + batch_size]
+                        sample_weight, indices[index:index + batch_size]
                     )
                     yield X_res, y_res, sw_res
 

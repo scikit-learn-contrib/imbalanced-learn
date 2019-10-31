@@ -3,12 +3,10 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
 from sklearn.utils.testing import assert_array_equal
 
 from imblearn.under_sampling import TomekLinks
-from imblearn.utils.testing import warns
 
 X = np.array(
     [

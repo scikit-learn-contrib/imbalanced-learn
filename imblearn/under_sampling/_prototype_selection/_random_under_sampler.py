@@ -14,7 +14,6 @@ from sklearn.utils import safe_indexing
 from ..base import BaseUnderSampler
 from ...utils import check_target_type
 from ...utils import Substitution
-from ...utils.deprecation import deprecate_parameter
 from ...utils._docstring import _random_state_docstring
 
 
