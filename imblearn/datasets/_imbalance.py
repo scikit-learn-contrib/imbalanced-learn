@@ -17,11 +17,11 @@ from ..utils import check_sampling_strategy
 def make_imbalance(X,
                    y,
                    sampling_strategy=None,
-                   ratio=None,
                    random_state=None,
                    verbose=False,
                    **kwargs):
-    """Turns a dataset into an imbalanced dataset at specific ratio.
+    """Turns a dataset into an imbalanced dataset with a specific sampling
+    strategy.
 
     A simple toy dataset to visualize clustering and classification
     algorithms.
@@ -46,11 +46,6 @@ def make_imbalance(X,
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
 
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -100,14 +95,6 @@ def make_imbalance(X,
     X, y = check_X_y(X, y)
     target_stats = Counter(y)
     # restrict ratio to be a dict or a callable
-    # FIXME remove ratio at 0.6
-    if ratio is not None:
-        warnings.warn("'ratio' has been deprecated in 0.4 and will be "
-                      "removed in 0.6. Use 'sampling_strategy' instead.")
-        sampling_strategy = ratio
-    elif sampling_strategy is None:
-        raise TypeError("make_imbalance() missing 1 required positional "
-                        "argument: 'sampling_strategy'")
     if isinstance(sampling_strategy, dict) or callable(sampling_strategy):
         sampling_strategy_ = check_sampling_strategy(
             sampling_strategy, y, 'under-sampling', **kwargs)

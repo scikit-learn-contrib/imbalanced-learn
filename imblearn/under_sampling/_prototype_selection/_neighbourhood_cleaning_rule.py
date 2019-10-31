@@ -65,11 +65,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Attributes
     ----------
     sample_indices_ : ndarray, shape (n_new_samples)
@@ -116,10 +111,8 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
                  n_neighbors=3,
                  kind_sel='all',
                  threshold_cleaning=0.5,
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 n_jobs=1):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -155,8 +148,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
             sampling_strategy=self.sampling_strategy,
             n_neighbors=self.n_neighbors,
             kind_sel='mode',
-            n_jobs=self.n_jobs,
-            ratio=self.ratio)
+            n_jobs=self.n_jobs)
         enn.fit_resample(X, y)
         index_not_a1 = enn.sample_indices_
         index_a1 = np.ones(y.shape, dtype=bool)

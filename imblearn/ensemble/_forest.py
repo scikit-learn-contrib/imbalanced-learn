@@ -453,3 +453,6 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self.classes_ = self.classes_[0]
 
         return self
+
+    def _more_tags(self):
+        return {'multioutput': False}

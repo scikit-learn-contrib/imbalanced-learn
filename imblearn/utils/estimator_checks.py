@@ -32,7 +32,6 @@ from imblearn.ensemble.base import BaseEnsembleSampler
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import NearMiss, ClusterCentroids
 
-DONT_SUPPORT_RATIO = ['SVMSMOTE', 'BorderlineSMOTE', 'KMeansSMOTE']
 # FIXME: remove in 0.6
 DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
                           'RepeatedEditedNearestNeighbours', 'AllKNN',
@@ -44,7 +43,6 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_one_label
     yield check_samplers_fit
     yield check_samplers_fit_resample
-    yield check_samplers_ratio_fit_resample
     yield check_samplers_sampling_strategy_fit_resample
     yield check_samplers_sparse
     yield check_samplers_pandas
@@ -171,38 +169,6 @@ def check_samplers_fit_resample(name, Sampler):
         n_samples = min(target_stats.values())
         assert all(value == n_samples
                    for value in Counter(y_ensemble).values())
-
-
-# FIXME remove in 0.6 -> ratio will be deprecated
-def check_samplers_ratio_fit_resample(name, Sampler):
-    if name not in DONT_SUPPORT_RATIO:
-        # in this test we will force all samplers to not change the class 1
-        X, y = make_classification(n_samples=1000, n_classes=3,
-                                   n_informative=4, weights=[0.2, 0.3, 0.5],
-                                   random_state=0)
-        sampler = Sampler()
-        expected_stat = Counter(y)[1]
-        if isinstance(sampler, BaseOverSampler):
-            ratio = {2: 498, 0: 498}
-            sampler.set_params(ratio=ratio)
-            X_res, y_res = sampler.fit_resample(X, y)
-            assert Counter(y_res)[1] == expected_stat
-        elif isinstance(sampler, BaseUnderSampler):
-            ratio = {2: 201, 0: 201}
-            sampler.set_params(ratio=ratio)
-            X_res, y_res = sampler.fit_resample(X, y)
-            assert Counter(y_res)[1] == expected_stat
-        elif isinstance(sampler, BaseCleaningSampler):
-            ratio = {2: 201, 0: 201}
-            sampler.set_params(ratio=ratio)
-            X_res, y_res = sampler.fit_resample(X, y)
-            assert Counter(y_res)[1] == expected_stat
-        if isinstance(sampler, BaseEnsembleSampler):
-            ratio = {2: 201, 0: 201}
-            sampler.set_params(ratio=ratio)
-            X_res, y_res = sampler.fit_resample(X, y)
-            y_ensemble = y_res[0]
-            assert Counter(y_ensemble)[1] == expected_stat
 
 
 def check_samplers_sampling_strategy_fit_resample(name, Sampler):

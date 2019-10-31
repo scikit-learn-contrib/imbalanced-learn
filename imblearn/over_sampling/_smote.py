@@ -43,10 +43,8 @@ class BaseSMOTE(BaseOverSampler):
                  sampling_strategy='auto',
                  random_state=None,
                  k_neighbors=5,
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 n_jobs=1):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.k_neighbors = k_neighbors
         self.n_jobs = n_jobs
@@ -317,7 +315,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
                  kind='borderline-1'):
         super().__init__(
             sampling_strategy=sampling_strategy, random_state=random_state,
-            k_neighbors=k_neighbors, n_jobs=n_jobs, ratio=None)
+            k_neighbors=k_neighbors, n_jobs=n_jobs)
         self.m_neighbors = m_neighbors
         self.kind = kind
 
@@ -499,7 +497,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
                  out_step=0.5):
         super().__init__(
             sampling_strategy=sampling_strategy, random_state=random_state,
-            k_neighbors=k_neighbors, n_jobs=n_jobs, ratio=None)
+            k_neighbors=k_neighbors, n_jobs=n_jobs)
         self.m_neighbors = m_neighbors
         self.svm_estimator = svm_estimator
         self.out_step = out_step
@@ -668,11 +666,6 @@ class SMOTE(SVMSMOTE, BorderlineSMOTE):
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Notes
     -----
     See the original papers: [1]_ for more details.
@@ -722,12 +715,11 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
                  out_step='deprecated',
                  kind='deprecated',
                  svm_estimator='deprecated',
-                 n_jobs=1,
-                 ratio=None):
+                 n_jobs=1):
         # FIXME: in 0.6 call super()
         BaseSMOTE.__init__(self, sampling_strategy=sampling_strategy,
                            random_state=random_state, k_neighbors=k_neighbors,
-                           n_jobs=n_jobs, ratio=ratio)
+                           n_jobs=n_jobs)
         self.kind = kind
         self.m_neighbors = m_neighbors
         self.out_step = out_step
@@ -955,8 +947,7 @@ class SMOTENC(SMOTE):
                  random_state=None, k_neighbors=5, n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy,
                          random_state=random_state,
-                         k_neighbors=k_neighbors,
-                         ratio=None)
+                         k_neighbors=k_neighbors)
         self.categorical_features = categorical_features
 
     @staticmethod

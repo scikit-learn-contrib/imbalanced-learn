@@ -42,7 +42,6 @@ class BaseEnsembleSampler(BaseSampler):
             The corresponding label of `X_resampled`
 
         """
-        self._deprecate_ratio()
         # Ensemble are a bit specific since they are returning an array of
         # resampled arrays.
         X, y, binarize_y = self._check_X_y(X, y)

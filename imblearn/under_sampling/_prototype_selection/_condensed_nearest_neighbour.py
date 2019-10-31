@@ -57,11 +57,6 @@ KNeighborsClassifier(n_neighbors=1))
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Attributes
     ----------
     sample_indices_ : ndarray, shape (n_new_samples)
@@ -111,10 +106,8 @@ CondensedNearestNeighbour # doctest: +SKIP
                  random_state=None,
                  n_neighbors=None,
                  n_seeds_S=1,
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 n_jobs=1):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors

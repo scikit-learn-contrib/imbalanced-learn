@@ -65,11 +65,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Attributes
     ----------
     sample_indices_ : ndarray, shape (n_new_samples)
@@ -120,10 +115,8 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                  random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 n_jobs=1):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -235,11 +228,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     n_jobs : int, optional (default=1)
         The number of thread to open when it is possible.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Attributes
     ----------
     sample_indices_ : ndarray, shape (n_new_samples)
@@ -291,10 +279,8 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                  n_neighbors=3,
                  max_iter=100,
                  kind_sel='all',
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 n_jobs=1):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -321,8 +307,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             return_indices=False,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
-            n_jobs=self.n_jobs,
-            ratio=self.ratio)
+            n_jobs=self.n_jobs)
 
     def _fit_resample(self, X, y):
         if self.return_indices:
@@ -430,11 +415,6 @@ class AllKNN(BaseCleaningSampler):
     n_jobs : int, optional (default=1)
         The number of thread to open when it is possible.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Attributes
     ----------
     sample_indices_ : ndarray, shape (n_new_samples)
@@ -487,10 +467,8 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                  n_neighbors=3,
                  kind_sel='all',
                  allow_minority=False,
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 n_jobs=1):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.return_indices = return_indices
         self.n_neighbors = n_neighbors
@@ -516,8 +494,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             return_indices=False,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
-            n_jobs=self.n_jobs,
-            ratio=self.ratio)
+            n_jobs=self.n_jobs)
 
     def _fit_resample(self, X, y):
         if self.return_indices:

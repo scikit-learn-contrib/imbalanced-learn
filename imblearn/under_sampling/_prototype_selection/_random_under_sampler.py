@@ -45,11 +45,6 @@ class RandomUnderSampler(BaseUnderSampler):
     replacement : boolean, optional (default=False)
         Whether the sample is with or without replacement.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Attributes
     ----------
     sample_indices_ : ndarray, shape (n_new_samples)
@@ -87,10 +82,8 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                  sampling_strategy='auto',
                  return_indices=False,
                  random_state=None,
-                 replacement=False,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 replacement=False):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.return_indices = return_indices
         self.replacement = replacement

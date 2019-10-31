@@ -46,7 +46,6 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
             Return the instance itself.
 
         """
-        self._deprecate_ratio()
         X, y, _ = self._check_X_y(X, y)
         self.sampling_strategy_ = check_sampling_strategy(
             self.sampling_strategy, y, self._sampling_type)
@@ -73,8 +72,6 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
             The corresponding label of `X_resampled`.
 
         """
-        self._deprecate_ratio()
-
         check_classification_targets(y)
         X, y, binarize_y = self._check_X_y(X, y)
 

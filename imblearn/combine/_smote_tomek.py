@@ -48,11 +48,6 @@ class SMOTETomek(BaseSampler):
         The number of threads to open if possible.
         Will not apply to smote and tomek given by the user.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Notes
     -----
     The methos is presented in [1]_.
@@ -96,15 +91,13 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
                  random_state=None,
                  smote=None,
                  tomek=None,
-                 n_jobs=1,
-                 ratio=None):
+                 n_jobs=1):
         super().__init__()
         self.sampling_strategy = sampling_strategy
         self.random_state = random_state
         self.smote = smote
         self.tomek = tomek
         self.n_jobs = n_jobs
-        self.ratio = ratio
 
     def _validate_estimator(self):
         "Private function to validate SMOTE and ENN objects"
@@ -120,8 +113,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
             self.smote_ = SMOTE(
                 sampling_strategy=self.sampling_strategy,
                 random_state=self.random_state,
-                n_jobs=self.n_jobs,
-                ratio=self.ratio)
+                n_jobs=self.n_jobs)
 
         if self.tomek is not None:
             if isinstance(self.tomek, TomekLinks):

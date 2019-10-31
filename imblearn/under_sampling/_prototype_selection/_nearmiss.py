@@ -64,11 +64,6 @@ class NearMiss(BaseUnderSampler):
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Attributes
     ----------
     sample_indices_ : ndarray, shape (n_new_samples)
@@ -115,10 +110,8 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                  version=1,
                  n_neighbors=3,
                  n_neighbors_ver3=3,
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 n_jobs=1):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.return_indices = return_indices
         self.version = version

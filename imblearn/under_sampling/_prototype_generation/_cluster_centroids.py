@@ -61,11 +61,6 @@ class ClusterCentroids(BaseUnderSampler):
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Notes
     -----
     Supports multi-class resampling by sampling each class independently.
@@ -95,10 +90,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                  random_state=None,
                  estimator=None,
                  voting='auto',
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+                 n_jobs=1):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.estimator = estimator
         self.voting = voting
