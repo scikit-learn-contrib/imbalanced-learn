@@ -15,7 +15,6 @@ from sklearn.utils.testing import assert_array_equal
 
 from imblearn.utils.testing import warns
 from imblearn.utils import check_neighbors_object
-from imblearn.utils import check_ratio
 from imblearn.utils import check_sampling_strategy
 from imblearn.utils import check_target_type
 
