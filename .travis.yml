@@ -42,9 +42,7 @@ matrix:
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
            OPTIONAL_DEPS="false"
   allow_failures:
-    - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
-           OPTIONAL_DEPS="false"
+    - env: DISTRIB="ubuntu"
 
 install: source build_tools/travis/install.sh
 script: bash build_tools/travis/test_script.sh
