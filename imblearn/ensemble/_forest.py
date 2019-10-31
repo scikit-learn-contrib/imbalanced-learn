@@ -42,7 +42,8 @@ def _local_parallel_build_trees(sampler, tree, forest, X, y, sample_weight,
         sample_weight = safe_indexing(sample_weight, sampler.sample_indices_)
     tree = _parallel_build_trees(tree, forest, X_resampled, y_resampled,
                                  sample_weight, tree_idx, n_trees,
-                                 verbose=verbose, class_weight=class_weight)
+                                 verbose=verbose, class_weight=class_weight,
+                                 n_samples_bootstrap=X_resampled.shape[0])
     return sampler, tree
 
 
