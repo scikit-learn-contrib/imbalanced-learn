@@ -134,3 +134,45 @@ def test_balanced_random_forest_grid_search(imbalanced_dataset):
         brf, {"n_estimators": (1, 2), "max_depth": (1, 2)}, cv=3
     )
     grid.fit(*imbalanced_dataset)
+
+
+def test_little_tree_with_small_max_samples():
+    rng = np.random.RandomState(1)
+
+    X = rng.randn(10000, 2)
+    y = rng.randn(10000) > 0
+
+    # First fit with no restriction on max samples
+    est1 = BalancedRandomForestClassifier(
+        n_estimators=1,
+        random_state=rng,
+        max_samples=None,
+    )
+
+    # Second fit with max samples restricted to just 2
+    est2 = BalancedRandomForestClassifier(
+        n_estimators=1,
+        random_state=rng,
+        max_samples=2,
+    )
+
+    est1.fit(X, y)
+    est2.fit(X, y)
+
+    tree1 = est1.estimators_[0].tree_
+    tree2 = est2.estimators_[0].tree_
+
+    msg = "Tree without `max_samples` restriction should have more nodes"
+    assert tree1.node_count > tree2.node_count, msg
+
+
+def test_balanced_random_forest_pruning(imbalanced_dataset):
+    brf = BalancedRandomForestClassifier()
+    brf.fit(*imbalanced_dataset)
+    n_nodes_no_pruning = brf.estimators_[0].tree_.node_count
+
+    brf_pruned = BalancedRandomForestClassifier(ccp_alpha=0.015)
+    brf_pruned.fit(*imbalanced_dataset)
+    n_nodes_pruning = brf_pruned.estimators_[0].tree_.node_count
+
+    assert n_nodes_no_pruning > n_nodes_pruning
