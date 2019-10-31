@@ -164,3 +164,15 @@ def test_little_tree_with_small_max_samples():
 
     msg = "Tree without `max_samples` restriction should have more nodes"
     assert tree1.node_count > tree2.node_count, msg
+
+
+def test_balanced_random_forest_pruning(imbalanced_dataset):
+    brf = BalancedRandomForestClassifier()
+    brf.fit(*imbalanced_dataset)
+    n_nodes_no_pruning = brf.estimators_[0].tree_.node_count
+
+    brf_pruned = BalancedRandomForestClassifier(ccp_alpha=0.015)
+    brf_pruned.fit(*imbalanced_dataset)
+    n_nodes_pruning = brf_pruned.estimators_[0].tree_.node_count
+
+    assert n_nodes_no_pruning > n_nodes_pruning
