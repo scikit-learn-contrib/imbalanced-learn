@@ -32,11 +32,6 @@ from imblearn.ensemble.base import BaseEnsembleSampler
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import NearMiss, ClusterCentroids
 
-# FIXME: remove in 0.6
-DONT_HAVE_RANDOM_STATE = ('NearMiss', 'EditedNearestNeighbours',
-                          'RepeatedEditedNearestNeighbours', 'AllKNN',
-                          'NeighbourhoodCleaningRule', 'TomekLinks')
-
 
 def _yield_sampler_checks(name, Estimator):
     yield check_target_type
@@ -96,9 +91,7 @@ def check_target_type(name, Estimator):
     X = np.random.random((20, 2))
     y = np.linspace(0, 1, 20)
     estimator = Estimator()
-    # FIXME: in 0.6 set the random_state for all
-    if name not in DONT_HAVE_RANDOM_STATE:
-        set_random_state(estimator)
+    set_random_state(estimator)
     with pytest.raises(ValueError, match="Unknown label type: 'continuous'"):
         estimator.fit_resample(X, y)
     # if the target is multilabel then we should raise an error
@@ -225,9 +218,7 @@ def check_samplers_sparse(name, Sampler):
         samplers = [Sampler()]
 
     for sampler in samplers:
-        # FIXME: in 0.6 set the random_state for all
-        if name not in DONT_HAVE_RANDOM_STATE:
-            set_random_state(sampler)
+        set_random_state(sampler)
         X_res_sparse, y_res_sparse = sampler.fit_resample(X_sparse, y)
         X_res, y_res = sampler.fit_resample(X, y)
         if not isinstance(sampler, BaseEnsembleSampler):
@@ -262,9 +253,7 @@ def check_samplers_pandas(name, Sampler):
         samplers = [Sampler()]
 
     for sampler in samplers:
-        # FIXME: in 0.6 set the random_state for all
-        if name not in DONT_HAVE_RANDOM_STATE:
-            set_random_state(sampler)
+        set_random_state(sampler)
         X_res_pd, y_res_pd = sampler.fit_resample(X_pd, y)
         X_res, y_res = sampler.fit_resample(X, y)
         assert_allclose(X_res_pd, X_res)
@@ -277,9 +266,7 @@ def check_samplers_multiclass_ova(name, Sampler):
                                weights=[0.2, 0.3, 0.5], random_state=0)
     y_ova = label_binarize(y, np.unique(y))
     sampler = Sampler()
-    # FIXME: in 0.6 set the random_state for all
-    if name not in DONT_HAVE_RANDOM_STATE:
-        set_random_state(sampler)
+    set_random_state(sampler)
     X_res, y_res = sampler.fit_resample(X, y)
     X_res_ova, y_res_ova = sampler.fit_resample(X, y_ova)
     assert_allclose(X_res, X_res_ova)
@@ -299,9 +286,7 @@ def check_samplers_preserve_dtype(name, Sampler):
     X = X.astype(np.float32)
     y = y.astype(np.int32)
     sampler = Sampler()
-    # FIXME: in 0.6 set the random_state for all
-    if name not in DONT_HAVE_RANDOM_STATE:
-        set_random_state(sampler)
+    set_random_state(sampler)
     X_res, y_res = sampler.fit_resample(X, y)
     assert X.dtype == X_res.dtype, "X dtype is not preserved"
     assert y.dtype == y_res.dtype, "y dtype is not preserved"

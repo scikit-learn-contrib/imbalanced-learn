@@ -16,8 +16,7 @@ from ...utils._docstring import _random_state_docstring
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring)
 class TomekLinks(BaseCleaningSampler):
     """Class to perform under-sampling by removing Tomek's links.
 
@@ -26,11 +25,6 @@ class TomekLinks(BaseCleaningSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
@@ -75,10 +69,8 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 random_state=None,
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
-        self.random_state = random_state
         self.n_jobs = n_jobs
 
     @staticmethod
@@ -124,10 +116,6 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         return links
 
     def _fit_resample(self, X, y):
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
         # Find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
         nn.fit(X)

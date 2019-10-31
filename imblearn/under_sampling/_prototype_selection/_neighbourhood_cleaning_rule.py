@@ -15,15 +15,12 @@ from ..base import BaseCleaningSampler
 from ._edited_nearest_neighbours import EditedNearestNeighbours
 from ...utils import check_neighbors_object
 from ...utils import Substitution
-from ...utils.deprecation import deprecate_parameter
-from ...utils._docstring import _random_state_docstring
 
 SEL_KIND = ('all', 'mode')
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring)
 class NeighbourhoodCleaningRule(BaseCleaningSampler):
     """Class performing under-sampling based on the neighbourhood cleaning
     rule.
@@ -33,11 +30,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -97,13 +89,11 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
                  threshold_cleaning=0.5,
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
-        self.random_state = random_state
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.threshold_cleaning = threshold_cleaning
@@ -111,11 +101,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Create the objects required by NCR."""
-
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
         self.nn_ = check_neighbors_object(
             'n_neighbors', self.n_neighbors, additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})

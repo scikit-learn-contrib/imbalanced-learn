@@ -16,15 +16,12 @@ from sklearn.utils import safe_indexing
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
-from ...utils.deprecation import deprecate_parameter
-from ...utils._docstring import _random_state_docstring
 
 SEL_KIND = ('all', 'mode')
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring)
 class EditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
@@ -34,11 +31,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -102,23 +94,16 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
-        self.random_state = random_state
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
         """Validate the estimator created in the ENN."""
-
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
         self.nn_ = check_neighbors_object(
             'n_neighbors', self.n_neighbors, additional_neighbor=1)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})
@@ -165,8 +150,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring)
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
@@ -176,11 +160,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -248,13 +227,11 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 random_state=None,
                  n_neighbors=3,
                  max_iter=100,
                  kind_sel='all',
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
-        self.random_state = random_state
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
@@ -262,11 +239,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
         if self.max_iter < 2:
             raise ValueError('max_iter must be greater than 1.'
                              ' Got {} instead.'.format(type(self.max_iter)))
@@ -334,8 +306,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring)
 class AllKNN(BaseCleaningSampler):
     """Class to perform under-sampling based on the AllKNN method.
 
@@ -344,11 +315,6 @@ class AllKNN(BaseCleaningSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -419,13 +385,11 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 random_state=None,
                  n_neighbors=3,
                  kind_sel='all',
                  allow_minority=False,
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
-        self.random_state = random_state
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.allow_minority = allow_minority
@@ -433,11 +397,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Create objects required by AllKNN"""
-
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 

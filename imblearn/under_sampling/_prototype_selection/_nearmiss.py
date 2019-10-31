@@ -14,13 +14,10 @@ from sklearn.utils import safe_indexing
 from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
-from ...utils.deprecation import deprecate_parameter
-from ...utils._docstring import _random_state_docstring
 
 
 @Substitution(
-    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring)
 class NearMiss(BaseUnderSampler):
     """Class to perform under-sampling based on NearMiss methods.
 
@@ -29,11 +26,6 @@ class NearMiss(BaseUnderSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     version : int, optional (default=1)
         Version of the NearMiss to use. Possible values are 1, 2 or 3.
@@ -96,13 +88,11 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(self,
                  sampling_strategy='auto',
-                 random_state=None,
                  version=1,
                  n_neighbors=3,
                  n_neighbors_ver3=3,
                  n_jobs=1):
         super().__init__(sampling_strategy=sampling_strategy)
-        self.random_state = random_state
         self.version = version
         self.n_neighbors = n_neighbors
         self.n_neighbors_ver3 = n_neighbors_ver3
@@ -181,10 +171,6 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
 
         self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
         self.nn_.set_params(**{'n_jobs': self.n_jobs})

@@ -20,10 +20,6 @@ def test_all_estimator_no_base_class(name, Estimator):
     assert not name.lower().startswith('base'), msg
 
 
-@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
-@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
-@pytest.mark.filterwarnings('ignore:"out_step" is deprecated in 0.4 and')
-@pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
 @pytest.mark.filterwarnings("ignore:'y' should be of types")
 @pytest.mark.filterwarnings("ignore:The number of the samples to")
 @pytest.mark.parametrize(
@@ -50,10 +46,6 @@ def _generate_checks_per_estimator(check_generator, estimators):
             yield name, Estimator, check
 
 
-@pytest.mark.filterwarnings('ignore:"kind" is deprecated in 0.4 and will be')
-@pytest.mark.filterwarnings('ignore:"svm_estimator" is deprecated in 0.4 and')
-@pytest.mark.filterwarnings('ignore:"out_step" is deprecated in 0.4 and')
-@pytest.mark.filterwarnings('ignore:"m_neighbors" is deprecated in 0.4 and')
 @pytest.mark.filterwarnings("ignore:'y' should be of types")
 @pytest.mark.parametrize(
     'name, Estimator, check',
