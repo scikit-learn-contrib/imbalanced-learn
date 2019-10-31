@@ -265,6 +265,7 @@ intersphinx_mapping = {
 sphinx_gallery_conf = {
     'doc_module': 'imblearn',
     'backreferences_dir': os.path.join('generated'),
+    'show_memory': True,
     'reference_url': {
         'imblearn': None}
 }
