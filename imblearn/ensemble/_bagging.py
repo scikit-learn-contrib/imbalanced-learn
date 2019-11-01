@@ -73,9 +73,12 @@ class BalancedBaggingClassifier(BaggingClassifier):
     replacement : bool, optional (default=False)
         Whether or not to sample randomly with replacement or not.
 
-    n_jobs : int, optional (default=1)
-        The number of jobs to run in parallel for both `fit` and `predict`.
-        If -1, then the number of jobs is set to the number of cores.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     {random_state}
 
@@ -178,7 +181,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         warm_start=False,
         sampling_strategy="auto",
         replacement=False,
-        n_jobs=1,
+        n_jobs=None,
         random_state=None,
         verbose=0,
     ):

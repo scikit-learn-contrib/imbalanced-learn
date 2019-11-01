@@ -45,9 +45,12 @@ EditedNearestNeighbours(sampling_strategy='all'))
         :class:`imblearn.under_sampling.EditedNearestNeighbours` object with
         sampling strategy='all' will be given.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
-        Will not apply to smote and enn given by the user.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Notes
     -----
@@ -93,7 +96,7 @@ EditedNearestNeighbours(sampling_strategy='all'))
         random_state=None,
         smote=None,
         enn=None,
-        n_jobs=1,
+        n_jobs=None,
     ):
         super().__init__()
         self.sampling_strategy = sampling_strategy

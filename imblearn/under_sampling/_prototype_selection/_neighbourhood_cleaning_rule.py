@@ -47,8 +47,12 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         where Ci and C is the number of samples in the class and the data set,
         respectively and theta is the threshold.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Attributes
     ----------
@@ -94,7 +98,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         n_neighbors=3,
         kind_sel="all",
         threshold_cleaning=0.5,
-        n_jobs=1,
+        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors

@@ -59,7 +59,7 @@ random under-sampler::
   BalancedBaggingClassifier(...)
   >>> y_pred = bbc.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.80...
+  0.81...
 
 .. _forest:
 
