@@ -44,7 +44,7 @@ def test_enn_init():
 
     assert enn.n_neighbors == 3
     assert enn.kind_sel == "all"
-    assert enn.n_jobs == 1
+    assert enn.n_jobs is None
 
 
 def test_enn_fit_resample():

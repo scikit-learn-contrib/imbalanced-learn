@@ -157,12 +157,12 @@ def test_validate_estimator_default():
 
 
 def test_parallelisation():
-    # Check if default job count is 1
+    # Check if default job count is None
     smt = SMOTETomek(random_state=RND_SEED)
     smt._validate_estimator()
-    assert smt.n_jobs == 1
-    assert smt.smote_.n_jobs == 1
-    assert smt.tomek_.n_jobs == 1
+    assert smt.n_jobs is None
+    assert smt.smote_.n_jobs is None
+    assert smt.tomek_.n_jobs is None
 
     # Check if job count is set
     smt = SMOTETomek(random_state=RND_SEED, n_jobs=8)

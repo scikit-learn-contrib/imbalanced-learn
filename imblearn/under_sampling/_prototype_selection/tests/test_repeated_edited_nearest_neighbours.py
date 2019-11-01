@@ -106,7 +106,7 @@ def test_renn_init():
 
     assert renn.n_neighbors == 3
     assert renn.kind_sel == "all"
-    assert renn.n_jobs == 1
+    assert renn.n_jobs is None
 
 
 def test_renn_iter_wrong():

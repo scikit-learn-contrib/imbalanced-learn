@@ -43,7 +43,7 @@ def test_cnn_init():
     cnn = CondensedNearestNeighbour(random_state=RND_SEED)
 
     assert cnn.n_seeds_S == 1
-    assert cnn.n_jobs == 1
+    assert cnn.n_jobs is None
 
 
 def test_cnn_fit_resample():

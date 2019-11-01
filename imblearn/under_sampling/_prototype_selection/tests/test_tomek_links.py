@@ -37,7 +37,7 @@ Y = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 
 def test_tl_init():
     tl = TomekLinks()
-    assert tl.n_jobs == 1
+    assert tl.n_jobs is None
 
 
 def test_tl_fit_resample():

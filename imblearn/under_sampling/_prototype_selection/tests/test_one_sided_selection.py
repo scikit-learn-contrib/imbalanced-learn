@@ -38,7 +38,7 @@ def test_oss_init():
     oss = OneSidedSelection(random_state=RND_SEED)
 
     assert oss.n_seeds_S == 1
-    assert oss.n_jobs == 1
+    assert oss.n_jobs is None
     assert oss.random_state == RND_SEED
 
 
