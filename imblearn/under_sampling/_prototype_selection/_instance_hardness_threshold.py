@@ -48,8 +48,12 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     cv : int, optional (default=5)
         Number of folds to be used when estimating samples' instance hardness.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Attributes
     ----------
@@ -95,7 +99,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
         sampling_strategy="auto",
         random_state=None,
         cv=5,
-        n_jobs=1,
+        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state

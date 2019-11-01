@@ -40,7 +40,7 @@ class BaseSMOTE(BaseOverSampler):
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
-        n_jobs=1,
+        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
@@ -252,8 +252,12 @@ class BorderlineSMOTE(BaseSMOTE):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     m_neighbors : int or object, optional (default=10)
         If int, number of nearest neighbours to use to determine if a minority
@@ -316,7 +320,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
-        n_jobs=1,
+        n_jobs=None,
         m_neighbors=10,
         kind="borderline-1",
     ):
@@ -446,8 +450,12 @@ class SVMSMOTE(BaseSMOTE):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     m_neighbors : int or object, optional (default=10)
         If int, number of nearest neighbours to use to determine if a minority
@@ -512,7 +520,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
-        n_jobs=1,
+        n_jobs=None,
         m_neighbors=10,
         svm_estimator=None,
         out_step=0.5,
@@ -661,8 +669,12 @@ class SMOTE(BaseSMOTE):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Notes
     -----
@@ -711,7 +723,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
-        n_jobs=1,
+        n_jobs=None,
     ):
         super().__init__(
             sampling_strategy=sampling_strategy,
@@ -822,8 +834,12 @@ class SMOTENC(SMOTE):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Notes
     -----
@@ -881,7 +897,7 @@ class SMOTENC(SMOTE):
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
-        n_jobs=1,
+        n_jobs=None,
     ):
         super().__init__(
             sampling_strategy=sampling_strategy,
@@ -1068,8 +1084,12 @@ class KMeansSMOTE(BaseSMOTE):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     kmeans_estimator : int or object, optional (default=MiniBatchKMeans())
         A KMeans instance or the number of clusters to be used. By default,
@@ -1134,7 +1154,7 @@ class KMeansSMOTE(BaseSMOTE):
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=2,
-        n_jobs=1,
+        n_jobs=None,
         kmeans_estimator=None,
         cluster_balance_threshold="auto",
         density_exponent="auto",

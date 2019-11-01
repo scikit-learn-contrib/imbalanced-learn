@@ -46,8 +46,12 @@ KNeighborsClassifier(n_neighbors=1))
     n_seeds_S : int, optional (default=1)
         Number of samples to extract in order to build the set S.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Attributes
     ----------
@@ -97,7 +101,7 @@ CondensedNearestNeighbour # doctest: +SKIP
         random_state=None,
         n_neighbors=None,
         n_seeds_S=1,
-        n_jobs=1,
+        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state

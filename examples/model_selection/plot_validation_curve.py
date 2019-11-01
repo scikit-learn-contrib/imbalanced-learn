@@ -39,7 +39,7 @@ pipeline = pl.make_pipeline(smote, cart)
 param_range = range(1, 11)
 train_scores, test_scores = ms.validation_curve(
     pipeline, X, y, param_name="smote__k_neighbors", param_range=param_range,
-    cv=3, scoring=scorer, n_jobs=1)
+    cv=3, scoring=scorer)
 train_scores_mean = np.mean(train_scores, axis=1)
 train_scores_std = np.std(train_scores, axis=1)
 test_scores_mean = np.mean(test_scores, axis=1)

@@ -38,8 +38,12 @@ class ADASYN(BaseOverSampler):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int, optional (default=1)
-        Number of threads to run the algorithm when it is possible.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Notes
     -----
@@ -83,7 +87,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         sampling_strategy="auto",
         random_state=None,
         n_neighbors=5,
-        n_jobs=1,
+        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
