@@ -1324,18 +1324,18 @@ class SLSMOTE(BaseSMOTE):
 
     Parameters
     -----------
-     {sampling_strategy}
+    {sampling_strategy}
 
-     {random_state}
+    {random_state}
 
-     k_neighbors : int or object, optional (default=5)
+    k_neighbors : int or object, optional (default=5)
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
     m_neighbors : int or object, optional (default=10)
-        If ``int``, number of nearest neighbours to use to determine the safe
+        If ``int``, number of nearest neighbours used to determine the safe
         level of an instance. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used
         to find the m_neighbors.
@@ -1582,16 +1582,16 @@ SLSMOTE # doctest: +NORMALIZE_WHITESPACE
 
         Parameters
         ----------
-         a_ratio: float
-                  sl_ratio of a single data point
+        a_ratio: float
+                 sl_ratio of a single data point
 
-         rand_state: random state object or int
+        rand_state: random state object or int
 
 
-         Returns
-         ------------
-         gap: float
-              a number between 0 and 1
+        Returns
+        ------------
+        gap: float
+             a number between 0 and 1
 
         """
 
