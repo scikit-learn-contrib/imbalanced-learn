@@ -204,8 +204,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     ccp_alpha : non-negative float, optional (default=0.0)
         Complexity parameter used for Minimal Cost-Complexity Pruning. The
         subtree with the largest cost complexity that is smaller than
-        ``ccp_alpha`` will be chosen. By default, no pruning is performed. See
-        :ref:`minimal_cost_complexity_pruning` for details.
+        ``ccp_alpha`` will be chosen. By default, no pruning is performed.
 
         .. versionadded:: 0.22
            Added in `scikit-learn` in 0.22
