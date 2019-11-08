@@ -27,7 +27,7 @@ MSG="Pushing the docs to $dir/ for branch: $CIRCLE_BRANCH, commit $CIRCLE_SHA1"
 
 cd $HOME
 if [ ! -d $DOC_REPO ];
-then git clone --depth 1 --no-checkout -b master "git@github.com:"$ORGAMIZATION"/"$DOC_REPO".git";
+then git clone --depth 1 --no-checkout -b master "git@github.com:"$ORGANIZATION"/"$DOC_REPO".git";
 fi
 cd $DOC_REPO
 git config core.sparseCheckout true
