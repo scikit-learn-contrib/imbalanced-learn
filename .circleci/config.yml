@@ -5,7 +5,8 @@ jobs:
     docker:
       - image: circleci/python:3.6.1
     environment:
-      - USERNAME: "imbalanced-learn"
+      - USERNAME: "glemaitre"
+      - ORGANIZATION: "imbalanced-learn"
       - DOC_REPO: "imbalanced-learn.github.io"
       - DOC_URL: ""
       - EMAIL: "g.lemaitre58@gmail.com"
