@@ -74,6 +74,15 @@ fi
 
 MAKE_TARGET=html
 
+# Installing required system packages to support the rendering of math
+# notation in the HTML documentation
+sudo -E apt-get -yq update
+sudo -E apt-get -yq remove texlive-binaries --purge
+sudo -E apt-get -yq --no-install-suggests --no-install-recommends \
+    install dvipng texlive-latex-base texlive-latex-extra \
+    texlive-latex-recommended texlive-fonts-recommended \
+    latexmk gsfonts ccache
+
 # deactivate circleci virtualenv and setup a miniconda env instead
 if [[ `type -t deactivate` ]]; then
     deactivate
