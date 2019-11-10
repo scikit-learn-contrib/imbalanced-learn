@@ -46,16 +46,8 @@ extensions = [
 # see https://github.com/numpy/numpydoc/issues/69
 numpydoc_show_class_members = False
 
-# For maths, use mathjax by default and svg if NO_MATHJAX env variable is set
-# (useful for viewing the doc offline)
-if os.environ.get('NO_MATHJAX'):
-    mathjax_path = ''
-    extensions.append('sphinx.ext.imgmath')
-    imgmath_image_format = 'svg'
-else:
-    extensions.append('sphinx.ext.mathjax')
-    mathjax_path = ('https://cdn.jsdelivr.net/npm/mathjax@3/es5/'
-                    'tex-chtml.js')
+extensions.append('sphinx.ext.imgmath')
+imgmath_image_format = 'svg'
 
 autodoc_default_flags = ['members', 'inherited-members']
 
@@ -141,7 +133,7 @@ html_theme = 'sphinx_rtd_theme'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {'mathjax_path': mathjax_path}
+# html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
