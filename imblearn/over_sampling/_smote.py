@@ -284,6 +284,11 @@ class BorderlineSMOTE(BaseSMOTE):
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
 
+    KMeansSMOTE: Over-sample using KMeans-SMOTE variant.
+
+    SafeLevelSMOTE: Over-sample using SafeLevel-SMOTE variant.
+
+
     ADASYN : Over-sample using ADASYN.
 
     References
@@ -483,6 +488,10 @@ class SVMSMOTE(BaseSMOTE):
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
     BorderlineSMOTE : Over-sample using Borderline-SMOTE.
+
+    KMeansSMOTE: Over-sample using KMeans-SMOTE variant.
+
+    SafeLevelSMOTE: Over-sample using SafeLevel-SMOTE variant.
 
     ADASYN : Over-sample using ADASYN.
 
@@ -695,6 +704,10 @@ class SMOTE(BaseSMOTE):
 
     SVMSMOTE : Over-sample using the SVM-SMOTE variant.
 
+    KMeansSMOTE: Over-sample using KMeans-SMOTE variant.
+
+    SafeLevelSMOTE: Over-sample using SafeLevel-SMOTE variant.
+
     ADASYN : Over-sample using ADASYN.
 
     References
@@ -863,6 +876,10 @@ class SMOTENC(SMOTE):
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
 
     BorderlineSMOTE : Over-sample using Borderline-SMOTE variant.
+
+    KMeansSMOTE: Over-sample using KMeans-SMOTE variant.
+
+    SafeLevelSMOTE: Over-sample using SafeLevel-SMOTE variant.
 
     ADASYN : Over-sample using ADASYN.
 
@@ -1318,7 +1335,7 @@ class KMeansSMOTE(BaseSMOTE):
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring,
 )
-class SLSMOTE(BaseSMOTE):
+class SafeLevelSMOTE(BaseSMOTE):
     """Class to perform over-sampling using safe-level SMOTE.
     This is an implementation of the Safe-level-SMOTE described in [2]_.
 
@@ -1389,13 +1406,13 @@ class SLSMOTE(BaseSMOTE):
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.over_sampling import \
-SLSMOTE # doctest: +NORMALIZE_WHITESPACE
+SafeLevelSMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
-    >>> sm = SLSMOTE(random_state=42)
+    >>> sm = SafeLevelSMOTE(random_state=42)
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
@@ -1415,7 +1432,7 @@ SLSMOTE # doctest: +NORMALIZE_WHITESPACE
 
         self.m_neighbors = m_neighbors
 
-    def _assign_sl(self, nn_estimator, samples, target_class, y):
+    def _assign_safe_levels(self, nn_estimator, samples, target_class, y):
         '''
         Assign the safe levels to the instances in the target class.
 
@@ -1444,8 +1461,8 @@ SLSMOTE # doctest: +NORMALIZE_WHITESPACE
 
         x = nn_estimator.kneighbors(samples, return_distance=False)[:, 1:]
         nn_label = (y[x] == target_class).astype(int)
-        sl = np.sum(nn_label, axis=1)
-        return sl
+        safe_levels = np.sum(nn_label, axis=1)
+        return safe_levels
 
     def _validate_estimator(self):
         super()._validate_estimator()
@@ -1466,28 +1483,30 @@ SLSMOTE # doctest: +NORMALIZE_WHITESPACE
             X_class = _safe_indexing(X, target_class_indices)
 
             self.nn_m_.fit(X)
-            sl = self._assign_sl(self.nn_m_, X_class, class_sample, y)
+            safe_levels = self._assign_safe_levels(
+                self.nn_m_, X_class, class_sample, y)
 
             # filter the points in X_class that have safe level >0
             # If safe level = 0, the point is not used to
             # generate synthetic instances
-            X_safe_indices = np.flatnonzero(sl != 0)
+            X_safe_indices = np.flatnonzero(safe_levels != 0)
             X_safe_class = _safe_indexing(X_class, X_safe_indices)
 
             self.nn_k_.fit(X_class)
             nns = self.nn_k_.kneighbors(X_safe_class,
                                         return_distance=False)[:, 1:]
 
-            sl_safe_class = sl[X_safe_indices]
-            sl_nns = sl[nns]
+            sl_safe_class = safe_levels[X_safe_indices]
+            sl_nns = safe_levels[nns]
             sl_safe_t = np.array([sl_safe_class]).transpose()
             with np.errstate(divide='ignore'):
-                sl_ratio = np.divide(sl_safe_t, sl_nns)
+                safe_level_ratio = np.divide(sl_safe_t, sl_nns)
 
-            X_new, y_new = self._make_samples_sl(X_safe_class, y.dtype,
-                                                 class_sample, X_class,
-                                                 nns, n_samples, sl_ratio,
-                                                 1.0)
+            X_new, y_new = self._make_samples_safelevel(X_safe_class, y.dtype,
+                                                        class_sample, X_class,
+                                                        nns, n_samples,
+                                                        safe_level_ratio,
+                                                        1.0)
 
             if sparse.issparse(X_new):
                 X_resampled = sparse.vstack([X_resampled, X_new])
@@ -1497,8 +1516,8 @@ SLSMOTE # doctest: +NORMALIZE_WHITESPACE
 
         return X_resampled, y_resampled
 
-    def _make_samples_sl(self, X, y_dtype, y_type, nn_data, nn_num,
-                         n_samples, sl_ratio, step_size=1.):
+    def _make_samples_safelevel(self, X, y_dtype, y_type, nn_data, nn_num,
+                                n_samples, safe_level_ratio, step_size=1.):
         """A support function that returns artificial samples using
         safe-level SMOTE. It is similar to _make_samples method for SMOTE.
 
@@ -1524,7 +1543,7 @@ SLSMOTE # doctest: +NORMALIZE_WHITESPACE
         n_samples : int
             The number of samples to generate.
 
-        sl_ratio: ndarray, shape (n_samples_safe, k_nearest_neighbours)
+        safe_level_ratio: ndarray, shape (n_samples_safe, k_nearest_neighbours)
 
         step_size : float, optional (default=1.)
             The step size to create samples.
@@ -1546,8 +1565,8 @@ SLSMOTE # doctest: +NORMALIZE_WHITESPACE
                                                size=n_samples)
         rows = np.floor_divide(samples_indices, nn_num.shape[1])
         cols = np.mod(samples_indices, nn_num.shape[1])
-        gap_arr = step_size * self._vgenerate_gap(sl_ratio)
-        gaps = gap_arr.flatten()[samples_indices]
+        gap_array = step_size * self._vgenerate_gap(safe_level_ratio)
+        gaps = gap_array.flatten()[samples_indices]
 
         y_new = np.array([y_type] * n_samples, dtype=y_dtype)
 
@@ -1578,12 +1597,12 @@ SLSMOTE # doctest: +NORMALIZE_WHITESPACE
         return X_new, y_new
 
     def _generate_gap(self, a_ratio, rand_state=None):
-        """ generate gap according to sl_ratio, non-vectorized version.
+        """ generate gap according to safe_level_ratio, non-vectorized version.
 
         Parameters
         ----------
         a_ratio: float
-                 sl_ratio of a single data point
+                 safe_level_ratio of a single data point
 
         rand_state: random state object or int
 
@@ -1603,28 +1622,30 @@ SLSMOTE # doctest: +NORMALIZE_WHITESPACE
         elif 0 < a_ratio < 1:
             gap = random_state.uniform(1-a_ratio, 1)
         else:
-            raise ValueError('sl_ratio should be nonegative')
+            raise ValueError('safe_level_ratio should be nonegative')
         return gap
 
-    def _vgenerate_gap(self, sl_ratio):
+    def _vgenerate_gap(self, safe_level_ratio):
         """
-        generate gap according to sl_ratio, vectorized version of _generate_gap
+        generate gap according to safe_level_ratio, vectorized version
+        of _generate_gap
 
         Parameters
         -----------
-        sl_ratio: ndarray  shape (n_samples_safe, k_nearest_neighbours)
-                  sl_ratio of all instances with safe_level>0 in the specified
-                  class
+        safe_level_ratio: ndarray  shape (n_samples_safe, k_nearest_neighbours)
+                  safe_level_ratio of all instances with safe_level>0 in the
+                  specified class
 
         Returns
         ------------
-        gap_arr: ndarray  shape (n_samples_safe, k_nearest_neighbours)
+        gap_array: ndarray  shape (n_samples_safe, k_nearest_neighbours)
                  the gap for all instances with safe_level>0 in the specified
                  class
 
         """
         prng = check_random_state(self.random_state)
-        rand_state = prng.randint(sl_ratio.size+1, size=sl_ratio.shape)
+        rand_state = prng.randint(
+            safe_level_ratio.size+1, size=safe_level_ratio.shape)
         vgap = np.vectorize(self._generate_gap)
-        gap_arr = vgap(sl_ratio, rand_state)
-        return gap_arr
+        gap_array = vgap(safe_level_ratio, rand_state)
+        return gap_array

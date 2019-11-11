@@ -152,8 +152,9 @@ nearest neighbors class. Those variants are presented in the figure below.
    :align: center
 
 
-The :class:`BorderlineSMOTE` [HWB2005]_, :class:`SVMSMOTE` [NCK2009]_, and
-:class:`KMeansSMOTE` [LDB2017]_ offer some variant of the SMOTE algorithm::
+The :class:`BorderlineSMOTE` [HWB2005]_, :class:`SVMSMOTE` [NCK2009]_,
+:class:`KMeansSMOTE` [LDB2017]_ and :class:`SafeLevelSMOTE` [BSL2009]_
+offer some variant of the SMOTE algorithm::
 
   >>> from imblearn.over_sampling import BorderlineSMOTE
   >>> X_resampled, y_resampled = BorderlineSMOTE().fit_resample(X, y)
@@ -212,6 +213,14 @@ other extra interpolation.
   .. [LDB2017] Felix Last, Georgios Douzas, Fernando Bacao, "Oversampling for
                Imbalanced Learning Based on K-Means and SMOTE"
                https://arxiv.org/abs/1711.00837
+
+     [BSL2009] C. Bunkhumpornpat, K. Sinapiromsaran, C. Lursinsap,
+               "Safe-level-SMOTE: Safe-level-synthetic minority over-sampling
+               technique for handling the class imbalanced problem," In:
+               Theeramunkong T., Kijsirikul B., Cercone N., Ho TB. (eds)
+               Advances in Knowledge Discovery and Data Mining. PAKDD 2009.
+               Lecture Notes in Computer Science, vol 5476. Springer, Berlin,
+               Heidelberg, 475-482, 2009.
 
 Mathematical formulation
 ========================
@@ -273,6 +282,11 @@ parameter ``m_neighbors`` to decide if a sample is in danger, safe, or noise.
 **KMeans** SMOTE --- cf. to :class:`KMeansSMOTE` --- uses a KMeans clustering
 method before to apply SMOTE. The clustering will group samples together and
 generate new samples depending of the cluster density.
+
+**SafeLevel** SMOTE --- cf. to :class:`SafeLevelSMOTE` --- uses the safe level
+(the number of positive instances in nearest neighbors) to generate a synthetic
+instance. Compared to regular SMOTE, the new instance is positioned closer to
+the positive instance with larger safe level.
 
 ADASYN works similarly to the regular SMOTE. However, the number of
 samples generated for each :math:`x_i` is proportional to the number of samples
