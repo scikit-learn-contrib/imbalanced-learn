@@ -1,7 +1,7 @@
 .. _changes_0_6:
 
 Version 0.6.0 (under-development)
-================================+
+=================================
 
 Changelog
 ---------
@@ -12,7 +12,7 @@ Changed models
 The following models might give some different sampling due to changes in
 scikit-learn:
 
-- :class:`imblearn.under_sampling.ClusterCentroid`
+- :class:`imblearn.under_sampling.ClusterCentroids`
 - :class:`imblearn.under_sampling.InstanceHardnessThreshold`
 
 Maintenance
