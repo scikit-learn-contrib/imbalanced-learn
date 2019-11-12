@@ -1619,10 +1619,8 @@ SafeLevelSMOTE # doctest: +NORMALIZE_WHITESPACE
             gap = 0
         elif a_ratio >= 1:
             gap = random_state.uniform(0, 1/a_ratio)
-        elif 0 < a_ratio < 1:
-            gap = random_state.uniform(1-a_ratio, 1)
         else:
-            raise ValueError('safe_level_ratio should be nonegative')
+            gap = random_state.uniform(1-a_ratio, 1)
         return gap
 
     def _vgenerate_gap(self, safe_level_ratio):
