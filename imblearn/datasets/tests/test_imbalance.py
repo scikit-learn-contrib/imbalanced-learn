@@ -9,6 +9,7 @@ import pytest
 import numpy as np
 
 from sklearn.datasets import load_iris
+from sklearn.datasets import fetch_openml
 
 from imblearn.datasets import make_imbalance
 
@@ -52,3 +53,21 @@ def test_make_imbalance_dict(iris, sampling_strategy, expected_counts):
     X, y = iris
     _, y_ = make_imbalance(X, y, sampling_strategy=sampling_strategy)
     assert Counter(y_) == expected_counts
+
+
+@pytest.mark.parametrize("as_frame", [True, False], ids=['dataframe', 'array'])
+@pytest.mark.parametrize(
+    "sampling_strategy, expected_counts",
+    [
+        ({'Iris-setosa': 10, 'Iris-versicolor': 20, 'Iris-virginica': 30},
+         {'Iris-setosa': 10, 'Iris-versicolor': 20, 'Iris-virginica': 30}),
+        ({'Iris-setosa': 10, 'Iris-versicolor': 20},
+         {'Iris-setosa': 10, 'Iris-versicolor': 20, 'Iris-virginica': 50}),
+    ],
+)
+def test_make_imbalanced_iris(as_frame, sampling_strategy, expected_counts):
+    X, y = fetch_openml('iris', version=1, return_X_y=True, as_frame=as_frame)
+    X_res, y_res = make_imbalance(X, y, sampling_strategy=sampling_strategy)
+    if as_frame:
+        assert hasattr(X_res, "loc")
+    assert Counter(y_res) == expected_counts

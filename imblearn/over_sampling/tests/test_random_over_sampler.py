@@ -6,6 +6,8 @@
 from collections import Counter
 
 import numpy as np
+import pytest
+
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_array_equal
 
@@ -37,9 +39,15 @@ def test_ros_init():
     assert ros.random_state == RND_SEED
 
 
-def test_ros_fit_resample():
+@pytest.mark.parametrize("as_frame", [True, False], ids=['dataframe', 'array'])
+def test_ros_fit_resample(as_frame):
+    if as_frame:
+        pd = pytest.importorskip("pandas")
+        X_ = pd.DataFrame(X)
+    else:
+        X_ = X
     ros = RandomOverSampler(random_state=RND_SEED)
-    X_resampled, y_resampled = ros.fit_resample(X, Y)
+    X_resampled, y_resampled = ros.fit_resample(X_, Y)
     X_gt = np.array(
         [
             [0.04352327, -0.20515826],
@@ -59,6 +67,11 @@ def test_ros_fit_resample():
         ]
     )
     y_gt = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0])
+
+    if as_frame:
+        assert hasattr(X_resampled, "loc")
+        X_resampled = X_resampled.to_numpy()
+
     assert_allclose(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 

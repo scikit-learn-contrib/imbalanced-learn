@@ -131,5 +131,23 @@ Instead of a dictionary, a function can be defined and directly pass to
   >>> sorted(Counter(y_imb).items())
   [(0, 25), (1, 35), (2, 47)]
 
+It would also work with pandas dataframe::
+
+  >>> from sklearn.datasets import fetch_openml
+  >>> df, y = fetch_openml(
+  ...     'iris', version=1, return_X_y=True, as_frame=True)
+  >>> df_resampled, y_resampled = make_imbalance(
+  ...     df, y, sampling_strategy={'Iris-setosa': 10, 'Iris-versicolor': 20},
+  ...     random_state=42)
+  >>> df_resampled.head()
+          sepallength  sepalwidth  petallength  petalwidth
+    13          4.3         3.0          1.1         0.1
+    39          5.1         3.4          1.5         0.2
+    30          4.8         3.1          1.6         0.2
+    45          4.8         3.0          1.4         0.3
+    17          5.1         3.5          1.4         0.3
+  >>> Counter(y_resampled)
+  Counter({'Iris-virginica': 50, 'Iris-versicolor': 20, 'Iris-setosa': 10})
+
 See :ref:`sphx_glr_auto_examples_datasets_plot_make_imbalance.py` and
 :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py`.
