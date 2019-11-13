@@ -45,7 +45,7 @@ Enhancement
   :class:`imblearn.over_sampling.RandomOverSampling`,,
   :class:`imblearn.datasets.make_imbalance` accepts Pandas DataFrame in and
   will output Pandas DataFrame.
-  :pr:`xxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`636` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Deprecation
 ...........
