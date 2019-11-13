@@ -7,8 +7,6 @@
 
 from collections import Counter
 
-from sklearn.utils import check_X_y
-
 from ..under_sampling import RandomUnderSampler
 from ..utils import check_sampling_strategy
 
@@ -26,7 +24,7 @@ def make_imbalance(
 
     Parameters
     ----------
-    X : ndarray, shape (n_samples, n_features)
+    X : {array-like, dataframe}, shape (n_samples, n_features)
         Matrix containing the data to be imbalanced.
 
     y : ndarray, shape (n_samples, )
@@ -58,7 +56,7 @@ def make_imbalance(
 
     Returns
     -------
-    X_resampled : ndarray, shape (n_samples_new, n_features)
+    X_resampled : {ndarray, dataframe}, shape (n_samples_new, n_features)
         The array containing the imbalanced data.
 
     y_resampled : ndarray, shape (n_samples_new)
@@ -88,7 +86,6 @@ def make_imbalance(
     Distribution after imbalancing: Counter({2: 30, 1: 20, 0: 10})
 
     """
-    X, y = check_X_y(X, y)
     target_stats = Counter(y)
     # restrict ratio to be a dict or a callable
     if isinstance(sampling_strategy, dict) or callable(sampling_strategy):

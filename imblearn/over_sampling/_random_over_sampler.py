@@ -7,7 +7,7 @@
 from collections import Counter
 
 import numpy as np
-from sklearn.utils import check_X_y
+from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 
@@ -74,7 +74,12 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     @staticmethod
     def _check_X_y(X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"], dtype=None)
+        if not hasattr(X, "loc"):
+            # Do not convert dataframe
+            X = check_array(X, accept_sparse=["csr", "csc"], dtype=None)
+        y = check_array(
+            y, accept_sparse=["csr", "csc"], dtype=None, ensure_2d=False
+        )
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):
