@@ -39,13 +39,13 @@ turning ``validate=False`` allows to pass any type of target ``y`` and do some
 sampling for regression targets.
 
   >>> from sklearn.datasets import make_regression
-  >>> X, y = make_regression(n_samples=100, random_state=42)
+  >>> X_reg, y_reg = make_regression(n_samples=100, random_state=42)
   >>> rng = np.random.RandomState(42)
   >>> def dummy_sampler(X, y):
   ...     indices = rng.choice(np.arange(X.shape[0]), size=10)
   ...     return X[indices], y[indices]
   >>> sampler = FunctionSampler(func=dummy_sampler, validate=False)
-  >>> X_res, y_res = sampler.fit_resample(X, y)
+  >>> X_res, y_res = sampler.fit_resample(X_reg, y_reg)
   >>> y_res
   array([  41.49112498, -142.78526195,   85.55095317,  141.43321419,
            75.46571114,  -67.49177372,  159.72700509, -169.80498923,
