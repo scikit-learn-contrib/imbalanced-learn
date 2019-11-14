@@ -5,15 +5,22 @@
 
 import pytest
 
+import numpy as np
 from scipy import sparse
 
 from sklearn.datasets import load_iris
+from sklearn.datasets import make_regression
+from sklearn.linear_model import LinearRegression
+from sklearn.utils import _safe_indexing
+from sklearn.utils.multiclass import type_of_target
 from sklearn.utils._testing import assert_array_equal
 from sklearn.utils._testing import assert_allclose_dense_sparse
 
 from imblearn.datasets import make_imbalance
-from imblearn import FunctionSampler
+from imblearn.pipeline import make_pipeline
 from imblearn.under_sampling import RandomUnderSampler
+
+from imblearn import FunctionSampler
 
 iris = load_iris()
 X, y = make_imbalance(
@@ -71,3 +78,19 @@ def test_function_sampler_func_kwargs(X, y):
     X_res_2, y_res_2 = RandomUnderSampler(random_state=0).fit_resample(X, y)
     assert_allclose_dense_sparse(X_res, X_res_2)
     assert_array_equal(y_res, y_res_2)
+
+
+def test_function_sampler_validate():
+    # check that we can let a pass a regression variable by turning down the
+    # validation
+    X, y = make_regression()
+
+    def dummy_sampler(X, y):
+        indices = np.random.choice(np.arange(X.shape[0]), size=100)
+        return _safe_indexing(X, indices), _safe_indexing(y, indices)
+
+    sampler = FunctionSampler(func=dummy_sampler, validate=False)
+    pipeline = make_pipeline(sampler, LinearRegression())
+    y_pred = pipeline.fit(X, y).predict(X)
+
+    assert type_of_target(y_pred) == 'continuous'
