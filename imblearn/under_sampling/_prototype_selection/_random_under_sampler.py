@@ -80,7 +80,9 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     @staticmethod
     def _check_X_y(X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X = check_array(X, accept_sparse=["csr", "csc"], dtype=None)
+        if not hasattr(X, "loc"):
+            # Do not convert dataframe
+            X = check_array(X, accept_sparse=["csr", "csc"], dtype=None)
         y = check_array(
             y, accept_sparse=["csr", "csc"], dtype=None, ensure_2d=False
         )

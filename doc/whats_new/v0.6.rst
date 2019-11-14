@@ -38,6 +38,15 @@ Maintenance
   parameters `max_samples` and `ccp_alpha`.
   :pr:`621` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+Enhancement
+...........
+
+- :class:`imblearn.under_sampling.RandomUnderSampling`,
+  :class:`imblearn.over_sampling.RandomOverSampling`,,
+  :class:`imblearn.datasets.make_imbalance` accepts Pandas DataFrame in and
+  will output Pandas DataFrame.
+  :pr:`636` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 

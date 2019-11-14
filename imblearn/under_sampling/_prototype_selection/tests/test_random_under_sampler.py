@@ -6,6 +6,8 @@
 from collections import Counter
 
 import numpy as np
+import pytest
+
 from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import RandomUnderSampler
@@ -28,9 +30,15 @@ X = np.array(
 Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 
-def test_rus_fit_resample():
+@pytest.mark.parametrize("as_frame", [True, False], ids=['dataframe', 'array'])
+def test_rus_fit_resample(as_frame):
+    if as_frame:
+        pd = pytest.importorskip("pandas")
+        X_ = pd.DataFrame(X)
+    else:
+        X_ = X
     rus = RandomUnderSampler(random_state=RND_SEED, replacement=True)
-    X_resampled, y_resampled = rus.fit_resample(X, Y)
+    X_resampled, y_resampled = rus.fit_resample(X_, Y)
 
     X_gt = np.array(
         [
@@ -43,6 +51,10 @@ def test_rus_fit_resample():
         ]
     )
     y_gt = np.array([0, 0, 0, 1, 1, 1])
+
+    if as_frame:
+        assert hasattr(X_resampled, "loc")
+        X_resampled = X_resampled.to_numpy()
 
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
