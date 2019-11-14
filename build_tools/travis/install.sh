@@ -33,15 +33,15 @@ if [[ "$DISTRIB" == "conda" ]]; then
     # provided versions
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
-    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
+    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION pandas
 
     if [[ "$OPTIONAL_DEPS" == "keras" ]]; then
-        conda install --yes pandas keras tensorflow=1
+        conda install --yes keras tensorflow=1
         KERAS_BACKEND=tensorflow
         python -c "import keras.backend"
         sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
     elif [[ "$OPTIONAL_DEPS" == "tensorflow" ]]; then
-        conda install --yes pandas tensorflow
+        conda install --yes tensorflow
     fi
 
     if [[ "$SKLEARN_VERSION" == "master" ]]; then
