@@ -42,10 +42,14 @@ Enhancement
 ...........
 
 - :class:`imblearn.under_sampling.RandomUnderSampling`,
-  :class:`imblearn.over_sampling.RandomOverSampling`,,
+  :class:`imblearn.over_sampling.RandomOverSampling`,
   :class:`imblearn.datasets.make_imbalance` accepts Pandas DataFrame in and
   will output Pandas DataFrame.
   :pr:`636` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- :class:`imblearn.FunctionSampler` accepts a parameter ``validate`` allowing
+  to check or not the input ``X`` and ``y``.
+  :pr:`637` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Deprecation
 ...........

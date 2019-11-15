@@ -127,9 +127,11 @@ class BaseSampler(SamplerMixin):
         self.sampling_strategy = sampling_strategy
 
     @staticmethod
-    def _check_X_y(X, y):
+    def _check_X_y(X, y, accept_sparse=None):
+        if accept_sparse is None:
+            accept_sparse = ["csr", "csc"]
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"])
+        X, y = check_X_y(X, y, accept_sparse=accept_sparse)
         return X, y, binarize_y
 
 
@@ -155,6 +157,11 @@ class FunctionSampler(BaseSampler):
 
     kw_args : dict, optional (default=None)
         The keyword argument expected by ``func``.
+
+    validate : bool, default=True
+        Whether or not to bypass the validation of ``X`` and ``y``. Turning-off
+        validation allows to use the ``FunctionSampler`` with any type of
+        data.
 
     Notes
     -----
@@ -202,16 +209,55 @@ class FunctionSampler(BaseSampler):
 
     _sampling_type = "bypass"
 
-    def __init__(self, func=None, accept_sparse=True, kw_args=None):
+    def __init__(self, func=None, accept_sparse=True, kw_args=None,
+                 validate=True):
         super().__init__()
         self.func = func
         self.accept_sparse = accept_sparse
         self.kw_args = kw_args
+        self.validate = validate
+
+    def fit_resample(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : array-like, shape (n_samples,)
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : {array-like, sparse matrix}, shape \
+(n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : array-like, shape (n_samples_new,)
+            The corresponding label of `X_resampled`.
+
+        """
+        if self.validate:
+            check_classification_targets(y)
+            X, y, binarize_y = self._check_X_y(
+                X, y, accept_sparse=self.accept_sparse
+            )
+
+        self.sampling_strategy_ = check_sampling_strategy(
+            self.sampling_strategy, y, self._sampling_type
+        )
+
+        output = self._fit_resample(X, y)
+
+        if self.validate and binarize_y:
+            y_sampled = label_binarize(output[1], np.unique(y))
+            if len(output) == 2:
+                return output[0], y_sampled
+            return output[0], y_sampled, output[2]
+        return output
 
     def _fit_resample(self, X, y):
-        X, y = check_X_y(
-            X, y, accept_sparse=["csr", "csc"] if self.accept_sparse else False
-        )
         func = _identity if self.func is None else self.func
         output = func(X, y, **(self.kw_args if self.kw_args else {}))
         return output
