@@ -376,17 +376,18 @@ class AllKNN(BaseCleaningSampler):
 
         .. versionadded:: 0.4
 
+    See Also
+    --------
+    CondensedNearestNeighbour: Under-sampling by condensing samples.
+    EditedNearestNeighbours: Under-sampling by editing samples.
+    RepeatedEditedNearestNeighbours: Under-sampling by repeating ENN.
+
     Notes
     -----
     The method is based on [1]_.
 
     Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
-
-    See also
-    --------
-    CondensedNearestNeighbour, EditedNearestNeighbours,
-    RepeatedEditedNearestNeighbours
 
     References
     ----------
@@ -410,7 +411,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = allknn.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 887, 0: 100}})
-
     """
 
     def __init__(

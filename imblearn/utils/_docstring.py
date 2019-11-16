@@ -23,7 +23,7 @@ class Substitution:
         return obj
 
 
-_random_state_docstring = """random_state : int, RandomState instance or None, optional (default=None)
+_random_state_docstring = """random_state : int, RandomState instance, default=None
         Control the randomization of the algorithm.
 
         - If int, ``random_state`` is the seed used by the random number

@@ -246,37 +246,30 @@ class BorderlineSMOTE(BaseSMOTE):
 
     {random_state}
 
-    k_neighbors : int or object, optional (default=5)
+    k_neighbors : int or object, default=5
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int or None, optional (default=None)
+    n_jobs : int, default=None
         Number of CPU cores used during the cross-validation loop.
         ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
         ``-1`` means using all processors. See
         `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
         for more details.
 
-    m_neighbors : int or object, optional (default=10)
+    m_neighbors : int or object, default=10
         If int, number of nearest neighbours to use to determine if a minority
         sample is in danger. If object, an estimator that inherits
         from :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used
         to find the m_neighbors.
 
-    kind : str, optional (default='borderline-1')
+    kind : {{"borderline-1", "borderline-2"}}, default='borderline-1'
         The type of SMOTE algorithm to use one of the following options:
         ``'borderline-1'``, ``'borderline-2'``.
 
-    Notes
-    -----
-    See the original papers: [2]_ for more details.
-
-    Supports multi-class resampling. A one-vs.-rest scheme is used as
-    originally proposed in [1]_.
-
-    See also
+    See Also
     --------
     SMOTE : Over-sample using SMOTE.
 
@@ -285,6 +278,13 @@ class BorderlineSMOTE(BaseSMOTE):
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
 
     ADASYN : Over-sample using ADASYN.
+
+    Notes
+    -----
+    See the original papers: [2]_ for more details.
+
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
+    originally proposed in [1]_.
 
     References
     ----------
@@ -312,7 +312,6 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
-
     """
 
     def __init__(

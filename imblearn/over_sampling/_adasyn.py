@@ -21,8 +21,11 @@ from ..utils._docstring import _random_state_docstring
     random_state=_random_state_docstring,
 )
 class ADASYN(BaseOverSampler):
-    """Perform over-sampling using Adaptive Synthetic (ADASYN) sampling
-    approach for imbalanced datasets.
+    """Oversample using Adaptive Synthetic (ADASYN) algorithm.
+
+    This method is similar to SMOTE but it generates different number of
+    samples depending on an estimate of the local distribution of the class
+    to be oversampled.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
@@ -45,15 +48,15 @@ class ADASYN(BaseOverSampler):
         `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
         for more details.
 
+    See Also
+    --------
+    SMOTE : Over-sample using SMOTE.
+
     Notes
     -----
     The implementation is based on [1]_.
 
     Supports multi-class resampling. A one-vs.-rest scheme is used.
-
-    See also
-    --------
-    SMOTE : Over-sample using SMOTE.
 
     References
     ----------
@@ -79,7 +82,6 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = ada.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 904, 1: 900}})
-
     """
 
     def __init__(
