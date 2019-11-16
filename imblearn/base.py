@@ -32,17 +32,16 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
             Data array.
 
-        y : array-like, shape (n_samples,)
+        y : array-like of shape (n_samples,)
             Target array.
 
         Returns
         -------
         self : object
             Return the instance itself.
-
         """
         X, y, _ = self._check_X_y(X, y)
         self.sampling_strategy_ = check_sampling_strategy(
@@ -55,21 +54,20 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : array-like, shape (n_samples,)
+        y : array-like of shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : {array-like, sparse matrix}, shape \
-(n_samples_new, n_features)
+        X_resampled : {array-like, sparse matrix} of shape \
+                (n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : array-like, shape (n_samples_new,)
+        y_resampled : array-like of shape (n_samples_new,)
             The corresponding label of `X_resampled`.
-
         """
         check_classification_targets(y)
         X, y, binarize_y = self._check_X_y(X, y)
@@ -97,20 +95,20 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : array-like, shape (n_samples,)
+        y : array-like of shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : {ndarray, sparse matrix}, shape \
-(n_samples_new, n_features)
+        X_resampled : {ndarray, sparse matrix} of shape \
+                (n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : ndarray, shape (n_samples_new,)
-            The corresponding label of `X_resampled`
+        y_resampled : ndarray of shape (n_samples_new,)
+            The corresponding label of `X_resampled`.
 
         """
         pass
@@ -146,16 +144,16 @@ class FunctionSampler(BaseSampler):
 
     Parameters
     ----------
-    func : callable or None,
+    func : callable, default=None
         The callable to use for the transformation. This will be passed the
         same arguments as transform, with args and kwargs forwarded. If func is
         None, then func will be the identity function.
 
-    accept_sparse : bool, optional (default=True)
+    accept_sparse : bool, default=True
         Whether sparse input are supported. By default, sparse inputs are
         supported.
 
-    kw_args : dict, optional (default=None)
+    kw_args : dict, default=None
         The keyword argument expected by ``func``.
 
     validate : bool, default=True
@@ -163,9 +161,13 @@ class FunctionSampler(BaseSampler):
         validation allows to use the ``FunctionSampler`` with any type of
         data.
 
+    See Also
+    --------
+
+    sklearn.preprocessing.FunctionTransfomer : Stateless transformer.
+
     Notes
     -----
-
     See
     :ref:`sphx_glr_auto_examples_plot_outlier_rejections.py`
 
@@ -204,7 +206,6 @@ class FunctionSampler(BaseSampler):
     >>> print('Resampled dataset shape {}'.format(
     ...     sorted(Counter(y_res).items())))
     Resampled dataset shape [(0, 100), (1, 100)]
-
     """
 
     _sampling_type = "bypass"
@@ -222,21 +223,20 @@ class FunctionSampler(BaseSampler):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
-        y : array-like, shape (n_samples,)
+        y : array-like of shape (n_samples,)
             Corresponding label for each sample in X.
 
         Returns
         -------
-        X_resampled : {array-like, sparse matrix}, shape \
-(n_samples_new, n_features)
+        X_resampled : {array-like, sparse matrix} of shape \
+                (n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : array-like, shape (n_samples_new,)
+        y_resampled : array-like of shape (n_samples_new,)
             The corresponding label of `X_resampled`.
-
         """
         if self.validate:
             check_classification_targets(y)

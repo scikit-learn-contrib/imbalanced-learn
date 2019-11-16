@@ -13,16 +13,21 @@ from sklearn.utils import _safe_indexing
 from .base import BaseOverSampler
 from ..utils import check_neighbors_object
 from ..utils import Substitution
+from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
 
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class ADASYN(BaseOverSampler):
-    """Perform over-sampling using Adaptive Synthetic (ADASYN) sampling
-    approach for imbalanced datasets.
+    """Oversample using Adaptive Synthetic (ADASYN) algorithm.
+
+    This method is similar to SMOTE but it generates different number of
+    samples depending on an estimate of the local distribution of the class
+    to be oversampled.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
@@ -38,22 +43,17 @@ class ADASYN(BaseOverSampler):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
+
+    See Also
+    --------
+    SMOTE : Over-sample using SMOTE.
 
     Notes
     -----
     The implementation is based on [1]_.
 
     Supports multi-class resampling. A one-vs.-rest scheme is used.
-
-    See also
-    --------
-    SMOTE : Over-sample using SMOTE.
 
     References
     ----------
@@ -79,7 +79,6 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = ada.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 904, 1: 900}})
-
     """
 
     def __init__(

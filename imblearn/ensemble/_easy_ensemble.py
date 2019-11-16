@@ -15,6 +15,7 @@ from sklearn.ensemble import BaggingClassifier
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type
+from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
 from ..pipeline import Pipeline
 
@@ -23,6 +24,7 @@ MAX_INT = np.iinfo(np.int32).max
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class EasyEnsembleClassifier(BaggingClassifier):
@@ -36,29 +38,24 @@ class EasyEnsembleClassifier(BaggingClassifier):
 
     Parameters
     ----------
-    n_estimators : int, optional (default=10)
+    n_estimators : int, default=10
         Number of AdaBoost learners in the ensemble.
 
-    base_estimator : object, optional (default=AdaBoostClassifier())
+    base_estimator : object, default=AdaBoostClassifier()
         The base AdaBoost classifier used in the inner ensemble. Note that you
         can set the number of inner learner by passing your own instance.
 
-    warm_start : bool, optional (default=False)
+    warm_start : bool, default=False
         When set to True, reuse the solution of the previous call to fit
         and add more estimators to the ensemble, otherwise, just fit
         a whole new ensemble.
 
     {sampling_strategy}
 
-    replacement : bool, optional (default=False)
+    replacement : bool, default=False
         Whether or not to sample randomly with replacement or not.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     {random_state}
 
@@ -79,15 +76,22 @@ class EasyEnsembleClassifier(BaggingClassifier):
     n_classes_ : int or list
         The number of classes.
 
+    See Also
+    --------
+    BalancedBaggingClassifier : Bagging classifier for which each base
+        estimator is trained on a balanced bootstrap.
+
+    BalancedRandomForestClassifier : Random forest applying random-under
+        sampling to balance the different bootstraps.
+
+    RUSBoostClassifier : AdaBoost classifier were each bootstrap is balanced
+        using random-under sampling at each round of boosting.
+
     Notes
     -----
     The method is described in [1]_.
 
     Supports multi-class resampling by sampling each class independently.
-
-    See also
-    --------
-    BalancedBaggingClassifier, BalancedRandomForestClassifier
 
     References
     ----------
@@ -119,7 +123,6 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
     >>> print(confusion_matrix(y_test, y_pred))
     [[ 23   0]
      [  2 225]]
-
     """
 
     def __init__(
@@ -183,15 +186,14 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         )
 
     def fit(self, X, y):
-        """Build a Bagging ensemble of AdaBoost classifier using balanced
-        boostrasp with random under-sampling.
+        """Train the ensemble on the training set.
 
         Parameters
         ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
             The training input samples.
 
-        y : array-like, shape (n_samples,)
+        y : array-like of shape (n_samples,)
             The target values.
 
         Returns

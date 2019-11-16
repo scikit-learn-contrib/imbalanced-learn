@@ -11,13 +11,15 @@ from sklearn.utils import _safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import Substitution
+from ...utils._docstring import _n_jobs_docstring
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
 )
 class TomekLinks(BaseCleaningSampler):
-    """Class to perform under-sampling by removing Tomek's links.
+    """Under-sampling by removing Tomek's links.
 
     Read more in the :ref:`User Guide <tomek_links>`.
 
@@ -25,19 +27,22 @@ class TomekLinks(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    See Also
+    --------
+    EditedNearestNeighbours : Undersample by samples edition.
+
+    CondensedNearestNeighbour : Undersample by samples condensation.
+
+    RandomUnderSampling : Randomly under-sample the dataset.
 
     Notes
     -----
@@ -67,7 +72,6 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = tl.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 897, 0: 100}})
-
     """
 
     def __init__(self, sampling_strategy="auto", n_jobs=None):
@@ -76,17 +80,19 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
     @staticmethod
     def is_tomek(y, nn_index, class_type):
-        """is_tomek uses the target vector and the first neighbour of every
-        sample point and looks for Tomek pairs. Returning a boolean vector with
-        True for majority Tomek links.
+        """Detect if samples are Tomek's link.
+
+        More precisely, it uses the target vector and the first neighbour of
+        every sample point and looks for Tomek pairs. Returning a boolean
+        vector with True for majority Tomek links.
 
         Parameters
         ----------
-        y : ndarray, shape (n_samples, )
+        y : ndarray of shape (n_samples,)
             Target vector of the data set, necessary to keep track of whether a
-            sample belongs to minority or not
+            sample belongs to minority or not.
 
-        nn_index : ndarray, shape (len(y), )
+        nn_index : ndarray of shape (len(y),)
             The index of the closes nearest neighbour to a sample point.
 
         class_type : int or str
@@ -94,10 +100,9 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
         Returns
         -------
-        is_tomek : ndarray, shape (len(y), )
+        is_tomek : ndarray of shape (len(y), )
             Boolean vector on len( # samples ), with True for majority samples
             that are Tomek links.
-
         """
         links = np.zeros(len(y), dtype=bool)
 

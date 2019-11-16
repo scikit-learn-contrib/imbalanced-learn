@@ -23,7 +23,7 @@ class Substitution:
         return obj
 
 
-_random_state_docstring = """random_state : int, RandomState instance or None, optional (default=None)
+_random_state_docstring = """random_state : int, RandomState instance, default=None
         Control the randomization of the algorithm.
 
         - If int, ``random_state`` is the seed used by the random number
@@ -32,4 +32,12 @@ _random_state_docstring = """random_state : int, RandomState instance or None, o
           generator;
         - If ``None``, the random number generator is the ``RandomState``
           instance used by ``np.random``.
+    """.rstrip()
+
+_n_jobs_docstring = """n_jobs : int, default=None
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
     """.rstrip()

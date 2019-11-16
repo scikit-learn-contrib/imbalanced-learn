@@ -52,6 +52,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
 
     conda install --yes pytest pytest-cov
     pip install codecov
+    pip install -U git+https://github.com/numpy/numpydoc.git
 
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # At the time of writing numpy 1.9.1 is included in the travis

@@ -16,6 +16,7 @@ from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import Substitution
+from ...utils._docstring import _n_jobs_docstring
 from ...utils._docstring import _random_state_docstring
 
 VOTING_KIND = ("auto", "hard", "soft")
@@ -23,11 +24,11 @@ VOTING_KIND = ("auto", "hard", "soft")
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class ClusterCentroids(BaseUnderSampler):
-    """Perform under-sampling by generating centroids based on
-    clustering methods.
+    """Undersample by generating centroids based on clustering methods.
 
     Method that under samples the majority class by replacing a
     cluster of majority samples by the cluster centroid of a KMeans
@@ -44,10 +45,10 @@ class ClusterCentroids(BaseUnderSampler):
 
     {random_state}
 
-    estimator : object, optional(default=KMeans())
+    estimator : object, default=KMeans()
         Pass a :class:`sklearn.cluster.KMeans` estimator.
 
-    voting : str, optional (default='auto')
+    voting : {{"hard", "soft", "auto"}}, default='auto'
         Voting strategy to generate the new samples:
 
         - If ``'hard'``, the nearest-neighbors of the centroids found using the
@@ -59,12 +60,13 @@ class ClusterCentroids(BaseUnderSampler):
 
         .. versionadded:: 0.3.0
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
+
+    See Also
+    --------
+    EditedNearestNeighbours : Under-sampling by editing samples.
+
+    CondensedNearestNeighbour: Under-sampling by condensing samples.
 
     Notes
     -----
@@ -87,7 +89,6 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     ... # doctest: +ELLIPSIS
     Resampled dataset shape Counter({{...}})
-
     """
 
     def __init__(

@@ -16,7 +16,7 @@ class BaseUnderSampler(BaseSampler):
 
     _sampling_type = "under-sampling"
 
-    _sampling_strategy_docstring = """sampling_strategy : float, str, dict, callable, (default='auto')
+    _sampling_strategy_docstring = """sampling_strategy : float, str, dict, callable, default='auto'
         Sampling information to sample the data set.
 
         - When ``float``, it corresponds to the desired ratio of the number of
