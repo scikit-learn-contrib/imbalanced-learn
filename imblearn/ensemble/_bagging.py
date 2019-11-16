@@ -16,11 +16,13 @@ from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type
+from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class BalancedBaggingClassifier(BaggingClassifier):
@@ -34,7 +36,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     Parameters
     ----------
-    base_estimator : object or None, default=None
+    base_estimator : object, default=None
         The base estimator to fit on random subsets of the dataset.
         If None, then the base estimator is a decision tree.
 
@@ -73,12 +75,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
     replacement : bool, default=False
         Whether or not to sample randomly with replacement or not.
 
-    n_jobs : int or None, default=None
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     {random_state}
 
@@ -119,8 +116,10 @@ class BalancedBaggingClassifier(BaggingClassifier):
     --------
     BalancedRandomForestClassifier : Random forest applying random-under
         sampling to balance the different bootstraps.
+
     EasyEnsembleClassifier : Ensemble of AdaBoost classifier trained on
         balanced bootstraps.
+
     RUSBoostClassifier : AdaBoost classifier were each bootstrap is balanced
         using random-under sampling at each round of boosting.
 

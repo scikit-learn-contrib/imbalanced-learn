@@ -8,7 +8,16 @@ from imblearn.utils.testing import all_estimators
 numpydoc_validation = pytest.importorskip("numpydoc.validate")
 
 # List of whitelisted modules and methods; regexp are supported.
+# These docstrings will fail because they are inheriting from scikit-learn
 DOCSTRING_WHITELIST = [
+    "BalancedBaggingClassifier.decision_function",
+    "BalancedRandomForestClassifier.decision_function",
+    "BalancedRandomForestClassifier.decision_path",
+    "BalancedRandomForestClassifier.feature_importances_",
+    "BalancedRandomForestClassifier.predict_log_proba",
+    "BalancedRandomForestClassifier.predict_proba",
+    "EasyEnsembleClassifier.decision_function",
+    "RUSBoostClassifier.feature_importances_"
 ]
 
 
@@ -128,7 +137,7 @@ def test_docstring(Estimator, method, request):
 
     import_path = ".".join(import_path)
 
-    if not any(re.search(regex, import_path) for regex in DOCSTRING_WHITELIST):
+    if any(re.search(regex, import_path) for regex in DOCSTRING_WHITELIST):
         request.applymarker(
             pytest.mark.xfail(
                 run=False, reason="TODO pass numpydoc validation"

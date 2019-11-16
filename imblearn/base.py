@@ -144,7 +144,7 @@ class FunctionSampler(BaseSampler):
 
     Parameters
     ----------
-    func : callable or None,
+    func : callable, default=None
         The callable to use for the transformation. This will be passed the
         same arguments as transform, with args and kwargs forwarded. If func is
         None, then func will be the identity function.
@@ -160,6 +160,11 @@ class FunctionSampler(BaseSampler):
         Whether or not to bypass the validation of ``X`` and ``y``. Turning-off
         validation allows to use the ``FunctionSampler`` with any type of
         data.
+
+    See Also
+    --------
+
+    sklearn.preprocessing.FunctionTransfomer : Stateless transformer.
 
     Notes
     -----
@@ -232,7 +237,6 @@ class FunctionSampler(BaseSampler):
 
         y_resampled : array-like of shape (n_samples_new,)
             The corresponding label of `X_resampled`.
-
         """
         if self.validate:
             check_classification_targets(y)

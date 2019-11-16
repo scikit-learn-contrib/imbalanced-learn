@@ -17,24 +17,25 @@ from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import Substitution
+from ...utils._docstring import _n_jobs_docstring
 from ...utils._docstring import _random_state_docstring
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class InstanceHardnessThreshold(BaseUnderSampler):
-    """Class to perform under-sampling based on the instance hardness
-    threshold.
+    """Undersample based on the instance hardness threshold.
 
     Read more in the :ref:`User Guide <instance_hardness_threshold>`.
 
     Parameters
     ----------
-    estimator : object, optional (default=RandomForestClassifier())
+    estimator : object, default=None
         Classifier to be used to estimate instance hardness of the samples.  By
-        default a :class:`sklearn.ensemble.RandomForestClassifer` will be used.
+        default a :class:`sklearn.ensemble.RandomForestClassifier` will be used.
         If ``str``, the choices using a string are the following: ``'knn'``,
         ``'decision-tree'``, ``'random-forest'``, ``'adaboost'``,
         ``'gradient-boosting'`` and ``'linear-svm'``.  If object, an estimator
@@ -45,22 +46,23 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
     {random_state}
 
-    cv : int, optional (default=5)
+    cv : int, default=5
         Number of folds to be used when estimating samples' instance hardness.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    See Also
+    --------
+    NearMiss : Undersample based on near-miss search.
+
+    RandomUnderSampler : Random under-sampling.
 
     Notes
     -----
@@ -90,7 +92,6 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     >>> X_res, y_res = iht.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))  # doctest: +ELLIPSIS
     Resampled dataset shape Counter({{1: 5..., 0: 100}})
-
     """
 
     def __init__(

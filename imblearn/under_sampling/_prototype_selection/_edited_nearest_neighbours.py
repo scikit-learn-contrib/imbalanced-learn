@@ -16,16 +16,20 @@ from sklearn.utils import _safe_indexing
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
+from ...utils._docstring import _n_jobs_docstring
 
 SEL_KIND = ("all", "mode")
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
 )
 class EditedNearestNeighbours(BaseCleaningSampler):
-    """Class to perform under-sampling based on the edited nearest neighbour
-    method.
+    """Undersample based on the edited nearest neighbour method.
+
+    This method will clean the database by removing samples close to the
+    decision boundary.
 
     Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
@@ -33,13 +37,13 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    n_neighbors : int or object, optional (default=3)
+    n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors.
 
-    kind_sel : str, optional (default='all')
+    kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
 
         - If ``'all'``, all neighbours will have to agree with the samples of
@@ -47,19 +51,22 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    See Also
+    --------
+    CondensedNearestNeighbour : Undersample by condensing samples.
+
+    RepeatedEditedNearestNeighbours : Undersample by repeating ENN algorithm.
+
+    AllKNN : Undersample using ENN and various number of neighbours.
 
     Notes
     -----
@@ -67,10 +74,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     Supports multi-class resampling. A one-vs.-rest scheme is used when
     sampling a class as proposed in [1]_.
-
-    See also
-    --------
-    CondensedNearestNeighbour, RepeatedEditedNearestNeighbours, AllKNN
 
     References
     ----------
@@ -94,11 +97,11 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = enn.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 887, 0: 100}})
-
     """
 
     def __init__(
-        self, sampling_strategy="auto", n_neighbors=3, kind_sel="all", n_jobs=None
+        self, sampling_strategy="auto", n_neighbors=3, kind_sel="all",
+        n_jobs=None
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
@@ -158,11 +161,13 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
 )
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
-    """Class to perform under-sampling based on the repeated edited nearest
-    neighbour method.
+    """Undersample based on the repeated edited nearest neighbour method.
+
+    This method will repeat several time the ENN algorithm.
 
     Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
@@ -170,17 +175,17 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    n_neighbors : int or object, optional (default=3)
+    n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors.
 
-    max_iter : int, optional (default=100)
+    max_iter : int, default=100
         Maximum number of iterations of the edited nearest neighbours
         algorithm for a single run.
 
-    kind_sel : str, optional (default='all')
+    kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
 
         - If ``'all'``, all neighbours will have to agree with the samples of
@@ -188,19 +193,22 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    See Also
+    --------
+    CondensedNearestNeighbour : Undersample by condensing samples.
+
+    EditedNearestNeighbours : Undersample by editing samples.
+
+    AllKNN : Undersample using ENN and various number of neighbours.
 
     Notes
     -----
@@ -208,10 +216,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     sampling a class as proposed in [1]_.
 
     Supports multi-class resampling.
-
-    See also
-    --------
-    CondensedNearestNeighbour, EditedNearestNeighbours, AllKNN
 
     References
     ----------
@@ -235,7 +239,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     >>> X_res, y_res = renn.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 887, 0: 100}})
-
     """
 
     def __init__(
@@ -331,10 +334,14 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
 )
 class AllKNN(BaseCleaningSampler):
-    """Class to perform under-sampling based on the AllKNN method.
+    """Undersample based on the AllKNN method.
+
+    This method will apply ENN several time and will vary the number of nearest
+    neighbours.
 
     Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
@@ -342,13 +349,13 @@ class AllKNN(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    n_neighbors : int or object, optional (default=3)
+    n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors.
 
-    kind_sel : str, optional (default='all')
+    kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
 
         - If ``'all'``, all neighbours will have to agree with the samples of
@@ -356,22 +363,17 @@ class AllKNN(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
-    allow_minority : bool, optional (default=False)
+    allow_minority : bool, default=False
         If ``True``, it allows the majority classes to become the minority
         class without early stopping.
 
         .. versionadded:: 0.3
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
@@ -379,7 +381,9 @@ class AllKNN(BaseCleaningSampler):
     See Also
     --------
     CondensedNearestNeighbour: Under-sampling by condensing samples.
+
     EditedNearestNeighbours: Under-sampling by editing samples.
+
     RepeatedEditedNearestNeighbours: Under-sampling by repeating ENN.
 
     Notes

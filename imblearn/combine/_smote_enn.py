@@ -13,15 +13,17 @@ from ..over_sampling.base import BaseOverSampler
 from ..under_sampling import EditedNearestNeighbours
 from ..utils import check_target_type
 from ..utils import Substitution
+from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
 
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class SMOTEENN(BaseSampler):
-    """Class to perform over-sampling using SMOTE and cleaning using ENN.
+    """Over-sampling using SMOTE and cleaning using ENN.
 
     Combine over- and under-sampling using SMOTE and Edited Nearest Neighbours.
 
@@ -33,24 +35,23 @@ class SMOTEENN(BaseSampler):
 
     {random_state}
 
-    smote : object, optional (default=SMOTE())
+    smote : object, default=None
         The :class:`imblearn.over_sampling.SMOTE` object to use. If not given,
         a :class:`imblearn.over_sampling.SMOTE` object with default parameters
         will be given.
 
-    enn : object, optional (default=\
-EditedNearestNeighbours(sampling_strategy='all'))
+    enn : object, default=None
         The :class:`imblearn.under_sampling.EditedNearestNeighbours` object
         to use. If not given, a
         :class:`imblearn.under_sampling.EditedNearestNeighbours` object with
         sampling strategy='all' will be given.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
+
+    See Also
+    --------
+    SMOTETomek : Over-sample using SMOTE followed by under-sampling removing
+        the Tomek's links.
 
     Notes
     -----
@@ -58,11 +59,6 @@ EditedNearestNeighbours(sampling_strategy='all'))
 
     Supports multi-class resampling. Refer to SMOTE and ENN regarding the
     scheme which used.
-
-    See also
-    --------
-    SMOTETomek : Over-sample using SMOTE followed by under-sampling removing
-        the Tomek's links.
 
     References
     ----------
@@ -85,7 +81,6 @@ EditedNearestNeighbours(sampling_strategy='all'))
     >>> X_res, y_res = sme.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 881}})
-
     """
 
     _sampling_type = "over-sampling"

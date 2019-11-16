@@ -15,16 +15,19 @@ from ..base import BaseCleaningSampler
 from ._edited_nearest_neighbours import EditedNearestNeighbours
 from ...utils import check_neighbors_object
 from ...utils import Substitution
+from ...utils._docstring import _n_jobs_docstring
 
 SEL_KIND = ("all", "mode")
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
 )
 class NeighbourhoodCleaningRule(BaseCleaningSampler):
-    """Class performing under-sampling based on the neighbourhood cleaning
-    rule.
+    """Undersample based on the neighbourhood cleaning rule.
+
+    This class uses ENN and a k-NN to remove noisy samples from the datasets.
 
     Read more in the :ref:`User Guide <condensed_nearest_neighbors>`.
 
@@ -32,13 +35,13 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    n_neighbors : int or object, optional (default=3)
+    n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors.
 
-    kind_sel : str, optional (default='all')
+    kind_sel : {{"all", "mode"}}, default='all'
         Strategy to use in order to exclude samples in the ENN sampling.
 
         - If ``'all'``, all neighbours will have to agree with the samples of
@@ -46,7 +49,7 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
-    threshold_cleaning : float, optional (default=0.5)
+    threshold_cleaning : float, default=0.5
         Threshold used to whether consider a class or not during the cleaning
         after applying ENN. A class will be considered during cleaning when:
 
@@ -55,19 +58,18 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         where Ci and C is the number of samples in the class and the data set,
         respectively and theta is the threshold.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    See Also
+    --------
+    EditedNearestNeighbours : Undersample by editing noisy samples.
 
     Notes
     -----
@@ -97,7 +99,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = ncr.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 877, 0: 100}})
-
     """
 
     def __init__(

@@ -37,10 +37,14 @@ class RandomOverSampler(BaseOverSampler):
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    See Also
+    --------
+    SMOTE : Oversample by generating synthetic samples.
 
     Notes
     -----
@@ -64,7 +68,6 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = ros.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
-
     """
 
     def __init__(self, sampling_strategy="auto", random_state=None):
