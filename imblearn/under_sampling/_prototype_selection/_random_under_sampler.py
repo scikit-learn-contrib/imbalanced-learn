@@ -85,7 +85,8 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         if not hasattr(X, "loc"):
             # Do not convert dataframe
-            X = check_array(X, accept_sparse=["csr", "csc"], dtype=None)
+            X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
+                            force_all_finite=False)
         y = check_array(
             y, accept_sparse=["csr", "csc"], dtype=None, ensure_2d=False
         )
