@@ -59,6 +59,9 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
     Attributes
     ----------
+    base_estimator_ : estimator
+        The base estimator from which the ensemble is grown.
+
     estimators_ : list of classifiers
         The collection of fitted sub-estimators.
 
@@ -325,7 +328,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
             sample_weight *= np.exp(
                 estimator_weight
                 * incorrect
-                * ((sample_weight > 0) | (estimator_weight < 0))
+                * (sample_weight > 0)
             )
 
         return sample_weight, estimator_weight, estimator_error
