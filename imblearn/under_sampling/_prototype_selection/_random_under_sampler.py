@@ -122,4 +122,8 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     def _more_tags(self):
-        return {"X_types": ["2darray", "string"], "sample_indices": True}
+        return {
+            "X_types": ["2darray", "string"],
+            "sample_indices": True,
+            "allow_nan": True,
+        }

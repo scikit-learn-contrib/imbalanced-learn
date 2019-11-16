@@ -109,4 +109,8 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         )
 
     def _more_tags(self):
-        return {"X_types": ["2darray", "string"], "sample_indices": True}
+        return {
+            "X_types": ["2darray", "string"],
+            "sample_indices": True,
+            "allow_nan": True,
+        }
