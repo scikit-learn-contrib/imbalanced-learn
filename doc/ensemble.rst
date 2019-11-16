@@ -59,7 +59,7 @@ random under-sampler::
   BalancedBaggingClassifier(...)
   >>> y_pred = bbc.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.80...
+  0.8...
 
 .. _forest:
 
@@ -78,9 +78,7 @@ each tree of the forest will be provided a balanced bootstrap sample
   BalancedRandomForestClassifier(...)
   >>> y_pred = brf.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.80...
-  >>> brf.feature_importances_  # doctest: +ELLIPSIS
-  array([ 0.57...,  0.42...])
+  0.8...
 
 .. _boosting:
 
@@ -99,7 +97,7 @@ a boosting iteration [SKHN2010]_::
   RUSBoostClassifier(...)
   >>> y_pred = rusboost.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.66...
+  0.6...
 
 A specific method which uses ``AdaBoost`` as learners in the bagging classifier
 is called EasyEnsemble. The :class:`EasyEnsembleClassifier` allows to bag
@@ -113,7 +111,7 @@ ensemble as::
   EasyEnsembleClassifier(...)
   >>> y_pred = eec.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.62...
+  0.6...
 
 .. topic:: Examples
 

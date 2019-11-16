@@ -25,7 +25,9 @@ run_tests(){
 
     # Test doc
     cd $OLDPWD
-    make test-doc
+    if [[ "$TEST_DOC" == "true" ]]; then
+        make test-doc
+    fi
 }
 
 if [[ "$SKIP_TESTS" != "true" ]]; then

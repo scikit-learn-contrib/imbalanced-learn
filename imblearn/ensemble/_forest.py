@@ -16,13 +16,14 @@ from joblib import Parallel, delayed
 
 from sklearn.base import clone
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble.base import _set_random_states
-from sklearn.ensemble.forest import _parallel_build_trees
+from sklearn.ensemble._base import _set_random_states
+from sklearn.ensemble._forest import _get_n_samples_bootstrap
+from sklearn.ensemble._forest import _parallel_build_trees
 from sklearn.exceptions import DataConversionWarning
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
@@ -33,22 +34,42 @@ from ..utils._docstring import _random_state_docstring
 MAX_INT = np.iinfo(np.int32).max
 
 
-def _local_parallel_build_trees(sampler, tree, forest, X, y, sample_weight,
-                                tree_idx, n_trees, verbose=0,
-                                class_weight=None):
+def _local_parallel_build_trees(
+    sampler,
+    tree,
+    forest,
+    X,
+    y,
+    sample_weight,
+    tree_idx,
+    n_trees,
+    verbose=0,
+    class_weight=None,
+    n_samples_bootstrap=None
+):
     # resample before to fit the tree
-    X_resampled, y_resampled = sampler.fit_sample(X, y)
+    X_resampled, y_resampled = sampler.fit_resample(X, y)
     if sample_weight is not None:
-        sample_weight = safe_indexing(sample_weight, sampler.sample_indices_)
-    tree = _parallel_build_trees(tree, forest, X_resampled, y_resampled,
-                                 sample_weight, tree_idx, n_trees,
-                                 verbose=verbose, class_weight=class_weight)
+        sample_weight = _safe_indexing(sample_weight, sampler.sample_indices_)
+    tree = _parallel_build_trees(
+        tree,
+        forest,
+        X_resampled,
+        y_resampled,
+        sample_weight,
+        tree_idx,
+        n_trees,
+        verbose=verbose,
+        class_weight=class_weight,
+        n_samples_bootstrap=n_samples_bootstrap,
+    )
     return sampler, tree
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class BalancedRandomForestClassifier(RandomForestClassifier):
     """A balanced random forest classifier.
 
@@ -140,9 +161,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     replacement : bool, optional (default=False)
         Whether or not to sample randomly with replacement or not.
 
-    n_jobs : int, optional (default=1)
-        The number of jobs to run in parallel for both `fit` and `predict`.
-        If -1, then the number of jobs is set to the number of cores.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     {random_state}
 
@@ -175,6 +199,26 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         For multi-output, the weights of each column of y will be multiplied.
         Note that these weights will be multiplied with sample_weight (passed
         through the fit method) if sample_weight is specified.
+
+
+    ccp_alpha : non-negative float, optional (default=0.0)
+        Complexity parameter used for Minimal Cost-Complexity Pruning. The
+        subtree with the largest cost complexity that is smaller than
+        ``ccp_alpha`` will be chosen. By default, no pruning is performed.
+
+        .. versionadded:: 0.22
+           Added in `scikit-learn` in 0.22
+
+    max_samples : int or float, default=None
+        If bootstrap is True, the number of samples to draw from X
+        to train each base estimator.
+            - If None (default), then draw `X.shape[0]` samples.
+            - If int, then draw `max_samples` samples.
+            - If float, then draw `max_samples * X.shape[0]` samples. Thus,
+              `max_samples` should be in the interval `(0, 1)`.
+
+        .. versionadded:: 0.22
+           Added in `scikit-learn` in 0.22
 
     Attributes
     ----------
@@ -241,25 +285,30 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     [1]
 
     """
-    def __init__(self,
-                 n_estimators=100,
-                 criterion="gini",
-                 max_depth=None,
-                 min_samples_split=2,
-                 min_samples_leaf=2,
-                 min_weight_fraction_leaf=0.,
-                 max_features="auto",
-                 max_leaf_nodes=None,
-                 min_impurity_decrease=0.,
-                 bootstrap=True,
-                 oob_score=False,
-                 sampling_strategy='auto',
-                 replacement=False,
-                 n_jobs=1,
-                 random_state=None,
-                 verbose=0,
-                 warm_start=False,
-                 class_weight=None):
+
+    def __init__(
+        self,
+        n_estimators=100,
+        criterion="gini",
+        max_depth=None,
+        min_samples_split=2,
+        min_samples_leaf=2,
+        min_weight_fraction_leaf=0.0,
+        max_features="auto",
+        max_leaf_nodes=None,
+        min_impurity_decrease=0.0,
+        bootstrap=True,
+        oob_score=False,
+        sampling_strategy="auto",
+        replacement=False,
+        n_jobs=None,
+        random_state=None,
+        verbose=0,
+        warm_start=False,
+        class_weight=None,
+        ccp_alpha=0.0,
+        max_samples=None,
+    ):
         super().__init__(
             criterion=criterion,
             max_depth=max_depth,
@@ -276,7 +325,10 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             min_weight_fraction_leaf=min_weight_fraction_leaf,
             max_features=max_features,
             max_leaf_nodes=max_leaf_nodes,
-            min_impurity_decrease=min_impurity_decrease)
+            min_impurity_decrease=min_impurity_decrease,
+            ccp_alpha=ccp_alpha,
+            max_samples=max_samples,
+        )
 
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
@@ -285,12 +337,16 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         """Check the estimator and the n_estimator attribute, set the
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError("n_estimators must be an integer, "
-                             "got {}.".format(type(self.n_estimators)))
+            raise ValueError(
+                "n_estimators must be an integer, "
+                "got {}.".format(type(self.n_estimators))
+            )
 
         if self.n_estimators <= 0:
-            raise ValueError("n_estimators must be greater than zero, "
-                             "got {}.".format(self.n_estimators))
+            raise ValueError(
+                "n_estimators must be greater than zero, "
+                "got {}.".format(self.n_estimators)
+            )
 
         if self.base_estimator is not None:
             self.base_estimator_ = clone(self.base_estimator)
@@ -299,7 +355,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self.sampling_strategy,
-            replacement=self.replacement)
+            replacement=self.replacement,
+        )
 
     def _make_sampler_estimator(self, random_state=None):
         """Make and configure a copy of the `base_estimator_` attribute.
@@ -307,8 +364,9 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         sub-estimators.
         """
         estimator = clone(self.base_estimator_)
-        estimator.set_params(**{p: getattr(self, p)
-                                for p in self.estimator_params})
+        estimator.set_params(
+            **{p: getattr(self, p) for p in self.estimator_params}
+        )
         sampler = clone(self.base_sampler_)
 
         if random_state is not None:
@@ -346,7 +404,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         # Validate or convert input data
         X = check_array(X, accept_sparse="csc", dtype=DTYPE)
-        y = check_array(y, accept_sparse='csc', ensure_2d=False, dtype=None)
+        y = check_array(y, accept_sparse="csc", ensure_2d=False, dtype=None)
         if sample_weight is not None:
             sample_weight = check_array(sample_weight, ensure_2d=False)
         if issparse(X):
@@ -359,10 +417,13 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         y = np.atleast_1d(y)
         if y.ndim == 2 and y.shape[1] == 1:
-            warn("A column-vector y was passed when a 1d array was"
-                 " expected. Please change the shape of y to "
-                 "(n_samples,), for example using ravel().",
-                 DataConversionWarning, stacklevel=2)
+            warn(
+                "A column-vector y was passed when a 1d array was"
+                " expected. Please change the shape of y to "
+                "(n_samples,), for example using ravel().",
+                DataConversionWarning,
+                stacklevel=2,
+            )
 
         if y.ndim == 1:
             # reshape is necessary to preserve the data contiguity against vs
@@ -382,12 +443,19 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             else:
                 sample_weight = expanded_class_weight
 
+        # Get bootstrap sample size
+        n_samples_bootstrap = _get_n_samples_bootstrap(
+            n_samples=X.shape[0],
+            max_samples=self.max_samples
+        )
+
         # Check parameters
         self._validate_estimator()
 
         if not self.bootstrap and self.oob_score:
-            raise ValueError("Out of bag estimation only available"
-                             " if bootstrap=True")
+            raise ValueError(
+                "Out of bag estimation only available" " if bootstrap=True"
+            )
 
         random_state = check_random_state(self.random_state)
 
@@ -400,13 +468,17 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         n_more_estimators = self.n_estimators - len(self.estimators_)
 
         if n_more_estimators < 0:
-            raise ValueError('n_estimators=%d must be larger or equal to '
-                             'len(estimators_)=%d when warm_start==True'
-                             % (self.n_estimators, len(self.estimators_)))
+            raise ValueError(
+                "n_estimators=%d must be larger or equal to "
+                "len(estimators_)=%d when warm_start==True"
+                % (self.n_estimators, len(self.estimators_))
+            )
 
         elif n_more_estimators == 0:
-            warn("Warm-start fitting without increasing n_estimators does not "
-                 "fit new trees.")
+            warn(
+                "Warm-start fitting without increasing n_estimators does not "
+                "fit new trees."
+            )
         else:
             if self.warm_start and len(self.estimators_) > 0:
                 # We draw from the random state to get the random state we
@@ -417,7 +489,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             samplers = []
             for _ in range(n_more_estimators):
                 tree, sampler = self._make_sampler_estimator(
-                    random_state=random_state)
+                    random_state=random_state
+                )
                 trees.append(tree)
                 samplers.append(sampler)
 
@@ -428,11 +501,23 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             # at a higher level, since correctness does not rely on using
             # threads.
             samplers_trees = Parallel(
-                n_jobs=self.n_jobs, verbose=self.verbose, prefer="threads")(
-                    delayed(_local_parallel_build_trees)(
-                        s, t, self, X, y, sample_weight, i, len(trees),
-                        verbose=self.verbose, class_weight=self.class_weight)
-                    for i, (s, t) in enumerate(zip(samplers, trees)))
+                n_jobs=self.n_jobs, verbose=self.verbose, prefer="threads"
+            )(
+                delayed(_local_parallel_build_trees)(
+                    s,
+                    t,
+                    self,
+                    X,
+                    y,
+                    sample_weight,
+                    i,
+                    len(trees),
+                    verbose=self.verbose,
+                    class_weight=self.class_weight,
+                    n_samples_bootstrap=n_samples_bootstrap,
+                )
+                for i, (s, t) in enumerate(zip(samplers, trees))
+            )
             samplers, trees = zip(*samplers_trees)
 
             # Collect newly grown trees
@@ -440,8 +525,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self.samplers_.extend(samplers)
 
             # Create pipeline with the fitted samplers and trees
-            self.pipelines_.extend([make_pipeline(deepcopy(s), deepcopy(t))
-                                    for s, t in zip(samplers, trees)])
+            self.pipelines_.extend(
+                [
+                    make_pipeline(deepcopy(s), deepcopy(t))
+                    for s, t in zip(samplers, trees)
+                ]
+            )
 
         if self.oob_score:
             self._set_oob_score(X, y)
@@ -452,3 +541,6 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self.classes_ = self.classes_[0]
 
         return self
+
+    def _more_tags(self):
+        return {"multioutput": False}

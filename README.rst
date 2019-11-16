@@ -4,7 +4,7 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |ReadTheDocs|_ |PythonVersion|_ |Pypi|_ |Gitter|_
+|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_
 
 .. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn.svg?branch=master
 .. _Travis: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn
@@ -17,9 +17,6 @@
 
 .. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield&circle-token=:circle-token
 .. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn/tree/master
-
-.. |ReadTheDocs| image:: https://readthedocs.org/projects/imbalanced-learn/badge/?version=latest
-.. _ReadTheDocs: https://imbalanced-learn.readthedocs.io/en/latest/?badge=latest
 
 .. |PythonVersion| image:: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
 .. _PythonVersion: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
@@ -162,10 +159,9 @@ Below is a list of the methods currently implemented in this module.
     2. SMOTE + ENN [11]_
 
 * Ensemble classifier using samplers internally
-    1. EasyEnsemble [13]_
-    2. BalanceCascade [13]_
-    3. Balanced Random Forest [16]_
-    4. Balanced Bagging
+    1. Easy Ensemble classifier [13]_
+    2. Balanced Random Forest [16]_
+    3. Balanced Bagging
 
 The different algorithms are presented in the sphinx-gallery_.
 

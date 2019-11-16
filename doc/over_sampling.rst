@@ -71,6 +71,15 @@ In addition, :class:`RandomOverSampler` allows to sample heterogeneous data
   >>> print(y_resampled)
   [0 0 1 1]
 
+It would also work with pandas dataframe::
+
+  >>> from sklearn.datasets import fetch_openml
+  >>> df_adult, y_adult = fetch_openml(
+  ...     'adult', version=2, as_frame=True, return_X_y=True)
+  >>> df_adult.head()  # doctest: +SKIP
+  >>> df_resampled, y_resampled = ros.fit_resample(df_adult, y_adult)
+  >>> df_resampled.head()  # doctest: +SKIP
+
 .. _smote_adasyn:
 
 From random over-sampling to SMOTE and ADASYN

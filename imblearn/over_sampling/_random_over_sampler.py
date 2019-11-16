@@ -7,18 +7,20 @@
 from collections import Counter
 
 import numpy as np
-from sklearn.utils import check_X_y, check_random_state, safe_indexing
+from sklearn.utils import check_array
+from sklearn.utils import check_random_state
+from sklearn.utils import _safe_indexing
 
 from .base import BaseOverSampler
 from ..utils import check_target_type
 from ..utils import Substitution
-from ..utils.deprecation import deprecate_parameter
 from ..utils._docstring import _random_state_docstring
 
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class RandomOverSampler(BaseOverSampler):
     """Class to perform random over-sampling.
 
@@ -33,26 +35,12 @@ class RandomOverSampler(BaseOverSampler):
 
     {random_state}
 
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly selected
-        in the corresponding classes.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     Attributes
     ----------
     sample_indices_ : ndarray, shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -79,26 +67,22 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self, sampling_strategy='auto',
-                 return_indices=False,
-                 random_state=None,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
-        self.return_indices = return_indices
+    def __init__(self, sampling_strategy="auto", random_state=None):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
 
     @staticmethod
     def _check_X_y(X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'], dtype=None)
+        if not hasattr(X, "loc"):
+            # Do not convert dataframe
+            X = check_array(X, accept_sparse=["csr", "csc"], dtype=None)
+        y = check_array(
+            y, accept_sparse=["csr", "csc"], dtype=None, ensure_2d=False
+        )
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
-
         random_state = check_random_state(self.random_state)
         target_stats = Counter(y)
 
@@ -107,20 +91,18 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         for class_sample, num_samples in self.sampling_strategy_.items():
             target_class_indices = np.flatnonzero(y == class_sample)
             indices = random_state.randint(
-                low=0, high=target_stats[class_sample], size=num_samples)
+                low=0, high=target_stats[class_sample], size=num_samples
+            )
 
-            sample_indices = np.append(sample_indices,
-                                       target_class_indices[indices])
+            sample_indices = np.append(
+                sample_indices, target_class_indices[indices]
+            )
         self.sample_indices_ = np.array(sample_indices)
 
-        if self.return_indices:
-            return (safe_indexing(X, sample_indices),
-                    safe_indexing(y, sample_indices), sample_indices)
-        return (safe_indexing(X, sample_indices),
-                safe_indexing(y, sample_indices))
+        return (
+            _safe_indexing(X, sample_indices),
+            _safe_indexing(y, sample_indices),
+        )
 
     def _more_tags(self):
-        # TODO: remove the str tag once the following PR is merged:
-        # https://github.com/scikit-learn/scikit-learn/pull/14043
-        return {'X_types': ['2darray', 'str', 'string'],
-                'sample_indices': True}
+        return {"X_types": ["2darray", "string"], "sample_indices": True}

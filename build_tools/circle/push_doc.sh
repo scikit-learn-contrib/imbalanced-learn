@@ -27,13 +27,13 @@ MSG="Pushing the docs to $dir/ for branch: $CIRCLE_BRANCH, commit $CIRCLE_SHA1"
 
 cd $HOME
 if [ ! -d $DOC_REPO ];
-then git clone --depth 1 --no-checkout -b gh-pages "git@github.com:"$USERNAME"/"$DOC_REPO".git";
+then git clone --depth 1 --no-checkout -b master "git@github.com:"$ORGANIZATION"/"$DOC_REPO".git";
 fi
 cd $DOC_REPO
 git config core.sparseCheckout true
 echo $dir > .git/info/sparse-checkout
-git checkout gh-pages
-git reset --hard origin/gh-pages
+git checkout master
+git reset --hard origin/master
 git rm -rf $dir/ && rm -rf $dir/
 cp -R $GENERATED_DOC_DIR $dir
 touch $dir/.nojekyll
@@ -42,6 +42,6 @@ git config --global user.name $USERNAME
 git config --global push.default matching
 git add -f $dir/
 git commit -m "$MSG" $dir
-git push origin gh-pages
+git push origin master
 
 echo $MSG

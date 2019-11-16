@@ -11,20 +11,18 @@ from collections import Counter
 import numpy as np
 from scipy.stats import mode
 
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
-from ...utils.deprecation import deprecate_parameter
-from ...utils._docstring import _random_state_docstring
 
-SEL_KIND = ('all', 'mode')
+SEL_KIND = ("all", "mode")
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+)
 class EditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the edited nearest neighbour
     method.
@@ -34,19 +32,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -62,13 +47,12 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Attributes
     ----------
@@ -76,7 +60,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -114,58 +97,44 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 return_indices=False,
-                 random_state=None,
-                 n_neighbors=3,
-                 kind_sel='all',
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
-        self.random_state = random_state
-        self.return_indices = return_indices
+    def __init__(
+        self, sampling_strategy="auto", n_neighbors=3, kind_sel="all", n_jobs=None
+    ):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
 
     def _validate_estimator(self):
         """Validate the estimator created in the ENN."""
-
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
         self.nn_ = check_neighbors_object(
-            'n_neighbors', self.n_neighbors, additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
+        )
+        self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         self._validate_estimator()
 
-        idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0,), dtype=int)
 
         self.nn_.fit(X)
 
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 target_class_indices = np.flatnonzero(y == target_class)
-                X_class = safe_indexing(X, target_class_indices)
-                y_class = safe_indexing(y, target_class_indices)
+                X_class = _safe_indexing(X, target_class_indices)
+                y_class = _safe_indexing(y, target_class_indices)
                 nnhood_idx = self.nn_.kneighbors(
-                    X_class, return_distance=False)[:, 1:]
+                    X_class, return_distance=False
+                )[:, 1:]
                 nnhood_label = y[nnhood_idx]
-                if self.kind_sel == 'mode':
+                if self.kind_sel == "mode":
                     nnhood_label, _ = mode(nnhood_label, axis=1)
                     nnhood_bool = np.ravel(nnhood_label) == y_class
-                elif self.kind_sel == 'all':
+                elif self.kind_sel == "all":
                     nnhood_label = nnhood_label == target_class
                     nnhood_bool = np.all(nnhood_label, axis=1)
                 index_target_class = np.flatnonzero(nnhood_bool)
@@ -173,24 +142,24 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under,
-                 np.flatnonzero(y == target_class)[index_target_class]),
-                axis=0)
+                (
+                    idx_under,
+                    np.flatnonzero(y == target_class)[index_target_class],
+                ),
+                axis=0,
+            )
 
         self.sample_indices_ = idx_under
 
-        if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
-        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+)
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Class to perform under-sampling based on the repeated edited nearest
     neighbour method.
@@ -200,19 +169,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -232,13 +188,12 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
-    n_jobs : int, optional (default=1)
-        The number of thread to open when it is possible.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Attributes
     ----------
@@ -246,7 +201,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -284,19 +238,15 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 return_indices=False,
-                 random_state=None,
-                 n_neighbors=3,
-                 max_iter=100,
-                 kind_sel='all',
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
-        self.random_state = random_state
-        self.return_indices = return_indices
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        n_neighbors=3,
+        max_iter=100,
+        kind_sel="all",
+        n_jobs=None,
+    ):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.n_jobs = n_jobs
@@ -304,30 +254,24 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
         if self.max_iter < 2:
-            raise ValueError('max_iter must be greater than 1.'
-                             ' Got {} instead.'.format(type(self.max_iter)))
+            raise ValueError(
+                "max_iter must be greater than 1."
+                " Got {} instead.".format(type(self.max_iter))
+            )
 
         self.nn_ = check_neighbors_object(
-            'n_neighbors', self.n_neighbors, additional_neighbor=1)
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
+        )
 
         self.enn_ = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
-            return_indices=False,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
             n_jobs=self.n_jobs,
-            ratio=self.ratio)
+        )
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         self._validate_estimator()
 
         X_, y_ = X, y
@@ -347,44 +291,48 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             # 3. If one of the class is disappearing
 
             # Case 1
-            b_conv = (prev_len == y_enn.shape[0])
+            b_conv = prev_len == y_enn.shape[0]
 
             # Case 2
             stats_enn = Counter(y_enn)
-            count_non_min = np.array([
-                val for val, key in zip(stats_enn.values(), stats_enn.keys())
-                if key != class_minority
-            ])
+            count_non_min = np.array(
+                [
+                    val
+                    for val, key in zip(stats_enn.values(), stats_enn.keys())
+                    if key != class_minority
+                ]
+            )
             b_min_bec_maj = np.any(
-                count_non_min < target_stats[class_minority])
+                count_non_min < target_stats[class_minority]
+            )
 
             # Case 3
-            b_remove_maj_class = (len(stats_enn) < len(target_stats))
+            b_remove_maj_class = len(stats_enn) < len(target_stats)
 
             X_, y_, = X_enn, y_enn
             self.sample_indices_ = self.sample_indices_[
-                self.enn_.sample_indices_]
+                self.enn_.sample_indices_
+            ]
 
             if b_conv or b_min_bec_maj or b_remove_maj_class:
                 if b_conv:
                     X_, y_, = X_enn, y_enn
                     self.sample_indices_ = self.sample_indices_[
-                        self.enn_.sample_indices_]
+                        self.enn_.sample_indices_
+                    ]
                 break
 
         X_resampled, y_resampled = X_, y_
 
-        if self.return_indices:
-            return X_resampled, y_resampled, self.sample_indices_
         return X_resampled, y_resampled
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}
 
 
 @Substitution(
-    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring
+)
 class AllKNN(BaseCleaningSampler):
     """Class to perform under-sampling based on the AllKNN method.
 
@@ -393,19 +341,6 @@ class AllKNN(BaseCleaningSampler):
     Parameters
     ----------
     {sampling_strategy}
-
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, size of the neighbourhood to consider to compute the
@@ -427,13 +362,12 @@ class AllKNN(BaseCleaningSampler):
 
         .. versionadded:: 0.3
 
-    n_jobs : int, optional (default=1)
-        The number of thread to open when it is possible.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Attributes
     ----------
@@ -441,7 +375,6 @@ class AllKNN(BaseCleaningSampler):
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
 
     Notes
     -----
@@ -480,19 +413,15 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 return_indices=False,
-                 random_state=None,
-                 n_neighbors=3,
-                 kind_sel='all',
-                 allow_minority=False,
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
-        self.random_state = random_state
-        self.return_indices = return_indices
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        n_neighbors=3,
+        kind_sel="all",
+        allow_minority=False,
+        n_jobs=None,
+    ):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
         self.kind_sel = kind_sel
         self.allow_minority = allow_minority
@@ -500,29 +429,21 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Create objects required by AllKNN"""
-
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
         if self.kind_sel not in SEL_KIND:
             raise NotImplementedError
 
         self.nn_ = check_neighbors_object(
-            'n_neighbors', self.n_neighbors, additional_neighbor=1)
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
+        )
 
         self.enn_ = EditedNearestNeighbours(
             sampling_strategy=self.sampling_strategy,
-            return_indices=False,
             n_neighbors=self.nn_,
             kind_sel=self.kind_sel,
             n_jobs=self.n_jobs,
-            ratio=self.ratio)
+        )
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         self._validate_estimator()
 
         X_, y_ = X, y
@@ -543,31 +464,34 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             # Case 1else:
 
             stats_enn = Counter(y_enn)
-            count_non_min = np.array([
-                val for val, key in zip(stats_enn.values(), stats_enn.keys())
-                if key != class_minority
-            ])
+            count_non_min = np.array(
+                [
+                    val
+                    for val, key in zip(stats_enn.values(), stats_enn.keys())
+                    if key != class_minority
+                ]
+            )
             b_min_bec_maj = np.any(
-                count_non_min < target_stats[class_minority])
+                count_non_min < target_stats[class_minority]
+            )
             if self.allow_minority:
                 # overwrite b_min_bec_maj
                 b_min_bec_maj = False
 
             # Case 2
-            b_remove_maj_class = (len(stats_enn) < len(target_stats))
+            b_remove_maj_class = len(stats_enn) < len(target_stats)
 
             X_, y_, = X_enn, y_enn
             self.sample_indices_ = self.sample_indices_[
-                self.enn_.sample_indices_]
+                self.enn_.sample_indices_
+            ]
 
             if b_min_bec_maj or b_remove_maj_class:
                 break
 
         X_resampled, y_resampled = X_, y_
 
-        if self.return_indices:
-            return X_resampled, y_resampled, self.sample_indices_
         return X_resampled, y_resampled
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}

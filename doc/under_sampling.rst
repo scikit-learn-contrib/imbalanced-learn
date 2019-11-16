@@ -116,6 +116,15 @@ In addition, :class:`RandomUnderSampler` allows to sample heterogeneous data
   >>> print(y_resampled)
   [0 1]
 
+It would also work with pandas dataframe::
+
+  >>> from sklearn.datasets import fetch_openml
+  >>> df_adult, y_adult = fetch_openml(
+  ...     'adult', version=2, as_frame=True, return_X_y=True)
+  >>> df_adult.head()  # doctest: +SKIP
+  >>> df_resampled, y_resampled = rus.fit_resample(df_adult, y_adult)
+  >>> df_resampled.head()  # doctest: +SKIP
+
 :class:`NearMiss` adds some heuristic rules to select samples [MZ2003]_.
 :class:`NearMiss` implements 3 different types of heuristic which can be
 selected with the parameter ``version``::

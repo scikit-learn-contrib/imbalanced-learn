@@ -7,8 +7,7 @@ import pytest
 
 from imblearn.utils import Substitution
 
-func_docstring = \
-    """A function.
+func_docstring = """A function.
 
     Parameters
     ----------
@@ -30,8 +29,7 @@ def func(param_1, param_2):
     return param_1, param_2
 
 
-cls_docstring = \
-    """A class.
+cls_docstring = """A class.
 
     Parameters
     ----------
@@ -56,8 +54,9 @@ class cls:
         self.param_2 = param_2
 
 
-@pytest.mark.parametrize("obj, obj_docstring", [(func, func_docstring),
-                                                (cls, cls_docstring)])
+@pytest.mark.parametrize(
+    "obj, obj_docstring", [(func, func_docstring), (cls, cls_docstring)]
+)
 def test_docstring_inject(obj, obj_docstring):
-    obj_injected_docstring = Substitution(param_1='xxx', param_2='yyy')(obj)
+    obj_injected_docstring = Substitution(param_1="xxx", param_2="yyy")(obj)
     assert obj_injected_docstring.__doc__ == obj_docstring

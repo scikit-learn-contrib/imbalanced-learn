@@ -13,7 +13,7 @@ class Substitution:
     """
 
     def __init__(self, *args, **kwargs):
-        if (args and kwargs):
+        if args and kwargs:
             raise AssertionError("Only positional or keyword args are allowed")
 
         self.params = args or kwargs
@@ -23,8 +23,7 @@ class Substitution:
         return obj
 
 
-_random_state_docstring = \
-    """random_state : int, RandomState instance or None, optional (default=None)
+_random_state_docstring = """random_state : int, RandomState instance or None, optional (default=None)
         Control the randomization of the algorithm.
 
         - If int, ``random_state`` is the seed used by the random number

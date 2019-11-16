@@ -5,14 +5,18 @@ jobs:
     docker:
       - image: circleci/python:3.6.1
     environment:
-      - USERNAME: "scikit-learn-contrib"
-      - DOC_REPO: "imbalanced-learn"
+      - USERNAME: "glemaitre"
+      - ORGANIZATION: "imbalanced-learn"
+      - DOC_REPO: "imbalanced-learn.github.io"
       - DOC_URL: ""
       - EMAIL: "g.lemaitre58@gmail.com"
       - MINICONDA_PATH: ~/miniconda
       - CONDA_ENV_NAME: testenv
       - PYTHON_VERSION: 3
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "34:ea:b1:d9:b1:e2:5d:79:81:c4:d0:39:ca:85:e1:ef"
       - checkout
       - run: ./build_tools/circle/checkout_merge_commit.sh
       - run: ./build_tools/circle/build_doc.sh
@@ -27,11 +31,11 @@ jobs:
       - attach_workspace:
           at: doc/_build/html
       - run: ls -ltrh doc/_build/html
-      # - deploy:
-      #     command: |
-      #       if [[ "${CIRCLE_BRANCH}" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
-      #         bash ./build_tools/circle/push_doc.sh doc/_build/html
-      #       fi
+      - deploy:
+          command: |
+            if [[ "${CIRCLE_BRANCH}" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
+              bash ./build_tools/circle/push_doc.sh doc/_build/html
+            fi
     filters:
       branches:
         ignore: gh-pages

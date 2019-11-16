@@ -19,7 +19,8 @@ from ..utils._docstring import _random_state_docstring
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class SMOTETomek(BaseSampler):
     """Class to perform over-sampling using SMOTE and cleaning using
     Tomek links.
@@ -44,14 +45,12 @@ class SMOTETomek(BaseSampler):
         given, a :class:`imblearn.under_sampling.TomekLinks` object with
         sampling strategy='all' will be given.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
-        Will not apply to smote and tomek given by the user.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
+    n_jobs : int or None, optional (default=None)
+        Number of CPU cores used during the cross-validation loop.
+        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``-1`` means using all processors. See
+        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
+        for more details.
 
     Notes
     -----
@@ -89,22 +88,22 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
 
     """
 
-    _sampling_type = 'over-sampling'
+    _sampling_type = "over-sampling"
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 random_state=None,
-                 smote=None,
-                 tomek=None,
-                 n_jobs=1,
-                 ratio=None):
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        random_state=None,
+        smote=None,
+        tomek=None,
+        n_jobs=None,
+    ):
         super().__init__()
         self.sampling_strategy = sampling_strategy
         self.random_state = random_state
         self.smote = smote
         self.tomek = tomek
         self.n_jobs = n_jobs
-        self.ratio = ratio
 
     def _validate_estimator(self):
         "Private function to validate SMOTE and ENN objects"
@@ -113,32 +112,36 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
             if isinstance(self.smote, SMOTE):
                 self.smote_ = clone(self.smote)
             else:
-                raise ValueError('smote needs to be a SMOTE object.'
-                                 'Got {} instead.'.format(type(self.smote)))
+                raise ValueError(
+                    "smote needs to be a SMOTE object."
+                    "Got {} instead.".format(type(self.smote))
+                )
         # Otherwise create a default SMOTE
         else:
             self.smote_ = SMOTE(
                 sampling_strategy=self.sampling_strategy,
                 random_state=self.random_state,
                 n_jobs=self.n_jobs,
-                ratio=self.ratio)
+            )
 
         if self.tomek is not None:
             if isinstance(self.tomek, TomekLinks):
                 self.tomek_ = clone(self.tomek)
             else:
-                raise ValueError('tomek needs to be a TomekLinks object.'
-                                 'Got {} instead.'.format(type(self.tomek)))
+                raise ValueError(
+                    "tomek needs to be a TomekLinks object."
+                    "Got {} instead.".format(type(self.tomek))
+                )
         # Otherwise create a default TomekLinks
         else:
             self.tomek_ = TomekLinks(
-                            sampling_strategy='all',
-                            n_jobs=self.n_jobs)
+                sampling_strategy="all", n_jobs=self.n_jobs
+            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
         y = check_target_type(y)
-        X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
+        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"])
         self.sampling_strategy_ = self.sampling_strategy
 
         X_res, y_res = self.smote_.fit_resample(X, y)

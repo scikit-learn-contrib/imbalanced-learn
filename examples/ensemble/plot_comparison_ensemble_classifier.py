@@ -111,9 +111,8 @@ plot_confusion_matrix(cm_tree, classes=np.unique(satimage.target), ax=ax,
 # will use a bagging classifier and its counter part which internally uses a
 # random under-sampling to balanced each boostrap sample.
 
-bagging = BaggingClassifier(n_estimators=50, random_state=0, n_jobs=-1)
-balanced_bagging = BalancedBaggingClassifier(n_estimators=50, random_state=0,
-                                             n_jobs=-1)
+bagging = BaggingClassifier(n_estimators=50, random_state=0)
+balanced_bagging = BalancedBaggingClassifier(n_estimators=50, random_state=0)
 
 bagging.fit(X_train, y_train)
 balanced_bagging.fit(X_train, y_train)
@@ -149,9 +148,8 @@ plot_confusion_matrix(cm_balanced_bagging, classes=np.unique(satimage.target),
 # outperforming bagging. Here, we used a vanilla random forest and its balanced
 # counterpart in which each bootstrap sample is balanced.
 
-rf = RandomForestClassifier(n_estimators=50, random_state=0, n_jobs=-1)
-brf = BalancedRandomForestClassifier(n_estimators=50, random_state=0,
-                                     n_jobs=-1)
+rf = RandomForestClassifier(n_estimators=50, random_state=0)
+brf = BalancedRandomForestClassifier(n_estimators=50, random_state=0)
 
 rf.fit(X_train, y_train)
 brf.fit(X_train, y_train)
@@ -189,8 +187,7 @@ plot_confusion_matrix(cm_brf, classes=np.unique(satimage.target), ax=ax[1],
 
 base_estimator = AdaBoostClassifier(n_estimators=10)
 eec = EasyEnsembleClassifier(n_estimators=10,
-                             base_estimator=base_estimator,
-                             n_jobs=-1)
+                             base_estimator=base_estimator)
 eec.fit(X_train, y_train)
 y_pred_eec = eec.predict(X_test)
 print('Easy ensemble classifier performance:')
