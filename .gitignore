@@ -119,3 +119,4 @@ cythonize.dat
 doc/_build/
 doc/auto_examples/
 doc/generated/
+doc/bibtex/auto

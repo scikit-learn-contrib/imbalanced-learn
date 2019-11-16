@@ -49,7 +49,7 @@ class TomekLinks(BaseCleaningSampler):
     References
     ----------
     .. [1] I. Tomek, "Two modifications of CNN," In Systems, Man, and
-       Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 2010.
+       Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 1976.
 
     Examples
     --------

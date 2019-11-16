@@ -36,9 +36,11 @@ use those metrics.
 Additional metrics specific to imbalanced datasets
 --------------------------------------------------
 
-The :func:`geometric_mean_score` is the root of the product of class-wise
-sensitivity. This measure tries to maximize the accuracy on each of the classes
-while keeping these accuracies balanced.
+The :func:`geometric_mean_score`
+:cite:`barandela2003strategies,kubat1997addressing` is the root of the product
+of class-wise sensitivity. This measure tries to maximize the accuracy on each
+of the classes while keeping these accuracies balanced.
 
-The :func:`make_index_balanced_accuracy` can wrap any metric and give more
-importance to a specific class using the parameter ``alpha``.
+The :func:`make_index_balanced_accuracy` :cite:`garcia2012effectiveness` can
+wrap any metric and give more importance to a specific class using the
+parameter ``alpha``.
