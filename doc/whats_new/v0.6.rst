@@ -51,6 +51,11 @@ Enhancement
   to check or not the input ``X`` and ``y``.
   :pr:`637` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- :class:`imblearn.under_sampling.RandomUnderSampler`,
+  :class:`imblearn.over_sampling.RandomOverSampler` can resample when non
+  finite values are present in ``X``.
+  :pr:`643` by `Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 

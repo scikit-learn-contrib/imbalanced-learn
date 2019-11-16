@@ -125,3 +125,23 @@ def test_random_over_sampling_heterogeneous_data():
     assert y_res.shape[0] == 4
     assert X_res.dtype == object
     assert X_res[-1, 0] in X_hetero[:, 0]
+
+
+def test_random_over_sampling_nan_inf():
+    # check that we can oversample even with missing or infinite data
+    # regression tests for #605
+    rng = np.random.RandomState(42)
+    n_not_finite = X.shape[0] // 3
+    row_indices = rng.choice(np.arange(X.shape[0]), size=n_not_finite)
+    col_indices = rng.randint(0, X.shape[1], size=n_not_finite)
+    not_finite_values = rng.choice([np.nan, np.inf], size=n_not_finite)
+
+    X_ = X.copy()
+    X_[row_indices, col_indices] = not_finite_values
+
+    ros = RandomOverSampler(random_state=0)
+    X_res, y_res = ros.fit_resample(X_, Y)
+
+    assert y_res.shape == (14,)
+    assert X_res.shape == (14, 2)
+    assert np.any(~np.isfinite(X_res))
