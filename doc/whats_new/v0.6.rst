@@ -54,7 +54,7 @@ Enhancement
 - :class:`imblearn.under_sampling.RandomUnderSampler`,
   :class:`imblearn.over_sampling.RandomOverSampler` can resample when non
   finite values are present in ``X``.
-  :pr:`xxx` by `Guillaume Lemaitre <glemaitre>`.
+  :pr:`643` by `Guillaume Lemaitre <glemaitre>`.
 
 Deprecation
 ...........
