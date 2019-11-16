@@ -23,15 +23,15 @@ run_tests(){
 
     pytest --cov=$MODULE -r sx --pyargs $MODULE
 
-    # Validate numpydoc style
-    if [[ "$TEST_NUMPYDOC" == "true" ]]; then
-        pytest -vsl maint_tools/test_docstring.py
-    fi
-
     # Test doc
     cd $OLDPWD
     if [[ "$TEST_DOC" == "true" ]]; then
         make test-doc
+    fi
+
+    # Validate numpydoc style
+    if [[ "$TEST_NUMPYDOC" == "true" ]]; then
+        pytest -vsl maint_tools/test_docstring.py
     fi
 }
 
