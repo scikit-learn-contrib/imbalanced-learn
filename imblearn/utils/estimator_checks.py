@@ -262,7 +262,7 @@ def check_samplers_pandas(name, Sampler):
         weights=[0.2, 0.3, 0.5],
         random_state=0,
     )
-    X_pd = pd.DataFrame(X)
+    X_pd = pd.DataFrame(X, columns=[str(i) for i in range(X.shape[1])])
     sampler = Sampler()
     if isinstance(Sampler(), NearMiss):
         samplers = [Sampler(version=version) for version in (1, 2, 3)]
@@ -274,7 +274,11 @@ def check_samplers_pandas(name, Sampler):
         set_random_state(sampler)
         X_res_pd, y_res_pd = sampler.fit_resample(X_pd, y)
         X_res, y_res = sampler.fit_resample(X, y)
-        assert_allclose(X_res_pd, X_res)
+
+        # check that we return a pandas dataframe if a dataframe was given in
+        assert isinstance(X_res_pd, pd.DataFrame)
+        assert X_pd.columns.to_list() == X_res_pd.columns.to_list()
+        assert_allclose(X_res_pd.to_numpy(), X_res)
         assert_allclose(y_res_pd, y_res)
 
 
