@@ -4,24 +4,33 @@ import numpy as np
 
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
-from sklearn.utils.testing import assert_array_equal
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.ensemble import RUSBoostClassifier
 
 
 @pytest.fixture
 def imbalanced_dataset():
-    return make_classification(n_samples=10000, n_features=3, n_informative=2,
-                               n_redundant=0, n_repeated=0, n_classes=3,
-                               n_clusters_per_class=1,
-                               weights=[0.01, 0.05, 0.94], class_sep=0.8,
-                               random_state=0)
+    return make_classification(
+        n_samples=10000,
+        n_features=3,
+        n_informative=2,
+        n_redundant=0,
+        n_repeated=0,
+        n_classes=3,
+        n_clusters_per_class=1,
+        weights=[0.01, 0.05, 0.94],
+        class_sep=0.8,
+        random_state=0,
+    )
 
 
 @pytest.mark.parametrize(
     "boosting_params, err_msg",
-    [({"n_estimators": 'whatever'}, "n_estimators must be an integer"),
-     ({"n_estimators": -100}, "n_estimators must be greater than zero")]
+    [
+        ({"n_estimators": "whatever"}, "n_estimators must be an integer"),
+        ({"n_estimators": -100}, "n_estimators must be greater than zero"),
+    ],
 )
 def test_rusboost_error(imbalanced_dataset, boosting_params, err_msg):
     rusboost = RUSBoostClassifier(**boosting_params)
@@ -29,18 +38,18 @@ def test_rusboost_error(imbalanced_dataset, boosting_params, err_msg):
         rusboost.fit(*imbalanced_dataset)
 
 
-@pytest.mark.parametrize('algorithm', ['SAMME', 'SAMME.R'])
+@pytest.mark.parametrize("algorithm", ["SAMME", "SAMME.R"])
 def test_rusboost(imbalanced_dataset, algorithm):
     X, y = imbalanced_dataset
-    X_train, X_test, y_train, y_test = train_test_split(X, y,
-                                                        stratify=y,
-                                                        random_state=1)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, stratify=y, random_state=1
+    )
     classes = np.unique(y)
 
     n_estimators = 500
-    rusboost = RUSBoostClassifier(n_estimators=n_estimators,
-                                  algorithm=algorithm,
-                                  random_state=0)
+    rusboost = RUSBoostClassifier(
+        n_estimators=n_estimators, algorithm=algorithm, random_state=0
+    )
     rusboost.fit(X_train, y_train)
     assert_array_equal(classes, rusboost.classes_)
 
@@ -51,11 +60,13 @@ def test_rusboost(imbalanced_dataset, algorithm):
     assert len(rusboost.pipelines_) == len(rusboost.samplers_)
 
     # each sampler in the ensemble should have different random state
-    assert (len({sampler.random_state for sampler in rusboost.samplers_}) ==
-            len(rusboost.samplers_))
+    assert len(
+        {sampler.random_state for sampler in rusboost.samplers_}
+    ) == len(rusboost.samplers_)
     # each estimator in the ensemble should have different random state
-    assert (len({est.random_state for est in rusboost.estimators_}) ==
-            len(rusboost.estimators_))
+    assert len({est.random_state for est in rusboost.estimators_}) == len(
+        rusboost.estimators_
+    )
 
     # check the consistency of the feature importances
     assert len(rusboost.feature_importances_) == imbalanced_dataset[0].shape[1]
@@ -67,18 +78,18 @@ def test_rusboost(imbalanced_dataset, algorithm):
 
     score = rusboost.score(X_test, y_test)
     assert score > 0.7, "Failed with algorithm {} and score {}".format(
-        algorithm, score)
+        algorithm, score
+    )
 
     y_pred = rusboost.predict(X_test)
     assert y_pred.shape == y_test.shape
 
 
-@pytest.mark.parametrize('algorithm', ['SAMME', 'SAMME.R'])
+@pytest.mark.parametrize("algorithm", ["SAMME", "SAMME.R"])
 def test_rusboost_sample_weight(imbalanced_dataset, algorithm):
     X, y = imbalanced_dataset
     sample_weight = np.ones_like(y)
-    rusboost = RUSBoostClassifier(algorithm=algorithm,
-                                  random_state=0)
+    rusboost = RUSBoostClassifier(algorithm=algorithm, random_state=0)
 
     # Predictions should be the same when sample_weight are all ones
     y_pred_sample_weight = rusboost.fit(X, y, sample_weight).predict(X)

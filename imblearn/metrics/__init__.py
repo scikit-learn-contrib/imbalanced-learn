@@ -11,7 +11,10 @@ from ._classification import make_index_balanced_accuracy
 from ._classification import classification_report_imbalanced
 
 __all__ = [
-    'sensitivity_specificity_support', 'sensitivity_score',
-    'specificity_score', 'geometric_mean_score',
-    'make_index_balanced_accuracy', 'classification_report_imbalanced'
+    "sensitivity_specificity_support",
+    "sensitivity_score",
+    "specificity_score",
+    "geometric_mean_score",
+    "make_index_balanced_accuracy",
+    "classification_report_imbalanced",
 ]

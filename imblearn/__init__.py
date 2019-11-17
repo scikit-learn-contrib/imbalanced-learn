@@ -46,6 +46,17 @@ from .base import FunctionSampler
 from ._version import __version__
 from .utils._show_versions import show_versions
 
-__all__ = ['combine', 'ensemble', 'exceptions', 'keras', 'metrics',
-           'over_sampling', 'tensorflow', 'under_sampling',
-           'utils', 'pipeline', 'FunctionSampler', '__version__']
+__all__ = [
+    "combine",
+    "ensemble",
+    "exceptions",
+    "keras",
+    "metrics",
+    "over_sampling",
+    "tensorflow",
+    "under_sampling",
+    "utils",
+    "pipeline",
+    "FunctionSampler",
+    "__version__",
+]
