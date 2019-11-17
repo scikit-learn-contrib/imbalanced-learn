@@ -29,6 +29,7 @@ from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution
+from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
 
 MAX_INT = np.iinfo(np.int32).max
@@ -68,6 +69,7 @@ def _local_parallel_build_trees(
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class BalancedRandomForestClassifier(RandomForestClassifier):
@@ -80,20 +82,20 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     Parameters
     ----------
-    n_estimators : integer, optional (default=100)
+    n_estimators : int, default=100
         The number of trees in the forest.
 
-    criterion : string, optional (default="gini")
+    criterion : str, default="gini"
         The function to measure the quality of a split. Supported criteria are
         "gini" for the Gini impurity and "entropy" for the information gain.
         Note: this parameter is tree-specific.
 
-    max_depth : integer or None, optional (default=None)
+    max_depth : int, default=None
         The maximum depth of the tree. If None, then nodes are expanded until
         all leaves are pure or until all leaves contain less than
         min_samples_split samples.
 
-    min_samples_split : int, float, optional (default=2)
+    min_samples_split : int, float, default=2
         The minimum number of samples required to split an internal node:
 
         - If int, then consider `min_samples_split` as the minimum number.
@@ -101,7 +103,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
           `ceil(min_samples_split * n_samples)` are the minimum
           number of samples for each split.
 
-    min_samples_leaf : int, float, optional (default=1)
+    min_samples_leaf : int, float, default=1
         The minimum number of samples required to be at a leaf node:
 
         - If int, then consider ``min_samples_leaf`` as the minimum number.
@@ -109,12 +111,13 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
           `ceil(min_samples_leaf * n_samples)` are the minimum
           number of samples for each node.
 
-    min_weight_fraction_leaf : float, optional (default=0.)
+    min_weight_fraction_leaf : float, default=0.0
         The minimum weighted fraction of the sum total of weights (of all
         the input samples) required to be at a leaf node. Samples have
         equal weight when sample_weight is not provided.
 
-    max_features : int, float, string or None, optional (default="auto")
+    max_features : {{"auto", "sqrt", "log2"}}, int, float, or None, \
+            default="auto"
         The number of features to consider when looking for the best split:
 
         - If int, then consider `max_features` features at each split.
@@ -130,12 +133,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         valid partition of the node samples is found, even if it requires to
         effectively inspect more than ``max_features`` features.
 
-    max_leaf_nodes : int or None, optional (default=None)
+    max_leaf_nodes : int, default=None
         Grow trees with ``max_leaf_nodes`` in best-first fashion.
         Best nodes are defined as relative reduction in impurity.
         If None then unlimited number of leaf nodes.
 
-    min_impurity_decrease : float, optional (default=0.)
+    min_impurity_decrease : float, default=0.0
         A node will be split if this split induces a decrease of the impurity
         greater than or equal to this value.
         The weighted impurity decrease equation is the following::
@@ -149,37 +152,32 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         ``N``, ``N_t``, ``N_t_R`` and ``N_t_L`` all refer to the weighted sum,
         if ``sample_weight`` is passed.
 
-    bootstrap : boolean, optional (default=True)
+    bootstrap : bool, default=True
         Whether bootstrap samples are used when building trees.
 
-    oob_score : bool (default=False)
+    oob_score : bool, default=False
         Whether to use out-of-bag samples to estimate
         the generalization accuracy.
 
     {sampling_strategy}
 
-    replacement : bool, optional (default=False)
+    replacement : bool, default=False
         Whether or not to sample randomly with replacement or not.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     {random_state}
 
-    verbose : int, optional (default=0)
+    verbose : int, default=0
         Controls the verbosity of the tree building process.
 
-    warm_start : bool, optional (default=False)
+    warm_start : bool, default=False
         When set to ``True``, reuse the solution of the previous call to fit
         and add more estimators to the ensemble, otherwise, just fit a whole
         new forest.
 
-    class_weight : dict, list of dicts, "balanced",
-        "balanced_subsample" or None, optional (default=None)
+    class_weight : dict, list of dicts, {{"balanced", "balanced_subsample"}}, \
+            default=None
         Weights associated with classes in the form dictionary with the key
         being the class_label and the value the weight.
         If not given, all classes are supposed to have weight one. For
@@ -200,8 +198,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         Note that these weights will be multiplied with sample_weight (passed
         through the fit method) if sample_weight is specified.
 
-
-    ccp_alpha : non-negative float, optional (default=0.0)
+    ccp_alpha : non-negative float, default=0.0
         Complexity parameter used for Minimal Cost-Complexity Pruning. The
         subtree with the largest cost complexity that is smaller than
         ``ccp_alpha`` will be chosen. By default, no pruning is performed.
@@ -231,7 +228,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     pipelines_ : list of Pipeline.
         The collection of fitted pipelines (samplers + trees).
 
-    classes_ : ndaray, shape (n_classes,) or a list of such arrays
+    classes_ : ndarray of shape (n_classes,) or a list of such arrays
         The classes labels (single output problem), or a list of arrays of
         class labels (multi-output problem).
 
@@ -245,21 +242,28 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     n_outputs_ : int
         The number of outputs when ``fit`` is performed.
 
-    feature_importances_ : ndarray, shape (n_features,)
+    feature_importances_ : ndarray of shape (n_features,)
         The feature importances (the higher, the more important the feature).
 
     oob_score_ : float
         Score of the training dataset obtained using an out-of-bag estimate.
 
-    oob_decision_function_ : ndarray, shape (n_samples, n_classes)
+    oob_decision_function_ : ndarray of shape (n_samples, n_classes)
         Decision function computed with out-of-bag estimate on the training
         set. If n_estimators is small it might be possible that a data point
         was never left out during the bootstrap. In this case,
         `oob_decision_function_` might contain NaN.
 
-    See also
+    See Also
     --------
-    BalancedBaggingClassifier, EasyEnsembleClassifier, RUSBoostClassifier
+    BalancedBaggingClassifier : Bagging classifier for which each base
+        estimator is trained on a balanced bootstrap.
+
+    EasyEnsembleClassifier : Ensemble of AdaBoost classifier trained on
+        balanced bootstraps.
+
+    RUSBoostClassifier : AdaBoost classifier were each bootstrap is balanced
+        using random-under sampling at each round of boosting.
 
     References
     ----------
@@ -283,7 +287,6 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     >>> print(clf.predict([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ...                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]))
     [1]
-
     """
 
     def __init__(
@@ -380,16 +383,16 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
             The training input samples. Internally, its dtype will be converted
             to ``dtype=np.float32``. If a sparse matrix is provided, it will be
             converted into a sparse ``csc_matrix``.
 
-        y : array-like, shape (n_samples,) or (n_samples, n_outputs)
+        y : array-like of shape (n_samples,) or (n_samples, n_outputs)
             The target values (class labels in classification, real numbers in
             regression).
 
-        sample_weight : array-like, shape (n_samples,)
+        sample_weight : array-like of shape (n_samples,)
             Sample weights. If None, then samples are equally weighted. Splits
             that would create child nodes with net zero or negative weight are
             ignored while searching for a split in each node. In the case of
@@ -399,7 +402,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         Returns
         -------
         self : object
-
+            The fitted instance.
         """
 
         # Validate or convert input data

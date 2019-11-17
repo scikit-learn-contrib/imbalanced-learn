@@ -12,29 +12,33 @@ import numpy as np
 
 from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble._base import _set_random_states
 from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import cross_val_predict
+from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import Substitution
+from ...utils._docstring import _n_jobs_docstring
 from ...utils._docstring import _random_state_docstring
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class InstanceHardnessThreshold(BaseUnderSampler):
-    """Class to perform under-sampling based on the instance hardness
-    threshold.
+    """Undersample based on the instance hardness threshold.
 
     Read more in the :ref:`User Guide <instance_hardness_threshold>`.
 
     Parameters
     ----------
-    estimator : object, optional (default=RandomForestClassifier())
+    estimator : object, default=None
         Classifier to be used to estimate instance hardness of the samples.  By
-        default a :class:`sklearn.ensemble.RandomForestClassifer` will be used.
+        default a :class:`sklearn.ensemble.RandomForestClassifier` will be used.
         If ``str``, the choices using a string are the following: ``'knn'``,
         ``'decision-tree'``, ``'random-forest'``, ``'adaboost'``,
         ``'gradient-boosting'`` and ``'linear-svm'``.  If object, an estimator
@@ -45,22 +49,23 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
     {random_state}
 
-    cv : int, optional (default=5)
+    cv : int, default=5
         Number of folds to be used when estimating samples' instance hardness.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    See Also
+    --------
+    NearMiss : Undersample based on near-miss search.
+
+    RandomUnderSampler : Random under-sampling.
 
     Notes
     -----
@@ -90,7 +95,6 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     >>> X_res, y_res = iht.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))  # doctest: +ELLIPSIS
     Resampled dataset shape Counter({{1: 5..., 0: 100}})
-
     """
 
     def __init__(
@@ -107,7 +111,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
         self.cv = cv
         self.n_jobs = n_jobs
 
-    def _validate_estimator(self):
+    def _validate_estimator(self, random_state):
         """Private function to create the classifier"""
 
         if (
@@ -116,6 +120,8 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             and hasattr(self.estimator, "predict_proba")
         ):
             self.estimator_ = clone(self.estimator)
+            _set_random_states(self.estimator_, random_state)
+
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
                 n_estimators=100,
@@ -130,22 +136,18 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             )
 
     def _fit_resample(self, X, y):
-        self._validate_estimator()
+        random_state = check_random_state(self.random_state)
+        self._validate_estimator(random_state)
 
         target_stats = Counter(y)
-        skf = StratifiedKFold(n_splits=self.cv, shuffle=False).split(X, y)
-        probabilities = np.zeros(y.shape[0], dtype=float)
-
-        for train_index, test_index in skf:
-            X_train = _safe_indexing(X, train_index)
-            X_test = _safe_indexing(X, test_index)
-            y_train = _safe_indexing(y, train_index)
-            y_test = _safe_indexing(y, test_index)
-
-            self.estimator_.fit(X_train, y_train)
-
-            probs = self.estimator_.predict_proba(X_test)
-            probabilities[test_index] = probs[range(len(y_test)), y_test]
+        skf = StratifiedKFold(
+            n_splits=self.cv, shuffle=True, random_state=random_state,
+        )
+        probabilities = cross_val_predict(
+            self.estimator_, X, y, cv=skf, n_jobs=self.n_jobs,
+            method='predict_proba'
+        )
+        probabilities = probabilities[range(len(y)), y]
 
         idx_under = np.empty((0,), dtype=int)
 

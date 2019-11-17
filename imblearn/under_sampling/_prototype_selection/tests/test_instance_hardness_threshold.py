@@ -6,7 +6,10 @@
 import pytest
 import numpy as np
 
+
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import InstanceHardnessThreshold
 
@@ -76,3 +79,16 @@ def test_iht_fit_resample_wrong_class_obj():
     iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)
     with pytest.raises(ValueError, match="Invalid parameter `estimator`"):
         iht.fit_resample(X, Y)
+
+
+def test_iht_reproducibility():
+    from sklearn.datasets import load_digits
+    X_digits, y_digits = load_digits(return_X_y=True)
+    idx_sampled = []
+    for seed in range(5):
+        est = RandomForestClassifier(n_estimators=10, random_state=seed)
+        iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)
+        iht.fit_resample(X_digits, y_digits)
+        idx_sampled.append(iht.sample_indices_.copy())
+    for idx_1, idx_2 in zip(idx_sampled, idx_sampled[1:]):
+        assert_array_equal(idx_1, idx_2)

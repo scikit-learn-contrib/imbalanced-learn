@@ -37,10 +37,14 @@ class RandomOverSampler(BaseOverSampler):
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    See Also
+    --------
+    SMOTE : Oversample by generating synthetic samples.
 
     Notes
     -----
@@ -64,7 +68,6 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = ros.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
-
     """
 
     def __init__(self, sampling_strategy="auto", random_state=None):
@@ -76,7 +79,8 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         if not hasattr(X, "loc"):
             # Do not convert dataframe
-            X = check_array(X, accept_sparse=["csr", "csc"], dtype=None)
+            X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
+                            force_all_finite=False)
         y = check_array(
             y, accept_sparse=["csr", "csc"], dtype=None, ensure_2d=False
         )
@@ -105,4 +109,8 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         )
 
     def _more_tags(self):
-        return {"X_types": ["2darray", "string"], "sample_indices": True}
+        return {
+            "X_types": ["2darray", "string"],
+            "sample_indices": True,
+            "allow_nan": True,
+        }

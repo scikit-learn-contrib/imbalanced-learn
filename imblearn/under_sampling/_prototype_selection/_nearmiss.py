@@ -14,9 +14,13 @@ from sklearn.utils import _safe_indexing
 from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
+from ...utils._docstring import _n_jobs_docstring
 
 
-@Substitution(sampling_strategy=BaseUnderSampler._sampling_strategy_docstring)
+@Substitution(
+    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
+)
 class NearMiss(BaseUnderSampler):
     """Class to perform under-sampling based on NearMiss methods.
 
@@ -26,17 +30,17 @@ class NearMiss(BaseUnderSampler):
     ----------
     {sampling_strategy}
 
-    version : int, optional (default=1)
+    version : int, default=1
         Version of the NearMiss to use. Possible values are 1, 2 or 3.
 
-    n_neighbors : int or object, optional (default=3)
+    n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         average distance to the minority point samples.  If object, an
         estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_neighbors_ver3 : int or object, optional (default=3)
+    n_neighbors_ver3 : int or object, default=3
         If ``int``, NearMiss-3 algorithm start by a phase of re-sampling. This
         parameter correspond to the number of neighbours selected create the
         subset in which the selection will be performed.  If object, an
@@ -44,19 +48,20 @@ class NearMiss(BaseUnderSampler):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    See Also
+    --------
+    RandomUnderSampler : Random undersample the dataset.
+
+    InstanceHardnessThreshold : Use of classifier to undersample a dataset.
 
     Notes
     -----
@@ -86,7 +91,6 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = nm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 100, 1: 100}})
-
     """
 
     def __init__(

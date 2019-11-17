@@ -29,6 +29,7 @@ from ..exceptions import raise_isinstance_error
 from ..utils import check_neighbors_object
 from ..utils import check_target_type
 from ..utils import Substitution
+from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
 
 
@@ -64,7 +65,7 @@ class BaseSMOTE(BaseOverSampler):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
             Points from which the points will be created.
 
         y_dtype : dtype
@@ -75,26 +76,25 @@ class BaseSMOTE(BaseOverSampler):
             target values for the synthetic variables with correct length in
             a clear format.
 
-        nn_data : ndarray, shape (n_samples_all, n_features)
+        nn_data : ndarray of shape (n_samples_all, n_features)
             Data set carrying all the neighbours to be used
 
-        nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)
+        nn_num : ndarray of shape (n_samples_all, k_nearest_neighbours)
             The nearest neighbours of each sample in `nn_data`.
 
         n_samples : int
             The number of samples to generate.
 
-        step_size : float, optional (default=1.)
+        step_size : float, default=1.0
             The step size to create samples.
 
         Returns
         -------
-        X_new : {ndarray, sparse matrix}, shape (n_samples_new, n_features)
+        X_new : {ndarray, sparse matrix} of shape (n_samples_new, n_features)
             Synthetically generated samples.
 
-        y_new : ndarray, shape (n_samples_new,)
+        y_new : ndarray of shape (n_samples_new,)
             Target values for synthetic samples.
-
         """
         random_state = check_random_state(self.random_state)
         samples_indices = random_state.randint(
@@ -124,13 +124,13 @@ class BaseSMOTE(BaseOverSampler):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
             Points from which the points will be created.
 
-        nn_data : ndarray, shape (n_samples_all, n_features)
+        nn_data : ndarray of shape (n_samples_all, n_features)
             Data set carrying all the neighbours to be used.
 
-        nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)
+        nn_num : ndarray of shape (n_samples_all, k_nearest_neighbours)
             The nearest neighbours of each sample in `nn_data`.
 
         rows : ndarray[int], shape (n_samples,)
@@ -148,7 +148,6 @@ class BaseSMOTE(BaseOverSampler):
         -------
         X_new : {ndarray, sparse matrix}, shape (n_samples, n_features)
             Synthetically generated samples.
-
         """
         diffs = nn_data[nn_num[rows, cols]] - X[rows]
 
@@ -175,16 +174,16 @@ class BaseSMOTE(BaseOverSampler):
             :class:`sklearn.neighbors.base.KNeighborsMixin` use to determine if
             a sample is in danger/noise.
 
-        samples : {array-like, sparse matrix}, shape (n_samples, n_features)
+        samples : {array-like, sparse matrix} of shape (n_samples, n_features)
             The samples to check if either they are in danger or not.
 
         target_class : int or str
             The target corresponding class being over-sampled.
 
-        y : array-like, shape (n_samples,)
+        y : array-like of shape (n_samples,)
             The true label in order to check the neighbour labels.
 
-        kind : str, optional (default='danger')
+        kind : {'danger', 'noise'}, default='danger'
             The type of classification to use. Can be either:
 
             - If 'danger', check if samples are in danger,
@@ -192,9 +191,8 @@ class BaseSMOTE(BaseOverSampler):
 
         Returns
         -------
-        output : ndarray, shape (n_samples,)
+        output : ndarray of shape (n_samples,)
             A boolean array where True refer to samples in danger or noise.
-
         """
         x = nn_estimator.kneighbors(samples, return_distance=False)[:, 1:]
         nn_label = (y[x] != target_class).astype(int)
@@ -215,6 +213,7 @@ class BaseSMOTE(BaseOverSampler):
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class BorderlineSMOTE(BaseSMOTE):
@@ -232,37 +231,25 @@ class BorderlineSMOTE(BaseSMOTE):
 
     {random_state}
 
-    k_neighbors : int or object, optional (default=5)
+    k_neighbors : int or object, default=5
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
-    m_neighbors : int or object, optional (default=10)
+    m_neighbors : int or object, default=10
         If int, number of nearest neighbours to use to determine if a minority
         sample is in danger. If object, an estimator that inherits
         from :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used
         to find the m_neighbors.
 
-    kind : str, optional (default='borderline-1')
+    kind : {{"borderline-1", "borderline-2"}}, default='borderline-1'
         The type of SMOTE algorithm to use one of the following options:
         ``'borderline-1'``, ``'borderline-2'``.
 
-    Notes
-    -----
-    See the original papers: [2]_ for more details.
-
-    Supports multi-class resampling. A one-vs.-rest scheme is used as
-    originally proposed in [1]_.
-
-    See also
+    See Also
     --------
     SMOTE : Over-sample using SMOTE.
 
@@ -271,6 +258,16 @@ class BorderlineSMOTE(BaseSMOTE):
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
 
     ADASYN : Over-sample using ADASYN.
+
+    KMeansSMOTE : Over-sample applying a clustering before to oversample using
+        SMOTE.
+
+    Notes
+    -----
+    See the original papers: [2]_ for more details.
+
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
+    originally proposed in [1]_.
 
     References
     ----------
@@ -298,7 +295,6 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
-
     """
 
     def __init__(
@@ -414,6 +410,7 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class SVMSMOTE(BaseSMOTE):
@@ -430,39 +427,27 @@ class SVMSMOTE(BaseSMOTE):
 
     {random_state}
 
-    k_neighbors : int or object, optional (default=5)
+    k_neighbors : int or object, default=5
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
-    m_neighbors : int or object, optional (default=10)
+    m_neighbors : int or object, default=10
         If int, number of nearest neighbours to use to determine if a minority
         sample is in danger. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the m_neighbors.
 
-    svm_estimator : object, optional (default=SVC())
+    svm_estimator : object, default=SVC()
         A parametrized :class:`sklearn.svm.SVC` classifier can be passed.
 
-    out_step : float, optional (default=0.5)
+    out_step : float, default=0.5
         Step size when extrapolating.
 
-    Notes
-    -----
-    See the original papers: [2]_ for more details.
-
-    Supports multi-class resampling. A one-vs.-rest scheme is used as
-    originally proposed in [1]_.
-
-    See also
+    See Also
     --------
     SMOTE : Over-sample using SMOTE.
 
@@ -471,6 +456,16 @@ class SVMSMOTE(BaseSMOTE):
     BorderlineSMOTE : Over-sample using Borderline-SMOTE.
 
     ADASYN : Over-sample using ADASYN.
+
+    KMeansSMOTE : Over-sample applying a clustering before to oversample using
+        SMOTE.
+
+    Notes
+    -----
+    See the original papers: [2]_ for more details.
+
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
+    originally proposed in [1]_.
 
     References
     ----------
@@ -498,7 +493,6 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
-
     """
 
     def __init__(
@@ -633,6 +627,7 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class SMOTE(BaseSMOTE):
@@ -649,27 +644,15 @@ class SMOTE(BaseSMOTE):
 
     {random_state}
 
-    k_neighbors : int or object, optional (default=5)
+    k_neighbors : int or object, default=5
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
-    Notes
-    -----
-    See the original papers: [1]_ for more details.
-
-    Supports multi-class resampling. A one-vs.-rest scheme is used as
-    originally proposed in [1]_.
-
-    See also
+    See Also
     --------
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
@@ -678,6 +661,16 @@ class SMOTE(BaseSMOTE):
     SVMSMOTE : Over-sample using the SVM-SMOTE variant.
 
     ADASYN : Over-sample using ADASYN.
+
+    KMeansSMOTE : Over-sample applying a clustering before to oversample using
+        SMOTE.
+
+    Notes
+    -----
+    See the original papers: [1]_ for more details.
+
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
+    originally proposed in [1]_.
 
     References
     ----------
@@ -701,7 +694,6 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
-
     """
 
     def __init__(
@@ -761,14 +753,14 @@ class SMOTENC(SMOTE):
 
     Parameters
     ----------
-    categorical_features : ndarray, shape (n_cat_features,) or (n_features,)
+    categorical_features : ndarray of shape (n_cat_features,) or (n_features,)
         Specified which features are categorical. Can either be:
 
         - array of indices specifying the categorical features;
         - mask array of shape (n_features, ) and ``bool`` dtype for which
           ``True`` indicates the categorical features.
 
-    sampling_strategy : float, str, dict or callable, (default='auto')
+    sampling_strategy : float, str, dict or callable, default='auto'
         Sampling information to resample the data set.
 
         - When ``float``, it corresponds to the desired ratio of the number of
@@ -804,7 +796,7 @@ class SMOTENC(SMOTE):
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
+    random_state : int, RandomState instance, default=None
         Control the randomization of the algorithm.
 
         - If int, ``random_state`` is the seed used by the random number
@@ -814,18 +806,31 @@ class SMOTENC(SMOTE):
         - If ``None``, the random number generator is the ``RandomState``
           instance used by ``np.random``.
 
-    k_neighbors : int or object, optional (default=5)
+    k_neighbors : int or object, default=5
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int or None, optional (default=None)
+    n_jobs : int, default=None
         Number of CPU cores used during the cross-validation loop.
         ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
         ``-1`` means using all processors. See
         `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
         for more details.
+
+    See Also
+    --------
+    SMOTE : Over-sample using SMOTE.
+
+    SVMSMOTE : Over-sample using SVM-SMOTE variant.
+
+    BorderlineSMOTE : Over-sample using Borderline-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
+
+    KMeansSMOTE : Over-sample applying a clustering before to oversample using
+        SMOTE.
 
     Notes
     -----
@@ -837,16 +842,6 @@ class SMOTENC(SMOTE):
     See
     :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
     and :ref:`sphx_glr_auto_examples_over-sampling_plot_illustration_generation_sample.py`.
-
-    See also
-    --------
-    SMOTE : Over-sample using SMOTE.
-
-    SVMSMOTE : Over-sample using SVM-SMOTE variant.
-
-    BorderlineSMOTE : Over-sample using Borderline-SMOTE variant.
-
-    ADASYN : Over-sample using ADASYN.
 
     References
     ----------
@@ -874,7 +869,6 @@ class SMOTENC(SMOTE):
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> print('Resampled dataset samples per class {}'.format(Counter(y_res)))
     Resampled dataset samples per class Counter({0: 900, 1: 900})
-
     """
 
     def __init__(
@@ -1048,6 +1042,7 @@ class SMOTENC(SMOTE):
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class KMeansSMOTE(BaseSMOTE):
@@ -1063,31 +1058,26 @@ class KMeansSMOTE(BaseSMOTE):
 
     {random_state}
 
-    k_neighbors : int or object, optional (default=2)
+    k_neighbors : int or object, default=2
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
-    kmeans_estimator : int or object, optional (default=MiniBatchKMeans())
+    kmeans_estimator : int or object, default=None
         A KMeans instance or the number of clusters to be used. By default,
         we used a :class:`sklearn.cluster.MiniBatchKMeans` which tend to be
         better with large number of samples.
 
-    cluster_balance_threshold : str or float, optional (default="auto")
+    cluster_balance_threshold : "auto" or float, default="auto"
         The threshold at which a cluster is called balanced and where samples
         of the class selected for SMOTE will be oversampled. If "auto", this
         will be determined by the ratio for each class, or it can be set
         manually.
 
-    density_exponent : str or float, optional (default="auto")
+    density_exponent : "auto" or float, default="auto"
         This exponent is used to determine the density of a cluster. Leaving
         this to "auto" will use a feature-length based exponent.
 
@@ -1101,6 +1091,16 @@ class KMeansSMOTE(BaseSMOTE):
 
     cluster_balance_threshold_ : float
         The threshold used during ``fit`` for calling a cluster balanced.
+
+    See Also
+    --------
+    SMOTE : Over-sample using SMOTE.
+
+    SVMSMOTE : Over-sample using SVM-SMOTE variant.
+
+    BorderlineSMOTE : Over-sample using Borderline-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
 
     References
     ----------
@@ -1131,7 +1131,6 @@ class KMeansSMOTE(BaseSMOTE):
     Middle blob unchanged: True
     >>> print("More 0 samples: %s" % ((y_res == 0).sum() > (y == 0).sum()))
     More 0 samples: True
-
     """
 
     def __init__(

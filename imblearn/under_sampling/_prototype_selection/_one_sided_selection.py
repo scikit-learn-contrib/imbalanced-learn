@@ -15,11 +15,13 @@ from sklearn.utils import check_random_state, _safe_indexing
 from ..base import BaseCleaningSampler
 from ._tomek_links import TomekLinks
 from ...utils import Substitution
+from ...utils._docstring import _n_jobs_docstring
 from ...utils._docstring import _random_state_docstring
 
 
 @Substitution(
     sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class OneSidedSelection(BaseCleaningSampler):
@@ -33,29 +35,27 @@ class OneSidedSelection(BaseCleaningSampler):
 
     {random_state}
 
-    n_neighbors : int or object, optional (default=\
-KNeighborsClassifier(n_neighbors=1))
+    n_neighbors : int or object, default=None
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors.
 
-    n_seeds_S : int, optional (default=1)
+    n_seeds_S : int, default=1
         Number of samples to extract in order to build the set S.
 
-    n_jobs : int or None, optional (default=None)
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    See Also
+    --------
+    EditedNearestNeighbours : Undersample by editing noisy samples.
 
     Notes
     -----
@@ -86,7 +86,6 @@ KNeighborsClassifier(n_neighbors=1))
     >>> X_res, y_res = oss.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 496, 0: 100}})
-
     """
 
     def __init__(
