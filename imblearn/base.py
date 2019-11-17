@@ -80,20 +80,22 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         output = self._fit_resample(X, y)
 
-        if self._columns is not None:
+        if self._X_columns is not None or self._y_name is not None:
             import pandas as pd
-            X_ = pd.DataFrame(output[0], columns=self._columns)
+
+        if self._X_columns is not None:
+            X_ = pd.DataFrame(output[0], columns=self._X_columns)
+            X_ = X_.astype(self._X_dtypes)
         else:
             X_ = output[0]
 
-        if binarize_y:
-            y_sampled = label_binarize(output[1], np.unique(y))
-            if len(output) == 2:
-                return X_, y_sampled
-            return X_, y_sampled, output[2]
-        if len(output) == 2:
-            return X_, output[1]
-        return X_, output[1], output[2]
+        y_ = (label_binarize(output[1], np.unique(y))
+              if binarize_y else output[1])
+
+        if self._y_name is not None:
+            y_ = pd.Series(y_, dtype=self._y_dtype, name=self._y_name)
+
+        return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 
     #  define an alias for back-compatibility
     fit_sample = fit_resample
@@ -135,8 +137,22 @@ class BaseSampler(SamplerMixin):
         self.sampling_strategy = sampling_strategy
 
     def _check_X_y(self, X, y, accept_sparse=None):
-        # store the columns name to reconstruct a dataframe
-        self._columns = X.columns if hasattr(X, "loc") else None
+        if hasattr(X, "loc"):
+            # store information to build dataframe
+            self._X_columns = X.columns
+            self._X_dtypes = X.dtypes
+        else:
+            self._X_columns = None
+            self._X_dtypes = None
+
+        if hasattr(y, "loc"):
+            # store information to build a series
+            self._y_name = y.name
+            self._y_dtype = y.dtype
+        else:
+            self._y_name = None
+            self._y_dtype = None
+
         if accept_sparse is None:
             accept_sparse = ["csr", "csc"]
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
@@ -263,20 +279,24 @@ class FunctionSampler(BaseSampler):
 
         output = self._fit_resample(X, y)
 
-        if self._columns is not None:
-            import pandas as pd
-            X_ = pd.DataFrame(output[0], columns=self._columns)
-        else:
-            X_ = output[0]
+        if self.validate:
+            if self._X_columns is not None or self._y_name is not None:
+                import pandas as pd
 
-        if self.validate and binarize_y:
-            y_sampled = label_binarize(output[1], np.unique(y))
-            if len(output) == 2:
-                return X_, y_sampled
-            return X_, y_sampled, output[2]
-        if len(output) == 2:
-            return X_, output[1]
-        return X_, output[1], output[2]
+            if self._X_columns is not None:
+                X_ = pd.DataFrame(output[0], columns=self._X_columns)
+                X_ = X_.astype(self._X_dtypes)
+            else:
+                X_ = output[0]
+
+            y_ = (label_binarize(output[1], np.unique(y))
+                  if binarize_y else output[1])
+
+            if self._y_name is not None:
+                y_ = pd.Series(y_, dtype=self._y_dtype, name=self._y_name)
+
+            return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
+        return output
 
     def _fit_resample(self, X, y):
         func = _identity if self.func is None else self.func
