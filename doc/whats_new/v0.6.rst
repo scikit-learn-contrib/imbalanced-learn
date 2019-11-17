@@ -67,7 +67,11 @@ Enhancement
 - :class:`imblearn.under_sampling.RandomUnderSampler`,
   :class:`imblearn.over_sampling.RandomOverSampler` can resample when non
   finite values are present in ``X``.
-  :pr:`643` by `Guillaume Lemaitre <glemaitre>`.
+  :pr:`643` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- All samplers will output a Pandas DataFrame if a Pandas DataFrame was given
+  as an input.
+  :pr:`644` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - The samples generation in
   :class:`imblearn.over_sampling.SMOTE`,

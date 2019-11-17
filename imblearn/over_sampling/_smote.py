@@ -888,11 +888,12 @@ class SMOTENC(SMOTE):
         )
         self.categorical_features = categorical_features
 
-    @staticmethod
-    def _check_X_y(X, y):
+    def _check_X_y(self, X, y):
         """Overwrite the checking to let pass some string for categorical
         features.
         """
+        # store the columns name to reconstruct a dataframe
+        self._columns = X.columns if hasattr(X, "loc") else None
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = check_X_y(X, y, accept_sparse=["csr", "csc"], dtype=None)
         return X, y, binarize_y

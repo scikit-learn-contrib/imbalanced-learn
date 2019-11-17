@@ -80,13 +80,12 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         self.random_state = random_state
         self.replacement = replacement
 
-    @staticmethod
-    def _check_X_y(X, y):
+    def _check_X_y(self, X, y):
+        # store the columns name to reconstruct a dataframe
+        self._columns = X.columns if hasattr(X, "loc") else None
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        if not hasattr(X, "loc"):
-            # Do not convert dataframe
-            X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
-                            force_all_finite=False)
+        X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
+                        force_all_finite=False)
         y = check_array(
             y, accept_sparse=["csr", "csc"], dtype=None, ensure_2d=False
         )

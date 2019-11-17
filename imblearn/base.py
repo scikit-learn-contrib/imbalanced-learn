@@ -32,7 +32,8 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+        X : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples, n_features)
             Data array.
 
         y : array-like of shape (n_samples,)
@@ -54,7 +55,8 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+        X : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
         y : array-like of shape (n_samples,)
@@ -62,7 +64,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         Returns
         -------
-        X_resampled : {array-like, sparse matrix} of shape \
+        X_resampled : {array-like, dataframe, sparse matrix} of shape \
                 (n_samples_new, n_features)
             The array containing the resampled data.
 
@@ -78,12 +80,20 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         output = self._fit_resample(X, y)
 
+        if self._columns is not None:
+            import pandas as pd
+            X_ = pd.DataFrame(output[0], columns=self._columns)
+        else:
+            X_ = output[0]
+
         if binarize_y:
             y_sampled = label_binarize(output[1], np.unique(y))
             if len(output) == 2:
-                return output[0], y_sampled
-            return output[0], y_sampled, output[2]
-        return output
+                return X_, y_sampled
+            return X_, y_sampled, output[2]
+        if len(output) == 2:
+            return X_, output[1]
+        return X_, output[1], output[2]
 
     #  define an alias for back-compatibility
     fit_sample = fit_resample
@@ -124,8 +134,9 @@ class BaseSampler(SamplerMixin):
     def __init__(self, sampling_strategy="auto"):
         self.sampling_strategy = sampling_strategy
 
-    @staticmethod
-    def _check_X_y(X, y, accept_sparse=None):
+    def _check_X_y(self, X, y, accept_sparse=None):
+        # store the columns name to reconstruct a dataframe
+        self._columns = X.columns if hasattr(X, "loc") else None
         if accept_sparse is None:
             accept_sparse = ["csr", "csc"]
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
@@ -238,6 +249,8 @@ class FunctionSampler(BaseSampler):
         y_resampled : array-like of shape (n_samples_new,)
             The corresponding label of `X_resampled`.
         """
+        # store the columns name to reconstruct a dataframe
+        self._columns = X.columns if hasattr(X, "loc") else None
         if self.validate:
             check_classification_targets(y)
             X, y, binarize_y = self._check_X_y(
@@ -250,12 +263,20 @@ class FunctionSampler(BaseSampler):
 
         output = self._fit_resample(X, y)
 
+        if self._columns is not None:
+            import pandas as pd
+            X_ = pd.DataFrame(output[0], columns=self._columns)
+        else:
+            X_ = output[0]
+
         if self.validate and binarize_y:
             y_sampled = label_binarize(output[1], np.unique(y))
             if len(output) == 2:
-                return output[0], y_sampled
-            return output[0], y_sampled, output[2]
-        return output
+                return X_, y_sampled
+            return X_, y_sampled, output[2]
+        if len(output) == 2:
+            return X_, output[1]
+        return X_, output[1], output[2]
 
     def _fit_resample(self, X, y):
         func = _identity if self.func is None else self.func
