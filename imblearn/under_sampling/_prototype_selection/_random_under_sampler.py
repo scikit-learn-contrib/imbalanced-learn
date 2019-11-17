@@ -81,8 +81,22 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         self.replacement = replacement
 
     def _check_X_y(self, X, y):
-        # store the columns name to reconstruct a dataframe
-        self._columns = X.columns if hasattr(X, "loc") else None
+        if hasattr(X, "loc"):
+            # store information to build dataframe
+            self._X_columns = X.columns
+            self._X_dtypes = X.dtypes
+        else:
+            self._X_columns = None
+            self._X_dtypes = None
+
+        if hasattr(y, "loc"):
+            # store information to build a series
+            self._y_name = y.name
+            self._y_dtype = y.dtype
+        else:
+            self._y_name = None
+            self._y_dtype = None
+
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
                         force_all_finite=False)

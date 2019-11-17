@@ -57,7 +57,8 @@ Enhancement
 - :class:`imblearn.under_sampling.RandomUnderSampling`,
   :class:`imblearn.over_sampling.RandomOverSampling`,
   :class:`imblearn.datasets.make_imbalance` accepts Pandas DataFrame in and
-  will output Pandas DataFrame.
+  will output Pandas DataFrame. Similarly, it will accepts Pandas Series in and
+  will output Pandas Series.
   :pr:`636` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - :class:`imblearn.FunctionSampler` accepts a parameter ``validate`` allowing
