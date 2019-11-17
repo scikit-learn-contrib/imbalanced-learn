@@ -296,7 +296,7 @@ class FunctionSampler(BaseSampler):
                 X_ = output[0]
 
             y_ = (label_binarize(output[1], np.unique(y))
-                if binarize_y else output[1])
+                  if binarize_y else output[1])
 
             if self._y_name is not None:
                 y_ = pd.Series(y_, dtype=self._y_dtype, name=self._y_name)
