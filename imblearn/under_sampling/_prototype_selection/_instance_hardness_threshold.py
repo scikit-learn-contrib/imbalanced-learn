@@ -121,10 +121,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
         ):
             self.estimator_ = clone(self.estimator)
             _set_random_states(self.estimator_, random_state)
-            try:
-                self.estimator_.set_params(n_jobs=1)
-            except ValueError:
-                pass
+
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
                 n_estimators=100,
