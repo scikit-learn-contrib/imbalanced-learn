@@ -15,6 +15,11 @@ scikit-learn:
 - :class:`imblearn.under_sampling.ClusterCentroids`
 - :class:`imblearn.under_sampling.InstanceHardnessThreshold`
 
+The following samplers will give different results due to change linked to
+the random state internal usage:
+
+- :class:`imblearn.over_sampling.SMOTENC`
+
 Bug fixes
 .........
 
