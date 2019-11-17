@@ -95,13 +95,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         if self._y_name is not None:
             y_ = pd.Series(y_, dtype=self._y_dtype, name=self._y_name)
 
-        if binarize_y:
-            if len(output) == 2:
-                return X_, y_
-            return X_, y_, output[2]
-        if len(output) == 2:
-            return X_, y_
-        return X_, y_, output[2]
+        return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 
     #  define an alias for back-compatibility
     fit_sample = fit_resample
@@ -301,15 +295,8 @@ class FunctionSampler(BaseSampler):
             if self._y_name is not None:
                 y_ = pd.Series(y_, dtype=self._y_dtype, name=self._y_name)
 
-            if binarize_y:
-                if len(output) == 2:
-                    return X_, y_
-                return X_, y_, output[2]
-        else:
-            X_, y_ = output[0], output[1]
-            if len(output) == 2:
-                return X_, y_
-            return X_, y_, output[2]
+            return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
+        return output
 
     def _fit_resample(self, X, y):
         func = _identity if self.func is None else self.func
