@@ -15,6 +15,11 @@ scikit-learn:
 - :class:`imblearn.under_sampling.ClusterCentroids`
 - :class:`imblearn.under_sampling.InstanceHardnessThreshold`
 
+The following samplers will give different results due to change linked to
+the random state internal usage:
+
+- :class:`imblearn.over_sampling.SMOTENC`
+
 Bug fixes
 .........
 
@@ -63,6 +68,15 @@ Enhancement
   :class:`imblearn.over_sampling.RandomOverSampler` can resample when non
   finite values are present in ``X``.
   :pr:`643` by `Guillaume Lemaitre <glemaitre>`.
+
+- The samples generation in
+  :class:`imblearn.over_sampling.SMOTE`,
+  :class:`imblearn.over_sampling.BorderlineSMOTE`,
+  :class:`imblearn.over_sampling.SVMSMOTE`,
+  :class:`imblearn.over_sampling.KMeansSMOTE`,
+  :class:`imblearn.over_sampling.SMOTENC` is now vectorize with giving
+  an additional speed-up when `X` in sparse.
+  :pr:`596` by :user:`Matt Edding <MattEding>`.
 
 Deprecation
 ...........
