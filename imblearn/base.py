@@ -32,7 +32,8 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+        X : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples, n_features)
             Data array.
 
         y : array-like of shape (n_samples,)
@@ -54,7 +55,8 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         Parameters
         ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+        X : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples, n_features)
             Matrix containing the data which have to be sampled.
 
         y : array-like of shape (n_samples,)
@@ -62,7 +64,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         Returns
         -------
-        X_resampled : {array-like, sparse matrix} of shape \
+        X_resampled : {array-like, dataframe, sparse matrix} of shape \
                 (n_samples_new, n_features)
             The array containing the resampled data.
 
