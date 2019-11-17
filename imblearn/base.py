@@ -300,16 +300,16 @@ class FunctionSampler(BaseSampler):
 
             if self._y_name is not None:
                 y_ = pd.Series(y_, dtype=self._y_dtype, name=self._y_name)
+
+            if binarize_y:
+                if len(output) == 2:
+                    return X_, y_
+                return X_, y_, output[2]
         else:
             X_, y_ = output[0], output[1]
-
-        if binarize_y:
             if len(output) == 2:
                 return X_, y_
             return X_, y_, output[2]
-        if len(output) == 2:
-            return X_, y_
-        return X_, y_, output[2]
 
     def _fit_resample(self, X, y):
         func = _identity if self.func is None else self.func
