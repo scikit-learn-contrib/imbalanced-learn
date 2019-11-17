@@ -139,11 +139,12 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             )
 
     def _fit_resample(self, X, y):
-        self._validate_estimator()
+        random_state = check_random_state(self.random_state)
+        self._validate_estimator(random_state)
 
         target_stats = Counter(y)
         skf = StratifiedKFold(
-            n_splits=self.cv, shuffle=False, random_state=random_state
+            n_splits=self.cv, shuffle=True, random_state=random_state,
         )
         probabilities = cross_val_predict(
             self.estimator_, X, y, cv=skf, n_jobs=self.n_jobs,
