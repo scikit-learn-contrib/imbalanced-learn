@@ -15,6 +15,14 @@ scikit-learn:
 - :class:`imblearn.under_sampling.ClusterCentroids`
 - :class:`imblearn.under_sampling.InstanceHardnessThreshold`
 
+Bug fixes
+.........
+
+- :class:`imblearn.under_sampling.InstanceHardnessThreshold` now take into
+  account the `random_state` and will give deterministic results. In addition,
+  `cross_val_predict` is used to take advantage of the parallelism.
+  :pr:`599` by :user:`Shihab Shahriar Khan <Shihab-Shahriar>`.
+
 Maintenance
 ...........
 
