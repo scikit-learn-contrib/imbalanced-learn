@@ -64,6 +64,15 @@ Enhancement
   finite values are present in ``X``.
   :pr:`643` by `Guillaume Lemaitre <glemaitre>`.
 
+- The samples generation in
+  :class:`imblearn.over_sampling.SMOTE`,
+  :class:`imblearn.over_sampling.BorderlineSMOTE`,
+  :class:`imblearn.over_sampling.SVMSMOTE`,
+  :class:`imblearn.over_sampling.KMeansSMOTE`,
+  :class:`imblearn.over_sampling.SMOTENC` is now vectorize with giving
+  an additional speed-up when `X` in sparse.
+  :pr:`596` by :user:`Matt Edding <MattEding>`.
+
 Deprecation
 ...........
 
