@@ -7,19 +7,19 @@
 
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseCleaningSampler
 from ...utils import Substitution
-from ...utils.deprecation import deprecate_parameter
-from ...utils._docstring import _random_state_docstring
+from ...utils._docstring import _n_jobs_docstring
 
 
 @Substitution(
     sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    n_jobs=_n_jobs_docstring,
+)
 class TomekLinks(BaseCleaningSampler):
-    """Class to perform under-sampling by removing Tomek's links.
+    """Under-sampling by removing Tomek's links.
 
     Read more in the :ref:`User Guide <tomek_links>`.
 
@@ -27,35 +27,22 @@ class TomekLinks(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
-
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
+
+    See Also
+    --------
+    EditedNearestNeighbours : Undersample by samples edition.
+
+    CondensedNearestNeighbour : Undersample by samples condensation.
+
+    RandomUnderSampling : Randomly under-sample the dataset.
 
     Notes
     -----
@@ -67,7 +54,7 @@ class TomekLinks(BaseCleaningSampler):
     References
     ----------
     .. [1] I. Tomek, "Two modifications of CNN," In Systems, Man, and
-       Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 2010.
+       Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 1976.
 
     Examples
     --------
@@ -85,34 +72,27 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = tl.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 897, 0: 100}})
-
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 return_indices=False,
-                 random_state=None,
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
-        self.random_state = random_state
-        self.return_indices = return_indices
+    def __init__(self, sampling_strategy="auto", n_jobs=None):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.n_jobs = n_jobs
 
     @staticmethod
     def is_tomek(y, nn_index, class_type):
-        """is_tomek uses the target vector and the first neighbour of every
-        sample point and looks for Tomek pairs. Returning a boolean vector with
-        True for majority Tomek links.
+        """Detect if samples are Tomek's link.
+
+        More precisely, it uses the target vector and the first neighbour of
+        every sample point and looks for Tomek pairs. Returning a boolean
+        vector with True for majority Tomek links.
 
         Parameters
         ----------
-        y : ndarray, shape (n_samples, )
+        y : ndarray of shape (n_samples,)
             Target vector of the data set, necessary to keep track of whether a
-            sample belongs to minority or not
+            sample belongs to minority or not.
 
-        nn_index : ndarray, shape (len(y), )
+        nn_index : ndarray of shape (len(y),)
             The index of the closes nearest neighbour to a sample point.
 
         class_type : int or str
@@ -120,10 +100,9 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
 
         Returns
         -------
-        is_tomek : ndarray, shape (len(y), )
+        is_tomek : ndarray of shape (len(y), )
             Boolean vector on len( # samples ), with True for majority samples
             that are Tomek links.
-
         """
         links = np.zeros(len(y), dtype=bool)
 
@@ -143,13 +122,6 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         return links
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
         # Find the nearest neighbour of every point
         nn = NearestNeighbors(n_neighbors=2, n_jobs=self.n_jobs)
         nn.fit(X)
@@ -158,12 +130,10 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         links = self.is_tomek(y, nns, self.sampling_strategy_)
         self.sample_indices_ = np.flatnonzero(np.logical_not(links))
 
-        if self.return_indices:
-            return (safe_indexing(X, self.sample_indices_),
-                    safe_indexing(y, self.sample_indices_),
-                    self.sample_indices_)
-        return (safe_indexing(X, self.sample_indices_),
-                safe_indexing(y, self.sample_indices_))
+        return (
+            _safe_indexing(X, self.sample_indices_),
+            _safe_indexing(y, self.sample_indices_),
+        )
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}

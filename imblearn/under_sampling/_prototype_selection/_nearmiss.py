@@ -9,18 +9,18 @@ from collections import Counter
 
 import numpy as np
 
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
-from ...utils.deprecation import deprecate_parameter
-from ...utils._docstring import _random_state_docstring
+from ...utils._docstring import _n_jobs_docstring
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    n_jobs=_n_jobs_docstring,
+)
 class NearMiss(BaseUnderSampler):
     """Class to perform under-sampling based on NearMiss methods.
 
@@ -30,30 +30,17 @@ class NearMiss(BaseUnderSampler):
     ----------
     {sampling_strategy}
 
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly
-        selected from the majority class.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
-    {random_state}
-
-        .. deprecated:: 0.4
-           ``random_state`` is deprecated in 0.4 and will be removed in 0.6.
-
-    version : int, optional (default=1)
+    version : int, default=1
         Version of the NearMiss to use. Possible values are 1, 2 or 3.
 
-    n_neighbors : int or object, optional (default=3)
+    n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         average distance to the minority point samples.  If object, an
         estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_neighbors_ver3 : int or object, optional (default=3)
+    n_neighbors_ver3 : int or object, default=3
         If ``int``, NearMiss-3 algorithm start by a phase of re-sampling. This
         parameter correspond to the number of neighbours selected create the
         subset in which the selection will be performed.  If object, an
@@ -61,21 +48,20 @@ class NearMiss(BaseUnderSampler):
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
-    n_jobs : int, optional (default=1)
-        The number of threads to open if possible.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
+    {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
+
+    See Also
+    --------
+    RandomUnderSampler : Random undersample the dataset.
+
+    InstanceHardnessThreshold : Use of classifier to undersample a dataset.
 
     Notes
     -----
@@ -105,34 +91,25 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = nm.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 100, 1: 100}})
-
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 return_indices=False,
-                 random_state=None,
-                 version=1,
-                 n_neighbors=3,
-                 n_neighbors_ver3=3,
-                 n_jobs=1,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
-        self.random_state = random_state
-        self.return_indices = return_indices
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        version=1,
+        n_neighbors=3,
+        n_neighbors_ver3=3,
+        n_jobs=None,
+    ):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.version = version
         self.n_neighbors = n_neighbors
         self.n_neighbors_ver3 = n_neighbors_ver3
         self.n_jobs = n_jobs
 
-    def _selection_dist_based(self,
-                              X,
-                              y,
-                              dist_vec,
-                              num_samples,
-                              key,
-                              sel_strategy='nearest'):
+    def _selection_dist_based(
+        self, X, y, dist_vec, num_samples, key, sel_strategy="nearest"
+    ):
         """Select the appropriate samples depending of the strategy selected.
 
         Parameters
@@ -166,17 +143,21 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         dist_avg_vec = np.sum(dist_vec[:, -self.nn_.n_neighbors:], axis=1)
 
         target_class_indices = np.flatnonzero(y == key)
-        if (dist_vec.shape[0] != safe_indexing(X,
-                                               target_class_indices).shape[0]):
-            raise RuntimeError('The samples to be selected do not correspond'
-                               ' to the distance matrix given. Ensure that'
-                               ' both `X[y == key]` and `dist_vec` are'
-                               ' related.')
+        if (
+            dist_vec.shape[0]
+            != _safe_indexing(X, target_class_indices).shape[0]
+        ):
+            raise RuntimeError(
+                "The samples to be selected do not correspond"
+                " to the distance matrix given. Ensure that"
+                " both `X[y == key]` and `dist_vec` are"
+                " related."
+            )
 
         # Sort the list of distance and get the index
-        if sel_strategy == 'nearest':
+        if sel_strategy == "nearest":
             sort_way = False
-        elif sel_strategy == 'farthest':
+        elif sel_strategy == "farthest":
             sort_way = True
         else:
             raise NotImplementedError
@@ -184,15 +165,18 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         sorted_idx = sorted(
             range(len(dist_avg_vec)),
             key=dist_avg_vec.__getitem__,
-            reverse=sort_way)
+            reverse=sort_way,
+        )
 
         # Throw a warning to tell the user that we did not have enough samples
         # to select and that we just select everything
         if len(sorted_idx) < num_samples:
-            warnings.warn('The number of the samples to be selected is larger'
-                          ' than the number of samples available. The'
-                          ' balancing ratio cannot be ensure and all samples'
-                          ' will be returned.')
+            warnings.warn(
+                "The number of the samples to be selected is larger"
+                " than the number of samples available. The"
+                " balancing ratio cannot be ensure and all samples"
+                " will be returned."
+            )
 
         # Select the desired number of samples
         return sorted_idx[:num_samples]
@@ -200,80 +184,83 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
 
-        # check for deprecated random_state
-        if self.random_state is not None:
-            deprecate_parameter(self, '0.4', 'random_state')
-
-        self.nn_ = check_neighbors_object('n_neighbors', self.n_neighbors)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+        self.nn_ = check_neighbors_object("n_neighbors", self.n_neighbors)
+        self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
         if self.version == 3:
-            self.nn_ver3_ = check_neighbors_object('n_neighbors_ver3',
-                                                   self.n_neighbors_ver3)
-            self.nn_ver3_.set_params(**{'n_jobs': self.n_jobs})
+            self.nn_ver3_ = check_neighbors_object(
+                "n_neighbors_ver3", self.n_neighbors_ver3
+            )
+            self.nn_ver3_.set_params(**{"n_jobs": self.n_jobs})
 
         if self.version not in (1, 2, 3):
-            raise ValueError('Parameter `version` must be 1, 2 or 3, got'
-                             ' {}'.format(self.version))
+            raise ValueError(
+                "Parameter `version` must be 1, 2 or 3, got"
+                " {}".format(self.version)
+            )
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         self._validate_estimator()
 
-        idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0,), dtype=int)
 
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
         minority_class_indices = np.flatnonzero(y == class_minority)
 
-        self.nn_.fit(safe_indexing(X, minority_class_indices))
+        self.nn_.fit(_safe_indexing(X, minority_class_indices))
 
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
                 target_class_indices = np.flatnonzero(y == target_class)
-                X_class = safe_indexing(X, target_class_indices)
-                y_class = safe_indexing(y, target_class_indices)
+                X_class = _safe_indexing(X, target_class_indices)
+                y_class = _safe_indexing(y, target_class_indices)
 
                 if self.version == 1:
                     dist_vec, idx_vec = self.nn_.kneighbors(
-                        X_class, n_neighbors=self.nn_.n_neighbors)
+                        X_class, n_neighbors=self.nn_.n_neighbors
+                    )
                     index_target_class = self._selection_dist_based(
                         X,
                         y,
                         dist_vec,
                         n_samples,
                         target_class,
-                        sel_strategy='nearest')
+                        sel_strategy="nearest",
+                    )
                 elif self.version == 2:
                     dist_vec, idx_vec = self.nn_.kneighbors(
-                        X_class, n_neighbors=target_stats[class_minority])
+                        X_class, n_neighbors=target_stats[class_minority]
+                    )
                     index_target_class = self._selection_dist_based(
                         X,
                         y,
                         dist_vec,
                         n_samples,
                         target_class,
-                        sel_strategy='nearest')
+                        sel_strategy="nearest",
+                    )
                 elif self.version == 3:
                     self.nn_ver3_.fit(X_class)
                     dist_vec, idx_vec = self.nn_ver3_.kneighbors(
-                        safe_indexing(X, minority_class_indices))
+                        _safe_indexing(X, minority_class_indices)
+                    )
                     idx_vec_farthest = np.unique(idx_vec.reshape(-1))
-                    X_class_selected = safe_indexing(X_class, idx_vec_farthest)
-                    y_class_selected = safe_indexing(y_class, idx_vec_farthest)
+                    X_class_selected = _safe_indexing(X_class, idx_vec_farthest)
+                    y_class_selected = _safe_indexing(y_class, idx_vec_farthest)
 
                     dist_vec, idx_vec = self.nn_.kneighbors(
-                        X_class_selected, n_neighbors=self.nn_.n_neighbors)
+                        X_class_selected, n_neighbors=self.nn_.n_neighbors
+                    )
                     index_target_class = self._selection_dist_based(
                         X_class_selected,
                         y_class_selected,
                         dist_vec,
                         n_samples,
                         target_class,
-                        sel_strategy='farthest')
+                        sel_strategy="farthest",
+                    )
                     # idx_tmp is relative to the feature selected in the
                     # previous step and we need to find the indirection
                     index_target_class = idx_vec_farthest[index_target_class]
@@ -281,16 +268,16 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under,
-                 np.flatnonzero(y == target_class)[index_target_class]),
-                axis=0)
+                (
+                    idx_under,
+                    np.flatnonzero(y == target_class)[index_target_class],
+                ),
+                axis=0,
+            )
 
         self.sample_indices_ = idx_under
 
-        if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
-        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     def _more_tags(self):
-        return {'sample_indices': True}
+        return {"sample_indices": True}

@@ -13,10 +13,10 @@ class BaseUnderSampler(BaseSampler):
     Warning: This class should not be used directly. Use the derive classes
     instead.
     """
-    _sampling_type = 'under-sampling'
 
-    _sampling_strategy_docstring = \
-        """sampling_strategy : float, str, dict, callable, (default='auto')
+    _sampling_type = "under-sampling"
+
+    _sampling_strategy_docstring = """sampling_strategy : float, str, dict, callable, default='auto'
         Sampling information to sample the data set.
 
         - When ``float``, it corresponds to the desired ratio of the number of
@@ -61,10 +61,10 @@ class BaseCleaningSampler(BaseSampler):
     Warning: This class should not be used directly. Use the derive classes
     instead.
     """
-    _sampling_type = 'clean-sampling'
 
-    _sampling_strategy_docstring = \
-        """sampling_strategy : str, list or callable
+    _sampling_type = "clean-sampling"
+
+    _sampling_strategy_docstring = """sampling_strategy : str, list or callable
         Sampling information to sample the data set.
 
         - When ``str``, specify the class targeted by the resampling. Note the

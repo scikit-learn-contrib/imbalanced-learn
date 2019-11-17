@@ -9,12 +9,12 @@ from imblearn.utils.testing import warns
 
 class Sampler:
     def __init__(self):
-        self.a = 'something'
-        self.b = 'something'
+        self.a = "something"
+        self.b = "something"
 
 
 def test_deprecate_parameter():
     with warns(DeprecationWarning, match="is deprecated from"):
-        deprecate_parameter(Sampler(), '0.2', 'a')
+        deprecate_parameter(Sampler(), "0.2", "a")
     with warns(DeprecationWarning, match="Use 'b' instead."):
-        deprecate_parameter(Sampler(), '0.2', 'a', 'b')
+        deprecate_parameter(Sampler(), "0.2", "a", "b")

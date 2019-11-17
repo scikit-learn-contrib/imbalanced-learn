@@ -5,23 +5,17 @@
 #          Christos Aridas
 # License: MIT
 
-import warnings
 from collections import Counter
-
-from sklearn.utils import check_X_y
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import check_sampling_strategy
 
 
-def make_imbalance(X,
-                   y,
-                   sampling_strategy=None,
-                   ratio=None,
-                   random_state=None,
-                   verbose=False,
-                   **kwargs):
-    """Turns a dataset into an imbalanced dataset at specific ratio.
+def make_imbalance(
+    X, y, sampling_strategy=None, random_state=None, verbose=False, **kwargs
+):
+    """Turns a dataset into an imbalanced dataset with a specific sampling
+    strategy.
 
     A simple toy dataset to visualize clustering and classification
     algorithms.
@@ -30,7 +24,7 @@ def make_imbalance(X,
 
     Parameters
     ----------
-    X : ndarray, shape (n_samples, n_features)
+    X : {array-like, dataframe}, shape (n_samples, n_features)
         Matrix containing the data to be imbalanced.
 
     y : ndarray, shape (n_samples, )
@@ -47,11 +41,6 @@ def make_imbalance(X,
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
 
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
-
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
@@ -67,7 +56,7 @@ def make_imbalance(X,
 
     Returns
     -------
-    X_resampled : ndarray, shape (n_samples_new, n_features)
+    X_resampled : {ndarray, dataframe}, shape (n_samples_new, n_features)
         The array containing the imbalanced data.
 
     y_resampled : ndarray, shape (n_samples_new)
@@ -97,34 +86,32 @@ def make_imbalance(X,
     Distribution after imbalancing: Counter({2: 30, 1: 20, 0: 10})
 
     """
-    X, y = check_X_y(X, y)
     target_stats = Counter(y)
     # restrict ratio to be a dict or a callable
-    # FIXME remove ratio at 0.6
-    if ratio is not None:
-        warnings.warn("'ratio' has been deprecated in 0.4 and will be "
-                      "removed in 0.6. Use 'sampling_strategy' instead.")
-        sampling_strategy = ratio
-    elif sampling_strategy is None:
-        raise TypeError("make_imbalance() missing 1 required positional "
-                        "argument: 'sampling_strategy'")
     if isinstance(sampling_strategy, dict) or callable(sampling_strategy):
         sampling_strategy_ = check_sampling_strategy(
-            sampling_strategy, y, 'under-sampling', **kwargs)
+            sampling_strategy, y, "under-sampling", **kwargs
+        )
     else:
-        raise ValueError("'sampling_strategy' has to be a dictionary or a "
-                         "function returning a dictionary. Got {} instead."
-                         .format(type(sampling_strategy)))
+        raise ValueError(
+            "'sampling_strategy' has to be a dictionary or a "
+            "function returning a dictionary. Got {} instead.".format(
+                type(sampling_strategy)
+            )
+        )
 
     if verbose:
-        print('The original target distribution in the dataset is: %s',
-              target_stats)
+        print(
+            "The original target distribution in the dataset is: %s",
+            target_stats,
+        )
     rus = RandomUnderSampler(
         sampling_strategy=sampling_strategy_,
         replacement=False,
-        random_state=random_state)
+        random_state=random_state,
+    )
     X_resampled, y_resampled = rus.fit_resample(X, y)
     if verbose:
-        print('Make the dataset imbalanced: %s', Counter(y_resampled))
+        print("Make the dataset imbalanced: %s", Counter(y_resampled))
 
     return X_resampled, y_resampled

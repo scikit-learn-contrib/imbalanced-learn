@@ -16,12 +16,15 @@ from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type
+from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    n_jobs=_n_jobs_docstring,
+    random_state=_random_state_docstring,
+)
 class BalancedBaggingClassifier(BaggingClassifier):
     """A Bagging classifier with additional balancing.
 
@@ -33,75 +36,71 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     Parameters
     ----------
-    base_estimator : object or None, optional (default=None)
+    base_estimator : object, default=None
         The base estimator to fit on random subsets of the dataset.
         If None, then the base estimator is a decision tree.
 
-    n_estimators : int, optional (default=10)
+    n_estimators : int, default=10
         The number of base estimators in the ensemble.
 
-    max_samples : int or float, optional (default=1.0)
+    max_samples : int or float, default=1.0
         The number of samples to draw from X to train each base estimator.
 
         - If int, then draw ``max_samples`` samples.
         - If float, then draw ``max_samples * X.shape[0]`` samples.
 
-    max_features : int or float, optional (default=1.0)
+    max_features : int or float, default=1.0
         The number of features to draw from X to train each base estimator.
 
         - If int, then draw ``max_features`` features.
         - If float, then draw ``max_features * X.shape[1]`` features.
 
-    bootstrap : boolean, optional (default=True)
+    bootstrap : bool, default=True
         Whether samples are drawn with replacement.
 
-    bootstrap_features : boolean, optional (default=False)
+    bootstrap_features : bool, default=False
         Whether features are drawn with replacement.
 
-    oob_score : bool
+    oob_score : bool, default=False
         Whether to use out-of-bag samples to estimate
         the generalization error.
 
-    warm_start : bool, optional (default=False)
+    warm_start : bool, default=False
         When set to True, reuse the solution of the previous call to fit
         and add more estimators to the ensemble, otherwise, just fit
         a whole new ensemble.
 
     {sampling_strategy}
 
-    replacement : bool, optional (default=False)
+    replacement : bool, default=False
         Whether or not to sample randomly with replacement or not.
 
-    n_jobs : int, optional (default=1)
-        The number of jobs to run in parallel for both `fit` and `predict`.
-        If -1, then the number of jobs is set to the number of cores.
+    {n_jobs}
 
     {random_state}
 
-    verbose : int, optional (default=0)
+    verbose : int, default=0
         Controls the verbosity of the building process.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
 
     Attributes
     ----------
     base_estimator_ : estimator
         The base estimator from which the ensemble is grown.
 
+    n_features_ : int
+        The number of features when `fit` is performed.
+
     estimators_ : list of estimators
         The collection of fitted base estimators.
 
-    estimators_samples_ : list of arrays
+    estimators_samples_ : list of ndarray
         The subset of drawn samples (i.e., the in-bag samples) for each base
         estimator. Each subset is defined by a boolean mask.
 
-    estimators_features_ : list of arrays
+    estimators_features_ : list of ndarray
         The subset of drawn features for each base estimator.
 
-    classes_ : array, shape (n_classes,)
+    classes_ : ndarray of shape (n_classes,)
         The classes labels.
 
     n_classes_ : int or list
@@ -110,11 +109,22 @@ class BalancedBaggingClassifier(BaggingClassifier):
     oob_score_ : float
         Score of the training dataset obtained using an out-of-bag estimate.
 
-    oob_decision_function_ : ndarray, shape (n_samples, n_classes)
+    oob_decision_function_ : ndarray of shape (n_samples, n_classes)
         Decision function computed with out-of-bag estimate on the training
         set. If n_estimators is small it might be possible that a data point
         was never left out during the bootstrap. In this case,
         ``oob_decision_function_`` might contain NaN.
+
+    See Also
+    --------
+    BalancedRandomForestClassifier : Random forest applying random-under
+        sampling to balance the different bootstraps.
+
+    EasyEnsembleClassifier : Ensemble of AdaBoost classifier trained on
+        balanced bootstraps.
+
+    RUSBoostClassifier : AdaBoost classifier were each bootstrap is balanced
+        using random-under sampling at each round of boosting.
 
     Notes
     -----
@@ -124,10 +134,6 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     See
     :ref:`sphx_glr_auto_examples_ensemble_plot_comparison_ensemble_classifier.py`.
-
-    See also
-    --------
-    BalanceCascade, EasyEnsemble
 
     References
     ----------
@@ -167,24 +173,24 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
     >>> print(confusion_matrix(y_test, y_pred))
     [[ 23   0]
      [  2 225]]
-
     """
 
-    def __init__(self,
-                 base_estimator=None,
-                 n_estimators=10,
-                 max_samples=1.0,
-                 max_features=1.0,
-                 bootstrap=True,
-                 bootstrap_features=False,
-                 oob_score=False,
-                 warm_start=False,
-                 sampling_strategy='auto',
-                 replacement=False,
-                 n_jobs=1,
-                 random_state=None,
-                 verbose=0,
-                 ratio=None):
+    def __init__(
+        self,
+        base_estimator=None,
+        n_estimators=10,
+        max_samples=1.0,
+        max_features=1.0,
+        bootstrap=True,
+        bootstrap_features=False,
+        oob_score=False,
+        warm_start=False,
+        sampling_strategy="auto",
+        replacement=False,
+        n_jobs=None,
+        random_state=None,
+        verbose=0,
+    ):
 
         super().__init__(
             base_estimator,
@@ -197,42 +203,53 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             warm_start=warm_start,
             n_jobs=n_jobs,
             random_state=random_state,
-            verbose=verbose)
+            verbose=verbose,
+        )
         self.sampling_strategy = sampling_strategy
-        self.ratio = ratio
         self.replacement = replacement
 
     def _validate_estimator(self, default=DecisionTreeClassifier()):
         """Check the estimator and the n_estimator attribute, set the
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError("n_estimators must be an integer, "
-                             "got {}.".format(type(self.n_estimators)))
+            raise ValueError(
+                "n_estimators must be an integer, "
+                "got {}.".format(type(self.n_estimators))
+            )
 
         if self.n_estimators <= 0:
-            raise ValueError("n_estimators must be greater than zero, "
-                             "got {}.".format(self.n_estimators))
+            raise ValueError(
+                "n_estimators must be greater than zero, "
+                "got {}.".format(self.n_estimators)
+            )
 
         if self.base_estimator is not None:
             base_estimator = clone(self.base_estimator)
         else:
             base_estimator = clone(default)
 
-        self.base_estimator_ = Pipeline([('sampler', RandomUnderSampler(
-            sampling_strategy=self.sampling_strategy,
-            replacement=self.replacement,
-            ratio=self.ratio)), ('classifier', base_estimator)])
+        self.base_estimator_ = Pipeline(
+            [
+                (
+                    "sampler",
+                    RandomUnderSampler(
+                        sampling_strategy=self.sampling_strategy,
+                        replacement=self.replacement,
+                    ),
+                ),
+                ("classifier", base_estimator),
+            ]
+        )
 
     def fit(self, X, y):
-        """Build a Bagging ensemble of estimators from the training
-           set (X, y).
+        """Build a Bagging ensemble of estimators from the training set (X, y).
 
         Parameters
         ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
             The training input samples.
 
-        y : array-like, shape (n_samples,)
+        y : array-like of shape (n_samples,)
             The target values.
 
         Returns
