@@ -98,7 +98,8 @@ class BaseSMOTE(BaseOverSampler):
         """
         random_state = check_random_state(self.random_state)
         samples_indices = random_state.randint(
-            low=0, high=len(nn_num.flatten()), size=n_samples)
+            low=0, high=len(nn_num.flatten()), size=n_samples
+        )
 
         # np.newaxis for backwards compatability with random_state
         steps = step_size * random_state.uniform(size=n_samples)[:, np.newaxis]
@@ -133,20 +134,20 @@ class BaseSMOTE(BaseOverSampler):
         nn_num : ndarray of shape (n_samples_all, k_nearest_neighbours)
             The nearest neighbours of each sample in `nn_data`.
 
-        rows : ndarray[int], shape (n_samples,)
+        rows : ndarray of shape (n_samples,), dtype=int
             Indices pointing at feature vector in X which will be used
             as a base for creating new samples.
 
-        cols : ndarray[int], shape (n_samples,)
+        cols : ndarray of shape (n_samples,), dtype=int
             Indices pointing at which nearest neighbor of base feature vector
             will be used when creating new samples.
 
-        steps : ndarray[float], shape (n_samples,)
+        steps : ndarray of shape (n_samples,), dtype=float
             Step sizes for new samples.
 
         Returns
         -------
-        X_new : {ndarray, sparse matrix}, shape (n_samples, n_features)
+        X_new : {ndarray, sparse matrix} of shape (n_samples, n_features)
             Synthetically generated samples.
         """
         diffs = nn_data[nn_num[rows, cols]] - X[rows]
@@ -724,8 +725,9 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
             self.nn_k_.fit(X_class)
             nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
-            X_new, y_new = self._make_samples(X_class, y.dtype, class_sample,
-                                              X_class, nns, n_samples, 1.0)
+            X_new, y_new = self._make_samples(
+                X_class, y.dtype, class_sample, X_class, nns, n_samples, 1.0
+            )
             X_resampled.append(X_new)
             y_resampled.append(y_new)
 
@@ -1011,14 +1013,14 @@ class SMOTENC(SMOTE):
         """
         rng = check_random_state(self.random_state)
         X_new = super()._generate_samples(
-            X, nn_data, nn_num, rows, cols, steps)
+            X, nn_data, nn_num, rows, cols, steps
+        )
         # change in sparsity structure more efficient with LIL than CSR
         X_new = (X_new.tolil() if sparse.issparse(X_new) else X_new)
 
         # convert to dense array since scipy.sparse doesn't handle 3D
         nn_data = (nn_data.toarray() if sparse.issparse(nn_data) else nn_data)
         all_neighbors = nn_data[nn_num[rows]]
-
 
         categories_size = [self.continuous_features_.size] + [
             cat.size for cat in self.ohe_.categories_
