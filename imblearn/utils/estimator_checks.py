@@ -226,10 +226,9 @@ def check_samplers_sparse(name, Sampler):
         set_random_state(sampler)
         X_res_sparse, y_res_sparse = sampler.fit_resample(X_sparse, y)
         X_res, y_res = sampler.fit_resample(X, y)
-        for x_sp, x, y_sp, y in zip(X_res_sparse, X_res, y_res_sparse, y_res):
-            assert sparse.issparse(x_sp)
-            assert_allclose(x_sp.A, x)
-            assert_allclose(y_sp, y)
+        assert sparse.issparse(X_res_sparse)
+        assert_allclose(X_res_sparse.A, X_res)
+        assert_allclose(y_res_sparse, y_res)
 
 
 def check_samplers_pandas(name, Sampler):
