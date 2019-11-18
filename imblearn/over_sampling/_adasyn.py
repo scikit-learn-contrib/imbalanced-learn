@@ -118,7 +118,8 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             # The ratio is computed using a one-vs-rest manner. Using majority
             # in multi-class would lead to slightly different results at the
             # cost of introducing a new parameter.
-            ratio_nn = np.sum(y[nns] != class_sample, axis=1) / self.n_neighbors
+            n_neighbors = self.nn_.n_neighbors - 1
+            ratio_nn = np.sum(y[nns] != class_sample, axis=1) / n_neighbors
             if not np.sum(ratio_nn):
                 raise RuntimeError(
                     "Not any neigbours belong to the majority"
@@ -140,8 +141,9 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             self.nn_.fit(X_class)
             nns = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
 
-            rows = np.repeat(target_class_indices, n_samples_generate)
-            cols = random_state.choice(self.n_neighbors, size=n_samples)
+            enumerated_class_indices = np.arange(len(target_class_indices))
+            rows = np.repeat(enumerated_class_indices, n_samples_generate)
+            cols = random_state.choice(n_neighbors, size=n_samples)
             diffs = X_class[nns[rows, cols]] - X_class[rows]
             steps = random_state.uniform(size=(n_samples, 1))
 
