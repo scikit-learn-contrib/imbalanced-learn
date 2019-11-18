@@ -100,7 +100,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         )
         self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
-def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y):
         self._validate_estimator()
         random_state = check_random_state(self.random_state)
 
