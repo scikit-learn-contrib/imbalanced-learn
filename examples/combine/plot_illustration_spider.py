@@ -19,7 +19,6 @@ import numpy as np
 from imblearn.combine import SPIDER
 from matplotlib.patches import Circle
 from scipy.stats import mode
-from sklearn.neighbors import NearestNeighbors
 
 print(__doc__)
 
@@ -75,10 +74,7 @@ def draw_neighborhoods(spider, neighborhood_k, neighborhood_k2, point,
     circle_k2 = PartialCircle(point, neighborhood_k2.radius,
                               linestyle=('-' if additional else '--'))
 
-    if additional:
-        neighbors = neighborhood_k2.neighbors
-    else:
-        neighbors = neighborhood_k.neighbors
+    if not additional:
         ax.add_patch(circle_k)
 
     if (spider.kind == 'strong') and outer:
