@@ -1,7 +1,7 @@
 """
 ========================================================================
 Model fitting on imbalanced dataset and comparison of methods to improve
-performance
+its performance
 ========================================================================
 
 This example illustrates the problem induced by learning on datasets having
@@ -39,7 +39,7 @@ classes_count
 
 ###############################################################################
 # This dataset is only slightly imbalanced. To better highlight the effect of
-# learning from imbalanced dataset, we will increase this ratio to 30:1
+# learning from an imbalanced dataset, we will increase its ratio to 30:1
 
 from imblearn.datasets import make_imbalance
 
@@ -87,7 +87,7 @@ print(f"Balanced accuracy score of a dummy classifier: {score:.3f}")
 ###############################################################################
 
 ###############################################################################
-# We will first define an helper function which will train a given model
+# We will first define a helper function which will train a given model
 # and compute both accuracy and balanced accuracy. The results will be stored
 # in a dataframe
 
@@ -177,7 +177,7 @@ df_scores
 
 ###############################################################################
 # We can see that our linear model is learning slightly better than our dummy
-# baseline. However, it is impacted by class imbalanced.
+# baseline. However, it is impacted by the class imbalance.
 #
 # We can verify that something similar is happening with a tree-based model
 # such as `RandomForestClassifier`. With this type of classifier, we will not
@@ -247,7 +247,7 @@ df_scores
 #
 # Another way is to resample the training set by under-sampling or
 # over-sampling some of the samples. `imbalanced-learn` provides some samplers
-# to do such precessing.
+# to do such processing.
 
 from imblearn.pipeline import make_pipeline as make_pipeline_with_sampler
 from imblearn.under_sampling import RandomUnderSampler
@@ -277,7 +277,7 @@ df_scores = evaluate_classifier(
 df_scores
 
 ###############################################################################
-# Applying a random under-sampler before to train the linear model or random
+# Applying a random under-sampler before the training of the linear model or random
 # forest, allows to not focus on the majority class at the cost of making more
 # mistake for samples in the majority class (i.e. decreased accuracy).
 #
@@ -290,7 +290,7 @@ df_scores
 # Use of `BalancedRandomForestClassifier` and `BalancedBaggingClassifier`
 # .......................................................................
 #
-# We already show that random under-sampling can be effective on decision tree.
+# We already showed that random under-sampling can be effective on decision tree.
 # However, instead of under-sampling once the dataset, one could under-sample
 # the original dataset before to take a bootstrap sample. This is the base of
 # the `BalancedRandomForestClassifier` and `BalancedBaggingClassifier`.
@@ -306,7 +306,7 @@ df_scores = evaluate_classifier(rf_clf, df_scores, "Balanced RF")
 df_scores
 
 ###############################################################################
-# The performance with the `BalancedRandomForestClassifier` are better than
+# The performance with the `BalancedRandomForestClassifier` is better than
 # applying a single random under-sampling. We will use a gradient-boosting
 # classifier within a `BalancedBaggingClassifier`.
 
@@ -332,7 +332,7 @@ df_scores
 # to bring some diversity for the different GBDT to learn and not focus on a
 # portion of the majority class.
 #
-# We will repeat the same experiment but a ratio of 100:1 and make a similar
+# We will repeat the same experiment but with a ratio of 100:1 and make a similar
 # analysis.
 
 ###############################################################################
