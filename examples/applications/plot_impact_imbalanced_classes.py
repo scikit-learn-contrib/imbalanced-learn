@@ -158,7 +158,8 @@ from sklearn.compose import make_column_selector as selector
 
 preprocessor_linear = ColumnTransformer(
     [("num-pipe", num_pipe, selector(dtype_include=np.number)),
-     ("cat-pipe", cat_pipe, selector(dtype_include=pd.CategoricalDtype))]
+     ("cat-pipe", cat_pipe, selector(dtype_include=pd.CategoricalDtype))],
+    n_jobs=2
 )
 
 ###############################################################################
@@ -192,11 +193,12 @@ cat_pipe = make_pipeline(
 
 preprocessor_tree = ColumnTransformer(
     [("num-pipe", num_pipe, selector(dtype_include=np.number)),
-     ("cat-pipe", cat_pipe, selector(dtype_include=pd.CategoricalDtype))]
+     ("cat-pipe", cat_pipe, selector(dtype_include=pd.CategoricalDtype))],
+    n_jobs=2
 )
 
 rf_clf = make_pipeline(
-    preprocessor_tree, RandomForestClassifier(random_state=42)
+    preprocessor_tree, RandomForestClassifier(random_state=42, n_jobs=2)
 )
 
 df_scores = evaluate_classifier(rf_clf, df_scores, "RF")
@@ -266,7 +268,7 @@ df_scores
 rf_clf = make_pipeline_with_sampler(
     preprocessor_tree,
     RandomUnderSampler(random_state=42),
-    RandomForestClassifier(random_state=42)
+    RandomForestClassifier(random_state=42, n_jobs=2)
 )
 
 df_scores = evaluate_classifier(
@@ -275,9 +277,10 @@ df_scores = evaluate_classifier(
 df_scores
 
 ###############################################################################
-# Applying a random under-sampler before the training of the linear model or random
-# forest, allows to not focus on the majority class at the cost of making more
-# mistake for samples in the majority class (i.e. decreased accuracy).
+# Applying a random under-sampler before the training of the linear model or
+# random forest, allows to not focus on the majority class at the cost of
+# making more mistake for samples in the majority class (i.e. decreased
+# accuracy).
 #
 # We could apply any type of samplers and find which sampler is working best
 # on the current dataset.
@@ -288,16 +291,17 @@ df_scores
 # Use of `BalancedRandomForestClassifier` and `BalancedBaggingClassifier`
 # .......................................................................
 #
-# We already showed that random under-sampling can be effective on decision tree.
-# However, instead of under-sampling once the dataset, one could under-sample
-# the original dataset before to take a bootstrap sample. This is the base of
-# the `BalancedRandomForestClassifier` and `BalancedBaggingClassifier`.
+# We already showed that random under-sampling can be effective on decision
+# tree. However, instead of under-sampling once the dataset, one could
+# under-sample the original dataset before to take a bootstrap sample. This is
+# the base of the `BalancedRandomForestClassifier` and
+# `BalancedBaggingClassifier`.
 
 from imblearn.ensemble import BalancedRandomForestClassifier
 
 rf_clf = make_pipeline(
     preprocessor_tree,
-    BalancedRandomForestClassifier(random_state=42)
+    BalancedRandomForestClassifier(random_state=42, n_jobs=2)
 )
 
 df_scores = evaluate_classifier(rf_clf, df_scores, "Balanced RF")
@@ -316,7 +320,7 @@ bag_clf = make_pipeline(
     preprocessor_tree,
     BalancedBaggingClassifier(
         base_estimator=HistGradientBoostingClassifier(random_state=42),
-        n_estimators=10, random_state=42
+        n_estimators=10, random_state=42, n_jobs=2
     )
 )
 
@@ -330,8 +334,8 @@ df_scores
 # to bring some diversity for the different GBDT to learn and not focus on a
 # portion of the majority class.
 #
-# We will repeat the same experiment but with a ratio of 100:1 and make a similar
-# analysis.
+# We will repeat the same experiment but with a ratio of 100:1 and make a
+# similar analysis.
 
 ###############################################################################
 # Increase imbalanced ratio
@@ -354,7 +358,7 @@ lr_clf = make_pipeline(
 )
 df_scores = evaluate_classifier(lr_clf, df_scores, "LR")
 rf_clf = make_pipeline(
-    preprocessor_tree, RandomForestClassifier(random_state=42)
+    preprocessor_tree, RandomForestClassifier(random_state=42, n_jobs=2)
 )
 df_scores = evaluate_classifier(rf_clf, df_scores, "RF")
 lr_clf.set_params(logisticregression__class_weight="balanced")
@@ -376,14 +380,14 @@ df_scores = evaluate_classifier(
 rf_clf = make_pipeline_with_sampler(
     preprocessor_tree,
     RandomUnderSampler(random_state=42),
-    RandomForestClassifier(random_state=42)
+    RandomForestClassifier(random_state=42, n_jobs=2)
 )
 df_scores = evaluate_classifier(
     rf_clf, df_scores, "RF with under-sampling"
 )
 rf_clf = make_pipeline(
     preprocessor_tree,
-    BalancedRandomForestClassifier(random_state=42)
+    BalancedRandomForestClassifier(random_state=42, n_jobs=2)
 )
 df_scores = evaluate_classifier(rf_clf, df_scores)
 df_scores = evaluate_classifier(
