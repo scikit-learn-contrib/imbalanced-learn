@@ -10,17 +10,21 @@ import numpy as np
 from scipy import sparse
 from scipy import stats
 
-from sklearn.utils import safe_indexing, safe_mask
+from sklearn.utils import safe_mask
+from sklearn.utils import _safe_indexing
 
 from .base import BasePreprocessSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
+from ..utils._docstring import _n_jobs_docstring
 
-SEL_KIND = ('weak', 'relabel', 'strong')
+SEL_KIND = ("weak", "relabel", "strong")
 
 
 @Substitution(
-    sampling_strategy=BasePreprocessSampler._sampling_strategy_docstring)
+    sampling_strategy=BasePreprocessSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
+)
 class SPIDER(BasePreprocessSampler):
     """Perform filtering and over-sampling using Selective Pre-processing of
     Imbalanced Data (SPIDER) sampling approach for imbalanced datasets.
@@ -55,8 +59,7 @@ class SPIDER(BasePreprocessSampler):
         The number to add to amplified samples during if ``kind`` is
         ``'strong'``. This has no effect otherwise.
 
-    n_jobs : int, optional (default=1)
-        Number of threads to run the algorithm when it is possible.
+    {n_jobs}
 
     Notes
     -----
@@ -101,11 +104,11 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
 
     def __init__(
         self,
-        sampling_strategy='auto',
-        kind='weak',
+        sampling_strategy="auto",
+        kind="weak",
         n_neighbors=3,
         additional_neighbors=2,
-        n_jobs=1,
+        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.kind = kind
@@ -116,19 +119,20 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         """Create the necessary objects for SPIDER"""
         self.nn_ = check_neighbors_object(
-            'n_neighbors', self.n_neighbors, additional_neighbor=1)
-        self.nn_.set_params(**{'n_jobs': self.n_jobs})
+            "n_neighbors", self.n_neighbors, additional_neighbor=1)
+        self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
         if self.kind not in SEL_KIND:
-            raise ValueError('The possible "kind" of algorithm are '
-                             '"weak", "relabel", and "strong".'
-                             'Got {} instead.'.format(self.kind))
+            raise ValueError(
+                'The possible "kind" of algorithm are "weak", "relabel",'
+                ' and "strong". Got {} instead.'.format(self.kind)
+            )
 
         if self.additional_neighbors < 1:
-            raise ValueError('additional_neighbors must be at least 1.')
+            raise ValueError("additional_neighbors must be at least 1.")
 
         if not isinstance(self.additional_neighbors, Integral):
-            raise TypeError('additional_neighbors must be an integer.')
+            raise TypeError("additional_neighbors must be an integer.")
 
     def _locate_neighbors(self, X, additional=False):
         """Find nearest neighbors for samples.
@@ -249,22 +253,22 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
             discard_indices = np.flatnonzero(~is_class & ~is_safe)
 
             class_noisy_indices = np.flatnonzero(is_class & ~is_safe)
-            X_class_noisy = safe_indexing(X, class_noisy_indices)
+            X_class_noisy = _safe_indexing(X, class_noisy_indices)
             y_class_noisy = y[class_noisy_indices]
 
-            if self.kind in ('weak', 'relabel'):
+            if self.kind in ("weak", "relabel"):
                 nn_indices = self._amplify(X_class_noisy, y_class_noisy)
 
-                if self.kind == 'relabel':
+                if self.kind == "relabel":
                     relabel_mask = np.isin(nn_indices, discard_indices)
                     relabel_indices = np.unique(nn_indices[relabel_mask])
                     self._y[relabel_indices] = class_sample
                     discard_indices = np.setdiff1d(
                         discard_indices, relabel_indices)
 
-            elif self.kind == 'strong':
+            elif self.kind == "strong":
                 class_safe_indices = np.flatnonzero(is_class & is_safe)
-                X_class_safe = safe_indexing(X, class_safe_indices)
+                X_class_safe = _safe_indexing(X, class_safe_indices)
                 y_class_safe = y[class_safe_indices]
                 self._amplify(X_class_safe, y_class_safe)
 

@@ -290,7 +290,7 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
                     )
                 )
             sampling_strategy_[class_sample] = n_samples
-    elif sampling_type in ("clean-sampling", "preprocess-sampling":
+    elif sampling_type in ("clean-sampling", "preprocess-sampling"):
         raise ValueError(
             "'sampling_strategy' as a dict for cleaning or preprocess "
             "methods is not supported. Please give a list of the classes "
