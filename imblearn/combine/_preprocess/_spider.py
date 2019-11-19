@@ -16,7 +16,7 @@ from sklearn.utils import _safe_indexing
 from .base import BasePreprocessSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
-from ..utils._docstring import _n_jobs_docstring
+from ...utils._docstring import _n_jobs_docstring
 
 SEL_KIND = ("weak", "relabel", "strong")
 
