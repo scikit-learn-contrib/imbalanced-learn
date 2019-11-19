@@ -98,7 +98,7 @@ class BaseSMOTE(BaseOverSampler):
         """
         random_state = check_random_state(self.random_state)
         samples_indices = random_state.randint(
-            low=0, high=len(nn_num.ravel()), size=n_samples
+            low=0, high=nn_num.size, size=n_samples
         )
 
         # np.newaxis for backwards compatability with random_state

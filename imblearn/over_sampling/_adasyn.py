@@ -130,7 +130,9 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
                 )
             ratio_nn /= np.sum(ratio_nn)
             n_samples_generate = np.rint(ratio_nn * n_samples).astype(int)
-            if not np.sum(n_samples_generate):
+            # rounding may cause new amount for n_samples
+            n_samples = np.sum(n_samples_generate)
+            if not n_samples:
                 raise ValueError(
                     "No samples will be generated with the"
                     " provided ratio settings."
