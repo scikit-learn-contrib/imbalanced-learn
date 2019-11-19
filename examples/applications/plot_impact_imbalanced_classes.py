@@ -394,3 +394,10 @@ df_scores = evaluate_classifier(
     bag_clf, df_scores, "Balanced bagging"
 )
 df_scores
+
+###############################################################################
+# When we analyse the results, we can draw a similar conclusion than in the
+# previous discussion. However, we can observe that the strategy
+# `class_weight="balanced"` does not improve the performance. A resampling is
+# indeed required. The most effective method remains the
+# `BalancedBaggingClassifier` using a GBDT as a base learner.
