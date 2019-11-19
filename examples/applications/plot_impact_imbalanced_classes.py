@@ -32,8 +32,6 @@ df = df.drop(columns=['fnlwgt', 'education-num'])
 ###############################################################################
 # The "adult" dataset as a class ratio of about 3:1
 
-from collections import Counter
-
 classes_count = y.value_counts()
 classes_count
 
