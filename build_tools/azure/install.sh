@@ -73,17 +73,17 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     sudo apt-get install python3-scipy libatlas3-base libatlas-base-dev libatlas-dev python3-virtualenv
     python3 -m virtualenv --system-site-packages --python=python3 $VIRTUALENV
     source $VIRTUALENV/bin/activate
-    python -m pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
     python -m pip install pandas
-    python -m pip install pytest==$PYTEST_VERSION pytest-cov joblib==$JOBLIB_VERSION
+    python -m pip install pytest==$PYTEST_VERSION pytest-cov joblib==$JOBLIB_VERSION cython
+    python -m pip install git+https://github.com/scikit-learn/scikit-learn.git
 elif [[ "$DISTRIB" == "ubuntu-32" ]]; then
     apt-get update
     apt-get install -y python3-dev python3-scipy libatlas3-base libatlas-base-dev libatlas-dev python3-virtualenv
     python3 -m virtualenv --system-site-packages --python=python3 $VIRTUALENV
     source $VIRTUALENV/bin/activate
-    python -m pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
     python -m pip install pandas
-    python -m pip install pytest==$PYTEST_VERSION pytest-cov joblib==$JOBLIB_VERSION
+    python -m pip install pytest==$PYTEST_VERSION pytest-cov joblib==$JOBLIB_VERSION cython
+    python -m pip install git+https://github.com/scikit-learn/scikit-learn.git
 elif [[ "$DISTRIB" == "conda-pip-latest" ]]; then
     # Since conda main channel usually lacks behind on the latest releases,
     # we use pypi to test against the latest releases of the dependencies.
@@ -101,7 +101,7 @@ fi
 
 if [[ "$TEST_DOCSTRINGS" == "true" ]]; then
     python -m pip install sphinx
-    pythong -m pip install -U git+https://github.com/numpy/numpydoc.git
+    python -m pip install -U git+https://github.com/numpy/numpydoc.git
 fi
 
 python --version
