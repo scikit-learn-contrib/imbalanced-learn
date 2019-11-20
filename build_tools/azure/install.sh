@@ -90,7 +90,7 @@ elif [[ "$DISTRIB" == "conda-pip-latest" ]]; then
     # conda is still used as a convenient way to install Python and pip.
     make_conda "python=$PYTHON_VERSION"
     python -m pip install -U pip
-    python -m pip install numpy scipy joblib
+    python -m pip install numpy scipy joblib cython
     python -m pip install git+https://github.com/scikit-learn/scikit-learn.git
     python -m pip install pytest==$PYTEST_VERSION pytest-cov pytest-xdist
     python -m pip install pandas
