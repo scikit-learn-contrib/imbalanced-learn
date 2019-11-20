@@ -30,6 +30,11 @@ if [[ "$DISTRIB" == "conda" ]]; then
         TO_INSTALL="$TO_INSTALL nomkl"
     fi
 
+    make_conda $TO_INSTALL
+    python -m pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
+
+    TO_INSTALL=""
+
     if [[ -n "$PANDAS_VERSION" ]]; then
         TO_INSTALL="$TO_INSTALL pandas=$PANDAS_VERSION"
     fi
@@ -37,15 +42,11 @@ if [[ "$DISTRIB" == "conda" ]]; then
     if [[ -n "$KERAS_VERSION" ]]; then
         TO_INSTALL="$TO_INSTALL keras=$KERAS_VERSION tensorflow=1"
         KERAS_BACKEND=tensorflow
-        python -c "import keras.backend"
-        sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
     fi
 
     if [[ -n "$TENSORFLOW_VERSION" ]]; then
         TO_INSTALL="$TO_INSTALL tensorflow=$TENSORFLOW_VERSION"
     fi
-
-    make_conda $TO_INSTALL
 
     if [[ "$PYTEST_VERSION" == "*" ]]; then
         python -m pip install pytest
@@ -55,6 +56,13 @@ if [[ "$DISTRIB" == "conda" ]]; then
 
     if [[ "$PYTHON_VERSION" == "*" ]]; then
         python -m pip install pytest-xdist
+    fi
+
+    conda install --yes $TO_INSTALL
+
+    if [[ -n "$KERAS_VERSION" ]]; then
+        python -c "import keras.backend"
+        sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
     fi
 
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
