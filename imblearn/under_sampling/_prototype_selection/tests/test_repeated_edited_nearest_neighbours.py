@@ -182,6 +182,7 @@ def test_renn_fit_resample():
     )
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+    assert 0 < renn.n_iter_ <= renn.max_iter
 
 
 def test_renn_fit_resample_mode_object():
@@ -266,6 +267,7 @@ def test_renn_fit_resample_mode_object():
     )
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+    assert 0 < renn.n_iter_ <= renn.max_iter
 
 
 def test_renn_fit_resample_mode():
@@ -351,6 +353,7 @@ def test_renn_fit_resample_mode():
     )
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+    assert 0 < renn.n_iter_ <= renn.max_iter
 
 
 def test_renn_not_good_object():
@@ -358,3 +361,16 @@ def test_renn_not_good_object():
     renn = RepeatedEditedNearestNeighbours(n_neighbors=nn, kind_sel="mode")
     with pytest.raises(ValueError):
         renn.fit_resample(X, Y)
+
+
+@pytest.mark.parametrize(
+    "max_iter, n_iter",
+    [
+        (2, 2),
+        (5, 3),
+    ],
+)
+def test_renn_iter_attribute(max_iter, n_iter):
+    renn = RepeatedEditedNearestNeighbours(max_iter=max_iter)
+    renn.fit_resample(X, Y)
+    assert renn.n_iter_ == n_iter

@@ -202,6 +202,11 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
         .. versionadded:: 0.4
 
+    n_iter_ : int
+        Number of iterations run.
+
+        .. versionadded:: 0.6
+
     See Also
     --------
     CondensedNearestNeighbour : Undersample by condensing samples.
@@ -325,6 +330,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                     ]
                 break
 
+        self.n_iter_ = n_iter + 1
         X_resampled, y_resampled = X_, y_
 
         return X_resampled, y_resampled
