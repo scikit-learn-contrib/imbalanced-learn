@@ -23,7 +23,7 @@ jobs:
     matrix:
       pylatest_conda_mkl:
         DISTRIB: 'conda'
-        PYTHON_VERSION: '*'
+        PYTHON_VERSION: '3.7'
         INSTALL_MKL: 'true'
         NUMPY_VERSION: '*'
         SCIPY_VERSION: '*'
@@ -61,21 +61,21 @@ jobs:
       # Linux environment to test the latest available dependencies and MKL.
       pylatest_pip_openblas_pandas:
         DISTRIB: 'conda-pip-latest'
-        PYTHON_VERSION: '*'
+        PYTHON_VERSION: '3.7'
         PYTEST_VERSION: '*'
         COVERAGE: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
       pylatest_conda_pandas_keras:
         DISTRIB: 'conda'
-        PYTHON_VERSION: '*'
+        PYTHON_VERSION: '3.7'
         PYTEST_VERSION: '*'
         INSTALL_MKL: 'true'
         KERAS_VERSION: '*'
         COVERAGE: 'true'
       pylatest_conda_pandas_tensorflow:
         DISTRIB: 'conda'
-        PYTHON_VERSION: '*'
+        PYTHON_VERSION: '3.7'
         PYTEST_VERSION: '*'
         INSTALL_MKL: 'true'
         TENSORFLOW_VERSION: '*'
