@@ -69,7 +69,9 @@ class SPIDER(BasePreprocessSampler):
 
     See also
     --------
-    NeighborhoodClearingRule and RandomOverSampler
+    NeighborhoodClearingRule : Undersample by editing noisy samples.
+
+    RandomOverSampler : Random oversample the dataset.
 
     References
     ----------
