@@ -61,7 +61,7 @@ y[y == minority_person] = 1
 classifier = ['3NN', neighbors.KNeighborsClassifier(3)]
 
 samplers = [
-    ['Standard', DummySampler()],
+    ['Standard', DummySampler(strategy="prior")],
     ['ADASYN', ADASYN(random_state=RANDOM_STATE)],
     ['ROS', RandomOverSampler(random_state=RANDOM_STATE)],
     ['SMOTE', SMOTE(random_state=RANDOM_STATE)],
