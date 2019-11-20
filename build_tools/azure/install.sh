@@ -58,7 +58,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
         python -m pip install pytest-xdist
     fi
 
-    if [[ -n "$TO_INSTALL" ]]
+    if [[ -n "$TO_INSTALL" ]]; then
        conda install --yes $TO_INSTALL
     fi
 
