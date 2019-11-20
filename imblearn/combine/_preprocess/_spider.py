@@ -26,8 +26,10 @@ SEL_KIND = ("weak", "relabel", "strong")
     n_jobs=_n_jobs_docstring,
 )
 class SPIDER(BasePreprocessSampler):
-    """Perform filtering and over-sampling using Selective Pre-processing of
-    Imbalanced Data (SPIDER) sampling approach for imbalanced datasets.
+    """Perform filtering and over-sampling using SPIDER algorithm.
+
+    This object is an implementation of SPIDER - Selective Pre-processing of
+    Imbalanced Data as presented in [1]_ and [2]_.
 
     Read more in the :ref:`User Guide <combine>`.
 
@@ -35,43 +37,41 @@ class SPIDER(BasePreprocessSampler):
     ----------
     {sampling_strategy}
 
-    kind : str (default='weak')
-        Possible choices are:
+    kind_sel : {{"weak", "relabel", "strong"}}, default='weak'
+        Strategy to use in order to preprocess samples in the SPIDER sampling.
 
-            ``'weak'``: Amplify noisy minority class samples based on the
-            number of safe majority neighbors.
-
-            ``'relabel'``: Perform ``'weak'`` amplification and then relabel
-            noisy majority neighbors for each noisy minority class sample.
-
-            ``'strong'``: Amplify all minority class samples by an extra
-            ``additional_neighbors`` if the sample is classified incorrectly
-            by its neighbors. Otherwise each minority sample is amplified in a
-            manner akin to ``'weak'`` amplification.
+        - If ``'weak'``, amplify noisy minority class samples based on the
+        number of safe majority neighbors.
+        - If ``'relabel'``, perform ``'weak'`` amplification and then relabel
+        noisy majority neighbors for each noisy minority class sample.
+        - If ``'strong'``, amplify all minority class samples by an extra
+        ``additional_neighbors`` if the sample is classified incorrectly
+        by its neighbors. Otherwise each minority sample is amplified in a
+        manner akin to ``'weak'`` amplification.
 
     n_neighbors : int or object, optional (default=3)
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
         :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        find the nearest-neighbors.
 
     additional_neighbors : int, optional (default=2)
-        The number to add to amplified samples during if ``kind`` is
+        The number to add to amplified samples during if ``kind_sel`` is
         ``'strong'``. This has no effect otherwise.
 
     {n_jobs}
+
+    See Also
+    --------
+    NeighborhoodClearingRule : Undersample by editing noisy samples.
+
+    RandomOverSampler : Random oversample the dataset.
 
     Notes
     -----
     The implementation is based on [1]_ and [2]_.
 
     Supports multi-class resampling. A one-vs.-rest scheme is used.
-
-    See also
-    --------
-    NeighborhoodClearingRule : Undersample by editing noisy samples.
-
-    RandomOverSampler : Random oversample the dataset.
 
     References
     ----------
@@ -107,13 +107,13 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
     def __init__(
         self,
         sampling_strategy="auto",
-        kind="weak",
+        kind_sel="weak",
         n_neighbors=3,
         additional_neighbors=2,
         n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
-        self.kind = kind
+        self.kind_sel = kind_sel
         self.n_neighbors = n_neighbors
         self.additional_neighbors = additional_neighbors
         self.n_jobs = n_jobs
@@ -124,10 +124,10 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
             "n_neighbors", self.n_neighbors, additional_neighbor=1)
         self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
-        if self.kind not in SEL_KIND:
+        if self.kind_sel not in SEL_KIND:
             raise ValueError(
                 'The possible "kind" of algorithm are "weak", "relabel",'
-                ' and "strong". Got {} instead.'.format(self.kind)
+                ' and "strong". Got {} instead.'.format(self.kind_sel)
             )
 
         if self.additional_neighbors < 1:
@@ -258,17 +258,17 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
             X_class_noisy = _safe_indexing(X, class_noisy_indices)
             y_class_noisy = y[class_noisy_indices]
 
-            if self.kind in ("weak", "relabel"):
+            if self.kind_sel in ("weak", "relabel"):
                 nn_indices = self._amplify(X_class_noisy, y_class_noisy)
 
-                if self.kind == "relabel":
+                if self.kind_sel == "relabel":
                     relabel_mask = np.isin(nn_indices, discard_indices)
                     relabel_indices = np.unique(nn_indices[relabel_mask])
                     self._y[relabel_indices] = class_sample
                     discard_indices = np.setdiff1d(
                         discard_indices, relabel_indices)
 
-            elif self.kind == "strong":
+            elif self.kind_sel == "strong":
                 class_safe_indices = np.flatnonzero(is_class & is_safe)
                 X_class_safe = _safe_indexing(X, class_safe_indices)
                 y_class_safe = y[class_safe_indices]
@@ -287,7 +287,7 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
                 y_incorrect = y_class_noisy[~is_correct]
                 self._amplify(X_incorrect, y_incorrect, additional=True)
             else:
-                raise NotImplementedError(self.kind)
+                raise NotImplementedError(self.kind_sel)
 
         discard_mask = np.ones_like(y, dtype=bool)
         try:
