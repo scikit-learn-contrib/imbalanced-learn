@@ -58,7 +58,9 @@ if [[ "$DISTRIB" == "conda" ]]; then
         python -m pip install pytest-xdist
     fi
 
-    conda install --yes $TO_INSTALL
+    if [[ -n "$TO_INSTALL" ]]
+       conda install --yes $TO_INSTALL
+    fi
 
     if [[ -n "$KERAS_VERSION" ]]; then
         python -c "import keras.backend"

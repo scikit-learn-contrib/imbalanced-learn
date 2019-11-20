@@ -46,37 +46,22 @@ jobs:
         DISTRIB: 'ubuntu'
         PYTHON_VERSION: '3.5'
         JOBLIB_VERSION: '0.11'
-      # Linux + Python 3.5 build with OpenBLAS and without SITE_JOBLIB
-      py35_conda_openblas:
-        DISTRIB: 'conda'
-        PYTHON_VERSION: '3.5'
-        INSTALL_MKL: 'false'
-        NUMPY_VERSION: '1.11.0'
-        SCIPY_VERSION: '0.17.0'
-        PANDAS_VERSION: '*'
-        PYTEST_VERSION: '*'
-        # later version of joblib are not packaged in conda for Python 3.5
-        JOBLIB_VERSION: '0.12.3'
-        COVERAGE: 'true'
       # Linux environment to test the latest available dependencies and MKL.
       pylatest_pip_openblas_pandas:
         DISTRIB: 'conda-pip-latest'
         PYTHON_VERSION: '3.7'
-        PYTEST_VERSION: '*'
         COVERAGE: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
       pylatest_conda_pandas_keras:
         DISTRIB: 'conda'
         PYTHON_VERSION: '3.7'
-        PYTEST_VERSION: '*'
         INSTALL_MKL: 'true'
         KERAS_VERSION: '*'
         COVERAGE: 'true'
       pylatest_conda_pandas_tensorflow:
         DISTRIB: 'conda'
         PYTHON_VERSION: '3.7'
-        PYTEST_VERSION: '*'
         INSTALL_MKL: 'true'
         TENSORFLOW_VERSION: '*'
         COVERAGE: 'true'
