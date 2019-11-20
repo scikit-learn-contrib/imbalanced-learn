@@ -30,7 +30,7 @@ if "%COVERAGE%" == "true" (
 python --version
 pip --version
 
-pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
+pip install git+https://github.com/scikit-learn/scikit-learn.git
 
 @rem Install the build and runtime dependencies of the project.
 python setup.py bdist_wheel bdist_wininst
