@@ -44,7 +44,7 @@ def correct(nn, y_fit, X, y, additional=False):
 def get_neighborhoods(spider, X_fit, y_fit, X_flagged, y_flagged, idx):
     point = X_flagged[idx]
 
-    additional = (spider.kind == 'strong')
+    additional = (spider.kind_sel_sel == 'strong')
     if correct(spider.nn_, y_fit, point[np.newaxis],
                y_flagged[idx][np.newaxis], additional=additional):
         additional = False
@@ -77,7 +77,7 @@ def draw_neighborhoods(spider, neighborhood_k, neighborhood_k2, point,
     if not additional:
         ax.add_patch(circle_k)
 
-    if (spider.kind == 'strong') and outer:
+    if (spider.kind_sel == 'strong') and outer:
         ax.add_patch(circle_k2)
 
 
@@ -89,14 +89,14 @@ def draw_amplification(X_flagged, point, neighbors, ax):
         ax.plot(xs, ys, color='black', linestyle=linestyle)
 
 
-def plot_spider(kind, X, y):
-    if kind == 'strong':
+def plot_spider(kind_sel, X, y):
+    if kind_sel == 'strong':
         _, axes = plt.subplots(2, 1, figsize=(12, 16))
     else:
         _, axes = plt.subplots(1, 1, figsize=(12, 8))
         axes = np.atleast_1d(axes)
 
-    spider = SPIDER(kind=kind)
+    spider = SPIDER(kind_sel=kind_sel)
     spider.fit_resample(X, y)
 
     is_safe = correct(spider.nn_, y, X, y)
@@ -130,17 +130,17 @@ def plot_spider(kind, X, y):
         neighborhoods = partial_neighborhoods(X_minor_noise, y_minor_noise,
                                               idx=idx)
         partial_draw_neighborhoods(*neighborhoods, ax=axes[0],
-                                   outer=(spider.kind == 'strong'))
+                                   outer=(spider.kind_sel == 'strong'))
         neigh_k, neigh_k2, point, additional = neighborhoods
         neighbors = neigh_k2.neighbors if additional else neigh_k.neighbors
         partial_amplification(point, neighbors, ax=axes[0])
 
     axes[0].axis('equal')
     axes[0].legend(markerscale=0.5)
-    axes[0].set_title(f'SPIDER-{spider.kind.title()}')
+    axes[0].set_title(f'SPIDER-{spider.kind_sel.title()}')
 
-    #: Neighborhoods for Safe Minority Samples (kind='strong' only)
-    if spider.kind == 'strong':
+    #: Neighborhoods for Safe Minority Samples (kind_sel='strong' only)
+    if spider.kind_sel == 'strong':
         for idx in range(len(X_minor_safe)):
             neighborhoods = partial_neighborhoods(X_minor_safe, y_minor_safe,
                                                   idx=idx)
@@ -157,7 +157,7 @@ def plot_spider(kind, X, y):
 
             axes[1].axis('equal')
             axes[1].legend(markerscale=0.5)
-            axes[1].set_title(f'SPIDER-{spider.kind.title()}')
+            axes[1].set_title(f'SPIDER-{spider.kind_sel.title()}')
 
 
 ###############################################################################
