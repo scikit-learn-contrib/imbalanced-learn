@@ -1,36 +1,105 @@
-# Python package
-# Create and test a Python package on multiple Python versions.
-# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+# Adapted from https://github.com/scikit-learn/scikit-learn/blob/master/azure-pipelines.yml
+jobs:
+- job: linting
+  displayName: Linting
+  pool:
+    vmImage: ubuntu-16.04
+  steps:
+    - bash: echo "##vso[task.prependpath]$CONDA/bin"
+      displayName: Add conda to PATH
+    - bash: sudo chown -R $USER $CONDA
+      displayName: Take ownership of conda installation
+    - bash: conda create --name flake8_env --yes flake8
+      displayName: Install flake8
+    - bash: |
+        source activate flake8_env
+        ./build_tools/circle/linting.sh
+      displayName: Run linting
 
-trigger:
-- master
+- template: build_tools/azure/posix.yml
+  parameters:
+    name: Linux
+    vmImage: ubuntu-16.04
+    dependsOn: [linting]
+    matrix:
+      # Linux environment to test that scikit-learn can be built against
+      # versions of numpy, scipy with ATLAS that comes with Ubuntu Xenial 16.04
+      # i.e. numpy 1.11 and scipy 0.17
+      py35_ubuntu_atlas:
+        DISTRIB: 'ubuntu'
+        PYTHON_VERSION: '3.5'
+        JOBLIB_VERSION: '*'
+      # Linux environment to test the latest available dependencies and MKL.
+      pylatest_pip_openblas_pandas:
+        DISTRIB: 'conda-pip-latest'
+        PYTHON_VERSION: '3.7'
+        COVERAGE: 'true'
+        PANDAS_VERSION: '*'
+        TEST_DOCSTRINGS: 'true'
+        JOBLIB_VERSION: '*'
+        CHECK_WARNINGS: 'true'
+      pylatest_conda_pandas_keras:
+        DISTRIB: 'conda'
+        PYTHON_VERSION: '3.7'
+        INSTALL_MKL: 'true'
+        PANDAS_VERSION: '*'
+        KERAS_VERSION: '*'
+        COVERAGE: 'true'
+        JOBLIB_VERSION: '*'
+        TEST_DOCSTRINGS: 'true'
+      pylatest_conda_pandas_tensorflow:
+        DISTRIB: 'conda'
+        PYTHON_VERSION: '3.7'
+        PANDAS_VERSION: '*'
+        JOBLIB_VERSION: '*'
+        INSTALL_MKL: 'true'
+        TENSORFLOW_VERSION: '*'
+        COVERAGE: 'true'
+        TEST_DOCSTRINGS: 'true'
 
-pool:
-  vmImage: 'ubuntu-latest'
-strategy:
-  matrix:
-    Python27:
-      python.version: '2.7'
-    Python35:
-      python.version: '3.5'
-    Python36:
-      python.version: '3.6'
-    Python37:
-      python.version: '3.7'
+- template: build_tools/azure/posix-32.yml
+  parameters:
+    name: Linux32
+    vmImage: ubuntu-16.04
+    dependsOn: [linting]
+    matrix:
+      py35_ubuntu_atlas_32bit:
+        DISTRIB: 'ubuntu-32'
+        PYTHON_VERSION: '3.5'
+        JOBLIB_VERSION: '*'
+        TEST_DOCSTRINGS: 'true'
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+- template: build_tools/azure/posix.yml
+  parameters:
+    name: macOS
+    vmImage: xcode9-macos10.13
+    dependsOn: [linting]
+    matrix:
+      pylatest_conda_mkl:
+        DISTRIB: 'conda'
+        PYTHON_VERSION: '*'
+        INSTALL_MKL: 'true'
+        NUMPY_VERSION: '*'
+        SCIPY_VERSION: '*'
+        PANDAS_VERSION: '*'
+        PYTEST_VERSION: '*'
+        JOBLIB_VERSION: '*'
+        COVERAGE: 'true'
+        TEST_DOCSTRINGS: 'true'
+        CHECK_WARNINGS: 'true'
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-  displayName: 'Install dependencies'
-
-- script: |
-    pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
+- template: build_tools/azure/windows.yml
+  parameters:
+    name: Windows
+    vmImage: vs2017-win2016
+    dependsOn: [linting]
+    matrix:
+      py37_conda_mkl:
+        PYTHON_VERSION: '3.7'
+        PYTHON_ARCH: '64'
+        PYTEST_VERSION: '*'
+        COVERAGE: 'true'
+        CHECK_WARNINGS: 'true'
+      py35_pip_openblas_32bit:
+        PYTHON_VERSION: '3.5'
+        PYTHON_ARCH: '32'
