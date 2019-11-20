@@ -30,7 +30,6 @@ from sklearn.utils.multiclass import type_of_target
 
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
-from imblearn.ensemble.base import BaseEnsembleSampler
 from imblearn.under_sampling import NearMiss, ClusterCentroids
 
 
@@ -168,12 +167,6 @@ def check_samplers_fit_resample(name, Sampler):
             for class_sample in target_stats.keys()
             if class_sample != class_minority
         )
-    elif isinstance(sampler, BaseEnsembleSampler):
-        y_ensemble = y_res[0]
-        n_samples = min(target_stats.values())
-        assert all(
-            value == n_samples for value in Counter(y_ensemble).values()
-        )
 
 
 def check_samplers_sampling_strategy_fit_resample(name, Sampler):
@@ -202,12 +195,6 @@ def check_samplers_sampling_strategy_fit_resample(name, Sampler):
         sampler.set_params(sampling_strategy=sampling_strategy)
         X_res, y_res = sampler.fit_resample(X, y)
         assert Counter(y_res)[1] == expected_stat
-    if isinstance(sampler, BaseEnsembleSampler):
-        sampling_strategy = {2: 201, 0: 201}
-        sampler.set_params(sampling_strategy=sampling_strategy)
-        X_res, y_res = sampler.fit_resample(X, y)
-        y_ensemble = y_res[0]
-        assert Counter(y_ensemble)[1] == expected_stat
 
 
 def check_samplers_sparse(name, Sampler):
@@ -239,17 +226,9 @@ def check_samplers_sparse(name, Sampler):
         set_random_state(sampler)
         X_res_sparse, y_res_sparse = sampler.fit_resample(X_sparse, y)
         X_res, y_res = sampler.fit_resample(X, y)
-        if not isinstance(sampler, BaseEnsembleSampler):
-            assert sparse.issparse(X_res_sparse)
-            assert_allclose(X_res_sparse.A, X_res)
-            assert_allclose(y_res_sparse, y_res)
-        else:
-            for x_sp, x, y_sp, y in zip(
-                X_res_sparse, X_res, y_res_sparse, y_res
-            ):
-                assert sparse.issparse(x_sp)
-                assert_allclose(x_sp.A, x)
-                assert_allclose(y_sp, y)
+        assert sparse.issparse(X_res_sparse)
+        assert_allclose(X_res_sparse.A, X_res)
+        assert_allclose(y_res_sparse, y_res)
 
 
 def check_samplers_pandas(name, Sampler):
@@ -262,7 +241,8 @@ def check_samplers_pandas(name, Sampler):
         weights=[0.2, 0.3, 0.5],
         random_state=0,
     )
-    X_pd = pd.DataFrame(X)
+    X_pd = pd.DataFrame(X, columns=[str(i) for i in range(X.shape[1])])
+    y_pd = pd.Series(y, name="class")
     sampler = Sampler()
     if isinstance(Sampler(), NearMiss):
         samplers = [Sampler(version=version) for version in (1, 2, 3)]
@@ -272,10 +252,16 @@ def check_samplers_pandas(name, Sampler):
 
     for sampler in samplers:
         set_random_state(sampler)
-        X_res_pd, y_res_pd = sampler.fit_resample(X_pd, y)
+        X_res_pd, y_res_pd = sampler.fit_resample(X_pd, y_pd)
         X_res, y_res = sampler.fit_resample(X, y)
-        assert_allclose(X_res_pd, X_res)
-        assert_allclose(y_res_pd, y_res)
+
+        # check that we return a pandas dataframe if a dataframe was given in
+        assert isinstance(X_res_pd, pd.DataFrame)
+        assert isinstance(y_res_pd, pd.Series)
+        assert X_pd.columns.to_list() == X_res_pd.columns.to_list()
+        assert y_pd.name == y_res_pd.name
+        assert_allclose(X_res_pd.to_numpy(), X_res)
+        assert_allclose(y_res_pd.to_numpy(), y_res)
 
 
 def check_samplers_multiclass_ova(name, Sampler):
@@ -293,13 +279,8 @@ def check_samplers_multiclass_ova(name, Sampler):
     X_res, y_res = sampler.fit_resample(X, y)
     X_res_ova, y_res_ova = sampler.fit_resample(X, y_ova)
     assert_allclose(X_res, X_res_ova)
-    if issubclass(Sampler, BaseEnsembleSampler):
-        for batch_y, batch_y_ova in zip(y_res, y_res_ova):
-            assert type_of_target(batch_y_ova) == type_of_target(y_ova)
-            assert_allclose(batch_y, batch_y_ova.argmax(axis=1))
-    else:
-        assert type_of_target(y_res_ova) == type_of_target(y_ova)
-        assert_allclose(y_res, y_res_ova.argmax(axis=1))
+    assert type_of_target(y_res_ova) == type_of_target(y_ova)
+    assert_allclose(y_res, y_res_ova.argmax(axis=1))
 
 
 def check_samplers_preserve_dtype(name, Sampler):

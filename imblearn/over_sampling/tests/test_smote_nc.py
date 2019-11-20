@@ -13,6 +13,7 @@ from scipy import sparse
 
 from sklearn.datasets import make_classification
 from sklearn.utils._testing import assert_allclose
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.over_sampling import SMOTENC
 
@@ -184,7 +185,7 @@ def test_smotenc_pandas():
     smote = SMOTENC(categorical_features=categorical_features, random_state=0)
     X_res_pd, y_res_pd = smote.fit_resample(X_pd, y)
     X_res, y_res = smote.fit_resample(X, y)
-    assert X_res_pd.tolist() == X_res.tolist()
+    assert_array_equal(X_res_pd.to_numpy(), X_res)
     assert_allclose(y_res_pd, y_res)
 
 

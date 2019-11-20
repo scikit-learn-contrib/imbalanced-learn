@@ -30,6 +30,12 @@ Imbalanced-learn samplers accept the same inputs that in scikit-learn:
   matrices;
 * ``targets``: array-like (1-D list, pandas.Series, numpy.array).
 
+The output will be of the following type:
+
+* ``data_resampled``: array-like (2-D list, pandas.Dataframe, numpy.array) or
+   sparse matrices;
+   * ``targets_resampled``: 1-D numpy.array or pd.Series.
+
 .. topic:: Sparse input
 
    For sparse input the data is **converted to the Compressed Sparse Rows
