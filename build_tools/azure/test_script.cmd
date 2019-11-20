@@ -17,4 +17,4 @@ if "%COVERAGE%" == "true" (
 set PYTEST_ARGS=%PYTEST_ARGS% --cov imblearn
 )
 
-pytest --junitxml=%JUNITXML% --showlocals --durations=20 %PYTEST_ARGS% --pyargs imblearn
+pytest --junitxml=%JUNITXML% --junit_family=xunit2 --showlocals --durations=20 %PYTEST_ARGS% --pyargs imblearn
