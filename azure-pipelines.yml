@@ -1,4 +1,5 @@
 # Adapted from https://github.com/scikit-learn/scikit-learn/blob/master/azure-pipelines.yml
+jobs:
 - job: linting
   displayName: Linting
   pool:
