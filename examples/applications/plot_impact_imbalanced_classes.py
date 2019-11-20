@@ -1,8 +1,7 @@
 """
-========================================================================
-Model fitting on imbalanced dataset and comparison of methods to improve
-its performance
-========================================================================
+==========================================================
+Fitting model on imbalanced datasets and how to fight bias
+==========================================================
 
 This example illustrates the problem induced by learning on datasets having
 imbalanced classes. Subsequently, we compare different approaches alleviating
