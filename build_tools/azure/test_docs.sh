@@ -8,5 +8,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     source $VIRTUALENV/bin/activate
 fi
 
-make test-doc
-pytest -vsl maint_tools/test_docstring.py
+if [[ "TEST_DOCSTRING" == 'true' ]]; then
+    make test-doc
+    pytest -vsl maint_tools/test_docstring.py
+fi

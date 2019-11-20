@@ -28,7 +28,7 @@ jobs:
       py35_ubuntu_atlas:
         DISTRIB: 'ubuntu'
         PYTHON_VERSION: '3.5'
-        JOBLIB_VERSION: '0.11'
+        JOBLIB_VERSION: '*'
       # Linux environment to test the latest available dependencies and MKL.
       pylatest_pip_openblas_pandas:
         DISTRIB: 'conda-pip-latest'
@@ -36,7 +36,7 @@ jobs:
         COVERAGE: 'true'
         PANDAS_VERSION: '*'
         TEST_DOCSTRINGS: 'true'
-        CHECK_WARNINGS: 'true'
+        JOBLIB_VERSION: '*'
       pylatest_conda_pandas_keras:
         DISTRIB: 'conda'
         PYTHON_VERSION: '3.7'
@@ -44,13 +44,17 @@ jobs:
         PANDAS_VERSION: '*'
         KERAS_VERSION: '*'
         COVERAGE: 'true'
+        JOBLIB_VERSION: '*'
+        TEST_DOCSTRINGS: 'true'
       pylatest_conda_pandas_tensorflow:
         DISTRIB: 'conda'
         PYTHON_VERSION: '3.7'
         PANDAS_VERSION: '*'
+        JOBLIB_VERSION: '*'
         INSTALL_MKL: 'true'
         TENSORFLOW_VERSION: '*'
         COVERAGE: 'true'
+        TEST_DOCSTRINGS: 'true'
 
 - template: build_tools/azure/posix-32.yml
   parameters:
@@ -61,7 +65,8 @@ jobs:
       py35_ubuntu_atlas_32bit:
         DISTRIB: 'ubuntu-32'
         PYTHON_VERSION: '3.5'
-        JOBLIB_VERSION: '0.11'
+        JOBLIB_VERSION: '*'
+        TEST_DOCSTRINGS: 'true'
 
 - template: build_tools/azure/posix.yml
   parameters:
@@ -79,6 +84,7 @@ jobs:
         PYTEST_VERSION: '*'
         JOBLIB_VERSION: '*'
         COVERAGE: 'true'
+        TEST_DOCSTRINGS: 'true'
 
 # - template: build_tools/azure/windows.yml
 #   parameters:
