@@ -363,7 +363,14 @@ def test_renn_not_good_object():
         renn.fit_resample(X, Y)
 
 
-def test_renn_iter_attribute():
-    renn = RepeatedEditedNearestNeighbours(max_iter=1)
+@pytest.mark.parametrize(
+    "max_iter, n_iter",
+    [
+        (2, 2),
+        (5, 3),
+    ],
+)
+def test_renn_iter_attribute(max_iter, n_iter):
+    renn = RepeatedEditedNearestNeighbours(max_iter=max_iter)
     renn.fit_resample(X, Y)
-    assert renn.n_iter_ == 1
+    assert renn.n_iter_ == n_iter
