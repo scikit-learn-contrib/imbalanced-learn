@@ -68,11 +68,14 @@ def test_check_target_type_ova(target, output_target, is_ova):
     assert binarize_target == is_ova
 
 
-def test_check_sampling_strategy_warning():
-    msg = "dict for cleaning methods is not supported"
+@pytest.mark.parametrize(
+    "sampling_method", ["clean-sampling", "preprocess-sampling"]
+)
+def test_check_sampling_strategy_warning(sampling_method):
+    msg = "dict for cleaning or preprocess methods is not supported"
     with pytest.raises(ValueError, match=msg):
         check_sampling_strategy(
-            {1: 0, 2: 0, 3: 0}, multiclass_target, "clean-sampling"
+            {1: 0, 2: 0, 3: 0}, multiclass_target, sampling_method
         )
 
 
@@ -83,7 +86,13 @@ def test_check_sampling_strategy_warning():
             0.5,
             binary_target,
             "clean-sampling",
-            "'clean-sampling' methods do let the user specify the sampling ratio",  # noqa
+            "-sampling' methods do not let the user specify the sampling ratio",
+        ),
+        (
+            0.5,
+            binary_target,
+            "preprocess-sampling",
+            "-sampling' methods do not let the user specify the sampling ratio",
         ),
         (
             0.1,
@@ -122,6 +131,7 @@ def test_check_sampling_strategy_error():
     [
         ("majority", "over-sampling", "over-sampler"),
         ("minority", "under-sampling", "under-sampler"),
+        ("minority", "clean-sampling", "under-sampler"),
     ],
 )
 def test_check_sampling_strategy_error_wrong_string(
