@@ -75,6 +75,7 @@ jobs:
         INSTALL_MKL: 'true'
         NUMPY_VERSION: '*'
         SCIPY_VERSION: '*'
+        PANDAS_VERSION: '*'
         PYTEST_VERSION: '*'
         JOBLIB_VERSION: '*'
         COVERAGE: 'true'
