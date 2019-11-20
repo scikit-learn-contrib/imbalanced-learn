@@ -18,23 +18,6 @@ jobs:
 
 - template: build_tools/azure/posix.yml
   parameters:
-    name: Linux_Runs
-    vmImage: ubuntu-16.04
-    matrix:
-      pylatest_conda_mkl:
-        DISTRIB: 'conda'
-        PYTHON_VERSION: '3.7'
-        INSTALL_MKL: 'true'
-        NUMPY_VERSION: '*'
-        SCIPY_VERSION: '*'
-        CYTHON_VERSION: '*'
-        PILLOW_VERSION: '*'
-        PYTEST_VERSION: '*'
-        JOBLIB_VERSION: '*'
-        COVERAGE: 'true'
-
-- template: build_tools/azure/posix.yml
-  parameters:
     name: Linux
     vmImage: ubuntu-16.04
     dependsOn: [linting]
@@ -51,62 +34,50 @@ jobs:
         DISTRIB: 'conda-pip-latest'
         PYTHON_VERSION: '3.7'
         COVERAGE: 'true'
+        PANDAS_VERSION: '*'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
       pylatest_conda_pandas_keras:
         DISTRIB: 'conda'
         PYTHON_VERSION: '3.7'
         INSTALL_MKL: 'true'
+        PANDAS_VERSION: '*'
         KERAS_VERSION: '*'
         COVERAGE: 'true'
       pylatest_conda_pandas_tensorflow:
         DISTRIB: 'conda'
         PYTHON_VERSION: '3.7'
+        PANDAS_VERSION: '*'
         INSTALL_MKL: 'true'
         TENSORFLOW_VERSION: '*'
         COVERAGE: 'true'
 
-# - template: build_tools/azure/posix-32.yml
-#   parameters:
-#     name: Linux32
-#     vmImage: ubuntu-16.04
-#     dependsOn: [linting]
-#     matrix:
-#       py35_ubuntu_atlas_32bit:
-#         DISTRIB: 'ubuntu-32'
-#         PYTHON_VERSION: '3.5'
-#         JOBLIB_VERSION: '0.11'
+- template: build_tools/azure/posix-32.yml
+  parameters:
+    name: Linux32
+    vmImage: ubuntu-16.04
+    dependsOn: [linting]
+    matrix:
+      py35_ubuntu_atlas_32bit:
+        DISTRIB: 'ubuntu-32'
+        PYTHON_VERSION: '3.5'
+        JOBLIB_VERSION: '0.11'
 
-# - template: build_tools/azure/posix.yml
-#   parameters:
-#     name: macOS
-#     vmImage: xcode9-macos10.13
-#     dependsOn: [linting]
-#     matrix:
-#       pylatest_conda_mkl:
-#         DISTRIB: 'conda'
-#         PYTHON_VERSION: '*'
-#         INSTALL_MKL: 'true'
-#         NUMPY_VERSION: '*'
-#         SCIPY_VERSION: '*'
-#         CYTHON_VERSION: '*'
-#         PILLOW_VERSION: '*'
-#         PYTEST_VERSION: '*'
-#         JOBLIB_VERSION: '*'
-#         COVERAGE: 'true'
-#       pylatest_conda_mkl_no_openmp:
-#         DISTRIB: 'conda'
-#         PYTHON_VERSION: '*'
-#         INSTALL_MKL: 'true'
-#         NUMPY_VERSION: '*'
-#         SCIPY_VERSION: '*'
-#         CYTHON_VERSION: '*'
-#         PILLOW_VERSION: '*'
-#         PYTEST_VERSION: '*'
-#         JOBLIB_VERSION: '*'
-#         COVERAGE: 'true'
-#         SKLEARN_TEST_NO_OPENMP: 'true'
-#         SKLEARN_SKIP_OPENMP_TEST: 'true'
+- template: build_tools/azure/posix.yml
+  parameters:
+    name: macOS
+    vmImage: xcode9-macos10.13
+    dependsOn: [linting]
+    matrix:
+      pylatest_conda_mkl:
+        DISTRIB: 'conda'
+        PYTHON_VERSION: '*'
+        INSTALL_MKL: 'true'
+        NUMPY_VERSION: '*'
+        SCIPY_VERSION: '*'
+        PYTEST_VERSION: '*'
+        JOBLIB_VERSION: '*'
+        COVERAGE: 'true'
 
 # - template: build_tools/azure/windows.yml
 #   parameters:
