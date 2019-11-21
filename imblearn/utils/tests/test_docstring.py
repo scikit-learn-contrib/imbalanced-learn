@@ -6,6 +6,8 @@
 import pytest
 
 from imblearn.utils import Substitution
+from imblearn.utils._docstring import _random_state_docstring
+from imblearn.utils._docstring import _n_jobs_docstring
 
 func_docstring = """A function.
 
@@ -60,3 +62,8 @@ class cls:
 def test_docstring_inject(obj, obj_docstring):
     obj_injected_docstring = Substitution(param_1="xxx", param_2="yyy")(obj)
     assert obj_injected_docstring.__doc__ == obj_docstring
+
+
+def test_docstring_template():
+    assert "random_state" in _random_state_docstring
+    assert "n_jobs" in _n_jobs_docstring
