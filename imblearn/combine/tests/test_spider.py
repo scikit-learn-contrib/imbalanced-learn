@@ -316,7 +316,7 @@ def test_spider_not_good_object():
     "add_neigh, err_type, err_msg",
     [
         (0, ValueError, "additional_neighbors must be at least 1"),
-        (0.0, TypeError, "additional_neighbors must be at an integer"),
+        (0.0, TypeError, "additional_neighbors must be an integer"),
         (2.0, TypeError, "additional_neighbors must be an integer"),
         ("2", TypeError, "additional_neighbors must be an integer"),
         (2 + 0j, TypeError, "additional_neighbors must be an integer"),
