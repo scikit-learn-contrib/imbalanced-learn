@@ -291,3 +291,19 @@ def test_spider_not_good_object():
     spider = SPIDER(n_neighbors=nn)
     with pytest.raises(ValueError, match="has to be one of"):
         spider.fit_resample(X, y)
+
+
+@pytest.mark.parametrize(
+    "add_neigh, err_type, err_msg",
+    [
+        (0, ValueError, "additional_neighbors must be at least 1"),
+        (0.0, TypeError, "additional_neighbors must be at an integer"),
+        (2.0, TypeError, "additional_neighbors must be an integer"),
+        ("2", TypeError, "additional_neighbors must be an integer"),
+        (2 + 0j, TypeError, "additional_neighbors must be an integer"),
+    ],
+)
+def test_spider_invalid_additional_neighbors(add_neigh, err_type, err_msg):
+    spider = SPIDER(additional_neighbors=add_neigh)
+    with pytest.raises(err_type, match=err_msg):
+        spider.fit_resample(X, y)

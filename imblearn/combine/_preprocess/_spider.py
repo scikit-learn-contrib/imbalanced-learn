@@ -130,11 +130,11 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
                 ' and "strong". Got {} instead.'.format(self.kind_sel)
             )
 
-        if self.additional_neighbors < 1:
-            raise ValueError("additional_neighbors must be at least 1.")
-
         if not isinstance(self.additional_neighbors, Integral):
             raise TypeError("additional_neighbors must be an integer.")
+
+        if self.additional_neighbors < 1:
+            raise ValueError("additional_neighbors must be at least 1.")
 
     def _locate_neighbors(self, X, additional=False):
         """Find nearest neighbors for samples.
@@ -181,11 +181,10 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
         is_correct : ndarray[bool], shape (n_samples,)
             Mask that indicates if KNN classifed samples correctly.
         """
-        try:
-            nn_indices = self._locate_neighbors(X, additional)
-        except ValueError:
+        if not X.size:
             return np.empty(0, dtype=bool)
 
+        nn_indices = self._locate_neighbors(X, additional)
         mode, _ = stats.mode(self._y[nn_indices], axis=1)
         is_correct = (y == mode.ravel())
         return is_correct
@@ -211,11 +210,10 @@ SPIDER # doctest: +NORMALIZE_WHITESPACE
         nn_indices : ndarray, shape (n_samples, n_neighbors)
             Indices of the nearest neighbors for the subset.
         """
-        try:
-            nn_indices = self._locate_neighbors(X, additional)
-        except ValueError:
+        if not X.size:
             return np.empty(0, dtype=int)
 
+        nn_indices = self._locate_neighbors(X, additional)
         amplify_amounts = np.isin(
             nn_indices, self._amplify_indices).sum(axis=1)
 
