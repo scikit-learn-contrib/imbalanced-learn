@@ -86,13 +86,13 @@ def test_check_sampling_strategy_warning(sampling_method):
             0.5,
             binary_target,
             "clean-sampling",
-            "-sampling' methods do not let the user specify the sampling ratio",
+            "sampling' methods do not let the user specify the sampling ratio",
         ),
         (
             0.5,
             binary_target,
             "preprocess-sampling",
-            "-sampling' methods do not let the user specify the sampling ratio",
+            "sampling' methods do not let the user specify the sampling ratio",
         ),
         (
             0.1,
