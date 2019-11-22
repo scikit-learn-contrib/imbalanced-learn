@@ -4,7 +4,6 @@
 
 import pytest
 import numpy as np
-from scipy import sparse
 
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.testing import assert_allclose
@@ -55,8 +54,12 @@ X = np.array(
         [11.42, 0.01]
     ]
 )
-y = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0,
-              0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0])
+y = np.array(
+    [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0,
+        0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0
+    ]
+)
 R_TOL = 1e-4
 
 
@@ -112,9 +115,13 @@ def test_spider_weak():
             [11.42, 0.01]
         ]
     )
-    y_gt = np.array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                           0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                           1, 0, 0])
+    y_gt = np.array(
+        [
+            1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+            0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            1, 0, 0
+        ]
+    )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
@@ -166,9 +173,13 @@ def test_spider_relabel():
             [11.42, 0.01]
         ]
     )
-    y_gt = np.array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                           0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                           1, 0, 1, 1, 0, 0])
+    y_gt = np.array(
+        [
+            1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+            0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 0, 1, 1, 0, 0
+        ]
+    )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
@@ -221,9 +232,13 @@ def test_spider_strong():
             [11.42, 0.01]
         ]
     )
-    y_gt = np.array([1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1,
-                           1, 1, 1, 0, 1, 0, 0])
+    y_gt = np.array(
+        [
+            1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1,
+            1, 1, 1, 0, 1, 0, 0
+        ]
+    )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
@@ -279,9 +294,13 @@ def test_spider_fit_resample_with_nn_object():
             [11.42, 0.01]
         ]
     )
-    y_gt = np.array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                           0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                           1, 0, 0])
+    y_gt = np.array(
+        [
+            1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+            0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            1, 0, 0
+        ]
+    )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
