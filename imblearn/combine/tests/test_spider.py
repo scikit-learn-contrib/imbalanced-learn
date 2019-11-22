@@ -6,8 +6,8 @@ import pytest
 import numpy as np
 
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils.testing import assert_allclose
-from sklearn.utils.testing import assert_array_equal
+from sklearn.utils._testing import assert_allclose
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.combine import SPIDER
 
