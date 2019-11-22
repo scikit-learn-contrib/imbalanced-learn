@@ -50,7 +50,7 @@ def test_balanced_bagging_classifier():
 
     for base_estimator in [
         None,
-        DummyClassifier(),
+        DummyClassifier(strategy="prior"),
         Perceptron(max_iter=1000, tol=1e-3),
         DecisionTreeClassifier(),
         KNeighborsClassifier(),

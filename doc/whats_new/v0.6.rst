@@ -81,7 +81,7 @@ Enhancement
   :class:`imblearn.over_sampling.KMeansSMOTE`,
   :class:`imblearn.over_sampling.SMOTENC` is now vectorize with giving
   an additional speed-up when `X` in sparse.
-  :pr:`596` by :user:`Matt Edding <MattEding>`.
+  :pr:`596` by :user:`Matt Eding <MattEding>`.
 
 Deprecation
 ...........
