@@ -12,11 +12,9 @@ composite estimator, as a chain of transforms, samples and estimators.
 #         Christos Aridas
 #         Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: BSD
-from itertools import filterfalse
-
 from sklearn import pipeline
 from sklearn.base import clone
-from sklearn.utils import Bunch, _print_elapsed_time
+from sklearn.utils import _print_elapsed_time
 from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_memory
 
@@ -170,13 +168,13 @@ class Pipeline(pipeline.Pipeline):
             )
 
     def _iter(
-        self, with_final=True, filter_passthrough=True, with_resample=False
+        self, with_final=True, filter_passthrough=True, filter_resample=True
     ):
         it = super()._iter(with_final, filter_passthrough)
-        if with_resample:
-            return it
+        if filter_resample:
+            return filter(lambda x: not hasattr(x[-1], "fit_resample"), it)
         else:
-            return filterfalse(lambda x: hasattr(x[-1], "fit_resample"), it)
+            return it
 
     # Estimator interface
 
@@ -206,7 +204,7 @@ class Pipeline(pipeline.Pipeline):
              name,
              transformer) in self._iter(with_final=False,
                                         filter_passthrough=False,
-                                        with_resample=True):
+                                        filter_resample=False):
             if (transformer is None or transformer == 'passthrough'):
                 with _print_elapsed_time('Pipeline',
                                          self._log_message(step_idx)):
@@ -220,7 +218,7 @@ class Pipeline(pipeline.Pipeline):
                 else:
                     cloned_transformer = clone(transformer)
             elif hasattr(memory, "cachedir"):
-                # joblib < 0.11
+                # joblib <= 0.11
                 if memory.cachedir is None:
                     # we do not clone when caching is disabled to
                     # preserve backward compatibility
