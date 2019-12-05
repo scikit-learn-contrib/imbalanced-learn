@@ -4,6 +4,7 @@ import numpy as np
 
 from sklearn.datasets import make_classification
 from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_array_equal
 
@@ -108,13 +109,16 @@ def test_balanced_random_forest_sample_weight(imbalanced_dataset):
     brf.fit(X, y, sample_weight)
 
 
+@pytest.mark.filterwarnings("ignore:Some inputs do not have OOB scores")
 def test_balanced_random_forest_oob(imbalanced_dataset):
     X, y = imbalanced_dataset
-    est = BalancedRandomForestClassifier(oob_score=True, random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, random_state=42, stratify=y
+    )
+    est = BalancedRandomForestClassifier(oob_score=True, random_state=0 )
 
-    n_samples = X.shape[0]
-    est.fit(X[: n_samples // 2, :], y[: n_samples // 2])
-    test_score = est.score(X[n_samples // 2:, :], y[n_samples // 2:])
+    est.fit(X_train, y_train)
+    test_score = est.score(X_test, y_test)
 
     assert abs(test_score - est.oob_score_) < 0.1
 
@@ -176,3 +180,16 @@ def test_balanced_random_forest_pruning(imbalanced_dataset):
     n_nodes_pruning = brf_pruned.estimators_[0].tree_.node_count
 
     assert n_nodes_no_pruning > n_nodes_pruning
+
+
+def test_balanced_random_forest_oob_binomial():
+    # Regression test for #655: check that the oob score is closed to 0.5
+    # a binomial experiment.
+    rng = np.random.RandomState(42)
+    n_samples = 1000
+    X = np.arange(n_samples).reshape(-1, 1)
+    y = rng.binomial(1, 0.5, size=n_samples)
+
+    erf = BalancedRandomForestClassifier(oob_score=True, random_state=42)
+    erf.fit(X, y)
+    assert np.abs(erf.oob_score_ - 0.5) < 0.05
