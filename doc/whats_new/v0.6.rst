@@ -30,7 +30,7 @@ Bug fixes
 
 - Fix a bug in :class:`imblearn.ensemble.BalancedRandomForestClassifier`
   leading to a wrong computation of the OOB score.
-  :pr:`xxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`656` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Maintenance
 ...........
