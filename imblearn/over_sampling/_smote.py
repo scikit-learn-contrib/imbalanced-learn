@@ -98,7 +98,7 @@ class BaseSMOTE(BaseOverSampler):
         """
         random_state = check_random_state(self.random_state)
         samples_indices = random_state.randint(
-            low=0, high=len(nn_num.flatten()), size=n_samples
+            low=0, high=nn_num.size, size=n_samples
         )
 
         # np.newaxis for backwards compatability with random_state
@@ -731,12 +731,11 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             X_resampled.append(X_new)
             y_resampled.append(y_new)
 
-        if sparse.issparse(X_new):
+        if sparse.issparse(X):
             X_resampled = sparse.vstack(X_resampled, format=X.format)
         else:
             X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
-
 
         return X_resampled, y_resampled
 
