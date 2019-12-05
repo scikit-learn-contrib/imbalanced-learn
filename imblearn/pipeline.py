@@ -170,8 +170,8 @@ class Pipeline(pipeline.Pipeline):
     def _iter(
         self, with_final=True, filter_passthrough=True, filter_resample=True
     ):
-        """Generate (idx, (name, trans)) tuples from self.steps
-        
+        """Generate (idx, (name, trans)) tuples from self.steps.
+
         When `filter_passthrough` is `True`, 'passthrough' and None transformers
         are filtered out. When `filter_resample` is `True`, estimator with a
         method `fit_resample` are filtered out.
