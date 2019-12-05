@@ -19,6 +19,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.ensemble._forest import _get_n_samples_bootstrap
 from sklearn.ensemble._forest import _parallel_build_trees
+from sklearn.ensemble._forest import _generate_unsampled_indices
 from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import check_array
@@ -544,6 +545,66 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self.classes_ = self.classes_[0]
 
         return self
+
+    def _set_oob_score(self, X, y):
+        """Compute out-of-bag score."""
+        X = check_array(X, dtype=DTYPE, accept_sparse='csr')
+
+        n_classes_ = self.n_classes_
+        n_samples = y.shape[0]
+
+        oob_decision_function = []
+        oob_score = 0.0
+        predictions = [np.zeros((n_samples, n_classes_[k]))
+                       for k in range(self.n_outputs_)]
+
+        for sampler, estimator in zip(self.samplers_, self.estimators_):
+            X_resample = X[sampler.sample_indices_]
+            y_resample = y[sampler.sample_indices_]
+
+            n_sample_subset = y_resample.shape[0]
+            n_samples_bootstrap = _get_n_samples_bootstrap(
+                n_sample_subset, self.max_samples
+            )
+
+            unsampled_indices = _generate_unsampled_indices(
+                estimator.random_state, n_sample_subset, n_samples_bootstrap
+            )
+            p_estimator = estimator.predict_proba(
+                X_resample[unsampled_indices, :], check_input=False
+            )
+
+            if self.n_outputs_ == 1:
+                p_estimator = [p_estimator]
+
+            for k in range(self.n_outputs_):
+                indices = sampler.sample_indices_[unsampled_indices]
+                predictions[k][indices, :] += p_estimator[k]
+
+        for k in range(self.n_outputs_):
+            if (predictions[k].sum(axis=1) == 0).any():
+                warn("Some inputs do not have OOB scores. "
+                     "This probably means too few trees were used "
+                     "to compute any reliable oob estimates.")
+
+            with np.errstate(invalid="ignore", divide="ignore"):
+                # with the resampling, we are likely to have rows not included
+                # for the OOB score leading to division by zero
+                decision = (predictions[k] /
+                            predictions[k].sum(axis=1)[:, np.newaxis])
+            mask_scores = np.isnan(np.sum(decision, axis=1))
+            oob_decision_function.append(decision)
+            oob_score += np.mean(
+                y[~mask_scores, k] == np.argmax(predictions[k][~mask_scores],
+                                                axis=1),
+                axis=0)
+
+        if self.n_outputs_ == 1:
+            self.oob_decision_function_ = oob_decision_function[0]
+        else:
+            self.oob_decision_function_ = oob_decision_function
+
+        self.oob_score_ = oob_score / self.n_outputs_
 
     def _more_tags(self):
         return {"multioutput": False}

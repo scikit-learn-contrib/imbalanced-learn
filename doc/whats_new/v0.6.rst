@@ -28,6 +28,10 @@ Bug fixes
   `cross_val_predict` is used to take advantage of the parallelism.
   :pr:`599` by :user:`Shihab Shahriar Khan <Shihab-Shahriar>`.
 
+- Fix a bug in :class:`imblearn.ensemble.BalancedRandomForestClassifier`
+  leading to a wrong computation of the OOB score.
+  :pr:`656` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Maintenance
 ...........
 
