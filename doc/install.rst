@@ -9,7 +9,7 @@ The imbalanced-learn package requires the following dependencies:
 
 * numpy (>=1.11)
 * scipy (>=0.17)
-* scikit-learn (>=0.21)
+* scikit-learn (>=0.22)
 * keras 2 (optional)
 * tensorflow (optional)
 
