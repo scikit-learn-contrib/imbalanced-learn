@@ -204,7 +204,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         subtree with the largest cost complexity that is smaller than
         ``ccp_alpha`` will be chosen. By default, no pruning is performed.
 
-        .. versionadded:: 0.22
+        .. versionadded:: 0.6
            Added in `scikit-learn` in 0.22
 
     max_samples : int or float, default=None
@@ -215,7 +215,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             - If float, then draw `max_samples * X.shape[0]` samples. Thus,
               `max_samples` should be in the interval `(0, 1)`.
 
-        .. versionadded:: 0.22
+        .. versionadded:: 0.6
            Added in `scikit-learn` in 0.22
 
     Attributes
