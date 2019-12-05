@@ -172,9 +172,9 @@ class Pipeline(pipeline.Pipeline):
     ):
         """Generate (idx, (name, trans)) tuples from self.steps.
 
-        When `filter_passthrough` is `True`, 'passthrough' and None transformers
-        are filtered out. When `filter_resample` is `True`, estimator with a
-        method `fit_resample` are filtered out.
+        When `filter_passthrough` is `True`, 'passthrough' and None
+        transformers are filtered out. When `filter_resample` is `True`,
+        estimator with a method `fit_resample` are filtered out.
         """
         it = super()._iter(with_final, filter_passthrough)
         if filter_resample:
