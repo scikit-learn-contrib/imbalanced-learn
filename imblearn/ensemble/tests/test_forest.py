@@ -115,7 +115,9 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, random_state=42, stratify=y
     )
-    est = BalancedRandomForestClassifier(oob_score=True, random_state=0)
+    est = BalancedRandomForestClassifier(
+        oob_score=True, random_state=0, n_estimators=1000
+    )
 
     est.fit(X_train, y_train)
     test_score = est.score(X_test, y_test)
@@ -182,14 +184,16 @@ def test_balanced_random_forest_pruning(imbalanced_dataset):
     assert n_nodes_no_pruning > n_nodes_pruning
 
 
-def test_balanced_random_forest_oob_binomial():
+@pytest.mark.parametrize("ratio", [0.5, 0.1])
+@pytest.mark.filterwarnings("ignore:Some inputs do not have OOB scores")
+def test_balanced_random_forest_oob_binomial(ratio):
     # Regression test for #655: check that the oob score is closed to 0.5
     # a binomial experiment.
     rng = np.random.RandomState(42)
     n_samples = 1000
     X = np.arange(n_samples).reshape(-1, 1)
-    y = rng.binomial(1, 0.5, size=n_samples)
+    y = rng.binomial(1, ratio, size=n_samples)
 
     erf = BalancedRandomForestClassifier(oob_score=True, random_state=42)
     erf.fit(X, y)
-    assert np.abs(erf.oob_score_ - 0.5) < 0.05
+    assert np.abs(erf.oob_score_ - 0.5) < 0.1

@@ -1,3 +1,24 @@
+.. _changes_0_6_1:
+
+Version 0.6.1
+==============
+
+**In Development**
+
+This is a bug-fix release to primarily resolve some packaging issues in version
+0.6.0. It also includes minor documentation improvements and some bug fixes.
+
+Changelog
+---------
+
+Bug fixes
+.........
+
+- Fix a bug in :class:`imblearn.ensemble.BalancedRandomForestClassifier`
+  leading to a wrong number of samples used during fitting due `max_samples`
+  and therefore a bad computation of the OOB score.
+  :pr:`656` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 .. _changes_0_6:
 
 Version 0.6.0
