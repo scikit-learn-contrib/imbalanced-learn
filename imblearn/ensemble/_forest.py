@@ -53,6 +53,8 @@ def _local_parallel_build_trees(
     X_resampled, y_resampled = sampler.fit_resample(X, y)
     if sample_weight is not None:
         sample_weight = _safe_indexing(sample_weight, sampler.sample_indices_)
+    if _get_n_samples_bootstrap is not None:
+        n_samples_bootstrap = min(n_samples_bootstrap, X_resampled.shape[0])
     tree = _parallel_build_trees(
         tree,
         forest,
@@ -214,6 +216,9 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             - If int, then draw `max_samples` samples.
             - If float, then draw `max_samples * X.shape[0]` samples. Thus,
               `max_samples` should be in the interval `(0, 1)`.
+        Be aware that the final number samples used will be the minimum between
+        the number of samples given in `max_samples` and the number of samples
+        obtained after resampling.
 
         .. versionadded:: 0.6
            Added in `scikit-learn` in 0.22
