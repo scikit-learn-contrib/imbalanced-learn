@@ -115,7 +115,9 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, random_state=42, stratify=y
     )
-    est = BalancedRandomForestClassifier(oob_score=True, random_state=0)
+    est = BalancedRandomForestClassifier(
+        oob_score=True, random_state=0, n_estimators=1000
+    )
 
     est.fit(X_train, y_train)
     test_score = est.score(X_test, y_test)
