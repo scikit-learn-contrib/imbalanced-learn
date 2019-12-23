@@ -3,6 +3,6 @@ recursive-include examples *
 include imblearn/tree *.pyx
 include imblearn/tree *.pyd
 include AUTHORS.rst
-include CONTRIBUTING.md
+include CONTRIBUTING.ms
 include LICENSE
 include README.rst
