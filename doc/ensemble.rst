@@ -6,12 +6,10 @@ Ensemble of samplers
 
 .. currentmodule:: imblearn.ensemble
 
-
 .. _ensemble_meta_estimators:
 
 Classifier including inner balancing samplers
 =============================================
-
 
 .. _bagging:
 

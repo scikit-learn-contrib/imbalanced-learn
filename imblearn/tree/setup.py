@@ -9,9 +9,6 @@ def configuration(parent_package='', top_path=None):
                          sources=['criterion.c'],
                          include_dirs=[numpy.get_include()],
                          libraries=libraries)
-                         # extra_compile_args=["-O3", "-fopenmp"],
-                         # extra_link_args=["-fopenmp"])
-    # config.add_subpackage("tests")
 
     return config
 

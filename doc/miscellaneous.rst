@@ -167,8 +167,6 @@ will be passed to ``fit_generator``::
   >>> callback_history = model.fit_generator(generator=training_generator,
   ...                                        epochs=10, verbose=0)
 
-
 .. topic:: References
 
   * :ref:`sphx_glr_auto_examples_applications_porto_seguro_keras_under_sampling.py`
-
