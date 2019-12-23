@@ -77,8 +77,10 @@ def cythonize(cython_file, gen_file):
             # There are ways of installing Cython that don't result in a cython
             # executable on the path, see scipy issue gh-2397.
             rc = subprocess.call([sys.executable, '-c',
-                                  'import sys; from Cython.Compiler.Main; import setuptools_main as main; sys.exit(main())'] + flags +
-                                 ["-o", gen_file, cython_file])
+                                  'import sys; from Cython.Compiler.Main; \
+								  import setuptools_main as main; sys.exit(main())'] 
+								  + flags
+								  + ["-o", gen_file, cython_file])
             if rc != 0:
                 raise Exception('Cythonizing %s failed' % cython_file)
     except OSError:
