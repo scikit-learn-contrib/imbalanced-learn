@@ -33,7 +33,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     # provided versions
     conda create -n testenv --yes python=$PYTHON_VERSION pip
     source activate testenv
-    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
+    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION cython=$CYTHON_VERSION
 
     if [[ "$OPTIONAL_DEPS" == "keras" ]]; then
         conda install --yes pandas keras tensorflow=1
@@ -66,12 +66,14 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
     pip3 install pandas
     pip3 install pytest pytest-cov codecov sphinx numpydoc
+    pip3 install cython
 
 fi
 
 python --version
 python -c "import numpy; print('numpy %s' % numpy.__version__)"
 python -c "import scipy; print('scipy %s' % scipy.__version__)"
+python -c "import Cython; print('Cython %s' % Cython.__version__)"
 
 pip install -e .
 ccache --show-stats

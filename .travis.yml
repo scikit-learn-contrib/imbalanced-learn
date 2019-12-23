@@ -33,13 +33,13 @@ matrix:
     - env: DISTRIB="ubuntu" TEST_DOC="true" TEST_NUMPYDOC="false"
     # Latest release
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master" CYTHON_VERSION="*"
            OPTIONAL_DEPS="keras" TEST_DOC="true" TEST_NUMPYDOC="false"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master" CYTHON_VERSION="*"
            OPTIONAL_DEPS="tensorflow" TEST_DOC="true" TEST_NUMPYDOC="false"
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
+           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master" CYTHON_VERSION="*"
            OPTIONAL_DEPS="false" TEST_DOC="false" TEST_NUMPYDOC="true"
 
 install: source build_tools/travis/install.sh

@@ -37,6 +37,7 @@ install:
   - activate testenv
   - conda install scipy numpy joblib -y -q
   - pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
+  - conda install -c anaconda cython -y -q
   - conda install %OPTIONAL_DEP% -y -q
   - conda install pytest pytest-cov -y -q
   - pip install codecov

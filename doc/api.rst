@@ -196,6 +196,29 @@ Imbalance-learn provides some fast-prototyping tools.
 
 .. _metrics_ref:
 
+:mod:`imblearn.tree`: Tree split criterion
+==================================
+
+.. automodule:: imblearn.tree
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: imblearn
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+   tree.criterion.HellingerDistanceCriterion
+
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+
+   pipeline.make_pipeline
+
+.. _metrics_ref:
+
 :mod:`imblearn.metrics`: Metrics
 ================================
 

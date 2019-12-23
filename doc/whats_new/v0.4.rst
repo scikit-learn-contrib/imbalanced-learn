@@ -129,6 +129,9 @@ Enhancement
   :class:`BorderlineSMOTE` and :class:`SVMSMOTE`.
   :issue:`440` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add support for Hellinger Distance as sklearn classification tree split criterion.
+  By :user: `Evgeni Dubov <EvgeniDubov>`.
+  
 - Allow :class:`imblearn.over_sampling.RandomOverSampler` can return indices
   using the attributes ``return_indices``.
   :issue:`439` by :user:`Hugo Gascon<hgascon>` and

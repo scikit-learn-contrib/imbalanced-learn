@@ -12,6 +12,7 @@ User Guide
    introduction.rst
    over_sampling.rst
    under_sampling.rst
+   tree.rst
    combine.rst
    ensemble.rst
    miscellaneous.rst
