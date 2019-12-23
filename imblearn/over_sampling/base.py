@@ -15,10 +15,9 @@ class BaseOverSampler(BaseSampler):
     instead.
     """
 
-    _sampling_type = 'over-sampling'
+    _sampling_type = "over-sampling"
 
-    _sampling_strategy_docstring = \
-        """sampling_strategy : float, str, dict or callable, (default='auto')
+    _sampling_strategy_docstring = """sampling_strategy : float, str, dict or callable, default='auto'
         Sampling information to resample the data set.
 
         - When ``float``, it corresponds to the desired ratio of the number of

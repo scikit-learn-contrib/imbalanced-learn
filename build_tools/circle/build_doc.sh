@@ -74,6 +74,15 @@ fi
 
 MAKE_TARGET=html
 
+# Installing required system packages to support the rendering of math
+# notation in the HTML documentation
+sudo -E apt-get -yq update
+sudo -E apt-get -yq remove texlive-binaries --purge
+sudo -E apt-get -yq --no-install-suggests --no-install-recommends \
+    install dvipng texlive-latex-base texlive-latex-extra \
+    texlive-latex-recommended texlive-fonts-recommended \
+    latexmk gsfonts ccache
+
 # deactivate circleci virtualenv and setup a miniconda env instead
 if [[ `type -t deactivate` ]]; then
     deactivate
@@ -88,13 +97,15 @@ conda update --yes --quiet conda
 
 # Configure the conda environment and put it in the path using the
 # provided versions
-conda create -n $CONDA_ENV_NAME --yes --quiet python=3.6
+conda create -n $CONDA_ENV_NAME --yes --quiet python=3.7
 source activate $CONDA_ENV_NAME
 
-conda install --yes pip numpy scipy pillow matplotlib sphinx \
-      sphinx_rtd_theme numpydoc pandas keras
-pip install --pre scikit-learn
+conda install --yes pip numpy scipy joblib pillow matplotlib memory_profiler \
+        sphinx sphinx_rtd_theme \pandas keras tensorflow=1
+pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
 pip install -U git+https://github.com/sphinx-gallery/sphinx-gallery.git
+pip install -U git+https://github.com/numpy/numpydoc.git
+pip install -U git+https://github.com/mcmtroffaes/sphinxcontrib-bibtex.git
 
 # Build and install imbalanced-learn in dev mode
 ls -l

@@ -9,18 +9,18 @@ import numpy as np
 from sklearn.utils import check_array
 from sklearn.utils import check_consistent_length
 from sklearn.utils import check_random_state
-from sklearn.utils import safe_indexing
+from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import check_target_type
 from ...utils import Substitution
-from ...utils.deprecation import deprecate_parameter
 from ...utils._docstring import _random_state_docstring
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    random_state=_random_state_docstring)
+    random_state=_random_state_docstring,
+)
 class RandomUnderSampler(BaseUnderSampler):
     """Class to perform random under-sampling.
 
@@ -33,30 +33,21 @@ class RandomUnderSampler(BaseUnderSampler):
     ----------
     {sampling_strategy}
 
-    return_indices : bool, optional (default=False)
-        Whether or not to return the indices of the samples randomly selected.
-
-        .. deprecated:: 0.4
-           ``return_indices`` is deprecated. Use the attribute
-           ``sample_indices_`` instead.
-
     {random_state}
 
-    replacement : boolean, optional (default=False)
+    replacement : bool, default=False
         Whether the sample is with or without replacement.
-
-    ratio : str, dict, or callable
-        .. deprecated:: 0.4
-           Use the parameter ``sampling_strategy`` instead. It will be removed
-           in 0.6.
 
     Attributes
     ----------
-    sample_indices_ : ndarray, shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-           ``sample_indices_`` used instead of ``return_indices=True``.
+
+    See Also
+    --------
+    NearMiss : Undersample using near-miss samples.
 
     Notes
     -----
@@ -80,37 +71,45 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = rus.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 100, 1: 100}})
-
     """
 
-    def __init__(self,
-                 sampling_strategy='auto',
-                 return_indices=False,
-                 random_state=None,
-                 replacement=False,
-                 ratio=None):
-        super().__init__(
-            sampling_strategy=sampling_strategy, ratio=ratio)
+    def __init__(
+        self, sampling_strategy="auto", random_state=None, replacement=False
+    ):
+        super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
-        self.return_indices = return_indices
         self.replacement = replacement
 
-    @staticmethod
-    def _check_X_y(X, y):
+    def _check_X_y(self, X, y):
+        if hasattr(X, "loc"):
+            # store information to build dataframe
+            self._X_columns = X.columns
+            self._X_dtypes = X.dtypes
+        else:
+            self._X_columns = None
+            self._X_dtypes = None
+
+        if hasattr(y, "loc"):
+            # store information to build a series
+            self._y_name = y.name
+            self._y_dtype = y.dtype
+        else:
+            self._y_name = None
+            self._y_dtype = None
+
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X = check_array(X, accept_sparse=['csr', 'csc'], dtype=None)
-        y = check_array(y, accept_sparse=['csr', 'csc'], dtype=None,
-                        ensure_2d=False)
+        X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
+                        force_all_finite=False)
+        y = check_array(
+            y, accept_sparse=["csr", "csc"], dtype=None, ensure_2d=False
+        )
         check_consistent_length(X, y)
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):
-        if self.return_indices:
-            deprecate_parameter(self, '0.4', 'return_indices',
-                                'sample_indices_')
         random_state = check_random_state(self.random_state)
 
-        idx_under = np.empty((0, ), dtype=int)
+        idx_under = np.empty((0,), dtype=int)
 
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
@@ -118,24 +117,26 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = random_state.choice(
                     range(np.count_nonzero(y == target_class)),
                     size=n_samples,
-                    replace=self.replacement)
+                    replace=self.replacement,
+                )
             else:
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under,
-                 np.flatnonzero(y == target_class)[index_target_class]),
-                axis=0)
+                (
+                    idx_under,
+                    np.flatnonzero(y == target_class)[index_target_class],
+                ),
+                axis=0,
+            )
 
         self.sample_indices_ = idx_under
 
-        if self.return_indices:
-            return (safe_indexing(X, idx_under), safe_indexing(y, idx_under),
-                    idx_under)
-        return safe_indexing(X, idx_under), safe_indexing(y, idx_under)
+        return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     def _more_tags(self):
-        # TODO: remove the str tag once the following PR is merged:
-        # https://github.com/scikit-learn/scikit-learn/pull/14043
-        return {'X_types': ['2darray', 'str', 'string'],
-                'sample_indices': True}
+        return {
+            "X_types": ["2darray", "string"],
+            "sample_indices": True,
+            "allow_nan": True,
+        }

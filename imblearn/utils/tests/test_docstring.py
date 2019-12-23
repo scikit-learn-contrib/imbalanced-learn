@@ -6,9 +6,10 @@
 import pytest
 
 from imblearn.utils import Substitution
+from imblearn.utils._docstring import _random_state_docstring
+from imblearn.utils._docstring import _n_jobs_docstring
 
-func_docstring = \
-    """A function.
+func_docstring = """A function.
 
     Parameters
     ----------
@@ -30,8 +31,7 @@ def func(param_1, param_2):
     return param_1, param_2
 
 
-cls_docstring = \
-    """A class.
+cls_docstring = """A class.
 
     Parameters
     ----------
@@ -56,8 +56,14 @@ class cls:
         self.param_2 = param_2
 
 
-@pytest.mark.parametrize("obj, obj_docstring", [(func, func_docstring),
-                                                (cls, cls_docstring)])
+@pytest.mark.parametrize(
+    "obj, obj_docstring", [(func, func_docstring), (cls, cls_docstring)]
+)
 def test_docstring_inject(obj, obj_docstring):
-    obj_injected_docstring = Substitution(param_1='xxx', param_2='yyy')(obj)
+    obj_injected_docstring = Substitution(param_1="xxx", param_2="yyy")(obj)
     assert obj_injected_docstring.__doc__ == obj_docstring
+
+
+def test_docstring_template():
+    assert "random_state" in _random_state_docstring
+    assert "n_jobs" in _n_jobs_docstring

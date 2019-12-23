@@ -54,21 +54,44 @@ from urllib.request import urlopen
 import numpy as np
 
 from sklearn.datasets import get_data_home
-from sklearn.datasets.base import Bunch
+from sklearn.utils import Bunch
 from sklearn.utils import check_random_state
 
-URL = ('https://zenodo.org/record/61452/files/'
-       'benchmark-imbalanced-learn.tar.gz')
-PRE_FILENAME = 'x'
-POST_FILENAME = 'data.npz'
+URL = (
+    "https://zenodo.org/record/61452/files/"
+    "benchmark-imbalanced-learn.tar.gz"
+)
+PRE_FILENAME = "x"
+POST_FILENAME = "data.npz"
 
 MAP_NAME_ID_KEYS = [
-    'ecoli', 'optical_digits', 'satimage', 'pen_digits', 'abalone',
-    'sick_euthyroid', 'spectrometer', 'car_eval_34', 'isolet', 'us_crime',
-    'yeast_ml8', 'scene', 'libras_move', 'thyroid_sick', 'coil_2000',
-    'arrhythmia', 'solar_flare_m0', 'oil', 'car_eval_4', 'wine_quality',
-    'letter_img', 'yeast_me2', 'webpage', 'ozone_level', 'mammography',
-    'protein_homo', 'abalone_19'
+    "ecoli",
+    "optical_digits",
+    "satimage",
+    "pen_digits",
+    "abalone",
+    "sick_euthyroid",
+    "spectrometer",
+    "car_eval_34",
+    "isolet",
+    "us_crime",
+    "yeast_ml8",
+    "scene",
+    "libras_move",
+    "thyroid_sick",
+    "coil_2000",
+    "arrhythmia",
+    "solar_flare_m0",
+    "oil",
+    "car_eval_4",
+    "wine_quality",
+    "letter_img",
+    "yeast_me2",
+    "webpage",
+    "ozone_level",
+    "mammography",
+    "protein_homo",
+    "abalone_19",
 ]
 
 MAP_NAME_ID = OrderedDict()
@@ -78,12 +101,14 @@ for v, k in enumerate(MAP_NAME_ID_KEYS):
     MAP_ID_NAME[v + 1] = k
 
 
-def fetch_datasets(data_home=None,
-                   filter_data=None,
-                   download_if_missing=True,
-                   random_state=None,
-                   shuffle=False,
-                   verbose=False):
+def fetch_datasets(
+    data_home=None,
+    filter_data=None,
+    download_if_missing=True,
+    random_state=None,
+    shuffle=False,
+    verbose=False,
+):
     """Load the benchmark datasets from Zenodo, downloading it if necessary.
 
     Parameters
@@ -209,23 +234,28 @@ def fetch_datasets(data_home=None,
         for it in filter_data:
             if isinstance(it, str):
                 if it not in list_data:
-                    raise ValueError('{} is not a dataset available. '
-                                     'The available datasets are {}'.format(
-                                         it, list_data))
+                    raise ValueError(
+                        "{} is not a dataset available. "
+                        "The available datasets are {}".format(it, list_data)
+                    )
                 else:
                     filter_data_.append(it)
             elif isinstance(it, int):
                 if it < 1 or it > 27:
-                    raise ValueError('The dataset with the ID={} is not an '
-                                     'available dataset. The IDs are '
-                                     '{}'.format(it, range(1, 28)))
+                    raise ValueError(
+                        "The dataset with the ID={} is not an "
+                        "available dataset. The IDs are "
+                        "{}".format(it, range(1, 28))
+                    )
                 else:
                     # The index start at one, then we need to remove one
                     # to not have issue with the indexing.
                     filter_data_.append(MAP_ID_NAME[it])
             else:
-                raise ValueError('The value in the tuple should be str or int.'
-                                 ' Got {} instead.'.format(type(it)))
+                raise ValueError(
+                    "The value in the tuple should be str or int."
+                    " Got {} instead.".format(type(it))
+                )
 
     # go through the list and check if the data are available
     for it in filter_data_:
@@ -244,7 +274,7 @@ def fetch_datasets(data_home=None,
             raise IOError("Data not found and `download_if_missing` is False")
 
         data = np.load(filename)
-        X, y = data['data'], data['label']
+        X, y = data["data"], data["label"]
 
         if shuffle:
             ind = np.arange(X.shape[0])

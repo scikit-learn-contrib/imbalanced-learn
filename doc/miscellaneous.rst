@@ -34,6 +34,23 @@ to retain the 10 first elements of the array ``X`` and ``y``::
   >>> np.all(y_res == y[:10])
   True
 
+In addition, the parameter ``validate`` control input checking. For instance,
+turning ``validate=False`` allows to pass any type of target ``y`` and do some
+sampling for regression targets.
+
+  >>> from sklearn.datasets import make_regression
+  >>> X_reg, y_reg = make_regression(n_samples=100, random_state=42)
+  >>> rng = np.random.RandomState(42)
+  >>> def dummy_sampler(X, y):
+  ...     indices = rng.choice(np.arange(X.shape[0]), size=10)
+  ...     return X[indices], y[indices]
+  >>> sampler = FunctionSampler(func=dummy_sampler, validate=False)
+  >>> X_res, y_res = sampler.fit_resample(X_reg, y_reg)
+  >>> y_res
+  array([  41.49112498, -142.78526195,   85.55095317,  141.43321419,
+           75.46571114,  -67.49177372,  159.72700509, -169.80498923,
+          211.95889757,  211.95889757])
+
 We illustrate the use of such sampler to implement an outlier rejection
 estimator which can be easily used within a
 :class:`imblearn.pipeline.Pipeline`:

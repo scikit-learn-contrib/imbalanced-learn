@@ -19,3 +19,4 @@ User Guide
    metrics.rst
    Dataset loading utilities <datasets/index.rst>
    developers_utils.rst
+   references.rst

@@ -9,6 +9,7 @@ import pytest
 import numpy as np
 
 from sklearn.datasets import load_iris
+from sklearn.datasets import fetch_openml
 
 from imblearn.datasets import make_imbalance
 
@@ -18,18 +19,13 @@ def iris():
     return load_iris(return_X_y=True)
 
 
-def test_make_imbalanced_backcompat(iris):
-    # check an error is raised with we don't pass sampling_strategy and ratio
-    err_msg = "missing 1 required positional argument"
-    with pytest.raises(TypeError, match=err_msg):
-        make_imbalance(*iris)
-
-
 @pytest.mark.parametrize(
     "sampling_strategy, err_msg",
-    [({0: -100, 1: 50, 2: 50}, "in a class cannot be negative"),
-     ({0: 10, 1: 70}, "should be less or equal to the original"),
-     ('random-string', "has to be a dictionary or a function")]
+    [
+        ({0: -100, 1: 50, 2: 50}, "in a class cannot be negative"),
+        ({0: 10, 1: 70}, "should be less or equal to the original"),
+        ("random-string", "has to be a dictionary or a function"),
+    ],
 )
 def test_make_imbalance_error(iris, sampling_strategy, err_msg):
     # we are reusing part of utils.check_sampling_strategy, however this is not
@@ -48,8 +44,10 @@ def test_make_imbalance_error_single_class(iris):
 
 @pytest.mark.parametrize(
     "sampling_strategy, expected_counts",
-    [({0: 10, 1: 20, 2: 30}, {0: 10, 1: 20, 2: 30}),
-     ({0: 10, 1: 20}, {0: 10, 1: 20, 2: 50})]
+    [
+        ({0: 10, 1: 20, 2: 30}, {0: 10, 1: 20, 2: 30}),
+        ({0: 10, 1: 20}, {0: 10, 1: 20, 2: 50}),
+    ],
 )
 def test_make_imbalance_dict(iris, sampling_strategy, expected_counts):
     X, y = iris
@@ -57,13 +55,20 @@ def test_make_imbalance_dict(iris, sampling_strategy, expected_counts):
     assert Counter(y_) == expected_counts
 
 
-@pytest.mark.filterwarnings("ignore:'ratio' has been deprecated in 0.4")
+@pytest.mark.parametrize("as_frame", [True, False], ids=['dataframe', 'array'])
 @pytest.mark.parametrize(
     "sampling_strategy, expected_counts",
-    [({0: 10, 1: 20, 2: 30}, {0: 10, 1: 20, 2: 30}),
-     ({0: 10, 1: 20}, {0: 10, 1: 20, 2: 50})]
+    [
+        ({'Iris-setosa': 10, 'Iris-versicolor': 20, 'Iris-virginica': 30},
+         {'Iris-setosa': 10, 'Iris-versicolor': 20, 'Iris-virginica': 30}),
+        ({'Iris-setosa': 10, 'Iris-versicolor': 20},
+         {'Iris-setosa': 10, 'Iris-versicolor': 20, 'Iris-virginica': 50}),
+    ],
 )
-def test_make_imbalance_dict_ratio(iris, sampling_strategy, expected_counts):
-    X, y = iris
-    _, y_ = make_imbalance(X, y, ratio=sampling_strategy)
-    assert Counter(y_) == expected_counts
+def test_make_imbalanced_iris(as_frame, sampling_strategy, expected_counts):
+    pytest.importorskip("pandas")
+    X, y = fetch_openml('iris', version=1, return_X_y=True, as_frame=as_frame)
+    X_res, y_res = make_imbalance(X, y, sampling_strategy=sampling_strategy)
+    if as_frame:
+        assert hasattr(X_res, "loc")
+    assert Counter(y_res) == expected_counts

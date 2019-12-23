@@ -4,7 +4,10 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |ReadTheDocs|_ |PythonVersion|_ |Pypi|_ |Gitter|_
+|Azure|_ |Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_
+
+.. |Azure| image:: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_apis/build/status/scikit-learn-contrib.imbalanced-learn?branchName=master
+.. _Azure: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_build
 
 .. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn.svg?branch=master
 .. _Travis: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn
@@ -17,9 +20,6 @@
 
 .. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield&circle-token=:circle-token
 .. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn/tree/master
-
-.. |ReadTheDocs| image:: https://readthedocs.org/projects/imbalanced-learn/badge/?version=latest
-.. _ReadTheDocs: https://imbalanced-learn.readthedocs.io/en/latest/?badge=latest
 
 .. |PythonVersion| image:: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
 .. _PythonVersion: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
@@ -44,7 +44,7 @@ Documentation
 Installation documentation, API documentation, and examples can be found on the
 documentation_.
 
-.. _documentation: https://imbalanced-learn.readthedocs.io/en/stable/
+.. _documentation: https://imbalanced-learn.org/stable/
 
 Installation
 ------------
@@ -57,7 +57,7 @@ The dependency requirements are based on the last scikit-learn release:
 
 * scipy(>=0.17)
 * numpy(>=1.11)
-* scikit-learn(>=0.21)
+* scikit-learn(>=0.22)
 * joblib(>=0.11)
 * keras 2 (optional)
 * tensorflow (optional)
@@ -153,19 +153,23 @@ Below is a list of the methods currently implemented in this module.
 * Over-sampling
     1. Random minority over-sampling with replacement
     2. SMOTE - Synthetic Minority Over-sampling Technique [8]_
-    3. bSMOTE(1 & 2) - Borderline SMOTE of types 1 and 2 [9]_
-    4. SVM SMOTE - Support Vectors SMOTE [10]_
-    5. ADASYN - Adaptive synthetic sampling approach for imbalanced learning [15]_
+    3. SMOTENC - SMOTE for Nominal Continuous [8]_
+    4. bSMOTE(1 & 2) - Borderline SMOTE of types 1 and 2 [9]_
+    5. SVM SMOTE - Support Vectors SMOTE [10]_
+    6. ADASYN - Adaptive synthetic sampling approach for imbalanced learning [15]_
+    7. KMeans-SMOTE [17]_
 
 * Over-sampling followed by under-sampling
     1. SMOTE + Tomek links [12]_
     2. SMOTE + ENN [11]_
 
 * Ensemble classifier using samplers internally
-    1. EasyEnsemble [13]_
-    2. BalanceCascade [13]_
-    3. Balanced Random Forest [16]_
-    4. Balanced Bagging
+    1. Easy Ensemble classifier [13]_
+    2. Balanced Random Forest [16]_
+    3. Balanced Bagging
+    4. RUSBoost [18]_
+
+* Mini-batch resampling for Keras and Tensorflow
 
 The different algorithms are presented in the sphinx-gallery_.
 
@@ -206,3 +210,7 @@ References:
 .. [15] : H. He, Y. Bai, E. A. Garcia, S. Li, “ADASYN: Adaptive synthetic sampling approach for imbalanced learning,” In Proceedings of the 5th IEEE International Joint Conference on Neural Networks, pp. 1322-1328, 2008.
 
 .. [16] : C. Chao, A. Liaw, and L. Breiman. "Using random forest to learn imbalanced data." University of California, Berkeley 110 (2004): 1-12.
+
+.. [17] : Felix Last, Georgios Douzas, Fernando Bacao, "Oversampling for Imbalanced Learning Based on K-Means and SMOTE"
+
+.. [18] : Seiffert, C., Khoshgoftaar, T. M., Van Hulse, J., & Napolitano, A. "RUSBoost: A hybrid approach to alleviating class imbalance." IEEE Transactions on Systems, Man, and Cybernetics-Part A: Systems and Humans 40.1 (2010): 185-197.

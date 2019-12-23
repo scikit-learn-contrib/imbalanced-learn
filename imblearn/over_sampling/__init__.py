@@ -11,5 +11,12 @@ from ._smote import KMeansSMOTE
 from ._smote import SVMSMOTE
 from ._smote import SMOTENC
 
-__all__ = ['ADASYN', 'RandomOverSampler', 'KMeansSMOTE',
-           'SMOTE', 'BorderlineSMOTE', 'SVMSMOTE', 'SMOTENC']
+__all__ = [
+    "ADASYN",
+    "RandomOverSampler",
+    "KMeansSMOTE",
+    "SMOTE",
+    "BorderlineSMOTE",
+    "SVMSMOTE",
+    "SMOTENC",
+]

@@ -71,6 +71,15 @@ In addition, :class:`RandomOverSampler` allows to sample heterogeneous data
   >>> print(y_resampled)
   [0 0 1 1]
 
+It would also work with pandas dataframe::
+
+  >>> from sklearn.datasets import fetch_openml
+  >>> df_adult, y_adult = fetch_openml(
+  ...     'adult', version=2, as_frame=True, return_X_y=True)
+  >>> df_adult.head()  # doctest: +SKIP
+  >>> df_resampled, y_resampled = ros.fit_resample(df_adult, y_adult)
+  >>> df_resampled.head()  # doctest: +SKIP
+
 .. _smote_adasyn:
 
 From random over-sampling to SMOTE and ADASYN
@@ -78,8 +87,9 @@ From random over-sampling to SMOTE and ADASYN
 
 Apart from the random sampling with replacement, there are two popular methods
 to over-sample minority classes: (i) the Synthetic Minority Oversampling
-Technique (SMOTE) [CBHK2002]_ and (ii) the Adaptive Synthetic (ADASYN)
-[HBGL2008]_ sampling method. These algorithms can be used in the same manner::
+Technique (SMOTE) :cite:`chawla2002smote` and (ii) the Adaptive Synthetic
+(ADASYN) :cite:`he2008adasyn` sampling method. These algorithms can be used in
+the same manner::
 
   >>> from imblearn.over_sampling import SMOTE, ADASYN
   >>> X_resampled, y_resampled = SMOTE().fit_resample(X, y)
@@ -98,18 +108,6 @@ over-sampling methods.
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :scale: 60
    :align: center
-
-.. topic:: References
-
-  .. [HBGL2008] He, Haibo, Yang Bai, Edwardo A. Garcia, and Shutao Li. "ADASYN:
-                Adaptive synthetic sampling approach for imbalanced learning,"
-                In IEEE International Joint Conference on Neural Networks (IEEE
-                World Congress on Computational Intelligence), pp. 1322-1328,
-                2008.
-
-  .. [CBHK2002] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer,
-                "SMOTE: synthetic minority over-sampling technique," Journal of
-                artificial intelligence research, 16, 321-357, 2002.
 
 Ill-posed examples
 ------------------
@@ -152,8 +150,10 @@ nearest neighbors class. Those variants are presented in the figure below.
    :align: center
 
 
-The :class:`BorderlineSMOTE` [HWB2005]_, :class:`SVMSMOTE` [NCK2009]_, and
-:class:`KMeansSMOTE` [LDB2017]_ offer some variant of the SMOTE algorithm::
+The :class:`BorderlineSMOTE` :cite:`han2005borderline`,
+:class:`SVMSMOTE` :cite:`nguyen2009borderline`, and
+:class:`KMeansSMOTE` :cite:`last2017oversampling` offer some variant of the
+SMOTE algorithm::
 
   >>> from imblearn.over_sampling import BorderlineSMOTE
   >>> X_resampled, y_resampled = BorderlineSMOTE().fit_resample(X, y)
@@ -162,9 +162,9 @@ The :class:`BorderlineSMOTE` [HWB2005]_, :class:`SVMSMOTE` [NCK2009]_, and
 
 When dealing with mixed data type such as continuous and categorical features,
 none of the presented methods (apart of the class :class:`RandomOverSampler`)
-can deal with the categorical features. The :class:`SMOTENC` [CBHK2002]_ is an
-extension of the :class:`SMOTE` algorithm for which categorical data are
-treated differently::
+can deal with the categorical features. The :class:`SMOTENC`
+:cite:`chawla2002smote` is an extension of the :class:`SMOTE` algorithm for
+which categorical data are treated differently::
 
   >>> # create a synthetic data set with continuous and categorical features
   >>> rng = np.random.RandomState(42)
@@ -190,28 +190,13 @@ features or a boolean mask marking these features::
   >>> print(X_resampled[-5:])
   [['A' 0.5246469549655818 2]
    ['B' -0.3657680728116921 2]
-   ['A' 0.9344237230779993 2]
+   ['B' 0.9344237230779993 2]
    ['B' 0.3710891618824609 2]
    ['B' 0.3327240726719727 2]]
 
 Therefore, it can be seen that the samples generated in the first and last
 columns are belonging to the same categories originally presented without any
 other extra interpolation.
-
-.. topic:: References
-
-  .. [HWB2005] H. Han, W. Wen-Yuan, M. Bing-Huan, "Borderline-SMOTE: a new
-               over-sampling method in imbalanced data sets learning," Advances
-               in intelligent computing, 878-887, 2005.
-
-  .. [NCK2009] H. M. Nguyen, E. W. Cooper, K. Kamei, "Borderline over-sampling
-               for imbalanced data classification," International Journal of
-               Knowledge Engineering and Soft Data Paradigms, 3(1), pp.4-21,
-               2009.
-
-  .. [LDB2017] Felix Last, Georgios Douzas, Fernando Bacao, "Oversampling for
-               Imbalanced Learning Based on K-Means and SMOTE"
-               https://arxiv.org/abs/1711.00837
 
 Mathematical formulation
 ========================

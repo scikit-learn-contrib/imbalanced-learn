@@ -15,8 +15,14 @@ from ._edited_nearest_neighbours import AllKNN
 from ._instance_hardness_threshold import InstanceHardnessThreshold
 
 __all__ = [
-    'RandomUnderSampler', 'InstanceHardnessThreshold', 'NearMiss',
-    'TomekLinks', 'EditedNearestNeighbours', 'RepeatedEditedNearestNeighbours',
-    'AllKNN', 'OneSidedSelection', 'CondensedNearestNeighbour',
-    'NeighbourhoodCleaningRule'
+    "RandomUnderSampler",
+    "InstanceHardnessThreshold",
+    "NearMiss",
+    "TomekLinks",
+    "EditedNearestNeighbours",
+    "RepeatedEditedNearestNeighbours",
+    "AllKNN",
+    "OneSidedSelection",
+    "CondensedNearestNeighbour",
+    "NeighbourhoodCleaningRule",
 ]
