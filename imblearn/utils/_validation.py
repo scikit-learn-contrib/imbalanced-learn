@@ -12,6 +12,7 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors._base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils import column_or_1d
 from sklearn.utils.multiclass import type_of_target
 
 from ..exceptions import raise_isinstance_error
@@ -96,6 +97,8 @@ def check_target_type(y, indicate_one_vs_all=False):
                 "multioutput targets are not supported."
             )
         y = y.argmax(axis=1)
+    else:
+        y = column_or_1d(y)
 
     return (y, type_y == "multilabel-indicator") if indicate_one_vs_all else y
 
