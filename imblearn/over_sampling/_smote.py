@@ -55,7 +55,6 @@ class BaseSMOTE(BaseOverSampler):
         self.nn_k_ = check_neighbors_object(
             "k_neighbors", self.k_neighbors, additional_neighbor=1
         )
-        self.nn_k_.set_params(**{"n_jobs": self.n_jobs})
 
     def _make_samples(
         self, X, y_dtype, y_type, nn_data, nn_num, n_samples, step_size=1.0
@@ -963,12 +962,21 @@ class SMOTENC(SMOTE):
         self.ohe_ = OneHotEncoder(
             sparse=True, handle_unknown="ignore", dtype=dtype_ohe
         )
+
         # the input of the OneHotEncoder needs to be dense
         X_ohe = self.ohe_.fit_transform(
             X_categorical.toarray()
             if sparse.issparse(X_categorical)
             else X_categorical
         )
+
+        # if self.median_std_ is 0, we must copy the class information to
+        # avoid losing it in the next step.
+        if self.median_std_ == 0:
+            X_categorical_minority = _safe_indexing(
+                X_ohe.toarray(), np.flatnonzero(y==class_minority)
+            )
+            self.X_categorical_minority_copy_ = X_categorical_minority
 
         # we can replace the 1 entries of the categorical features with the
         # median of the standard deviation. It will ensure that whenever
@@ -1034,6 +1042,12 @@ class SMOTENC(SMOTE):
 
         # convert to dense array since scipy.sparse doesn't handle 3D
         nn_data = (nn_data.toarray() if sparse.issparse(nn_data) else nn_data)
+
+        # reset categorical data if it zeroed out after being multipled
+        # by self.median_std_
+        if self.median_std_ == 0:
+            nn_data[:, self.continuous_features_.size:] = self.X_categorical_minority_copy_
+
         all_neighbors = nn_data[nn_num[rows]]
 
         categories_size = [self.continuous_features_.size] + [
