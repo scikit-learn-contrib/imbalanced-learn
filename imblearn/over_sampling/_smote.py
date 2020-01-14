@@ -973,7 +973,7 @@ class SMOTENC(SMOTE):
         # if self.median_std_ is 0, we must copy the class information to
         # avoid losing it in the next step.
         if self.median_std_ == 0:
-            X_categorical__minority = _safe_indexing(
+            X_categorical_minority = _safe_indexing(
                 X_ohe.toarray(), np.flatnonzero(y == class_minority)
             )
             self.X_categorical_minority_copy_ = (
