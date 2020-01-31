@@ -9,7 +9,6 @@ import numpy as np
 
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import GaussianNB as NB
 from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import InstanceHardnessThreshold
@@ -56,13 +55,13 @@ def test_iht_fit_resample():
 
 
 def test_iht_fit_resample_half():
-    sampling_strategy = {0: 3, 1: 3}
+    sampling_strategy = {0: 6, 1: 8}
     iht = InstanceHardnessThreshold(
-        NB(), sampling_strategy=sampling_strategy, random_state=RND_SEED
+        ESTIMATOR, sampling_strategy=sampling_strategy, random_state=RND_SEED
     )
     X_resampled, y_resampled = iht.fit_resample(X, Y)
-    assert X_resampled.shape == (6, 2)
-    assert y_resampled.shape == (6,)
+    assert X_resampled.shape == (14, 2)
+    assert y_resampled.shape == (14,)
 
 
 def test_iht_fit_resample_class_obj():
