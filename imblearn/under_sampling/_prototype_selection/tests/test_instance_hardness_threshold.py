@@ -55,13 +55,13 @@ def test_iht_fit_resample():
 
 
 def test_iht_fit_resample_half():
-    sampling_strategy = {0: 6, 1: 8}
+    sampling_strategy = {0: 3, 1: 3}
     iht = InstanceHardnessThreshold(
         ESTIMATOR, sampling_strategy=sampling_strategy, random_state=RND_SEED
     )
     X_resampled, y_resampled = iht.fit_resample(X, Y)
-    assert X_resampled.shape == (14, 2)
-    assert y_resampled.shape == (14,)
+    assert X_resampled.shape == (3, 2)
+    assert y_resampled.shape == (3,)
 
 
 def test_iht_fit_resample_class_obj():
