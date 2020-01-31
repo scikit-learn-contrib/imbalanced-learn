@@ -111,7 +111,7 @@ API, one can construct the ensemble as::
   EasyEnsembleClassifier(...)
   >>> y_pred = eec.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.6...
+  0.4...
 
 .. topic:: Examples
 
