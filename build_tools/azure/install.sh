@@ -73,7 +73,6 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     sudo apt-get install python3-scipy libatlas3-base libatlas-base-dev libatlas-dev python3-virtualenv git
     python3 -m virtualenv --system-site-packages --python=python3 $VIRTUALENV
     source $VIRTUALENV/bin/activate
-    python -m pip install pandas
     python -m pip install pytest==$PYTEST_VERSION pytest-cov joblib cython
     python -m pip install git+https://github.com/scikit-learn/scikit-learn.git
 elif [[ "$DISTRIB" == "ubuntu-32" ]]; then
@@ -81,7 +80,6 @@ elif [[ "$DISTRIB" == "ubuntu-32" ]]; then
     apt-get install -y python3-dev python3-scipy libatlas3-base libatlas-base-dev libatlas-dev python3-virtualenv git
     python3 -m virtualenv --system-site-packages --python=python3 $VIRTUALENV
     source $VIRTUALENV/bin/activate
-    python -m pip install pandas
     python -m pip install pytest==$PYTEST_VERSION pytest-cov joblib cython
     python -m pip install git+https://github.com/scikit-learn/scikit-learn.git
 elif [[ "$DISTRIB" == "conda-pip-latest" ]]; then
