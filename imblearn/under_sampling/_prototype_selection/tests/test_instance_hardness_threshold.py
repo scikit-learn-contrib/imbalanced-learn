@@ -60,8 +60,8 @@ def test_iht_fit_resample_half():
         ESTIMATOR, sampling_strategy=sampling_strategy, random_state=RND_SEED
     )
     X_resampled, y_resampled = iht.fit_resample(X, Y)
-    assert X_resampled.shape == (3, 2)
-    assert y_resampled.shape == (3,)
+    assert X_resampled.shape == (6, 2)
+    assert y_resampled.shape == (6,)
 
 
 def test_iht_fit_resample_class_obj():
