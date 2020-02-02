@@ -44,6 +44,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_multiclass_ova
     yield check_samplers_preserve_dtype
     yield check_samplers_sample_indices
+    yield check_samplers_2d_target
 
 
 def _yield_classifier_checks(name, Estimator):
@@ -281,6 +282,20 @@ def check_samplers_multiclass_ova(name, Sampler):
     assert_allclose(X_res, X_res_ova)
     assert type_of_target(y_res_ova) == type_of_target(y_ova)
     assert_allclose(y_res, y_res_ova.argmax(axis=1))
+
+
+def check_samplers_2d_target(name, Sampler):
+    X, y = make_classification(
+        n_samples=100,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
+
+    y = y.reshape(-1, 1)  # Make the target 2d
+    sampler = Sampler()
+    sampler.fit_resample(X, y)
 
 
 def check_samplers_preserve_dtype(name, Sampler):
