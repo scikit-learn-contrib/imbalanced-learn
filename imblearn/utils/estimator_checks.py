@@ -285,11 +285,11 @@ def check_samplers_list(name, Sampler):
     X_list = X.tolist()
     y_list = y.tolist()
     sampler = Sampler()
-    if isinstance(Sampler(), NearMiss):
+    if isinstance(sampler, NearMiss):
         samplers = [Sampler(version=version) for version in (1, 2, 3)]
 
     else:
-        samplers = [Sampler()]
+        samplers = [sampler]
 
     for sampler in samplers:
         set_random_state(sampler)
