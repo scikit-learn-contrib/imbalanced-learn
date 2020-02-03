@@ -27,6 +27,51 @@ SAMPLING_KIND = (
 TARGET_KIND = ("binary", "multiclass", "multilabel-indicator")
 
 
+class _OutputReconstructor:
+    """A class for converting input types to numpy and back."""
+
+    def __init__(self, X, y):
+        self.x_props = self._gets_props(X)
+        self.y_props = self._gets_props(y)
+
+    def reconstruct(self, X, y):
+        X = self._transfrom(X, self.x_props)
+        y = self._transfrom(y, self.y_props)
+        return X, y
+
+    def _gets_props(self, array):
+        props = {}
+        props["type"] = array.__class__.__name__
+        props["columns"] = getattr(array, "columns", None)
+        props["name"] = getattr(array, "name", None)
+        props["dtypes"] = getattr(array, "dtypes", None)
+        return props
+
+    def _transfrom(self, array, props):
+        type_ = props["type"].lower()
+        msg="Could not convert to {}".format(type_)
+        if type_ == "list":
+            ret = array.tolist()
+        elif type_ == "dataframe":
+            try:
+                import pandas as pd
+                ret = pd.DataFrame(array, columns=props["columns"])
+                ret = ret.astype(props["dtypes"])
+            except Exception:
+                warnings.warn(msg)
+        elif type_ == "series":
+            try:
+                import pandas as pd
+                ret = pd.Series(array,
+                                dtype=props["dtypes"],
+                                name=props["name"])
+            except Exception:
+                warnings.warn(msg)
+        else:
+            ret = array
+        return ret
+
+
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     """Check the objects is consistent to be a NN.
 

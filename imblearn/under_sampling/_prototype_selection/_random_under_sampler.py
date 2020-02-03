@@ -15,6 +15,7 @@ from ..base import BaseUnderSampler
 from ...utils import check_target_type
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
+from ...utils._validation import _OutputReconstructor
 
 
 @Substitution(
@@ -81,22 +82,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         self.replacement = replacement
 
     def _check_X_y(self, X, y):
-        if hasattr(X, "loc"):
-            # store information to build dataframe
-            self._X_columns = X.columns
-            self._X_dtypes = X.dtypes
-        else:
-            self._X_columns = None
-            self._X_dtypes = None
-
-        if hasattr(y, "loc"):
-            # store information to build a series
-            self._y_name = y.name
-            self._y_dtype = y.dtype
-        else:
-            self._y_name = None
-            self._y_dtype = None
-
+        self._reconstructor = _OutputReconstructor(X, y)
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
                         force_all_finite=False)
