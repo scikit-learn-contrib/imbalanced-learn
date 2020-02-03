@@ -49,24 +49,15 @@ class _OutputReconstructor:
 
     def _transfrom(self, array, props):
         type_ = props["type"].lower()
-        msg = "Could not convert to {}".format(type_)
         if type_ == "list":
             ret = array.tolist()
         elif type_ == "dataframe":
-            try:
-                import pandas as pd
-                ret = pd.DataFrame(array, columns=props["columns"])
-                ret = ret.astype(props["dtypes"])
-            except Exception:
-                warnings.warn(msg)
+            import pandas as pd
+            ret = pd.DataFrame(array, columns=props["columns"])
+            ret = ret.astype(props["dtypes"])
         elif type_ == "series":
-            try:
-                import pandas as pd
-                ret = pd.Series(array,
-                                dtype=props["dtypes"],
-                                name=props["name"])
-            except Exception:
-                warnings.warn(msg)
+            import pandas as pd
+            ret = pd.Series(array, dtype=props["dtypes"], name=props["name"])
         else:
             ret = array
         return ret
