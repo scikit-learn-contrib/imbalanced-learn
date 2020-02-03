@@ -49,7 +49,7 @@ class _OutputReconstructor:
 
     def _transfrom(self, array, props):
         type_ = props["type"].lower()
-        msg="Could not convert to {}".format(type_)
+        msg = "Could not convert to {}".format(type_)
         if type_ == "list":
             ret = array.tolist()
         elif type_ == "dataframe":
