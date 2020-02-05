@@ -17,6 +17,7 @@ from imblearn.utils.testing import warns
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_sampling_strategy
 from imblearn.utils import check_target_type
+from imblearn.utils._validation import OutputFormater
 
 multiclass_target = np.array([1] * 50 + [2] * 100 + [3] * 25)
 binary_target = np.array([1] * 25 + [0] * 100)
@@ -315,3 +316,43 @@ def test_sampling_strategy_check_order(
         sampling_strategy, y, sampling_type
     )
     assert sampling_strategy_ == expected_result
+
+
+def test_output_formater_plain_list():
+    X = np.array([[0, 0], [1, 1]])
+    y = np.array([[0, 0], [1, 1]])
+
+    formater = OutputFormater(X.tolist(), y.tolist())
+    X_res, y_res = formater.format(X, y)
+    assert isinstance(X_res, list)
+    assert isinstance(y_res, list)
+
+
+def test_output_formater_pandas():
+    pd = pytest.importorskip("pandas")
+
+    X = np.array([[0, 0], [1, 1]])
+    y = np.array([0, 1])
+
+    X_df = pd.DataFrame(X, columns=["a", "b"])
+    X_df = X_df.astype(int)
+    y_df = pd.DataFrame(y, columns=["target", ])
+    y_df = y_df.astype(int)
+    y_s = pd.Series(y, name="target", dtype=int)
+
+    # DataFrame and DataFrame case
+    formater = OutputFormater(X_df, y_df)
+    X_res, y_res = formater.format(X, y)
+    assert isinstance(X_res, pd.DataFrame)
+    assert_array_equal(X_res.columns, X_df.columns)
+    assert_array_equal(X_res.dtypes, X_df.dtypes)
+    assert isinstance(y_res, pd.DataFrame)
+    assert_array_equal(y_res.columns, y_df.columns)
+    assert_array_equal(y_res.dtypes, y_df.dtypes)
+
+    # DataFrames and Series case
+    formater = OutputFormater(X_df, y_s)
+    _, y_res = formater.format(X, y)
+    assert isinstance(y_res, pd.Series)
+    assert_array_equal(y_res.name, y_s.name)
+    assert_array_equal(y_res.dtype, y_s.dtype)
