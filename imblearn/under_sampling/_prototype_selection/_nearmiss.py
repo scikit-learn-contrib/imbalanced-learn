@@ -247,8 +247,10 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                         _safe_indexing(X, minority_class_indices)
                     )
                     idx_vec_farthest = np.unique(idx_vec.reshape(-1))
-                    X_class_selected = _safe_indexing(X_class, idx_vec_farthest)
-                    y_class_selected = _safe_indexing(y_class, idx_vec_farthest)
+                    X_class_selected = _safe_indexing(
+                        X_class, idx_vec_farthest)
+                    y_class_selected = _safe_indexing(
+                        y_class, idx_vec_farthest)
 
                     dist_vec, idx_vec = self.nn_.kneighbors(
                         X_class_selected, n_neighbors=self.nn_.n_neighbors

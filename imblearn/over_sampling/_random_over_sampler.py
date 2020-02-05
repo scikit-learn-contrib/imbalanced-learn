@@ -15,8 +15,6 @@ from .base import BaseOverSampler
 from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _OutputReconstructor
-
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
@@ -76,7 +74,6 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         self.random_state = random_state
 
     def _check_X_y(self, X, y):
-        self._reconstructor = _OutputReconstructor(X, y)
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
                         force_all_finite=False)

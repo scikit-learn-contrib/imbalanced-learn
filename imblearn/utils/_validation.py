@@ -27,14 +27,14 @@ SAMPLING_KIND = (
 TARGET_KIND = ("binary", "multiclass", "multilabel-indicator")
 
 
-class _OutputReconstructor:
+class OutputFormater:
     """A class for converting input types to numpy and back."""
 
     def __init__(self, X, y):
         self.x_props = self._gets_props(X)
         self.y_props = self._gets_props(y)
 
-    def reconstruct(self, X, y):
+    def format(self, X, y):
         X = self._transfrom(X, self.x_props)
         y = self._transfrom(y, self.y_props)
         return X, y

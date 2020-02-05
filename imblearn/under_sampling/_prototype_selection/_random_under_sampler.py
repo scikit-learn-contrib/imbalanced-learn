@@ -15,7 +15,6 @@ from ..base import BaseUnderSampler
 from ...utils import check_target_type
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
-from ...utils._validation import _OutputReconstructor
 
 
 @Substitution(
@@ -82,7 +81,6 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         self.replacement = replacement
 
     def _check_X_y(self, X, y):
-        self._reconstructor = _OutputReconstructor(X, y)
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
                         force_all_finite=False)

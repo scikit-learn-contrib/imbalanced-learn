@@ -14,7 +14,7 @@ from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
-from .utils._validation import _OutputReconstructor
+from .utils._validation import OutputFormater
 
 
 class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
@@ -73,6 +73,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
             The corresponding label of `X_resampled`.
         """
         check_classification_targets(y)
+        self._formater = OutputFormater(X, y)
         X, y, binarize_y = self._check_X_y(X, y)
 
         self.sampling_strategy_ = check_sampling_strategy(
@@ -84,7 +85,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         y_ = (label_binarize(output[1], np.unique(y))
               if binarize_y else output[1])
 
-        X_, y_ = self._reconstructor.reconstruct(output[0], y_)
+        X_, y_ = self._formater.format(output[0], y_)
         return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 
     #  define an alias for back-compatibility
@@ -127,7 +128,6 @@ class BaseSampler(SamplerMixin):
         self.sampling_strategy = sampling_strategy
 
     def _check_X_y(self, X, y, accept_sparse=None):
-        self._reconstructor = _OutputReconstructor(X, y)
         if accept_sparse is None:
             accept_sparse = ["csr", "csc"]
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
@@ -240,7 +240,7 @@ class FunctionSampler(BaseSampler):
         y_resampled : array-like of shape (n_samples_new,)
             The corresponding label of `X_resampled`.
         """
-        self._reconstructor = _OutputReconstructor(X, y)
+        self._formater = OutputFormater(X, y)
 
         if self.validate:
             check_classification_targets(y)
@@ -258,7 +258,7 @@ class FunctionSampler(BaseSampler):
 
             y_ = (label_binarize(output[1], np.unique(y))
                   if binarize_y else output[1])
-            X_, y_ = self._reconstructor.reconstruct(output[0], y_)
+            X_, y_ = self._formater.format(output[0], y_)
             return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 
         return output

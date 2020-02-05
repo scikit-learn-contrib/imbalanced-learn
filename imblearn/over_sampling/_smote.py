@@ -31,7 +31,6 @@ from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _OutputReconstructor
 
 
 class BaseSMOTE(BaseOverSampler):
@@ -892,7 +891,6 @@ class SMOTENC(SMOTE):
         """Overwrite the checking to let pass some string for categorical
         features.
         """
-        self._reconstructor = _OutputReconstructor(X, y)
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = check_X_y(X, y, accept_sparse=["csr", "csc"], dtype=None)
         return X, y, binarize_y
