@@ -334,8 +334,8 @@ def test_arrays_transformer_numpy():
 
     arrays_transformer = ArraysTransformer(X, y)
     X_res, y_res = arrays_transformer.transform(X, y)
-    assert isinstance(X_res, np.array)
-    assert isinstance(y_res, np.array)
+    assert isinstance(X_res, np.ndarray)
+    assert isinstance(y_res, np.ndarray)
 
 
 def test_arrays_transformer_pandas():
