@@ -17,7 +17,7 @@ from imblearn.utils.testing import warns
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_sampling_strategy
 from imblearn.utils import check_target_type
-from imblearn.utils._validation import OutputFormater
+from imblearn.utils._validation import ArraysTransformer
 
 multiclass_target = np.array([1] * 50 + [2] * 100 + [3] * 25)
 binary_target = np.array([1] * 25 + [0] * 100)
@@ -318,17 +318,27 @@ def test_sampling_strategy_check_order(
     assert sampling_strategy_ == expected_result
 
 
-def test_output_formater_plain_list():
+def test_arrays_transformer_plain_list():
     X = np.array([[0, 0], [1, 1]])
     y = np.array([[0, 0], [1, 1]])
 
-    formater = OutputFormater(X.tolist(), y.tolist())
-    X_res, y_res = formater.format(X, y)
+    arrays_transformer = ArraysTransformer(X.tolist(), y.tolist())
+    X_res, y_res = arrays_transformer.transform(X, y)
     assert isinstance(X_res, list)
     assert isinstance(y_res, list)
 
 
-def test_output_formater_pandas():
+def test_arrays_transformer_numpy():
+    X = np.array([[0, 0], [1, 1]])
+    y = np.array([[0, 0], [1, 1]])
+
+    arrays_transformer = ArraysTransformer(X, y)
+    X_res, y_res = arrays_transformer.transform(X, y)
+    assert isinstance(X_res, np.array)
+    assert isinstance(y_res, np.array)
+
+
+def test_arrays_transformer_pandas():
     pd = pytest.importorskip("pandas")
 
     X = np.array([[0, 0], [1, 1]])
@@ -341,8 +351,8 @@ def test_output_formater_pandas():
     y_s = pd.Series(y, name="target", dtype=int)
 
     # DataFrame and DataFrame case
-    formater = OutputFormater(X_df, y_df)
-    X_res, y_res = formater.format(X, y)
+    arrays_transformer = ArraysTransformer(X_df, y_df)
+    X_res, y_res = arrays_transformer.transform(X, y)
     assert isinstance(X_res, pd.DataFrame)
     assert_array_equal(X_res.columns, X_df.columns)
     assert_array_equal(X_res.dtypes, X_df.dtypes)
@@ -351,8 +361,8 @@ def test_output_formater_pandas():
     assert_array_equal(y_res.dtypes, y_df.dtypes)
 
     # DataFrames and Series case
-    formater = OutputFormater(X_df, y_s)
-    _, y_res = formater.format(X, y)
+    arrays_transformer = ArraysTransformer(X_df, y_s)
+    _, y_res = arrays_transformer.transform(X, y)
     assert isinstance(y_res, pd.Series)
     assert_array_equal(y_res.name, y_s.name)
     assert_array_equal(y_res.dtype, y_s.dtype)

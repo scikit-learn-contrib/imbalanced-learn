@@ -27,16 +27,16 @@ SAMPLING_KIND = (
 TARGET_KIND = ("binary", "multiclass", "multilabel-indicator")
 
 
-class OutputFormater:
-    """A class for converting input types to numpy and back."""
+class ArraysTransformer:
+    """A class to convert sampler ouput arrays to their orinal types."""
 
     def __init__(self, X, y):
         self.x_props = self._gets_props(X)
         self.y_props = self._gets_props(y)
 
-    def format(self, X, y):
-        X = self._transfrom(X, self.x_props)
-        y = self._transfrom(y, self.y_props)
+    def transform(self, X, y):
+        X = self._transfrom_one(X, self.x_props)
+        y = self._transfrom_one(y, self.y_props)
         return X, y
 
     def _gets_props(self, array):
@@ -47,7 +47,7 @@ class OutputFormater:
         props["dtypes"] = getattr(array, "dtypes", None)
         return props
 
-    def _transfrom(self, array, props):
+    def _transfrom_one(self, array, props):
         type_ = props["type"].lower()
         if type_ == "list":
             ret = array.tolist()
