@@ -14,6 +14,7 @@ from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
+from .utils._validation import ArraysTransformer
 
 
 class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
@@ -72,6 +73,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
             The corresponding label of `X_resampled`.
         """
         check_classification_targets(y)
+        arrays_transformer = ArraysTransformer(X, y)
         X, y, binarize_y = self._check_X_y(X, y)
 
         self.sampling_strategy_ = check_sampling_strategy(
@@ -80,21 +82,10 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         output = self._fit_resample(X, y)
 
-        if self._X_columns is not None or self._y_name is not None:
-            import pandas as pd
-
-        if self._X_columns is not None:
-            X_ = pd.DataFrame(output[0], columns=self._X_columns)
-            X_ = X_.astype(self._X_dtypes)
-        else:
-            X_ = output[0]
-
         y_ = (label_binarize(output[1], np.unique(y))
               if binarize_y else output[1])
 
-        if self._y_name is not None:
-            y_ = pd.Series(y_, dtype=self._y_dtype, name=self._y_name)
-
+        X_, y_ = arrays_transformer.transform(output[0], y_)
         return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 
     #  define an alias for back-compatibility
@@ -137,22 +128,6 @@ class BaseSampler(SamplerMixin):
         self.sampling_strategy = sampling_strategy
 
     def _check_X_y(self, X, y, accept_sparse=None):
-        if hasattr(X, "loc"):
-            # store information to build dataframe
-            self._X_columns = X.columns
-            self._X_dtypes = X.dtypes
-        else:
-            self._X_columns = None
-            self._X_dtypes = None
-
-        if hasattr(y, "loc"):
-            # store information to build a series
-            self._y_name = y.name
-            self._y_dtype = y.dtype
-        else:
-            self._y_name = None
-            self._y_dtype = None
-
         if accept_sparse is None:
             accept_sparse = ["csr", "csc"]
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
@@ -265,8 +240,8 @@ class FunctionSampler(BaseSampler):
         y_resampled : array-like of shape (n_samples_new,)
             The corresponding label of `X_resampled`.
         """
-        # store the columns name to reconstruct a dataframe
-        self._columns = X.columns if hasattr(X, "loc") else None
+        arrays_transformer = ArraysTransformer(X, y)
+
         if self.validate:
             check_classification_targets(y)
             X, y, binarize_y = self._check_X_y(
@@ -280,22 +255,12 @@ class FunctionSampler(BaseSampler):
         output = self._fit_resample(X, y)
 
         if self.validate:
-            if self._X_columns is not None or self._y_name is not None:
-                import pandas as pd
-
-            if self._X_columns is not None:
-                X_ = pd.DataFrame(output[0], columns=self._X_columns)
-                X_ = X_.astype(self._X_dtypes)
-            else:
-                X_ = output[0]
 
             y_ = (label_binarize(output[1], np.unique(y))
                   if binarize_y else output[1])
-
-            if self._y_name is not None:
-                y_ = pd.Series(y_, dtype=self._y_dtype, name=self._y_name)
-
+            X_, y_ = arrays_transformer.transform(output[0], y_)
             return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
+
         return output
 
     def _fit_resample(self, X, y):

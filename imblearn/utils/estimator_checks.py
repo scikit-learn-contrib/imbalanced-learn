@@ -41,6 +41,7 @@ def _yield_sampler_checks(name, Estimator):
     yield check_samplers_sampling_strategy_fit_resample
     yield check_samplers_sparse
     yield check_samplers_pandas
+    yield check_samplers_list
     yield check_samplers_multiclass_ova
     yield check_samplers_preserve_dtype
     yield check_samplers_sample_indices
@@ -242,8 +243,9 @@ def check_samplers_pandas(name, Sampler):
         weights=[0.2, 0.3, 0.5],
         random_state=0,
     )
-    X_pd = pd.DataFrame(X, columns=[str(i) for i in range(X.shape[1])])
-    y_pd = pd.Series(y, name="class")
+    X_df = pd.DataFrame(X, columns=[str(i) for i in range(X.shape[1])])
+    y_df = pd.DataFrame(y)
+    y_s = pd.Series(y, name="class")
     sampler = Sampler()
     if isinstance(Sampler(), NearMiss):
         samplers = [Sampler(version=version) for version in (1, 2, 3)]
@@ -253,16 +255,52 @@ def check_samplers_pandas(name, Sampler):
 
     for sampler in samplers:
         set_random_state(sampler)
-        X_res_pd, y_res_pd = sampler.fit_resample(X_pd, y_pd)
+        X_res_df, y_res_s = sampler.fit_resample(X_df, y_s)
+        X_res_df, y_res_df = sampler.fit_resample(X_df, y_df)
         X_res, y_res = sampler.fit_resample(X, y)
 
-        # check that we return a pandas dataframe if a dataframe was given in
-        assert isinstance(X_res_pd, pd.DataFrame)
-        assert isinstance(y_res_pd, pd.Series)
-        assert X_pd.columns.to_list() == X_res_pd.columns.to_list()
-        assert y_pd.name == y_res_pd.name
-        assert_allclose(X_res_pd.to_numpy(), X_res)
-        assert_allclose(y_res_pd.to_numpy(), y_res)
+        # check that we return the same type for dataframes or series types
+        assert isinstance(X_res_df, pd.DataFrame)
+        assert isinstance(y_res_df, pd.DataFrame)
+        assert isinstance(y_res_s, pd.Series)
+
+        assert X_df.columns.to_list() == X_res_df.columns.to_list()
+        assert y_df.columns.to_list() == y_res_df.columns.to_list()
+        assert y_s.name == y_res_s.name
+
+        assert_allclose(X_res_df.to_numpy(), X_res)
+        assert_allclose(y_res_df.to_numpy().ravel(), y_res)
+        assert_allclose(y_res_s.to_numpy(), y_res)
+
+
+def check_samplers_list(name, Sampler):
+    # Check that the can samplers handle simple lists
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
+    X_list = X.tolist()
+    y_list = y.tolist()
+    sampler = Sampler()
+    if isinstance(sampler, NearMiss):
+        samplers = [Sampler(version=version) for version in (1, 2, 3)]
+
+    else:
+        samplers = [sampler]
+
+    for sampler in samplers:
+        set_random_state(sampler)
+        X_res, y_res = sampler.fit_resample(X, y)
+        X_res_list, y_res_list = sampler.fit_resample(X_list, y_list)
+
+        assert isinstance(X_res_list, list)
+        assert isinstance(y_res_list, list)
+
+        assert_allclose(X_res, X_res_list)
+        assert_allclose(y_res, y_res_list)
 
 
 def check_samplers_multiclass_ova(name, Sampler):
