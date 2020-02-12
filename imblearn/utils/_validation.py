@@ -27,6 +27,42 @@ SAMPLING_KIND = (
 TARGET_KIND = ("binary", "multiclass", "multilabel-indicator")
 
 
+class ArraysTransformer:
+    """A class to convert sampler ouput arrays to their orinal types."""
+
+    def __init__(self, X, y):
+        self.x_props = self._gets_props(X)
+        self.y_props = self._gets_props(y)
+
+    def transform(self, X, y):
+        X = self._transfrom_one(X, self.x_props)
+        y = self._transfrom_one(y, self.y_props)
+        return X, y
+
+    def _gets_props(self, array):
+        props = {}
+        props["type"] = array.__class__.__name__
+        props["columns"] = getattr(array, "columns", None)
+        props["name"] = getattr(array, "name", None)
+        props["dtypes"] = getattr(array, "dtypes", None)
+        return props
+
+    def _transfrom_one(self, array, props):
+        type_ = props["type"].lower()
+        if type_ == "list":
+            ret = array.tolist()
+        elif type_ == "dataframe":
+            import pandas as pd
+            ret = pd.DataFrame(array, columns=props["columns"])
+            ret = ret.astype(props["dtypes"])
+        elif type_ == "series":
+            import pandas as pd
+            ret = pd.Series(array, dtype=props["dtypes"], name=props["name"])
+        else:
+            ret = array
+        return ret
+
+
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     """Check the objects is consistent to be a NN.
 
