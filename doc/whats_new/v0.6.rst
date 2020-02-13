@@ -1,3 +1,23 @@
+.. _changes_0_6_2:
+
+Version 0.6.2
+==============
+
+This is a bug-fix release to resolve some issues regarding the handling the
+input and the output format of the arrays.
+
+Changelog
+---------
+
+Bug fixes
+.........
+
+- Allow column vectors to be passed as targets.
+  :pr:`673` by :user:`Christos Aridas <chkoar>`.
+- Better input handling when the target is a dataframe. 
+  :pr:`681` by :user:`Christos Aridas <chkoar>`.
+
+
 .. _changes_0_6_1:
 
 Version 0.6.1
