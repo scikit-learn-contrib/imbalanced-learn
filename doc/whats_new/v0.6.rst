@@ -9,12 +9,9 @@ input and the output format of the arrays.
 Changelog
 ---------
 
-Bug fixes
-.........
-
 - Allow column vectors to be passed as targets.
   :pr:`673` by :user:`Christos Aridas <chkoar>`.
-- Better input handling when the target is a dataframe. 
+- Better input/output handling for pandas, numpy and plain lists. 
   :pr:`681` by :user:`Christos Aridas <chkoar>`.
 
 
@@ -23,7 +20,6 @@ Bug fixes
 Version 0.6.1
 ==============
 
-**In Development**
 
 This is a bug-fix release to primarily resolve some packaging issues in version
 0.6.0. It also includes minor documentation improvements and some bug fixes.
