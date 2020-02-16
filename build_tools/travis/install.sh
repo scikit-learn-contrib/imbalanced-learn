@@ -17,57 +17,43 @@ export CXX=/usr/lib/ccache/g++
 # ~60M is used by .ccache when compiling from scratch at the time of writing
 ccache --max-size 100M --show-stats
 
-if [[ "$DISTRIB" == "conda" ]]; then
-    # Deactivate the travis-provided virtual environment and setup a
-    # conda-based environment instead
-    deactivate
+# Deactivate the travis-provided virtual environment and setup a
+# conda-based environment instead
+deactivate
 
-    # Install miniconda
-    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-        -O miniconda.sh
-    MINICONDA_PATH=/home/travis/miniconda
-    chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
-    export PATH=$MINICONDA_PATH/bin:$PATH
+# Install miniconda
+wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    -O miniconda.sh
+MINICONDA_PATH=/home/travis/miniconda
+chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
+export PATH=$MINICONDA_PATH/bin:$PATH
 
-    # Configure the conda environment and put it in the path using the
-    # provided versions
-    conda create -n testenv --yes python=$PYTHON_VERSION pip
-    source activate testenv
-    conda install --yes numpy=$NUMPY_VERSION scipy=$SCIPY_VERSION
+# Configure the conda environment and put it in the path using the
+# provided versions
+conda create -n testenv --yes python=$PYTHON_VERSION pip
+source activate testenv
 
-    if [[ "$OPTIONAL_DEPS" == "keras" ]]; then
-        conda install --yes pandas keras tensorflow=1
-        KERAS_BACKEND=tensorflow
-        python -c "import keras.backend"
-        sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
-    elif [[ "$OPTIONAL_DEPS" == "tensorflow" ]]; then
-        conda install --yes pandas tensorflow
-    fi
+pip install --upgrade pip setuptools
+echo "Installing numpy and scipy master wheels"
+dev_url=https://7933911d6844c6c53a7d-47bd50c35cd79bd838daf386af554a83.ssl.cf2.rackcdn.com
+pip install --pre --upgrade --timeout=60 -f $dev_url numpy scipy pandas cython
+echo "Installing joblib master"
+pip install https://github.com/joblib/joblib/archive/master.zip
 
-    if [[ "$SKLEARN_VERSION" == "master" ]]; then
-        pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
-    else
-        conda install --yes scikit-learn=$SKLEARN_VERSION
-    fi
-
-    conda install --yes pytest pytest-cov
-    pip install codecov
-    pip install -U git+https://github.com/numpy/numpydoc.git
-
-elif [[ "$DISTRIB" == "ubuntu" ]]; then
-    # At the time of writing numpy 1.9.1 is included in the travis
-    # virtualenv but we want to use the numpy installed through apt-get
-    # install.
-    deactivate
-    # Create a new virtualenv using system site packages for python, numpy
-    virtualenv --system-site-packages --python=python3 testvenv
-    source testvenv/bin/activate
-
-    pip3 install --pre --extra-index https://pypi.anaconda.org/scipy-wheels-nightly/simple scikit-learn
-    pip3 install pandas
-    pip3 install pytest pytest-cov codecov sphinx numpydoc
-
+if [[ "$OPTIONAL_DEPS" == "keras" ]]; then
+    conda install --yes keras tensorflow=1
+    KERAS_BACKEND=tensorflow
+    python -c "import keras.backend"
+    sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
+elif [[ "$OPTIONAL_DEPS" == "tensorflow" ]]; then
+    conda install --yes tensorflow
 fi
+
+pip install --pre --extra-index https://pypi.anaconda.org/scipy-wheels-nightly/simple scikit-learn
+
+conda install --yes pytest pytest-cov
+pip install codecov
+pip install -U git+https://github.com/numpy/numpydoc.git
 
 python --version
 python -c "import numpy; print('numpy %s' % numpy.__version__)"

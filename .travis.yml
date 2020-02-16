@@ -28,16 +28,13 @@ env:
 
 matrix:
   include:
-    # Last LTS ubuntu version
-    - env: DISTRIB="ubuntu" TEST_DOC="true" TEST_NUMPYDOC="false"
-    # Latest release
-    - env: DISTRIB="conda" PYTHON_VERSION="3.7"
+    - env: PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
            OPTIONAL_DEPS="keras" TEST_DOC="true" TEST_NUMPYDOC="false"
-    - env: DISTRIB="conda" PYTHON_VERSION="3.7"
+    - env: PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
            OPTIONAL_DEPS="tensorflow" TEST_DOC="true" TEST_NUMPYDOC="false"
-    - env: DISTRIB="conda" PYTHON_VERSION="3.7"
+    - env: PYTHON_VERSION="3.7"
            NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
            OPTIONAL_DEPS="false" TEST_DOC="false" TEST_NUMPYDOC="true"
 
