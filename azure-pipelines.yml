@@ -3,7 +3,7 @@ jobs:
 - job: linting
   displayName: Linting
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   steps:
     - bash: echo "##vso[task.prependpath]$CONDA/bin"
       displayName: Add conda to PATH
@@ -19,15 +19,15 @@ jobs:
 - template: build_tools/azure/posix.yml
   parameters:
     name: Linux
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
     dependsOn: [linting]
     matrix:
       # Linux environment to test that scikit-learn can be built against
-      # versions of numpy, scipy with ATLAS that comes with Ubuntu Xenial 16.04
-      # i.e. numpy 1.11 and scipy 0.17
-      py35_ubuntu_atlas:
+      # versions of numpy, scipy with ATLAS that comes with Ubuntu Bionic 18.04
+      # i.e. numpy 1.13.3 and scipy 0.19
+      py36_ubuntu_atlas:
         DISTRIB: 'ubuntu'
-        PYTHON_VERSION: '3.5'
+        PYTHON_VERSION: '3.6'
         JOBLIB_VERSION: '*'
       # Linux environment to test the latest available dependencies and MKL.
       pylatest_pip_openblas_pandas:
@@ -60,12 +60,12 @@ jobs:
 - template: build_tools/azure/posix-32.yml
   parameters:
     name: Linux32
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
     dependsOn: [linting]
     matrix:
       py35_ubuntu_atlas_32bit:
         DISTRIB: 'ubuntu-32'
-        PYTHON_VERSION: '3.5'
+        PYTHON_VERSION: '3.6'
         JOBLIB_VERSION: '*'
         TEST_DOCSTRINGS: 'true'
 
@@ -100,6 +100,6 @@ jobs:
         PYTEST_VERSION: '*'
         COVERAGE: 'true'
         CHECK_WARNINGS: 'true'
-      py35_pip_openblas_32bit:
-        PYTHON_VERSION: '3.5'
+      py36_pip_openblas_32bit:
+        PYTHON_VERSION: '3.6'
         PYTHON_ARCH: '32'
