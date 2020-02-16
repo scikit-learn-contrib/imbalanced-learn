@@ -63,7 +63,7 @@ jobs:
     vmImage: ubuntu-18.04
     dependsOn: [linting]
     matrix:
-      py35_ubuntu_atlas_32bit:
+      py36_ubuntu_atlas_32bit:
         DISTRIB: 'ubuntu-32'
         PYTHON_VERSION: '3.6'
         JOBLIB_VERSION: '*'

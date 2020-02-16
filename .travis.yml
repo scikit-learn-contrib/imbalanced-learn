@@ -28,8 +28,7 @@ env:
 
 matrix:
   include:
-    # This environment tests the using anaconda
-    # Ubuntu 14.04 environment
+    # Last LTS ubuntu version
     - env: DISTRIB="ubuntu" TEST_DOC="true" TEST_NUMPYDOC="false"
     # Latest release
     - env: DISTRIB="conda" PYTHON_VERSION="3.7"
