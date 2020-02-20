@@ -215,22 +215,15 @@ class Pipeline(pipeline.Pipeline):
                 with _print_elapsed_time('Pipeline',
                                          self._log_message(step_idx)):
                     continue
-            if hasattr(memory, "location"):
+
+            try:
                 # joblib >= 0.12
-                if memory.location is None:
-                    # we do not clone when caching is disabled to
-                    # preserve backward compatibility
-                    cloned_transformer = transformer
-                else:
-                    cloned_transformer = clone(transformer)
-            elif hasattr(memory, "cachedir"):
-                # joblib <= 0.11
-                if memory.cachedir is None:
-                    # we do not clone when caching is disabled to
-                    # preserve backward compatibility
-                    cloned_transformer = transformer
-            else:
-                cloned_transformer = clone(transformer)
+                cache = memory.location
+            except Exception:
+                cache = memory.cachedir
+            finally:
+                cloned_transformer = clone(transformer) if cache else transformer
+
             # Fit or load from cache the current transfomer
             if hasattr(cloned_transformer, "transform") or hasattr(
                 cloned_transformer, "fit_transform"
