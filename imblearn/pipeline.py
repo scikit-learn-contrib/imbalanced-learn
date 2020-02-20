@@ -218,11 +218,11 @@ class Pipeline(pipeline.Pipeline):
 
             try:
                 # joblib >= 0.12
-                cache = memory.location
+                mem = memory.location
             except Exception:
-                cache = memory.cachedir
+                mem = memory.cachedir
             finally:
-                cloned_transformer = clone(transformer) if cache else transformer
+                cloned_transformer = clone(transformer) if mem else transformer
 
             # Fit or load from cache the current transfomer
             if hasattr(cloned_transformer, "transform") or hasattr(
