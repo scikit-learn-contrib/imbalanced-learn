@@ -86,7 +86,7 @@ jobs:
         JOBLIB_VERSION: '*'
         COVERAGE: 'true'
         TEST_DOCSTRINGS: 'true'
-        CHECK_WARNINGS: 'true'
+        CHECK_WARNINGS: 'false'
 
 - template: build_tools/azure/windows.yml
   parameters:
@@ -99,7 +99,7 @@ jobs:
         PYTHON_ARCH: '64'
         PYTEST_VERSION: '*'
         COVERAGE: 'true'
-        CHECK_WARNINGS: 'true'
+        CHECK_WARNINGS: 'false'
       py36_pip_openblas_32bit:
         PYTHON_VERSION: '3.6'
         PYTHON_ARCH: '32'
