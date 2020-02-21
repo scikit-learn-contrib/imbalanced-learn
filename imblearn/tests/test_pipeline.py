@@ -1350,7 +1350,7 @@ def test_pipeline_old_joblib_memory(monkeypatch):
     monkeypatch.setattr(Memory, "cachedir", "foo", raising=False)
     monkeypatch.setattr(Memory, "cache", lambda self, x: x, raising=False)
     memory = Memory()
-    
+
     del memory.location  # Older versions do not have the location parameter
 
     iris = load_iris()
