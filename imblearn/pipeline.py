@@ -219,7 +219,7 @@ class Pipeline(pipeline.Pipeline):
             try:
                 # joblib >= 0.12
                 mem = memory.location
-            except Exception:
+            except AttributeError:
                 mem = memory.cachedir
             finally:
                 cloned_transformer = clone(transformer) if mem else transformer
