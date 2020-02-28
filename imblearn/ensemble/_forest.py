@@ -25,6 +25,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
+from sklearn.utils import _check_sample_weight
+
 
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
@@ -415,7 +417,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         X = check_array(X, accept_sparse="csc", dtype=DTYPE)
         y = check_array(y, accept_sparse="csc", ensure_2d=False, dtype=None)
         if sample_weight is not None:
-            sample_weight = check_array(sample_weight, ensure_2d=False)
+            sample_weight = _check_sample_weight(sample_weight, X)
         if issparse(X):
             # Pre-sort indices to avoid that each individual tree of the
             # ensemble sorts the indices.
