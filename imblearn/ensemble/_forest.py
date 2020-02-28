@@ -25,7 +25,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
-from sklearn.utils import _check_sample_weight
+from sklearn.utils.validation import _check_sample_weight
 
 
 from ..pipeline import make_pipeline
