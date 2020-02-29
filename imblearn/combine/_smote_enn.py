@@ -135,7 +135,7 @@ class SMOTEENN(BaseSampler):
     def _fit_resample(self, X, y):
         self._validate_estimator()
         y = check_target_type(y)
-        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"])
+        X, y = self._validate_data(X, y, accept_sparse=["csr", "csc"])
         self.sampling_strategy_ = self.sampling_strategy
 
         X_res, y_res = self.smote_.fit_resample(X, y)

@@ -892,7 +892,9 @@ class SMOTENC(SMOTE):
         features.
         """
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"], dtype=None)
+        X, y = self._validate_data(
+            X, y, accept_sparse=["csr", "csc"], dtype=None,
+        )
         return X, y, binarize_y
 
     def _validate_estimator(self):

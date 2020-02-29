@@ -82,10 +82,9 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
 
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
-                        force_all_finite=False)
-        y = check_array(
-            y, accept_sparse=["csr", "csc"], dtype=None, ensure_2d=False
+        X, y = self._validate_data(
+            X, y, accept_sparse=["csr", "csc"], dtype=None,
+            force_all_finite=False
         )
         check_consistent_length(X, y)
         return X, y, binarize_y

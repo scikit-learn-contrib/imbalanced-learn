@@ -5,3 +5,13 @@ Version 0.7.0 (under development)
 
 Changelog
 ---------
+
+Maintenance
+...........
+
+- Make code SLEP010 compliant.
+  :pr:`693` by :user:`Guillaume Lemaitre <glemaitre>`.
+- Use `_check_sample_weight` in the
+  :class:`imblearn.ensemble.BalancedRandomForest`.
+  :pr:`693` by :user:`Christos Aridas <@chkoar>` and
+  :user:`Guillaume Lemaitre <glemaitre>`.
