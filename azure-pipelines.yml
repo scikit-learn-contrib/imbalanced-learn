@@ -37,6 +37,7 @@ jobs:
         PANDAS_VERSION: '*'
         TEST_DOCSTRINGS: 'true'
         JOBLIB_VERSION: '*'
+        CHECK_WARNINGS: 'true'
       pylatest_conda_pandas_keras:
         DISTRIB: 'conda'
         PYTHON_VERSION: '3.7'
@@ -98,6 +99,7 @@ jobs:
         PYTHON_ARCH: '64'
         PYTEST_VERSION: '*'
         COVERAGE: 'true'
+        CHECK_WARNINGS: 'true'
       py36_pip_openblas_32bit:
         PYTHON_VERSION: '3.6'
         PYTHON_ARCH: '32'
