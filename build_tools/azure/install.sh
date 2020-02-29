@@ -32,7 +32,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     fi
 
     make_conda $TO_INSTALL
-    python -m pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
+    pip install --pre --extra-index https://pypi.anaconda.org/scipy-wheels-nightly/simple scikit-learn
 
     TO_INSTALL=""
 
