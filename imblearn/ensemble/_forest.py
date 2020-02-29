@@ -612,4 +612,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         self.oob_score_ = oob_score / self.n_outputs_
 
     def _more_tags(self):
-        return {"multioutput": False}
+        return {
+            "multioutput": False,
+            "multilabel": False,
+        }
