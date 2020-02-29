@@ -112,3 +112,9 @@ def test_fit_resample_error(cluster_centroids_params, err_msg):
     cc = ClusterCentroids(**cluster_centroids_params)
     with pytest.raises(ValueError, match=err_msg):
         cc.fit_resample(X, Y)
+
+
+def test_n_jobs_deprecation():
+    cc = ClusterCentroids(n_jobs=-1)
+    with pytest.warns(FutureWarning, match="'n_jobs' is deprecated in 0.7"):
+        cc.fit_resample(X, Y)

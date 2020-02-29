@@ -15,3 +15,5 @@ Maintenance
   :class:`imblearn.ensemble.BalancedRandomForest`.
   :pr:`693` by :user:`Christos Aridas <@chkoar>` and
   :user:`Guillaume Lemaitre <glemaitre>`.
+- Deprecate `n_jobs` in :class:`imblearn.under_sampling.ClusterCentroids`.
+  :pr:`693` by :user:`Guillaume Lemaitre <glemaitre>`.
