@@ -5,7 +5,6 @@
 # License: MIT
 
 from sklearn.base import clone
-from sklearn.utils import check_X_y
 
 from ..base import BaseSampler
 from ..over_sampling import SMOTE

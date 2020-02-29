@@ -20,7 +20,6 @@ from sklearn.svm import SVC
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 from sklearn.utils import check_array
-from sklearn.utils import check_X_y
 from sklearn.utils.sparsefuncs_fast import csr_mean_variance_axis0
 from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
 

@@ -7,7 +7,6 @@
 from collections import Counter
 
 import numpy as np
-from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 
