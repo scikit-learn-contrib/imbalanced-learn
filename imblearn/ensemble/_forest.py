@@ -413,7 +413,9 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         """
 
         # Validate or convert input data
-        X, y = self._validate_data(X, y, accept_sparse="csc", dtype=DTYPE)
+        X, y = self._validate_data(
+            X, y, accept_sparse="csc", dtype=DTYPE, ensure_2d=False
+        )
         if sample_weight is not None:
             sample_weight = _check_sample_weight(sample_weight, X)
         if issparse(X):
@@ -612,7 +614,4 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         self.oob_score_ = oob_score / self.n_outputs_
 
     def _more_tags(self):
-        return {
-            "multioutput": False,
-            "multilabel": False,
-        }
+        return {"multioutput": False}
