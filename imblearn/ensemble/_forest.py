@@ -414,7 +414,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         # Validate or convert input data
         X, y = self._validate_data(
-            X, y, accept_sparse="csc", dtype=DTYPE, ensure_2d=False
+            X, y, accept_sparse="csc", dtype=DTYPE, ensure_2d=False,
+            multi_output=True
         )
         if sample_weight is not None:
             sample_weight = _check_sample_weight(sample_weight, X)
