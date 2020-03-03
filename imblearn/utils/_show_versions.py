@@ -30,6 +30,7 @@ def _get_deps_info():
         "pandas",
         "keras",
         "tensorflow",
+        "joblib",
     ]
 
     def get_version(module):

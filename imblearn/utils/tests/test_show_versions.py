@@ -16,6 +16,7 @@ def test_get_deps_info():
     assert "scipy" in _deps_info
     assert "Cython" in _deps_info
     assert "pandas" in _deps_info
+    assert "joblib" in _deps_info
 
 
 def test_show_versions_default(capsys):
@@ -34,6 +35,7 @@ def test_show_versions_default(capsys):
     assert "pandas" in out
     assert "keras" in out
     assert "tensorflow" in out
+    assert "joblib" in out
 
 
 def test_show_versions_github(capsys):
@@ -55,4 +57,5 @@ def test_show_versions_github(capsys):
     assert "* pandas" in out
     assert "* keras" in out
     assert "* tensorflow" in out
+    assert "* joblib" in out
     assert "</details>" in out
