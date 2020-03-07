@@ -42,6 +42,7 @@ script: bash build_tools/travis/test_script.sh
 after_success: source build_tools/travis/after_success.sh
 
 notifications:
+  slack: imbalanced-learn:VU4Oj10LZV7peLCNV0IG615Y
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/188e3c7a5180fd4f2120
