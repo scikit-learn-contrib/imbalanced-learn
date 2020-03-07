@@ -5,6 +5,15 @@ parameters:
   matrix: []
   dependsOn: []
 
+pr: none
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master
+  always: true
+
 jobs:
 - job: ${{ parameters.name }}
   dependsOn: ${{ parameters.dependsOn }}

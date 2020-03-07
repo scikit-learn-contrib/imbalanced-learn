@@ -94,12 +94,12 @@ jobs:
     vmImage: vs2017-win2016
     dependsOn: [linting]
     matrix:
-      py37_conda_mkl:
+      crosn_py37_conda_mkl:
         PYTHON_VERSION: '3.7'
         PYTHON_ARCH: '64'
         PYTEST_VERSION: '*'
         COVERAGE: 'true'
         CHECK_WARNINGS: 'true'
-      py36_pip_openblas_32bit:
+      cron_py36_pip_openblas_32bit:
         PYTHON_VERSION: '3.6'
         PYTHON_ARCH: '32'
