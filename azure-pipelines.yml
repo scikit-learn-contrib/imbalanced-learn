@@ -89,22 +89,21 @@ jobs:
         CHECK_WARNINGS: 'true'
 
 
-pr: none
-schedules:
-- cron: "0 0 * * *"
-  displayName: Daily midnight build
-  branches:
-    include:
-    - master
-  always: true
-  
 - template: build_tools/azure/windows.yml
+  pr: none
+  schedules:
+  - cron: "0 0 * * *"
+    displayName: Daily midnight build
+    branches:
+      include:
+      - master
   parameters:
     name: Windows
     vmImage: vs2017-win2016
     dependsOn: [linting]
     matrix:
       crosn_py37_conda_mkl:
+        always: true
         PYTHON_VERSION: '3.7'
         PYTHON_ARCH: '64'
         PYTEST_VERSION: '*'
