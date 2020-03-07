@@ -88,6 +88,16 @@ jobs:
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
 
+
+pr: none
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master
+  always: true
+  
 - template: build_tools/azure/windows.yml
   parameters:
     name: Windows
