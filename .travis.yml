@@ -6,7 +6,6 @@ language: python
 
 # Pre-install packages for the ubuntu distribution
 cache:
-  apt: true
   # We use three different cache directory
   # to work around a Travis bug with multi-platform cache
   directories:
