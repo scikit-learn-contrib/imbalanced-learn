@@ -20,7 +20,7 @@ def data_heterogneous_ordered():
     X[:, 2] = rng.choice(["a", "b", "c"], size=30).astype(object)
     # create a categorical feature using some integer
     X[:, 3] = rng.randint(3, size=30)
-    y = np.array([[0,2,3]] * 5 +[[1,2,3,4]]*2 + [[1,2]]*3+[[1]] * 20)
+    y = np.array([[0, 2, 3]] * 5 + [[1, 2, 3, 4]]*2 + [[1, 2]]*3+[[1]] * 20)
     # return the categories
     return X, y, [2, 3]
 
@@ -34,7 +34,7 @@ def data_heterogneous_unordered():
     X[:, 0] = rng.choice(["a", "b", "c"], size=30).astype(object)
     # create a categorical feature using some integer
     X[:, 3] = rng.randint(3, size=30)
-    y = np.array([[0,2,3]] * 5 +[[1,2,3,4]]*2 + [[1,2]]*3+[[1]] * 20)
+    y = np.array([[0, 2, 3]] * 5 + [[1, 2, 3, 4]]*2 + [[1, 2]]*3+[[1]] * 20)
     # return the categories
     return X, y, [0, 3]
 
@@ -48,7 +48,7 @@ def data_heterogneous_masked():
     X[:, 0] = rng.choice(["a", "b", "c"], size=30).astype(object)
     # create a categorical feature using some integer
     X[:, 3] = rng.randint(3, size=30)
-    y = np.array([[0,2,3]] * 5 +[[1,2,3,4]]*2 + [[1,2]]*3+[[1]] * 20)
+    y = np.array([[0, 2, 3]] * 5 + [[1, 2, 3, 4]]*2 + [[1, 2]]*3+[[1]] * 20)
     # return the categories
     return X, y, [True, False, True]
 
@@ -83,6 +83,7 @@ def test_mlsmote(data):
         assert set(X[:, cat_idx]) == set(X_resampled[:, cat_idx])
         assert X[:, cat_idx].dtype == X_resampled[:, cat_idx].dtype
 
+
 def test_mlsmote_fit():
     X, y, categorical_features = data_heterogneous_unordered()
     smote = MLSMOTE(categorical_features=categorical_features)
@@ -94,11 +95,12 @@ def test_mlsmote_fit():
 
 def test_mlsmote_fit_resample():
     X, y, categorical_features = data_heterogneous_unordered()
-    target_stats = Counter(np.unique(np.array([a for x in y for a in (x if isinstance(x, list) else [x])])))
+    target_stats = Counter(np.unique(
+        np.array([a for x in y for a in (x if isinstance(x, list) else [x])])))
     smote = MLSMOTE(categorical_features=categorical_features)
     _, y_res = smote.fit_resample(X, y)
-    classes_res=np.unique(np.array([a for x in y_res for a in (x if isinstance(x, list) else [x])]))
+    classes_res = np.unique(
+        np.array([a for x in y_res for a in (x if isinstance(x, list) else [x])]))
     _ = Counter(classes_res)
     n_samples = max(target_stats.values())
     assert all(value >= n_samples for value in Counter(classes_res).values())
-
