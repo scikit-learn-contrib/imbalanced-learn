@@ -204,7 +204,7 @@ class MLSMOTE:
     def _get_label_frequencies(self, labels):
         """"A support function to get the frequencies of labels"""
         frequency_map = np.array(np.unique(labels, return_counts=True)).T
-        frequencies = np.array([x[1] for x in count_map])
+        frequencies = np.array([x[1] for x in frequency_map])
         return frequencies
 
     def _get_most_frequent_value(self, values):
