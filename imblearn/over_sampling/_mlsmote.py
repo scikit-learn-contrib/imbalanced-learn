@@ -56,6 +56,8 @@ class MLSMOTE:
         y_resampled = y.copy()
 
         self.unique_labels = self._collect_unique_labels(y)
+        self.imbalance_ratio_per_label = np.array(
+            list(map(self._get_imbalance_ratio_per_label, self.unique_labels)))
         self.features = X
 
         X_synth = []
@@ -64,8 +66,8 @@ class MLSMOTE:
         append_X_synth = X_synth.append
         append_y_synth = y_synth.append
         mean_ir = self._get_mean_imbalance_ratio()
-        for label in self.unique_labels:
-            irlbl = self._get_imbalance_ratio_per_label(label)
+        for index, label in np.ndenumerate(self.unique_labels):
+            irlbl = self.imbalance_ratio_per_label[index]
             if irlbl > mean_ir:
                 min_bag = self._get_all_instances_of_label(label)
                 for sample in min_bag:
@@ -179,8 +181,7 @@ class MLSMOTE:
         return np.array(instance_ids)
 
     def _get_mean_imbalance_ratio(self):
-        ratio_sum = np.sum(
-            np.array(list(map(self._get_imbalance_ratio_per_label, self.unique_labels))))
+        ratio_sum = np.sum(self.imbalance_ratio_per_label)
         return ratio_sum/self.unique_labels.shape[0]
 
     def _get_imbalance_ratio_per_label(self, label):
