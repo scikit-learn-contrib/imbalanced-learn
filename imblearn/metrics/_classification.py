@@ -12,8 +12,6 @@ the lower the better
 #          Dariusz Brzezinski
 # License: MIT
 
-from copy import deepcopy
-from inspect import getcallargs
 import functools
 import warnings
 
