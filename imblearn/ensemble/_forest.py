@@ -301,7 +301,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         criterion="gini",
         max_depth=None,
         min_samples_split=2,
-        min_samples_leaf=2,
+        min_samples_leaf=1,
         min_weight_fraction_leaf=0.0,
         max_features="auto",
         max_leaf_nodes=None,
