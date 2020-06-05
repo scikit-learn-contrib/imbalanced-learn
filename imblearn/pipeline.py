@@ -456,12 +456,8 @@ def make_pipeline(*steps, **kwargs):
     >>> from sklearn.preprocessing import StandardScaler
     >>> make_pipeline(StandardScaler(), GaussianNB(priors=None))
     ... # doctest: +NORMALIZE_WHITESPACE
-    Pipeline(memory=None,
-             steps=[('standardscaler',
-                     StandardScaler(copy=True, with_mean=True, with_std=True)),
-                    ('gaussiannb',
-                     GaussianNB(priors=None, var_smoothing=1e-09))],
-             verbose=False)
+    Pipeline(steps=[('standardscaler', StandardScaler()),
+                    ('gaussiannb', GaussianNB())])
     """
     memory = kwargs.pop("memory", None)
     verbose = kwargs.pop('verbose', False)
