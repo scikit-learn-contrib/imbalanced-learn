@@ -872,6 +872,8 @@ class SMOTENC(SMOTE):
     Resampled dataset samples per class Counter({0: 900, 1: 900})
     """
 
+    _required_parameters = ["categorical_features"]
+
     def __init__(
         self,
         categorical_features,
