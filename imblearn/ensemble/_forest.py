@@ -458,7 +458,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         self._sampling_strategy = {
             np.where(self.classes_[0] == key)[0][0]: value
-            for key, value in self.sampling_strategy.items()
+            for key, value in self._sampling_strategy.items()
         }
 
         if expanded_class_weight is not None:
