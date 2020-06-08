@@ -6,9 +6,13 @@ from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 
 from imblearn.base import BaseSampler
-# from imblearn.utils.estimator_checks import check_estimator
-from imblearn.utils.estimator_checks import parametrize_with_checks
 from imblearn.utils import check_target_type
+
+from imblearn.utils.estimator_checks import check_target_type
+from imblearn.utils.estimator_checks import check_samplers_one_label
+from imblearn.utils.estimator_checks import check_samplers_fit
+from imblearn.utils.estimator_checks import check_samplers_sparse
+from imblearn.utils.estimator_checks import check_samplers_preserve_dtype
 
 
 class BaseBadSampler(BaseEstimator):
@@ -25,12 +29,22 @@ class BaseBadSampler(BaseEstimator):
         return X, y
 
 
+class SamplerSingleClass(BaseSampler):
+    """Sampler that would sample even with a single class."""
+    _sampling_type = "bypass"
+
+    def fit_resample(self, X, y):
+        return self._fit_resample(X, y)
+
+    def _fit_resample(self, X, y):
+        return X, y
+
+
 class NotFittedSampler(BaseBadSampler):
     """Sampler without target checking."""
 
     def fit(self, X, y):
-        y, _ = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=True)
+        X, y = self._validate_data(X, y)
         return self
 
 
@@ -38,8 +52,7 @@ class NoAcceptingSparseSampler(BaseBadSampler):
     """Sampler which does not accept sparse matrix."""
 
     def fit(self, X, y):
-        y, _ = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=False)
+        X, y = self._validate_data(X, y)
         self.sampling_strategy_ = "sampling_strategy_"
         return self
 
@@ -53,17 +66,26 @@ class NotPreservingDtypeSampler(BaseSampler):
 
 mapping_estimator_error = {
     "BaseBadSampler": (AssertionError, "ValueError not raised by fit"),
+    "SamplerSingleClass": (AssertionError, "Sampler can't balance when only"),
     "NotFittedSampler": (AssertionError, "No fitted attribute"),
     "NoAcceptingSparseSampler": (TypeError, "A sparse matrix was passed"),
     "NotPreservingDtypeSampler": (AssertionError, "X dtype is not preserved"),
 }
 
 
-@parametrize_with_checks([
-    BaseBadSampler(), NotFittedSampler(), NoAcceptingSparseSampler(),
-    NotPreservingDtypeSampler(),
-])
-def test_parametrize_with_checks(estimator, check, request):
-    err_type, err_msg = mapping_estimator_error[estimator.__class__.__name__]
+def _test_single_check(Estimator, check):
+    estimator = Estimator()
+    name = estimator.__class__.__name__
+    err_type, err_msg = mapping_estimator_error[name]
     with pytest.raises(err_type, match=err_msg):
-        check(estimator)
+        check(name, estimator)
+
+
+def test_all_checks():
+    _test_single_check(BaseBadSampler, check_target_type)
+    _test_single_check(SamplerSingleClass, check_samplers_one_label)
+    _test_single_check(NotFittedSampler, check_samplers_fit)
+    _test_single_check(NoAcceptingSparseSampler, check_samplers_sparse)
+    _test_single_check(
+        NotPreservingDtypeSampler, check_samplers_preserve_dtype
+    )

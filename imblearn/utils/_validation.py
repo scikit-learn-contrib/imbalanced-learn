@@ -125,7 +125,6 @@ def check_target_type(y, indicate_one_vs_all=False):
 
     """
     type_y = type_of_target(y)
-    print(type_y)
     if type_y == "multilabel-indicator":
         if np.any(y.sum(axis=1) > 1):
             raise ValueError(

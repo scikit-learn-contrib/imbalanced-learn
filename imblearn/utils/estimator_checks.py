@@ -27,6 +27,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils.estimator_checks import _mark_xfail_checks
 from sklearn.utils.estimator_checks import _set_check_estimator_ids
 from sklearn.utils._testing import assert_allclose
+from sklearn.utils._testing import assert_raises_regex
 from sklearn.utils.multiclass import type_of_target
 
 from imblearn.over_sampling.base import BaseOverSampler
@@ -131,14 +132,17 @@ def check_target_type(name, estimator):
     # should raise warning if the target is continuous (we cannot raise error)
     X = np.random.random((20, 2))
     y = np.linspace(0, 1, 20)
-    with pytest.raises(ValueError, match="Unknown label type: 'continuous'"):
-        estimator.fit_resample(X, y)
+    msg = "Unknown label type: 'continuous'"
+    assert_raises_regex(
+        ValueError, msg, estimator.fit_resample, X, y,
+    )
     # if the target is multilabel then we should raise an error
     rng = np.random.RandomState(42)
     y = rng.randint(2, size=(20, 3))
     msg = "Multilabel and multioutput targets are not supported."
-    with pytest.raises(ValueError, match=msg):
-        estimator.fit_resample(X, y)
+    assert_raises_regex(
+        ValueError, msg, estimator.fit_resample, X, y,
+    )
 
 
 def check_samplers_one_label(name, sampler):
@@ -158,6 +162,7 @@ def check_samplers_one_label(name, sampler):
         print(error_string_fit, traceback, exc)
         traceback.print_exc(file=sys.stdout)
         raise exc
+    raise AssertionError(error_string_fit)
 
 
 def check_samplers_fit(name, sampler):
