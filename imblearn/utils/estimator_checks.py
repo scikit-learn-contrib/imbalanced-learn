@@ -384,6 +384,7 @@ def check_classifier_on_multilabel_or_multioutput_targets(name, estimator):
 def check_classifiers_with_encoded_labels(name, classifier):
     # Non-regression test for #709
     # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/709
+    pytest.importorskip("pandas")
     df, y = fetch_openml("iris", version=1, as_frame=True, return_X_y=True)
     df, y = make_imbalance(
         df, y, sampling_strategy={
