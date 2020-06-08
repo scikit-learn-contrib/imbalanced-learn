@@ -48,7 +48,7 @@ def _tested_estimators():
 
 
 @parametrize_with_checks_sklearn(list(_tested_estimators()))
-def test_estimators_sklearn(estimator, check, request):
+def test_estimators_compatibility_sklearn(estimator, check, request):
     _set_checking_parameters(estimator)
     check(estimator)
 

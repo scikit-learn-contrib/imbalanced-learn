@@ -112,14 +112,7 @@ def parametrize_with_checks(estimators):
     ...                           DecisionTreeRegressor()])
     ... def test_sklearn_compatible_estimator(estimator, check):
     ...     check(estimator)
-
     """
-    if any(isinstance(est, type) for est in estimators):
-        msg = ("Passing a class was deprecated in version 0.23 "
-               "and isn't supported anymore from 0.24."
-               "Please pass an instance instead.")
-        raise TypeError(msg)
-
     names = (type(estimator).__name__ for estimator in estimators)
 
     checks_generator = ((clone(estimator), partial(check, name))

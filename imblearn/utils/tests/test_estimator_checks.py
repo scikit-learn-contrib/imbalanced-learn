@@ -6,7 +6,8 @@ from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 
 from imblearn.base import BaseSampler
-from imblearn.utils.estimator_checks import check_estimator
+# from imblearn.utils.estimator_checks import check_estimator
+from imblearn.utils.estimator_checks import parametrize_with_checks
 from imblearn.utils import check_target_type
 
 
@@ -50,21 +51,19 @@ class NotPreservingDtypeSampler(BaseSampler):
         return X.astype(np.float64), y.astype(np.int64)
 
 
-@pytest.mark.filterwarnings("ignore:'y' should be of types")
-@pytest.mark.filterwarnings("ignore: Can't check dok sparse matrix for nan")
-@pytest.mark.parametrize(
-    "Estimator, err_type, err_msg",
-    [
-        (BaseBadSampler, AssertionError, "ValueError not raised by fit"),
-        (NotFittedSampler, AssertionError, "No fitted attribute"),
-        (NoAcceptingSparseSampler, TypeError, "A sparse matrix was passed"),
-        (
-            NotPreservingDtypeSampler,
-            AssertionError,
-            "X dtype is not preserved",
-        ),
-    ],
-)
-def test_check_estimator(Estimator, err_type, err_msg):
+mapping_estimator_error = {
+    "BaseBadSampler": (AssertionError, "ValueError not raised by fit"),
+    "NotFittedSampler": (AssertionError, "No fitted attribute"),
+    "NoAcceptingSparseSampler": (TypeError, "A sparse matrix was passed"),
+    "NotPreservingDtypeSampler": (AssertionError, "X dtype is not preserved"),
+}
+
+
+@parametrize_with_checks([
+    BaseBadSampler(), NotFittedSampler(), NoAcceptingSparseSampler(),
+    NotPreservingDtypeSampler(),
+])
+def test_parametrize_with_checks(estimator, check, request):
+    err_type, err_msg = mapping_estimator_error[estimator.__class__.__name__]
     with pytest.raises(err_type, match=err_msg):
-        check_estimator(Estimator)
+        check(estimator)
