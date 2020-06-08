@@ -18,6 +18,7 @@ from scipy import sparse
 
 from sklearn.base import clone
 from sklearn.datasets import (
+    fetch_openml,
     make_classification,
     make_multilabel_classification,
 )  # noqa
@@ -30,6 +31,7 @@ from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_raises_regex
 from sklearn.utils.multiclass import type_of_target
 
+from imblearn.datasets import make_imbalance
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 
@@ -65,6 +67,7 @@ def _yield_sampler_checks(sampler):
 
 def _yield_classifier_checks(classifier):
     yield check_classifier_on_multilabel_or_multioutput_targets
+    yield check_classifiers_with_encoded_labels
 
 
 def _yield_all_checks(estimator):
@@ -376,3 +379,24 @@ def check_classifier_on_multilabel_or_multioutput_targets(name, estimator):
     msg = "Multilabel and multioutput targets are not supported."
     with pytest.raises(ValueError, match=msg):
         estimator.fit(X, y)
+
+
+def check_classifiers_with_encoded_labels(name, classifier):
+    # Non-regression test for #709
+    # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/709
+    pytest.importorskip("pandas")
+    df, y = fetch_openml("iris", version=1, as_frame=True, return_X_y=True)
+    df, y = make_imbalance(
+        df, y, sampling_strategy={
+            "Iris-setosa": 30, "Iris-versicolor": 20, "Iris-virginica": 50,
+        }
+    )
+    classifier.set_params(
+        sampling_strategy={
+            "Iris-setosa": 20, "Iris-virginica": 20,
+        }
+    )
+    classifier.fit(df, y)
+    assert set(classifier.classes_) == set(y.cat.categories.tolist())
+    y_pred = classifier.predict(df)
+    assert set(y_pred) == set(y.cat.categories.tolist())

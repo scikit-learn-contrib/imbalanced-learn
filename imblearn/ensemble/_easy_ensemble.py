@@ -14,7 +14,7 @@ from sklearn.ensemble import BaggingClassifier
 
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import Substitution, check_target_type
+from ..utils import Substitution, check_target_type, check_sampling_strategy
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
 from ..pipeline import Pipeline
@@ -152,6 +152,19 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
 
+    def _validate_y(self, y):
+        y_encoded = super()._validate_y(y)
+        if isinstance(self.sampling_strategy, dict):
+            self._sampling_strategy = {
+                np.where(self.classes_ == key)[0][0]: value
+                for key, value in check_sampling_strategy(
+                    self.sampling_strategy, y, 'under-sampling',
+                ).items()
+            }
+        else:
+            self._sampling_strategy = self.sampling_strategy
+        return y_encoded
+
     def _validate_estimator(self, default=AdaBoostClassifier()):
         """Check the estimator and the n_estimator attribute, set the
         `base_estimator_` attribute."""
@@ -177,7 +190,7 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
                 (
                     "sampler",
                     RandomUnderSampler(
-                        sampling_strategy=self.sampling_strategy,
+                        sampling_strategy=self._sampling_strategy,
                         replacement=self.replacement,
                     ),
                 ),
