@@ -6,6 +6,8 @@ clustering."""
 #          Christos Aridas
 # License: MIT
 
+import warnings
+
 import numpy as np
 from scipy import sparse
 
@@ -62,6 +64,9 @@ class ClusterCentroids(BaseUnderSampler):
 
     {n_jobs}
 
+      .. deprecated:: 0.7
+         `n_jobs` was deprecated in 0.7 and will be removed in 0.9.
+
     See Also
     --------
     EditedNearestNeighbours : Under-sampling by editing samples.
@@ -107,10 +112,13 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Private function to create the KMeans estimator"""
-        if self.estimator is None:
-            self.estimator_ = KMeans(
-                random_state=self.random_state, n_jobs=self.n_jobs
+        if self.n_jobs is not None:
+            warnings.warn(
+                "'n_jobs' was deprecated in 0.7 and will be removed in 0.9",
+                FutureWarning
             )
+        if self.estimator is None:
+            self.estimator_ = KMeans(random_state=self.random_state)
         elif isinstance(self.estimator, KMeans):
             self.estimator_ = clone(self.estimator)
         else:
