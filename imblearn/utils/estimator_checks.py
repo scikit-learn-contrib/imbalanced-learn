@@ -114,8 +114,6 @@ def parametrize_with_checks(estimators):
     ...     check(estimator)
 
     """
-    import pytest
-
     if any(isinstance(est, type) for est in estimators):
         msg = ("Passing a class was deprecated in version 0.23 "
                "and isn't supported anymore from 0.24."
