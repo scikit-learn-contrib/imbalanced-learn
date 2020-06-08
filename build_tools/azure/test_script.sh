@@ -36,10 +36,23 @@ if [[ "$PYTHON_VERSION" == "*" ]]; then
     TEST_CMD="$TEST_CMD -n2"
 fi
 
+OLDPWD=$(pwd)
 mkdir -p $TEST_DIR
 cp setup.cfg $TEST_DIR
 cd $TEST_DIR
 
 set -x
 $TEST_CMD --pyargs imblearn
+
+# Test doc
+cd $OLDPWD
+if [[ "$TEST_DOC" == "true" ]]; then
+    make test-doc
+fi
+
+# Validate numpydoc style
+if [[ "$TEST_NUMPYDOC" == "true" ]]; then
+    pytest -vsl maint_tools/test_docstring.py
+fi
+
 set +x
