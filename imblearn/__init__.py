@@ -32,7 +32,6 @@ pipeline
     Module which allowing to create pipeline with scikit-learn estimators.
 """
 import importlib
-import sys
 import types
 
 from . import combine

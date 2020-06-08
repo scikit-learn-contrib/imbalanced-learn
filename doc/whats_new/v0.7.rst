@@ -37,3 +37,7 @@ Enhancements
   :class:`imblearn.ensemble.RUSBoostClassifier`, accept `sampling_strategy`
   with the same key than in `y` without the need of encoding `y` in advance.
   :pr:`718` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Lazy import `keras` module when importing `imblearn.
+  :pr:`719` by :user:`Guillaume Lemaitre <glemaitre>`.
+
