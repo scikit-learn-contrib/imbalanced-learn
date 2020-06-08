@@ -49,10 +49,6 @@ def _tested_estimators():
 
 @parametrize_with_checks_sklearn(list(_tested_estimators()))
 def test_estimators_sklearn(estimator, check, request):
-    # Common tests for estimator instances
-    # with ignore_warnings(category=(FutureWarning,
-    #                                ConvergenceWarning,
-    #                                UserWarning, FutureWarning)):
     _set_checking_parameters(estimator)
     check(estimator)
 
