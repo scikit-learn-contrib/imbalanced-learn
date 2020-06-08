@@ -2,14 +2,12 @@ import pytest
 
 import numpy as np
 
-from sklearn.datasets import fetch_openml
 from sklearn.datasets import make_classification
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_array_equal
 
-from imblearn.datasets import make_imbalance
 from imblearn.ensemble import BalancedRandomForestClassifier
 
 
