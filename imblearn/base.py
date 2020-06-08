@@ -10,7 +10,6 @@ import numpy as np
 
 from sklearn.base import BaseEstimator
 from sklearn.preprocessing import label_binarize
-from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
@@ -131,7 +130,9 @@ class BaseSampler(SamplerMixin):
         if accept_sparse is None:
             accept_sparse = ["csr", "csc"]
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=accept_sparse)
+        X, y = self._validate_data(
+            X, y, reset=True, accept_sparse=accept_sparse
+        )
         return X, y, binarize_y
 
 

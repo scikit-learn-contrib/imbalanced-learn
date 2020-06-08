@@ -97,7 +97,7 @@ a boosting iteration :cite:`seiffert2009rusboost`::
   RUSBoostClassifier(...)
   >>> y_pred = rusboost.predict(X_test)
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
-  0.4...
+  0...
 
 A specific method which uses ``AdaBoost`` as learners in the bagging classifier
 is called EasyEnsemble. The :class:`EasyEnsembleClassifier` allows to bag
