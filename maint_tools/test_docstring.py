@@ -137,7 +137,7 @@ def test_docstring(Estimator, method, request):
 
     import_path = ".".join(import_path)
 
-    if any(re.search(regex, import_path) for regex in DOCSTRING_WHITELIST):
+    if not any(re.search(regex, import_path) for regex in DOCSTRING_WHITELIST):
         request.applymarker(
             pytest.mark.xfail(
                 run=False, reason="TODO pass numpydoc validation"
