@@ -7,30 +7,18 @@
 import inspect
 import pkgutil
 from contextlib import contextmanager
+from importlib import import_module
 from re import compile
+from pathlib import Path
 
 from operator import itemgetter
 from pytest import warns as _warns
 
 from sklearn.base import BaseEstimator
-
-from imblearn.base import SamplerMixin
-import imblearn
-
-# meta-estimators need another estimator to be instantiated.
-META_ESTIMATORS = []
-# estimators that there is no way to default-construct sensibly
-OTHER = ["Pipeline", "FeatureUnion", "SMOTENC"]
-# some strange ones
-DONT_TEST = []
+from sklearn.utils._testing import ignore_warnings
 
 
-def all_estimators(
-    include_meta_estimators=False,
-    include_other=False,
-    type_filter=None,
-    include_dont_test=False,
-):
+def all_estimators(type_filter=None,):
     """Get a list of all estimators from imblearn.
 
     This function crawls the module and gets all classes that inherit
@@ -41,18 +29,6 @@ def all_estimators(
 
     Parameters
     ----------
-    include_meta_estimators : boolean, default=False
-        Whether to include meta-estimators that can be constructed using
-        an estimator as their first argument. These are currently none.
-
-    include_other : boolean, default=False
-        Wether to include meta-estimators that are somehow special and can
-        not be default-constructed sensibly. These are currently
-        Pipeline, FeatureUnion.
-
-    include_dont_test : boolean, default=False
-        Whether to include "special" label estimator or test processors.
-
     type_filter : string, list of string, or None, default=None
         Which kind of estimators should be returned. If None, no
         filter is applied and all estimators are returned.  Possible
@@ -67,6 +43,7 @@ def all_estimators(
         and ``class`` is the actual type of the class.
 
     """
+    from ..base import SamplerMixin
 
     def is_abstract(c):
         if not (hasattr(c, "__abstractmethods__")):
@@ -76,16 +53,23 @@ def all_estimators(
         return True
 
     all_classes = []
-    # get parent folder
-    path = imblearn.__path__
-    for importer, modname, ispkg in pkgutil.walk_packages(
-        path=path, prefix="imblearn.", onerror=lambda x: None
-    ):
-        if ".tests." in modname:
-            continue
-        module = __import__(modname, fromlist="dummy")
-        classes = inspect.getmembers(module, inspect.isclass)
-        all_classes.extend(classes)
+    modules_to_ignore = {"tests"}
+    root = str(Path(__file__).parent.parent)
+    # Ignore deprecation warnings triggered at import time and from walking
+    # packages
+    with ignore_warnings(category=FutureWarning):
+        for importer, modname, ispkg in pkgutil.walk_packages(
+                path=[root], prefix='imblearn.'):
+            mod_parts = modname.split(".")
+            if (any(part in modules_to_ignore for part in mod_parts)
+                    or '._' in modname):
+                continue
+            module = import_module(modname)
+            classes = inspect.getmembers(module, inspect.isclass)
+            classes = [(name, est_cls) for name, est_cls in classes
+                       if not name.startswith("_")]
+
+            all_classes.extend(classes)
 
     all_classes = set(all_classes)
 
@@ -100,14 +84,6 @@ def all_estimators(
     # get rid of sklearn estimators which have been imported in some classes
     estimators = [c for c in estimators if "sklearn" not in c[1].__module__]
 
-    if not include_dont_test:
-        estimators = [c for c in estimators if not c[0] in DONT_TEST]
-
-    if not include_other:
-        estimators = [c for c in estimators if not c[0] in OTHER]
-    # possibly get rid of meta estimators
-    if not include_meta_estimators:
-        estimators = [c for c in estimators if not c[0] in META_ESTIMATORS]
     if type_filter is not None:
         if not isinstance(type_filter, list):
             type_filter = [type_filter]

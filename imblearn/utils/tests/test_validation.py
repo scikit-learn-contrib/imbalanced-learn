@@ -32,7 +32,7 @@ def test_check_neighbors_object():
     estimator = check_neighbors_object(name, n_neighbors, 1)
     assert issubclass(type(estimator), KNeighborsMixin)
     assert estimator.n_neighbors == 2
-    estimator = NearestNeighbors(n_neighbors)
+    estimator = NearestNeighbors(n_neighbors=n_neighbors)
     estimator_cloned = check_neighbors_object(name, estimator)
     assert estimator.n_neighbors == estimator_cloned.n_neighbors
     n_neighbors = "rnd"

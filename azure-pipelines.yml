@@ -32,7 +32,7 @@ jobs:
       # Linux environment to test the latest available dependencies and MKL.
       pylatest_pip_openblas_pandas:
         DISTRIB: 'conda-pip-latest'
-        PYTHON_VERSION: '3.7'
+        PYTHON_VERSION: '3.8'
         COVERAGE: 'true'
         PANDAS_VERSION: '*'
         TEST_DOCSTRINGS: 'true'
@@ -49,7 +49,7 @@ jobs:
         TEST_DOCSTRINGS: 'true'
       pylatest_conda_pandas_tensorflow:
         DISTRIB: 'conda'
-        PYTHON_VERSION: '3.7'
+        PYTHON_VERSION: '3.8'
         PANDAS_VERSION: '*'
         JOBLIB_VERSION: '*'
         INSTALL_MKL: 'true'
@@ -72,7 +72,7 @@ jobs:
 - template: build_tools/azure/posix.yml
   parameters:
     name: macOS
-    vmImage: xcode9-macos10.13
+    vmImage: macOS-10.14
     dependsOn: [linting]
     matrix:
       pylatest_conda_mkl:
@@ -95,7 +95,7 @@ jobs:
     dependsOn: [linting]
     matrix:
       py37_conda_mkl:
-        PYTHON_VERSION: '3.7'
+        PYTHON_VERSION: '3.8'
         PYTHON_ARCH: '64'
         PYTEST_VERSION: '*'
         COVERAGE: 'true'
