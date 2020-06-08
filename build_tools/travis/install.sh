@@ -34,22 +34,13 @@ conda create -n testenv --yes python=$PYTHON_VERSION pip
 source activate testenv
 
 pip install --upgrade pip setuptools
-echo "Installing numpy and scipy master wheels"
-dev_url=https://7933911d6844c6c53a7d-47bd50c35cd79bd838daf386af554a83.ssl.cf2.rackcdn.com
-pip install --pre --upgrade --timeout=60 -f $dev_url numpy scipy pandas cython
+echo "Installing numpy, scipy, and pandas master wheels"
+dev_url=https://pypi.anaconda.org/scipy-wheels-nightly/simple
+pip install --pre --upgrade --timeout=60 -f $dev_url numpy scipy pandas
 echo "Installing joblib master"
 pip install https://github.com/joblib/joblib/archive/master.zip
-
-if [[ "$OPTIONAL_DEPS" == "keras" ]]; then
-    conda install --yes keras tensorflow=1
-    KERAS_BACKEND=tensorflow
-    python -c "import keras.backend"
-    sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
-elif [[ "$OPTIONAL_DEPS" == "tensorflow" ]]; then
-    conda install --yes tensorflow
-fi
-
-pip install --pre --extra-index https://pypi.anaconda.org/scipy-wheels-nightly/simple scikit-learn
+echo "Installing scikit-learn master"
+pip install --pre --extra-index $dev_url scikit-learn
 
 conda install --yes pytest pytest-cov
 pip install codecov
