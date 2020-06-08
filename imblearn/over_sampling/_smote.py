@@ -744,8 +744,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 #     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
 #     random_state=_random_state_docstring)
 class SMOTENC(SMOTE):
-    """Synthetic Minority Over-sampling Technique for Nominal and Continuous
-    (SMOTE-NC).
+    """Synthetic Minority Over-sampling Technique for Nominal and Continuous.
 
     Unlike :class:`SMOTE`, SMOTE-NC for dataset containing continuous and
     categorical features.
