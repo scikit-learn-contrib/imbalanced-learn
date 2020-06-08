@@ -9,7 +9,6 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
 fi
 
 if [[ "$TEST_DOCSTRINGS" == 'true' ]]; then
-    pwd
     make test-doc
     pytest -vsl maint_tools/test_docstring.py
 fi
