@@ -24,15 +24,9 @@ from sklearn.datasets import (
 from sklearn.cluster import KMeans
 from sklearn.exceptions import SkipTestWarning
 from sklearn.preprocessing import label_binarize
-from sklearn.utils.estimator_checks import check_estimator as \
-    sklearn_check_estimator
-from sklearn.utils.estimator_checks import \
-    check_parameters_default_constructible
 from sklearn.utils.estimator_checks import _mark_xfail_checks
 from sklearn.utils.estimator_checks import _set_check_estimator_ids
-from sklearn.utils.estimator_checks import _skip_if_xfail
 from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import SkipTest
 from sklearn.utils.multiclass import type_of_target
 
 from imblearn.over_sampling.base import BaseOverSampler
