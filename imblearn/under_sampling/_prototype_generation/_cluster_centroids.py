@@ -102,7 +102,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         random_state=None,
         estimator=None,
         voting="auto",
-        n_jobs=None,
+        n_jobs="deprecatedxs",
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
@@ -112,7 +112,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Private function to create the KMeans estimator"""
-        if self.n_jobs is not None:
+        if self.n_jobs != "deprecated":
             warnings.warn(
                 "'n_jobs' was deprecated in 0.7 and will be removed in 0.9",
                 FutureWarning
