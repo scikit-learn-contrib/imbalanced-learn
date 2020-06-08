@@ -40,7 +40,7 @@ jobs:
         CHECK_WARNINGS: 'true'
       pylatest_conda_pandas_keras:
         DISTRIB: 'conda'
-        PYTHON_VERSION: '3.8'
+        PYTHON_VERSION: '3.7'
         INSTALL_MKL: 'true'
         PANDAS_VERSION: '*'
         KERAS_VERSION: '*'
