@@ -200,20 +200,3 @@ def test_balanced_random_forest_oob_binomial(ratio):
     erf = BalancedRandomForestClassifier(oob_score=True, random_state=42)
     erf.fit(X, y)
     assert np.abs(erf.oob_score_ - 0.5) < 0.1
-
-
-def test_balanced_random_forest_str_labels():
-    # Non-regression test for #709
-    # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/709
-    df, y = fetch_openml("iris", version=1, as_frame=True, return_X_y=True)
-    df, y = make_imbalance(
-        df, y, sampling_strategy={
-            "Iris-setosa": 30, "Iris-versicolor": 20, "Iris-virginica": 50
-        }
-    )
-    forest = BalancedRandomForestClassifier(
-        sampling_strategy={
-            "Iris-setosa": 20, "Iris-versicolor": 20, "Iris-virginica": 20
-        }
-    )
-    forest.fit(df, y)

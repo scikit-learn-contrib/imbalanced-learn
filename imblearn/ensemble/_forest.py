@@ -448,18 +448,20 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         self.n_outputs_ = y.shape[1]
 
-        self._sampling_strategy = check_sampling_strategy(
-            self.sampling_strategy, y, 'under-sampling',
-        )
-        y, expanded_class_weight = self._validate_y_class_weight(y)
+        y_encoded, expanded_class_weight = self._validate_y_class_weight(y)
 
         if getattr(y, "dtype", None) != DOUBLE or not y.flags.contiguous:
-            y = np.ascontiguousarray(y, dtype=DOUBLE)
+            y_encoded = np.ascontiguousarray(y_encoded, dtype=DOUBLE)
 
-        self._sampling_strategy = {
-            np.where(self.classes_[0] == key)[0][0]: value
-            for key, value in self._sampling_strategy.items()
-        }
+        if isinstance(self.sampling_strategy, dict):
+            self._sampling_strategy = {
+                np.where(self.classes_[0] == key)[0][0]: value
+                for key, value in check_sampling_strategy(
+                    self.sampling_strategy, y, 'under-sampling',
+                ).items()
+            }
+        else:
+            self._sampling_strategy = self.sampling_strategy
 
         if expanded_class_weight is not None:
             if sample_weight is not None:
@@ -532,7 +534,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                     t,
                     self,
                     X,
-                    y,
+                    y_encoded,
                     sample_weight,
                     i,
                     len(trees),
@@ -557,7 +559,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             )
 
         if self.oob_score:
-            self._set_oob_score(X, y)
+            self._set_oob_score(X, y_encoded)
 
         # Decapsulate classes_ attributes
         if hasattr(self, "classes_") and self.n_outputs_ == 1:
