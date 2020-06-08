@@ -28,7 +28,7 @@ TARGET_KIND = ("binary", "multiclass", "multilabel-indicator")
 
 
 class ArraysTransformer:
-    """A class to convert sampler ouput arrays to their orinal types."""
+    """A class to convert sampler output arrays to their original types."""
 
     def __init__(self, X, y):
         self.x_props = self._gets_props(X)

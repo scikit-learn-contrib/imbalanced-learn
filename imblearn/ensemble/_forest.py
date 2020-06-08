@@ -33,6 +33,7 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import check_sampling_strategy
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -364,7 +365,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self.base_estimator_ = clone(default)
 
         self.base_sampler_ = RandomUnderSampler(
-            sampling_strategy=self.sampling_strategy,
+            sampling_strategy=self._sampling_strategy,
             replacement=self.replacement,
         )
 
@@ -447,10 +448,18 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         self.n_outputs_ = y.shape[1]
 
+        self._sampling_strategy = check_sampling_strategy(
+            self.sampling_strategy, y, 'under-sampling',
+        )
         y, expanded_class_weight = self._validate_y_class_weight(y)
 
         if getattr(y, "dtype", None) != DOUBLE or not y.flags.contiguous:
             y = np.ascontiguousarray(y, dtype=DOUBLE)
+
+        self._sampling_strategy = {
+            np.where(self.classes_[0] == key)[0][0]: value
+            for key, value in self.sampling_strategy.items()
+        }
 
         if expanded_class_weight is not None:
             if sample_weight is not None:
