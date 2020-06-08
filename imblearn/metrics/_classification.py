@@ -12,10 +12,8 @@ the lower the better
 #          Dariusz Brzezinski
 # License: MIT
 
-import warnings
 import functools
-
-from inspect import getcallargs
+import warnings
 
 import numpy as np
 import scipy as sp
@@ -731,56 +729,56 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
     def decorate(scoring_func):
         @functools.wraps(scoring_func)
         def compute_score(*args, **kwargs):
-            # Create the list of tags
-            tags_scoring_func = getcallargs(scoring_func, *args, **kwargs)
+            signature_scoring_func = signature(scoring_func)
+            params_scoring_func = set(signature_scoring_func.parameters.keys())
+
             # check that the scoring function does not need a score
             # and only a prediction
-            if (
-                "y_score" in tags_scoring_func
-                or "y_prob" in tags_scoring_func
-                or "y2" in tags_scoring_func
-            ):
+            prohibitied_y_pred = set(["y_score", "y_prob", "y2"])
+            if prohibitied_y_pred.intersection(params_scoring_func):
                 raise AttributeError(
                     "The function {} has an unsupported"
                     " attribute. Metric with`y_pred` are the"
                     " only supported metrics is the only"
-                    " supported."
+                    " supported.".format(scoring_func.__name__)
                 )
-            # Compute the score from the scoring function
-            _score = scoring_func(*args, **kwargs)
-            # Square if desired
+
+            args_scoring_func = signature_scoring_func.bind(*args, **kwargs)
+            args_scoring_func.apply_defaults()
+            _score = scoring_func(
+                *args_scoring_func.args, **args_scoring_func.kwargs
+            )
             if squared:
                 _score = np.power(_score, 2)
-            # Get the signature of the sens/spec function
-            sens_spec_sig = signature(sensitivity_specificity_support)
-            # We need to extract from kwargs only the one needed by the
-            # specificity and specificity
-            params_sens_spec = set(sens_spec_sig._parameters.keys())
-            # Make the intersection between the parameters
-            sel_params = params_sens_spec.intersection(set(tags_scoring_func))
-            # Create a sub dictionary
-            tags_scoring_func = {k: tags_scoring_func[k] for k in sel_params}
-            # Check if the metric is the geometric mean
+
+            signature_sens_spec = signature(sensitivity_specificity_support)
+            params_sens_spec = set(signature_sens_spec.parameters.keys())
+            common_params = params_sens_spec.intersection(
+                set(args_scoring_func.arguments.keys())
+            )
+
+            args_sens_spec = {
+                k: args_scoring_func.arguments[k] for k in common_params
+            }
+
             if scoring_func.__name__ == "geometric_mean_score":
-                if "average" in tags_scoring_func:
-                    if tags_scoring_func["average"] == "multiclass":
-                        tags_scoring_func["average"] = "macro"
-            # We do not support multilabel so the only average supported
-            # is binary
+                if "average" in args_sens_spec:
+                    if args_sens_spec["average"] == "multiclass":
+                        args_sens_spec["average"] = "macro"
             elif (
                 scoring_func.__name__ == "accuracy_score"
                 or scoring_func.__name__ == "jaccard_score"
             ):
-                tags_scoring_func["average"] = "binary"
-            # Create the list of parameters through signature binding
-            tags_sens_spec = sens_spec_sig.bind(**tags_scoring_func)
-            # Call the sens/spec function
-            sen, spe, _ = sensitivity_specificity_support(
-                *tags_sens_spec.args, **tags_sens_spec.kwargs
+                # We do not support multilabel so the only average supported
+                # is binary
+                args_sens_spec["average"] = "binary"
+
+            sensitivity, specificity, _ = sensitivity_specificity_support(
+                **args_sens_spec
             )
-            # Compute the dominance
-            dom = sen - spe
-            return (1.0 + alpha * dom) * _score
+
+            dominance = sensitivity - specificity
+            return (1.0 + alpha * dominance) * _score
 
         return compute_score
 
