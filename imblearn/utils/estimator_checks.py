@@ -37,7 +37,6 @@ from sklearn.utils.multiclass import type_of_target
 
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
-# from imblearn.under_sampling import NearMiss, ClusterCentroids
 
 
 def _set_checking_parameters(estimator):
@@ -50,6 +49,8 @@ def _set_checking_parameters(estimator):
             voting="soft",
             estimator=KMeans(random_state=0, algorithm="full"),
         )
+    if name == "KMeansSMOTE":
+        estimator.set_params(kmeans_estimator=12)
 
 
 def _yield_sampler_checks(sampler):
@@ -139,44 +140,6 @@ def parametrize_with_checks(estimators):
 
     return pytest.mark.parametrize("estimator, check", checks_with_marks,
                                    ids=_set_check_estimator_ids)
-
-
-# def check_estimator(Estimator, run_sampler_tests=True):
-#     """Check if estimator adheres to scikit-learn conventions and
-#     imbalanced-learn
-
-#     This estimator will run an extensive test-suite for input validation,
-#     shapes, etc.
-#     Additional tests samplers if the Estimator inherits from the corresponding
-#     mixin from imblearn.base
-
-#     Parameters
-#     ----------
-#     estimators : list of estimators instances
-#         Estimators to generated checks for.
-
-#     run_sampler_tests=True : bool, default=True
-#         Will run or not the samplers tests.
-#     """
-#     estimator = Estimator
-#     name = type(estimator).__name__
-#     # scikit-learn common tests
-#     # sklearn_check_estimator(estimator)
-#     # check_parameters_default_constructible(name, Estimator)
-#     # if run_sampler_tests:
-#     #     for check in _yield_all_checks(name, Estimator):
-#     #         check(name, Estimator)
-#     checks_generator = ((estimator,
-#                          partial(_skip_if_xfail(estimator, check), name))
-#                         for check in _yield_all_checks(estimator))
-
-#     for estimator, check in checks_generator:
-#         try:
-#             check(estimator)
-#         except SkipTest as exception:
-#             # SkipTest is thrown when pandas can't be imported, or by checks
-#             # that are in the xfail_checks tag
-#             warnings.warn(str(exception), SkipTestWarning)
 
 
 def check_target_type(name, estimator):

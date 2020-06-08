@@ -261,3 +261,14 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return self._fit(X, y, self.max_samples, sample_weight=None)
+
+    def _more_tags(self):
+        tags = super()._more_tags()
+        tags_key = "_xfail_checks"
+        failing_test = "check_estimators_nan_inf"
+        reason = "Fails because the sampler removed infinity and NaN values"
+        if tags_key in tags:
+            tags[tags_key][failing_test] = reason
+        else:
+            tags[tags_key] = {failing_test: reason}
+        return tags
