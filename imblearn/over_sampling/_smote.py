@@ -744,8 +744,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 #     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
 #     random_state=_random_state_docstring)
 class SMOTENC(SMOTE):
-    """Synthetic Minority Over-sampling Technique for Nominal and Continuous
-    (SMOTE-NC).
+    """Synthetic Minority Over-sampling Technique for Nominal and Continuous.
 
     Unlike :class:`SMOTE`, SMOTE-NC for dataset containing continuous and
     categorical features.
@@ -871,6 +870,8 @@ class SMOTENC(SMOTE):
     >>> print('Resampled dataset samples per class {}'.format(Counter(y_res)))
     Resampled dataset samples per class Counter({0: 900, 1: 900})
     """
+
+    _required_parameters = ["categorical_features"]
 
     def __init__(
         self,

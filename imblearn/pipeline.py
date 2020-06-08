@@ -47,7 +47,7 @@ class Pipeline(pipeline.Pipeline):
         fit/transform/fit_resample) that are chained, in the order in which
         they are chained, with the last object an estimator.
 
-    memory : Instance of joblib.Memory or string, optional (default=None)
+    memory : Instance of joblib.Memory or str, default=None
         Used to cache the fitted transformers of the pipeline. By default,
         no caching is performed. If a string is given, it is the path to
         the caching directory. Enabling caching triggers a clone of
@@ -57,7 +57,7 @@ class Pipeline(pipeline.Pipeline):
         inspect estimators within the pipeline. Caching the
         transformers is advantageous when fitting is time consuming.
 
-    verbose : boolean, optional (default=False)
+    verbose : bool, default=False
         If True, the time elapsed while fitting each step will be printed as it
         is completed.
 
@@ -67,17 +67,16 @@ class Pipeline(pipeline.Pipeline):
         Read-only attribute to access any step parameter by user given name.
         Keys are step names and values are steps parameters.
 
+    See Also
+    --------
+    make_pipeline : Helper function to make pipeline.
+
     Notes
     -----
     See :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py`
 
-    See also
-    --------
-    make_pipeline : helper function to make pipeline.
-
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.model_selection import train_test_split as tts
@@ -109,7 +108,6 @@ class Pipeline(pipeline.Pipeline):
        macro avg       0.93      0.99      0.96       250
     weighted avg       0.99      0.98      0.98       250
     <BLANKLINE>
-
     """
 
     # BaseEstimator interface
@@ -257,7 +255,7 @@ class Pipeline(pipeline.Pipeline):
         return X, y, fit_params_steps[self.steps[-1][0]]
 
     def fit(self, X, y=None, **fit_params):
-        """Fit the model
+        """Fit the model.
 
         Fit all the transforms/samplers one after the other and
         transform/sample the data, then fit the transformed/sampled
@@ -273,7 +271,7 @@ class Pipeline(pipeline.Pipeline):
             Training targets. Must fulfill label requirements for all steps of
             the pipeline.
 
-        **fit_params : dict of string -> object
+        **fit_params : dict of str -> object
             Parameters passed to the ``fit`` method of each step, where
             each parameter name is prefixed such that parameter ``p`` for step
             ``s`` has key ``s__p``.
@@ -281,8 +279,7 @@ class Pipeline(pipeline.Pipeline):
         Returns
         -------
         self : Pipeline
-            This estimator
-
+            This estimator.
         """
         Xt, yt, fit_params = self._fit(X, y, **fit_params)
         with _print_elapsed_time('Pipeline',
@@ -292,7 +289,7 @@ class Pipeline(pipeline.Pipeline):
         return self
 
     def fit_transform(self, X, y=None, **fit_params):
-        """Fit the model and transform with the final estimator
+        """Fit the model and transform with the final estimator.
 
         Fits all the transformers/samplers one after the other and
         transform/sample the data, then uses fit_transform on
@@ -315,9 +312,8 @@ class Pipeline(pipeline.Pipeline):
 
         Returns
         -------
-        Xt : array-like, shape = [n_samples, n_transformed_features]
-            Transformed samples
-
+        Xt : array-like of shape (n_samples, n_transformed_features)
+            Transformed samples.
         """
         last_step = self._final_estimator
         Xt, yt, fit_params = self._fit(X, y, **fit_params)
@@ -331,7 +327,7 @@ class Pipeline(pipeline.Pipeline):
                 return last_step.fit(Xt, yt, **fit_params).transform(Xt)
 
     def fit_resample(self, X, y=None, **fit_params):
-        """Fit the model and sample with the final estimator
+        """Fit the model and sample with the final estimator.
 
         Fits all the transformers/samplers one after the other and
         transform/sample the data, then uses fit_resample on transformed
@@ -354,12 +350,11 @@ class Pipeline(pipeline.Pipeline):
 
         Returns
         -------
-        Xt : array-like, shape = [n_samples, n_transformed_features]
-            Transformed samples
+        Xt : array-like of shape (n_samples, n_transformed_features)
+            Transformed samples.
 
-        yt : array-like, shape = [n_samples, n_transformed_features]
-            Transformed target
-
+        yt : array-like of shape (n_samples, n_transformed_features)
+            Transformed target.
         """
         last_step = self._final_estimator
         Xt, yt, fit_params = self._fit(X, y, **fit_params)
@@ -372,7 +367,7 @@ class Pipeline(pipeline.Pipeline):
 
     @if_delegate_has_method(delegate="_final_estimator")
     def fit_predict(self, X, y=None, **fit_params):
-        """Applies fit_predict of last step in pipeline after transforms.
+        """Apply `fit_predict` of last step in pipeline after transforms.
 
         Applies fit_transforms of a pipeline to the data, followed by the
         fit_predict method of the final estimator in the pipeline. Valid
@@ -395,7 +390,8 @@ class Pipeline(pipeline.Pipeline):
 
         Returns
         -------
-        y_pred : array-like
+        y_pred : ndarray of shape (n_samples,)
+            The predicted target.
         """
         Xt, yt, fit_params = self._fit(X, y, **fit_params)
         with _print_elapsed_time('Pipeline',
@@ -425,9 +421,10 @@ def make_pipeline(*steps, **kwargs):
 
     Parameters
     ----------
-    *steps : list of estimators.
+    *steps : list of estimators
+        A list of estimators.
 
-    memory : None, str or object with the joblib.Memory interface, optional
+    memory : None, str or object with the joblib.Memory interface, default=None
         Used to cache the fitted transformers of the pipeline. By default,
         no caching is performed. If a string is given, it is the path to
         the caching directory. Enabling caching triggers a clone of
@@ -437,7 +434,7 @@ def make_pipeline(*steps, **kwargs):
         inspect estimators within the pipeline. Caching the
         transformers is advantageous when fitting is time consuming.
 
-    verbose : boolean, optional (default=False)
+    verbose : bool, default=False
         If True, the time elapsed while fitting each step will be printed as it
         is completed.
 
@@ -445,7 +442,7 @@ def make_pipeline(*steps, **kwargs):
     -------
     p : Pipeline
 
-    See also
+    See Also
     --------
     imblearn.pipeline.Pipeline : Class for creating a pipeline of
         transforms with a final estimator.
@@ -456,12 +453,8 @@ def make_pipeline(*steps, **kwargs):
     >>> from sklearn.preprocessing import StandardScaler
     >>> make_pipeline(StandardScaler(), GaussianNB(priors=None))
     ... # doctest: +NORMALIZE_WHITESPACE
-    Pipeline(memory=None,
-             steps=[('standardscaler',
-                     StandardScaler(copy=True, with_mean=True, with_std=True)),
-                    ('gaussiannb',
-                     GaussianNB(priors=None, var_smoothing=1e-09))],
-             verbose=False)
+    Pipeline(steps=[('standardscaler', StandardScaler()),
+                    ('gaussiannb', GaussianNB())])
     """
     memory = kwargs.pop("memory", None)
     verbose = kwargs.pop('verbose', False)

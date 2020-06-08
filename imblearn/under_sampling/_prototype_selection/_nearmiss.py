@@ -282,4 +282,10 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     def _more_tags(self):
-        return {"sample_indices": True}
+        return {
+            "sample_indices": True,
+            "_xfail_checks": {
+                "check_samplers_fit_resample":
+                "Fails for NearMiss-3 with less samples than expected"
+            }
+        }
