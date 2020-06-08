@@ -6,7 +6,6 @@ from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 
 from imblearn.base import BaseSampler
-from imblearn.utils import check_target_type
 
 from imblearn.utils.estimator_checks import check_target_type
 from imblearn.utils.estimator_checks import check_samplers_one_label
