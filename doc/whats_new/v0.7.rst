@@ -5,3 +5,17 @@ Version 0.7.0 (under development)
 
 Changelog
 ---------
+
+Changed models
+..............
+
+The following models might give some different results due to changes:
+
+- :class:`imblearn.ensemble.BalancedRandomForestClassifier`
+
+Bug fixes
+.........
+
+- Change the default value `min_samples_leaf` to be consistent with
+  scikit-learn.
+  :pr:`711` by :user:`zerolfx <zerolfx>`.
