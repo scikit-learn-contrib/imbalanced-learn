@@ -102,7 +102,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         random_state=None,
         estimator=None,
         voting="auto",
-        n_jobs="deprecatedxs",
+        n_jobs="deprecated",
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
