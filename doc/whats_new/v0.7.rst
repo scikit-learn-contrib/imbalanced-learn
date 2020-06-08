@@ -26,3 +26,14 @@ Bug fixes
 - Change the default value `min_samples_leaf` to be consistent with
   scikit-learn.
   :pr:`711` by :user:`zerolfx <zerolfx>`.
+
+Enhancements
+............
+
+- The classifier implemented in imbalanced-learn,
+  :class:`imblearn.ensemble.BalancedBaggingClassifier`,
+  :class:`imblearn.ensemble.BalancedRandomForestClassifier`,
+  :class:`imblearn.ensemble.EasyEnsembleClassifier`, and
+  :class:`imblearn.ensemble.RUSBoostClassifier`, accept `sampling_strategy`
+  with the same key than in `y` without the need of encoding `y` in advance.
+  :pr:`718` by :user:`Guillaume Lemaitre <glemaitre>`.
