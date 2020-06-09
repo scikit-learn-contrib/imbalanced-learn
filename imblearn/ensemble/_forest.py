@@ -25,6 +25,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
+from sklearn.utils.validation import _check_sample_weight
 
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
@@ -32,6 +33,7 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import check_sampling_strategy
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -301,7 +303,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         criterion="gini",
         max_depth=None,
         min_samples_split=2,
-        min_samples_leaf=2,
+        min_samples_leaf=1,
         min_weight_fraction_leaf=0.0,
         max_features="auto",
         max_leaf_nodes=None,
@@ -363,7 +365,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self.base_estimator_ = clone(default)
 
         self.base_sampler_ = RandomUnderSampler(
-            sampling_strategy=self.sampling_strategy,
+            sampling_strategy=self._sampling_strategy,
             replacement=self.replacement,
         )
 
@@ -412,10 +414,15 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         """
 
         # Validate or convert input data
-        X = check_array(X, accept_sparse="csc", dtype=DTYPE)
-        y = check_array(y, accept_sparse="csc", ensure_2d=False, dtype=None)
+        if issparse(y):
+            raise ValueError(
+                "sparse multilabel-indicator for y is not supported."
+            )
+        X, y = self._validate_data(X, y, multi_output=True,
+                                   accept_sparse="csc", dtype=DTYPE)
         if sample_weight is not None:
-            sample_weight = check_array(sample_weight, ensure_2d=False)
+            sample_weight = _check_sample_weight(sample_weight, X)
+
         if issparse(X):
             # Pre-sort indices to avoid that each individual tree of the
             # ensemble sorts the indices.
@@ -441,10 +448,20 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         self.n_outputs_ = y.shape[1]
 
-        y, expanded_class_weight = self._validate_y_class_weight(y)
+        y_encoded, expanded_class_weight = self._validate_y_class_weight(y)
 
         if getattr(y, "dtype", None) != DOUBLE or not y.flags.contiguous:
-            y = np.ascontiguousarray(y, dtype=DOUBLE)
+            y_encoded = np.ascontiguousarray(y_encoded, dtype=DOUBLE)
+
+        if isinstance(self.sampling_strategy, dict):
+            self._sampling_strategy = {
+                np.where(self.classes_[0] == key)[0][0]: value
+                for key, value in check_sampling_strategy(
+                    self.sampling_strategy, y, 'under-sampling',
+                ).items()
+            }
+        else:
+            self._sampling_strategy = self.sampling_strategy
 
         if expanded_class_weight is not None:
             if sample_weight is not None:
@@ -517,7 +534,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                     t,
                     self,
                     X,
-                    y,
+                    y_encoded,
                     sample_weight,
                     i,
                     len(trees),
@@ -542,7 +559,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             )
 
         if self.oob_score:
-            self._set_oob_score(X, y)
+            self._set_oob_score(X, y_encoded)
 
         # Decapsulate classes_ attributes
         if hasattr(self, "classes_") and self.n_outputs_ == 1:

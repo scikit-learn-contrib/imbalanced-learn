@@ -230,6 +230,9 @@ something specific for the categorical features. In fact, the categories of a
 new generated sample are decided by picking the most frequent category of the
 nearest neighbors present during the generation.
 
+.. warning::
+   Be aware that SMOTE-NC is not designed to work with only categorical data.
+
 The other SMOTE variants and ADASYN differ from each other by selecting the
 samples :math:`x_i` ahead of generating the new samples.
 

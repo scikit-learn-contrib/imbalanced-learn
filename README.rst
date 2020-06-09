@@ -4,16 +4,13 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Azure|_ |Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_
+|Azure|_ |Travis|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_
 
 .. |Azure| image:: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_apis/build/status/scikit-learn-contrib.imbalanced-learn?branchName=master
 .. _Azure: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_build
 
 .. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn.svg?branch=master
 .. _Travis: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn
-
-.. |AppVeyor| image:: https://ci.appveyor.com/api/projects/status/c8w4xb7re4euntvi/branch/master?svg=true
-.. _AppVeyor: https://ci.appveyor.com/project/glemaitre/imbalanced-learn/history
 
 .. |Codecov| image:: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn/branch/master/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn
@@ -55,8 +52,8 @@ Dependencies
 imbalanced-learn is tested to work under Python 3.6+.
 The dependency requirements are based on the last scikit-learn release:
 
-* scipy(>=0.17)
-* numpy(>=1.11)
+* scipy(>=0.19.1)
+* numpy(>=1.13.3)
 * scikit-learn(>=0.22)
 * joblib(>=0.11)
 * keras 2 (optional)

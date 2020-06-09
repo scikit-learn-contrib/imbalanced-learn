@@ -13,11 +13,7 @@ cache:
   - $HOME/.cache/pip
   - $HOME/.cache/pip
   - $HOME/download
-addons:
-  apt:
-    packages:
-      - python3-numpy
-      - python3-scipy
+
 env:
   global:
     # Directory where tests are run from
@@ -28,19 +24,7 @@ env:
 
 matrix:
   include:
-    # This environment tests the using anaconda
-    # Ubuntu 14.04 environment
-    - env: DISTRIB="ubuntu" TEST_DOC="true" TEST_NUMPYDOC="false"
-    # Latest release
-    - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
-           OPTIONAL_DEPS="keras" TEST_DOC="true" TEST_NUMPYDOC="false"
-    - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
-           OPTIONAL_DEPS="tensorflow" TEST_DOC="true" TEST_NUMPYDOC="false"
-    - env: DISTRIB="conda" PYTHON_VERSION="3.7"
-           NUMPY_VERSION="*" SCIPY_VERSION="*" SKLEARN_VERSION="master"
-           OPTIONAL_DEPS="false" TEST_DOC="false" TEST_NUMPYDOC="true"
+    - env: PYTHON_VERSION="3.8" TEST_DOC="true" TEST_NUMPYDOC="true"
 
 install: source build_tools/travis/install.sh
 script: bash build_tools/travis/test_script.sh

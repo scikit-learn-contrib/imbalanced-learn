@@ -7,7 +7,6 @@
 from collections import Counter
 
 import numpy as np
-from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 
@@ -15,7 +14,6 @@ from .base import BaseOverSampler
 from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
-
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
@@ -75,27 +73,10 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         self.random_state = random_state
 
     def _check_X_y(self, X, y):
-        if hasattr(X, "loc"):
-            # store information to build dataframe
-            self._X_columns = X.columns
-            self._X_dtypes = X.dtypes
-        else:
-            self._X_columns = None
-            self._X_dtypes = None
-
-        if hasattr(y, "loc"):
-            # store information to build a series
-            self._y_name = y.name
-            self._y_dtype = y.dtype
-        else:
-            self._y_name = None
-            self._y_dtype = None
-
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X = check_array(X, accept_sparse=["csr", "csc"], dtype=None,
-                        force_all_finite=False)
-        y = check_array(
-            y, accept_sparse=["csr", "csc"], dtype=None, ensure_2d=False
+        X, y = self._validate_data(
+            X, y, reset=True, accept_sparse=["csr", "csc"], dtype=None,
+            force_all_finite=False,
         )
         return X, y, binarize_y
 

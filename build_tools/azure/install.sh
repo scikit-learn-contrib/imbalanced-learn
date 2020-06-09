@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -x
 
 UNAMESTR=`uname`
 
@@ -31,7 +32,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     fi
 
     make_conda $TO_INSTALL
-    python -m pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
+    python -m pip install scikit-learn
 
     TO_INSTALL=""
 
@@ -70,20 +71,18 @@ if [[ "$DISTRIB" == "conda" ]]; then
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
     sudo add-apt-repository --remove ppa:ubuntu-toolchain-r/test
     sudo apt-get update
-    sudo apt-get install python3-scipy libatlas3-base libatlas-base-dev libatlas-dev python3-virtualenv git
+    sudo apt-get install python3-scipy libatlas3-base libatlas-base-dev python3-virtualenv git
     python3 -m virtualenv --system-site-packages --python=python3 $VIRTUALENV
     source $VIRTUALENV/bin/activate
-    python -m pip install pandas
     python -m pip install pytest==$PYTEST_VERSION pytest-cov joblib cython
-    python -m pip install git+https://github.com/scikit-learn/scikit-learn.git
+    python -m pip install scikit-learn
 elif [[ "$DISTRIB" == "ubuntu-32" ]]; then
     apt-get update
-    apt-get install -y python3-dev python3-scipy libatlas3-base libatlas-base-dev libatlas-dev python3-virtualenv git
+    apt-get install -y python3-dev python3-scipy libatlas3-base libatlas-base-dev python3-virtualenv git
     python3 -m virtualenv --system-site-packages --python=python3 $VIRTUALENV
     source $VIRTUALENV/bin/activate
-    python -m pip install pandas
     python -m pip install pytest==$PYTEST_VERSION pytest-cov joblib cython
-    python -m pip install git+https://github.com/scikit-learn/scikit-learn.git
+    python -m pip install scikit-learn
 elif [[ "$DISTRIB" == "conda-pip-latest" ]]; then
     # Since conda main channel usually lacks behind on the latest releases,
     # we use pypi to test against the latest releases of the dependencies.
@@ -91,7 +90,7 @@ elif [[ "$DISTRIB" == "conda-pip-latest" ]]; then
     make_conda "python=$PYTHON_VERSION"
     python -m pip install -U pip
     python -m pip install numpy scipy joblib cython
-    python -m pip install git+https://github.com/scikit-learn/scikit-learn.git
+    python -m pip install scikit-learn
     python -m pip install pytest==$PYTEST_VERSION pytest-cov pytest-xdist
     python -m pip install pandas
 fi

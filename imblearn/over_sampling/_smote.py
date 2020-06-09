@@ -20,7 +20,6 @@ from sklearn.svm import SVC
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 from sklearn.utils import check_array
-from sklearn.utils import check_X_y
 from sklearn.utils.sparsefuncs_fast import csr_mean_variance_axis0
 from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
 
@@ -743,10 +742,10 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 #     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
 #     random_state=_random_state_docstring)
 class SMOTENC(SMOTE):
-    """Synthetic Minority Over-sampling Technique for Nominal and Continuous
-    (SMOTE-NC).
+    """Synthetic Minority Over-sampling Technique for Nominal and Continuous.
 
     Unlike :class:`SMOTE`, SMOTE-NC for dataset containing continuous and
+    categorical features. However, it is not designed to work with only
     categorical features.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
@@ -871,6 +870,8 @@ class SMOTENC(SMOTE):
     Resampled dataset samples per class Counter({0: 900, 1: 900})
     """
 
+    _required_parameters = ["categorical_features"]
+
     def __init__(
         self,
         categorical_features,
@@ -890,24 +891,10 @@ class SMOTENC(SMOTE):
         """Overwrite the checking to let pass some string for categorical
         features.
         """
-        if hasattr(X, "loc"):
-            # store information to build dataframe
-            self._X_columns = X.columns
-            self._X_dtypes = X.dtypes
-        else:
-            self._X_columns = None
-            self._X_dtypes = None
-
-        if hasattr(y, "loc"):
-            # store information to build a series
-            self._y_name = y.name
-            self._y_dtype = y.dtype
-        else:
-            self._y_name = None
-            self._y_dtype = None
-
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"], dtype=None)
+        X, y = self._validate_data(
+            X, y, reset=True, dtype=None, accept_sparse=["csr", "csc"]
+        )
         return X, y, binarize_y
 
     def _validate_estimator(self):
@@ -930,6 +917,12 @@ class SMOTENC(SMOTE):
         self.continuous_features_ = np.setdiff1d(
             np.arange(self.n_features_), self.categorical_features_
         )
+
+        if self.categorical_features_.size == self.n_features_in_:
+            raise ValueError(
+                "SMOTE-NC is not designed to work only with categorical "
+                "features. It requires some numerical features."
+            )
 
     def _fit_resample(self, X, y):
         self.n_features_ = X.shape[1]

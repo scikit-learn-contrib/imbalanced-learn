@@ -116,7 +116,8 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
         X, y, random_state=42, stratify=y
     )
     est = BalancedRandomForestClassifier(
-        oob_score=True, random_state=0, n_estimators=1000
+        oob_score=True, random_state=0, n_estimators=1000,
+        min_samples_leaf=2,
     )
 
     est.fit(X_train, y_train)
