@@ -17,6 +17,7 @@ from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
+from ...utils._validation import _deprecate_positional_args
 
 SEL_KIND = ("all", "mode")
 
@@ -99,12 +100,10 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
+    @_deprecate_positional_args
     def __init__(
-        self,
-        sampling_strategy="auto",
-        n_neighbors=3,
-        kind_sel="all",
-        n_jobs=None,
+        self, *, sampling_strategy="auto", n_neighbors=3, kind_sel="all",
+        n_jobs=None
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
@@ -249,8 +248,10 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         n_neighbors=3,
         max_iter=100,
@@ -426,8 +427,10 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         n_neighbors=3,
         kind_sel="all",

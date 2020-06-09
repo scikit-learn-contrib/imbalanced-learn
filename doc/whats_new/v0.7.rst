@@ -19,6 +19,9 @@ Maintenance
 - Remove `FutureWarning` issued by `scikit-learn` 0.23.
   :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Impose keywords only argument as in `scikit-learn`.
+  :pr:`721` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Changed models
 ..............
 
@@ -37,6 +40,14 @@ Bug fixes
   :class:`imblearn.metrics.make_index_balanced_accuracy`. The function was
   unusable.
   :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Raise a proper error message when only numerical or categorical features
+  are given in :class:`imblearn.over_sampling.SMOTENC`.
+  :pr:`720` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix a bug when the median of the standard deviation is null in
+  :class:`imblearn.over_sampling.SMOTENC`.
+  :pr:`675` by :user:`bganglia <bganglia>`.
 
 Enhancements
 ............
@@ -59,3 +70,7 @@ Deprecation
   :class:`imblearn.under_sampling.ClusterCentroids` since it was used by
   :class:`sklearn.cluster.KMeans` which deprecated it.
   :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Deprecation of passing keyword argument by position similarly to
+  `scikit-learn`.
+  :pr:`721` by :user:`Guillaume lemaitre <glemaitre>`.

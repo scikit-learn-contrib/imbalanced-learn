@@ -5,6 +5,8 @@
 
 import warnings
 from collections import OrderedDict
+from functools import wraps
+from inspect import signature, Parameter
 from numbers import Integral, Real
 
 import numpy as np
@@ -601,3 +603,41 @@ SAMPLING_TARGET_KIND = {
     "all": _sampling_strategy_all,
     "auto": _sampling_strategy_auto,
 }
+
+
+def _deprecate_positional_args(f):
+    """Decorator for methods that issues warnings for positional arguments
+
+    Using the keyword-only argument syntax in pep 3102, arguments after the
+    * will issue a warning when passed as a positional argument.
+
+    Parameters
+    ----------
+    f : function
+        function to check arguments on
+    """
+    sig = signature(f)
+    kwonly_args = []
+    all_args = []
+
+    for name, param in sig.parameters.items():
+        if param.kind == Parameter.POSITIONAL_OR_KEYWORD:
+            all_args.append(name)
+        elif param.kind == Parameter.KEYWORD_ONLY:
+            kwonly_args.append(name)
+
+    @wraps(f)
+    def inner_f(*args, **kwargs):
+        extra_args = len(args) - len(all_args)
+        if extra_args > 0:
+            # ignore first 'self' argument for instance methods
+            args_msg = ['{}={}'.format(name, arg)
+                        for name, arg in zip(kwonly_args[:extra_args],
+                                             args[-extra_args:])]
+            warnings.warn("Pass {} as keyword args. From version 0.9 "
+                          "passing these as positional arguments will "
+                          "result in an error".format(", ".join(args_msg)),
+                          FutureWarning)
+        kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
+        return f(**kwargs)
+    return inner_f

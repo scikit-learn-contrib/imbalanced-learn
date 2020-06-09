@@ -22,6 +22,7 @@ from ..base import BaseUnderSampler
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
 from ...utils._docstring import _random_state_docstring
+from ...utils._validation import _deprecate_positional_args
 
 
 @Substitution(
@@ -97,8 +98,10 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     Resampled dataset shape Counter({{1: 5..., 0: 100}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         estimator=None,
         sampling_strategy="auto",
         random_state=None,

@@ -15,6 +15,7 @@ from ..base import BaseUnderSampler
 from ...utils import check_neighbors_object
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
+from ...utils._validation import _deprecate_positional_args
 
 
 @Substitution(
@@ -93,8 +94,10 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 100, 1: 100}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         version=1,
         n_neighbors=3,

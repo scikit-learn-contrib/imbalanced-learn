@@ -57,6 +57,8 @@ from sklearn.datasets import get_data_home
 from sklearn.utils import Bunch
 from sklearn.utils import check_random_state
 
+from ..utils._validation import _deprecate_positional_args
+
 URL = (
     "https://zenodo.org/record/61452/files/"
     "benchmark-imbalanced-learn.tar.gz"
@@ -101,7 +103,9 @@ for v, k in enumerate(MAP_NAME_ID_KEYS):
     MAP_ID_NAME[v + 1] = k
 
 
+@_deprecate_positional_args
 def fetch_datasets(
+    *,
     data_home=None,
     filter_data=None,
     download_if_missing=True,

@@ -20,7 +20,6 @@ from sklearn.svm import SVC
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 from sklearn.utils import check_array
-from sklearn.utils import check_X_y
 from sklearn.utils.sparsefuncs_fast import csr_mean_variance_axis0
 from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
 
@@ -31,6 +30,7 @@ from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import _deprecate_positional_args
 
 
 class BaseSMOTE(BaseOverSampler):
@@ -55,7 +55,6 @@ class BaseSMOTE(BaseOverSampler):
         self.nn_k_ = check_neighbors_object(
             "k_neighbors", self.k_neighbors, additional_neighbor=1
         )
-        self.nn_k_.set_params(**{"n_jobs": self.n_jobs})
 
     def _make_samples(
         self, X, y_dtype, y_type, nn_data, nn_num, n_samples, step_size=1.0
@@ -298,8 +297,10 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
@@ -496,8 +497,10 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
@@ -567,16 +570,12 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
             n_generated_samples = int(fractions * (n_samples + 1))
             if np.count_nonzero(danger_bool) > 0:
                 nns = self.nn_k_.kneighbors(
-                    _safe_indexing(
-                        support_vector, np.flatnonzero(danger_bool)
-                    ),
+                    _safe_indexing(support_vector, np.flatnonzero(danger_bool)),
                     return_distance=False,
                 )[:, 1:]
 
                 X_new_1, y_new_1 = self._make_samples(
-                    _safe_indexing(
-                        support_vector, np.flatnonzero(danger_bool)
-                    ),
+                    _safe_indexing(support_vector, np.flatnonzero(danger_bool)),
                     y.dtype,
                     class_sample,
                     X_class,
@@ -587,16 +586,12 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
 
             if np.count_nonzero(safety_bool) > 0:
                 nns = self.nn_k_.kneighbors(
-                    _safe_indexing(
-                        support_vector, np.flatnonzero(safety_bool)
-                    ),
+                    _safe_indexing(support_vector, np.flatnonzero(safety_bool)),
                     return_distance=False,
                 )[:, 1:]
 
                 X_new_2, y_new_2 = self._make_samples(
-                    _safe_indexing(
-                        support_vector, np.flatnonzero(safety_bool)
-                    ),
+                    _safe_indexing(support_vector, np.flatnonzero(safety_bool)),
                     y.dtype,
                     class_sample,
                     X_class,
@@ -705,8 +700,10 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
@@ -755,6 +752,7 @@ class SMOTENC(SMOTE):
     """Synthetic Minority Over-sampling Technique for Nominal and Continuous.
 
     Unlike :class:`SMOTE`, SMOTE-NC for dataset containing continuous and
+    categorical features. However, it is not designed to work with only
     categorical features.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
@@ -881,9 +879,11 @@ class SMOTENC(SMOTE):
 
     _required_parameters = ["categorical_features"]
 
+    @_deprecate_positional_args
     def __init__(
         self,
         categorical_features,
+        *,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
@@ -901,7 +901,9 @@ class SMOTENC(SMOTE):
         features.
         """
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = check_X_y(X, y, accept_sparse=["csr", "csc"], dtype=None)
+        X, y = self._validate_data(
+            X, y, reset=True, dtype=None, accept_sparse=["csr", "csc"]
+        )
         return X, y, binarize_y
 
     def _validate_estimator(self):
@@ -924,6 +926,12 @@ class SMOTENC(SMOTE):
         self.continuous_features_ = np.setdiff1d(
             np.arange(self.n_features_), self.categorical_features_
         )
+
+        if self.categorical_features_.size == self.n_features_in_:
+            raise ValueError(
+                "SMOTE-NC is not designed to work only with categorical "
+                "features. It requires some numerical features."
+            )
 
     def _fit_resample(self, X, y):
         self.n_features_ = X.shape[1]
@@ -956,6 +964,7 @@ class SMOTENC(SMOTE):
         self.ohe_ = OneHotEncoder(
             sparse=True, handle_unknown="ignore", dtype=dtype_ohe
         )
+
         # the input of the OneHotEncoder needs to be dense
         X_ohe = self.ohe_.fit_transform(
             X_categorical.toarray()
@@ -967,6 +976,15 @@ class SMOTENC(SMOTE):
         # median of the standard deviation. It will ensure that whenever
         # distance is computed between 2 samples, the difference will be equal
         # to the median of the standard deviation as in the original paper.
+
+        # In the edge case where the median of the std is equal to 0, the 1s
+        # entries will be also nullified. In this case, we store the original
+        # categorical encoding which will be later used for inversing the OHE
+        if math.isclose(self.median_std_, 0):
+            self._X_categorical_minority_encoded = _safe_indexing(
+                X_ohe.toarray(), np.flatnonzero(y == class_minority)
+            )
+
         X_ohe.data = (
             np.ones_like(X_ohe.data, dtype=X_ohe.dtype) * self.median_std_ / 2
         )
@@ -975,7 +993,7 @@ class SMOTENC(SMOTE):
         X_resampled, y_resampled = super()._fit_resample(X_encoded, y)
 
         # reverse the encoding of the categorical features
-        X_res_cat = X_resampled[:, self.continuous_features_.size :]
+        X_res_cat = X_resampled[:, self.continuous_features_.size:]
         X_res_cat.data = np.ones_like(X_res_cat.data)
         X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
 
@@ -1023,19 +1041,26 @@ class SMOTENC(SMOTE):
             X, nn_data, nn_num, rows, cols, steps
         )
         # change in sparsity structure more efficient with LIL than CSR
-        X_new = X_new.tolil() if sparse.issparse(X_new) else X_new
+        X_new = (X_new.tolil() if sparse.issparse(X_new) else X_new)
 
         # convert to dense array since scipy.sparse doesn't handle 3D
-        nn_data = nn_data.toarray() if sparse.issparse(nn_data) else nn_data
+        nn_data = (nn_data.toarray() if sparse.issparse(nn_data) else nn_data)
+
+        # In the case that the median std was equal to zeros, we have to
+        # create non-null entry based on the encoded of OHE
+        if math.isclose(self.median_std_, 0):
+            nn_data[:, self.continuous_features_.size:] = (
+                self._X_categorical_minority_encoded
+            )
+
         all_neighbors = nn_data[nn_num[rows]]
 
         categories_size = [self.continuous_features_.size] + [
             cat.size for cat in self.ohe_.categories_
         ]
 
-        for start_idx, end_idx in zip(
-            np.cumsum(categories_size)[:-1], np.cumsum(categories_size)[1:]
-        ):
+        for start_idx, end_idx in zip(np.cumsum(categories_size)[:-1],
+                                      np.cumsum(categories_size)[1:]):
             col_maxs = all_neighbors[:, :, start_idx:end_idx].sum(axis=1)
             # tie breaking argmax
             is_max = np.isclose(col_maxs, col_maxs.max(axis=1, keepdims=True))
@@ -1143,8 +1168,10 @@ class KMeansSMOTE(BaseSMOTE):
     More 0 samples: True
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=2,

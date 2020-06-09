@@ -17,6 +17,7 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type, check_sampling_strategy
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import _deprecate_positional_args
 from ..pipeline import Pipeline
 
 MAX_INT = np.iinfo(np.int32).max
@@ -125,10 +126,12 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
      [  2 225]]
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
         n_estimators=10,
         base_estimator=None,
+        *,
         warm_start=False,
         sampling_strategy="auto",
         replacement=False,

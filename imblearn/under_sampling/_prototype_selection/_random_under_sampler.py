@@ -13,6 +13,7 @@ from ..base import BaseUnderSampler
 from ...utils import check_target_type
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
+from ...utils._validation import _deprecate_positional_args
 
 
 @Substitution(
@@ -71,8 +72,9 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 100, 1: 100}})
     """
 
+    @_deprecate_positional_args
     def __init__(
-        self, sampling_strategy="auto", random_state=None, replacement=False
+        self, *, sampling_strategy="auto", random_state=None, replacement=False
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state

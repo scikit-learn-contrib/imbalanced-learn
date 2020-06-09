@@ -20,6 +20,7 @@ from ..base import BaseUnderSampler
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
 from ...utils._docstring import _random_state_docstring
+from ...utils._validation import _deprecate_positional_args
 
 VOTING_KIND = ("auto", "hard", "soft")
 
@@ -96,8 +97,10 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{...}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         estimator=None,
