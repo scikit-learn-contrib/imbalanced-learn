@@ -20,7 +20,7 @@ Maintenance
   :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - Impose keywords only argument as in `scikit-learn`.
-  :pr:`xxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`721` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Changed models
 ..............
@@ -69,4 +69,4 @@ Deprecation
 
 - Deprecation of passing keyword argument by position similarly to
   `scikit-learn`.
-  :pr:`xxx` by :user:`Guillaume lemaitre <glemaitre>`.
+  :pr:`721` by :user:`Guillaume lemaitre <glemaitre>`.
