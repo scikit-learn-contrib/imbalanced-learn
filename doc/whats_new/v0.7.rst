@@ -40,7 +40,7 @@ Bug fixes
 
 - Raise a proper error message when only numerical or categorical features
   are given in :class:`imblearn.over_sampling.SMOTENC`.
-  :pr:`xxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`720` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Enhancements
 ............
