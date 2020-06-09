@@ -12,6 +12,7 @@ from ..under_sampling import RandomUnderSampler
 from ..pipeline import make_pipeline
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import _deprecate_positional_args
 
 
 @Substitution(
@@ -120,9 +121,11 @@ class RUSBoostClassifier(AdaBoostClassifier):
     array([...])
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
         base_estimator=None,
+        *,
         n_estimators=50,
         learning_rate=1.0,
         algorithm="SAMME.R",

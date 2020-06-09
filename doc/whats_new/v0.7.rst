@@ -19,6 +19,9 @@ Maintenance
 - Remove `FutureWarning` issued by `scikit-learn` 0.23.
   :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Impose keywords only argument as in `scikit-learn`.
+  :pr:`xxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Changed models
 ..............
 
@@ -63,3 +66,7 @@ Deprecation
   :class:`imblearn.under_sampling.ClusterCentroids` since it was used by
   :class:`sklearn.cluster.KMeans` which deprecated it.
   :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Deprecation of passing keyword argument by position similarly to
+  `scikit-learn`.
+  :pr:`xxx` by :user:`Guillaume lemaitre <glemaitre>`.

@@ -16,6 +16,7 @@ from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import _deprecate_positional_args
 
 
 @Substitution(
@@ -85,8 +86,10 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
 
     _sampling_type = "over-sampling"
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         smote=None,

@@ -30,6 +30,7 @@ from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import _deprecate_positional_args
 
 
 class BaseSMOTE(BaseOverSampler):
@@ -297,8 +298,10 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
@@ -495,8 +498,10 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
@@ -696,8 +701,10 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
@@ -873,9 +880,11 @@ class SMOTENC(SMOTE):
 
     _required_parameters = ["categorical_features"]
 
+    @_deprecate_positional_args
     def __init__(
         self,
         categorical_features,
+        *,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
@@ -1142,8 +1151,10 @@ class KMeansSMOTE(BaseSMOTE):
     More 0 samples: True
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=2,

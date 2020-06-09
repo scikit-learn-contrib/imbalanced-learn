@@ -34,6 +34,7 @@ from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
 from ..utils._validation import check_sampling_strategy
+from ..utils._validation import _deprecate_positional_args
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -297,9 +298,11 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     [1]
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
         n_estimators=100,
+        *,
         criterion="gini",
         max_depth=None,
         min_samples_split=2,

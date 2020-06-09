@@ -51,6 +51,7 @@ from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 from ..tensorflow import balanced_batch_generator as tf_bbg
+from ..utils._validation import _deprecate_positional_args
 
 
 class BalancedBatchGenerator(*ParentClass):
@@ -130,10 +131,12 @@ class BalancedBatchGenerator(*ParentClass):
     # flag for keras sequence duck-typing
     use_sequence_api = True
 
+    @_deprecate_positional_args
     def __init__(
         self,
         X,
         y,
+        *,
         sample_weight=None,
         sampler=None,
         batch_size=32,
@@ -199,9 +202,11 @@ class BalancedBatchGenerator(*ParentClass):
 
 
 @Substitution(random_state=_random_state_docstring)
+@_deprecate_positional_args
 def balanced_batch_generator(
     X,
     y,
+    *,
     sample_weight=None,
     sampler=None,
     batch_size=32,

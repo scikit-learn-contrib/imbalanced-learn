@@ -14,6 +14,7 @@ from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
 from .utils._validation import ArraysTransformer
+from .utils._validation import _deprecate_positional_args
 
 
 class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
@@ -213,7 +214,8 @@ class FunctionSampler(BaseSampler):
 
     _sampling_type = "bypass"
 
-    def __init__(self, func=None, accept_sparse=True, kw_args=None,
+    @_deprecate_positional_args
+    def __init__(self, *, func=None, accept_sparse=True, kw_args=None,
                  validate=True):
         super().__init__()
         self.func = func

@@ -30,10 +30,14 @@ try:
 except ImportError:
     from sklearn.externals.funcsigs import signature
 
+from ..utils._validation import _deprecate_positional_args
 
+
+@_deprecate_positional_args
 def sensitivity_specificity_support(
     y_true,
     y_pred,
+    *,
     labels=None,
     pos_label=1,
     average=None,
@@ -279,9 +283,11 @@ def sensitivity_specificity_support(
     return sensitivity, specificity, true_sum
 
 
+@_deprecate_positional_args
 def sensitivity_score(
     y_true,
     y_pred,
+    *,
     labels=None,
     pos_label=1,
     average="binary",
@@ -382,9 +388,11 @@ def sensitivity_score(
     return s
 
 
+@_deprecate_positional_args
 def specificity_score(
     y_true,
     y_pred,
+    *,
     labels=None,
     pos_label=1,
     average="binary",
@@ -485,9 +493,11 @@ def specificity_score(
     return s
 
 
+@_deprecate_positional_args
 def geometric_mean_score(
     y_true,
     y_pred,
+    *,
     labels=None,
     pos_label=1,
     average="multiclass",
@@ -675,7 +685,8 @@ def geometric_mean_score(
         return gmean
 
 
-def make_index_balanced_accuracy(alpha=0.1, squared=True):
+@_deprecate_positional_args
+def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
     """Balance any scoring function using the index balanced accuracy
 
     This factory function wraps scoring function to express it as the
@@ -785,9 +796,11 @@ def make_index_balanced_accuracy(alpha=0.1, squared=True):
     return decorate
 
 
+@_deprecate_positional_args
 def classification_report_imbalanced(
     y_true,
     y_pred,
+    *,
     labels=None,
     target_names=None,
     sample_weight=None,
