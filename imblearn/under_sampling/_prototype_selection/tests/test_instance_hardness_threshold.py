@@ -84,6 +84,7 @@ def test_iht_fit_resample_wrong_class_obj():
 
 def test_iht_reproducibility():
     from sklearn.datasets import load_digits
+
     X_digits, y_digits = load_digits(return_X_y=True)
     idx_sampled = []
     for seed in range(5):

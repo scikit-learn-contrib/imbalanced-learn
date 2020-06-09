@@ -39,7 +39,7 @@ def test_ros_init():
     assert ros.random_state == RND_SEED
 
 
-@pytest.mark.parametrize("as_frame", [True, False], ids=['dataframe', 'array'])
+@pytest.mark.parametrize("as_frame", [True, False], ids=["dataframe", "array"])
 def test_ros_fit_resample(as_frame):
     if as_frame:
         pd = pytest.importorskip("pandas")

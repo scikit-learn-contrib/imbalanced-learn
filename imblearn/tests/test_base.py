@@ -93,4 +93,4 @@ def test_function_sampler_validate():
     pipeline = make_pipeline(sampler, LinearRegression())
     y_pred = pipeline.fit(X, y).predict(X)
 
-    assert type_of_target(y_pred) == 'continuous'
+    assert type_of_target(y_pred) == "continuous"

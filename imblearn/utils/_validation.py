@@ -53,10 +53,12 @@ class ArraysTransformer:
             ret = array.tolist()
         elif type_ == "dataframe":
             import pandas as pd
+
             ret = pd.DataFrame(array, columns=props["columns"])
             ret = ret.astype(props["dtypes"])
         elif type_ == "series":
             import pandas as pd
+
             ret = pd.Series(array, dtype=props["dtypes"], name=props["name"])
         else:
             ret = array

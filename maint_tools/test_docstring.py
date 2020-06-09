@@ -10,8 +10,10 @@ numpydoc_validation = pytest.importorskip("numpydoc.validate")
 # List of whitelisted modules and methods; regexp are supported.
 # These docstrings will fail because they are inheriting from scikit-learn
 DOCSTRING_WHITELIST = [
-    "ADASYN$", "ADASYN.",
-    "AllKNN$", "AllKNN.",
+    "ADASYN$",
+    "ADASYN.",
+    "AllKNN$",
+    "AllKNN.",
     "BalancedBaggingClassifier$",
     "BalancedBaggingClassifier.estimators_samples_",
     "BalancedBaggingClassifier.fit",
@@ -26,8 +28,10 @@ DOCSTRING_WHITELIST = [
     "BalancedRandomForestClassifier.predict$",
     "BalancedRandomForestClassifier.score",
     "BalancedRandomForestClassifier.set_params",
-    "ClusterCentroids$", "ClusterCentroids.",
-    "CondensedNearestNeighbour$", "CondensedNearestNeighbour.",
+    "ClusterCentroids$",
+    "ClusterCentroids.",
+    "CondensedNearestNeighbour$",
+    "CondensedNearestNeighbour.",
     "EasyEnsembleClassifier$",
     "EasyEnsembleClassifier.estimators_samples_",
     "EasyEnsembleClassifier.fit",
@@ -35,22 +39,33 @@ DOCSTRING_WHITELIST = [
     "EasyEnsembleClassifier.predict",
     "EasyEnsembleClassifier.score",
     "EasyEnsembleClassifier.set_params",
-    "EditedNearestNeighbours$", "EditedNearestNeighbours.",
-    "FunctionSampler$", "FunctionSampler.",
-    "InstanceHardnessThreshold$", "InstanceHardnessThreshold.",
-    "SMOTE$", "SMOTE.",
-    "NearMiss$", "NearMiss.",
-    "NeighbourhoodCleaningRule$", "NeighbourhoodCleaningRule.",
-    "OneSidedSelection$", "OneSidedSelection.",
+    "EditedNearestNeighbours$",
+    "EditedNearestNeighbours.",
+    "FunctionSampler$",
+    "FunctionSampler.",
+    "InstanceHardnessThreshold$",
+    "InstanceHardnessThreshold.",
+    "SMOTE$",
+    "SMOTE.",
+    "NearMiss$",
+    "NearMiss.",
+    "NeighbourhoodCleaningRule$",
+    "NeighbourhoodCleaningRule.",
+    "OneSidedSelection$",
+    "OneSidedSelection.",
     "Pipeline$",
     "Pipeline.fit$",
     "Pipeline.fit_transform",
     "Pipeline.fit_resample",
     "Pipeline.fit_predict",
-    "RUSBoostClassifier$", "RUSBoostClassifier.",
-    "RandomOverSampler$", "RandomOverSampler.",
-    "RandomUnderSampler$", "RandomUnderSampler.",
-    "TomekLinks$", "TomekLinks",
+    "RUSBoostClassifier$",
+    "RUSBoostClassifier.",
+    "RandomOverSampler$",
+    "RandomOverSampler.",
+    "RandomUnderSampler$",
+    "RandomUnderSampler.",
+    "TomekLinks$",
+    "TomekLinks",
 ]
 
 
@@ -65,8 +80,9 @@ def get_all_methods():
             if name.startswith("_"):
                 continue
             method_obj = getattr(Estimator, name)
-            if (hasattr(method_obj, '__call__')
-                    or isinstance(method_obj, property)):
+            if hasattr(method_obj, "__call__") or isinstance(
+                method_obj, property
+            ):
                 methods.append(name)
         methods.append(None)
 
@@ -137,8 +153,8 @@ def repr_errors(res, estimator=None, method: Optional[str] = None) -> str:
         except TypeError:
             # In particular we can't parse the signature of properties
             obj_signature = (
-                    "\nParsing of the method signature failed, "
-                    "possibly because this is a property."
+                "\nParsing of the method signature failed, "
+                "possibly because this is a property."
             )
 
         obj_name = estimator.__name__ + "." + method

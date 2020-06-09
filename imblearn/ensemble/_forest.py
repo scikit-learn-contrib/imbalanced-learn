@@ -49,7 +49,7 @@ def _local_parallel_build_trees(
     n_trees,
     verbose=0,
     class_weight=None,
-    n_samples_bootstrap=None
+    n_samples_bootstrap=None,
 ):
     # resample before to fit the tree
     X_resampled, y_resampled = sampler.fit_resample(X, y)
@@ -418,8 +418,9 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             raise ValueError(
                 "sparse multilabel-indicator for y is not supported."
             )
-        X, y = self._validate_data(X, y, multi_output=True,
-                                   accept_sparse="csc", dtype=DTYPE)
+        X, y = self._validate_data(
+            X, y, multi_output=True, accept_sparse="csc", dtype=DTYPE
+        )
         if sample_weight is not None:
             sample_weight = _check_sample_weight(sample_weight, X)
 
@@ -457,7 +458,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self._sampling_strategy = {
                 np.where(self.classes_[0] == key)[0][0]: value
                 for key, value in check_sampling_strategy(
-                    self.sampling_strategy, y, 'under-sampling',
+                    self.sampling_strategy, y, "under-sampling",
                 ).items()
             }
         else:
@@ -471,8 +472,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         # Get bootstrap sample size
         n_samples_bootstrap = _get_n_samples_bootstrap(
-            n_samples=X.shape[0],
-            max_samples=self.max_samples
+            n_samples=X.shape[0], max_samples=self.max_samples
         )
 
         # Check parameters
@@ -570,15 +570,17 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     def _set_oob_score(self, X, y):
         """Compute out-of-bag score."""
-        X = check_array(X, dtype=DTYPE, accept_sparse='csr')
+        X = check_array(X, dtype=DTYPE, accept_sparse="csr")
 
         n_classes_ = self.n_classes_
         n_samples = y.shape[0]
 
         oob_decision_function = []
         oob_score = 0.0
-        predictions = [np.zeros((n_samples, n_classes_[k]))
-                       for k in range(self.n_outputs_)]
+        predictions = [
+            np.zeros((n_samples, n_classes_[k]))
+            for k in range(self.n_outputs_)
+        ]
 
         for sampler, estimator in zip(self.samplers_, self.estimators_):
             X_resample = X[sampler.sample_indices_]
@@ -605,21 +607,25 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         for k in range(self.n_outputs_):
             if (predictions[k].sum(axis=1) == 0).any():
-                warn("Some inputs do not have OOB scores. "
-                     "This probably means too few trees were used "
-                     "to compute any reliable oob estimates.")
+                warn(
+                    "Some inputs do not have OOB scores. "
+                    "This probably means too few trees were used "
+                    "to compute any reliable oob estimates."
+                )
 
             with np.errstate(invalid="ignore", divide="ignore"):
                 # with the resampling, we are likely to have rows not included
                 # for the OOB score leading to division by zero
-                decision = (predictions[k] /
-                            predictions[k].sum(axis=1)[:, np.newaxis])
+                decision = (
+                    predictions[k] / predictions[k].sum(axis=1)[:, np.newaxis]
+                )
             mask_scores = np.isnan(np.sum(decision, axis=1))
             oob_decision_function.append(decision)
             oob_score += np.mean(
-                y[~mask_scores, k] == np.argmax(predictions[k][~mask_scores],
-                                                axis=1),
-                axis=0)
+                y[~mask_scores, k]
+                == np.argmax(predictions[k][~mask_scores], axis=1),
+                axis=0,
+            )
 
         if self.n_outputs_ == 1:
             self.oob_decision_function_ = oob_decision_function[0]

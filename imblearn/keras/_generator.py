@@ -173,13 +173,13 @@ class BalancedBatchGenerator(*ParentClass):
         X_resampled = _safe_indexing(
             self.X,
             self.indices_[
-                index * self.batch_size:(index + 1) * self.batch_size
+                index * self.batch_size : (index + 1) * self.batch_size
             ],
         )
         y_resampled = _safe_indexing(
             self.y,
             self.indices_[
-                index * self.batch_size:(index + 1) * self.batch_size
+                index * self.batch_size : (index + 1) * self.batch_size
             ],
         )
         if issparse(X_resampled) and not self.keep_sparse:
@@ -188,7 +188,7 @@ class BalancedBatchGenerator(*ParentClass):
             sample_weight_resampled = _safe_indexing(
                 self.sample_weight,
                 self.indices_[
-                    index * self.batch_size:(index + 1) * self.batch_size
+                    index * self.batch_size : (index + 1) * self.batch_size
                 ],
             )
 

@@ -15,6 +15,7 @@ from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 
+
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring,
@@ -75,7 +76,11 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = self._validate_data(
-            X, y, reset=True, accept_sparse=["csr", "csc"], dtype=None,
+            X,
+            y,
+            reset=True,
+            accept_sparse=["csr", "csc"],
+            dtype=None,
             force_all_finite=False,
         )
         return X, y, binarize_y

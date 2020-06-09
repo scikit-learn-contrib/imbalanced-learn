@@ -115,7 +115,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         if self.n_jobs != "deprecated":
             warnings.warn(
                 "'n_jobs' was deprecated in 0.7 and will be removed in 0.9",
-                FutureWarning
+                FutureWarning,
             )
         if self.estimator is None:
             self.estimator_ = KMeans(random_state=self.random_state)

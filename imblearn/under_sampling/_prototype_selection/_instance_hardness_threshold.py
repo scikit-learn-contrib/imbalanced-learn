@@ -144,8 +144,12 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             n_splits=self.cv, shuffle=True, random_state=random_state,
         )
         probabilities = cross_val_predict(
-            self.estimator_, X, y, cv=skf, n_jobs=self.n_jobs,
-            method='predict_proba'
+            self.estimator_,
+            X,
+            y,
+            cv=skf,
+            n_jobs=self.n_jobs,
+            method="predict_proba",
         )
         probabilities = probabilities[range(len(y)), y]
 

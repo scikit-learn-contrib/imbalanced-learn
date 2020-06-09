@@ -43,8 +43,7 @@ def _set_checking_parameters(estimator):
         estimator.set_params(n_estimators=min(5, estimator.n_estimators))
     if name == "ClusterCentroids":
         estimator.set_params(
-            voting="soft",
-            estimator=KMeans(random_state=0, algorithm="full"),
+            voting="soft", estimator=KMeans(random_state=0, algorithm="full"),
         )
     if name == "KMeansSMOTE":
         estimator.set_params(kmeans_estimator=12)
@@ -76,7 +75,7 @@ def _yield_all_checks(estimator):
     if tags["_skip_test"]:
         warnings.warn(
             f"Explicit SKIP via _skip_test tag for estimator {name}.",
-            SkipTestWarning
+            SkipTestWarning,
         )
         return
     # trigger our checks if this is a SamplerMixin
@@ -119,16 +118,20 @@ def parametrize_with_checks(estimators):
     """
     names = (type(estimator).__name__ for estimator in estimators)
 
-    checks_generator = ((clone(estimator), partial(check, name))
-                        for name, estimator in zip(names, estimators)
-                        for check in _yield_all_checks(estimator))
+    checks_generator = (
+        (clone(estimator), partial(check, name))
+        for name, estimator in zip(names, estimators)
+        for check in _yield_all_checks(estimator)
+    )
 
     checks_with_marks = (
         _mark_xfail_checks(estimator, check, pytest)
-        for estimator, check in checks_generator)
+        for estimator, check in checks_generator
+    )
 
-    return pytest.mark.parametrize("estimator, check", checks_with_marks,
-                                   ids=_set_check_estimator_ids)
+    return pytest.mark.parametrize(
+        "estimator, check", checks_with_marks, ids=_set_check_estimator_ids
+    )
 
 
 def check_target_type(name, estimator):
@@ -387,14 +390,16 @@ def check_classifiers_with_encoded_labels(name, classifier):
     pytest.importorskip("pandas")
     df, y = fetch_openml("iris", version=1, as_frame=True, return_X_y=True)
     df, y = make_imbalance(
-        df, y, sampling_strategy={
-            "Iris-setosa": 30, "Iris-versicolor": 20, "Iris-virginica": 50,
-        }
+        df,
+        y,
+        sampling_strategy={
+            "Iris-setosa": 30,
+            "Iris-versicolor": 20,
+            "Iris-virginica": 50,
+        },
     )
     classifier.set_params(
-        sampling_strategy={
-            "Iris-setosa": 20, "Iris-virginica": 20,
-        }
+        sampling_strategy={"Iris-setosa": 20, "Iris-virginica": 20,}
     )
     classifier.fit(df, y)
     assert set(classifier.classes_) == set(y.cat.categories.tolist())

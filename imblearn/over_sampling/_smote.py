@@ -567,12 +567,16 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
             n_generated_samples = int(fractions * (n_samples + 1))
             if np.count_nonzero(danger_bool) > 0:
                 nns = self.nn_k_.kneighbors(
-                    _safe_indexing(support_vector, np.flatnonzero(danger_bool)),
+                    _safe_indexing(
+                        support_vector, np.flatnonzero(danger_bool)
+                    ),
                     return_distance=False,
                 )[:, 1:]
 
                 X_new_1, y_new_1 = self._make_samples(
-                    _safe_indexing(support_vector, np.flatnonzero(danger_bool)),
+                    _safe_indexing(
+                        support_vector, np.flatnonzero(danger_bool)
+                    ),
                     y.dtype,
                     class_sample,
                     X_class,
@@ -583,12 +587,16 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
 
             if np.count_nonzero(safety_bool) > 0:
                 nns = self.nn_k_.kneighbors(
-                    _safe_indexing(support_vector, np.flatnonzero(safety_bool)),
+                    _safe_indexing(
+                        support_vector, np.flatnonzero(safety_bool)
+                    ),
                     return_distance=False,
                 )[:, 1:]
 
                 X_new_2, y_new_2 = self._make_samples(
-                    _safe_indexing(support_vector, np.flatnonzero(safety_bool)),
+                    _safe_indexing(
+                        support_vector, np.flatnonzero(safety_bool)
+                    ),
                     y.dtype,
                     class_sample,
                     X_class,
@@ -967,7 +975,7 @@ class SMOTENC(SMOTE):
         X_resampled, y_resampled = super()._fit_resample(X_encoded, y)
 
         # reverse the encoding of the categorical features
-        X_res_cat = X_resampled[:, self.continuous_features_.size:]
+        X_res_cat = X_resampled[:, self.continuous_features_.size :]
         X_res_cat.data = np.ones_like(X_res_cat.data)
         X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
 
@@ -1015,18 +1023,19 @@ class SMOTENC(SMOTE):
             X, nn_data, nn_num, rows, cols, steps
         )
         # change in sparsity structure more efficient with LIL than CSR
-        X_new = (X_new.tolil() if sparse.issparse(X_new) else X_new)
+        X_new = X_new.tolil() if sparse.issparse(X_new) else X_new
 
         # convert to dense array since scipy.sparse doesn't handle 3D
-        nn_data = (nn_data.toarray() if sparse.issparse(nn_data) else nn_data)
+        nn_data = nn_data.toarray() if sparse.issparse(nn_data) else nn_data
         all_neighbors = nn_data[nn_num[rows]]
 
         categories_size = [self.continuous_features_.size] + [
             cat.size for cat in self.ohe_.categories_
         ]
 
-        for start_idx, end_idx in zip(np.cumsum(categories_size)[:-1],
-                                      np.cumsum(categories_size)[1:]):
+        for start_idx, end_idx in zip(
+            np.cumsum(categories_size)[:-1], np.cumsum(categories_size)[1:]
+        ):
             col_maxs = all_neighbors[:, :, start_idx:end_idx].sum(axis=1)
             # tie breaking argmax
             is_max = np.isclose(col_maxs, col_maxs.max(axis=1, keepdims=True))

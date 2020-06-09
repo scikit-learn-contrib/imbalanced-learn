@@ -30,6 +30,7 @@ class BaseBadSampler(BaseEstimator):
 
 class SamplerSingleClass(BaseSampler):
     """Sampler that would sample even with a single class."""
+
     _sampling_type = "bypass"
 
     def fit_resample(self, X, y):

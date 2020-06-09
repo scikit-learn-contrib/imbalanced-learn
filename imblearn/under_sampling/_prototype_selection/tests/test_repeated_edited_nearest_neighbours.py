@@ -364,11 +364,7 @@ def test_renn_not_good_object():
 
 
 @pytest.mark.parametrize(
-    "max_iter, n_iter",
-    [
-        (2, 2),
-        (5, 3),
-    ],
+    "max_iter, n_iter", [(2, 2), (5, 3),],
 )
 def test_renn_iter_attribute(max_iter, n_iter):
     renn = RepeatedEditedNearestNeighbours(max_iter=max_iter)

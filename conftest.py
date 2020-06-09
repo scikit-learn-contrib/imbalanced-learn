@@ -12,22 +12,24 @@ import pytest
 import numpy as np
 
 try:
-    np.set_printoptions(legacy='1.13')
+    np.set_printoptions(legacy="1.13")
 except TypeError:
     pass
 
 
 def pytest_runtest_setup(item):
     fname = item.fspath.strpath
-    if (fname.endswith(os.path.join('keras', '_generator.py')) or
-            fname.endswith('miscellaneous.rst')):
+    if fname.endswith(
+        os.path.join("keras", "_generator.py")
+    ) or fname.endswith("miscellaneous.rst"):
         try:
             import keras
         except ImportError:
-            pytest.skip('The keras package is not installed.')
-    elif (fname.endswith(os.path.join('tensorflow', '_generator.py')) or
-          fname.endswith('miscellaneous.rst')):
+            pytest.skip("The keras package is not installed.")
+    elif fname.endswith(
+        os.path.join("tensorflow", "_generator.py")
+    ) or fname.endswith("miscellaneous.rst"):
         try:
             import tensorflow
         except ImportError:
-            pytest.skip('The tensorflow package is not installed.')
+            pytest.skip("The tensorflow package is not installed.")

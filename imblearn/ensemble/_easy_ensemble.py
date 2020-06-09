@@ -158,7 +158,7 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
             self._sampling_strategy = {
                 np.where(self.classes_ == key)[0][0]: value
                 for key, value in check_sampling_strategy(
-                    self.sampling_strategy, y, 'under-sampling',
+                    self.sampling_strategy, y, "under-sampling",
                 ).items()
             }
         else:

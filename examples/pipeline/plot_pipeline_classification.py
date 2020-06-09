@@ -19,16 +19,26 @@ from sklearn.metrics import classification_report
 from sklearn.neighbors import KNeighborsClassifier as KNN
 
 from imblearn.pipeline import make_pipeline
-from imblearn.under_sampling import (EditedNearestNeighbours,
-                                     RepeatedEditedNearestNeighbours)
+from imblearn.under_sampling import (
+    EditedNearestNeighbours,
+    RepeatedEditedNearestNeighbours,
+)
 
 print(__doc__)
 
 # Generate the dataset
-X, y = make_classification(n_classes=2, class_sep=1.25, weights=[0.3, 0.7],
-                           n_informative=3, n_redundant=1, flip_y=0,
-                           n_features=5, n_clusters_per_class=1,
-                           n_samples=5000, random_state=10)
+X, y = make_classification(
+    n_classes=2,
+    class_sep=1.25,
+    weights=[0.3, 0.7],
+    n_informative=3,
+    n_redundant=1,
+    flip_y=0,
+    n_features=5,
+    n_clusters_per_class=1,
+    n_samples=5000,
+    random_state=10,
+)
 
 # Instanciate a PCA object for the sake of easy visualisation
 pca = PCA(n_components=2)
