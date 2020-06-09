@@ -204,3 +204,17 @@ def test_smotenc_preserve_dtype():
     X_res, y_res = smote.fit_resample(X, y)
     assert X.dtype == X_res.dtype, "X dtype is not preserved"
     assert y.dtype == y_res.dtype, "y dtype is not preserved"
+
+
+@pytest.mark.parametrize(
+    "categorical_features", [[True, True, True], [0, 1, 2]]
+)
+def test_smotenc_raising_error_all_categorical(categorical_features):
+    X, y = make_classification(
+        n_features=3, n_informative=1, n_redundant=1, n_repeated=0,
+        n_clusters_per_class=1,
+    )
+    smote = SMOTENC(categorical_features=categorical_features)
+    err_msg = "SMOTE-NC is not designed to work only with categorical features"
+    with pytest.raises(ValueError, match=err_msg):
+        smote.fit_resample(X, y)
