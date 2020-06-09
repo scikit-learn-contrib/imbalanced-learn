@@ -75,8 +75,7 @@ def check_balanced_batch_generator_tf_1_X_X(dataset, sampler):
             for i in range(steps_per_epoch):
                 X_batch, y_batch = next(training_generator)
                 sess.run(
-                    [train_op, loss],
-                    feed_dict={data: X_batch, targets: y_batch},
+                    [train_op, loss], feed_dict={data: X_batch, targets: y_batch},
                 )
 
             # For each epoch, run accuracy on train and test
@@ -142,8 +141,7 @@ def check_balanced_batch_generator_tf_2_X_X_compat_1_X_X(dataset, sampler):
             for i in range(steps_per_epoch):
                 X_batch, y_batch = next(training_generator)
                 sess.run(
-                    [train_op, loss],
-                    feed_dict={data: X_batch, targets: y_batch},
+                    [train_op, loss], feed_dict={data: X_batch, targets: y_batch},
                 )
 
             # For each epoch, run accuracy on train and test

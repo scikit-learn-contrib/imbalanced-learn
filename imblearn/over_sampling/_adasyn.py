@@ -137,8 +137,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             n_samples = np.sum(n_samples_generate)
             if not n_samples:
                 raise ValueError(
-                    "No samples will be generated with the"
-                    " provided ratio settings."
+                    "No samples will be generated with the" " provided ratio settings."
                 )
 
             # the nearest neighbors need to be fitted only on the current class

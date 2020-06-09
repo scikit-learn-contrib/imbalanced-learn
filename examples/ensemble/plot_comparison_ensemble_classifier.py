@@ -40,12 +40,7 @@ from imblearn.metrics import geometric_mean_score
 
 
 def plot_confusion_matrix(
-    cm,
-    classes,
-    ax,
-    normalize=False,
-    title="Confusion matrix",
-    cmap=plt.cm.Blues,
+    cm, classes, ax, normalize=False, title="Confusion matrix", cmap=plt.cm.Blues,
 ):
     """
     This function prints and plots the confusion matrix.
@@ -85,9 +80,7 @@ def plot_confusion_matrix(
 
 satimage = fetch_datasets()["satimage"]
 X, y = satimage.data, satimage.target
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, stratify=y, random_state=0
-)
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=0)
 
 ###############################################################################
 # Classification using a single decision tree

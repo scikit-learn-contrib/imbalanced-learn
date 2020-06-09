@@ -108,9 +108,7 @@ class OneSidedSelection(BaseCleaningSampler):
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
         if self.n_neighbors is None:
-            self.estimator_ = KNeighborsClassifier(
-                n_neighbors=1, n_jobs=self.n_jobs
-            )
+            self.estimator_ = KNeighborsClassifier(n_neighbors=1, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, int):
             self.estimator_ = KNeighborsClassifier(
                 n_neighbors=self.n_neighbors, n_jobs=self.n_jobs
@@ -160,9 +158,7 @@ class OneSidedSelection(BaseCleaningSampler):
 
                 S_misclassified_indices = np.flatnonzero(pred_S_y != S_y)
                 idx_tmp = idx_maj_extracted[S_misclassified_indices]
-                idx_under = np.concatenate(
-                    (idx_under, idx_maj_sample, idx_tmp), axis=0
-                )
+                idx_under = np.concatenate((idx_under, idx_maj_sample, idx_tmp), axis=0)
             else:
                 idx_under = np.concatenate(
                     (idx_under, np.flatnonzero(y == target_class)), axis=0

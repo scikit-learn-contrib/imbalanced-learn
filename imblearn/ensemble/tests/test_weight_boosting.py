@@ -60,9 +60,9 @@ def test_rusboost(imbalanced_dataset, algorithm):
     assert len(rusboost.pipelines_) == len(rusboost.samplers_)
 
     # each sampler in the ensemble should have different random state
-    assert len(
-        {sampler.random_state for sampler in rusboost.samplers_}
-    ) == len(rusboost.samplers_)
+    assert len({sampler.random_state for sampler in rusboost.samplers_}) == len(
+        rusboost.samplers_
+    )
     # each estimator in the ensemble should have different random state
     assert len({est.random_state for est in rusboost.estimators_}) == len(
         rusboost.estimators_
@@ -77,9 +77,7 @@ def test_rusboost(imbalanced_dataset, algorithm):
     assert rusboost.decision_function(X_test).shape[1] == len(classes)
 
     score = rusboost.score(X_test, y_test)
-    assert score > 0.7, "Failed with algorithm {} and score {}".format(
-        algorithm, score
-    )
+    assert score > 0.7, "Failed with algorithm {} and score {}".format(algorithm, score)
 
     y_pred = rusboost.predict(X_test)
     assert y_pred.shape == y_test.shape

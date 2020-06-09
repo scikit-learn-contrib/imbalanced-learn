@@ -132,9 +132,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
                 )
         # Otherwise create a default TomekLinks
         else:
-            self.tomek_ = TomekLinks(
-                sampling_strategy="all", n_jobs=self.n_jobs
-            )
+            self.tomek_ = TomekLinks(sampling_strategy="all", n_jobs=self.n_jobs)
 
     def _fit_resample(self, X, y):
         self._validate_estimator()

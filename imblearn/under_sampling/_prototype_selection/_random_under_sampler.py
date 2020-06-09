@@ -109,10 +109,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (
-                    idx_under,
-                    np.flatnonzero(y == target_class)[index_target_class],
-                ),
+                (idx_under, np.flatnonzero(y == target_class)[index_target_class],),
                 axis=0,
             )
 

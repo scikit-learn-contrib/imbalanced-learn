@@ -43,9 +43,7 @@ pipeline = pl.make_pipeline(
 )
 
 # Split the data
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, random_state=RANDOM_STATE
-)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=RANDOM_STATE)
 
 # Train the classifier with balancing
 pipeline.fit(X_train, y_train)
@@ -58,18 +56,14 @@ y_pred_bal = pipeline.predict(X_test)
 # sensitivity and specificity. Combining the two metrics should account for
 # the balancing of the dataset.
 
-print(
-    "The geometric mean is {}".format(geometric_mean_score(y_test, y_pred_bal))
-)
+print("The geometric mean is {}".format(geometric_mean_score(y_test, y_pred_bal)))
 
 ###############################################################################
 # The index balanced accuracy can transform any metric to be used in
 # imbalanced learning problems.
 
 alpha = 0.1
-geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(
-    geometric_mean_score
-)
+geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(geometric_mean_score)
 
 print(
     "The IBA using alpha = {} and the geometric mean: {}".format(
@@ -78,9 +72,7 @@ print(
 )
 
 alpha = 0.5
-geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(
-    geometric_mean_score
-)
+geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(geometric_mean_score)
 
 print(
     "The IBA using alpha = {} and the geometric mean: {}".format(

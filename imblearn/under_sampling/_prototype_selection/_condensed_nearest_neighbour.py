@@ -114,9 +114,7 @@ CondensedNearestNeighbour # doctest: +SKIP
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
         if self.n_neighbors is None:
-            self.estimator_ = KNeighborsClassifier(
-                n_neighbors=1, n_jobs=self.n_jobs
-            )
+            self.estimator_ = KNeighborsClassifier(n_neighbors=1, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, int):
             self.estimator_ = KNeighborsClassifier(
                 n_neighbors=self.n_neighbors, n_jobs=self.n_jobs
@@ -145,9 +143,7 @@ CondensedNearestNeighbour # doctest: +SKIP
                 idx_maj = np.flatnonzero(y == target_class)
                 idx_maj_sample = idx_maj[
                     random_state.randint(
-                        low=0,
-                        high=target_stats[target_class],
-                        size=self.n_seeds_S,
+                        low=0, high=target_stats[target_class], size=self.n_seeds_S,
                     )
                 ]
 
@@ -183,9 +179,7 @@ CondensedNearestNeighbour # doctest: +SKIP
                     # append it in C_x
                     if y_sam != pred_y:
                         # Keep the index for later
-                        idx_maj_sample = np.append(
-                            idx_maj_sample, idx_maj[idx_sam]
-                        )
+                        idx_maj_sample = np.append(idx_maj_sample, idx_maj[idx_sam])
 
                         # Update C
                         C_indices = np.append(C_indices, idx_maj[idx_sam])
@@ -200,9 +194,7 @@ CondensedNearestNeighbour # doctest: +SKIP
                         # well classified elements
                         pred_S_y = self.estimator_.predict(S_x)
                         good_classif_label = np.unique(
-                            np.append(
-                                idx_maj_sample, np.flatnonzero(pred_S_y == S_y)
-                            )
+                            np.append(idx_maj_sample, np.flatnonzero(pred_S_y == S_y))
                         )
 
                 idx_under = np.concatenate((idx_under, idx_maj_sample), axis=0)

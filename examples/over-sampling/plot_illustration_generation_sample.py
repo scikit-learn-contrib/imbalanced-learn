@@ -36,9 +36,7 @@ idx = rng.randint(len(y), size=2)
 annotation = [r"$x_i$", r"$x_{zi}$"]
 
 for a, i in zip(annotation, idx):
-    ax.annotate(
-        a, (z[i], y[i]), xytext=tuple([z[i] + 0.01, y[i] + 0.005]), fontsize=15
-    )
+    ax.annotate(a, (z[i], y[i]), xytext=tuple([z[i] + 0.01, y[i] + 0.005]), fontsize=15)
 
 # draw the circle in which the new sample will generated
 radius = np.sqrt((z[idx[0]] - z[idx[1]]) ** 2 + (y[idx[0]] - y[idx[1]]) ** 2)

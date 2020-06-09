@@ -62,17 +62,12 @@ def all_estimators(type_filter=None,):
             path=[root], prefix="imblearn."
         ):
             mod_parts = modname.split(".")
-            if (
-                any(part in modules_to_ignore for part in mod_parts)
-                or "._" in modname
-            ):
+            if any(part in modules_to_ignore for part in mod_parts) or "._" in modname:
                 continue
             module = import_module(modname)
             classes = inspect.getmembers(module, inspect.isclass)
             classes = [
-                (name, est_cls)
-                for name, est_cls in classes
-                if not name.startswith("_")
+                (name, est_cls) for name, est_cls in classes if not name.startswith("_")
             ]
 
             all_classes.extend(classes)

@@ -103,26 +103,18 @@ def plot_decision_function(X, y, clf, ax):
 # ``SMOTETomek``.
 
 
-fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(
-    3, 2, figsize=(15, 25)
-)
+fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(15, 25))
 X, y = create_dataset(n_samples=1000, weights=(0.1, 0.2, 0.7))
 
 ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
 for ax, sampler in zip(
     ax_arr,
-    (
-        SMOTE(random_state=0),
-        SMOTEENN(random_state=0),
-        SMOTETomek(random_state=0),
-    ),
+    (SMOTE(random_state=0), SMOTEENN(random_state=0), SMOTETomek(random_state=0),),
 ):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
-    ax[0].set_title(
-        "Decision function for {}".format(sampler.__class__.__name__)
-    )
+    ax[0].set_title("Decision function for {}".format(sampler.__class__.__name__))
     plot_resampling(X, y, sampler, ax[1])
     ax[1].set_title("Resampling using {}".format(sampler.__class__.__name__))
 fig.tight_layout()

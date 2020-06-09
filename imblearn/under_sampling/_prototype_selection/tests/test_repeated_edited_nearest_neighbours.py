@@ -151,34 +151,7 @@ def test_renn_fit_resample():
         ]
     )
     y_gt = np.array(
-        [
-            0,
-            0,
-            0,
-            0,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-        ]
+        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,]
     )
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)

@@ -44,11 +44,7 @@ def plot_pie(y):
 
     fig, ax = plt.subplots()
     ax.pie(
-        sizes,
-        explode=explode,
-        labels=labels,
-        shadow=True,
-        autopct=make_autopct(sizes),
+        sizes, explode=explode, labels=labels, shadow=True, autopct=make_autopct(sizes),
     )
     ax.axis("equal")
 
@@ -58,17 +54,11 @@ def plot_pie(y):
 
 iris = load_iris()
 
-print(
-    "Information of the original iris data set: \n {}".format(
-        Counter(iris.target)
-    )
-)
+print("Information of the original iris data set: \n {}".format(Counter(iris.target)))
 plot_pie(iris.target)
 
 sampling_strategy = {0: 10, 1: 20, 2: 47}
-X, y = make_imbalance(
-    iris.data, iris.target, sampling_strategy=sampling_strategy
-)
+X, y = make_imbalance(iris.data, iris.target, sampling_strategy=sampling_strategy)
 
 print(
     "Information of the iris data set after making it"
@@ -244,9 +234,7 @@ def ratio_multiplier(y):
     return target_stats
 
 
-X_res, y_res = RandomUnderSampler(
-    sampling_strategy=ratio_multiplier
-).fit_resample(X, y)
+X_res, y_res = RandomUnderSampler(sampling_strategy=ratio_multiplier).fit_resample(X, y)
 
 print(
     "Information of the iris data set after balancing using a callable"

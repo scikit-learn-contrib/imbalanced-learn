@@ -44,9 +44,7 @@ pipeline = pl.make_pipeline(
 )
 
 # Split the data
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, random_state=RANDOM_STATE
-)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=RANDOM_STATE)
 
 # Train the classifier with balancing
 pipeline.fit(X_train, y_train)

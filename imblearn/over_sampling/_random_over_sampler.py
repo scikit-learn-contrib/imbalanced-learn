@@ -99,9 +99,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                 low=0, high=target_stats[class_sample], size=num_samples
             )
 
-            sample_indices = np.append(
-                sample_indices, target_class_indices[indices]
-            )
+            sample_indices = np.append(sample_indices, target_class_indices[indices])
         self.sample_indices_ = np.array(sample_indices)
 
         return (

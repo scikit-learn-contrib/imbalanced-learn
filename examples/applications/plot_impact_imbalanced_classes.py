@@ -42,9 +42,7 @@ from imblearn.datasets import make_imbalance
 
 ratio = 30
 df_res, y_res = make_imbalance(
-    df,
-    y,
-    sampling_strategy={classes_count.idxmin(): classes_count.max() // ratio},
+    df, y, sampling_strategy={classes_count.idxmin(): classes_count.max() // ratio},
 )
 y_res.value_counts()
 
@@ -292,8 +290,7 @@ df_scores
 from imblearn.ensemble import BalancedRandomForestClassifier
 
 rf_clf = make_pipeline(
-    preprocessor_tree,
-    BalancedRandomForestClassifier(random_state=42, n_jobs=2),
+    preprocessor_tree, BalancedRandomForestClassifier(random_state=42, n_jobs=2),
 )
 
 df_scores = evaluate_classifier(rf_clf, df_scores, "Balanced RF")
@@ -335,9 +332,7 @@ df_scores
 
 ratio = 100
 df_res, y_res = make_imbalance(
-    df,
-    y,
-    sampling_strategy={classes_count.idxmin(): classes_count.max() // ratio},
+    df, y, sampling_strategy={classes_count.idxmin(): classes_count.max() // ratio},
 )
 X_train, X_test, y_train, y_test = train_test_split(
     df_res, y_res, stratify=y_res, random_state=42
@@ -368,8 +363,7 @@ rf_clf = make_pipeline_with_sampler(
 )
 df_scores = evaluate_classifier(rf_clf, df_scores, "RF with under-sampling")
 rf_clf = make_pipeline(
-    preprocessor_tree,
-    BalancedRandomForestClassifier(random_state=42, n_jobs=2),
+    preprocessor_tree, BalancedRandomForestClassifier(random_state=42, n_jobs=2),
 )
 df_scores = evaluate_classifier(rf_clf, df_scores)
 df_scores = evaluate_classifier(bag_clf, df_scores, "Balanced bagging")

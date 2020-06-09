@@ -55,18 +55,10 @@ X_majority = np.transpose(
 
 fig, ax = plt.subplots(1, 1, figsize=(6, 6))
 ax.scatter(
-    X_minority[:, 0],
-    X_minority[:, 1],
-    label="Minority class",
-    s=200,
-    marker="_",
+    X_minority[:, 0], X_minority[:, 1], label="Minority class", s=200, marker="_",
 )
 ax.scatter(
-    X_majority[:, 0],
-    X_majority[:, 1],
-    label="Majority class",
-    s=200,
-    marker="+",
+    X_majority[:, 0], X_majority[:, 1], label="Majority class", s=200, marker="+",
 )
 
 # highlight the samples of interest
@@ -96,10 +88,7 @@ title_arr = ("Removing only majority samples", "Removing all samples")
 for ax, title, sampler in zip(
     ax_arr,
     title_arr,
-    [
-        TomekLinks(sampling_strategy="auto"),
-        TomekLinks(sampling_strategy="all"),
-    ],
+    [TomekLinks(sampling_strategy="auto"), TomekLinks(sampling_strategy="all"),],
 ):
     X_res, y_res = sampler.fit_resample(
         np.vstack((X_minority, X_majority)),

@@ -32,15 +32,10 @@ def imbalanced_dataset():
     [
         ({"n_estimators": "whatever"}, "n_estimators must be an integer"),
         ({"n_estimators": -100}, "n_estimators must be greater than zero"),
-        (
-            {"bootstrap": False, "oob_score": True},
-            "Out of bag estimation only",
-        ),
+        ({"bootstrap": False, "oob_score": True}, "Out of bag estimation only",),
     ],
 )
-def test_balanced_random_forest_error(
-    imbalanced_dataset, forest_params, err_msg
-):
+def test_balanced_random_forest_error(imbalanced_dataset, forest_params, err_msg):
     brf = BalancedRandomForestClassifier(**forest_params)
     with pytest.raises(ValueError, match=err_msg):
         brf.fit(*imbalanced_dataset)
@@ -63,9 +58,7 @@ def test_balanced_random_forest_error_warning_warm_start(imbalanced_dataset):
 
 def test_balanced_random_forest(imbalanced_dataset):
     n_estimators = 10
-    brf = BalancedRandomForestClassifier(
-        n_estimators=n_estimators, random_state=0
-    )
+    brf = BalancedRandomForestClassifier(n_estimators=n_estimators, random_state=0)
     brf.fit(*imbalanced_dataset)
 
     assert len(brf.samplers_) == n_estimators
@@ -77,17 +70,13 @@ def test_balanced_random_forest(imbalanced_dataset):
 def test_balanced_random_forest_attributes(imbalanced_dataset):
     X, y = imbalanced_dataset
     n_estimators = 10
-    brf = BalancedRandomForestClassifier(
-        n_estimators=n_estimators, random_state=0
-    )
+    brf = BalancedRandomForestClassifier(n_estimators=n_estimators, random_state=0)
     brf.fit(X, y)
 
     for idx in range(n_estimators):
         X_res, y_res = brf.samplers_[idx].fit_resample(X, y)
         X_res_2, y_res_2 = (
-            brf.pipelines_[idx]
-            .named_steps["randomundersampler"]
-            .fit_resample(X, y)
+            brf.pipelines_[idx].named_steps["randomundersampler"].fit_resample(X, y)
         )
         assert_allclose(X_res, X_res_2)
         assert_array_equal(y_res, y_res_2)
@@ -128,17 +117,13 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
     est = BalancedRandomForestClassifier(
         oob_score=True, random_state=0, n_estimators=1, bootstrap=True
     )
-    with pytest.warns(UserWarning) and np.errstate(
-        divide="ignore", invalid="ignore"
-    ):
+    with pytest.warns(UserWarning) and np.errstate(divide="ignore", invalid="ignore"):
         est.fit(X, y)
 
 
 def test_balanced_random_forest_grid_search(imbalanced_dataset):
     brf = BalancedRandomForestClassifier()
-    grid = GridSearchCV(
-        brf, {"n_estimators": (1, 2), "max_depth": (1, 2)}, cv=3
-    )
+    grid = GridSearchCV(brf, {"n_estimators": (1, 2), "max_depth": (1, 2)}, cv=3)
     grid.fit(*imbalanced_dataset)
 
 

@@ -6,9 +6,7 @@
 import warnings
 
 
-def deprecate_parameter(
-    sampler, version_deprecation, param_deprecated, new_param=None
-):
+def deprecate_parameter(sampler, version_deprecation, param_deprecated, new_param=None):
     """Helper to deprecate a parameter by another one.
 
     Parameters

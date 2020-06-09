@@ -79,32 +79,7 @@ def test_ada_fit_resample():
         ]
     )
     y_gt = np.array(
-        [
-            0,
-            1,
-            0,
-            0,
-            0,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            0,
-            0,
-            1,
-            1,
-            1,
-            1,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
+        [0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0,]
     )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
@@ -143,32 +118,7 @@ def test_ada_fit_resample_nn_obj():
         ]
     )
     y_gt = np.array(
-        [
-            0,
-            1,
-            0,
-            0,
-            0,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            0,
-            0,
-            1,
-            1,
-            1,
-            1,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
+        [0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0,]
     )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
@@ -177,10 +127,7 @@ def test_ada_fit_resample_nn_obj():
 @pytest.mark.parametrize(
     "adasyn_params, err_msg",
     [
-        (
-            {"sampling_strategy": {0: 9, 1: 12}},
-            "No samples will be generated.",
-        ),
+        ({"sampling_strategy": {0: 9, 1: 12}}, "No samples will be generated.",),
         ({"n_neighbors": "rnd"}, "has to be one of"),
     ],
 )

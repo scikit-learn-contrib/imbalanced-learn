@@ -71,10 +71,7 @@ blobs, _ = make_blobs(
 )
 X_test = np.vstack([moons, blobs])
 y_test = np.hstack(
-    [
-        np.ones(moons.shape[0], dtype=np.int8),
-        np.zeros(blobs.shape[0], dtype=np.int8),
-    ]
+    [np.ones(moons.shape[0], dtype=np.int8), np.zeros(blobs.shape[0], dtype=np.int8),]
 )
 
 plot_scatter(X_test, y_test, "Testing dataset")
@@ -93,9 +90,7 @@ plot_scatter(X_test, y_test, "Testing dataset")
 
 def outlier_rejection(X, y):
     """This will be our function used to resample our dataset."""
-    model = IsolationForest(
-        max_samples=100, contamination=0.4, random_state=rng
-    )
+    model = IsolationForest(max_samples=100, contamination=0.4, random_state=rng)
     model.fit(X)
     y_pred = model.predict(X)
     return X[y_pred == 1], y[y_pred == 1]

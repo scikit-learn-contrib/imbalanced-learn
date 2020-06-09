@@ -175,24 +175,18 @@ class BalancedBatchGenerator(*ParentClass):
     def __getitem__(self, index):
         X_resampled = _safe_indexing(
             self.X,
-            self.indices_[
-                index * self.batch_size : (index + 1) * self.batch_size
-            ],
+            self.indices_[index * self.batch_size : (index + 1) * self.batch_size],
         )
         y_resampled = _safe_indexing(
             self.y,
-            self.indices_[
-                index * self.batch_size : (index + 1) * self.batch_size
-            ],
+            self.indices_[index * self.batch_size : (index + 1) * self.batch_size],
         )
         if issparse(X_resampled) and not self.keep_sparse:
             X_resampled = X_resampled.toarray()
         if self.sample_weight is not None:
             sample_weight_resampled = _safe_indexing(
                 self.sample_weight,
-                self.indices_[
-                    index * self.batch_size : (index + 1) * self.batch_size
-                ],
+                self.indices_[index * self.batch_size : (index + 1) * self.batch_size],
             )
 
         if self.sample_weight is None:

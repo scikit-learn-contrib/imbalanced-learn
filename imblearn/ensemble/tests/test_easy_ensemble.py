@@ -48,10 +48,7 @@ Y = np.array([1, 2, 2, 2, 1, 0, 1, 1, 1, 0])
 def test_easy_ensemble_classifier(n_estimators, base_estimator):
     # Check classification for various parameter settings.
     X, y = make_imbalance(
-        iris.data,
-        iris.target,
-        sampling_strategy={0: 20, 1: 25, 2: 50},
-        random_state=0,
+        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
     )
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
@@ -64,9 +61,7 @@ def test_easy_ensemble_classifier(n_estimators, base_estimator):
     eec.fit(X_train, y_train).score(X_test, y_test)
     assert len(eec.estimators_) == n_estimators
     for est in eec.estimators_:
-        assert (
-            len(est.named_steps["classifier"]) == base_estimator.n_estimators
-        )
+        assert len(est.named_steps["classifier"]) == base_estimator.n_estimators
     # test the different prediction function
     eec.predict(X_test)
     eec.predict_proba(X_test)
@@ -77,10 +72,7 @@ def test_easy_ensemble_classifier(n_estimators, base_estimator):
 def test_base_estimator():
     # Check base_estimator and its default values.
     X, y = make_imbalance(
-        iris.data,
-        iris.target,
-        sampling_strategy={0: 20, 1: 25, 2: 50},
-        random_state=0,
+        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
     )
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
@@ -88,25 +80,18 @@ def test_base_estimator():
         X_train, y_train
     )
 
-    assert isinstance(
-        ensemble.base_estimator_.steps[-1][1], AdaBoostClassifier
-    )
+    assert isinstance(ensemble.base_estimator_.steps[-1][1], AdaBoostClassifier)
 
     ensemble = EasyEnsembleClassifier(
         2, AdaBoostClassifier(), n_jobs=-1, random_state=0
     ).fit(X_train, y_train)
 
-    assert isinstance(
-        ensemble.base_estimator_.steps[-1][1], AdaBoostClassifier
-    )
+    assert isinstance(ensemble.base_estimator_.steps[-1][1], AdaBoostClassifier)
 
 
 def test_bagging_with_pipeline():
     X, y = make_imbalance(
-        iris.data,
-        iris.target,
-        sampling_strategy={0: 20, 1: 25, 2: 50},
-        random_state=0,
+        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
     )
     estimator = EasyEnsembleClassifier(
         n_estimators=2,
@@ -124,9 +109,7 @@ def test_warm_start(random_state=42):
     for n_estimators in [5, 10]:
         if clf_ws is None:
             clf_ws = EasyEnsembleClassifier(
-                n_estimators=n_estimators,
-                random_state=random_state,
-                warm_start=True,
+                n_estimators=n_estimators, random_state=random_state, warm_start=True,
             )
         else:
             clf_ws.set_params(n_estimators=n_estimators)
@@ -158,9 +141,7 @@ def test_warm_start_equal_n_estimators():
     X, y = make_hastie_10_2(n_samples=20, random_state=1)
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=43)
 
-    clf = EasyEnsembleClassifier(
-        n_estimators=5, warm_start=True, random_state=83
-    )
+    clf = EasyEnsembleClassifier(n_estimators=5, warm_start=True, random_state=83)
     clf.fit(X_train, y_train)
 
     y_pred = clf.predict(X_test)
@@ -179,17 +160,13 @@ def test_warm_start_equivalence():
     X, y = make_hastie_10_2(n_samples=20, random_state=1)
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=43)
 
-    clf_ws = EasyEnsembleClassifier(
-        n_estimators=5, warm_start=True, random_state=3141
-    )
+    clf_ws = EasyEnsembleClassifier(n_estimators=5, warm_start=True, random_state=3141)
     clf_ws.fit(X_train, y_train)
     clf_ws.set_params(n_estimators=10)
     clf_ws.fit(X_train, y_train)
     y1 = clf_ws.predict(X_test)
 
-    clf = EasyEnsembleClassifier(
-        n_estimators=10, warm_start=False, random_state=3141
-    )
+    clf = EasyEnsembleClassifier(n_estimators=10, warm_start=False, random_state=3141)
     clf.fit(X_train, y_train)
     y2 = clf.predict(X_test)
 
@@ -205,10 +182,7 @@ def test_warm_start_equivalence():
 )
 def test_easy_ensemble_classifier_error(n_estimators, msg_error):
     X, y = make_imbalance(
-        iris.data,
-        iris.target,
-        sampling_strategy={0: 20, 1: 25, 2: 50},
-        random_state=0,
+        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
     )
     with pytest.raises(ValueError, match=msg_error):
         eec = EasyEnsembleClassifier(n_estimators=n_estimators)
@@ -217,16 +191,11 @@ def test_easy_ensemble_classifier_error(n_estimators, msg_error):
 
 def test_easy_ensemble_classifier_single_estimator():
     X, y = make_imbalance(
-        iris.data,
-        iris.target,
-        sampling_strategy={0: 20, 1: 25, 2: 50},
-        random_state=0,
+        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
     )
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
-    clf1 = EasyEnsembleClassifier(n_estimators=1, random_state=0).fit(
-        X_train, y_train
-    )
+    clf1 = EasyEnsembleClassifier(n_estimators=1, random_state=0).fit(X_train, y_train)
     clf2 = make_pipeline(
         RandomUnderSampler(random_state=0), AdaBoostClassifier(random_state=0)
     ).fit(X_train, y_train)
@@ -236,10 +205,7 @@ def test_easy_ensemble_classifier_single_estimator():
 
 def test_easy_ensemble_classifier_grid_search():
     X, y = make_imbalance(
-        iris.data,
-        iris.target,
-        sampling_strategy={0: 20, 1: 25, 2: 50},
-        random_state=0,
+        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
     )
 
     parameters = {
@@ -247,8 +213,6 @@ def test_easy_ensemble_classifier_grid_search():
         "base_estimator__n_estimators": [3, 4],
     }
     grid_search = GridSearchCV(
-        EasyEnsembleClassifier(base_estimator=AdaBoostClassifier()),
-        parameters,
-        cv=5,
+        EasyEnsembleClassifier(base_estimator=AdaBoostClassifier()), parameters, cv=5,
     )
     grid_search.fit(X, y)

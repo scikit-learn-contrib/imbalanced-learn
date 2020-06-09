@@ -81,11 +81,7 @@ categorical_pipeline = make_pipeline(
 preprocessor = ColumnTransformer(
     [
         ("numerical_preprocessing", numerical_pipeline, numerical_columns),
-        (
-            "categorical_preprocessing",
-            categorical_pipeline,
-            categorical_columns,
-        ),
+        ("categorical_preprocessing", categorical_pipeline, categorical_columns,),
     ],
     remainder="drop",
 )
@@ -105,11 +101,7 @@ from keras.layers import Activation, Dense, Dropout, BatchNormalization
 
 def make_model(n_features):
     model = Sequential()
-    model.add(
-        Dense(
-            200, input_shape=(n_features,), kernel_initializer="glorot_normal"
-        )
-    )
+    model.add(Dense(200, input_shape=(n_features,), kernel_initializer="glorot_normal"))
     model.add(BatchNormalization())
     model.add(Activation("relu"))
     model.add(Dropout(0.5))
@@ -127,9 +119,7 @@ def make_model(n_features):
     model.add(Dropout(0.1))
     model.add(Dense(1, activation="sigmoid"))
 
-    model.compile(
-        loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"]
-    )
+    model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
 
     return model
 
@@ -236,10 +226,7 @@ df_results = (
 )
 df_time = (
     pd.DataFrame(
-        {
-            "Balanced model": cv_time_balanced,
-            "Imbalanced model": cv_time_imbalanced,
-        }
+        {"Balanced model": cv_time_balanced, "Imbalanced model": cv_time_imbalanced,}
     )
     .unstack()
     .reset_index()
@@ -259,9 +246,7 @@ plt.figure()
 sns.boxplot(y="level_0", x=0, data=df_results, whis=10.0)
 sns.despine(top=True, right=True, left=True)
 ax = plt.gca()
-ax.xaxis.set_major_formatter(
-    plt.FuncFormatter(lambda x, pos: "%i%%" % (100 * x))
-)
+ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, pos: "%i%%" % (100 * x)))
 plt.xlabel("ROC-AUC")
 plt.ylabel("")
 plt.title("Difference in terms of ROC-AUC using a random under-sampling")

@@ -86,6 +86,4 @@ def test_all_checks():
     _test_single_check(SamplerSingleClass, check_samplers_one_label)
     _test_single_check(NotFittedSampler, check_samplers_fit)
     _test_single_check(NoAcceptingSparseSampler, check_samplers_sparse)
-    _test_single_check(
-        NotPreservingDtypeSampler, check_samplers_preserve_dtype
-    )
+    _test_single_check(NotPreservingDtypeSampler, check_samplers_preserve_dtype)

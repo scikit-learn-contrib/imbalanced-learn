@@ -38,9 +38,7 @@ def _build_keras_model(n_classes, n_features):
 
 def test_balanced_batch_generator_class_no_return_indices(data):
     with pytest.raises(ValueError, match="needs to have an attribute"):
-        BalancedBatchGenerator(
-            *data, sampler=ClusterCentroids(), batch_size=10
-        )
+        BalancedBatchGenerator(*data, sampler=ClusterCentroids(), batch_size=10)
 
 
 @pytest.mark.filterwarnings("ignore:`wait_time` is not used")  # keras 2.2.4
@@ -114,9 +112,7 @@ def test_balanced_batch_generator_function(data, sampler, sample_weight):
         random_state=42,
     )
     model.fit_generator(
-        generator=training_generator,
-        steps_per_epoch=steps_per_epoch,
-        epochs=10,
+        generator=training_generator, steps_per_epoch=steps_per_epoch, epochs=10,
     )
 
 

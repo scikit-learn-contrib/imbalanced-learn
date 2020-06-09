@@ -206,9 +206,7 @@ def test_smotenc_preserve_dtype():
     assert y.dtype == y_res.dtype, "y dtype is not preserved"
 
 
-@pytest.mark.parametrize(
-    "categorical_features", [[True, True, True], [0, 1, 2]]
-)
+@pytest.mark.parametrize("categorical_features", [[True, True, True], [0, 1, 2]])
 def test_smotenc_raising_error_all_categorical(categorical_features):
     X, y = make_classification(
         n_features=3,

@@ -134,9 +134,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         if self.voting_ == "hard":
             nearest_neighbors = NearestNeighbors(n_neighbors=1)
             nearest_neighbors.fit(X, y)
-            indices = nearest_neighbors.kneighbors(
-                centroids, return_distance=False
-            )
+            indices = nearest_neighbors.kneighbors(centroids, return_distance=False)
             X_new = _safe_indexing(X, np.squeeze(indices))
         else:
             if sparse.issparse(X):

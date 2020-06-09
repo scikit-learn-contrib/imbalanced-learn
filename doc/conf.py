@@ -254,10 +254,7 @@ latex_documents = [
 
 # intersphinx configuration
 intersphinx_mapping = {
-    "python": (
-        "https://docs.python.org/{.major}".format(sys.version_info),
-        None,
-    ),
+    "python": ("https://docs.python.org/{.major}".format(sys.version_info), None,),
     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "matplotlib": ("https://matplotlib.org/", None),
@@ -323,9 +320,7 @@ texinfo_documents = [
 
 # Config for sphinx_issues
 
-issues_uri = (
-    "https://github.com/scikit-learn-contrib/imbalanced-learn/issues/{issue}"
-)
+issues_uri = "https://github.com/scikit-learn-contrib/imbalanced-learn/issues/{issue}"
 issues_github_path = "scikit-learn-contrib/imbalanced-learn"
 issues_user_uri = "https://github.com/{user}"
 

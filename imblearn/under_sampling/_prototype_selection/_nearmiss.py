@@ -146,10 +146,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         dist_avg_vec = np.sum(dist_vec[:, -self.nn_.n_neighbors :], axis=1)
 
         target_class_indices = np.flatnonzero(y == key)
-        if (
-            dist_vec.shape[0]
-            != _safe_indexing(X, target_class_indices).shape[0]
-        ):
+        if dist_vec.shape[0] != _safe_indexing(X, target_class_indices).shape[0]:
             raise RuntimeError(
                 "The samples to be selected do not correspond"
                 " to the distance matrix given. Ensure that"
@@ -166,9 +163,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
             raise NotImplementedError
 
         sorted_idx = sorted(
-            range(len(dist_avg_vec)),
-            key=dist_avg_vec.__getitem__,
-            reverse=sort_way,
+            range(len(dist_avg_vec)), key=dist_avg_vec.__getitem__, reverse=sort_way,
         )
 
         # Throw a warning to tell the user that we did not have enough samples
@@ -198,8 +193,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
 
         if self.version not in (1, 2, 3):
             raise ValueError(
-                "Parameter `version` must be 1, 2 or 3, got"
-                " {}".format(self.version)
+                "Parameter `version` must be 1, 2 or 3, got" " {}".format(self.version)
             )
 
     def _fit_resample(self, X, y):
@@ -225,24 +219,14 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                         X_class, n_neighbors=self.nn_.n_neighbors
                     )
                     index_target_class = self._selection_dist_based(
-                        X,
-                        y,
-                        dist_vec,
-                        n_samples,
-                        target_class,
-                        sel_strategy="nearest",
+                        X, y, dist_vec, n_samples, target_class, sel_strategy="nearest",
                     )
                 elif self.version == 2:
                     dist_vec, idx_vec = self.nn_.kneighbors(
                         X_class, n_neighbors=target_stats[class_minority]
                     )
                     index_target_class = self._selection_dist_based(
-                        X,
-                        y,
-                        dist_vec,
-                        n_samples,
-                        target_class,
-                        sel_strategy="nearest",
+                        X, y, dist_vec, n_samples, target_class, sel_strategy="nearest",
                     )
                 elif self.version == 3:
                     self.nn_ver3_.fit(X_class)
@@ -250,12 +234,8 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                         _safe_indexing(X, minority_class_indices)
                     )
                     idx_vec_farthest = np.unique(idx_vec.reshape(-1))
-                    X_class_selected = _safe_indexing(
-                        X_class, idx_vec_farthest
-                    )
-                    y_class_selected = _safe_indexing(
-                        y_class, idx_vec_farthest
-                    )
+                    X_class_selected = _safe_indexing(X_class, idx_vec_farthest)
+                    y_class_selected = _safe_indexing(y_class, idx_vec_farthest)
 
                     dist_vec, idx_vec = self.nn_.kneighbors(
                         X_class_selected, n_neighbors=self.nn_.n_neighbors
@@ -275,10 +255,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (
-                    idx_under,
-                    np.flatnonzero(y == target_class)[index_target_class],
-                ),
+                (idx_under, np.flatnonzero(y == target_class)[index_target_class],),
                 axis=0,
             )
 

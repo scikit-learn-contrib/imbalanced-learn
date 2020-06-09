@@ -104,8 +104,7 @@ def make_imbalance(
 
     if verbose:
         print(
-            "The original target distribution in the dataset is: %s",
-            target_stats,
+            "The original target distribution in the dataset is: %s", target_stats,
         )
     rus = RandomUnderSampler(
         sampling_strategy=sampling_strategy_,

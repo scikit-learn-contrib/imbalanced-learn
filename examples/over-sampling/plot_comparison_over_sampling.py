@@ -171,11 +171,7 @@ ax1.set_title("Original data - y={}".format(Counter(y)))
 ax_arr = (ax2, ax3, ax4)
 for ax, sampler in zip(
     ax_arr,
-    (
-        RandomOverSampler(random_state=0),
-        SMOTE(random_state=0),
-        ADASYN(random_state=0),
-    ),
+    (RandomOverSampler(random_state=0), SMOTE(random_state=0), ADASYN(random_state=0),),
 ):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
@@ -212,20 +208,14 @@ fig.tight_layout()
 # issues as illustrated below.
 
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 15))
-X, y = create_dataset(
-    n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8
-)
+X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
 ax_arr = ((ax1, ax2), (ax3, ax4))
-for ax, sampler in zip(
-    ax_arr, (SMOTE(random_state=0), ADASYN(random_state=0))
-):
+for ax, sampler in zip(ax_arr, (SMOTE(random_state=0), ADASYN(random_state=0))):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
-    ax[0].set_title(
-        "Decision function for {}".format(sampler.__class__.__name__)
-    )
+    ax[0].set_title("Decision function for {}".format(sampler.__class__.__name__))
     plot_resampling(X, y, sampler, ax[1])
     ax[1].set_title("Resampling using {}".format(sampler.__class__.__name__))
 fig.tight_layout()
@@ -238,13 +228,10 @@ fig.tight_layout()
 # the KMeans version will make a clustering before to generate samples in each
 # cluster independently depending each cluster density.
 
-(
-    fig,
-    ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10)),
-) = plt.subplots(5, 2, figsize=(15, 30))
-X, y = create_dataset(
-    n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8
+(fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10)),) = plt.subplots(
+    5, 2, figsize=(15, 30)
 )
+X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
 
 ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10))
@@ -261,9 +248,7 @@ for ax, sampler in zip(
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
-    ax[0].set_title(
-        "Decision function for {}".format(sampler.__class__.__name__)
-    )
+    ax[0].set_title("Decision function for {}".format(sampler.__class__.__name__))
     plot_resampling(X, y, sampler, ax[1])
     ax[1].set_title("Resampling using {}".format(sampler.__class__.__name__))
 fig.tight_layout()

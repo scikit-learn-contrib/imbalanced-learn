@@ -59,10 +59,7 @@ from sklearn.utils import check_random_state
 
 from ..utils._validation import _deprecate_positional_args
 
-URL = (
-    "https://zenodo.org/record/61452/files/"
-    "benchmark-imbalanced-learn.tar.gz"
-)
+URL = "https://zenodo.org/record/61452/files/" "benchmark-imbalanced-learn.tar.gz"
 PRE_FILENAME = "x"
 POST_FILENAME = "data.npz"
 

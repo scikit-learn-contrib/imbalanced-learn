@@ -86,9 +86,7 @@ print(classification_report_imbalanced(y_test, y_pred))
 # It is also important to note that we are using the ``make_pipeline`` function
 # implemented in imbalanced-learn to properly handle the samplers.
 
-pipe = make_pipeline_imb(
-    TfidfVectorizer(), RandomUnderSampler(), MultinomialNB()
-)
+pipe = make_pipeline_imb(TfidfVectorizer(), RandomUnderSampler(), MultinomialNB())
 
 pipe.fit(X_train, y_train)
 y_pred = pipe.predict(X_test)

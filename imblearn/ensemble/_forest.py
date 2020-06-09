@@ -368,8 +368,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self.base_estimator_ = clone(default)
 
         self.base_sampler_ = RandomUnderSampler(
-            sampling_strategy=self._sampling_strategy,
-            replacement=self.replacement,
+            sampling_strategy=self._sampling_strategy, replacement=self.replacement,
         )
 
     def _make_sampler_estimator(self, random_state=None):
@@ -378,9 +377,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         sub-estimators.
         """
         estimator = clone(self.base_estimator_)
-        estimator.set_params(
-            **{p: getattr(self, p) for p in self.estimator_params}
-        )
+        estimator.set_params(**{p: getattr(self, p) for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
         if random_state is not None:
@@ -418,9 +415,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         # Validate or convert input data
         if issparse(y):
-            raise ValueError(
-                "sparse multilabel-indicator for y is not supported."
-            )
+            raise ValueError("sparse multilabel-indicator for y is not supported.")
         X, y = self._validate_data(
             X, y, multi_output=True, accept_sparse="csc", dtype=DTYPE
         )
@@ -517,9 +512,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             trees = []
             samplers = []
             for _ in range(n_more_estimators):
-                tree, sampler = self._make_sampler_estimator(
-                    random_state=random_state
-                )
+                tree, sampler = self._make_sampler_estimator(random_state=random_state)
                 trees.append(tree)
                 samplers.append(sampler)
 
@@ -581,8 +574,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         oob_decision_function = []
         oob_score = 0.0
         predictions = [
-            np.zeros((n_samples, n_classes_[k]))
-            for k in range(self.n_outputs_)
+            np.zeros((n_samples, n_classes_[k])) for k in range(self.n_outputs_)
         ]
 
         for sampler, estimator in zip(self.samplers_, self.estimators_):
@@ -619,14 +611,11 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             with np.errstate(invalid="ignore", divide="ignore"):
                 # with the resampling, we are likely to have rows not included
                 # for the OOB score leading to division by zero
-                decision = (
-                    predictions[k] / predictions[k].sum(axis=1)[:, np.newaxis]
-                )
+                decision = predictions[k] / predictions[k].sum(axis=1)[:, np.newaxis]
             mask_scores = np.isnan(np.sum(decision, axis=1))
             oob_decision_function.append(decision)
             oob_score += np.mean(
-                y[~mask_scores, k]
-                == np.argmax(predictions[k][~mask_scores], axis=1),
+                y[~mask_scores, k] == np.argmax(predictions[k][~mask_scores], axis=1),
                 axis=0,
             )
 

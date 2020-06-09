@@ -109,9 +109,7 @@ def plot_decision_function(X, y, clf, ax):
 # centroids of the cluster found.
 
 fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 6))
-X, y = create_dataset(
-    n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8
-)
+X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
 clf = LinearSVC().fit(X, y)
 plot_decision_function(X, y, clf, ax1)
@@ -142,9 +140,7 @@ fig.tight_layout()
 # the targetted class.
 
 fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 6))
-X, y = create_dataset(
-    n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8
-)
+X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
 clf = LinearSVC().fit(X, y)
 plot_decision_function(X, y, clf, ax1)
@@ -169,9 +165,7 @@ fig.tight_layout()
 # samples selected are the on for which the average distance to the :math:`k`
 # nearest neighbors is the largest.
 
-fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(
-    3, 2, figsize=(15, 25)
-)
+fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(15, 25))
 X, y = create_dataset(n_samples=5000, weights=(0.1, 0.2, 0.7), class_sep=0.8)
 
 ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
@@ -188,9 +182,7 @@ for ax, sampler in zip(
     )
     plot_resampling(X, y, sampler, ax[1])
     ax[1].set_title(
-        "Resampling using {}-{}".format(
-            sampler.__class__.__name__, sampler.version
-        )
+        "Resampling using {}-{}".format(sampler.__class__.__name__, sampler.version)
     )
 fig.tight_layout()
 
@@ -202,9 +194,7 @@ fig.tight_layout()
 # the ``RepeatedEditedNearestNeighbours`` by changing the :math:`k` parameter
 # of the internal nearest neighors algorithm, increasing it at each iteration.
 
-fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(
-    3, 2, figsize=(15, 25)
-)
+fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(15, 25))
 X, y = create_dataset(n_samples=500, weights=(0.2, 0.3, 0.5), class_sep=0.8)
 
 ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
@@ -219,9 +209,7 @@ for ax, sampler in zip(
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
-    ax[0].set_title(
-        "Decision function for {}".format(sampler.__class__.__name__)
-    )
+    ax[0].set_title("Decision function for {}".format(sampler.__class__.__name__))
     plot_resampling(X, y, sampler, ax[1])
     ax[1].set_title("Resampling using {}".format(sampler.__class__.__name__))
 fig.tight_layout()
@@ -235,9 +223,7 @@ fig.tight_layout()
 # ``EditedNearestNeighbours`` to remove some sample. Additionally, they use a 3
 # nearest-neighbors to remove samples which do not agree with this rule.
 
-fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(
-    3, 2, figsize=(15, 25)
-)
+fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(15, 25))
 X, y = create_dataset(n_samples=500, weights=(0.2, 0.3, 0.5), class_sep=0.8)
 
 ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
@@ -252,9 +238,7 @@ for ax, sampler in zip(
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
-    ax[0].set_title(
-        "Decision function for {}".format(sampler.__class__.__name__)
-    )
+    ax[0].set_title("Decision function for {}".format(sampler.__class__.__name__))
     plot_resampling(X, y, sampler, ax[1])
     ax[1].set_title("Resampling using {}".format(sampler.__class__.__name__))
 fig.tight_layout()
@@ -265,16 +249,13 @@ fig.tight_layout()
 # removed.
 
 fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 6))
-X, y = create_dataset(
-    n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8
-)
+X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
 clf = LinearSVC().fit(X, y)
 plot_decision_function(X, y, clf, ax1)
 ax1.set_title("Linear SVC with y={}".format(Counter(y)))
 sampler = InstanceHardnessThreshold(
-    random_state=0,
-    estimator=LogisticRegression(solver="lbfgs", multi_class="auto"),
+    random_state=0, estimator=LogisticRegression(solver="lbfgs", multi_class="auto"),
 )
 clf = make_pipeline(sampler, LinearSVC())
 clf.fit(X, y)

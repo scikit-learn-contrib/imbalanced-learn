@@ -102,12 +102,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
     @_deprecate_positional_args
     def __init__(
-        self,
-        *,
-        sampling_strategy="auto",
-        n_neighbors=3,
-        kind_sel="all",
-        n_jobs=None,
+        self, *, sampling_strategy="auto", n_neighbors=3, kind_sel="all", n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
@@ -136,9 +131,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 target_class_indices = np.flatnonzero(y == target_class)
                 X_class = _safe_indexing(X, target_class_indices)
                 y_class = _safe_indexing(y, target_class_indices)
-                nnhood_idx = self.nn_.kneighbors(
-                    X_class, return_distance=False
-                )[:, 1:]
+                nnhood_idx = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
                 nnhood_label = y[nnhood_idx]
                 if self.kind_sel == "mode":
                     nnhood_label, _ = mode(nnhood_label, axis=1)
@@ -151,10 +144,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (
-                    idx_under,
-                    np.flatnonzero(y == target_class)[index_target_class],
-                ),
+                (idx_under, np.flatnonzero(y == target_class)[index_target_class],),
                 axis=0,
             )
 
@@ -318,17 +308,13 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
                     if key != class_minority
                 ]
             )
-            b_min_bec_maj = np.any(
-                count_non_min < target_stats[class_minority]
-            )
+            b_min_bec_maj = np.any(count_non_min < target_stats[class_minority])
 
             # Case 3
             b_remove_maj_class = len(stats_enn) < len(target_stats)
 
             X_, y_, = X_enn, y_enn
-            self.sample_indices_ = self.sample_indices_[
-                self.enn_.sample_indices_
-            ]
+            self.sample_indices_ = self.sample_indices_[self.enn_.sample_indices_]
 
             if b_conv or b_min_bec_maj or b_remove_maj_class:
                 if b_conv:
@@ -491,9 +477,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
                     if key != class_minority
                 ]
             )
-            b_min_bec_maj = np.any(
-                count_non_min < target_stats[class_minority]
-            )
+            b_min_bec_maj = np.any(count_non_min < target_stats[class_minority])
             if self.allow_minority:
                 # overwrite b_min_bec_maj
                 b_min_bec_maj = False
@@ -502,9 +486,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             b_remove_maj_class = len(stats_enn) < len(target_stats)
 
             X_, y_, = X_enn, y_enn
-            self.sample_indices_ = self.sample_indices_[
-                self.enn_.sample_indices_
-            ]
+            self.sample_indices_ = self.sample_indices_[self.enn_.sample_indices_]
 
             if b_min_bec_maj or b_remove_maj_class:
                 break

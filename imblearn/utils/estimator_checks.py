@@ -74,8 +74,7 @@ def _yield_all_checks(estimator):
     tags = estimator._get_tags()
     if tags["_skip_test"]:
         warnings.warn(
-            f"Explicit SKIP via _skip_test tag for estimator {name}.",
-            SkipTestWarning,
+            f"Explicit SKIP via _skip_test tag for estimator {name}.", SkipTestWarning,
         )
         return
     # trigger our checks if this is a SamplerMixin
@@ -201,8 +200,7 @@ def check_samplers_fit_resample(name, sampler):
             # IHT does not enforce the number of samples but provide a number
             # of samples the closest to the desired target.
             assert all(
-                Counter(y_res)[k] <= target_stats[k]
-                for k in target_stats.keys()
+                Counter(y_res)[k] <= target_stats[k] for k in target_stats.keys()
             )
         else:
             assert all(value == n_samples for value in Counter(y_res).values())

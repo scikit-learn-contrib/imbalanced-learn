@@ -220,13 +220,9 @@ def sensitivity_specificity_support(
             # Pathological case
             true_sum = pred_sum = tp_sum = np.zeros(len(labels))
         if len(y_pred):
-            pred_sum = np.bincount(
-                y_pred, weights=sample_weight, minlength=len(labels)
-            )
+            pred_sum = np.bincount(y_pred, weights=sample_weight, minlength=len(labels))
         if len(y_true):
-            true_sum = np.bincount(
-                y_true, weights=sample_weight, minlength=len(labels)
-            )
+            true_sum = np.bincount(y_true, weights=sample_weight, minlength=len(labels))
 
         # Compute the true negative
         tn_sum = y_true.size - (pred_sum + true_sum - tp_sum)
@@ -285,13 +281,7 @@ def sensitivity_specificity_support(
 
 @_deprecate_positional_args
 def sensitivity_score(
-    y_true,
-    y_pred,
-    *,
-    labels=None,
-    pos_label=1,
-    average="binary",
-    sample_weight=None,
+    y_true, y_pred, *, labels=None, pos_label=1, average="binary", sample_weight=None,
 ):
     """Compute the sensitivity
 
@@ -390,13 +380,7 @@ def sensitivity_score(
 
 @_deprecate_positional_args
 def specificity_score(
-    y_true,
-    y_pred,
-    *,
-    labels=None,
-    pos_label=1,
-    average="binary",
-    sample_weight=None,
+    y_true, y_pred, *, labels=None, pos_label=1, average="binary", sample_weight=None,
 ):
     """Compute the specificity
 
@@ -633,10 +617,7 @@ def geometric_mean_score(
         else:
             n_labels = len(labels)
             labels = np.hstack(
-                [
-                    labels,
-                    np.setdiff1d(present_labels, labels, assume_unique=True),
-                ]
+                [labels, np.setdiff1d(present_labels, labels, assume_unique=True),]
             )
 
         le = LabelEncoder()
@@ -662,9 +643,7 @@ def geometric_mean_score(
             # Pathological case
             true_sum = tp_sum = np.zeros(len(labels))
         if len(y_true):
-            true_sum = np.bincount(
-                y_true, weights=sample_weight, minlength=len(labels)
-            )
+            true_sum = np.bincount(y_true, weights=sample_weight, minlength=len(labels))
 
         # Retain only selected labels
         indices = np.searchsorted(sorted_labels, labels[:n_labels])
@@ -672,9 +651,7 @@ def geometric_mean_score(
         true_sum = true_sum[indices]
 
         with np.errstate(divide="ignore", invalid="ignore"):
-            recall = _prf_divide(
-                tp_sum, true_sum, "recall", "true", None, "recall"
-            )
+            recall = _prf_divide(tp_sum, true_sum, "recall", "true", None, "recall")
         recall[recall == 0] = correction
 
         with np.errstate(divide="ignore", invalid="ignore"):
@@ -756,9 +733,7 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
 
             args_scoring_func = signature_scoring_func.bind(*args, **kwargs)
             args_scoring_func.apply_defaults()
-            _score = scoring_func(
-                *args_scoring_func.args, **args_scoring_func.kwargs
-            )
+            _score = scoring_func(*args_scoring_func.args, **args_scoring_func.kwargs)
             if squared:
                 _score = np.power(_score, 2)
 
@@ -768,9 +743,7 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
                 set(args_scoring_func.arguments.keys())
             )
 
-            args_sens_spec = {
-                k: args_scoring_func.arguments[k] for k in common_params
-            }
+            args_sens_spec = {k: args_scoring_func.arguments[k] for k in common_params}
 
             if scoring_func.__name__ == "geometric_mean_score":
                 if "average" in args_sens_spec:
@@ -900,38 +873,22 @@ def classification_report_imbalanced(
     # Compute the different metrics
     # Precision/recall/f1
     precision, recall, f1, support = precision_recall_fscore_support(
-        y_true,
-        y_pred,
-        labels=labels,
-        average=None,
-        sample_weight=sample_weight,
+        y_true, y_pred, labels=labels, average=None, sample_weight=sample_weight,
     )
     # Specificity
     specificity = specificity_score(
-        y_true,
-        y_pred,
-        labels=labels,
-        average=None,
-        sample_weight=sample_weight,
+        y_true, y_pred, labels=labels, average=None, sample_weight=sample_weight,
     )
     # Geometric mean
     geo_mean = geometric_mean_score(
-        y_true,
-        y_pred,
-        labels=labels,
-        average=None,
-        sample_weight=sample_weight,
+        y_true, y_pred, labels=labels, average=None, sample_weight=sample_weight,
     )
     # Index balanced accuracy
     iba_gmean = make_index_balanced_accuracy(alpha=alpha, squared=True)(
         geometric_mean_score
     )
     iba = iba_gmean(
-        y_true,
-        y_pred,
-        labels=labels,
-        average=None,
-        sample_weight=sample_weight,
+        y_true, y_pred, labels=labels, average=None, sample_weight=sample_weight,
     )
 
     for i, label in enumerate(labels):
