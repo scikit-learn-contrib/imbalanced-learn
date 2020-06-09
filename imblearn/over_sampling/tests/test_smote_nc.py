@@ -218,3 +218,21 @@ def test_smotenc_raising_error_all_categorical(categorical_features):
     err_msg = "SMOTE-NC is not designed to work only with categorical features"
     with pytest.raises(ValueError, match=err_msg):
         smote.fit_resample(X, y)
+
+
+def test_smote_nc_with_null_median_std():
+    # Non-regression test for #662
+    # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/662
+    data = np.array([[1, 2, 1, 'A'],
+                     [2, 1, 2, 'A'],
+                     [1, 2, 3, 'B'],
+                     [1, 2, 4, 'C'],
+                     [1, 2, 5, 'C']], dtype="object")
+    labels = np.array(
+        ['class_1', 'class_1', 'class_1', 'class_2', 'class_2'], dtype=object
+    )
+    smote = SMOTENC(categorical_features=[3], k_neighbors=1, random_state=0)
+    X_res, y_res = smote.fit_resample(data, labels)
+    # check that the categorical feature is not random but correspond to the
+    # categories seen in the minority class samples
+    assert X_res[-1, -1] == "C"

@@ -963,20 +963,19 @@ class SMOTENC(SMOTE):
             else X_categorical
         )
 
-        # if self.median_std_ is 0, we have to copy the class information to
-        # avoid losing it in the next step.
-        if self.median_std_ == 0:
-            X_categorical_minority = _safe_indexing(
-                X_ohe.toarray(), np.flatnonzero(y == class_minority)
-            )
-            self.X_categorical_minority_copy_ = (
-                X_categorical_minority
-            )
-
         # we can replace the 1 entries of the categorical features with the
         # median of the standard deviation. It will ensure that whenever
         # distance is computed between 2 samples, the difference will be equal
         # to the median of the standard deviation as in the original paper.
+
+        # In the edge case where the median of the std is equal to 0, the 1s
+        # entries will be also nullified. In this case, we store the original
+        # categorical encoding which will be later used for inversing the OHE
+        if math.isclose(self.median_std_, 0):
+            self._X_categorical_minority_encoded = _safe_indexing(
+                X_ohe.toarray(), np.flatnonzero(y == class_minority)
+            )
+
         X_ohe.data = (
             np.ones_like(X_ohe.data, dtype=X_ohe.dtype) * self.median_std_ / 2
         )
@@ -1038,11 +1037,11 @@ class SMOTENC(SMOTE):
         # convert to dense array since scipy.sparse doesn't handle 3D
         nn_data = (nn_data.toarray() if sparse.issparse(nn_data) else nn_data)
 
-        # reset categorical data if it zeroed out after being multipled
-        # by self.median_std_
-        if self.median_std_ == 0:
+        # In the case that the median std was equal to zeros, we have to
+        # create non-null entry based on the encoded of OHE
+        if math.isclose(self.median_std_, 0):
             nn_data[:, self.continuous_features_.size:] = (
-                self.X_categorical_minority_copy_
+                self._X_categorical_minority_encoded
             )
 
         all_neighbors = nn_data[nn_num[rows]]
