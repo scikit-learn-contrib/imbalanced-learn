@@ -13,6 +13,12 @@ Maintenance
   is activated and `joblib==0.11`.
   :pr:`687` by :user:`Christos Aridas <chkoar>`.
 
+- Refactor common test to use the dev tools from `scikit-learn` 0.23.
+  :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Remove `FutureWarning` issued by `scikit-learn` 0.23.
+  :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Changed models
 ..............
 
@@ -27,6 +33,11 @@ Bug fixes
   scikit-learn.
   :pr:`711` by :user:`zerolfx <zerolfx>`.
 
+- Fix a bug due to change in `scikit-learn` 0.23 in
+  :class:`imblearn.metrics.make_index_balanced_accuracy`. The function was
+  unusable.
+  :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancements
 ............
 
@@ -38,6 +49,13 @@ Enhancements
   with the same key than in `y` without the need of encoding `y` in advance.
   :pr:`718` by :user:`Guillaume Lemaitre <glemaitre>`.
 
-- Lazy import `keras` module when importing `imblearn.
+- Lazy import `keras` module when importing `imblearn.keras`
   :pr:`719` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+Deprecation
+...........
+
+- Deprecation of the parameters `n_jobs` in
+  :class:`imblearn.under_sampling.ClusterCentroids` since it was used by
+  :class:`sklearn.cluster.KMeans` which deprecated it.
+  :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
