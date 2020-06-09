@@ -17,6 +17,7 @@ from ._tomek_links import TomekLinks
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
 from ...utils._docstring import _random_state_docstring
+from ...utils._validation import _deprecate_positional_args
 
 
 @Substitution(
@@ -88,8 +89,10 @@ class OneSidedSelection(BaseCleaningSampler):
     Resampled dataset shape Counter({{1: 496, 0: 100}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         n_neighbors=None,

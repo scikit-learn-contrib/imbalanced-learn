@@ -32,14 +32,14 @@ def test_make_imbalance_error(iris, sampling_strategy, err_msg):
     # cover in the common tests so we will repeat it here
     X, y = iris
     with pytest.raises(ValueError, match=err_msg):
-        make_imbalance(X, y, sampling_strategy)
+        make_imbalance(X, y, sampling_strategy=sampling_strategy)
 
 
 def test_make_imbalance_error_single_class(iris):
     X, y = iris
     y = np.zeros_like(y)
     with pytest.raises(ValueError, match="needs to have more than 1 class."):
-        make_imbalance(X, y, {0: 10})
+        make_imbalance(X, y, sampling_strategy={0: 10})
 
 
 @pytest.mark.parametrize(

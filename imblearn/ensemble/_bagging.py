@@ -18,6 +18,7 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type, check_sampling_strategy
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import _deprecate_positional_args
 
 
 @Substitution(
@@ -175,10 +176,12 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
      [  2 225]]
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
         base_estimator=None,
         n_estimators=10,
+        *,
         max_samples=1.0,
         max_features=1.0,
         bootstrap=True,

@@ -14,6 +14,7 @@ from .base import BaseOverSampler
 from ..utils import check_target_type
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import _deprecate_positional_args
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
@@ -68,7 +69,8 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
-    def __init__(self, sampling_strategy="auto", random_state=None):
+    @_deprecate_positional_args
+    def __init__(self, *, sampling_strategy="auto", random_state=None):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
 

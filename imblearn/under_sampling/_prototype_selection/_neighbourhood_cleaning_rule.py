@@ -16,6 +16,7 @@ from ._edited_nearest_neighbours import EditedNearestNeighbours
 from ...utils import check_neighbors_object
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
+from ...utils._validation import _deprecate_positional_args
 
 SEL_KIND = ("all", "mode")
 
@@ -101,8 +102,10 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{1: 877, 0: 100}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         n_neighbors=3,
         kind_sel="all",

@@ -18,6 +18,7 @@ from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_sampling_strategy
 from imblearn.utils import check_target_type
 from imblearn.utils._validation import ArraysTransformer
+from imblearn.utils._validation import _deprecate_positional_args
 
 multiclass_target = np.array([1] * 50 + [2] * 100 + [3] * 25)
 binary_target = np.array([1] * 25 + [0] * 100)
@@ -366,3 +367,35 @@ def test_arrays_transformer_pandas():
     assert isinstance(y_res, pd.Series)
     assert_array_equal(y_res.name, y_s.name)
     assert_array_equal(y_res.dtype, y_s.dtype)
+
+
+def test_deprecate_positional_args_warns_for_function():
+
+    @_deprecate_positional_args
+    def f1(a, b, *, c=1, d=1):
+        pass
+
+    with pytest.warns(FutureWarning,
+                      match=r"Pass c=3 as keyword args"):
+        f1(1, 2, 3)
+
+    with pytest.warns(FutureWarning,
+                      match=r"Pass c=3, d=4 as keyword args"):
+        f1(1, 2, 3, 4)
+
+    @_deprecate_positional_args
+    def f2(a=1, *, b=1, c=1, d=1):
+        pass
+
+    with pytest.warns(FutureWarning,
+                      match=r"Pass b=2 as keyword args"):
+        f2(1, 2)
+
+    # The * is place before a keyword only argument without a default value
+    @_deprecate_positional_args
+    def f3(a, *, b, c=1, d=1):
+        pass
+
+    with pytest.warns(FutureWarning,
+                      match=r"Pass b=2 as keyword args"):
+        f3(1, 2)

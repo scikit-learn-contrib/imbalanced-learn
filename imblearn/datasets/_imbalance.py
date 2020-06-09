@@ -9,10 +9,12 @@ from collections import Counter
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import check_sampling_strategy
+from ..utils._validation import _deprecate_positional_args
 
 
+@_deprecate_positional_args
 def make_imbalance(
-    X, y, sampling_strategy=None, random_state=None, verbose=False, **kwargs
+    X, y, *, sampling_strategy=None, random_state=None, verbose=False, **kwargs
 ):
     """Turns a dataset into an imbalanced dataset with a specific sampling
     strategy.

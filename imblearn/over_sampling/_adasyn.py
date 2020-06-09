@@ -15,6 +15,7 @@ from ..utils import check_neighbors_object
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
+from ..utils._validation import _deprecate_positional_args
 
 
 @Substitution(
@@ -81,8 +82,10 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 904, 1: 900}})
     """
 
+    @_deprecate_positional_args
     def __init__(
         self,
+        *,
         sampling_strategy="auto",
         random_state=None,
         n_neighbors=5,
