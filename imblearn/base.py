@@ -82,8 +82,11 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         output = self._fit_resample(X, y)
 
-        y_ = (label_binarize(output[1], np.unique(y))
-              if binarize_y else output[1])
+        y_ = (
+            label_binarize(output[1], np.unique(y))
+            if binarize_y
+            else output[1]
+        )
 
         X_, y_ = arrays_transformer.transform(output[0], y_)
         return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
@@ -215,8 +218,9 @@ class FunctionSampler(BaseSampler):
     _sampling_type = "bypass"
 
     @_deprecate_positional_args
-    def __init__(self, *, func=None, accept_sparse=True, kw_args=None,
-                 validate=True):
+    def __init__(
+        self, *, func=None, accept_sparse=True, kw_args=None, validate=True
+    ):
         super().__init__()
         self.func = func
         self.accept_sparse = accept_sparse
@@ -259,8 +263,11 @@ class FunctionSampler(BaseSampler):
 
         if self.validate:
 
-            y_ = (label_binarize(output[1], np.unique(y))
-                  if binarize_y else output[1])
+            y_ = (
+                label_binarize(output[1], np.unique(y))
+                if binarize_y
+                else output[1]
+            )
             X_, y_ = arrays_transformer.transform(output[0], y_)
             return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 

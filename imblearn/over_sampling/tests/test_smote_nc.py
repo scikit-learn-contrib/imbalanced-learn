@@ -211,7 +211,10 @@ def test_smotenc_preserve_dtype():
 )
 def test_smotenc_raising_error_all_categorical(categorical_features):
     X, y = make_classification(
-        n_features=3, n_informative=1, n_redundant=1, n_repeated=0,
+        n_features=3,
+        n_informative=1,
+        n_redundant=1,
+        n_repeated=0,
         n_clusters_per_class=1,
     )
     smote = SMOTENC(categorical_features=categorical_features)
@@ -223,13 +226,18 @@ def test_smotenc_raising_error_all_categorical(categorical_features):
 def test_smote_nc_with_null_median_std():
     # Non-regression test for #662
     # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/662
-    data = np.array([[1, 2, 1, 'A'],
-                     [2, 1, 2, 'A'],
-                     [1, 2, 3, 'B'],
-                     [1, 2, 4, 'C'],
-                     [1, 2, 5, 'C']], dtype="object")
+    data = np.array(
+        [
+            [1, 2, 1, "A"],
+            [2, 1, 2, "A"],
+            [1, 2, 3, "B"],
+            [1, 2, 4, "C"],
+            [1, 2, 5, "C"],
+        ],
+        dtype="object",
+    )
     labels = np.array(
-        ['class_1', 'class_1', 'class_1', 'class_2', 'class_2'], dtype=object
+        ["class_1", "class_1", "class_1", "class_2", "class_2"], dtype=object
     )
     smote = SMOTENC(categorical_features=[3], k_neighbors=1, random_state=0)
     X_res, y_res = smote.fit_resample(data, labels)

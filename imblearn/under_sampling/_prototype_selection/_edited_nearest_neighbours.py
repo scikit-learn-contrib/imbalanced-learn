@@ -102,8 +102,12 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
     @_deprecate_positional_args
     def __init__(
-        self, *, sampling_strategy="auto", n_neighbors=3, kind_sel="all",
-        n_jobs=None
+        self,
+        *,
+        sampling_strategy="auto",
+        n_neighbors=3,
+        kind_sel="all",
+        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
