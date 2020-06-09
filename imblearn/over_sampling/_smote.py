@@ -54,7 +54,6 @@ class BaseSMOTE(BaseOverSampler):
         self.nn_k_ = check_neighbors_object(
             "k_neighbors", self.k_neighbors, additional_neighbor=1
         )
-        self.nn_k_.set_params(**{"n_jobs": self.n_jobs})
 
     def _make_samples(
         self, X, y_dtype, y_type, nn_data, nn_num, n_samples, step_size=1.0
@@ -956,6 +955,7 @@ class SMOTENC(SMOTE):
         self.ohe_ = OneHotEncoder(
             sparse=True, handle_unknown="ignore", dtype=dtype_ohe
         )
+
         # the input of the OneHotEncoder needs to be dense
         X_ohe = self.ohe_.fit_transform(
             X_categorical.toarray()
@@ -967,6 +967,15 @@ class SMOTENC(SMOTE):
         # median of the standard deviation. It will ensure that whenever
         # distance is computed between 2 samples, the difference will be equal
         # to the median of the standard deviation as in the original paper.
+
+        # In the edge case where the median of the std is equal to 0, the 1s
+        # entries will be also nullified. In this case, we store the original
+        # categorical encoding which will be later used for inversing the OHE
+        if math.isclose(self.median_std_, 0):
+            self._X_categorical_minority_encoded = _safe_indexing(
+                X_ohe.toarray(), np.flatnonzero(y == class_minority)
+            )
+
         X_ohe.data = (
             np.ones_like(X_ohe.data, dtype=X_ohe.dtype) * self.median_std_ / 2
         )
@@ -1027,6 +1036,14 @@ class SMOTENC(SMOTE):
 
         # convert to dense array since scipy.sparse doesn't handle 3D
         nn_data = (nn_data.toarray() if sparse.issparse(nn_data) else nn_data)
+
+        # In the case that the median std was equal to zeros, we have to
+        # create non-null entry based on the encoded of OHE
+        if math.isclose(self.median_std_, 0):
+            nn_data[:, self.continuous_features_.size:] = (
+                self._X_categorical_minority_encoded
+            )
+
         all_neighbors = nn_data[nn_num[rows]]
 
         categories_size = [self.continuous_features_.size] + [
