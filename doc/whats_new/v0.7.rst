@@ -44,7 +44,7 @@ Bug fixes
 
 - Fix a bug when the median of the standard deviation is null in
   :class:`imblearn.over_sampling.SMOTENC`.
-  :pr:`675` by :user:`gilbenzvi <gilbenzvi>`.
+  :pr:`675` by :user:`bganglia <bganglia>`.
 
 Enhancements
 ............
