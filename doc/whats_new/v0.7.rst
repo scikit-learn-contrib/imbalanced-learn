@@ -38,6 +38,10 @@ Bug fixes
   unusable.
   :pr:`710` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Raise a proper error message when only numerical or categorical features
+  are given in :class:`imblearn.over_sampling.SMOTENC`.
+  :pr:`720` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancements
 ............
 
