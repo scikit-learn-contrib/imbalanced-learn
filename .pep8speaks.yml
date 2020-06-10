@@ -1,0 +1,8 @@
+# File : .pep8speaks.yml
+
+scanner:
+    diff_only: True  # If True, errors caused by only the patch are shown
+    linter: flake8
+
+flake8:
+    max-line-length: 88  # Default is 79 in PEP 8
