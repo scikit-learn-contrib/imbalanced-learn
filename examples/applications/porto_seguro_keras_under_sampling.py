@@ -226,7 +226,7 @@ df_results = (
 )
 df_time = (
     pd.DataFrame(
-        {"Balanced model": cv_time_balanced, "Imbalanced model": cv_time_imbalanced,}
+        {"Balanced model": cv_time_balanced, "Imbalanced model": cv_time_imbalanced}
     )
     .unstack()
     .reset_index()

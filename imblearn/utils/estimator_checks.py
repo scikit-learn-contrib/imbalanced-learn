@@ -396,9 +396,7 @@ def check_classifiers_with_encoded_labels(name, classifier):
             "Iris-virginica": 50,
         },
     )
-    classifier.set_params(
-        sampling_strategy={"Iris-setosa": 20, "Iris-virginica": 20,}
-    )
+    classifier.set_params(sampling_strategy={"Iris-setosa": 20, "Iris-virginica": 20})
     classifier.fit(df, y)
     assert set(classifier.classes_) == set(y.cat.categories.tolist())
     y_pred = classifier.predict(df)

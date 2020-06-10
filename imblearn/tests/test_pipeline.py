@@ -1248,7 +1248,7 @@ parameter_grid_test_verbose = (
                 r"\[Pipeline\].*\(step 2 of 2\) Processing clf.* total=.*\n$",
             ),
             (
-                Pipeline([("transf", Transf()), ("noop", None), ("clf", FitParamT()),]),
+                Pipeline([("transf", Transf()), ("noop", None), ("clf", FitParamT())]),
                 r"\[Pipeline\].*\(step 1 of 3\) Processing transf.* total=.*\n"
                 r"\[Pipeline\].*\(step 2 of 3\) Processing noop.* total=.*\n"
                 r"\[Pipeline\].*\(step 3 of 3\) Processing clf.* total=.*\n$",

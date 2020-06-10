@@ -326,7 +326,7 @@ def test_arrays_transformer_pandas():
 
     X_df = pd.DataFrame(X, columns=["a", "b"])
     X_df = X_df.astype(int)
-    y_df = pd.DataFrame(y, columns=["target",])
+    y_df = pd.DataFrame(y, columns=["target"])
     y_df = y_df.astype(int)
     y_s = pd.Series(y, name="target", dtype=int)
 

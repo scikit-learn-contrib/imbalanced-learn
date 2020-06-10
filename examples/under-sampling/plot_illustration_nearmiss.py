@@ -40,7 +40,7 @@ def make_plot_despine(ax):
 
 # minority class
 X_minority = np.transpose(
-    [[1.1, 1.3, 1.15, 0.8, 0.8, 0.6, 0.55], [1.0, 1.5, 1.7, 2.5, 2.0, 1.2, 0.55],]
+    [[1.1, 1.3, 1.15, 0.8, 0.8, 0.6, 0.55], [1.0, 1.5, 1.7, 2.5, 2.0, 1.2, 0.55]]
 )
 # majority class
 X_majority = np.transpose(

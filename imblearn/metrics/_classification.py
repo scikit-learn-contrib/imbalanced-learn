@@ -617,7 +617,7 @@ def geometric_mean_score(
         else:
             n_labels = len(labels)
             labels = np.hstack(
-                [labels, np.setdiff1d(present_labels, labels, assume_unique=True),]
+                [labels, np.setdiff1d(present_labels, labels, assume_unique=True)]
             )
 
         le = LabelEncoder()

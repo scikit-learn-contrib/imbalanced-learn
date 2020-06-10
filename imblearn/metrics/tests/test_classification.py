@@ -439,7 +439,7 @@ def test_iba_sklearn_metrics(score, expected_score):
 
 @pytest.mark.parametrize(
     "score_loss",
-    [average_precision_score, brier_score_loss, cohen_kappa_score, roc_auc_score,],
+    [average_precision_score, brier_score_loss, cohen_kappa_score, roc_auc_score],
 )
 def test_iba_error_y_score_prob_error(score_loss):
     y_true, y_pred, _ = make_prediction(binary=True)
