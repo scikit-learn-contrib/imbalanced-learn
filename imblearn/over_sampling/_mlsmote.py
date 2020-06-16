@@ -59,8 +59,6 @@ class MLSMOTE:
         else:
             self.labels = np.array([np.array(xi) for xi in y])
             self.unique_labels = self._collect_unique_labels(y)
-        self.imbalance_ratio_per_label = np.array(
-            list(map(self._get_imbalance_ratio_per_label, self.unique_labels)))
         self.features = X
 
         X_synth = []
@@ -74,7 +72,7 @@ class MLSMOTE:
             y_synth = None
 
             for label in self.unique_labels:
-                irlbl = self.imbalance_ratio_per_label[label]
+                irlbl = self._get_imbalance_ratio_per_label(label, y_resampled)
                 if irlbl > mean_ir:
                     min_bag = self._get_all_instances_of_label(label)
                     for sample in min_bag:
@@ -89,7 +87,7 @@ class MLSMOTE:
             return np.concatenate((X_resampled, np.array(X_synth))), y_resampled
         else:
             for index, label in np.ndenumerate(self.unique_labels):
-                irlbl = self.imbalance_ratio_per_label[index]
+                irlbl = self._get_imbalance_ratio_per_label(label, y_resampled)
                 if irlbl > mean_ir:
                     min_bag = self._get_all_instances_of_label(label)
                     for sample in min_bag:
@@ -228,17 +226,25 @@ class MLSMOTE:
         return np.array(instance_ids)
 
     def _get_mean_imbalance_ratio(self):
-        ratio_sum = np.sum(self.imbalance_ratio_per_label)
+        ratio_sum = np.sum(np.array(
+            list(map(self._get_imbalance_ratio_per_label, self.unique_labels))))
         return ratio_sum/len(self.unique_labels)
 
-    def _get_imbalance_ratio_per_label(self, label):
-        sum_array = list(map(self._sum_h, self.unique_labels))
-        sum_array = np.array(sum_array)
-        return sum_array.max()/self._sum_h(label)
+    def _get_imbalance_ratio_per_label(self, label, labels=None):
+        sum_h = self._sum_h
+        if labels is None:
+            sum_array = np.array([sum_h(l, self.labels)
+                                  for l in self.unique_labels])
+            ratio = sum_array.max()/sum_h(label, self.labels)
+        else:
+            sum_array = np.array([sum_h(l, labels)for l in self.unique_labels])
+            ratio = sum_array.max()/sum_h(label, labels)
 
-    def _sum_h(self, label):
-        if sparse.issparse(self.labels):
-            return self.labels[:, label].count_nonzero()
+        return ratio
+
+    def _sum_h(self, label, labels):
+        if sparse.issparse(labels):
+            return labels[:, label].count_nonzero()
 
         h_sum = 0
 
@@ -248,7 +254,7 @@ class MLSMOTE:
             else:
                 return 0
 
-        for label_set in self.labels:
+        for label_set in labels:
             h_sum += h(label, label_set)
 
         return h_sum
