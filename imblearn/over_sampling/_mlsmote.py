@@ -143,17 +143,12 @@ class MLSMOTE:
 
         if sparse.issparse(self.labels):
             neighbours_labels = self.labels[neighbour_ids]
-            print("ns", neighbours_labels)
             possible_labels = neighbours_labels.sum(axis=0)
-            print("possible", possible_labels)
             y = np.zeros((1, len(self.unique_labels)))
             if self.sampling_strategy_ == 'ranking':
                 head_index = int((self.k_neighbors + 1)/2)
-                print("choosen_nonz", possible_labels.nonzero())
                 choosen_labels = possible_labels.nonzero()[1][:head_index]
-                print("choosen", choosen_labels)
                 y[0, choosen_labels] = 1
-                print("y", y)
             if self.sampling_strategy_ == 'union':
                 choosen_labels = possible_labels.nonzero()[0]
                 y[choosen_labels] = 1
