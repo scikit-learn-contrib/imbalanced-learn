@@ -182,16 +182,14 @@ class MLSMOTE:
         return X, y
 
     def _calc_distances(self, sample, min_bag):
-        distances = []
-        append_distances = distances.append
-        for bag_sample in min_bag:
-            nominal_distances = np.array([self._get_vdm(
-                self.features[sample, cat], self.features[bag_sample, cat])for cat in self.categorical_features_])
-            ordinal_distances = np.array([self._get_euclidean_distance(
+        def calc_dist(bag_sample):
+            nominal_distance = sum([self._get_vdm(
+                self.features[sample, cat], self.features[bag_sample, cat], cat)for cat in self.categorical_features_])
+            ordinal_distance = sum([self._get_euclidean_distance(
                 self.features[sample, num], self.features[bag_sample, num])for num in self.continuous_features_])
-            dists = np.array(
-                [nominal_distances.sum(), ordinal_distances.sum()])
-            append_distances((dists.sum(), bag_sample))
+            dist = sum([nominal_distance, ordinal_distance])
+            return (dist, bag_sample)
+        distances = [calc_dist(bag_sample) for bag_sample in min_bag]
         dtype = np.dtype([('distance', float), ('index', int)])
         return np.array(distances, dtype=dtype)
 
