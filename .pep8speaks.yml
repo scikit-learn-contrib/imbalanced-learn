@@ -6,3 +6,5 @@ scanner:
 
 flake8:
     max-line-length: 88  # Default is 79 in PEP 8
+    ignore:  # Errors and warnings to ignore
+        - E203
