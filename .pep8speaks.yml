@@ -1,7 +1,7 @@
 # File : .pep8speaks.yml
 
 scanner:
-    diff_only: True  # If True, errors caused by only the patch are shown
+    diff_only: False  # If True, errors caused by only the patch are shown
     linter: flake8
 
 flake8:
