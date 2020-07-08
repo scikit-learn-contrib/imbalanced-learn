@@ -1,4 +1,5 @@
 numpy>=1.11
+pre-commit>=2.6.0
 scipy>=0.17
 scikit-learn>=0.22
 joblib>=0.11
