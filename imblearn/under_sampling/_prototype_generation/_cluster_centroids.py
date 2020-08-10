@@ -171,7 +171,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                 self.estimator_.set_params(**{"n_clusters": n_samples})
                 self.estimator_.fit(X[y == target_class])
                 X_new, y_new = self._generate_sample(
-                    X, y, self.estimator_.cluster_centers_, target_class
+                    X[y == target_class], y[y == target_class], self.estimator_.cluster_centers_, target_class
                 )
                 X_resampled.append(X_new)
                 y_resampled.append(y_new)
