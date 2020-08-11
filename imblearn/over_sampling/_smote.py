@@ -554,12 +554,19 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
             support_vector = _safe_indexing(X, support_index)
 
             self.nn_m_.fit(X)
+            
+            prev_support_vector = support_vector
+            
             noise_bool = self._in_danger_noise(
                 self.nn_m_, support_vector, class_sample, y, kind="noise"
             )
             support_vector = _safe_indexing(
                 support_vector, np.flatnonzero(np.logical_not(noise_bool))
             )
+            
+            if len(support_vector) == 0:
+                support_vector = prev_support_vector
+            
             danger_bool = self._in_danger_noise(
                 self.nn_m_, support_vector, class_sample, y, kind="danger"
             )
