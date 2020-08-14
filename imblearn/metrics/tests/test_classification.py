@@ -14,7 +14,6 @@ from sklearn import datasets
 from sklearn import svm
 
 from sklearn.preprocessing import label_binarize
-from sklearn.utils.fixes import np_version
 from sklearn.utils.validation import check_random_state
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_array_equal
@@ -413,12 +412,8 @@ def test_classification_report_imbalanced_multiclass_with_unicode_label():
         "red¢ 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total "
         "0.51 0.53 0.80 0.47 0.58 0.40 75"
     )
-    if np_version[:3] < (1, 7, 0):
-        with pytest.raises(RuntimeError, match="NumPy < 1.7.0"):
-            classification_report_imbalanced(y_true, y_pred)
-    else:
-        report = classification_report_imbalanced(y_true, y_pred)
-        assert _format_report(report) == expected_report
+    report = classification_report_imbalanced(y_true, y_pred)
+    assert _format_report(report) == expected_report
 
 
 def test_classification_report_imbalanced_multiclass_with_long_string_label():
