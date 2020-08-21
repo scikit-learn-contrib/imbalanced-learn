@@ -2,8 +2,6 @@
 # Authors: Andrea Lorenzon <andrelorenzon@gmail.com>
 # License: MIT
 
-import pytest
-
 import numpy as np
 
 from imblearn.over_sampling import ROSE
@@ -12,12 +10,15 @@ from imblearn.over_sampling import ROSE
 def test_testunit():
     return True
 
+
 def test_randomState():
     assert(np.random.RandomState(42))
 
+
 def test_instance():
     rose = ROSE()
-    assert(ROSE)
+    assert(id(rose))
+
 
 RND_SEED = 0
 X = np.array(
@@ -50,5 +51,5 @@ R_TOL = 1e-4
 
 def test_rose():
     X_res, y_res = ROSE().fit_resample(X, Y)
-    assert(np.unique(Y.all())==np.unique(y_res.all()))
+    assert(np.unique( Y.all() )==np.unique( y_res.all() ))
     assert(X_res.shape[1]==X.shape[1])
