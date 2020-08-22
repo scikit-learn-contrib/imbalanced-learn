@@ -21,7 +21,7 @@ class ROSE(BaseOverSampler):
     shrink_factors : dict of {classes: shrinkfactors} couples, applied to
         the gaussian kernels
     {n_jobs}
-        
+
     Notes
     -----
     TODO: Support for multi-class resampling. A one-vs.one scheme is used.
@@ -33,18 +33,11 @@ class ROSE(BaseOverSampler):
     .. [2] G Menardi, N. Torelli, "Training and assessing classification
        rules with imbalanced data," Data Mining and Knowledge
        Discovery, 28(1), pp.92-122, 2014.
-    
     """
 
     @_deprecate_positional_args
-    def __init__(
-        self,
-        *,
-        sampling_strategy="auto",
-        shrink_factors=None,
-        random_state=None,
-        n_jobs=None,
-    ):
+    def __init__(self, *, sampling_strategy="auto", shrink_factors=None,
+                 random_state=None, n_jobs=None):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.shrink_factors = shrink_factors
@@ -100,9 +93,8 @@ class ROSE(BaseOverSampler):
         return Xrose
 
     def _fit_resample(self, X, y):
-        
-        #random_state = check_random_state(self.random_state)
 
+        #random_state = check_random_state(self.random_state)
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0), dtype=X.dtype)
 
@@ -126,3 +118,4 @@ class ROSE(BaseOverSampler):
             y_resampled = np.hstack((y_resampled, y_new))
 
         return X_resampled.astype(X.dtype), y_resampled.astype(y.dtype)
+        

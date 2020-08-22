@@ -8,16 +8,19 @@ from imblearn.over_sampling import ROSE
 
 
 def test_testunit():
+    """Check test unit"""
     return True
 
 
-def test_randomState():
-    assert(np.random.RandomState(42))
+def test_random_state():
+    """Check randomState()"""
+    assert np.random.RandomState(42)
 
 
 def test_instance():
+    """Check ROSE instantiation"""
     rose = ROSE()
-    assert(id(rose))
+    assert id(rose)
 
 
 RND_SEED = 0
@@ -50,6 +53,7 @@ R_TOL = 1e-4
 
 
 def test_rose():
+    """Check ROSE use"""
     X_res, y_res = ROSE().fit_resample(X, Y)
-    assert(np.unique( Y.all() )==np.unique( y_res.all() ))
-    assert(X_res.shape[1]==X.shape[1])
+    assert np.unique(Y.all()) == np.unique(y_res.all())
+    assert X_res.shape[1] == X.shape[1]
