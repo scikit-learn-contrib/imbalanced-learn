@@ -13,7 +13,14 @@ class ROSE(BaseOverSampler):
 
     """Oversample using Random OverSampling Examples (ROSE) algorithm.
 
+    The algorithm generates new samples by a smoothed bootstrap approach.
+    The generation of new examples corresponds to the generation of data from
+    the kernel density estimate of f(x|Y_i), with a smoothing matrix H_j.
+    A shrinking matrix can be provided, to set the bandwidth of the gaussian
+    kernel.
+
     Read more in the :ref:`User Guide <rose>`.
+
     Parameters
     ----------
     {sampling_strategy}
@@ -74,9 +81,6 @@ class ROSE(BaseOverSampler):
             Target values for synthetic samples.
 
         """
-
-        # pdb.set_trace()
-
         p = X.shape[1]
 
         random_state = check_random_state(self.random_state)
@@ -94,12 +98,13 @@ class ROSE(BaseOverSampler):
 
     def _fit_resample(self, X, y):
 
-        #random_state = check_random_state(self.random_state)
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0), dtype=X.dtype)
 
         if self.shrink_factors is None:
-            self.shrink_factors = {key: 1 for key in self.sampling_strategy_.keys()}
+            self.shrink_factors = {
+                key: 1 for key in self.sampling_strategy_.keys()
+                }
 
         for class_sample, n_samples in self.sampling_strategy_.items():
             class_indices = np.flatnonzero(y == class_sample)
@@ -118,4 +123,3 @@ class ROSE(BaseOverSampler):
             y_resampled = np.hstack((y_resampled, y_new))
 
         return X_resampled.astype(X.dtype), y_resampled.astype(y.dtype)
-        
