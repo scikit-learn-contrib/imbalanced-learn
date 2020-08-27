@@ -155,6 +155,7 @@ Below is a list of the methods currently implemented in this module.
     5. SVM SMOTE - Support Vectors SMOTE [10]_
     6. ADASYN - Adaptive synthetic sampling approach for imbalanced learning [15]_
     7. KMeans-SMOTE [17]_
+    8. ROSE - Random OverSampling Examples [19]_
 
 * Over-sampling followed by under-sampling
     1. SMOTE + Tomek links [12]_
@@ -211,3 +212,5 @@ References:
 .. [17] : Felix Last, Georgios Douzas, Fernando Bacao, "Oversampling for Imbalanced Learning Based on K-Means and SMOTE"
 
 .. [18] : Seiffert, C., Khoshgoftaar, T. M., Van Hulse, J., & Napolitano, A. "RUSBoost: A hybrid approach to alleviating class imbalance." IEEE Transactions on Systems, Man, and Cybernetics-Part A: Systems and Humans 40.1 (2010): 185-197.
+
+.. [19] : Menardi, G., Torelli, N.: "Training and assessing classification rules with unbalanced data", Data Mining and Knowledge Discovery,  28, (2014): 92–122
