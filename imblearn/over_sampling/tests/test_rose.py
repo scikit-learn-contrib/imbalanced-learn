@@ -38,5 +38,4 @@ def test_rose():
     )
     Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
     X_res, y_res = ROSE(random_state=RND_SEED).fit_resample(X, Y)
-    assert np.unique(Y.all()) == np.unique(y_res.all())
     assert X_res.shape[1] == X.shape[1]
