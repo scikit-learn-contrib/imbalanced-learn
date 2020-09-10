@@ -6,8 +6,10 @@ from scipy import sparse
 from sklearn.utils import check_random_state
 
 from .base import BaseOverSampler
-from ..utils._validation import _deprecate_positional_args
 
+from ..utils import check_target_type
+from ..utils._validation import _deprecate_positional_args
+from sklearn.utils.multiclass import type_of_target
 
 class ROSE(BaseOverSampler):
 
@@ -97,6 +99,9 @@ class ROSE(BaseOverSampler):
         return Xrose
 
     def _fit_resample(self, X, y):
+
+        if type_of_target(y) != "binary":
+            raise Exception("ROSE supports only binary outcome datasets.")
 
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0), dtype=X.dtype)
