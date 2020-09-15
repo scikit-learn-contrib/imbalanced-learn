@@ -112,17 +112,6 @@ class ROSE(BaseOverSampler):
 
     def _fit_resample(self, X, y):
 
-        datatype = "numpy"
-        X_names = ""
-        y_names = ""
-
-        # convert pandas to numpy
-        if isinstance(X, pandas.DataFrame):
-            datatype = "pandas"
-            X_names = X.columns
-            y_names = y.columns
-            X = X.to_numpy()
-            y = y.to_numpy()
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0), dtype=X.dtype)
 
@@ -150,12 +139,5 @@ class ROSE(BaseOverSampler):
                 X_resampled = np.vstack((X_resampled, X_new))
 
             y_resampled = np.hstack((y_resampled, y_new))
-
-        if datatype == "pandas":
-            X = pandas.DataFrame(X_resampled.astype(X.dtype))
-            X.columns = X_names
-            y = pandas.DataFrame(y_resampled.astype(y.dtype))
-            y.columns = y_names
-            return X, y
 
         return X_resampled.astype(X.dtype), y_resampled.astype(y.dtype)
