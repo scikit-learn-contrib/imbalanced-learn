@@ -54,7 +54,6 @@ class ROSE(BaseOverSampler):
         self.shrink_factors = shrink_factors
         self.n_jobs = n_jobs
 
-    
     def _make_samples(self,
                       X,
                       class_indices,
@@ -98,7 +97,7 @@ class ROSE(BaseOverSampler):
         minimize_amise = (4 / ((number_of_features + 2) * len(
             class_indices))) ** (1 / (number_of_features + 4))
         # create a diagonal matrix with the st.dev. of all classes
-        variances = np.std(np.diagflat(X[class_indices, :]),axis=0, ddof=1)
+        variances = np.std(np.diagflat(X[class_indices, :]), axis=0, ddof=1)
         # compute H_opt  = optional shrink factors * min(AMISE) * kernel variance
         h_opt = h_shrink * minimize_amise * variances
         # (sample from multivariate normal)* h_opt + original values
@@ -109,9 +108,9 @@ class ROSE(BaseOverSampler):
 
     def _fit_resample(self, X, y):
 
-        datatype="numpy"
-        X_names=""
-        y_names=""
+        datatype = "numpy"
+        X_names = ""
+        y_names = ""
 
         # convert pandas to numpy
         if isinstance(X, pandas.DataFrame):
@@ -119,8 +118,7 @@ class ROSE(BaseOverSampler):
             X_names = X.columns
             y_names = y.columns
             X = X.to_numpy()
-            y = y.to_numpy() 
-
+            y = y.to_numpy()
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0), dtype=X.dtype)
 
@@ -149,11 +147,11 @@ class ROSE(BaseOverSampler):
 
             y_resampled = np.hstack((y_resampled, y_new))
 
-        if datatype=="numpy":
-            return X_resampled.astype(X.dtype), y_resampled.astype(y.dtype)
-        elif datatype =="pandas":
+        if datatype == "pandas":
             X = pandas.DataFrame(X_resampled.astype(X.dtype))
             X.columns = X_names
             y = pandas.DataFrame(y_resampled.astype(y.dtype))
             y.columns = y_names
-
+            return X, y
+        
+        return X_resampled.astype(X.dtype), y_resampled.astype(y.dtype)
