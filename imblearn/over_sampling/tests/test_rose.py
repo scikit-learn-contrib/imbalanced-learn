@@ -24,4 +24,3 @@ def test_rose():
                   [3.3, 3.3, 3.3, 0]])
     Y = np.array([1, 2, 3, 1, 2, 3, 1, 2, 3])
     X_res, y_res = ROSE(random_state=RND_SEED).fit_resample(X, Y)
-    
