@@ -2,6 +2,7 @@
 
 import numpy as np
 from scipy import sparse
+import pandas
 
 from sklearn.utils import check_random_state
 #from sklearn.utils.multiclass import type_of_target
@@ -53,6 +54,7 @@ class ROSE(BaseOverSampler):
         self.shrink_factors = shrink_factors
         self.n_jobs = n_jobs
 
+    
     def _make_samples(self,
                       X,
                       class_indices,
@@ -96,7 +98,7 @@ class ROSE(BaseOverSampler):
         minimize_amise = (4 / ((number_of_features + 2) * len(
             class_indices))) ** (1 / (number_of_features + 4))
         # create a diagonal matrix with the st.dev. of all classes
-        variances = np.diagflat(X[class_indices, :].std(axis=0, ddof=1))
+        variances = np.std(np.diagflat(X[class_indices, :]),axis=0, ddof=1)
         # compute H_opt  = optional shrink factors * min(AMISE) * kernel variance
         h_opt = h_shrink * minimize_amise * variances
         # (sample from multivariate normal)* h_opt + original values
@@ -107,15 +109,24 @@ class ROSE(BaseOverSampler):
 
     def _fit_resample(self, X, y):
 
-        # if type_of_target(y) != "binary":
-        #     raise Exception("ROSE supports only binary outcome datasets.")
+        datatype="numpy"
+        X_names=""
+        y_names=""
+
+        # convert pandas to numpy
+        if isinstance(X, pandas.DataFrame):
+            datatype = "pandas"
+            X_names = X.columns
+            y_names = y.columns
+            X = X.to_numpy()
+            y = y.to_numpy() 
 
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0), dtype=X.dtype)
 
         if self.shrink_factors is None:
             self.shrink_factors = {
-                key: 1 for key in self.sampling_strategy_.keys()
+                key: 0.5 for key in self.sampling_strategy_.keys()
                 }
 
         for class_sample, n_samples in self.sampling_strategy_.items():
@@ -123,6 +134,7 @@ class ROSE(BaseOverSampler):
             class_indices = np.flatnonzero(y == class_sample)
             # compute final n. of samples, by number of elements of a class + n_samples
             n_class_samples = len(class_indices) + n_samples
+
             # resample
             X_new = self._make_samples(X,
                                        class_indices,
@@ -137,4 +149,11 @@ class ROSE(BaseOverSampler):
 
             y_resampled = np.hstack((y_resampled, y_new))
 
-        return X_resampled.astype(X.dtype), y_resampled.astype(y.dtype)
+        if datatype=="numpy":
+            return X_resampled.astype(X.dtype), y_resampled.astype(y.dtype)
+        elif datatype =="pandas":
+            X = pandas.DataFrame(X_resampled.astype(X.dtype))
+            X.columns = X_names
+            y = pandas.DataFrame(y_resampled.astype(y.dtype))
+            y.columns = y_names
+
