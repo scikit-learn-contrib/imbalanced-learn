@@ -5,11 +5,11 @@ from scipy import sparse
 import pandas
 
 from sklearn.utils import check_random_state
-#from sklearn.utils.multiclass import type_of_target
+# from sklearn.utils.multiclass import type_of_target
 
 from .base import BaseOverSampler
 
-#from ..utils import check_target_type
+# from ..utils import check_target_type
 from ..utils._validation import _deprecate_positional_args
 
 
@@ -59,10 +59,10 @@ class ROSE(BaseOverSampler):
                       class_indices,
                       n_class_samples,
                       h_shrink):
-        """ A support function that returns artificial samples constructed from
-        a random subsample of the data, by adding a multiviariate gaussian kernel
-        and sampling from this distribution. An optional shrink factor can be
-        included, to compress/dilate the kernel.
+        """ A support function that returns artificial samples constructed
+        from a random subsample of the data, by adding a multiviariate
+        gaussian kernel and sampling from this distribution. An optional
+        shrink factor can be included, to compress/dilate the kernel.
 
         Parameters
         ----------
@@ -92,17 +92,21 @@ class ROSE(BaseOverSampler):
         # import random state from API
         random_state = check_random_state(self.random_state)
         # get random subsample of data with replacement
-        samples_indices = random_state.choice(class_indices, size=n_class_samples, replace=True)
+        samples_indices = random_state.choice(
+            class_indices, size=n_class_samples, replace=True)
         # compute optimal min(AMISE)
         minimize_amise = (4 / ((number_of_features + 2) * len(
             class_indices))) ** (1 / (number_of_features + 4))
         # create a diagonal matrix with the st.dev. of all classes
-        variances = np.std(np.diagflat(X[class_indices, :]), axis=0, ddof=1)
-        # compute H_opt  = optional shrink factors * min(AMISE) * kernel variance
+        variances = np.std(np.diagflat(X[class_indices, :]),
+                           axis=0,
+                           ddof=1)
+        # compute H_optimal
         h_opt = h_shrink * minimize_amise * variances
         # (sample from multivariate normal)* h_opt + original values
         Xrose = np.random.standard_normal(
-            size=(n_class_samples, number_of_features)) @ h_opt + X[samples_indices, :]
+            size=(n_class_samples,
+                  number_of_features)) @ h_opt + X[samples_indices, :]
 
         return Xrose
 
@@ -130,7 +134,7 @@ class ROSE(BaseOverSampler):
         for class_sample, n_samples in self.sampling_strategy_.items():
             # get indices of all y's with a given class n
             class_indices = np.flatnonzero(y == class_sample)
-            # compute final n. of samples, by number of elements of a class + n_samples
+            # compute final n. of samples, by n. of elements + n_samples
             n_class_samples = len(class_indices) + n_samples
 
             # resample
@@ -153,5 +157,5 @@ class ROSE(BaseOverSampler):
             y = pandas.DataFrame(y_resampled.astype(y.dtype))
             y.columns = y_names
             return X, y
-        
+
         return X_resampled.astype(X.dtype), y_resampled.astype(y.dtype)
