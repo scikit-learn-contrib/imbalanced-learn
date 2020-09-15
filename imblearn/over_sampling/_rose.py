@@ -4,7 +4,7 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.utils import check_random_state
-from sklearn.utils.multiclass import type_of_target
+#from sklearn.utils.multiclass import type_of_target
 
 from .base import BaseOverSampler
 
