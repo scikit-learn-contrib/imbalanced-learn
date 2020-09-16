@@ -133,13 +133,13 @@ class ROSE(BaseOverSampler):
         # X, y = check_X_y(X, y)
         # X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         # y_resampled = np.empty((0), dtype=X.dtype)
-        debug= False
+        debug = False
         X_resampled = X.copy()
         y_resampled = y.copy()
 
         if self.shrink_factors is None:
             self.shrink_factors = {
-                key: 0.5 for key in self.sampling_strategy_.keys()
+                key: 1 for key in self.sampling_strategy_.keys()
                 }
      
         for class_sample, n_samples in self.sampling_strategy_.items():
