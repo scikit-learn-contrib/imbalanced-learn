@@ -164,7 +164,7 @@ class ROSE(BaseOverSampler):
             if sparse.issparse(X_new):
                 X_resampled = sparse.vstack([X_resampled, X_new])
             else:
-                X_resampled = np.vstack((X_resampled, X_new))
+                X_resampled = np.concatenate((X_resampled, X_new))
 
             y_resampled = np.hstack((y_resampled, y_new))
 
