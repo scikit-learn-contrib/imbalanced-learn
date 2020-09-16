@@ -48,7 +48,7 @@ class ROSE(BaseOverSampler):
         self.random_state = random_state
         self.shrink_factors = shrink_factors
         self.n_jobs = n_jobs
-        print("init done: \n {}".format(self.shrink_factors))
+        # print("init done: \n {}".format(self.shrink_factors))
     def _make_samples(self,
                       X,
                       class_indices,
@@ -125,6 +125,11 @@ class ROSE(BaseOverSampler):
             # compute final n. of samples, by n. of elements + n_samples
             n_class_samples = len(class_indices) + n_samples
 
+            print("""
+            class_indices = {class_indices} \n
+            n_class_samples = {n_class_samples} \n
+            self.shrink_factors = {self.shrink_factors}\n
+            """)
             # resample
             X_new = self._make_samples(X,
                                        class_indices,
