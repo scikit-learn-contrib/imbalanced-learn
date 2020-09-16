@@ -126,10 +126,10 @@ class ROSE(BaseOverSampler):
             n_class_samples = len(class_indices) + n_samples
 
             print("""
-            class_indices = {class_indices} \n
-            n_class_samples = {n_class_samples} \n
-            self.shrink_factors = {self.shrink_factors}\n
-            """)
+            class_indices = {} \n
+            n_class_samples = {} \n
+            self.shrink_factors = {}\n
+            """.format(class_indices,n_class_samples,self.shrink_factors))
             # resample
             X_new = self._make_samples(X,
                                        class_indices,
