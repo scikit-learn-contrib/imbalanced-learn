@@ -108,8 +108,11 @@ class ROSE(BaseOverSampler):
     def _fit_resample(self, X, y):
 
         # X, y = check_X_y(X, y)
-        X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        y_resampled = np.empty((0), dtype=X.dtype)
+        # X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
+        # y_resampled = np.empty((0), dtype=X.dtype)
+
+        X_resampled = X.copy()
+        y_resampled = y.copy()
 
         if self.shrink_factors is None:
             self.shrink_factors = {
