@@ -121,9 +121,9 @@ class ROSE(BaseOverSampler):
                         number_of_features))
         print("randoms = {} , {}".format(randoms, randoms.shape))
         #Xrose = randoms @ h_opt + X[samples_indices, :]
-        Xrose = np.matmul(randoms.T,h_opt) + X[samples_indices, :]
+        Xrose = np.matmul(randoms,h_opt) + X[samples_indices, :]
         if self.debug:
-            print(Xrose)
+            print("Xrose = \n" , Xrose)
         return Xrose
 
     def _fit_resample(self, X, y):
