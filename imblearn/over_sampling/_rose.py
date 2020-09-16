@@ -48,7 +48,7 @@ class ROSE(BaseOverSampler):
         self.random_state = random_state
         self.shrink_factors = shrink_factors
         self.n_jobs = n_jobs
-    debug=True
+        self.debug=True
         # print("init done: \n {}".format(self.shrink_factors))
     def _make_samples(self,
                       X,
@@ -98,7 +98,7 @@ class ROSE(BaseOverSampler):
                            axis=0,
                            ddof=1)
         # compute H_optimal
-        if debug: 
+        if self.debug: 
             print("""
                 class_indices = {}
                 computing h_opt:
@@ -110,7 +110,7 @@ class ROSE(BaseOverSampler):
         # (sample from multivariate normal)* h_opt + original values
         
 
-        if debug: 
+        if self.debug: 
             print("""
                 inside Rose:
                 n_class_sample = {}
@@ -147,7 +147,7 @@ class ROSE(BaseOverSampler):
             # compute final n. of samples, by n. of elements + n_samples
             n_class_samples = len(class_indices)# + n_samples
 
-            if debug: 
+            if self.debug: 
                 print("""
                     class_indices = {} \n
                     n_class_samples = {} \n
