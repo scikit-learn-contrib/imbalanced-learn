@@ -104,12 +104,14 @@ class ROSE(BaseOverSampler):
         inside Rose:
         n_class_sample = {}
         number_of_features = {}
-        h_opt = {}
+        h_opt = {} , {}
         sample_indices = {}
-        """.format(n_class_samples,number_of_features,h_opt,samples_indices))
-        Xrose = np.random.standard_normal(
-            size=(n_class_samples,
-                  number_of_features)) @ h_opt + X[samples_indices, :]
+        """.format(n_class_samples,number_of_features,h_opt, h_opt.shape,samples_indices))
+        randoms = np.random.standard_normal(
+                        size=(n_class_samples,
+                        number_of_features))
+        print("randoms = {} , {}".format(randoms, randoms.shape))
+        Xrose = randoms @ h_opt + X[samples_indices, :]
 
         return Xrose
 
