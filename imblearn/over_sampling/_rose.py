@@ -48,7 +48,7 @@ class ROSE(BaseOverSampler):
         self.random_state = random_state
         self.shrink_factors = shrink_factors
         self.n_jobs = n_jobs
-        self.debug=True
+        
         # print("init done: \n {}".format(self.shrink_factors))
     def _make_samples(self,
                       X,
@@ -96,7 +96,8 @@ class ROSE(BaseOverSampler):
         # create a diagonal matrix with the st.dev. of all classes
         variances = np.diagflat(np.std(X[class_indices,:], axis=0, ddof=1))
         # compute H_optimal
-        if self.debug: 
+        debug = True
+        if debug: 
             print("""
                 class_indices = {}
                 computing h_opt:
@@ -108,7 +109,7 @@ class ROSE(BaseOverSampler):
         # (sample from multivariate normal)* h_opt + original values
         
 
-        if self.debug: 
+        if debug: 
             print("""
                 inside Rose:
                 n_class_sample = {}
@@ -119,10 +120,11 @@ class ROSE(BaseOverSampler):
         randoms = np.random.standard_normal(
                         size=(n_class_samples,
                         number_of_features))
-        print("randoms = {} , {}".format(randoms, randoms.shape))
+        if debug:
+            print("randoms = {} , {}".format(randoms, randoms.shape))
         #Xrose = randoms @ h_opt + X[samples_indices, :]
         Xrose = np.matmul(randoms,h_opt) + X[samples_indices, :]
-        if self.debug:
+        if debug:
             print("Xrose = \n" , Xrose)
         return Xrose
 
@@ -131,7 +133,7 @@ class ROSE(BaseOverSampler):
         # X, y = check_X_y(X, y)
         # X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         # y_resampled = np.empty((0), dtype=X.dtype)
-
+        debug= True
         X_resampled = X.copy()
         y_resampled = y.copy()
 
@@ -144,9 +146,9 @@ class ROSE(BaseOverSampler):
             # get indices of all y's with a given class n
             class_indices = np.flatnonzero(y == class_sample)
             # compute final n. of samples, by n. of elements + n_samples
-            n_class_samples = len(class_indices)# + n_samples
+            n_class_samples = len(class_indices) + n_samples
 
-            if self.debug: 
+            if debug: 
                 print("""
                     class_indices = {} \n
                     n_class_samples = {} \n
