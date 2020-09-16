@@ -5,7 +5,7 @@ from scipy import sparse
 from sklearn.utils import check_random_state
 from .base import BaseOverSampler
 from ..utils._validation import _deprecate_positional_args
-from sklearn.utils import check_X_y
+# from sklearn.utils import check_X_y
 
 
 class ROSE(BaseOverSampler):
@@ -107,7 +107,7 @@ class ROSE(BaseOverSampler):
 
     def _fit_resample(self, X, y):
 
-        X, y = check_X_y(X, y)
+        # X, y = check_X_y(X, y)
         X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         y_resampled = np.empty((0), dtype=X.dtype)
 
