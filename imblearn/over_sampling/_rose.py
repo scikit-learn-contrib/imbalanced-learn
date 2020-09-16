@@ -96,7 +96,7 @@ class ROSE(BaseOverSampler):
         # create a diagonal matrix with the st.dev. of all classes
         variances = np.diagflat(np.std(X[class_indices,:], axis=0, ddof=1))
         # compute H_optimal
-        debug = True
+        debug = False
         if debug: 
             print("""
                 class_indices = {}
@@ -133,7 +133,7 @@ class ROSE(BaseOverSampler):
         # X, y = check_X_y(X, y)
         # X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
         # y_resampled = np.empty((0), dtype=X.dtype)
-        debug= True
+        debug= False
         X_resampled = X.copy()
         y_resampled = y.copy()
 
