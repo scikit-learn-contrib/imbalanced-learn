@@ -99,6 +99,14 @@ class ROSE(BaseOverSampler):
         # compute H_optimal
         h_opt = h_shrink * minimize_amise * variances
         # (sample from multivariate normal)* h_opt + original values
+        
+        print("""
+        inside Rose:
+        n_class_sample = {}
+        number_of_features = {}
+        h_opt = {}
+        sample_indices = {}
+        """.format(n_class_samples,number_of_features,h_opt,samples_indices))
         Xrose = np.random.standard_normal(
             size=(n_class_samples,
                   number_of_features)) @ h_opt + X[samples_indices, :]
