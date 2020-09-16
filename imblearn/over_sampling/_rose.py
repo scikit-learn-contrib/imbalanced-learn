@@ -98,14 +98,16 @@ class ROSE(BaseOverSampler):
                            ddof=1)
         # compute H_optimal
         print("""
+        class_indices = {}
         computing h_opt:
         h_shrink  = {}
         minimize_amise = {}
         variances = {}
-        """.format(h_shrink, minimize_amise, variances))
+        """.format(class_indices, h_shrink, minimize_amise, variances))
         h_opt = h_shrink * minimize_amise * variances
         # (sample from multivariate normal)* h_opt + original values
         
+
         print("""
         inside Rose:
         n_class_sample = {}
