@@ -48,7 +48,7 @@ class ROSE(BaseOverSampler):
         self.random_state = random_state
         self.shrink_factors = shrink_factors
         self.n_jobs = n_jobs
-
+        print("init done")
     def _make_samples(self,
                       X,
                       class_indices,
