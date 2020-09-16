@@ -115,7 +115,7 @@ class ROSE(BaseOverSampler):
             self.shrink_factors = {
                 key: 0.5 for key in self.sampling_strategy_.keys()
                 }
-
+        print(self.shrink_factors)
         for class_sample, n_samples in self.sampling_strategy_.items():
             # get indices of all y's with a given class n
             class_indices = np.flatnonzero(y == class_sample)
