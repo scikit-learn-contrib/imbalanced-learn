@@ -48,6 +48,7 @@ class ROSE(BaseOverSampler):
         self.random_state = random_state
         self.shrink_factors = shrink_factors
         self.n_jobs = n_jobs
+    debug=True
         # print("init done: \n {}".format(self.shrink_factors))
     def _make_samples(self,
                       X,
@@ -97,29 +98,32 @@ class ROSE(BaseOverSampler):
                            axis=0,
                            ddof=1)
         # compute H_optimal
-        print("""
-        class_indices = {}
-        computing h_opt:
-        h_shrink  = {}
-        minimize_amise = {}
-        variances = {}
-        """.format(class_indices, h_shrink, minimize_amise, variances))
+        if debug: 
+            print("""
+                class_indices = {}
+                computing h_opt:
+                h_shrink  = {}
+                minimize_amise = {}
+                variances = {}
+                """.format(class_indices, h_shrink, minimize_amise, variances))
         h_opt = h_shrink * minimize_amise * variances
         # (sample from multivariate normal)* h_opt + original values
         
 
-        print("""
-        inside Rose:
-        n_class_sample = {}
-        number_of_features = {}
-        h_opt = {} , {}
-        sample_indices = {}
-        """.format(n_class_samples,number_of_features,h_opt, h_opt.shape,samples_indices))
+        if debug: 
+            print("""
+                inside Rose:
+                n_class_sample = {}
+                number_of_features = {}
+                h_opt = {} , {}
+                sample_indices = {}
+                """.format(n_class_samples,number_of_features,h_opt, h_opt.shape,samples_indices))
         randoms = np.random.standard_normal(
                         size=(n_class_samples,
                         number_of_features))
         print("randoms = {} , {}".format(randoms, randoms.shape))
-        Xrose = randoms @ h_opt + X[samples_indices, :]
+        #Xrose = randoms @ h_opt + X[samples_indices, :]
+        Xrose = np.matmul(randoms,h_opt) + X[samples_indices, :]
 
         return Xrose
 
@@ -141,13 +145,14 @@ class ROSE(BaseOverSampler):
             # get indices of all y's with a given class n
             class_indices = np.flatnonzero(y == class_sample)
             # compute final n. of samples, by n. of elements + n_samples
-            n_class_samples = len(class_indices) + n_samples
+            n_class_samples = len(class_indices)# + n_samples
 
-            print("""
-            class_indices = {} \n
-            n_class_samples = {} \n
-            self.shrink_factors = {}\n
-            """.format(class_indices,n_class_samples,self.shrink_factors))
+            if debug: 
+                print("""
+                    class_indices = {} \n
+                    n_class_samples = {} \n
+                    self.shrink_factors = {}\n
+                    """.format(class_indices,n_class_samples,self.shrink_factors))
             # resample
             X_new = self._make_samples(X,
                                        class_indices,
