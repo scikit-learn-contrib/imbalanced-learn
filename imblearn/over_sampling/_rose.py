@@ -94,9 +94,7 @@ class ROSE(BaseOverSampler):
         minimize_amise = (4 / ((number_of_features + 2) * len(
             class_indices))) ** (1 / (number_of_features + 4))
         # create a diagonal matrix with the st.dev. of all classes
-        variances = np.std(np.diagflat(X[class_indices, :]),
-                           axis=0,
-                           ddof=1)
+        variances = np.diagflat(np.std(X[class_indices,:], axis=0, ddof=1))
         # compute H_optimal
         if self.debug: 
             print("""
