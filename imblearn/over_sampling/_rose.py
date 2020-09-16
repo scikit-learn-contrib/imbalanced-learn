@@ -102,8 +102,8 @@ class ROSE(BaseOverSampler):
                 computing h_opt:
                 h_shrink  = {}
                 minimize_amise = {}
-                variances = {}
-                """.format(class_indices, h_shrink, minimize_amise, variances))
+                variances =\n{}, shape={}
+                """.format(class_indices, h_shrink, minimize_amise, variances, variances.shape))
         h_opt = h_shrink * minimize_amise * variances
         # (sample from multivariate normal)* h_opt + original values
         
@@ -113,7 +113,7 @@ class ROSE(BaseOverSampler):
                 inside Rose:
                 n_class_sample = {}
                 number_of_features = {}
-                h_opt = {} , {}
+                h_opt = \n{} , shape= {}
                 sample_indices = {}
                 """.format(n_class_samples,number_of_features,h_opt, h_opt.shape,samples_indices))
         randoms = np.random.standard_normal(
