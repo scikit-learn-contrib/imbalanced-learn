@@ -97,6 +97,12 @@ class ROSE(BaseOverSampler):
                            axis=0,
                            ddof=1)
         # compute H_optimal
+        print("""
+        computing h_opt:
+        h_shrink  = {}
+        minimize_amise = {}
+        variances = {}
+        """.format(h_shrink, minimize_amise, variances))
         h_opt = h_shrink * minimize_amise * variances
         # (sample from multivariate normal)* h_opt + original values
         
@@ -128,7 +134,7 @@ class ROSE(BaseOverSampler):
             self.shrink_factors = {
                 key: 0.5 for key in self.sampling_strategy_.keys()
                 }
-        print(self.shrink_factors)
+     
         for class_sample, n_samples in self.sampling_strategy_.items():
             # get indices of all y's with a given class n
             class_indices = np.flatnonzero(y == class_sample)
