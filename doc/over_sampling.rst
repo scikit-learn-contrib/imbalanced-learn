@@ -205,18 +205,20 @@ ROSE is an oversampling method, provided by the :class:`ROSE` class, that balanc
 response datasets by a smoothed bootstrap resampling technique. New examples are 
 generated in the neighborhood of existing samples from a smooth, unimodal and symmetric 
 distribution. The generation of the samples corresponds to the generation of the data
-from the kernel density estimate (KDE) :math:`f(x \vert \mathcal Y_i)`
+from the kernel density estimate (KDE) :math:`f(x \vert\mathcal Y_i)`
+
+Optional `shrink_factors` is a dictionary where one can choose the shrinking shrink_factors
+that will be applied to the KDE kernel for each class (default: 1.0). Setting it to 0
+and ROSE will perform a simple bootstrap oversampling.
 
 Article: :cite:`torelli2014rose`. 
 
 The class can be used in the following manner::
 
   >>> from imblearn.over_sampling import ROSE
-  >>> X_resampled, y_resampled = ROSE().fit_resample(X, y)
+  >>> X_resampled, y_resampled = ROSE(shrink_factors={1:1, 2:0.5, 3:0.2}).fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4674), (1, 4674), (2, 4674)]
-  >>> clf_rose = LinearSVC().fit(X_resampled, y_resampled)
-
 
 Mathematical formulation
 ========================
