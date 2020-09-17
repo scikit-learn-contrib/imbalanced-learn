@@ -6,7 +6,6 @@ import numpy as np
 
 from imblearn.over_sampling import ROSE
 from sklearn.datasets import make_spd_matrix as SymPosDef
-from numpy.testing import assert_allclose
 
 
 def test_rose():

@@ -127,10 +127,10 @@ class ROSE(BaseOverSampler):
         if self.shrink_factors is None:
             self.shrink_factors = {
                 key: 1 for key in self.sampling_strategy_.keys()}
-        
+
         for class_sample, n_samples in self.sampling_strategy_.items():
             class_indices = np.flatnonzero(y == class_sample)
-            n_class_samples = n_samples 
+            n_class_samples = n_samples
             X_new = self._make_samples(X,
                                        class_indices,
                                        n_samples,
