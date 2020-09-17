@@ -88,6 +88,7 @@ class ROSE(BaseOverSampler):
         number_of_features = X.shape[1]
         # import random state from API
         random_state = check_random_state(self.random_state)
+        print(random_state, type(random_state))
         # get random subsample of data with replacement
         samples_indices = random_state.choice(
             class_indices, size=n_class_samples, replace=True)
@@ -121,7 +122,7 @@ class ROSE(BaseOverSampler):
                 h_opt = \n{} , shape= {}
                 sample_indices = {}
                 """.format(n_class_samples,number_of_features,h_opt, h_opt.shape,samples_indices))
-        randoms = np.random.standard_normal(
+        randoms = random_state.standard_normal(
                         size=(n_class_samples,
                         number_of_features))
         if debug:
