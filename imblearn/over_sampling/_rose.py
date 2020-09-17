@@ -43,10 +43,11 @@ class ROSE(BaseOverSampler):
     --------
 
     >>> from imblearn.over_sampling import ROSE
-    >>> X_res, y_res = ROSE(shrink_factors={1:1, 2:0.5, 3:0.2}).fit_resample(X, y)
+    >>> r = ROSE(shrink_factors={1:1, 2:0.5, 3:0.2})
+    >>> X_res, y_res = r.fit_resample(X, y)
     >>> print(sorted(Counter(y_resampled).items()))
     [(0, 4674), (1, 4674), (2, 4674)]
-    
+
     """
 
     @_deprecate_positional_args
