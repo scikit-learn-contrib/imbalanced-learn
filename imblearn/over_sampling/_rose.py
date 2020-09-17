@@ -83,6 +83,7 @@ class ROSE(BaseOverSampler):
             Target values for synthetic samples.
 
         """
+
         # get number of features
         number_of_features = X.shape[1]
         # import random state from API
@@ -94,7 +95,10 @@ class ROSE(BaseOverSampler):
         minimize_amise = (4 / ((number_of_features + 2) * len(
             class_indices))) ** (1 / (number_of_features + 4))
         # create a diagonal matrix with the st.dev. of all classes
-        variances = np.diagflat(np.std(X[class_indices,:], axis=0, ddof=1))
+        if sparse.issparse(X):
+            variances = np.diagflat(np.std(X[class_indices,:].toarray(), axis=0, ddof=1))
+        else:
+            variances = np.diagflat(np.std(X[class_indices,:], axis=0, ddof=1))
         # compute H_optimal
         debug = False
         if debug: 
@@ -126,6 +130,8 @@ class ROSE(BaseOverSampler):
         Xrose = np.matmul(randoms,h_opt) + X[samples_indices, :]
         if debug:
             print("Xrose = \n" , Xrose)
+        if sparse.issparse(X):
+            return sparse.csr_matrix(Xrose)
         return Xrose
 
     def _fit_resample(self, X, y):
