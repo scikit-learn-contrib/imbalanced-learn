@@ -43,10 +43,17 @@ class ROSE(BaseOverSampler):
     --------
 
     >>> from imblearn.over_sampling import ROSE
-    >>> r = ROSE(shrink_factors={1:1, 2:0.5, 3:0.2})
+    >>> from sklearn.datasets import make_classification
+    >>> from collections import Counter
+    >>> r = ROSE(shrink_factors={0:1, 1:0.5, 2:0.7})
+    >>> X, y = make_classification(n_classes=3, class_sep=2,
+    ... weights=[0.1, 0.7, 0.2], n_informative=3, n_redundant=1, flip_y=0,
+    ... n_features=20, n_clusters_per_class=1, n_samples=2000, random_state=10)
+    >>> print('Original dataset shape %s' % Counter(y))
+    Original dataset shape Counter({1: 1400, 2: 400, 0: 200})
     >>> X_res, y_res = r.fit_resample(X, y)
-    >>> print(sorted(Counter(y_resampled).items()))
-    [(0, 4674), (1, 4674), (2, 4674)]
+    >>> print('Resampled dataset shape %s' % Counter(y_res))
+    Resampled dataset shape Counter({2: 1400, 1: 1400, 0: 1400})
 
     """
 
@@ -120,13 +127,13 @@ class ROSE(BaseOverSampler):
         if self.shrink_factors is None:
             self.shrink_factors = {
                 key: 1 for key in self.sampling_strategy_.keys()}
-
+        
         for class_sample, n_samples in self.sampling_strategy_.items():
             class_indices = np.flatnonzero(y == class_sample)
-            n_class_samples = len(class_indices) + n_samples
+            n_class_samples = n_samples 
             X_new = self._make_samples(X,
                                        class_indices,
-                                       n_class_samples,
+                                       n_samples,
                                        self.shrink_factors[class_sample])
             y_new = np.array([class_sample] * n_class_samples)
 
