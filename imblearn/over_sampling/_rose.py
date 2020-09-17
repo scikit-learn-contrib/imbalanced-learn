@@ -5,7 +5,6 @@ from scipy import sparse
 from sklearn.utils import check_random_state
 from .base import BaseOverSampler
 from ..utils._validation import _deprecate_positional_args
-# from sklearn.utils import check_X_y
 
 
 class ROSE(BaseOverSampler):
@@ -48,8 +47,7 @@ class ROSE(BaseOverSampler):
         self.random_state = random_state
         self.shrink_factors = shrink_factors
         self.n_jobs = n_jobs
-        
-        # print("init done: \n {}".format(self.shrink_factors))
+
     def _make_samples(self,
                       X,
                       class_indices,
@@ -84,62 +82,28 @@ class ROSE(BaseOverSampler):
 
         """
 
-        # get number of features
         number_of_features = X.shape[1]
-        # import random state from API
         random_state = check_random_state(self.random_state)
-        # get random subsample of data with replacement
         samples_indices = random_state.choice(
             class_indices, size=n_class_samples, replace=True)
-        # compute optimal min(AMISE)
         minimize_amise = (4 / ((number_of_features + 2) * len(
             class_indices))) ** (1 / (number_of_features + 4))
-        # create a diagonal matrix with the st.dev. of all classes
         if sparse.issparse(X):
-            variances = np.diagflat(np.std(X[class_indices,:].toarray(), axis=0, ddof=1))
+            variances = np.diagflat(
+                np.std(X[class_indices, :].toarray(), axis=0, ddof=1))
         else:
-            variances = np.diagflat(np.std(X[class_indices,:], axis=0, ddof=1))
-        # compute H_optimal
-        debug = False
-        if debug: 
-            print("""
-                class_indices = {}
-                computing h_opt:
-                h_shrink  = {}
-                minimize_amise = {}
-                variances =\n{}, shape={}
-                """.format(class_indices, h_shrink, minimize_amise, variances, variances.shape))
+            variances = np.diagflat(
+                np.std(X[class_indices, :], axis=0, ddof=1))
         h_opt = h_shrink * minimize_amise * variances
-        # (sample from multivariate normal)* h_opt + original values
-        
-
-        if debug: 
-            print("""
-                inside Rose:
-                n_class_sample = {}
-                number_of_features = {}
-                h_opt = \n{} , shape= {}
-                sample_indices = {}
-                """.format(n_class_samples,number_of_features,h_opt, h_opt.shape,samples_indices))
-        randoms = random_state.standard_normal(
-                        size=(n_class_samples,
-                        number_of_features))
-        if debug:
-            print("randoms = {} , {}".format(randoms, randoms.shape))
-        #Xrose = randoms @ h_opt + X[samples_indices, :]
-        Xrose = np.matmul(randoms,h_opt) + X[samples_indices, :]
-        if debug:
-            print("Xrose = \n" , Xrose)
+        randoms = random_state.standard_normal(size=(n_class_samples,
+                                                     number_of_features))
+        Xrose = np.matmul(randoms, h_opt) + X[samples_indices, :]
         if sparse.issparse(X):
             return sparse.csr_matrix(Xrose)
         return Xrose
 
     def _fit_resample(self, X, y):
 
-        # X, y = check_X_y(X, y)
-        # X_resampled = np.empty((0, X.shape[1]), dtype=X.dtype)
-        # y_resampled = np.empty((0), dtype=X.dtype)
-        debug = False
         X_resampled = X.copy()
         y_resampled = y.copy()
 
@@ -147,20 +111,10 @@ class ROSE(BaseOverSampler):
             self.shrink_factors = {
                 key: 1 for key in self.sampling_strategy_.keys()
                 }
-     
-        for class_sample, n_samples in self.sampling_strategy_.items():
-            # get indices of all y's with a given class n
-            class_indices = np.flatnonzero(y == class_sample)
-            # compute final n. of samples, by n. of elements + n_samples
-            n_class_samples = len(class_indices) + n_samples
 
-            if debug: 
-                print("""
-                    class_indices = {} \n
-                    n_class_samples = {} \n
-                    self.shrink_factors = {}\n
-                    """.format(class_indices,n_class_samples,self.shrink_factors))
-            # resample
+        for class_sample, n_samples in self.sampling_strategy_.items():
+            class_indices = np.flatnonzero(y == class_sample)
+            n_class_samples = len(class_indices) + n_samples
             X_new = self._make_samples(X,
                                        class_indices,
                                        n_class_samples,
