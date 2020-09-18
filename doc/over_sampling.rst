@@ -198,28 +198,6 @@ Therefore, it can be seen that the samples generated in the first and last
 columns are belonging to the same categories originally presented without any
 other extra interpolation.
 
-Random OverSampling Examples (ROSE)
------------------------------------
-
-ROSE is an oversampling method, provided by the :class:`ROSE` class, that balances binary
-response datasets by a smoothed bootstrap resampling technique. New examples are 
-generated in the neighborhood of existing samples from a smooth, unimodal and symmetric 
-distribution. The generation of the samples corresponds to the generation of the data
-from the kernel density estimate (KDE) :math:`f(x \vert\mathcal Y_i)`
-
-Optional `shrink_factors` is a dictionary where one can choose the shrinking shrink_factors
-that will be applied to the KDE kernel for each class (default: 1.0). Setting it to 0
-and ROSE will perform a simple bootstrap oversampling.
-
-Article: :cite:`torelli2014rose`. 
-
-The class can be used in the following manner::
-
-  >>> from imblearn.over_sampling import ROSE
-  >>> X_resampled, y_resampled = ROSE(shrink_factors={1:1, 2:0.5, 3:0.2}).fit_resample(X, y)
-  >>> print(sorted(Counter(y_resampled).items()))
-  [(0, 4674), (1, 4674), (2, 4674)]
-
 Mathematical formulation
 ========================
 
@@ -295,8 +273,7 @@ Multi-class management
 ----------------------
 
 All algorithms can be used with multiple classes as well as binary classes
-classification aside from ROSE, that only works on binary classification problems.
-:class:`RandomOverSampler` does not require any inter-class
+classification.  :class:`RandomOverSampler` does not require any inter-class
 information during the sample generation. Therefore, each targeted class is
 resampled independently. In the contrary, both :class:`ADASYN` and
 :class:`SMOTE` need information regarding the neighbourhood of each sample used

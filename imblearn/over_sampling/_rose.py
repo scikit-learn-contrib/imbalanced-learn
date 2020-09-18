@@ -23,7 +23,7 @@ class ROSE(BaseOverSampler):
     ----------
     {sampling_strategy}
     {random_state}
-    shrink_factors : dict of {classes: shrinkfactors} couples, applied to
+    shrink_factors : dict of {classes: shrinkfactors} items, applied to
         the gaussian kernels
     {n_jobs}
 
