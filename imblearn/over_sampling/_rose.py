@@ -56,7 +56,7 @@ class ROSE(BaseOverSampler):
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
-    
+
     shrink_factors : dict, default= 1 for every class
         Dict of {classes: shrinkfactors} items, applied to
         the gaussian kernels.
@@ -70,7 +70,7 @@ class ROSE(BaseOverSampler):
           generator;
         - If ``None``, the random number generator is the ``RandomState``
           instance used by ``np.random``.
-          
+
     n_jobs : int, default=None
         Number of CPU cores used during the cross-validation loop.
         ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
