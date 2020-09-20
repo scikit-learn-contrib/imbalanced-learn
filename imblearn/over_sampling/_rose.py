@@ -81,16 +81,7 @@ class ROSE(BaseOverSampler):
 
     See Also
     --------
-    SMOTE : Over-sample using SMOTE.
-
-    SMOTENC : Over-sample using SMOTE for continuous and categorical features.
-
-    SVMSMOTE : Over-sample using SVM-SMOTE variant.
-
-    ADASYN : Over-sample using ADASYN.
-
-    KMeansSMOTE : Over-sample applying a clustering before to oversample using
-        SMOTE.
+    
 
     Notes
     -----
