@@ -13,9 +13,9 @@ class ROSE(BaseOverSampler):
     This object is the implementation of ROSE algorithm.
     It generates new samples by a smoothed bootstrap approach,
     taking a random subsample of original data and adding a
-    multivariate kernel density estimate :math:`f(x|Y_i)`around
+    multivariate kernel density estimate :math:`f(x|Y_i)` around
     them with a smoothing matrix :math:`H_j`, and finally sampling
-    from this distribution. A shrinking matrix can be provided,to
+    from this distribution. A shrinking matrix can be provided, to
     set the bandwidth of the gaussian kernel.
 
     Read more in the :ref:`User Guide <rose>`.
