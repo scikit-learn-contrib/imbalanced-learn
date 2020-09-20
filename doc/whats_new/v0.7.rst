@@ -63,6 +63,9 @@ Enhancements
 - Lazy import `keras` module when importing `imblearn.keras`
   :pr:`719` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Added Random Over-Sampling Examples (ROSE) class.
+  :pr:`754` by :user:`Andrea Lorenzon <andrealorenzon>`.
+
 Deprecation
 ...........
 

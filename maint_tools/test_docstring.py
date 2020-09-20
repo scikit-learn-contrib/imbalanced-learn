@@ -47,6 +47,7 @@ DOCSTRING_WHITELIST = [
     "Pipeline.fit_transform",
     "Pipeline.fit_resample",
     "Pipeline.fit_predict",
+    "ROSE$", "ROSE.", "ROSE",
     "RUSBoostClassifier$", "RUSBoostClassifier.",
     "RandomOverSampler$", "RandomOverSampler.",
     "RandomUnderSampler$", "RandomUnderSampler.",

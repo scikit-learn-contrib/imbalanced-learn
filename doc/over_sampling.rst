@@ -198,6 +198,23 @@ Therefore, it can be seen that the samples generated in the first and last
 columns are belonging to the same categories originally presented without any
 other extra interpolation.
 
+.. _rose:
+
+ROSE (Random Over-Sampling Examples)
+------------------------------------
+
+ROSE uses smoothed bootstrapping to draw artificial samples from the 
+feature space neighborhood around selected classes, using a multivariate
+Gaussian kernel around randomly selected samples. First, random samples are 
+selected from original classes. Then the smoothing kernel distribution
+is computed around the samples: :math:`\hat f(x|y=Y_i) = \sum_i^{n_j} 
+p_i Pr(x|x_i)=\sum_i^{n_j} \frac{1}{n_j} Pr(x|x_i)=\sum_i^{n_j} 
+\frac{1}{n_j} K_{H_j}(x|x_i)`.
+
+Then new samples are drawn from the computed distribution.
+
+
+
 Mathematical formulation
 ========================
 
