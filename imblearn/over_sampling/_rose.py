@@ -8,12 +8,13 @@ from ..utils._validation import _deprecate_positional_args
 
 
 class ROSE(BaseOverSampler):
-
     """Random OverSampling Examples (ROSE).
 
-    The algorithm generates new samples by a smoothed bootstrap approach.
-    The generation of new examples corresponds to the generation of data from
-    the kernel density estimate of f(x|Y_i), with a smoothing matrix H_j.
+    This object is the implementation of ROSE algorithm.
+    It generates new samples by a smoothed bootstrap approach,
+    taking a random subsample of original data and adding a
+    multivariate kernel distribution around them with a smoothing
+    matrix H_j, and finally sampling from this distribution.
     A shrinking matrix can be provided, to set the bandwidth of the gaussian
     kernel.
 
@@ -59,7 +60,7 @@ class ROSE(BaseOverSampler):
 
     shrink_factors : dict, default= 1 for every class
         Dict of {classes: shrinkfactors} items, applied to
-        the gaussian kernels.
+        the gaussian kernels. It can be used to compress/dilate the kernel.
 
     random_state : int, RandomState instance, default=None
         Control the randomization of the algorithm.
