@@ -79,6 +79,10 @@ class ROSE(BaseOverSampler):
         `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
         for more details.
 
+    See Also
+    --------
+    Nothing else.
+
     Notes
     -----
 
