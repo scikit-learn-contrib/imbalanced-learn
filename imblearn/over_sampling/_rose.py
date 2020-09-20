@@ -8,7 +8,7 @@ from ..utils._validation import _deprecate_positional_args
 
 
 class ROSE(BaseOverSampler):
-    """Random OverSampling Examples (ROSE).
+    """Random Over-Sampling Examples (ROSE).
 
     This object is the implementation of ROSE algorithm.
     It generates new samples by a smoothed bootstrap approach,
