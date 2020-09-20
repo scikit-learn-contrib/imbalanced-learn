@@ -81,7 +81,7 @@ class ROSE(BaseOverSampler):
 
     See Also
     --------
-    
+
 
     Notes
     -----
