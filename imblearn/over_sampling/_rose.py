@@ -81,7 +81,7 @@ class ROSE(BaseOverSampler):
 
     See Also
     --------
-    Nothing else.
+    SMOTE : Over-sample using SMOTE.
 
     Notes
     -----
