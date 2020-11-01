@@ -50,7 +50,10 @@ numpydoc_show_class_members = False
 extensions.append('sphinx.ext.imgmath')
 imgmath_image_format = 'svg'
 
-autodoc_default_flags = ['members', 'inherited-members']
+autodoc_default_options = {
+    "members": True,
+    "inherited-members": True,
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -309,6 +312,30 @@ issues_uri = 'https://github.com/scikit-learn-contrib/imbalanced-learn/issues/{i
 issues_github_path = 'scikit-learn-contrib/imbalanced-learn'
 issues_user_uri = 'https://github.com/{user}'
 
+# Hack to get kwargs to appear in docstring #18434
+# TODO: Remove when https://github.com/sphinx-doc/sphinx/pull/8234 gets
+# merged
+from sphinx.util import inspect  # noqa
+from sphinx.ext.autodoc import ClassDocumenter  # noqa
+
+
+class PatchedClassDocumenter(ClassDocumenter):
+    def _get_signature(self):
+        old_signature = inspect.signature
+
+        def patch_signature(subject, bound_method=False, follow_wrapped=True):
+            # changes the default of follow_wrapped to True
+            return old_signature(
+                subject,
+                bound_method=bound_method,
+                follow_wrapped=follow_wrapped,
+            )
+
+        inspect.signature = patch_signature
+        result = super()._get_signature()
+        inspect.signature = old_signature
+        return result
+
 
 # Temporary work-around for spacing problem between parameter and parameter
 # type in the doc, see https://github.com/numpy/numpydoc/issues/215. The bug
@@ -317,7 +344,8 @@ issues_user_uri = 'https://github.com/{user}'
 # In an ideal world, this would get fixed in this PR:
 # https://github.com/readthedocs/sphinx_rtd_theme/pull/747/files
 def setup(app):
-    app.add_javascript('js/copybutton.js')
+    app.registry.documenters["class"] = PatchedClassDocumenter
+    app.add_javascript("js/copybutton.js")
     app.add_stylesheet("basic.css")
     # app.connect('autodoc-process-docstring', generate_example_rst)
 

@@ -140,13 +140,17 @@ class BalancedBaggingClassifier(BaggingClassifier):
     ----------
     .. [1] L. Breiman, "Pasting small votes for classification in large
            databases and on-line", Machine Learning, 36(1), 85-103, 1999.
+
     .. [2] L. Breiman, "Bagging predictors", Machine Learning, 24(2), 123-140,
            1996.
+
     .. [3] T. Ho, "The random subspace method for constructing decision
            forests", Pattern Analysis and Machine Intelligence, 20(8), 832-844,
            1998.
+
     .. [4] G. Louppe and P. Geurts, "Ensembles on Random Patches", Machine
            Learning and Knowledge Discovery in Databases, 346-361, 2012.
+
     .. [5] Chen, Chao, Andy Liaw, and Leo Breiman. "Using random forest to
            learn imbalanced data." University of California, Berkeley 110,
            2004.

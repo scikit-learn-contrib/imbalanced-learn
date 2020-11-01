@@ -36,7 +36,7 @@ class RandomOverSampler(BaseOverSampler):
 
     Attributes
     ----------
-    sample_indices_ : ndarray of shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
         .. versionadded:: 0.4

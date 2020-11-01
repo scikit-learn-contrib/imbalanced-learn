@@ -154,11 +154,11 @@ Prototype selection
 .. autosummary::
    :toctree: generated/
    :template: function.rst
-              
+
    tensorflow.balanced_batch_generator
 
 .. _misc_ref:
-   
+
 Miscellaneous
 =============
 
