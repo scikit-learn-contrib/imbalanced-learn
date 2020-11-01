@@ -8,6 +8,7 @@ import numpy as np
 
 from sklearn.utils._testing import assert_array_equal
 
+from sklearn.datasets import make_classification
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.under_sampling import EditedNearestNeighbours
@@ -127,3 +128,20 @@ def test_enn_not_good_object():
     enn = EditedNearestNeighbours(n_neighbors=nn, kind_sel="mode")
     with pytest.raises(ValueError, match="has to be one of"):
         enn.fit_resample(X, Y)
+
+
+def test_enn_check_kind_selection():
+    """Check that `check_sel="all"` is more conservative than
+    `check_sel="mode"`."""
+
+    X, y = make_classification(
+        n_samples=1000, n_classes=2, weights=[0.3, 0.7], random_state=0,
+    )
+
+    enn_all = EditedNearestNeighbours(kind_sel="all")
+    enn_mode = EditedNearestNeighbours(kind_sel="mode")
+
+    enn_all.fit_resample(X, y)
+    enn_mode.fit_resample(X, y)
+
+    assert enn_all.sample_indices_.size < enn_mode.sample_indices_.size
