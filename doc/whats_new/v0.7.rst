@@ -52,7 +52,7 @@ Bug fixes
 - Fix a bug in :class:`imblearn.under_sampling.ClusterCentroids` where
   `voting="hard"` could have lead to select a sample from any class instead of
   the targeted class.
-  :pr:`xx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`769` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Enhancements
 ............
