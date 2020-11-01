@@ -49,6 +49,11 @@ Bug fixes
   :class:`imblearn.over_sampling.SMOTENC`.
   :pr:`675` by :user:`bganglia <bganglia>`.
 
+- Fix a bug in :class:`imblearn.under_sampling.ClusterCentroids` where
+  `voting="hard"` could have lead to select a sample from any class instead of
+  the targeted class.
+  :pr:`769` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancements
 ............
 
