@@ -6,6 +6,7 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.cluster import KMeans
+from sklearn.datasets import make_classification
 
 from imblearn.under_sampling import ClusterCentroids
 
@@ -121,3 +122,37 @@ def test_cluster_centroids_n_jobs():
         cc.fit_resample(X, Y)
     assert len(record) == 1
     assert "'n_jobs' was deprecated" in record[0].message.args[0]
+
+
+def test_cluster_centroids_hard_target_class():
+    # check that the samples selecting by the hard voting corresponds to the
+    # targeted class
+    # non-regression test for:
+    # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/738
+    X, y = make_classification(
+        n_samples=1000,
+        n_features=2,
+        n_informative=1,
+        n_redundant=0,
+        n_repeated=0,
+        n_clusters_per_class=1,
+        weights=[0.3, 0.7],
+        class_sep=0.01,
+        random_state=0,
+    )
+
+    cc = ClusterCentroids(voting="hard", random_state=0)
+    X_res, y_res = cc.fit_resample(X, y)
+
+    minority_class_indices = np.flatnonzero(y == 0)
+    X_minority_class = X[minority_class_indices]
+
+    resampled_majority_class_indices = np.flatnonzero(y_res == 1)
+    X_res_majority = X_res[resampled_majority_class_indices]
+
+    sample_from_minority_in_majority = [
+        np.all(np.isclose(selected_sample, minority_sample))
+        for selected_sample in X_res_majority
+        for minority_sample in X_minority_class
+    ]
+    assert sum(sample_from_minority_in_majority) == 0
