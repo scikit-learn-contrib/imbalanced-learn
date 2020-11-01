@@ -34,7 +34,7 @@ The output will be of the following type:
 
 * ``data_resampled``: array-like (2-D list, pandas.Dataframe, numpy.array) or
    sparse matrices;
-   * ``targets_resampled``: 1-D numpy.array or pd.Series.
+* ``targets_resampled``: 1-D numpy.array or pd.Series.
 
 .. topic:: Sparse input
 

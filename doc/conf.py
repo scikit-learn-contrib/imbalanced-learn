@@ -75,7 +75,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'imbalanced-learn'
-copyright = '2016 - 2017, G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas'
+copyright = '2014-2020, The imbalanced-learn developers'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

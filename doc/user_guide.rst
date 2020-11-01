@@ -6,6 +6,9 @@
 User Guide
 ==========
 
+.. Ensure that the references will be alphabetically collected last
+.. Check https://github.com/mcmtroffaes/sphinxcontrib-bibtex/issues/113
+
 .. toctree::
    :numbered:
 
@@ -18,4 +21,4 @@ User Guide
    metrics.rst
    Dataset loading utilities <datasets/index.rst>
    developers_utils.rst
-   references.rst
+   zzz_references.rst
