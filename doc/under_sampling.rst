@@ -244,10 +244,7 @@ Edited data set using nearest neighbours
 "edit" the dataset by removing samples which do not agree "enough" with their
 neighboorhood :cite:`wilson1972asymptotic`. For each sample in the class to be
 under-sampled, the nearest-neighbours are computed and if the selection
-criterion is not fulfilled, the sample is removed. Two selection criteria are
-currently available: (i) the majority (i.e., ``kind_sel='mode'``) or (ii) all
-(i.e., ``kind_sel='all'``) the nearest-neighbors have to belong to the same
-class than the sample inspected to keep it in the dataset::
+criterion is not fulfilled, the sample is removed::
 
   >>> sorted(Counter(y).items())
   [(0, 64), (1, 262), (2, 4674)]
@@ -256,6 +253,22 @@ class than the sample inspected to keep it in the dataset::
   >>> X_resampled, y_resampled = enn.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 213), (2, 4568)]
+
+Two selection criteria are currently available: (i) the majority (i.e.,
+``kind_sel='mode'``) or (ii) all (i.e., ``kind_sel='all'``) the
+nearest-neighbors have to belong to the same class than the sample inspected to
+keep it in the dataset. Thus, it implies that `kind_sel='all'` will be less
+conservative than `kind_sel='mode'`, and more samples will be excluded in
+the former strategy than the latest::
+
+  >>> enn = EditedNearestNeighbours(kind_sel="all")
+  >>> X_resampled, y_resampled = enn.fit_resample(X, y)
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 213), (2, 4568)]
+  >>> enn = EditedNearestNeighbours(kind_sel="mode")
+  >>> X_resampled, y_resampled = enn.fit_resample(X, y)
+  >>> print(sorted(Counter(y_resampled).items()))
+  [(0, 64), (1, 234), (2, 4666)]
 
 The parameter ``n_neighbors`` allows to give a classifier subclassed from
 ``KNeighborsMixin`` from scikit-learn to find the nearest neighbors and make

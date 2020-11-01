@@ -52,6 +52,9 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
+        The strategy `"all"` will be less conservative than `'mode'`. Thus,
+        more samples will be removed when `kind_sel="all"` generally.
+
     {n_jobs}
 
     Attributes
@@ -194,6 +197,9 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
           interest to not be excluded.
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
+
+        The strategy `"all"` will be less conservative than `'mode'`. Thus,
+        more samples will be removed when `kind_sel="all"` generally.
 
     {n_jobs}
 
@@ -372,6 +378,9 @@ class AllKNN(BaseCleaningSampler):
           interest to not be excluded.
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
+
+        The strategy `"all"` will be less conservative than `'mode'`. Thus,
+        more samples will be removed when `kind_sel="all"` generally.
 
     allow_minority : bool, default=False
         If ``True``, it allows the majority classes to become the minority

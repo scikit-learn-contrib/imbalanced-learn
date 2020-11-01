@@ -50,6 +50,9 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
+        The strategy `"all"` will be less conservative than `'mode'`. Thus,
+        more samples will be removed when `kind_sel="all"` generally.
+
     threshold_cleaning : float, default=0.5
         Threshold used to whether consider a class or not during the cleaning
         after applying ENN. A class will be considered during cleaning when:
