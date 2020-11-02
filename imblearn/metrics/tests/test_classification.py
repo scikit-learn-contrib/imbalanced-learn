@@ -466,3 +466,35 @@ def test_iba_error_y_score_prob_error(score_loss):
     aps = make_index_balanced_accuracy(alpha=0.5, squared=True)(score_loss)
     with pytest.raises(AttributeError):
         aps(y_true, y_pred)
+
+
+def test_classification_report_imbalanced_dict():
+    iris = datasets.load_iris()
+    y_true, y_pred, _ = make_prediction(dataset=iris, binary=False)
+
+    report = classification_report_imbalanced(
+        y_true,
+        y_pred,
+        labels=np.arange(len(iris.target_names)),
+        target_names=iris.target_names,
+        output_dict=True,
+    )
+    outer_keys = set(report.keys())
+    inner_keys = set(report[0].keys())
+
+    expected_outer_keys = {
+        0,
+        1,
+        2,
+        "avg_pre",
+        "avg_rec",
+        "avg_spe",
+        "avg_f1",
+        "avg_geo",
+        "avg_iba",
+        "total_support",
+    }
+    expected_inner_keys = {'spe', 'f1', 'sup', 'rec', 'geo', 'iba', 'pre'}
+
+    assert outer_keys == expected_outer_keys
+    assert inner_keys == expected_inner_keys

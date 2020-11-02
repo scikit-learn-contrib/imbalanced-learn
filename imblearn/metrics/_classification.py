@@ -806,6 +806,8 @@ def classification_report_imbalanced(
     sample_weight=None,
     digits=2,
     alpha=0.1,
+    output_dict=False,
+    zero_division="warn",
 ):
     """Build a classification report based on metrics used with imbalanced
     dataset
@@ -816,38 +818,59 @@ def classification_report_imbalanced(
     mean, and index balanced accuracy of the
     geometric mean.
 
+    Read more in the :ref:`User Guide <classification_report>`.
+
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
+    y_true : 1d array-like, or label indicator array / sparse matrix
         Ground truth (correct) target values.
 
-    y_pred : ndarray, shape (n_samples, )
+    y_pred : 1d array-like, or label indicator array / sparse matrix
         Estimated targets as returned by a classifier.
 
-    labels : list, optional
-        The set of labels to include when ``average != 'binary'``, and their
-        order if ``average is None``. Labels present in the data can be
-        excluded, for example to calculate a multiclass average ignoring a
-        majority negative class, while labels not present in the data will
-        result in 0 components in a macro average.
+    labels : array-like of shape (n_labels,), default=None
+        Optional list of label indices to include in the report.
 
-    target_names : list of strings, optional
+    target_names : list of str of shape (n_labels,), default=None
         Optional display names matching the labels (same order).
 
-    sample_weight : ndarray, shape (n_samples, )
+    sample_weight : array-like of shape (n_samples,), default=None
         Sample weights.
 
-    digits : int, optional (default=2)
-        Number of digits for formatting output floating point values
+    digits : int, default=2
+        Number of digits for formatting output floating point values.
+        When ``output_dict`` is ``True``, this will be ignored and the
+        returned values will not be rounded.
 
-    alpha : float, optional (default=0.1)
+    alpha : float, default=0.1
         Weighting factor.
+
+    output_dict : bool, default=False
+        If True, return output as dict.
+
+        .. versionadded:: 0.7
+
+    zero_division : "warn" or {0, 1}, default="warn"
+        Sets the value to return when there is a zero division. If set to
+        "warn", this acts as 0, but warnings are also raised.
+
+        .. versionadded:: 0.7
 
     Returns
     -------
-    report : string
+    report : string / dict
         Text summary of the precision, recall, specificity, geometric mean,
         and index balanced accuracy.
+        Dictionary returned if output_dict is True. Dictionary has the
+        following structure::
+
+            {'label 1': {'pre':0.5,
+                         'rec':1.0,
+                         ...
+                        },
+             'label 2': { ... },
+              ...
+            }
 
     Examples
     --------
@@ -883,7 +906,7 @@ def classification_report_imbalanced(
     last_line_heading = "avg / total"
 
     if target_names is None:
-        target_names = ["%s" % l for l in labels]
+        target_names = [f"{label}" for label in labels]
     name_width = max(len(cn) for cn in target_names)
     width = max(name_width, len(last_line_heading), digits)
 
@@ -905,6 +928,7 @@ def classification_report_imbalanced(
         labels=labels,
         average=None,
         sample_weight=sample_weight,
+        zero_division=zero_division
     )
     # Specificity
     specificity = specificity_score(
@@ -934,33 +958,50 @@ def classification_report_imbalanced(
         sample_weight=sample_weight,
     )
 
+    report_dict = {}
     for i, label in enumerate(labels):
+        report_dict_label = {}
         values = [target_names[i]]
-        for v in (
-            precision[i],
-            recall[i],
-            specificity[i],
-            f1[i],
-            geo_mean[i],
-            iba[i],
+        for score_name, score_value in zip(
+            headers[1:-1],
+            [
+                precision[i],
+                recall[i],
+                specificity[i],
+                f1[i],
+                geo_mean[i],
+                iba[i],
+            ]
         ):
-            values += ["{0:0.{1}f}".format(v, digits)]
-        values += ["{}".format(support[i])]
+            values += ["{0:0.{1}f}".format(score_value, digits)]
+            report_dict_label[score_name] = score_value
+        values += [f"{support[i]}"]
+        report_dict_label[headers[-1]] = support[i]
         report += fmt % tuple(values)
+
+        report_dict[label] = report_dict_label
 
     report += "\n"
 
     # compute averages
     values = [last_line_heading]
-    for v in (
-        np.average(precision, weights=support),
-        np.average(recall, weights=support),
-        np.average(specificity, weights=support),
-        np.average(f1, weights=support),
-        np.average(geo_mean, weights=support),
-        np.average(iba, weights=support),
+    for score_name, score_value in zip(
+        headers[1:-1],
+        [
+            np.average(precision, weights=support),
+            np.average(recall, weights=support),
+            np.average(specificity, weights=support),
+            np.average(f1, weights=support),
+            np.average(geo_mean, weights=support),
+            np.average(iba, weights=support),
+        ]
     ):
-        values += ["{0:0.{1}f}".format(v, digits)]
-    values += ["{}".format(np.sum(support))]
+        values += ["{0:0.{1}f}".format(score_value, digits)]
+        report_dict[f"avg_{score_name}"] = score_value
+    values += [f"{np.sum(support)}"]
     report += fmt % tuple(values)
+    report_dict["total_support"] = np.sum(support)
+
+    if output_dict:
+        return report_dict
     return report
