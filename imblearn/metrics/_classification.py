@@ -818,31 +818,11 @@ def classification_report_imbalanced(
     mean, and index balanced accuracy of the
     geometric mean.
 
+    Read more in the :ref:`User Guide <classification_report>`.
+
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
-        Ground truth (correct) target values.
-
-    y_pred : ndarray, shape (n_samples, )
-        Estimated targets as returned by a classifier.
-
-    labels : list, optional
-        The set of labels to include when ``average != 'binary'``, and their
-        order if ``average is None``. Labels present in the data can be
-        excluded, for example to calculate a multiclass average ignoring a
-        majority negative class, while labels not present in the data will
-        result in 0 components in a macro average.
-
-    target_names : list of strings, optional
-        Optional display names matching the labels (same order).
-
-    sample_weight : ndarray, shape (n_samples, )
-        Sample weights.
-
-    digits : int, optional (default=2)
-        Number of digits for formatting output floating point values
-
-   y_true : 1d array-like, or label indicator array / sparse matrix
+    y_true : 1d array-like, or label indicator array / sparse matrix
         Ground truth (correct) target values.
 
     y_pred : 1d array-like, or label indicator array / sparse matrix

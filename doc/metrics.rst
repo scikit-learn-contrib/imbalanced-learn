@@ -44,3 +44,13 @@ of the classes while keeping these accuracies balanced.
 The :func:`make_index_balanced_accuracy` :cite:`garcia2012effectiveness` can
 wrap any metric and give more importance to a specific class using the
 parameter ``alpha``.
+
+.. _classification_report:
+
+Summary of important metrics
+----------------------------
+
+The :func:`classification_report_imbalanced` will compute a set of metrics
+per class and summarize it in a table. The parameter `output_dict` allows
+to get a string or a Python dictionary. This dictionary can be reused to create
+a Pandas dataframe for instance.
