@@ -36,11 +36,13 @@ class OneSidedSelection(BaseCleaningSampler):
 
     {random_state}
 
-    n_neighbors : int or object, default=None
+    n_neighbors : int or estimator object, default=None
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbors.
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the nearest-neighbors. If `None`, a
+        :class:`~sklearn.neighbors.KNeighborsClassifier` with a 1-NN rules will
+        be used.
 
     n_seeds_S : int, default=1
         Number of samples to extract in order to build the set S.

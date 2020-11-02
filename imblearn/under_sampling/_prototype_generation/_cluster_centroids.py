@@ -48,8 +48,9 @@ class ClusterCentroids(BaseUnderSampler):
 
     {random_state}
 
-    estimator : object, default=KMeans()
-        Pass a :class:`sklearn.cluster.KMeans` estimator.
+    estimator : estimator object, default=None
+        Pass a :class:`~sklearn.cluster.KMeans` estimator. By default, it will
+        be a default :class:`~sklearn.cluster.KMeans` estimator.
 
     voting : {{"hard", "soft", "auto"}}, default='auto'
         Voting strategy to generate the new samples:

@@ -117,42 +117,42 @@ def fetch_datasets(
 
     Parameters
     ----------
-    data_home : string, optional (default=None)
+    data_home : str, default=None
         Specify another download and cache folder for the datasets. By default
         all scikit-learn data is stored in '~/scikit_learn_data' subfolders.
 
-    filter_data : tuple of str/int or None, optional (default=None)
+    filter_data : tuple of str/int, default=None
         A tuple containing the ID or the name of the datasets to be returned.
         Refer to the above table to get the ID and name of the datasets.
 
-    download_if_missing : boolean, optional (default=True)
+    download_if_missing : bool, default=True
         If False, raise a IOError if the data is not locally available
         instead of trying to download the data from the source site.
 
-    random_state : int, RandomState instance or None, optional (default=None)
+    random_state : int, RandomState instance or None, default=None
         Random state for shuffling the dataset.
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
 
-    shuffle : bool, optional (default=False)
+    shuffle : bool, default=False
         Whether to shuffle dataset.
 
-    verbose : bool, optional (default=False)
+    verbose : bool, default=False
         Show information regarding the fetching.
 
     Returns
     -------
     datasets : OrderedDict of Bunch object,
         The ordered is defined by ``filter_data``. Each Bunch object ---
-        refered as dataset --- have the following attributes:
+        referred as dataset --- have the following attributes:
 
-    dataset.data : ndarray, shape (n_samples, n_features)
+    dataset.data : ndarray of shape (n_samples, n_features)
 
-    dataset.target : ndarray, shape (n_samples, )
+    dataset.target : ndarray of shape (n_samples,)
 
-    dataset.DESCR : string
+    dataset.DESCR : str
         Description of the each dataset.
 
     Notes

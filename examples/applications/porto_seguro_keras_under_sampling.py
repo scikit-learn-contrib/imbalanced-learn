@@ -63,7 +63,7 @@ def convert_float64(X):
 ###############################################################################
 # We want to standard scale the numerical features while we want to one-hot
 # encode the categorical features. In this regard, we make use of the
-# :class:`sklearn.compose.ColumnTransformer`.
+# :class:`~sklearn.compose.ColumnTransformer`.
 
 numerical_columns = [name for name in X_train.columns
                      if '_calc_' in name and '_bin' not in name]

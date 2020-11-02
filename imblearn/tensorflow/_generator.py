@@ -33,24 +33,24 @@ def balanced_batch_generator(
 
     Parameters
     ----------
-    X : ndarray, shape (n_samples, n_features)
+    X : ndarray of shape (n_samples, n_features)
         Original imbalanced dataset.
 
-    y : ndarray, shape (n_samples,) or (n_samples, n_classes)
+    y : ndarray of shape (n_samples,) or (n_samples, n_classes)
         Associated targets.
 
-    sample_weight : ndarray, shape (n_samples,)
+    sample_weight : ndarray of shape (n_samples,), default=None
         Sample weight.
 
-    sampler : object or None, optional (default=RandomUnderSampler)
+    sampler : sampler object, default=None
         A sampler instance which has an attribute ``sample_indices_``.
         By default, the sampler used is a
-        :class:`imblearn.under_sampling.RandomUnderSampler`.
+        :class:`~imblearn.under_sampling.RandomUnderSampler`.
 
-    batch_size : int, optional (default=32)
+    batch_size : int, default=32
         Number of samples per gradient update.
 
-    keep_sparse : bool, optional (default=False)
+    keep_sparse : bool, default=False
         Either or not to conserve or not the sparsity of the input ``X``. By
         default, the returned batches will be dense.
 
@@ -64,7 +64,6 @@ def balanced_batch_generator(
 
     steps_per_epoch : int
         The number of samples per epoch.
-
     """
 
     random_state = check_random_state(random_state)

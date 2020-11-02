@@ -42,7 +42,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
     n_estimators : int, default=10
         Number of AdaBoost learners in the ensemble.
 
-    base_estimator : object, default=AdaBoostClassifier()
+    base_estimator : estimator object, default=AdaBoostClassifier()
         The base AdaBoost classifier used in the inner ensemble. Note that you
         can set the number of inner learner by passing your own instance.
 
@@ -60,7 +60,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
 
     {random_state}
 
-    verbose : int, optional (default=0)
+    verbose : int, default=0
         Controls the verbosity of the building process.
 
     Attributes
@@ -103,7 +103,6 @@ class EasyEnsembleClassifier(BaggingClassifier):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.model_selection import train_test_split

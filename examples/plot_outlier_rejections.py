@@ -73,14 +73,14 @@ y_test = np.hstack([np.ones(moons.shape[0], dtype=np.int8),
 plot_scatter(X_test, y_test, 'Testing dataset')
 
 ##############################################################################
-# How to use the :class:`imblearn.FunctionSampler`
+# How to use the :class:`~imblearn.FunctionSampler`
 ##############################################################################
 
 ##############################################################################
 # We first define a function which will use
-# :class:`sklearn.ensemble.IsolationForest` to eliminate some outliers from
+# :class:`~sklearn.ensemble.IsolationForest` to eliminate some outliers from
 # our dataset during training. The function passed to the
-# :class:`imblearn.FunctionSampler` will be called when using the method
+# :class:`~imblearn.FunctionSampler` will be called when using the method
 # ``fit_resample``.
 
 

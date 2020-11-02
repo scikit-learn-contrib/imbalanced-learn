@@ -29,7 +29,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
     Parameters
     ----------
-    base_estimator : object, default=None
+    base_estimator : estimator object, default=None
         The base estimator from which the boosted ensemble is built.
         Support for sample weighting is required, as well as proper
         ``classes_`` and ``n_classes_`` attributes. If ``None``, then

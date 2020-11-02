@@ -64,29 +64,29 @@ class BalancedBatchGenerator(*ParentClass):
 
     Parameters
     ----------
-    X : ndarray, shape (n_samples, n_features)
+    X : ndarray of shape (n_samples, n_features)
         Original imbalanced dataset.
 
-    y : ndarray, shape (n_samples,) or (n_samples, n_classes)
+    y : ndarray of shape (n_samples,) or (n_samples, n_classes)
         Associated targets.
 
-    sample_weight : ndarray, shape (n_samples,)
+    sample_weight : ndarray of shape (n_samples,)
         Sample weight.
 
-    sampler : object or None, optional (default=RandomUnderSampler)
+    sampler : sampler object, default=None
         A sampler instance which has an attribute ``sample_indices_``.
         By default, the sampler used is a
-        :class:`imblearn.under_sampling.RandomUnderSampler`.
+        :class:`~imblearn.under_sampling.RandomUnderSampler`.
 
-    batch_size : int, optional (default=32)
+    batch_size : int, default=32
         Number of samples per gradient update.
 
-    keep_sparse : bool, optional (default=False)
+    keep_sparse : bool, default=False
         Either or not to conserve or not the sparsity of the input (i.e. ``X``,
         ``y``, ``sample_weight``). By default, the returned batches will be
         dense.
 
-    random_state : int, RandomState instance or None, optional (default=None)
+    random_state : int, RandomState instance or None, default=None
         Control the randomization of the algorithm:
 
         - If int, ``random_state`` is the seed used by the random number
@@ -98,10 +98,10 @@ class BalancedBatchGenerator(*ParentClass):
 
     Attributes
     ----------
-    sampler_ : object
+    sampler_ : sampler object
         The sampler used to balance the dataset.
 
-    indices_ : ndarray, shape (n_samples, n_features)
+    indices_ : ndarray of shape (n_samples, n_features)
         The indices of the samples selected during sampling.
 
     Examples
@@ -125,7 +125,6 @@ class BalancedBatchGenerator(*ParentClass):
     ...     X, y, sampler=NearMiss(), batch_size=10, random_state=42)
     >>> callback_history = model.fit_generator(generator=training_generator,
     ...                                        epochs=10, verbose=0)
-
     """
 
     # flag for keras sequence duck-typing
@@ -222,24 +221,24 @@ def balanced_batch_generator(
 
     Parameters
     ----------
-    X : ndarray, shape (n_samples, n_features)
+    X : ndarray of shape (n_samples, n_features)
         Original imbalanced dataset.
 
-    y : ndarray, shape (n_samples,) or (n_samples, n_classes)
+    y : ndarray of shape (n_samples,) or (n_samples, n_classes)
         Associated targets.
 
-    sample_weight : ndarray, shape (n_samples,)
+    sample_weight : ndarray of shape (n_samples,), default=None
         Sample weight.
 
-    sampler : object or None, optional (default=RandomUnderSampler)
+    sampler : sampler object, default=None
         A sampler instance which has an attribute ``sample_indices_``.
         By default, the sampler used is a
-        :class:`imblearn.under_sampling.RandomUnderSampler`.
+        :class:`~imblearn.under_sampling.RandomUnderSampler`.
 
-    batch_size : int, optional (default=32)
+    batch_size : int, default=32
         Number of samples per gradient update.
 
-    keep_sparse : bool, optional (default=False)
+    keep_sparse : bool, default=False
         Either or not to conserve or not the sparsity of the input (i.e. ``X``,
         ``y``, ``sample_weight``). By default, the returned batches will be
         dense.

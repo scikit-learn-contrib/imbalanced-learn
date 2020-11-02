@@ -64,13 +64,13 @@ def sensitivity_specificity_support(
 
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
+    y_true : ndarray of shape (n_samples,)
         Ground truth (correct) target values.
 
-    y_pred : ndarray, shape (n_samples, )
+    y_pred : ndarray of shape (n_samples,)
         Estimated targets as returned by a classifier.
 
-    labels : list, optional
+    labels : list, default=None
         The set of labels to include when ``average != 'binary'``, and their
         order if ``average is None``. Labels present in the data can be
         excluded, for example to calculate a multiclass average ignoring a
@@ -79,13 +79,13 @@ def sensitivity_specificity_support(
         labels are column indices. By default, all labels in ``y_true`` and
         ``y_pred`` are used in sorted order.
 
-    pos_label : str or int, optional (default=1)
+    pos_label : str or int, default=1
         The class to report if ``average='binary'`` and the data is binary.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : str or None, optional (default=None)
+    average : str, default=None
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
@@ -107,23 +107,26 @@ def sensitivity_specificity_support(
             Calculate metrics for each instance, and find their average (only
             meaningful for multilabel classification where this differs from
             :func:`accuracy_score`).
-    warn_for : tuple or set, for internal use
+
+    warn_for : tuple or set of {{"sensitivity", "specificity"}}, for internal use
         This determines which warnings will be made in the case that this
         function is being used to return only one of its metrics.
 
-    sample_weight : ndarray, shape (n_samples, )
+    sample_weight : ndarray of shape (n_samples,), default=None
         Sample weights.
 
     Returns
     -------
-    sensitivity : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    sensitivity : float (if `average is None`) or ndarray of \
+            shape (n_unique_labels,)
+        The sensitivity metric.
 
-    specificity : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    specificity : float (if `average is None`) or ndarray of \
+            shape (n_unique_labels,)
+        The specificity metric.
 
-    support : int (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    support : int (if `average is None`) or ndarray of \
+            shape (n_unique_labels,)
         The number of occurrences of each label in ``y_true``.
 
     References
@@ -143,7 +146,6 @@ def sensitivity_specificity_support(
     (0.33333333333333331, 0.66666666666666663, None)
     >>> sensitivity_specificity_support(y_true, y_pred, average='weighted')
     (0.33333333333333331, 0.66666666666666663, None)
-
     """
     average_options = (None, "micro", "macro", "weighted", "samples")
     if average not in average_options and average != "binary":
@@ -305,26 +307,26 @@ def sensitivity_score(
 
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
+    y_true : ndarray of shape (n_samples,)
         Ground truth (correct) target values.
 
-    y_pred : ndarray, shape (n_samples, )
+    y_pred : ndarray of shape (n_samples,)
         Estimated targets as returned by a classifier.
 
-    labels : list, optional
+    labels : list, default=None
         The set of labels to include when ``average != 'binary'``, and their
         order if ``average is None``. Labels present in the data can be
         excluded, for example to calculate a multiclass average ignoring a
         majority negative class, while labels not present in the data will
         result in 0 components in a macro average.
 
-    pos_label : str or int, optional (default=1)
+    pos_label : str or int, default=1
         The class to report if ``average='binary'`` and the data is binary.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : str or None, optional (default=None)
+    average : str, default=None
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
@@ -347,17 +349,14 @@ def sensitivity_score(
             meaningful for multilabel classification where this differs from
             :func:`accuracy_score`).
 
-    warn_for : tuple or set, for internal use
-        This determines which warnings will be made in the case that this
-        function is being used to return only one of its metrics.
-
-    sample_weight : ndarray, shape (n_samples, )
+    sample_weight : ndarray of shape (n_samples,), default=None
         Sample weights.
 
     Returns
     -------
-    specificity : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    specificity : float (if `average is None`) or ndarray of \
+            shape (n_unique_labels,)
+        The specifcity metric.
 
     Examples
     --------
@@ -373,7 +372,6 @@ def sensitivity_score(
     0.33333333333333331
     >>> sensitivity_score(y_true, y_pred, average=None)
     array([ 1.,  0.,  0.])
-
     """
     s, _, _ = sensitivity_specificity_support(
         y_true,
@@ -410,26 +408,26 @@ def specificity_score(
 
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
+    y_true : ndarray of shape (n_samples,)
         Ground truth (correct) target values.
 
-    y_pred : ndarray, shape (n_samples, )
+    y_pred : ndarray of shape (n_samples,)
         Estimated targets as returned by a classifier.
 
-    labels : list, optional
+    labels : list, default=None
         The set of labels to include when ``average != 'binary'``, and their
         order if ``average is None``. Labels present in the data can be
         excluded, for example to calculate a multiclass average ignoring a
         majority negative class, while labels not present in the data will
         result in 0 components in a macro average.
 
-    pos_label : str or int, optional (default=1)
+    pos_label : str or int, default=1
         The class to report if ``average='binary'`` and the data is binary.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : str or None, optional (default=None)
+    average : str, default=None
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
@@ -452,17 +450,14 @@ def specificity_score(
             meaningful for multilabel classification where this differs from
             :func:`accuracy_score`).
 
-    warn_for : tuple or set, for internal use
-        This determines which warnings will be made in the case that this
-        function is being used to return only one of its metrics.
-
-    sample_weight : ndarray, shape (n_samples, )
+    sample_weight : ndarray of shape (n_samples,), default=None
         Sample weights.
 
     Returns
     -------
-    specificity : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    specificity : float (if `average is None`) or ndarray of \
+            shape (n_unique_labels,)
+        The specificity metric.
 
     Examples
     --------
@@ -478,7 +473,6 @@ def specificity_score(
     0.66666666666666663
     >>> specificity_score(y_true, y_pred, average=None)
     array([ 0.75,  0.5 ,  0.75])
-
     """
     _, s, _ = sensitivity_specificity_support(
         y_true,
@@ -527,26 +521,26 @@ def geometric_mean_score(
 
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
+    y_true : ndarray of shape (n_samples,)
         Ground truth (correct) target values.
 
-    y_pred : ndarray, shape (n_samples, )
+    y_pred : ndarray of shape (n_samples,)
         Estimated targets as returned by a classifier.
 
-    labels : list, optional
+    labels : list, default=None
         The set of labels to include when ``average != 'binary'``, and their
         order if ``average is None``. Labels present in the data can be
         excluded, for example to calculate a multiclass average ignoring a
         majority negative class, while labels not present in the data will
         result in 0 components in a macro average.
 
-    pos_label : str or int, optional (default=1)
+    pos_label : str or int, default=1
         The class to report if ``average='binary'`` and the data is binary.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : str or None, optional (default='multiclass')
+    average : str or None, default='multiclass'
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
@@ -569,10 +563,10 @@ def geometric_mean_score(
             meaningful for multilabel classification where this differs from
             :func:`accuracy_score`).
 
-    sample_weight : ndarray, shape (n_samples, )
+    sample_weight : ndarray of shape (n_samples,), default=None
         Sample weights.
 
-    correction: float, optional (default=0.0)
+    correction: float, default=0.0
         Substitutes sensitivity of unrecognized classes from zero to a given
         value.
 
@@ -610,7 +604,6 @@ def geometric_mean_score(
     0.47140452079103168
     >>> geometric_mean_score(y_true, y_pred, average=None)
     array([ 0.8660254,  0.       ,  0.       ])
-
     """
     if average is None or average != "multiclass":
         sen, spe, _ = sensitivity_specificity_support(
@@ -701,10 +694,10 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
 
     Parameters
     ----------
-    alpha : float, optional (default=0.1)
+    alpha : float, default=0.1
         Weighting factor.
 
-    squared : bool, optional (default=True)
+    squared : bool, default=True
         If ``squared`` is True, then the metric computed will be squared
         before to be weighted.
 
@@ -734,7 +727,6 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
     >>> y_pred = [0, 0, 1, 1, 0, 1]
     >>> print(gmean(y_true, y_pred, average=None))
     [ 0.44444444  0.44444444]
-
     """
 
     def decorate(scoring_func):

@@ -37,14 +37,14 @@ class SMOTETomek(BaseSampler):
 
     {random_state}
 
-    smote : object, default=None
-        The :class:`imblearn.over_sampling.SMOTE` object to use. If not given,
-        a :class:`imblearn.over_sampling.SMOTE` object with default parameters
+    smote : sampler object, default=None
+        The :class:`~imblearn.over_sampling.SMOTE` object to use. If not given,
+        a :class:`~imblearn.over_sampling.SMOTE` object with default parameters
         will be given.
 
-    tomek : object, default=None
-        The :class:`imblearn.under_sampling.TomekLinks` object to use. If not
-        given, a :class:`imblearn.under_sampling.TomekLinks` object with
+    tomek : sampler object, default=None
+        The :class:`~imblearn.under_sampling.TomekLinks` object to use. If not
+        given, a :class:`~imblearn.under_sampling.TomekLinks` object with
         sampling strategy='all' will be given.
 
     {n_jobs}

@@ -75,13 +75,13 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
 
     Parameters
     ----------
-    nn_name : str,
+    nn_name : str
         The name associated to the object to raise an error if needed.
 
     nn_object : int or KNeighborsMixin,
-        The object to be checked
+        The object to be checked.
 
-    additional_neighbor : int, optional (default=0)
+    additional_neighbor : int, default=0
         Sometimes, some algorithm need an additional neighbors.
 
     Returns
@@ -110,21 +110,20 @@ def check_target_type(y, indicate_one_vs_all=False):
 
     Parameters
     ----------
-    y : ndarray,
+    y : ndarray
         The array containing the target.
 
-    indicate_one_vs_all : bool, optional
+    indicate_one_vs_all : bool, default=False
         Either to indicate if the targets are encoded in a one-vs-all fashion.
 
     Returns
     -------
-    y : ndarray,
+    y : ndarray
         The returned target.
 
     is_one_vs_all : bool, optional
         Indicate if the target was originally encoded in a one-vs-all fashion.
         Only returned if ``indicate_multilabel=True``.
-
     """
     type_y = type_of_target(y)
     if type_y == "multilabel-indicator":
@@ -437,7 +436,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
 
     Checks that ``sampling_strategy`` is of consistent type and return a
     dictionary containing each targeted class with its corresponding
-    number of sample. It is used in :class:`imblearn.base.BaseSampler`.
+    number of sample. It is used in :class:`~imblearn.base.BaseSampler`.
 
     Parameters
     ----------
@@ -502,20 +501,20 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
 
-    y : ndarray, shape (n_samples,)
+    y : ndarray of shape (n_samples,)
         The target array.
 
-    sampling_type : str,
+    sampling_type : {{'over-sampling', 'under-sampling', 'clean-sampling'}}
         The type of sampling. Can be either ``'over-sampling'``,
         ``'under-sampling'``, or ``'clean-sampling'``.
 
-    kwargs : dict, optional
+    kwargs : dict
         Dictionary of additional keyword arguments to pass to
         ``sampling_strategy`` when this is a callable.
 
     Returns
     -------
-    sampling_strategy_converted : dict,
+    sampling_strategy_converted : dict
         The converted and validated sampling target. Returns a dictionary with
         the key being the class target and the value being the desired
         number of samples.
@@ -612,7 +611,7 @@ def _deprecate_positional_args(f):
     Parameters
     ----------
     f : function
-        function to check arguments on
+        function to check arguments on.
     """
     sig = signature(f)
     kwonly_args = []

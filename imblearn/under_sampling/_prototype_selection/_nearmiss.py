@@ -34,20 +34,22 @@ class NearMiss(BaseUnderSampler):
     version : int, default=1
         Version of the NearMiss to use. Possible values are 1, 2 or 3.
 
-    n_neighbors : int or object, default=3
+    n_neighbors : int or estimator object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         average distance to the minority point samples.  If object, an
         estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
+        By default, it will be a 3-NN.
 
-    n_neighbors_ver3 : int or object, default=3
+    n_neighbors_ver3 : int or estimator object, default=3
         If ``int``, NearMiss-3 algorithm start by a phase of re-sampling. This
         parameter correspond to the number of neighbours selected create the
         subset in which the selection will be performed.  If object, an
         estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
+        By default, it will be a 3-NN.
 
     {n_jobs}
 
@@ -78,7 +80,6 @@ class NearMiss(BaseUnderSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import \

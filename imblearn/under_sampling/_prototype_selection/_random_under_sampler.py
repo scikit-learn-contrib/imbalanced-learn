@@ -56,7 +56,6 @@ class RandomUnderSampler(BaseUnderSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import \

@@ -3,10 +3,19 @@
 import numpy as np
 from scipy import sparse
 from sklearn.utils import check_random_state
+
 from .base import BaseOverSampler
+from ..utils import Substitution
+from ..utils._docstring import _random_state_docstring
+from ..utils._docstring import _n_jobs_docstring
 from ..utils._validation import _deprecate_positional_args
 
 
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    random_state=_random_state_docstring,
+    n_jobs=_n_jobs_docstring
+)
 class ROSE(BaseOverSampler):
     """Random Over-Sampling Examples (ROSE).
 
@@ -22,69 +31,32 @@ class ROSE(BaseOverSampler):
 
     Parameters
     ----------
-    sampling_strategy : float, str, dict or callable, default='auto'
-        Sampling information to resample the data set.
+    {sampling_strategy}
 
-        - When ``float``, it corresponds to the desired ratio of the number of
-          samples in the minority class over the number of samples in the
-          majority class after resampling. Therefore, the ratio is expressed as
-          :math:`\\alpha_{os} = N_{rm} / N_{M}` where :math:`N_{rm}` is the
-          number of samples in the minority class after resampling and
-          :math:`N_{M}` is the number of samples in the majority class.
+    shrink_factors : dict, default=None
+        Dictionary where the key is the label and the value is the shrinkage
+        factor. If `None`, each class shrinkage is equal to 1.
+        The shrinkage applies to the gaussian kernels. It can be used to
+        compress/dilate the kernel.
 
-            .. warning::
-               ``float`` is only available for **binary** classification. An
-               error is raised for multi-class classification.
+    {random_state}
 
-        - When ``str``, specify the class targeted by the resampling. The
-          number of samples in the different classes will be equalized.
-          Possible choices are:
-
-            ``'minority'``: resample only the minority class;
-
-            ``'not minority'``: resample all classes but the minority class;
-
-            ``'not majority'``: resample all classes but the majority class;
-
-            ``'all'``: resample all classes;
-
-            ``'auto'``: equivalent to ``'not majority'``.
-
-        - When ``dict``, the keys correspond to the targeted classes. The
-          values correspond to the desired number of samples for each targeted
-          class.
-
-        - When callable, function taking ``y`` and returns a ``dict``. The keys
-          correspond to the targeted classes. The values correspond to the
-          desired number of samples for each class.
-
-    shrink_factors : dict, default= 1 for every class
-        Dict of {classes: shrinkfactors} items, applied to
-        the gaussian kernels. It can be used to compress/dilate the kernel.
-
-    random_state : int, RandomState instance, default=None
-        Control the randomization of the algorithm.
-
-        - If int, ``random_state`` is the seed used by the random number
-          generator;
-        - If ``RandomState`` instance, random_state is the random number
-          generator;
-        - If ``None``, the random number generator is the ``RandomState``
-          instance used by ``np.random``.
-
-    n_jobs : int, default=None
-        Number of CPU cores used during the cross-validation loop.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See
-        `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
-        for more details.
+    {n_jobs}
 
     See Also
     --------
+    BorderlineSMOTE : Over-sample using the bordeline-SMOTE variant.
+
     SMOTE : Over-sample using SMOTE.
 
-    Notes
-    -----
+    SMOTENC : Over-sample using SMOTE for continuous and categorical features.
+
+    SVMSMOTE : Over-sample using SVM-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
+
+    KMeansSMOTE : Over-sample applying a clustering before to oversample using
+        SMOTE.
 
     References
     ----------
@@ -97,7 +69,6 @@ class ROSE(BaseOverSampler):
 
     Examples
     --------
-
     >>> from imblearn.over_sampling import ROSE
     >>> from sklearn.datasets import make_classification
     >>> from collections import Counter
@@ -125,17 +96,17 @@ class ROSE(BaseOverSampler):
                       class_indices,
                       n_class_samples,
                       h_shrink):
-        """ A support function that returns artificial samples constructed
+        """A support function that returns artificial samples constructed
         from a random subsample of the data, by adding a multiviariate
         gaussian kernel and sampling from this distribution. An optional
         shrink factor can be included, to compress/dilate the kernel.
 
         Parameters
         ----------
-        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
             Observations from which the samples will be created.
 
-        class_indices : ndarray, shape (n_class_samples,)
+        class_indices : ndarray of shape (n_class_samples,)
             The target class indices
 
         n_class_samples : int
@@ -146,12 +117,11 @@ class ROSE(BaseOverSampler):
 
         Returns
         -------
-        X_new : {ndarray, sparse matrix}, shape (n_samples, n_features)
+        X_new : {ndarray, sparse matrix} of shape (n_samples, n_features)
             Synthetically generated samples.
 
-        y_new : ndarray, shape (n_samples,)
+        y_new : ndarray of shape (n_samples,)
             Target values for synthetic samples.
-
         """
 
         number_of_features = X.shape[1]

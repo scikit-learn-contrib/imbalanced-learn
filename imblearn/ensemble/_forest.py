@@ -91,7 +91,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     n_estimators : int, default=100
         The number of trees in the forest.
 
-    criterion : str, default="gini"
+    criterion : {"gini", "entropy"}, default="gini"
         The function to measure the quality of a split. Supported criteria are
         "gini" for the Gini impurity and "entropy" for the information gain.
         Note: this parameter is tree-specific.
@@ -101,7 +101,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         all leaves are pure or until all leaves contain less than
         min_samples_split samples.
 
-    min_samples_split : int, float, default=2
+    min_samples_split : int or float, default=2
         The minimum number of samples required to split an internal node:
 
         - If int, then consider `min_samples_split` as the minimum number.
@@ -109,7 +109,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
           `ceil(min_samples_split * n_samples)` are the minimum
           number of samples for each split.
 
-    min_samples_leaf : int, float, default=1
+    min_samples_leaf : int or float, default=1
         The minimum number of samples required to be at a leaf node:
 
         - If int, then consider ``min_samples_leaf`` as the minimum number.

@@ -41,7 +41,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors.
 
     kind_sel : {{'all', 'mode'}}, default='all'
@@ -183,7 +183,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors.
 
     max_iter : int, default=100
@@ -238,7 +238,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import \
@@ -365,11 +364,11 @@ class AllKNN(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    n_neighbors : int or object, default=3
+    n_neighbors : int or estimator object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbors.
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the nearest-neighbors. By default, it will be a 3-NN.
 
     kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
@@ -420,7 +419,6 @@ class AllKNN(BaseCleaningSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import \

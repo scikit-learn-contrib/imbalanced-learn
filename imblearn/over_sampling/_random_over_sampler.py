@@ -16,6 +16,7 @@ from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
 from ..utils._validation import _deprecate_positional_args
 
+
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring,
@@ -43,7 +44,20 @@ class RandomOverSampler(BaseOverSampler):
 
     See Also
     --------
-    SMOTE : Oversample by generating synthetic samples.
+    ROSE : Random Over-Sampling Examples.
+
+    BorderlineSMOTE : Over-sample using the bordeline-SMOTE variant.
+
+    SMOTE : Over-sample using SMOTE.
+
+    SMOTENC : Over-sample using SMOTE for continuous and categorical features.
+
+    SVMSMOTE : Over-sample using SVM-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
+
+    KMeansSMOTE : Over-sample applying a clustering before to oversample using
+        SMOTE.
 
     Notes
     -----
@@ -53,7 +67,6 @@ class RandomOverSampler(BaseOverSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.over_sampling import \

@@ -37,7 +37,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     Parameters
     ----------
-    base_estimator : object, default=None
+    base_estimator : estimator object, default=None
         The base estimator to fit on random subsets of the dataset.
         If None, then the base estimator is a decision tree.
 
@@ -130,7 +130,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
     Notes
     -----
     This is possible to turn this classifier into a balanced random forest [5]_
-    by passing a :class:`sklearn.tree.DecisionTreeClassifier` with
+    by passing a :class:`~sklearn.tree.DecisionTreeClassifier` with
     `max_features='auto'` as a base estimator.
 
     See
@@ -157,7 +157,6 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.model_selection import train_test_split
