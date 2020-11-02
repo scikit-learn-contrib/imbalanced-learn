@@ -91,7 +91,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     n_estimators : int, default=100
         The number of trees in the forest.
 
-    criterion : {"gini", "entropy"}, default="gini"
+    criterion : {{"gini", "entropy"}}, default="gini"
         The function to measure the quality of a split. Supported criteria are
         "gini" for the Gini impurity and "entropy" for the information gain.
         Note: this parameter is tree-specific.
