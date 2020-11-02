@@ -7,7 +7,6 @@
 from functools import partial
 
 import numpy as np
-from numpy.core.multiarray import inner
 
 import pytest
 

@@ -906,7 +906,7 @@ def classification_report_imbalanced(
     last_line_heading = "avg / total"
 
     if target_names is None:
-        target_names = ["%s" % l for l in labels]
+        target_names = [f"{label}" for label in labels]
     name_width = max(len(cn) for cn in target_names)
     width = max(name_width, len(last_line_heading), digits)
 
