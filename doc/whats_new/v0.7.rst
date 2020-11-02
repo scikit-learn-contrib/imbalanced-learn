@@ -71,6 +71,11 @@ Enhancements
 - Added Random Over-Sampling Examples (ROSE) class.
   :pr:`754` by :user:`Andrea Lorenzon <andrealorenzon>`.
 
+- Add option `output_dict` in
+  :func:`imblearn.metrics.classification_report_imbalanced` to return a
+  dictionary instead of a string.
+  :pr:`xx` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 
