@@ -7,16 +7,17 @@ import pytest
 
 from sklearn.base import clone
 from sklearn.exceptions import ConvergenceWarning
-from sklearn.utils.estimator_checks import parametrize_with_checks as \
-    parametrize_with_checks_sklearn
+from sklearn.utils.estimator_checks import parametrize_with_checks
 from sklearn.utils.estimator_checks import _construct_instance
+from sklearn.utils.estimator_checks import _yield_all_checks as \
+    sklearn_yielder
 from sklearn.utils._testing import ignore_warnings
 from sklearn.utils._testing import set_random_state
 from sklearn.utils._testing import SkipTest
 
-from imblearn.utils.estimator_checks import parametrize_with_checks
 from imblearn.utils.estimator_checks import _set_checking_parameters
-from imblearn.utils.estimator_checks import _yield_all_checks
+from imblearn.utils.estimator_checks import _yield_all_checks as \
+    imblearn_yielder
 from imblearn.utils.testing import all_estimators
 from imblearn.under_sampling import NearMiss
 
@@ -47,13 +48,17 @@ def _tested_estimators():
             yield estimator
 
 
-@parametrize_with_checks_sklearn(list(_tested_estimators()))
+@parametrize_with_checks(
+    list(_tested_estimators()), checks_generator=sklearn_yielder,
+)
 def test_estimators_compatibility_sklearn(estimator, check, request):
     _set_checking_parameters(estimator)
     check(estimator)
 
 
-@parametrize_with_checks(list(_tested_estimators()))
+@parametrize_with_checks(
+    list(_tested_estimators()), checks_generator=imblearn_yielder,
+)
 def test_estimators_imblearn(estimator, check, request):
     # Common tests for estimator instances
     with ignore_warnings(category=(FutureWarning,
