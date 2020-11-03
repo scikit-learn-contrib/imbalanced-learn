@@ -112,19 +112,21 @@ class BalancedBatchGenerator(*ParentClass):
     >>> class_dict = dict()
     >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
     >>> X, y = make_imbalance(iris.data, iris.target, class_dict)
-    >>> import keras
-    >>> y = keras.utils.to_categorical(y, 3)
-    >>> model = keras.models.Sequential()
-    >>> model.add(keras.layers.Dense(y.shape[1], input_dim=X.shape[1],
-    ...                              activation='softmax'))
+    >>> import tensorflow
+    >>> y = tensorflow.keras.utils.to_categorical(y, 3)
+    >>> model = tensorflow.keras.models.Sequential()
+    >>> model.add(
+    ...     tensorflow.keras.layers.Dense(
+    ...         y.shape[1], input_dim=X.shape[1], activation='softmax'
+    ...     )
+    ... )
     >>> model.compile(optimizer='sgd', loss='categorical_crossentropy',
     ...               metrics=['accuracy'])
     >>> from imblearn.keras import BalancedBatchGenerator
     >>> from imblearn.under_sampling import NearMiss
     >>> training_generator = BalancedBatchGenerator(
     ...     X, y, sampler=NearMiss(), batch_size=10, random_state=42)
-    >>> callback_history = model.fit_generator(generator=training_generator,
-    ...                                        epochs=10, verbose=0)
+    >>> callback_history = model.fit(training_generator, epochs=10, verbose=0)
     """
 
     # flag for keras sequence duck-typing
@@ -264,21 +266,23 @@ def balanced_batch_generator(
     >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
     >>> from imblearn.datasets import make_imbalance
     >>> X, y = make_imbalance(X, y, class_dict)
-    >>> import keras
-    >>> y = keras.utils.to_categorical(y, 3)
-    >>> model = keras.models.Sequential()
-    >>> model.add(keras.layers.Dense(y.shape[1], input_dim=X.shape[1],
-    ...                              activation='softmax'))
+    >>> import tensorflow
+    >>> y = tensorflow.keras.utils.to_categorical(y, 3)
+    >>> model = tensorflow.keras.models.Sequential()
+    >>> model.add(
+    ...     tensorflow.keras.layers.Dense(
+    ...         y.shape[1], input_dim=X.shape[1], activation='softmax'
+    ...     )
+    ... )
     >>> model.compile(optimizer='sgd', loss='categorical_crossentropy',
     ...               metrics=['accuracy'])
     >>> from imblearn.keras import balanced_batch_generator
     >>> from imblearn.under_sampling import NearMiss
     >>> training_generator, steps_per_epoch = balanced_batch_generator(
     ...     X, y, sampler=NearMiss(), batch_size=10, random_state=42)
-    >>> callback_history = model.fit_generator(generator=training_generator,
-    ...                                        steps_per_epoch=steps_per_epoch,
-    ...                                        epochs=10, verbose=0)
-
+    >>> callback_history = model.fit(training_generator,
+    ...                              steps_per_epoch=steps_per_epoch,
+    ...                              epochs=10, verbose=0)
     """
 
     return tf_bbg(
