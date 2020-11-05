@@ -1,6 +1,6 @@
 import warnings
 
-from dask import array
+import numpy as np
 from sklearn.exceptions import DataConversionWarning
 from sklearn.utils.multiclass import _is_integral_float
 
@@ -9,7 +9,7 @@ def is_multilabel(y):
     if not (y.ndim == 2 and y.shape[1] > 1):
         return False
 
-    labels = array.unique(y).compute()
+    labels = np.unique(y).compute()
 
     return len(labels) < 3 and (
         y.dtype.kind in 'biu' or _is_integral_float(labels)
@@ -34,12 +34,12 @@ def type_of_target(y):
         suffix = ""
 
     # check float and contains non-integer float values
-    if y.dtype.kind == 'f' and array.any(y != y.astype(int)):
+    if y.dtype.kind == 'f' and np.any(y != y.astype(int)):
         # [.1, .2, 3] or [[.1, .2, 3]] or [[1., .2]] and not [1., 2., 3.]
         # NOTE: we don't check for infinite values
         return 'continuous' + suffix
 
-    labels = array.unique(y).compute()
+    labels = np.unique(y).compute()
     if (len((labels)) > 2) or (y.ndim >= 2 and len(y[0]) > 1):
         # [1, 2, 3] or [[1., 2., 3]] or [[1, 2]]
         return 'multiclass' + suffix

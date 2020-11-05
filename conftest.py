@@ -19,6 +19,7 @@ except TypeError:
 
 def pytest_runtest_setup(item):
     fname = item.fspath.strpath
+    print(item)
     if (fname.endswith(os.path.join('keras', '_generator.py')) or
             fname.endswith('miscellaneous.rst')):
         try:
@@ -31,7 +32,8 @@ def pytest_runtest_setup(item):
             import tensorflow  # noqa
         except ImportError:
             pytest.skip('The tensorflow package is not installed.')
-    elif "dask" in fname:
+    elif (fname.endswith(os.path.join("dask", "utils.py")) or
+          fname.endswith(os.path.join("dask", "_support.py"))):
         try:
             import dask  # noqa
         except ImportError:
