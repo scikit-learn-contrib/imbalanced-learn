@@ -53,7 +53,7 @@ def all_estimators(type_filter=None,):
         return True
 
     all_classes = []
-    modules_to_ignore = {"tests"}
+    modules_to_ignore = {"tests", "dask"}
     root = str(Path(__file__).parent.parent)
     # Ignore deprecation warnings triggered at import time and from walking
     # packages
