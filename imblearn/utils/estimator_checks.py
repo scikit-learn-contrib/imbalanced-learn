@@ -51,6 +51,7 @@ def _set_checking_parameters(estimator):
 
 
 def _yield_sampler_checks(sampler):
+    tags = sampler._get_tags()
     yield check_target_type
     yield check_samplers_one_label
     yield check_samplers_fit
@@ -58,6 +59,8 @@ def _yield_sampler_checks(sampler):
     yield check_samplers_sampling_strategy_fit_resample
     yield check_samplers_sparse
     yield check_samplers_pandas
+    if "dask-array" in tags["X_types"]:
+        yield check_samplers_dask_array
     yield check_samplers_list
     yield check_samplers_multiclass_ova
     yield check_samplers_preserve_dtype
@@ -288,6 +291,30 @@ def check_samplers_pandas(name, sampler):
     assert_allclose(X_res_df.to_numpy(), X_res)
     assert_allclose(y_res_df.to_numpy().ravel(), y_res)
     assert_allclose(y_res_s.to_numpy(), y_res)
+
+
+def check_samplers_dask_array(name, sampler):
+    dask = pytest.importorskip("dask")
+    # Check that the samplers handle pandas dataframe and pandas series
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
+    X_dask = dask.array.from_array(X, chunks=100)
+    y_dask = dask.array.from_array(y, chunks=100)
+
+    X_res_dask, y_res_dask = sampler.fit_resample(X_dask, y_dask)
+    X_res, y_res = sampler.fit_resample(X, y)
+
+    # check that we return the same type for dataframes or series types
+    assert isinstance(X_res_dask, dask.array.Array)
+    assert isinstance(y_res_dask, dask.array.Array)
+
+    assert_allclose(X_res_dask, X_res)
+    assert_allclose(y_res_dask, y_res)
 
 
 def check_samplers_list(name, sampler):

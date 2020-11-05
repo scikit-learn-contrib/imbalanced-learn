@@ -10,6 +10,7 @@ from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
+from ...dask._support import is_dask_container
 from ...utils import check_target_type
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
@@ -80,44 +81,66 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         self.replacement = replacement
 
     def _check_X_y(self, X, y):
-        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X, y, reset=True, accept_sparse=["csr", "csc"], dtype=None,
-            force_all_finite=False,
+        y, binarize_y, self._uniques = check_target_type(
+            y,
+            indicate_one_vs_all=True,
+            return_unique=True,
         )
+        if not any([is_dask_container(arr) for arr in (X, y)]):
+            X, y = self._validate_data(
+                X,
+                y,
+                reset=True,
+                accept_sparse=["csr", "csc"],
+                dtype=None,
+                force_all_finite=False,
+            )
         return X, y, binarize_y
+
+    @staticmethod
+    def _find_target_class_indices(y, target_class):
+        target_class_indices = np.flatnonzero(y == target_class)
+        if is_dask_container(y):
+            return target_class_indices.compute()
+        return target_class_indices
 
     def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
 
-        idx_under = np.empty((0,), dtype=int)
+        idx_under = []
 
-        for target_class in np.unique(y):
+        for target_class in self._uniques:
+            target_class_indices = self._find_target_class_indices(
+                y, target_class
+            )
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
                 index_target_class = random_state.choice(
-                    range(np.count_nonzero(y == target_class)),
+                    target_class_indices.size,
                     size=n_samples,
                     replace=self.replacement,
                 )
             else:
                 index_target_class = slice(None)
 
-            idx_under = np.concatenate(
-                (
-                    idx_under,
-                    np.flatnonzero(y == target_class)[index_target_class],
-                ),
-                axis=0,
-            )
+            selected_indices = target_class_indices[index_target_class]
+            idx_under.append(selected_indices)
 
-        self.sample_indices_ = idx_under
+        self.sample_indices_ = np.hstack(idx_under)
+        self.sample_indices_.sort()
 
-        return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
+        return (
+            _safe_indexing(X, self.sample_indices_),
+            _safe_indexing(y, self.sample_indices_)
+        )
 
     def _more_tags(self):
         return {
-            "X_types": ["2darray", "string"],
+            "X_types": [
+                "2darray",
+                "string",
+                "dask-array",
+            ],
             "sample_indices": True,
             "allow_nan": True,
         }

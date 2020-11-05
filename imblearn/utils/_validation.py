@@ -14,10 +14,13 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors._base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import column_or_1d
-from sklearn.utils.multiclass import type_of_target
 
+from ..dask._support import is_dask_container
 from ..exceptions import raise_isinstance_error
+from .wrapper import _is_multiclass_encoded
+from .wrapper import column_or_1d
+from .wrapper import type_of_target
+from .wrapper import unique
 
 SAMPLING_KIND = (
     "over-sampling",
@@ -99,10 +102,12 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
 
 def _count_class_sample(y):
     unique, counts = np.unique(y, return_counts=True)
+    if is_dask_container(unique):
+        unique, counts = unique.compute(), counts.compute()
     return dict(zip(unique, counts))
 
 
-def check_target_type(y, indicate_one_vs_all=False):
+def check_target_type(y, indicate_one_vs_all=False, return_unique=False):
     """Check the target types to be conform to the current samplers.
 
     The current samplers should be compatible with ``'binary'``,
@@ -116,10 +121,16 @@ def check_target_type(y, indicate_one_vs_all=False):
     indicate_one_vs_all : bool, default=False
         Either to indicate if the targets are encoded in a one-vs-all fashion.
 
+    return_unique : bool, default=False
+        Either to return or not the unique values in y.
+
     Returns
     -------
     y : ndarray
         The returned target.
+
+    y_unique : ndarray
+        The unique values in `y`.
 
     is_one_vs_all : bool, optional
         Indicate if the target was originally encoded in a one-vs-all fashion.
@@ -127,7 +138,7 @@ def check_target_type(y, indicate_one_vs_all=False):
     """
     type_y = type_of_target(y)
     if type_y == "multilabel-indicator":
-        if np.any(y.sum(axis=1) > 1):
+        if not _is_multiclass_encoded(y):
             raise ValueError(
                 "Imbalanced-learn currently supports binary, multiclass and "
                 "binarized encoded multiclasss targets. Multilabel and "
@@ -137,7 +148,13 @@ def check_target_type(y, indicate_one_vs_all=False):
     else:
         y = column_or_1d(y)
 
-    return (y, type_y == "multilabel-indicator") if indicate_one_vs_all else y
+    output = [y]
+    if indicate_one_vs_all:
+        output += [type_y == "multilabel-indicator"]
+    if return_unique:
+        output += [unique(y)]
+
+    return output
 
 
 def _sampling_strategy_all(y, sampling_type):
