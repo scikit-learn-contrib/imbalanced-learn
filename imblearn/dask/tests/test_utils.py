@@ -8,14 +8,6 @@ from imblearn.dask.utils import is_multilabel
 from imblearn.dask.utils import type_of_target
 
 
-def test_type_of_target_error():
-    y = np.arange(10)
-
-    err_msg = "Expected a Dask array, series or dataframe."
-    with pytest.raises(ValueError, match=err_msg):
-        type_of_target(y)
-
-
 @pytest.mark.parametrize(
     "y, expected_result",
     [

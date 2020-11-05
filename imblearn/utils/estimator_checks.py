@@ -61,6 +61,8 @@ def _yield_sampler_checks(sampler):
     yield check_samplers_pandas
     if "dask-array" in tags["X_types"]:
         yield check_samplers_dask_array
+    if "dask-dataframe" in tags["X_types"]:
+        yield check_samplers_dask_dataframe
     yield check_samplers_list
     yield check_samplers_multiclass_ova
     yield check_samplers_preserve_dtype
@@ -295,7 +297,7 @@ def check_samplers_pandas(name, sampler):
 
 def check_samplers_dask_array(name, sampler):
     dask = pytest.importorskip("dask")
-    # Check that the samplers handle pandas dataframe and pandas series
+    # Check that the samplers handle dask array
     X, y = make_classification(
         n_samples=1000,
         n_classes=3,
@@ -315,6 +317,37 @@ def check_samplers_dask_array(name, sampler):
 
     assert_allclose(X_res_dask, X_res)
     assert_allclose(y_res_dask, y_res)
+
+
+def check_samplers_dask_dataframe(name, sampler):
+    dask = pytest.importorskip("dask")
+    # Check that the samplers handle dask dataframe and dask series
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
+    X_df = dask.dataframe.from_array(
+        X, columns=[str(i) for i in range(X.shape[1])]
+    )
+    y_s = dask.dataframe.from_array(y)
+
+    X_res_df, y_res_s = sampler.fit_resample(X_df, y_s)
+    X_res, y_res = sampler.fit_resample(X, y)
+
+    # check that we return the same type for dataframes or series types
+    assert isinstance(X_res_df, dask.dataframe.DataFrame)
+    assert isinstance(y_res_s, dask.dataframe.Series)
+
+    # assert X_df.columns.to_list() == X_res_df.columns.to_list()
+    # assert y_df.columns.to_list() == y_res_df.columns.to_list()
+    # assert y_s.name == y_res_s.name
+
+    # assert_allclose(X_res_df.to_numpy(), X_res)
+    # assert_allclose(y_res_df.to_numpy().ravel(), y_res)
+    # assert_allclose(y_res_s.to_numpy(), y_res)
 
 
 def check_samplers_list(name, sampler):

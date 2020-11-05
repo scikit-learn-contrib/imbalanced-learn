@@ -140,6 +140,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                 "2darray",
                 "string",
                 "dask-array",
+                "dask-dataframe"
             ],
             "sample_indices": True,
             "allow_nan": True,
