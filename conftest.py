@@ -31,3 +31,8 @@ def pytest_runtest_setup(item):
             import tensorflow
         except ImportError:
             pytest.skip('The tensorflow package is not installed.')
+    elif "dask" in fname:
+        try:
+            import dask
+        except ImportError:
+            pytest.skip('The dask package is not installed.')
