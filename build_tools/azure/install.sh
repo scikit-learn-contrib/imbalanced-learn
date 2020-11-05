@@ -40,6 +40,10 @@ if [[ "$DISTRIB" == "conda" ]]; then
         TO_INSTALL="$TO_INSTALL pandas=$PANDAS_VERSION"
     fi
 
+    if [[ -n "$DASK_VERSION" ]]; then
+        TO_INSTALL="$TO_INSTALL dask=$DASK_VERSION"
+    fi
+
     if [[ -n "$KERAS_VERSION" ]]; then
         TO_INSTALL="$TO_INSTALL keras=$KERAS_VERSION tensorflow=1"
         KERAS_BACKEND=tensorflow
