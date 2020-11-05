@@ -95,7 +95,7 @@ elif [[ "$DISTRIB" == "conda-pip-latest" ]]; then
     python -m pip install -U pip
     python -m pip install numpy scipy joblib cython
     python -m pip install pandas
-    python -m pip install dask
+    python -m pip install "dask[complete]"
     python -m pip install scikit-learn
     python -m pip install pytest==$PYTEST_VERSION pytest-cov pytest-xdist
 fi
