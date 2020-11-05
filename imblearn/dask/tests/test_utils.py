@@ -20,7 +20,7 @@ def test_type_of_target_error():
     "y, expected_result",
     [
         (array.from_array(np.array([0, 1, 0, 1])), False),
-        (array(np.array([[1, 0], [0, 0]])), True),
+        (array.from_array(np.array([[1, 0], [0, 0]])), True),
         (array.from_array(np.array([[1], [0], [0]])), False),
         (array.from_array(np.array([[1, 0, 0]])), True),
     ]
