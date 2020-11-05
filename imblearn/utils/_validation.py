@@ -129,12 +129,12 @@ def check_target_type(y, indicate_one_vs_all=False, return_unique=False):
     y : ndarray
         The returned target.
 
-    y_unique : ndarray
-        The unique values in `y`.
-
     is_one_vs_all : bool, optional
         Indicate if the target was originally encoded in a one-vs-all fashion.
         Only returned if ``indicate_multilabel=True``.
+
+    y_unique : ndarray
+        The unique values in `y`.
     """
     type_y = type_of_target(y)
     if type_y == "multilabel-indicator":
@@ -154,7 +154,7 @@ def check_target_type(y, indicate_one_vs_all=False, return_unique=False):
     if return_unique:
         output += [unique(y)]
 
-    return output
+    return output[0] if len(output) == 1 else tuple(output)
 
 
 def _sampling_strategy_all(y, sampling_type):
