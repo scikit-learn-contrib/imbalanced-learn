@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from dask import array
-from dask_ml.datasets import make_classification
 
 from imblearn.dask.utils import is_multilabel
 from imblearn.dask.utils import type_of_target

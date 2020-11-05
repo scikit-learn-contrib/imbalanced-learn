@@ -1,6 +1,5 @@
 import warnings
 
-from dask import dataframe
 from dask import array
 from sklearn.exceptions import DataConversionWarning
 from sklearn.utils.multiclass import _is_integral_float
