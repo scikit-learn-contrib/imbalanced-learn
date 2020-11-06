@@ -1,5 +1,7 @@
 import numpy as np
 
+from sklearn.utils.multiclass import check_classification_targets as \
+    sklearn_check_classification_targets
 from sklearn.utils.multiclass import type_of_target as sklearn_type_of_target
 from sklearn.utils.validation import column_or_1d as sklearn_column_or_1d
 
@@ -30,8 +32,20 @@ def column_or_1d(y, *, warn=False):
     return sklearn_column_or_1d(y, warn=warn)
 
 
-def unique(*args, **kwargs):
-    output = np.unique(args, kwargs)
-    if is_dask_container(output):
-        return (arr.compute() for arr in output)
-    return output
+def unique(arr, **kwargs):
+    if is_dask_container(arr):
+        if hasattr(arr, "unique"):
+            output = np.asarray(arr.unique(**kwargs))
+        else:
+            output = np.unique(arr).compute()
+        return output
+    return np.unique(arr, **kwargs)
+
+
+def check_classification_targets(y):
+    if is_dask_container(y):
+        from ..dask.utils import check_classification_targets as \
+            dask_check_classification_targets
+
+        return dask_check_classification_targets(y)
+    return sklearn_check_classification_targets(y)

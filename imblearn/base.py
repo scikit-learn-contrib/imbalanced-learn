@@ -10,11 +10,11 @@ import numpy as np
 
 from sklearn.base import BaseEstimator
 from sklearn.preprocessing import label_binarize
-from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
 from .utils._validation import ArraysTransformer
 from .utils._validation import _deprecate_positional_args
+from .utils.wrapper import check_classification_targets
 
 
 class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
@@ -82,6 +82,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         output = self._fit_resample(X, y)
 
+        # TODO: label binarize is not implemented with dask
         y_ = (label_binarize(output[1], np.unique(y))
               if binarize_y else output[1])
 

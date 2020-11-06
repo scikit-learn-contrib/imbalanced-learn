@@ -333,6 +333,7 @@ def check_samplers_dask_dataframe(name, sampler):
         X, columns=[str(i) for i in range(X.shape[1])]
     )
     y_s = dask.dataframe.from_array(y)
+    y_s = y_s.rename("target")
 
     X_res_df, y_res_s = sampler.fit_resample(X_df, y_s)
     X_res, y_res = sampler.fit_resample(X, y)
@@ -341,13 +342,11 @@ def check_samplers_dask_dataframe(name, sampler):
     assert isinstance(X_res_df, dask.dataframe.DataFrame)
     assert isinstance(y_res_s, dask.dataframe.Series)
 
-    # assert X_df.columns.to_list() == X_res_df.columns.to_list()
-    # assert y_df.columns.to_list() == y_res_df.columns.to_list()
-    # assert y_s.name == y_res_s.name
+    assert X_df.columns.to_list() == X_res_df.columns.to_list()
+    assert y_s.name == y_res_s.name
 
-    # assert_allclose(X_res_df.to_numpy(), X_res)
-    # assert_allclose(y_res_df.to_numpy().ravel(), y_res)
-    # assert_allclose(y_res_s.to_numpy(), y_res)
+    assert_allclose(np.array(X_res_df), X_res)
+    assert_allclose(np.array(y_res_s), y_res)
 
 
 def check_samplers_list(name, sampler):

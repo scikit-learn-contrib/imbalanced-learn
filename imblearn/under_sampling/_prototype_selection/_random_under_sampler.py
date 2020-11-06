@@ -81,6 +81,9 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
         self.replacement = replacement
 
     def _check_X_y(self, X, y):
+        if is_dask_container(y) and hasattr(y, "to_dask_array"):
+            y = y.to_dask_array()
+            y.compute_chunk_sizes()
         y, binarize_y, self._uniques = check_target_type(
             y,
             indicate_one_vs_all=True,
@@ -95,6 +98,9 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                 dtype=None,
                 force_all_finite=False,
             )
+        elif is_dask_container(X) and hasattr(X, "to_dask_array"):
+            X = X.to_dask_array()
+            X.compute_chunk_sizes()
         return X, y, binarize_y
 
     @staticmethod
@@ -140,7 +146,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                 "2darray",
                 "string",
                 "dask-array",
-                # "dask-dataframe"
+                "dask-dataframe"
             ],
             "sample_indices": True,
             "allow_nan": True,

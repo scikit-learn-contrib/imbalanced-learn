@@ -9,7 +9,10 @@ def is_multilabel(y):
     if not (y.ndim == 2 and y.shape[1] > 1):
         return False
 
-    labels = np.unique(y).compute()
+    if hasattr(y, "unique"):
+        labels = np.asarray(y.unique())
+    else:
+        labels = np.unique(y).compute()
 
     return len(labels) < 3 and (
         y.dtype.kind in 'biu' or _is_integral_float(labels)
@@ -39,7 +42,10 @@ def type_of_target(y):
         # NOTE: we don't check for infinite values
         return 'continuous' + suffix
 
-    labels = np.unique(y).compute()
+    if hasattr(y, "unique"):
+        labels = np.asarray(y.unique())
+    else:
+        labels = np.unique(y).compute()
     if (len((labels)) > 2) or (y.ndim >= 2 and len(y[0]) > 1):
         # [1, 2, 3] or [[1., 2., 3]] or [[1, 2]]
         return 'multiclass' + suffix
@@ -63,3 +69,10 @@ def column_or_1d(y, *, warn=False):
     raise ValueError(
         f"y should be a 1d array. Got an array of shape {shape} instead."
     )
+
+
+def check_classification_targets(y):
+    y_type = type_of_target(y)
+    if y_type not in ['binary', 'multiclass', 'multiclass-multioutput',
+                      'multilabel-indicator', 'multilabel-sequences']:
+        raise ValueError("Unknown label type: %r" % y_type)

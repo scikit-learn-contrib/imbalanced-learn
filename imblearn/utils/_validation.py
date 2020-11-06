@@ -47,6 +47,9 @@ class ArraysTransformer:
     def _gets_props(self, array):
         props = {}
         props["type"] = array.__class__.__name__
+        if props["type"].lower() in ("series", "dataframe"):
+            suffix = "dask-" if is_dask_container(array) else "pandas-"
+            props["type"] = suffix + props["type"]
         props["columns"] = getattr(array, "columns", None)
         props["name"] = getattr(array, "name", None)
         props["dtypes"] = getattr(array, "dtypes", None)
@@ -56,13 +59,34 @@ class ArraysTransformer:
         type_ = props["type"].lower()
         if type_ == "list":
             ret = array.tolist()
-        elif type_ == "dataframe":
+        elif type_ == "pandas-dataframe":
             import pandas as pd
+
             ret = pd.DataFrame(array, columns=props["columns"])
             ret = ret.astype(props["dtypes"])
-        elif type_ == "series":
+        elif type_ == "pandas-series":
             import pandas as pd
+
             ret = pd.Series(array, dtype=props["dtypes"], name=props["name"])
+        elif type_ == "dask-dataframe":
+            from dask import dataframe
+
+            if is_dask_container(array):
+                ret = dataframe.from_dask_array(
+                    array, columns=props["columns"]
+                )
+            else:
+                ret = dataframe.from_array(array, columns=props["columns"])
+            ret = ret.astype(props["dtypes"])
+        elif type_ == "dask-series":
+            from dask import dataframe
+
+            if is_dask_container(array):
+                ret = dataframe.from_dask_array(array)
+            else:
+                ret = dataframe.from_array(array)
+            ret = ret.astype(props["dtypes"])
+            ret = ret.rename(props["name"])
         else:
             ret = array
         return ret
