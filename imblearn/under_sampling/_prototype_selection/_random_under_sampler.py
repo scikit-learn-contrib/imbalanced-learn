@@ -10,16 +10,20 @@ from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
-from ...dask._support import is_dask_container
+from ...dask._support import is_dask_collection
 from ...utils import check_target_type
 from ...utils import Substitution
-from ...utils._docstring import _random_state_docstring
+from ...utils._docstring import (
+    _random_state_docstring,
+    _validate_if_dask_collection_docstring
+)
 from ...utils._validation import _deprecate_positional_args
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring,
+    validate_if_dask_collection=_validate_if_dask_collection_docstring,
 )
 class RandomUnderSampler(BaseUnderSampler):
     """Class to perform random under-sampling.
@@ -37,6 +41,8 @@ class RandomUnderSampler(BaseUnderSampler):
 
     replacement : bool, default=False
         Whether the sample is with or without replacement.
+
+    {validate_if_dask_collection}
 
     Attributes
     ----------
@@ -74,22 +80,23 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
 
     @_deprecate_positional_args
     def __init__(
-        self, *, sampling_strategy="auto", random_state=None, replacement=False
+        self,
+        *,
+        sampling_strategy="auto",
+        random_state=None,
+        replacement=False,
+        validate_if_dask_collection=False,
     ):
-        super().__init__(sampling_strategy=sampling_strategy)
+        super().__init__(
+            sampling_strategy=sampling_strategy,
+            validate_if_dask_collection=validate_if_dask_collection,
+        )
         self.random_state = random_state
         self.replacement = replacement
 
     def _check_X_y(self, X, y):
-        if is_dask_container(y) and hasattr(y, "to_dask_array"):
-            y = y.to_dask_array()
-            y.compute_chunk_sizes()
-        y, binarize_y, self._uniques = check_target_type(
-            y,
-            indicate_one_vs_all=True,
-            return_unique=True,
-        )
-        if not any([is_dask_container(arr) for arr in (X, y)]):
+        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
+        if not any([is_dask_collection(arr) for arr in (X, y)]):
             X, y = self._validate_data(
                 X,
                 y,
@@ -98,16 +105,15 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                 dtype=None,
                 force_all_finite=False,
             )
-        elif is_dask_container(X) and hasattr(X, "to_dask_array"):
-            X = X.to_dask_array()
-            X.compute_chunk_sizes()
         return X, y, binarize_y
 
     @staticmethod
     def _find_target_class_indices(y, target_class):
         target_class_indices = np.flatnonzero(y == target_class)
-        if is_dask_container(y):
-            return target_class_indices.compute()
+        if is_dask_collection(y):
+            from dask import compute
+
+            return compute(target_class_indices)[0]
         return target_class_indices
 
     def _fit_resample(self, X, y):
@@ -115,7 +121,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
 
         idx_under = []
 
-        for target_class in self._uniques:
+        for target_class in self._classes_counts:
             target_class_indices = self._find_target_class_indices(
                 y, target_class
             )

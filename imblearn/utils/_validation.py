@@ -15,7 +15,7 @@ from sklearn.base import clone
 from sklearn.neighbors._base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 
-from ..dask._support import is_dask_container
+from ..dask._support import is_dask_collection
 from ..exceptions import raise_isinstance_error
 from .wrapper import _is_multiclass_encoded
 from .wrapper import column_or_1d
@@ -39,6 +39,16 @@ class ArraysTransformer:
         self.x_props = self._gets_props(X)
         self.y_props = self._gets_props(y)
 
+    @staticmethod
+    def to_dask_array(X, y):
+        if hasattr(X, "to_dask_array"):
+            X = X.to_dask_array()
+            X.compute_chunk_sizes()
+        if hasattr(y, "to_dask_array"):
+            y = y.to_dask_array()
+            y.compute_chunk_sizes()
+        return X, y
+
     def transform(self, X, y):
         X = self._transfrom_one(X, self.x_props)
         y = self._transfrom_one(y, self.y_props)
@@ -48,7 +58,7 @@ class ArraysTransformer:
         props = {}
         props["type"] = array.__class__.__name__
         if props["type"].lower() in ("series", "dataframe"):
-            suffix = "dask-" if is_dask_container(array) else "pandas-"
+            suffix = "dask-" if is_dask_collection(array) else "pandas-"
             props["type"] = suffix + props["type"]
         props["columns"] = getattr(array, "columns", None)
         props["name"] = getattr(array, "name", None)
@@ -71,7 +81,7 @@ class ArraysTransformer:
         elif type_ == "dask-dataframe":
             from dask import dataframe
 
-            if is_dask_container(array):
+            if is_dask_collection(array):
                 ret = dataframe.from_dask_array(
                     array, columns=props["columns"]
                 )
@@ -81,7 +91,7 @@ class ArraysTransformer:
         elif type_ == "dask-series":
             from dask import dataframe
 
-            if is_dask_container(array):
+            if is_dask_collection(array):
                 ret = dataframe.from_dask_array(array)
             else:
                 ret = dataframe.from_array(array)
@@ -124,14 +134,16 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
         raise_isinstance_error(nn_name, [int, KNeighborsMixin], nn_object)
 
 
-def _count_class_sample(y):
+def get_classes_counts(y):
     unique, counts = np.unique(y, return_counts=True)
-    if is_dask_container(unique):
-        unique, counts = unique.compute(), counts.compute()
+    if is_dask_collection(unique):
+        from dask import compute
+
+        unique, counts = compute(unique, counts)
     return dict(zip(unique, counts))
 
 
-def check_target_type(y, indicate_one_vs_all=False, return_unique=False):
+def check_target_type(y, indicate_one_vs_all=False):
     """Check the target types to be conform to the current samplers.
 
     The current samplers should be compatible with ``'binary'``,
@@ -144,9 +156,6 @@ def check_target_type(y, indicate_one_vs_all=False, return_unique=False):
 
     indicate_one_vs_all : bool, default=False
         Either to indicate if the targets are encoded in a one-vs-all fashion.
-
-    return_unique : bool, default=False
-        Either to return or not the unique values in y.
 
     Returns
     -------
@@ -175,27 +184,24 @@ def check_target_type(y, indicate_one_vs_all=False, return_unique=False):
     output = [y]
     if indicate_one_vs_all:
         output += [type_y == "multilabel-indicator"]
-    if return_unique:
-        output += [unique(y)]
 
     return output[0] if len(output) == 1 else tuple(output)
 
 
-def _sampling_strategy_all(y, sampling_type):
+def _sampling_strategy_all(classes_counts, sampling_type):
     """Returns sampling target by targeting all classes."""
-    target_stats = _count_class_sample(y)
     if sampling_type == "over-sampling":
-        n_sample_majority = max(target_stats.values())
+        n_sample_majority = max(classes_counts.values())
         sampling_strategy = {
             key: n_sample_majority - value
-            for (key, value) in target_stats.items()
+            for (key, value) in classes_counts.items()
         }
     elif (
         sampling_type == "under-sampling" or sampling_type == "clean-sampling"
     ):
-        n_sample_minority = min(target_stats.values())
+        n_sample_minority = min(classes_counts.values())
         sampling_strategy = {
-            key: n_sample_minority for key in target_stats.keys()
+            key: n_sample_minority for key in classes_counts.keys()
         }
     else:
         raise NotImplementedError
@@ -203,7 +209,7 @@ def _sampling_strategy_all(y, sampling_type):
     return sampling_strategy
 
 
-def _sampling_strategy_majority(y, sampling_type):
+def _sampling_strategy_majority(classes_counts, sampling_type):
     """Returns sampling target by targeting the majority class only."""
     if sampling_type == "over-sampling":
         raise ValueError(
@@ -213,12 +219,11 @@ def _sampling_strategy_majority(y, sampling_type):
     elif (
         sampling_type == "under-sampling" or sampling_type == "clean-sampling"
     ):
-        target_stats = _count_class_sample(y)
-        class_majority = max(target_stats, key=target_stats.get)
-        n_sample_minority = min(target_stats.values())
+        class_majority = max(classes_counts, key=classes_counts.get)
+        n_sample_minority = min(classes_counts.values())
         sampling_strategy = {
             key: n_sample_minority
-            for key in target_stats.keys()
+            for key in classes_counts.keys()
             if key == class_majority
         }
     else:
@@ -227,26 +232,25 @@ def _sampling_strategy_majority(y, sampling_type):
     return sampling_strategy
 
 
-def _sampling_strategy_not_majority(y, sampling_type):
+def _sampling_strategy_not_majority(classes_counts, sampling_type):
     """Returns sampling target by targeting all classes but not the
     majority."""
-    target_stats = _count_class_sample(y)
     if sampling_type == "over-sampling":
-        n_sample_majority = max(target_stats.values())
-        class_majority = max(target_stats, key=target_stats.get)
+        n_sample_majority = max(classes_counts.values())
+        class_majority = max(classes_counts, key=classes_counts.get)
         sampling_strategy = {
             key: n_sample_majority - value
-            for (key, value) in target_stats.items()
+            for (key, value) in classes_counts.items()
             if key != class_majority
         }
     elif (
         sampling_type == "under-sampling" or sampling_type == "clean-sampling"
     ):
-        n_sample_minority = min(target_stats.values())
-        class_majority = max(target_stats, key=target_stats.get)
+        n_sample_minority = min(classes_counts.values())
+        class_majority = max(classes_counts, key=classes_counts.get)
         sampling_strategy = {
             key: n_sample_minority
-            for key in target_stats.keys()
+            for key in classes_counts.keys()
             if key != class_majority
         }
     else:
@@ -255,26 +259,25 @@ def _sampling_strategy_not_majority(y, sampling_type):
     return sampling_strategy
 
 
-def _sampling_strategy_not_minority(y, sampling_type):
+def _sampling_strategy_not_minority(classes_counts, sampling_type):
     """Returns sampling target by targeting all classes but not the
     minority."""
-    target_stats = _count_class_sample(y)
     if sampling_type == "over-sampling":
-        n_sample_majority = max(target_stats.values())
-        class_minority = min(target_stats, key=target_stats.get)
+        n_sample_majority = max(classes_counts.values())
+        class_minority = min(classes_counts, key=classes_counts.get)
         sampling_strategy = {
             key: n_sample_majority - value
-            for (key, value) in target_stats.items()
+            for (key, value) in classes_counts.items()
             if key != class_minority
         }
     elif (
         sampling_type == "under-sampling" or sampling_type == "clean-sampling"
     ):
-        n_sample_minority = min(target_stats.values())
-        class_minority = min(target_stats, key=target_stats.get)
+        n_sample_minority = min(classes_counts.values())
+        class_minority = min(classes_counts, key=classes_counts.get)
         sampling_strategy = {
             key: n_sample_minority
-            for key in target_stats.keys()
+            for key in classes_counts.keys()
             if key != class_minority
         }
     else:
@@ -283,15 +286,14 @@ def _sampling_strategy_not_minority(y, sampling_type):
     return sampling_strategy
 
 
-def _sampling_strategy_minority(y, sampling_type):
+def _sampling_strategy_minority(classes_counts, sampling_type):
     """Returns sampling target by targeting the minority class only."""
-    target_stats = _count_class_sample(y)
     if sampling_type == "over-sampling":
-        n_sample_majority = max(target_stats.values())
-        class_minority = min(target_stats, key=target_stats.get)
+        n_sample_majority = max(classes_counts.values())
+        class_minority = min(classes_counts, key=classes_counts.get)
         sampling_strategy = {
             key: n_sample_majority - value
-            for (key, value) in target_stats.items()
+            for (key, value) in classes_counts.items()
             if key == class_minority
         }
     elif (
@@ -307,24 +309,23 @@ def _sampling_strategy_minority(y, sampling_type):
     return sampling_strategy
 
 
-def _sampling_strategy_auto(y, sampling_type):
+def _sampling_strategy_auto(classes_counts, sampling_type):
     """Returns sampling target auto for over-sampling and not-minority for
     under-sampling."""
     if sampling_type == "over-sampling":
-        return _sampling_strategy_not_majority(y, sampling_type)
+        return _sampling_strategy_not_majority(classes_counts, sampling_type)
     elif (
         sampling_type == "under-sampling" or sampling_type == "clean-sampling"
     ):
-        return _sampling_strategy_not_minority(y, sampling_type)
+        return _sampling_strategy_not_minority(classes_counts, sampling_type)
 
 
-def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
+def _sampling_strategy_dict(sampling_strategy, classes_counts, sampling_type):
     """Returns sampling target by converting the dictionary depending of the
     sampling."""
-    target_stats = _count_class_sample(y)
     # check that all keys in sampling_strategy are also in y
     set_diff_sampling_strategy_target = set(sampling_strategy.keys()) - set(
-        target_stats.keys()
+        classes_counts.keys()
     )
     if len(set_diff_sampling_strategy_target) > 0:
         raise ValueError(
@@ -341,17 +342,17 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
         )
     sampling_strategy_ = {}
     if sampling_type == "over-sampling":
-        n_samples_majority = max(target_stats.values())
-        class_majority = max(target_stats, key=target_stats.get)
+        n_samples_majority = max(classes_counts.values())
+        class_majority = max(classes_counts, key=classes_counts.get)
         for class_sample, n_samples in sampling_strategy.items():
-            if n_samples < target_stats[class_sample]:
+            if n_samples < classes_counts[class_sample]:
                 raise ValueError(
                     "With over-sampling methods, the number"
                     " of samples in a class should be greater"
                     " or equal to the original number of samples."
                     " Originally, there is {} samples and {}"
                     " samples are asked.".format(
-                        target_stats[class_sample], n_samples
+                        classes_counts[class_sample], n_samples
                     )
                 )
             if n_samples > n_samples_majority:
@@ -367,18 +368,18 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
                     )
                 )
             sampling_strategy_[class_sample] = (
-                n_samples - target_stats[class_sample]
+                n_samples - classes_counts[class_sample]
             )
     elif sampling_type == "under-sampling":
         for class_sample, n_samples in sampling_strategy.items():
-            if n_samples > target_stats[class_sample]:
+            if n_samples > classes_counts[class_sample]:
                 raise ValueError(
                     "With under-sampling methods, the number of"
                     " samples in a class should be less or equal"
                     " to the original number of samples."
                     " Originally, there is {} samples and {}"
                     " samples are asked.".format(
-                        target_stats[class_sample], n_samples
+                        classes_counts[class_sample], n_samples
                     )
                 )
             sampling_strategy_[class_sample] = n_samples
@@ -394,19 +395,18 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
     return sampling_strategy_
 
 
-def _sampling_strategy_list(sampling_strategy, y, sampling_type):
+def _sampling_strategy_list(sampling_strategy, classes_counts, sampling_type):
     """With cleaning methods, sampling_strategy can be a list to target the
- class of interest."""
+    class of interest."""
     if sampling_type != "clean-sampling":
         raise ValueError(
             "'sampling_strategy' cannot be a list for samplers "
             "which are not cleaning methods."
         )
 
-    target_stats = _count_class_sample(y)
     # check that all keys in sampling_strategy are also in y
     set_diff_sampling_strategy_target = set(sampling_strategy) - set(
-        target_stats.keys()
+        classes_counts.keys()
     )
     if len(set_diff_sampling_strategy_target) > 0:
         raise ValueError(
@@ -415,27 +415,26 @@ def _sampling_strategy_list(sampling_strategy, y, sampling_type):
         )
 
     return {
-        class_sample: min(target_stats.values())
+        class_sample: min(classes_counts.values())
         for class_sample in sampling_strategy
     }
 
 
-def _sampling_strategy_float(sampling_strategy, y, sampling_type):
+def _sampling_strategy_float(sampling_strategy, classes_counts, sampling_type):
     """Take a proportion of the majority (over-sampling) or minority
     (under-sampling) class in binary classification."""
-    type_y = type_of_target(y)
-    if type_y != "binary":
+
+    if len(classes_counts) != 2:
         raise ValueError(
             '"sampling_strategy" can be a float only when the type '
             "of target is binary. For multi-class, use a dict."
         )
-    target_stats = _count_class_sample(y)
     if sampling_type == "over-sampling":
-        n_sample_majority = max(target_stats.values())
-        class_majority = max(target_stats, key=target_stats.get)
+        n_sample_majority = max(classes_counts.values())
+        class_majority = max(classes_counts, key=classes_counts.get)
         sampling_strategy_ = {
             key: int(n_sample_majority * sampling_strategy - value)
-            for (key, value) in target_stats.items()
+            for (key, value) in classes_counts.items()
             if key != class_majority
         }
         if any([n_samples <= 0 for n_samples in sampling_strategy_.values()]):
@@ -446,16 +445,16 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
                 "ratio."
             )
     elif sampling_type == "under-sampling":
-        n_sample_minority = min(target_stats.values())
-        class_minority = min(target_stats, key=target_stats.get)
+        n_sample_minority = min(classes_counts.values())
+        class_minority = min(classes_counts, key=classes_counts.get)
         sampling_strategy_ = {
             key: int(n_sample_minority / sampling_strategy)
-            for (key, value) in target_stats.items()
+            for (key, value) in classes_counts.items()
             if key != class_minority
         }
         if any(
             [
-                n_samples > target_stats[target]
+                n_samples > classes_counts[target]
                 for target, n_samples in sampling_strategy_.items()
             ]
         ):
@@ -472,7 +471,9 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
     return sampling_strategy_
 
 
-def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
+def check_sampling_strategy(
+    sampling_strategy, classes_counts, sampling_type, **kwargs
+):
     """Sampling target validation for samplers.
 
     Checks that ``sampling_strategy`` is of consistent type and return a
@@ -567,10 +568,10 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
             " instead.".format(SAMPLING_KIND, sampling_type)
         )
 
-    if np.unique(y).size <= 1:
+    if len(classes_counts) <= 1:
         raise ValueError(
             "The target 'y' needs to have more than 1 class."
-            " Got {} class instead".format(np.unique(y).size)
+            " Got {} class instead".format(len(classes_counts))
         )
 
     if sampling_type in ("ensemble", "bypass"):
@@ -587,7 +588,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
         return OrderedDict(
             sorted(
                 SAMPLING_TARGET_KIND[sampling_strategy](
-                    y, sampling_type
+                    classes_counts, sampling_type
                 ).items()
             )
         )
@@ -595,7 +596,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
         return OrderedDict(
             sorted(
                 _sampling_strategy_dict(
-                    sampling_strategy, y, sampling_type
+                    sampling_strategy, classes_counts, sampling_type
                 ).items()
             )
         )
@@ -603,7 +604,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
         return OrderedDict(
             sorted(
                 _sampling_strategy_list(
-                    sampling_strategy, y, sampling_type
+                    sampling_strategy, classes_counts, sampling_type
                 ).items()
             )
         )
@@ -618,16 +619,16 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
         return OrderedDict(
             sorted(
                 _sampling_strategy_float(
-                    sampling_strategy, y, sampling_type
+                    sampling_strategy, classes_counts, sampling_type
                 ).items()
             )
         )
     elif callable(sampling_strategy):
-        sampling_strategy_ = sampling_strategy(y, **kwargs)
+        sampling_strategy_ = sampling_strategy(classes_counts, **kwargs)
         return OrderedDict(
             sorted(
                 _sampling_strategy_dict(
-                    sampling_strategy_, y, sampling_type
+                    sampling_strategy_, classes_counts, sampling_type
                 ).items()
             )
         )

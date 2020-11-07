@@ -297,6 +297,7 @@ def check_samplers_pandas(name, sampler):
 
 def check_samplers_dask_array(name, sampler):
     dask = pytest.importorskip("dask")
+    from dask import array
     # Check that the samplers handle dask array
     X, y = make_classification(
         n_samples=1000,
@@ -305,15 +306,15 @@ def check_samplers_dask_array(name, sampler):
         weights=[0.2, 0.3, 0.5],
         random_state=0,
     )
-    X_dask = dask.array.from_array(X, chunks=100)
-    y_dask = dask.array.from_array(y, chunks=100)
+    X_dask = array.from_array(X, chunks=100)
+    y_dask = array.from_array(y, chunks=100)
 
     X_res_dask, y_res_dask = sampler.fit_resample(X_dask, y_dask)
     X_res, y_res = sampler.fit_resample(X, y)
 
     # check that we return the same type for dataframes or series types
-    assert isinstance(X_res_dask, dask.array.Array)
-    assert isinstance(y_res_dask, dask.array.Array)
+    assert isinstance(X_res_dask, array.Array)
+    assert isinstance(y_res_dask, array.Array)
 
     assert_allclose(X_res_dask, X_res)
     assert_allclose(y_res_dask, y_res)
@@ -321,6 +322,7 @@ def check_samplers_dask_array(name, sampler):
 
 def check_samplers_dask_dataframe(name, sampler):
     dask = pytest.importorskip("dask")
+    from dask import dataframe
     # Check that the samplers handle dask dataframe and dask series
     X, y = make_classification(
         n_samples=1000,
@@ -329,18 +331,18 @@ def check_samplers_dask_dataframe(name, sampler):
         weights=[0.2, 0.3, 0.5],
         random_state=0,
     )
-    X_df = dask.dataframe.from_array(
+    X_df = dataframe.from_array(
         X, columns=[str(i) for i in range(X.shape[1])]
     )
-    y_s = dask.dataframe.from_array(y)
+    y_s = dataframe.from_array(y)
     y_s = y_s.rename("target")
 
     X_res_df, y_res_s = sampler.fit_resample(X_df, y_s)
     X_res, y_res = sampler.fit_resample(X, y)
 
     # check that we return the same type for dataframes or series types
-    assert isinstance(X_res_df, dask.dataframe.DataFrame)
-    assert isinstance(y_res_s, dask.dataframe.Series)
+    assert isinstance(X_res_df, dataframe.DataFrame)
+    assert isinstance(y_res_s, dataframe.Series)
 
     assert X_df.columns.to_list() == X_res_df.columns.to_list()
     assert y_s.name == y_res_s.name

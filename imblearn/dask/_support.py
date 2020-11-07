@@ -1,13 +1,9 @@
-_REGISTERED_DASK_CONTAINER = []
+def is_dask_collection(container):
+    try:
+        # to keep dask as an optional depency, keep the statement in a
+        # try/except statement
+        from dask import is_dask_collection
 
-try:
-    from dask import array, dataframe
-    _REGISTERED_DASK_CONTAINER += [
-        array.Array, dataframe.Series, dataframe.DataFrame,
-    ]
-except ImportError:
-    pass
-
-
-def is_dask_container(container):
-    return isinstance(container, tuple(_REGISTERED_DASK_CONTAINER))
+        return is_dask_collection(container)
+    except ImportError:
+        return False

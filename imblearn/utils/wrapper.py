@@ -5,11 +5,11 @@ from sklearn.utils.multiclass import check_classification_targets as \
 from sklearn.utils.multiclass import type_of_target as sklearn_type_of_target
 from sklearn.utils.validation import column_or_1d as sklearn_column_or_1d
 
-from ..dask._support import is_dask_container
+from ..dask._support import is_dask_collection
 
 
 def type_of_target(y):
-    if is_dask_container(y):
+    if is_dask_collection(y):
         from ..dask.utils import type_of_target as dask_type_of_target
 
         return dask_type_of_target(y)
@@ -17,7 +17,7 @@ def type_of_target(y):
 
 
 def _is_multiclass_encoded(y):
-    if is_dask_container(y):
+    if is_dask_collection(y):
         from dask import array
 
         return array.all(y.sum(axis=1) == 1).compute()
@@ -25,7 +25,7 @@ def _is_multiclass_encoded(y):
 
 
 def column_or_1d(y, *, warn=False):
-    if is_dask_container(y):
+    if is_dask_collection(y):
         from ..dask.utils import column_or_1d as dask_column_or_1d
 
         return dask_column_or_1d(y, warn=warn)
@@ -33,7 +33,7 @@ def column_or_1d(y, *, warn=False):
 
 
 def unique(arr, **kwargs):
-    if is_dask_container(arr):
+    if is_dask_collection(arr):
         if hasattr(arr, "unique"):
             output = np.asarray(arr.unique(**kwargs))
         else:
@@ -43,7 +43,7 @@ def unique(arr, **kwargs):
 
 
 def check_classification_targets(y):
-    if is_dask_container(y):
+    if is_dask_collection(y):
         from ..dask.utils import check_classification_targets as \
             dask_check_classification_targets
 
