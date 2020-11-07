@@ -53,6 +53,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         if (not dask_collection or
                 (dask_collection and self.validate_if_dask_collection)):
             X, y, _ = self._check_X_y(X, y)
+
         self._classes_counts = get_classes_counts(y)
         self.sampling_strategy_ = check_sampling_strategy(
             self.sampling_strategy, self._classes_counts, self._sampling_type

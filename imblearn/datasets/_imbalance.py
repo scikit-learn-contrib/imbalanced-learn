@@ -9,7 +9,10 @@ from collections import Counter
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import check_sampling_strategy
-from ..utils._validation import _deprecate_positional_args
+from ..utils._validation import (
+    _deprecate_positional_args,
+    get_classes_counts,
+)
 
 
 @_deprecate_positional_args
@@ -87,11 +90,11 @@ def make_imbalance(
     >>> print('Distribution after imbalancing: {}'.format(Counter(y_res)))
     Distribution after imbalancing: Counter({2: 30, 1: 20, 0: 10})
     """
-    target_stats = Counter(y)
+    target_stats = get_classes_counts(y)
     # restrict ratio to be a dict or a callable
     if isinstance(sampling_strategy, dict) or callable(sampling_strategy):
         sampling_strategy_ = check_sampling_strategy(
-            sampling_strategy, y, "under-sampling", **kwargs
+            sampling_strategy, target_stats, "under-sampling", **kwargs
         )
     else:
         raise ValueError(
