@@ -65,6 +65,10 @@ def _yield_sampler_checks(sampler):
         yield check_samplers_dask_dataframe
     yield check_samplers_list
     yield check_samplers_multiclass_ova
+    if "dask-array" in tags["X_types"]:
+        yield check_samplers_multiclass_ova_dask_array
+    if "dask-dataframe" in tags["X_types"]:
+        yield check_samplers_multiclass_ova_dask_dataframe
     yield check_samplers_preserve_dtype
     yield check_samplers_sample_indices
     yield check_samplers_2d_target
@@ -343,27 +347,20 @@ def check_samplers_dask_dataframe(name, sampler_orig):
     )
     y_s = dataframe.from_array(y)
     y_s = y_s.rename("target")
-    y_s_ohe = dataframe.get_dummies(
-        y_s.astype(pd.CategoricalDtype(categories=[0, 1, 2]))
-    )
 
     for validate_if_dask_collection in (True, False):
         sampler.set_params(
             validate_if_dask_collection=validate_if_dask_collection
         )
         X_res_df, y_res_s = sampler.fit_resample(X_df, y_s)
-        # FIXME: not supported with validate=False
-        X_res, y_res_s_ohe = sampler.fit_resample(X, y_s_ohe)
         X_res, y_res = sampler.fit_resample(X, y)
 
         # check that we return the same type for dataframes or series types
         assert isinstance(X_res_df, dataframe.DataFrame)
         assert isinstance(y_res_s, dataframe.Series)
-        assert isinstance(y_res_s_ohe, dataframe.DataFrame)
 
         assert X_df.columns.to_list() == X_res_df.columns.to_list()
         assert y_s.name == y_res_s.name
-        assert y_s_ohe.columns.to_list() == y_res_s_ohe.columns.to_list()
 
         assert_allclose(np.array(X_res_df), X_res)
         assert_allclose(np.array(y_res_s), y_res)
@@ -406,6 +403,66 @@ def check_samplers_multiclass_ova(name, sampler):
     assert_allclose(X_res, X_res_ova)
     assert type_of_target(y_res_ova) == type_of_target(y_ova)
     assert_allclose(y_res, y_res_ova.argmax(axis=1))
+
+
+def check_samplers_multiclass_ova_dask_array(name, sampler_orig):
+    pytest.importorskip("dask")
+    from dask import array
+    sampler = clone(sampler_orig)
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
+    y_ova = label_binarize(y, np.unique(y))
+
+    X = array.from_array(X)
+    y = array.from_array(y)
+    y_ova = array.from_array(y_ova)
+
+    sampler.set_params(validate_if_dask_collection=True)
+    X_res, y_res = sampler.fit_resample(X, y)
+    X_res_ova, y_res_ova = sampler.fit_resample(X, y_ova)
+
+    assert_allclose(X_res, X_res_ova)
+    assert type_of_target(y_res_ova) == type_of_target(y_ova)
+    assert_allclose(y_res, y_res_ova.argmax(axis=1))
+
+    assert isinstance(X_res_ova, array.Array)
+    assert isinstance(y_res, array.Array)
+    assert isinstance(y_res_ova, array.Array)
+
+
+def check_samplers_multiclass_ova_dask_dataframe(name, sampler_orig):
+    pytest.importorskip("dask")
+    from dask import dataframe
+    sampler = clone(sampler_orig)
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
+    y_ova = label_binarize(y, np.unique(y))
+
+    X = dataframe.from_array(X)
+    y = dataframe.from_array(y)
+    y_ova = dataframe.from_array(y_ova)
+
+    sampler.set_params(validate_if_dask_collection=True)
+    X_res, y_res = sampler.fit_resample(X, y)
+    X_res_ova, y_res_ova = sampler.fit_resample(X, y_ova)
+
+    assert_allclose(X_res, X_res_ova)
+    assert type_of_target(y_res_ova) == type_of_target(y_ova)
+    assert_allclose(y_res, y_res_ova.to_dask_array().argmax(axis=1))
+
+    assert isinstance(X_res_ova, dataframe.DataFrame)
+    assert isinstance(y_res, dataframe.Series)
+    assert isinstance(y_res_ova, dataframe.DataFrame)
 
 
 def check_samplers_2d_target(name, sampler):
