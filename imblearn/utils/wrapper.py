@@ -1,5 +1,6 @@
 import numpy as np
 
+from sklearn.preprocessing import label_binarize as sklearn_label_binarize
 from sklearn.utils.multiclass import check_classification_targets as \
     sklearn_check_classification_targets
 from sklearn.utils.multiclass import type_of_target as sklearn_type_of_target
@@ -49,3 +50,11 @@ def check_classification_targets(y):
 
         return dask_check_classification_targets(y)
     return sklearn_check_classification_targets(y)
+
+
+def label_binarize(y, *, classes):
+    if is_dask_collection(y):
+        from ..dask.preprocessing import label_binarize as dask_label_binarize
+
+        return dask_label_binarize(y, classes=classes)
+    return sklearn_label_binarize(y, classes=classes)

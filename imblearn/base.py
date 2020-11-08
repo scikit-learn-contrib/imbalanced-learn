@@ -18,7 +18,10 @@ from .utils._validation import (
     _deprecate_positional_args,
     get_classes_counts,
 )
-from .utils.wrapper import check_classification_targets
+from .utils.wrapper import (
+    check_classification_targets,
+    label_binarize,
+)
 
 
 class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
@@ -49,7 +52,11 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         self : object
             Return the instance itself.
         """
+        arrays_transformer = ArraysTransformer(X, y)
         dask_collection = any([is_dask_collection(arr) for arr in (X, y)])
+        if dask_collection:
+            X, y = arrays_transformer.to_dask_array(X, y)
+
         if (not dask_collection or
                 (dask_collection and self.validate_if_dask_collection)):
             X, y, _ = self._check_X_y(X, y)
@@ -83,12 +90,14 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         """
         arrays_transformer = ArraysTransformer(X, y)
         dask_collection = any([is_dask_collection(arr) for arr in (X, y)])
+        if dask_collection:
+            X, y = arrays_transformer.to_dask_array(X, y)
+
         if (not dask_collection or
                 (dask_collection and self.validate_if_dask_collection)):
             check_classification_targets(y)
             X, y, binarize_y = self._check_X_y(X, y)
         else:
-            X, y = arrays_transformer.to_dask_array(X, y)
             binarize_y = False
 
         self._classes_counts = get_classes_counts(y)
@@ -98,9 +107,10 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         output = self._fit_resample(X, y)
 
-        # TODO: label binarize is not implemented with dask
-        y_ = (label_binarize(output[1], np.unique(y))
-              if binarize_y else output[1])
+        if binarize_y:
+            y_ = label_binarize(output[1], classes=np.unique(y))
+        else:
+            y_ = output[1]
 
         X_, y_ = arrays_transformer.transform(output[0], y_)
         return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
@@ -281,9 +291,10 @@ class FunctionSampler(BaseSampler):
         output = self._fit_resample(X, y)
 
         if self.validate:
-
-            y_ = (label_binarize(output[1], np.unique(y))
-                  if binarize_y else output[1])
+            if binarize_y:
+                y_ = label_binarize(output[1], classes=np.unique(y))
+            else:
+                y_ = output[1]
             X_, y_ = arrays_transformer.transform(output[0], y_)
             return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 

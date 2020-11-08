@@ -295,9 +295,10 @@ def check_samplers_pandas(name, sampler):
     assert_allclose(y_res_s.to_numpy(), y_res)
 
 
-def check_samplers_dask_array(name, sampler):
+def check_samplers_dask_array(name, sampler_orig):
     pytest.importorskip("dask")
     from dask import array
+    sampler = clone(sampler_orig)
     # Check that the samplers handle dask array
     X, y = make_classification(
         n_samples=1000,
@@ -309,20 +310,25 @@ def check_samplers_dask_array(name, sampler):
     X_dask = array.from_array(X, chunks=100)
     y_dask = array.from_array(y, chunks=100)
 
-    X_res_dask, y_res_dask = sampler.fit_resample(X_dask, y_dask)
-    X_res, y_res = sampler.fit_resample(X, y)
+    for validate_if_dask_collection in (True, False):
+        sampler.set_params(
+            validate_if_dask_collection=validate_if_dask_collection
+        )
+        X_res_dask, y_res_dask = sampler.fit_resample(X_dask, y_dask)
+        X_res, y_res = sampler.fit_resample(X, y)
 
-    # check that we return the same type for dataframes or series types
-    assert isinstance(X_res_dask, array.Array)
-    assert isinstance(y_res_dask, array.Array)
+        # check that we return the same type for dataframes or series types
+        assert isinstance(X_res_dask, array.Array)
+        assert isinstance(y_res_dask, array.Array)
 
-    assert_allclose(X_res_dask, X_res)
-    assert_allclose(y_res_dask, y_res)
+        assert_allclose(X_res_dask, X_res)
+        assert_allclose(y_res_dask, y_res)
 
 
-def check_samplers_dask_dataframe(name, sampler):
+def check_samplers_dask_dataframe(name, sampler_orig):
     pytest.importorskip("dask")
     from dask import dataframe
+    sampler = clone(sampler_orig)
     # Check that the samplers handle dask dataframe and dask series
     X, y = make_classification(
         n_samples=1000,
@@ -337,18 +343,22 @@ def check_samplers_dask_dataframe(name, sampler):
     y_s = dataframe.from_array(y)
     y_s = y_s.rename("target")
 
-    X_res_df, y_res_s = sampler.fit_resample(X_df, y_s)
-    X_res, y_res = sampler.fit_resample(X, y)
+    for validate_if_dask_collection in (True, False):
+        sampler.set_params(
+            validate_if_dask_collection=validate_if_dask_collection
+        )
+        X_res_df, y_res_s = sampler.fit_resample(X_df, y_s)
+        X_res, y_res = sampler.fit_resample(X, y)
 
-    # check that we return the same type for dataframes or series types
-    assert isinstance(X_res_df, dataframe.DataFrame)
-    assert isinstance(y_res_s, dataframe.Series)
+        # check that we return the same type for dataframes or series types
+        assert isinstance(X_res_df, dataframe.DataFrame)
+        assert isinstance(y_res_s, dataframe.Series)
 
-    assert X_df.columns.to_list() == X_res_df.columns.to_list()
-    assert y_s.name == y_res_s.name
+        assert X_df.columns.to_list() == X_res_df.columns.to_list()
+        assert y_s.name == y_res_s.name
 
-    assert_allclose(np.array(X_res_df), X_res)
-    assert_allclose(np.array(y_res_s), y_res)
+        assert_allclose(np.array(X_res_df), X_res)
+        assert_allclose(np.array(y_res_s), y_res)
 
 
 def check_samplers_list(name, sampler):
