@@ -273,8 +273,9 @@ class FunctionSampler(BaseSampler):
                 X, y, accept_sparse=self.accept_sparse
             )
 
+        self._classes_counts = get_classes_counts(y)
         self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type
+            self.sampling_strategy, self._classes_counts, self._sampling_type
         )
 
         output = self._fit_resample(X, y)
