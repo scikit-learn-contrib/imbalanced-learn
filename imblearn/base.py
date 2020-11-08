@@ -107,7 +107,9 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         output = self._fit_resample(X, y)
 
         if binarize_y:
-            y_ = label_binarize(output[1], classes=np.unique(y))
+            y_ = label_binarize(
+                output[1], classes=list(self._classes_counts.keys())
+            )
         else:
             y_ = output[1]
 
@@ -291,7 +293,9 @@ class FunctionSampler(BaseSampler):
 
         if self.validate:
             if binarize_y:
-                y_ = label_binarize(output[1], classes=np.unique(y))
+                y_ = label_binarize(
+                    output[1], classes=list(self._classes_counts.keys())
+                )
             else:
                 y_ = output[1]
             X_, y_ = arrays_transformer.transform(output[0], y_)

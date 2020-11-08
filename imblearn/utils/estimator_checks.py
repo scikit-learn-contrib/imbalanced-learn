@@ -327,6 +327,7 @@ def check_samplers_dask_array(name, sampler_orig):
 
 def check_samplers_dask_dataframe(name, sampler_orig):
     pytest.importorskip("dask")
+    pd = pytest.importorskip("pandas")
     from dask import dataframe
     sampler = clone(sampler_orig)
     # Check that the samplers handle dask dataframe and dask series
@@ -342,20 +343,27 @@ def check_samplers_dask_dataframe(name, sampler_orig):
     )
     y_s = dataframe.from_array(y)
     y_s = y_s.rename("target")
+    y_s_ohe = dataframe.get_dummies(
+        y_s.astype(pd.CategoricalDtype(categories=[0, 1, 2]))
+    )
 
     for validate_if_dask_collection in (True, False):
         sampler.set_params(
             validate_if_dask_collection=validate_if_dask_collection
         )
         X_res_df, y_res_s = sampler.fit_resample(X_df, y_s)
+        # FIXME: not supported with validate=False
+        X_res, y_res_s_ohe = sampler.fit_resample(X, y_s_ohe)
         X_res, y_res = sampler.fit_resample(X, y)
 
         # check that we return the same type for dataframes or series types
         assert isinstance(X_res_df, dataframe.DataFrame)
         assert isinstance(y_res_s, dataframe.Series)
+        assert isinstance(y_res_s_ohe, dataframe.DataFrame)
 
         assert X_df.columns.to_list() == X_res_df.columns.to_list()
         assert y_s.name == y_res_s.name
+        assert y_s_ohe.columns.to_list() == y_res_s_ohe.columns.to_list()
 
         assert_allclose(np.array(X_res_df), X_res)
         assert_allclose(np.array(y_res_s), y_res)
