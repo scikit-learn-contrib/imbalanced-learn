@@ -17,7 +17,10 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type, check_sampling_strategy
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _deprecate_positional_args
+from ..utils._validation import (
+    _deprecate_positional_args,
+    get_classes_counts,
+)
 from ..pipeline import Pipeline
 
 MAX_INT = np.iinfo(np.int32).max
@@ -156,11 +159,14 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_y(self, y):
         y_encoded = super()._validate_y(y)
+        classes_counts = get_classes_counts(y)
         if isinstance(self.sampling_strategy, dict):
             self._sampling_strategy = {
                 np.where(self.classes_ == key)[0][0]: value
                 for key, value in check_sampling_strategy(
-                    self.sampling_strategy, y, 'under-sampling',
+                    self.sampling_strategy,
+                    classes_counts,
+                    "under-sampling",
                 ).items()
             }
         else:

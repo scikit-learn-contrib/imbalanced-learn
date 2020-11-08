@@ -41,3 +41,10 @@ _n_jobs_docstring = """n_jobs : int, default=None
         `Glossary <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_
         for more details.
     """.rstrip()
+
+_validate_if_dask_collection_docstring = \
+  """validate_if_dask_collection : bool, default=False
+        Whether or not `X` and `y` should be validated. This parameter applies
+        only when `X` and `y` are Dask collections where validation might be
+        potentially costly.
+    """.rstrip()

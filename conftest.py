@@ -22,12 +22,12 @@ def pytest_runtest_setup(item):
     if (fname.endswith(os.path.join('keras', '_generator.py')) or
             fname.endswith('miscellaneous.rst')):
         try:
-            import keras
+            import keras  # noqa
         except ImportError:
             pytest.skip('The keras package is not installed.')
     elif (fname.endswith(os.path.join('tensorflow', '_generator.py')) or
           fname.endswith('miscellaneous.rst')):
         try:
-            import tensorflow
+            import tensorflow  # noqa
         except ImportError:
             pytest.skip('The tensorflow package is not installed.')

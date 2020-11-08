@@ -10,15 +10,20 @@ from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
+from ...dask._support import is_dask_collection
 from ...utils import check_target_type
 from ...utils import Substitution
-from ...utils._docstring import _random_state_docstring
+from ...utils._docstring import (
+    _random_state_docstring,
+    _validate_if_dask_collection_docstring
+)
 from ...utils._validation import _deprecate_positional_args
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring,
+    validate_if_dask_collection=_validate_if_dask_collection_docstring,
 )
 class RandomUnderSampler(BaseUnderSampler):
     """Class to perform random under-sampling.
@@ -36,6 +41,8 @@ class RandomUnderSampler(BaseUnderSampler):
 
     replacement : bool, default=False
         Whether the sample is with or without replacement.
+
+    {validate_if_dask_collection}
 
     Attributes
     ----------
@@ -73,51 +80,80 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
 
     @_deprecate_positional_args
     def __init__(
-        self, *, sampling_strategy="auto", random_state=None, replacement=False
+        self,
+        *,
+        sampling_strategy="auto",
+        random_state=None,
+        replacement=False,
+        validate_if_dask_collection=False,
     ):
-        super().__init__(sampling_strategy=sampling_strategy)
+        super().__init__(
+            sampling_strategy=sampling_strategy,
+            validate_if_dask_collection=validate_if_dask_collection,
+        )
         self.random_state = random_state
         self.replacement = replacement
 
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X, y, reset=True, accept_sparse=["csr", "csc"], dtype=None,
-            force_all_finite=False,
-        )
+        if not any([is_dask_collection(arr) for arr in (X, y)]):
+            X, y = self._validate_data(
+                X,
+                y,
+                reset=True,
+                accept_sparse=["csr", "csc"],
+                dtype=None,
+                force_all_finite=False,
+            )
         return X, y, binarize_y
+
+    @staticmethod
+    def _find_target_class_indices(y, target_class):
+        target_class_indices = np.flatnonzero(y == target_class)
+        if is_dask_collection(y):
+            from dask import compute
+
+            return compute(target_class_indices)[0]
+        return target_class_indices
 
     def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
 
-        idx_under = np.empty((0,), dtype=int)
+        idx_under = []
 
-        for target_class in np.unique(y):
+        for target_class in self._classes_counts:
+            target_class_indices = self._find_target_class_indices(
+                y, target_class
+            )
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
                 index_target_class = random_state.choice(
-                    range(np.count_nonzero(y == target_class)),
+                    target_class_indices.size,
                     size=n_samples,
                     replace=self.replacement,
                 )
             else:
                 index_target_class = slice(None)
 
-            idx_under = np.concatenate(
-                (
-                    idx_under,
-                    np.flatnonzero(y == target_class)[index_target_class],
-                ),
-                axis=0,
-            )
+            selected_indices = target_class_indices[index_target_class]
+            idx_under.append(selected_indices)
 
-        self.sample_indices_ = idx_under
+        self.sample_indices_ = np.hstack(idx_under)
+        self.sample_indices_.sort()
 
-        return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
+        return (
+            _safe_indexing(X, self.sample_indices_),
+            _safe_indexing(y, self.sample_indices_)
+        )
 
     def _more_tags(self):
         return {
-            "X_types": ["2darray", "string"],
+            "X_types": [
+                "2darray",
+                "string",
+                "dask-array",
+                "dask-dataframe"
+            ],
             "sample_indices": True,
             "allow_nan": True,
         }

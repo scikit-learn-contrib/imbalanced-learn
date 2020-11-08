@@ -7,10 +7,12 @@ from ._docstring import Substitution
 from ._validation import check_neighbors_object
 from ._validation import check_target_type
 from ._validation import check_sampling_strategy
+from ._validation import get_classes_counts
 
 __all__ = [
     "check_neighbors_object",
     "check_sampling_strategy",
     "check_target_type",
+    "get_classes_counts",
     "Substitution",
 ]

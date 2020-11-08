@@ -30,61 +30,27 @@ X = np.array(
 Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 
-@pytest.mark.parametrize("as_frame", [True, False], ids=['dataframe', 'array'])
-def test_rus_fit_resample(as_frame):
-    if as_frame:
-        pd = pytest.importorskip("pandas")
-        X_ = pd.DataFrame(X)
-    else:
-        X_ = X
-    rus = RandomUnderSampler(random_state=RND_SEED, replacement=True)
-    X_resampled, y_resampled = rus.fit_resample(X_, Y)
+@pytest.mark.parametrize(
+    "sampling_strategy, expected_counts",
+    [
+        ("auto", {0: 3, 1: 3}),
+        ({0: 3, 1: 6}, {0: 3, 1: 6}),
+    ]
+)
+def test_rus_fit_resample(sampling_strategy, expected_counts):
+    rus = RandomUnderSampler(sampling_strategy=sampling_strategy)
+    X_res, y_res = rus.fit_resample(X, Y)
 
-    X_gt = np.array(
-        [
-            [0.92923648, 0.76103773],
-            [0.47104475, 0.44386323],
-            [0.13347175, 0.12167502],
-            [0.09125309, -0.85409574],
-            [0.12372842, 0.6536186],
-            [0.04352327, -0.20515826],
-        ]
-    )
-    y_gt = np.array([0, 0, 0, 1, 1, 1])
+    # check that there is not samples from class 0 resampled as class 1 and
+    # vice-versa
+    classes = [0, 1]
+    for c0, c1 in (classes, classes[::-1]):
+        X_c0 = X[Y == c0]
+        X_c1 = X_res[y_res == c1]
+        for s0 in X_c0:
+            assert not np.isclose(s0, X_c1).all(axis=1).any()
 
-    if as_frame:
-        assert hasattr(X_resampled, "loc")
-        X_resampled = X_resampled.to_numpy()
-
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
-
-
-def test_rus_fit_resample_half():
-    sampling_strategy = {0: 3, 1: 6}
-    rus = RandomUnderSampler(
-        sampling_strategy=sampling_strategy,
-        random_state=RND_SEED,
-        replacement=True,
-    )
-    X_resampled, y_resampled = rus.fit_resample(X, Y)
-
-    X_gt = np.array(
-        [
-            [0.92923648, 0.76103773],
-            [0.47104475, 0.44386323],
-            [0.92923648, 0.76103773],
-            [0.15490546, 0.3130677],
-            [0.15490546, 0.3130677],
-            [0.15490546, 0.3130677],
-            [0.20792588, 1.49407907],
-            [0.15490546, 0.3130677],
-            [0.12372842, 0.6536186],
-        ]
-    )
-    y_gt = np.array([0, 0, 0, 1, 1, 1, 1, 1, 1])
-    assert_array_equal(X_resampled, X_gt)
-    assert_array_equal(y_resampled, y_gt)
+    assert Counter(y_res) == expected_counts
 
 
 def test_multiclass_fit_resample():

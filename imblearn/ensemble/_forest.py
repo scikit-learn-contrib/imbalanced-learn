@@ -33,8 +33,11 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring
 from ..utils._docstring import _random_state_docstring
-from ..utils._validation import check_sampling_strategy
-from ..utils._validation import _deprecate_positional_args
+from ..utils._validation import (
+    check_sampling_strategy,
+    _deprecate_positional_args,
+    get_classes_counts,
+)
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -457,10 +460,11 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             y_encoded = np.ascontiguousarray(y_encoded, dtype=DOUBLE)
 
         if isinstance(self.sampling_strategy, dict):
+            classes_counts = get_classes_counts(y)
             self._sampling_strategy = {
                 np.where(self.classes_[0] == key)[0][0]: value
                 for key, value in check_sampling_strategy(
-                    self.sampling_strategy, y, 'under-sampling',
+                    self.sampling_strategy, classes_counts, 'under-sampling',
                 ).items()
             }
         else:

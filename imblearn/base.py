@@ -9,12 +9,18 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 from sklearn.base import BaseEstimator
-from sklearn.preprocessing import label_binarize
-from sklearn.utils.multiclass import check_classification_targets
 
+from .dask._support import is_dask_collection
 from .utils import check_sampling_strategy, check_target_type
-from .utils._validation import ArraysTransformer
-from .utils._validation import _deprecate_positional_args
+from .utils._validation import (
+    ArraysTransformer,
+    _deprecate_positional_args,
+    get_classes_counts,
+)
+from .utils.wrapper import (
+    check_classification_targets,
+    label_binarize,
+)
 
 
 class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
@@ -45,9 +51,18 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         self : object
             Return the instance itself.
         """
-        X, y, _ = self._check_X_y(X, y)
+        arrays_transformer = ArraysTransformer(X, y)
+        dask_collection = any([is_dask_collection(arr) for arr in (X, y)])
+        if dask_collection:
+            X, y = arrays_transformer.to_dask_array(X, y)
+
+        if (not dask_collection or
+                (dask_collection and self.validate_if_dask_collection)):
+            X, y, _ = self._check_X_y(X, y)
+
+        self._classes_counts = get_classes_counts(y)
         self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type
+            self.sampling_strategy, self._classes_counts, self._sampling_type
         )
         return self
 
@@ -72,18 +87,31 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         y_resampled : array-like of shape (n_samples_new,)
             The corresponding label of `X_resampled`.
         """
-        check_classification_targets(y)
         arrays_transformer = ArraysTransformer(X, y)
-        X, y, binarize_y = self._check_X_y(X, y)
+        dask_collection = any([is_dask_collection(arr) for arr in (X, y)])
+        if dask_collection:
+            X, y = arrays_transformer.to_dask_array(X, y)
 
+        if (not dask_collection or
+                (dask_collection and self.validate_if_dask_collection)):
+            check_classification_targets(y)
+            X, y, binarize_y = self._check_X_y(X, y)
+        else:
+            binarize_y = False
+
+        self._classes_counts = get_classes_counts(y)
         self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type
+            self.sampling_strategy, self._classes_counts, self._sampling_type
         )
 
         output = self._fit_resample(X, y)
 
-        y_ = (label_binarize(output[1], np.unique(y))
-              if binarize_y else output[1])
+        if binarize_y:
+            y_ = label_binarize(
+                output[1], classes=list(self._classes_counts.keys())
+            )
+        else:
+            y_ = output[1]
 
         X_, y_ = arrays_transformer.transform(output[0], y_)
         return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
@@ -124,8 +152,13 @@ class BaseSampler(SamplerMixin):
     instead.
     """
 
-    def __init__(self, sampling_strategy="auto"):
+    def __init__(
+        self,
+        sampling_strategy="auto",
+        validate_if_dask_collection=False,
+    ):
         self.sampling_strategy = sampling_strategy
+        self.validate_if_dask_collection = validate_if_dask_collection
 
     def _check_X_y(self, X, y, accept_sparse=None):
         if accept_sparse is None:
@@ -251,16 +284,20 @@ class FunctionSampler(BaseSampler):
                 X, y, accept_sparse=self.accept_sparse
             )
 
+        self._classes_counts = get_classes_counts(y)
         self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type
+            self.sampling_strategy, self._classes_counts, self._sampling_type
         )
 
         output = self._fit_resample(X, y)
 
         if self.validate:
-
-            y_ = (label_binarize(output[1], np.unique(y))
-                  if binarize_y else output[1])
+            if binarize_y:
+                y_ = label_binarize(
+                    output[1], classes=list(self._classes_counts.keys())
+                )
+            else:
+                y_ = output[1]
             X_, y_ = arrays_transformer.transform(output[0], y_)
             return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 

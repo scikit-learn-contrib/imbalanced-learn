@@ -248,6 +248,6 @@ Imbalance-learn provides some fast-prototyping tools.
    :toctree: generated/
    :template: function.rst
 
-   utils.estimator_checks.parametrize_with_checks
    utils.check_neighbors_object
    utils.check_sampling_strategy
+   utils.get_classes_counts
