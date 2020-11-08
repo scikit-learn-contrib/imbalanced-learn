@@ -402,6 +402,7 @@ def test_sampling_strategy_deprecation_array_target():
             sampling_strategy, binary_target, "under-sampling",
         )
 
+
 def test_arrays_transformer_plain_list():
     X = np.array([[0, 0], [1, 1]])
     y = np.array([[0, 0], [1, 1]])

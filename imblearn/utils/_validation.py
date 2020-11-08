@@ -588,8 +588,8 @@ def check_sampling_strategy(
 
     if hasattr(classes_counts, "__array__"):
         warnings.warn(
-            f"Passing that array of target `y` is deprecated in 0.7 and will "
-            f"raise an error from 0.9. Instead, pass `y` to "
+            "Passing an array of target `y` is deprecated in 0.7 and will "
+            "raise an error from 0.9. Instead, pass `y` to "
             "imblearn.utils.get_classes_counts function to get the "
             "dictionary.", FutureWarning
         )
