@@ -13,4 +13,5 @@ coverage combine --append
 popd
 cp $TEST_DIR/.coverage $BUILD_REPOSITORY_LOCALPATH
 
+echo $CODECOV_TOKEN
 codecov --root $BUILD_REPOSITORY_LOCALPATH -t $CODECOV_TOKEN || echo "codecov upload failed"
