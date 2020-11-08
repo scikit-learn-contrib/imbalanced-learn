@@ -1,6 +1,3 @@
-import numpy as np
-
-
 def label_binarize(y, *, classes):
     import pandas as pd
     from dask import dataframe

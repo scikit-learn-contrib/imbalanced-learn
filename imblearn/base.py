@@ -9,7 +9,6 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 from sklearn.base import BaseEstimator
-from sklearn.preprocessing import label_binarize
 
 from .dask._support import is_dask_collection
 from .utils import check_sampling_strategy, check_target_type
