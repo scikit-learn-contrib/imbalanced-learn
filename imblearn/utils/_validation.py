@@ -134,6 +134,19 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
 
 
 def get_classes_counts(y):
+    """Compute the counts of each class present in `y`.
+
+    Parameters
+    ----------
+    y : ndarray of shape (n_samples,)
+        The target array.
+
+    Returns
+    -------
+    classes_counts : dict
+        A dictionary where the keys are the class labels and the values are the
+        counts for each class.
+    """
     unique, counts = np.unique(y, return_counts=True)
     if is_dask_collection(unique):
         from dask import compute
@@ -542,8 +555,14 @@ def check_sampling_strategy(
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
 
-    y : ndarray of shape (n_samples,)
-        The target array.
+    classes_counts : dict or ndarray of shape (n_samples,)
+        A dictionary where the keys are the class present in `y` and the values
+        are the counts. The function :func:`~imblearn.utils.get_classes_count`
+        provides such a dictionary, giving `y` as an input.
+
+        .. deprecated:: 0.7
+           Passing the array `y` is deprecated from 0.7 and will be removed
+           in 0.9.
 
     sampling_type : {{'over-sampling', 'under-sampling', 'clean-sampling'}}
         The type of sampling. Can be either ``'over-sampling'``,
@@ -566,6 +585,15 @@ def check_sampling_strategy(
             "'sampling_type' should be one of {}. Got '{}'"
             " instead.".format(SAMPLING_KIND, sampling_type)
         )
+
+    if hasattr(y, "__array__"):
+        warnings.warn(
+            f"Passing that array of target `y` is deprecated in 0.7 and will "
+            f"raise an error from 0.9. Instead, pass `y` to "
+            "imblearn.utils.get_classes_counts function to get the "
+            "dictionary.", FutureWarning
+        )
+        classes_counts = get_classes_counts(classes_counts)
 
     if len(classes_counts) <= 1:
         raise ValueError(
