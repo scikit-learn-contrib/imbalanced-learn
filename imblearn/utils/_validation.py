@@ -586,7 +586,7 @@ def check_sampling_strategy(
             " instead.".format(SAMPLING_KIND, sampling_type)
         )
 
-    if hasattr(y, "__array__"):
+    if hasattr(classes_counts, "__array__"):
         warnings.warn(
             f"Passing that array of target `y` is deprecated in 0.7 and will "
             f"raise an error from 0.9. Instead, pass `y` to "
