@@ -20,7 +20,6 @@ from ..exceptions import raise_isinstance_error
 from .wrapper import _is_multiclass_encoded
 from .wrapper import column_or_1d
 from .wrapper import type_of_target
-from .wrapper import unique
 
 SAMPLING_KIND = (
     "over-sampling",

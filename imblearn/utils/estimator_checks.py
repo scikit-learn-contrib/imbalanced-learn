@@ -296,7 +296,7 @@ def check_samplers_pandas(name, sampler):
 
 
 def check_samplers_dask_array(name, sampler):
-    dask = pytest.importorskip("dask")
+    pytest.importorskip("dask")
     from dask import array
     # Check that the samplers handle dask array
     X, y = make_classification(
@@ -321,7 +321,7 @@ def check_samplers_dask_array(name, sampler):
 
 
 def check_samplers_dask_dataframe(name, sampler):
-    dask = pytest.importorskip("dask")
+    pytest.importorskip("dask")
     from dask import dataframe
     # Check that the samplers handle dask dataframe and dask series
     X, y = make_classification(
