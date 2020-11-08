@@ -331,7 +331,6 @@ def check_samplers_dask_array(name, sampler_orig):
 
 def check_samplers_dask_dataframe(name, sampler_orig):
     pytest.importorskip("dask")
-    pd = pytest.importorskip("pandas")
     from dask import dataframe
     sampler = clone(sampler_orig)
     # Check that the samplers handle dask dataframe and dask series
