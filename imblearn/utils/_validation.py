@@ -25,6 +25,7 @@ SAMPLING_KIND = (
     "clean-sampling",
     "ensemble",
     "bypass",
+    "preprocess-sampling",
 )
 TARGET_KIND = ("binary", "multiclass", "multilabel-indicator")
 
@@ -143,15 +144,13 @@ def check_target_type(y, indicate_one_vs_all=False):
 def _sampling_strategy_all(y, sampling_type):
     """Returns sampling target by targeting all classes."""
     target_stats = _count_class_sample(y)
-    if sampling_type == "over-sampling":
+    if sampling_type in ("over-sampling", "preprocess-sampling"):
         n_sample_majority = max(target_stats.values())
         sampling_strategy = {
             key: n_sample_majority - value
             for (key, value) in target_stats.items()
         }
-    elif (
-        sampling_type == "under-sampling" or sampling_type == "clean-sampling"
-    ):
+    elif sampling_type in ("under-sampling", "clean-sampling"):
         n_sample_minority = min(target_stats.values())
         sampling_strategy = {
             key: n_sample_minority for key in target_stats.keys()
@@ -164,14 +163,12 @@ def _sampling_strategy_all(y, sampling_type):
 
 def _sampling_strategy_majority(y, sampling_type):
     """Returns sampling target by targeting the majority class only."""
-    if sampling_type == "over-sampling":
+    if sampling_type in ("over-sampling", "preprocess-sampling"):
         raise ValueError(
             "'sampling_strategy'='majority' cannot be used with"
-            " over-sampler."
+            " over-sampler or preprocess-sampler."
         )
-    elif (
-        sampling_type == "under-sampling" or sampling_type == "clean-sampling"
-    ):
+    elif sampling_type in ("under-sampling", "clean-sampling"):
         target_stats = _count_class_sample(y)
         class_majority = max(target_stats, key=target_stats.get)
         n_sample_minority = min(target_stats.values())
@@ -190,7 +187,7 @@ def _sampling_strategy_not_majority(y, sampling_type):
     """Returns sampling target by targeting all classes but not the
     majority."""
     target_stats = _count_class_sample(y)
-    if sampling_type == "over-sampling":
+    if sampling_type in ("over-sampling", "preprocess-sampling"):
         n_sample_majority = max(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)
         sampling_strategy = {
@@ -198,9 +195,7 @@ def _sampling_strategy_not_majority(y, sampling_type):
             for (key, value) in target_stats.items()
             if key != class_majority
         }
-    elif (
-        sampling_type == "under-sampling" or sampling_type == "clean-sampling"
-    ):
+    elif sampling_type in ("under-sampling", "clean-sampling"):
         n_sample_minority = min(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)
         sampling_strategy = {
@@ -218,7 +213,7 @@ def _sampling_strategy_not_minority(y, sampling_type):
     """Returns sampling target by targeting all classes but not the
     minority."""
     target_stats = _count_class_sample(y)
-    if sampling_type == "over-sampling":
+    if sampling_type in ("over-sampling", "preprocess-sampling"):
         n_sample_majority = max(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
         sampling_strategy = {
@@ -226,9 +221,7 @@ def _sampling_strategy_not_minority(y, sampling_type):
             for (key, value) in target_stats.items()
             if key != class_minority
         }
-    elif (
-        sampling_type == "under-sampling" or sampling_type == "clean-sampling"
-    ):
+    elif sampling_type in ("under-sampling", "clean-sampling"):
         n_sample_minority = min(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
         sampling_strategy = {
@@ -245,7 +238,7 @@ def _sampling_strategy_not_minority(y, sampling_type):
 def _sampling_strategy_minority(y, sampling_type):
     """Returns sampling target by targeting the minority class only."""
     target_stats = _count_class_sample(y)
-    if sampling_type == "over-sampling":
+    if sampling_type in ("over-sampling", "preprocess-sampling"):
         n_sample_majority = max(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
         sampling_strategy = {
@@ -253,9 +246,7 @@ def _sampling_strategy_minority(y, sampling_type):
             for (key, value) in target_stats.items()
             if key == class_minority
         }
-    elif (
-        sampling_type == "under-sampling" or sampling_type == "clean-sampling"
-    ):
+    elif sampling_type in ("under-sampling", "clean-sampling"):
         raise ValueError(
             "'sampling_strategy'='minority' cannot be used with"
             " under-sampler and clean-sampler."
@@ -269,11 +260,9 @@ def _sampling_strategy_minority(y, sampling_type):
 def _sampling_strategy_auto(y, sampling_type):
     """Returns sampling target auto for over-sampling and not-minority for
     under-sampling."""
-    if sampling_type == "over-sampling":
+    if sampling_type in ("over-sampling", "preprocess-sampling"):
         return _sampling_strategy_not_majority(y, sampling_type)
-    elif (
-        sampling_type == "under-sampling" or sampling_type == "clean-sampling"
-    ):
+    elif sampling_type in ("under-sampling", "clean-sampling"):
         return _sampling_strategy_not_minority(y, sampling_type)
 
 
@@ -341,11 +330,11 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
                     )
                 )
             sampling_strategy_[class_sample] = n_samples
-    elif sampling_type == "clean-sampling":
+    elif sampling_type in ("clean-sampling", "preprocess-sampling"):
         raise ValueError(
-            "'sampling_strategy' as a dict for cleaning methods is "
-            "not supported. Please give a list of the classes to be "
-            "targeted by the sampling."
+            "'sampling_strategy' as a dict for cleaning or preprocess "
+            "methods is not supported. Please give a list of the classes "
+            "to be targeted by the sampling."
         )
     else:
         raise NotImplementedError
@@ -356,10 +345,10 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
 def _sampling_strategy_list(sampling_strategy, y, sampling_type):
     """With cleaning methods, sampling_strategy can be a list to target the
  class of interest."""
-    if sampling_type != "clean-sampling":
+    if sampling_type not in ("clean-sampling", "preprocess-sampling"):
         raise ValueError(
             "'sampling_strategy' cannot be a list for samplers "
-            "which are not cleaning methods."
+            "which are not cleaning or preprocess methods."
         )
 
     target_stats = _count_class_sample(y)
@@ -425,8 +414,8 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
             )
     else:
         raise ValueError(
-            "'clean-sampling' methods do let the user "
-            "specify the sampling ratio."
+            "'clean-sampling' and 'preprocess-sampling' methods do not let "
+            "the user specify the sampling ratio."
         )
     return sampling_strategy_
 
@@ -460,12 +449,13 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
             .. warning::
                ``float`` is only available for **binary** classification. An
                error is raised for multi-class classification and with cleaning
-               samplers.
+               or preprocessing samplers.
 
         - When ``str``, specify the class targeted by the resampling. For
           **under- and over-sampling methods**, the number of samples in the
-          different classes will be equalized. For **cleaning methods**, the
-          number of samples will not be equal. Possible choices are:
+          different classes will be equalized. For **cleaning and
+          preprocessing methods**, the number of samples will not be equal.
+          Possible choices are:
 
             ``'minority'``: resample only the minority class;
 
@@ -478,8 +468,8 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
             ``'all'``: resample all classes;
 
             ``'auto'``: for under-sampling methods, equivalent to ``'not
-            minority'`` and for over-sampling methods, equivalent to ``'not
-            majority'``.
+            minority'`` and for preprocessing and over-sampling methods,
+            equivalent to ``'not majority'``.
 
         - When ``dict``, the keys correspond to the targeted classes. The
           values correspond to the desired number of samples for each targeted
@@ -488,14 +478,14 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
           .. warning::
              ``dict`` is available for both **under- and over-sampling
              methods**. An error is raised with **cleaning methods**. Use a
-             ``list`` instead.
+             ``list`` instead. An error is raised with **preprocess methods**.
 
         - When ``list``, the list contains the targeted classes. It used only
           for **cleaning methods**.
 
           .. warning::
-             ``list`` is available for **cleaning methods**. An error is raised
-             with **under- and over-sampling methods**.
+             ``list`` is available for **cleaning and preprocess methods**. An
+            error is raised with **under- and over-sampling methods**.
 
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
@@ -506,7 +496,8 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
 
     sampling_type : {{'over-sampling', 'under-sampling', 'clean-sampling'}}
         The type of sampling. Can be either ``'over-sampling'``,
-        ``'under-sampling'``, or ``'clean-sampling'``.
+        ``'under-sampling'``, ``'clean-sampling'``, or
+        ``'preprocess-sampling'``.
 
     kwargs : dict
         Dictionary of additional keyword arguments to pass to
