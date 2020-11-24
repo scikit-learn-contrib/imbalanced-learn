@@ -1002,9 +1002,11 @@ def classification_report_imbalanced(
 
 @_deprecate_positional_args
 def macro_averaged_mean_absolute_error(y_true, y_pred):
-    """Compute Macro-Averaged Mean Absolute Error (MA-MAE) for imbalanced ordinal classification.
+    """Compute Macro-Averaged Mean Absolute Error (MA-MAE)
+    for imbalanced ordinal classification.
 
-    This function computes each MAE for each class and average them, giving an equal weight to each class.
+    This function computes each MAE for each class and average them,
+    giving an equal weight to each class.
 
     Read more in the :ref:`User Guide <macro_averaged_mean_absolute_error>`.
 
@@ -1019,7 +1021,8 @@ def macro_averaged_mean_absolute_error(y_true, y_pred):
     Returns
     -------
     loss : float or ndarray of floats
-        Macro-Avaeraged MAE output is non-negative floating point. The best value is 0.0.
+        Macro-Averaged MAE output is non-negative floating point.
+        The best value is 0.0.
 
     Examples
     --------
@@ -1044,7 +1047,8 @@ def macro_averaged_mean_absolute_error(y_true, y_pred):
     y_pred = np.array(y_pred)
     for class_to_predict in np.unique(y_true):
         index_class_to_predict = np.where(y_true == class_to_predict)[0]
-        mae_class = mean_absolute_error(y_true[index_class_to_predict], y_pred[index_class_to_predict])
+        mae_class = mean_absolute_error(y_true[index_class_to_predict],
+                                        y_pred[index_class_to_predict])
         all_mae.append(mae_class)
     ma_mae = sum(all_mae) / len(all_mae)
     return ma_mae
