@@ -29,6 +29,7 @@ from imblearn.metrics import specificity_score
 from imblearn.metrics import geometric_mean_score
 from imblearn.metrics import make_index_balanced_accuracy
 from imblearn.metrics import classification_report_imbalanced
+from imblearn.metrics import macro_averaged_mean_absolute_error
 
 from imblearn.utils.testing import warns
 
@@ -498,3 +499,18 @@ def test_classification_report_imbalanced_dict():
 
     assert outer_keys == expected_outer_keys
     assert inner_keys == expected_inner_keys
+
+
+@pytest.mark.parametrize(
+    "y_true, y_pred, expected_ma_mae",
+    [
+        ([1, 1, 1, 2, 2, 2], [1, 2, 1, 2, 1, 2], 0.333),
+        ([1, 1, 1, 1, 1, 2], [1, 2, 1, 2, 1, 2], 0.2),
+        ([1, 1, 1, 2, 2, 2, 3, 3, 3], [1, 3, 1, 2, 1, 1, 2, 3, 3], 0.555),
+        ([1, 1, 1, 1, 1, 1, 2, 3, 3], [1, 3, 1, 2, 1, 1, 2, 3, 3], 0.166),
+
+    ],
+)
+def test_macro_averaged_mean_absolute_error(y_true, y_pred, expected_ma_mae):
+    ma_mae = macro_averaged_mean_absolute_error(y_true, y_pred)
+    assert ma_mae == pytest.approx(expected_ma_mae, rel=R_TOL)

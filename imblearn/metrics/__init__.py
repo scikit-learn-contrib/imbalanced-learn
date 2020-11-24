@@ -9,6 +9,7 @@ from ._classification import specificity_score
 from ._classification import geometric_mean_score
 from ._classification import make_index_balanced_accuracy
 from ._classification import classification_report_imbalanced
+from ._classification import macro_averaged_mean_absolute_error
 
 __all__ = [
     "sensitivity_specificity_support",
@@ -17,4 +18,5 @@ __all__ = [
     "geometric_mean_score",
     "make_index_balanced_accuracy",
     "classification_report_imbalanced",
+    "macro_averaged_mean_absolute_error"
 ]

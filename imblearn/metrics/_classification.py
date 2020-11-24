@@ -18,6 +18,7 @@ import warnings
 import numpy as np
 import scipy as sp
 
+from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics._classification import _check_targets
 from sklearn.metrics._classification import _prf_divide
@@ -997,3 +998,53 @@ def classification_report_imbalanced(
     if output_dict:
         return report_dict
     return report
+
+
+@_deprecate_positional_args
+def macro_averaged_mean_absolute_error(y_true, y_pred):
+    """Compute Macro-Averaged Mean Absolute Error (MA-MAE) for imbalanced ordinal classification.
+
+    This function computes each MAE for each class and average them, giving an equal weight to each class.
+
+    Read more in the :ref:`User Guide <macro_averaged_mean_absolute_error>`.
+
+    Parameters
+    ----------
+    y_true : 1d array-like, or label indicator array / sparse matrix
+        Ground truth (correct) target values.
+
+    y_pred : 1d array-like, or label indicator array / sparse matrix
+        Estimated targets as returned by a classifier.
+
+    Returns
+    -------
+    loss : float or ndarray of floats
+        Macro-Avaeraged MAE output is non-negative floating point. The best value is 0.0.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from sklearn.metrics import mean_absolute_error
+    >>> from imblearn.metrics import macro_averaged_mean_absolute_error
+    >>> y_true_balanced = [1, 1, 1, 2, 2, 2]
+    >>> y_true_imbalanced = [1, 1, 1, 1, 1, 2]
+    >>> y_pred = [1, 2, 1, 2, 1, 2]
+    >>> mean_absolute_error(y_true_balanced, y_pred)
+       0.3333333333333333
+    >>> mean_absolute_error(y_true_imbalanced, y_pred)
+       0.3333333333333333
+    >>> macro_averaged_mean_absolute_error(y_true_balanced, y_pred)
+       0.3333333333333333
+    >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
+       0.2
+
+    """
+    all_mae = []
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    for class_to_predict in np.unique(y_true):
+        index_class_to_predict = np.where(y_true == class_to_predict)[0]
+        mae_class = mean_absolute_error(y_true[index_class_to_predict], y_pred[index_class_to_predict])
+        all_mae.append(mae_class)
+    ma_mae = sum(all_mae) / len(all_mae)
+    return ma_mae

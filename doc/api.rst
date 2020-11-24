@@ -216,6 +216,7 @@ Imbalance-learn provides some fast-prototyping tools.
    metrics.specificity_score
    metrics.geometric_mean_score
    metrics.make_index_balanced_accuracy
+   metrics.macro_averaged_mean_absolute_error
 
 .. _datasets_ref:
 
