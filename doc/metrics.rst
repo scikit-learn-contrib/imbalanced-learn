@@ -45,6 +45,18 @@ The :func:`make_index_balanced_accuracy` :cite:`garcia2012effectiveness` can
 wrap any metric and give more importance to a specific class using the
 parameter ``alpha``.
 
+.. _macro_averaged_mean_absolute_error:
+
+Macro-Averaged Mean Absolute Error (MA-MAE)
+-------------------------------------------
+
+Ordinal classification is used when there is a rank among classes, for example
+levels of functionality or movie ratings.
+
+The :func:`macro_averaged_mean_absolute_error` :cite:`esuli2009ordinal` is used
+for imbalanced ordinal classification. We compute each MAE for each class and
+average them, giving an equal weight to each class.
+
 .. _classification_report:
 
 Summary of important metrics
@@ -54,10 +66,3 @@ The :func:`classification_report_imbalanced` will compute a set of metrics
 per class and summarize it in a table. The parameter `output_dict` allows
 to get a string or a Python dictionary. This dictionary can be reused to create
 a Pandas dataframe for instance.
-
-.. _macro_averaged_mean_absolute_error:
-
-Macro-Averaged Mean Absolute Error (MA-MAE)
--------------------------------------------
-
-The :func:`macro_averaged_mean_absolute_error` :cite:`esuli2009ordinal` is used for imbalanced ordinal classification. We compute each MAE for each class and average them, giving an equal weight to each class.

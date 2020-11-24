@@ -1012,10 +1012,10 @@ def macro_averaged_mean_absolute_error(y_true, y_pred):
 
     Parameters
     ----------
-    y_true : 1d array-like, or label indicator array / sparse matrix
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Ground truth (correct) target values.
 
-    y_pred : 1d array-like, or label indicator array / sparse matrix
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated targets as returned by a classifier.
 
     Returns
@@ -1033,20 +1033,19 @@ def macro_averaged_mean_absolute_error(y_true, y_pred):
     >>> y_true_imbalanced = [1, 2, 2, 2]
     >>> y_pred = [1, 2, 1, 2]
     >>> mean_absolute_error(y_true_balanced, y_pred)
-       0.5
+    0.5
     >>> mean_absolute_error(y_true_imbalanced, y_pred)
-       0.25
+    0.25
     >>> macro_averaged_mean_absolute_error(y_true_balanced, y_pred)
-       0.5
+    0.5
     >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
-       0.16666666666666666
+    0.16666666666666666
 
     """
     all_mae = []
-    y_true = np.array(y_true)
-    y_pred = np.array(y_pred)
+    y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
     for class_to_predict in np.unique(y_true):
-        index_class_to_predict = np.where(y_true == class_to_predict)[0]
+        index_class_to_predict = np.flatnonzero(y_true == class_to_predict)
         mae_class = mean_absolute_error(y_true[index_class_to_predict],
                                         y_pred[index_class_to_predict])
         all_mae.append(mae_class)
