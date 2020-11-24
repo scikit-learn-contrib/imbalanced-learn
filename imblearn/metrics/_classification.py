@@ -1038,9 +1038,8 @@ def macro_averaged_mean_absolute_error(y_true, y_pred):
        0.25
     >>> macro_averaged_mean_absolute_error(y_true_balanced, y_pred)
        0.5
-    >>> np.round(macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred,
-                                                    4)
-       0.1667
+    >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
+       0.16666666666666666
 
     """
     all_mae = []
