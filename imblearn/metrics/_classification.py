@@ -1029,19 +1029,18 @@ def macro_averaged_mean_absolute_error(y_true, y_pred):
     >>> import numpy as np
     >>> from sklearn.metrics import mean_absolute_error
     >>> from imblearn.metrics import macro_averaged_mean_absolute_error
-    >>> y_true_balanced = [1, 1, 1, 2, 2, 2]
-    >>> y_true_imbalanced = [1, 1, 1, 1, 1, 2]
-    >>> y_pred = [1, 2, 1, 2, 1, 2]
-    >>> np.round(mean_absolute_error(y_true_balanced, y_pred), 4)
-       0.3333
-    >>> np.round(mean_absolute_error(y_true_imbalanced, y_pred), 4)
-       0.3333
-    >>> np.round(macro_averaged_mean_absolute_error(y_true_balanced, y_pred),
-                                                    4)
-       0.3333
+    >>> y_true_balanced = [1, 1, 2, 2]
+    >>> y_true_imbalanced = [1, 2, 2, 2]
+    >>> y_pred = [1, 2, 1, 2]
+    >>> mean_absolute_error(y_true_balanced, y_pred)
+       0.5
+    >>> mean_absolute_error(y_true_imbalanced, y_pred)
+       0.25
+    >>> macro_averaged_mean_absolute_error(y_true_balanced, y_pred)
+       0.5
     >>> np.round(macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred,
                                                     4)
-       0.2
+       0.1667
 
     """
     all_mae = []
