@@ -1032,13 +1032,15 @@ def macro_averaged_mean_absolute_error(y_true, y_pred):
     >>> y_true_balanced = [1, 1, 1, 2, 2, 2]
     >>> y_true_imbalanced = [1, 1, 1, 1, 1, 2]
     >>> y_pred = [1, 2, 1, 2, 1, 2]
-    >>> mean_absolute_error(y_true_balanced, y_pred)
-       0.3333333333333333
-    >>> mean_absolute_error(y_true_imbalanced, y_pred)
-       0.3333333333333333
-    >>> macro_averaged_mean_absolute_error(y_true_balanced, y_pred)
-       0.3333333333333333
-    >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
+    >>> np.round(mean_absolute_error(y_true_balanced, y_pred), 4)
+       0.3333
+    >>> np.round(mean_absolute_error(y_true_imbalanced, y_pred), 4)
+       0.3333
+    >>> np.round(macro_averaged_mean_absolute_error(y_true_balanced, y_pred),
+                                                    4)
+       0.3333
+    >>> np.round(macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred,
+                                                    4)
        0.2
 
     """
