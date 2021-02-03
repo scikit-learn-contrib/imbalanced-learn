@@ -255,6 +255,7 @@ def check_samplers_sparse(name, sampler_orig):
     )
     X_sparse = sparse.csr_matrix(X)
     X_res_sparse, y_res_sparse = sampler.fit_resample(X_sparse, y)
+    sampler = clone(sampler)
     X_res, y_res = sampler.fit_resample(X, y)
     assert sparse.issparse(X_res_sparse)
     assert_allclose(X_res_sparse.A, X_res)
