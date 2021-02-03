@@ -345,8 +345,8 @@ class PatchedClassDocumenter(ClassDocumenter):
 # https://github.com/readthedocs/sphinx_rtd_theme/pull/747/files
 def setup(app):
     app.registry.documenters["class"] = PatchedClassDocumenter
-    app.add_javascript("js/copybutton.js")
-    app.add_stylesheet("basic.css")
+    app.app.add_js_file()("js/copybutton.js")
+    app.add_css_file("basic.css")
     # app.connect('autodoc-process-docstring', generate_example_rst)
 
 
