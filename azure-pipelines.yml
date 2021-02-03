@@ -32,7 +32,7 @@ jobs:
       # Linux environment to test the latest available dependencies and MKL.
       pylatest_pip_openblas_pandas:
         DISTRIB: 'conda-pip-latest'
-        PYTHON_VERSION: '3.8'
+        PYTHON_VERSION: '3.9'
         COVERAGE: 'true'
         PANDAS_VERSION: '*'
         TEST_DOCSTRINGS: 'true'
