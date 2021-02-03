@@ -43,6 +43,9 @@ extensions = [
     'sphinx_gallery.gen_gallery',
 ]
 
+# bibtex file
+bibtex_bibfiles = ['bibtex/refs.bib']
+
 # this is needed for some reason...
 # see https://github.com/numpy/numpydoc/issues/69
 numpydoc_show_class_members = False
