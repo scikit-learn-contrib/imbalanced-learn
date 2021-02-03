@@ -16,6 +16,7 @@ import pytest
 import numpy as np
 from scipy import sparse
 
+from sklearn.base import clone
 from sklearn.datasets import (
     fetch_openml,
     make_classification,
@@ -127,7 +128,8 @@ def parametrize_with_checks(estimators):
                                    ids=_get_check_estimator_ids)
 
 
-def check_target_type(name, estimator):
+def check_target_type(name, estimator_orig):
+    estimator = clone(estimator_orig)
     # should raise warning if the target is continuous (we cannot raise error)
     X = np.random.random((20, 2))
     y = np.linspace(0, 1, 20)
@@ -144,7 +146,8 @@ def check_target_type(name, estimator):
     )
 
 
-def check_samplers_one_label(name, sampler):
+def check_samplers_one_label(name, sampler_orig):
+    sampler = clone(sampler_orig)
     error_string_fit = "Sampler can't balance when only one class is present."
     X = np.random.random((20, 2))
     y = np.zeros(20)
@@ -164,7 +167,8 @@ def check_samplers_one_label(name, sampler):
     raise AssertionError(error_string_fit)
 
 
-def check_samplers_fit(name, sampler):
+def check_samplers_fit(name, sampler_orig):
+    sampler = clone(sampler_orig)
     np.random.seed(42)  # Make this test reproducible
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
@@ -174,7 +178,8 @@ def check_samplers_fit(name, sampler):
     ), "No fitted attribute sampling_strategy_"
 
 
-def check_samplers_fit_resample(name, sampler):
+def check_samplers_fit_resample(name, sampler_orig):
+    sampler = clone(sampler_orig)
     X, y = make_classification(
         n_samples=1000,
         n_classes=3,
@@ -209,7 +214,8 @@ def check_samplers_fit_resample(name, sampler):
         )
 
 
-def check_samplers_sampling_strategy_fit_resample(name, sampler):
+def check_samplers_sampling_strategy_fit_resample(name, sampler_orig):
+    sampler = clone(sampler_orig)
     # in this test we will force all samplers to not change the class 1
     X, y = make_classification(
         n_samples=1000,
@@ -236,7 +242,8 @@ def check_samplers_sampling_strategy_fit_resample(name, sampler):
         assert Counter(y_res)[1] == expected_stat
 
 
-def check_samplers_sparse(name, sampler):
+def check_samplers_sparse(name, sampler_orig):
+    sampler = clone(sampler_orig)
     # check that sparse matrices can be passed through the sampler leading to
     # the same results than dense
     X, y = make_classification(
@@ -254,8 +261,9 @@ def check_samplers_sparse(name, sampler):
     assert_allclose(y_res_sparse, y_res)
 
 
-def check_samplers_pandas(name, sampler):
+def check_samplers_pandas(name, sampler_orig):
     pd = pytest.importorskip("pandas")
+    sampler = clone(sampler_orig)
     # Check that the samplers handle pandas dataframe and pandas series
     X, y = make_classification(
         n_samples=1000,
@@ -286,7 +294,8 @@ def check_samplers_pandas(name, sampler):
     assert_allclose(y_res_s.to_numpy(), y_res)
 
 
-def check_samplers_list(name, sampler):
+def check_samplers_list(name, sampler_orig):
+    sampler = clone(sampler_orig)
     # Check that the can samplers handle simple lists
     X, y = make_classification(
         n_samples=1000,
@@ -308,7 +317,8 @@ def check_samplers_list(name, sampler):
     assert_allclose(y_res, y_res_list)
 
 
-def check_samplers_multiclass_ova(name, sampler):
+def check_samplers_multiclass_ova(name, sampler_orig):
+    sampler = clone(sampler_orig)
     # Check that multiclass target lead to the same results than OVA encoding
     X, y = make_classification(
         n_samples=1000,
@@ -325,7 +335,8 @@ def check_samplers_multiclass_ova(name, sampler):
     assert_allclose(y_res, y_res_ova.argmax(axis=1))
 
 
-def check_samplers_2d_target(name, sampler):
+def check_samplers_2d_target(name, sampler_orig):
+    sampler = clone(sampler_orig)
     X, y = make_classification(
         n_samples=100,
         n_classes=3,
@@ -338,7 +349,8 @@ def check_samplers_2d_target(name, sampler):
     sampler.fit_resample(X, y)
 
 
-def check_samplers_preserve_dtype(name, sampler):
+def check_samplers_preserve_dtype(name, sampler_orig):
+    sampler = clone(sampler_orig)
     X, y = make_classification(
         n_samples=1000,
         n_classes=3,
@@ -354,7 +366,8 @@ def check_samplers_preserve_dtype(name, sampler):
     assert y.dtype == y_res.dtype, "y dtype is not preserved"
 
 
-def check_samplers_sample_indices(name, sampler):
+def check_samplers_sample_indices(name, sampler_orig):
+    sampler = clone(sampler_orig)
     X, y = make_classification(
         n_samples=1000,
         n_classes=3,
@@ -370,17 +383,21 @@ def check_samplers_sample_indices(name, sampler):
         assert not hasattr(sampler, "sample_indices_")
 
 
-def check_classifier_on_multilabel_or_multioutput_targets(name, estimator):
+def check_classifier_on_multilabel_or_multioutput_targets(
+    name, estimator_orig
+):
+    estimator = clone(estimator_orig)
     X, y = make_multilabel_classification(n_samples=30)
     msg = "Multilabel and multioutput targets are not supported."
     with pytest.raises(ValueError, match=msg):
         estimator.fit(X, y)
 
 
-def check_classifiers_with_encoded_labels(name, classifier):
+def check_classifiers_with_encoded_labels(name, classifier_orig):
     # Non-regression test for #709
     # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/709
     pytest.importorskip("pandas")
+    classifier = clone(classifier_orig)
     df, y = fetch_openml("iris", version=1, as_frame=True, return_X_y=True)
     df, y = make_imbalance(
         df, y, sampling_strategy={
