@@ -25,8 +25,8 @@ from sklearn.datasets import (
 from sklearn.cluster import KMeans
 from sklearn.exceptions import SkipTestWarning
 from sklearn.preprocessing import label_binarize
-from sklearn.utils.estimator_checks import _mark_xfail_checks
-from sklearn.utils.estimator_checks import _set_check_estimator_ids
+from sklearn.utils.estimator_checks import _maybe_mark_xfail
+from sklearn.utils.estimator_checks import _get_check_estimator_ids
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_raises_regex
 from sklearn.utils.multiclass import type_of_target
@@ -117,18 +117,15 @@ def parametrize_with_checks(estimators):
     ... def test_sklearn_compatible_estimator(estimator, check):
     ...     check(estimator)
     """
-    names = (type(estimator).__name__ for estimator in estimators)
+    def checks_generator():
+        for estimator in estimators:
+            name = type(estimator).__name__
+            for check in _yield_all_checks(estimator):
+                check = partial(check, name)
+                yield _maybe_mark_xfail(estimator, check, pytest)
 
-    checks_generator = ((clone(estimator), partial(check, name))
-                        for name, estimator in zip(names, estimators)
-                        for check in _yield_all_checks(estimator))
-
-    checks_with_marks = (
-        _mark_xfail_checks(estimator, check, pytest)
-        for estimator, check in checks_generator)
-
-    return pytest.mark.parametrize("estimator, check", checks_with_marks,
-                                   ids=_set_check_estimator_ids)
+    return pytest.mark.parametrize("estimator, check", checks_generator(),
+                                   ids=_get_check_estimator_ids)
 
 
 def check_target_type(name, estimator):
