@@ -16,7 +16,6 @@ import pytest
 import numpy as np
 from scipy import sparse
 
-from sklearn.base import clone
 from sklearn.datasets import (
     fetch_openml,
     make_classification,
