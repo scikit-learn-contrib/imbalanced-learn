@@ -76,6 +76,9 @@ Enhancements
   dictionary instead of a string.
   :pr:`770` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Added the `SMOTERSB` class, implementing SMOTE with Rough Set Theory 
+  :pr:`778` by :user:`Zolisa Bleki <zoj613>`
+
 Deprecation
 ...........
 

@@ -77,6 +77,7 @@ Prototype selection
    over_sampling.SMOTENC
    over_sampling.SVMSMOTE
    over_sampling.ROSE
+   over_sampling.SMOTERSB
 
 
 .. _combine_ref:

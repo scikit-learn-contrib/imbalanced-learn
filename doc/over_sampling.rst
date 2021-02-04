@@ -151,7 +151,8 @@ nearest neighbors class. Those variants are presented in the figure below.
 
 
 The :class:`BorderlineSMOTE` :cite:`han2005borderline`,
-:class:`SVMSMOTE` :cite:`nguyen2009borderline`, and
+:class:`SVMSMOTE` :cite:`nguyen2009borderline`,
+:class:`SMOTERSB` :cite:`ramentol2012smotersb` and
 :class:`KMeansSMOTE` :cite:`last2017oversampling` offer some variant of the
 SMOTE algorithm::
 

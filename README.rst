@@ -156,6 +156,7 @@ Below is a list of the methods currently implemented in this module.
     6. ADASYN - Adaptive synthetic sampling approach for imbalanced learning [15]_
     7. KMeans-SMOTE [17]_
     8. ROSE - Random OverSampling Examples [19]_
+    9. SMOTERSB - SMOTE + Rough Set Theory lower bounds [20]_
 
 * Over-sampling followed by under-sampling
     1. SMOTE + Tomek links [12]_
@@ -214,3 +215,5 @@ References:
 .. [18] : Seiffert, C., Khoshgoftaar, T. M., Van Hulse, J., & Napolitano, A. "RUSBoost: A hybrid approach to alleviating class imbalance." IEEE Transactions on Systems, Man, and Cybernetics-Part A: Systems and Humans 40.1 (2010): 185-197.
 
 .. [19] : Menardi, G., Torelli, N.: "Training and assessing classification rules with unbalanced data", Data Mining and Knowledge Discovery,  28, (2014): 92–122
+
+.. [20] : Ramentol, E., Caballero, Y., Bello, R. et al. SMOTE-RSB*: a hybrid preprocessing approach based on oversampling and undersampling for high imbalanced data-sets using SMOTE and rough sets theory. Knowl Inf Syst 33, 245–265 (2012). https://doi.org/10.1007/s10115-011-0465-6.
