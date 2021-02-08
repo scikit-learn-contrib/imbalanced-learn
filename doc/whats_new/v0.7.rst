@@ -76,6 +76,12 @@ Enhancements
   dictionary instead of a string.
   :pr:`770` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add the the function
+  :func:`imblearn.metrics.macro_averaged_mean_absolute_error` returning the
+  average across class of the MAE. This metric is used in ordinal
+  classification.
+  :pr:`780` by :user:`Aurélien Massiot <AurelienMassiot>`.
+
 Deprecation
 ...........
 
