@@ -88,9 +88,6 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         X_, y_ = arrays_transformer.transform(output[0], y_)
         return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 
-    #  define an alias for back-compatibility
-    fit_sample = fit_resample
-
     @abstractmethod
     def _fit_resample(self, X, y):
         """Base method defined in each sampler to defined the sampling
