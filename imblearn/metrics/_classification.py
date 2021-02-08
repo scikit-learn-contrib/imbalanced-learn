@@ -22,9 +22,12 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics._classification import _check_targets
 from sklearn.metrics._classification import _prf_divide
-
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.multiclass import unique_labels
+from sklearn.utils.validation import (
+    check_consistent_length,
+    column_or_1d,
+)
 
 try:
     from inspect import signature
@@ -1000,8 +1003,7 @@ def classification_report_imbalanced(
     return report
 
 
-@_deprecate_positional_args
-def macro_averaged_mean_absolute_error(y_true, y_pred):
+def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
     """Compute Macro-Averaged Mean Absolute Error (MA-MAE)
     for imbalanced ordinal classification.
 
@@ -1017,6 +1019,9 @@ def macro_averaged_mean_absolute_error(y_true, y_pred):
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated targets as returned by a classifier.
+
+    sample_weight : array-like of shape (n_samples,), default=None
+        Sample weights.
 
     Returns
     -------
@@ -1040,14 +1045,24 @@ def macro_averaged_mean_absolute_error(y_true, y_pred):
     0.5
     >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
     0.16666666666666666
-
     """
-    all_mae = []
-    y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
-    for class_to_predict in np.unique(y_true):
-        index_class_to_predict = np.flatnonzero(y_true == class_to_predict)
-        mae_class = mean_absolute_error(y_true[index_class_to_predict],
-                                        y_pred[index_class_to_predict])
-        all_mae.append(mae_class)
-    ma_mae = sum(all_mae) / len(all_mae)
-    return ma_mae
+    _, y_true, y_pred = _check_targets(y_true, y_pred)
+    if sample_weight is not None:
+        sample_weight = column_or_1d(sample_weight)
+    else:
+        sample_weight = np.ones(y_true.shape)
+    check_consistent_length(y_true, y_pred, sample_weight)
+    labels = unique_labels(y_true, y_pred)
+    mae = []
+    for possible_class in labels:
+        indices = np.flatnonzero(y_true == possible_class)
+
+        mae.append(
+            mean_absolute_error(
+                y_true[indices],
+                y_pred[indices],
+                sample_weight=sample_weight[indices],
+            )
+        )
+
+    return np.sum(mae) / len(mae)

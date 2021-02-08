@@ -514,3 +514,17 @@ def test_classification_report_imbalanced_dict():
 def test_macro_averaged_mean_absolute_error(y_true, y_pred, expected_ma_mae):
     ma_mae = macro_averaged_mean_absolute_error(y_true, y_pred)
     assert ma_mae == pytest.approx(expected_ma_mae, rel=R_TOL)
+
+
+def test_macro_averaged_mean_absolute_error_sample_weight():
+    y_true = [1, 1, 1, 2, 2, 2]
+    y_pred = [1, 2, 1, 2, 1, 2]
+
+    ma_mae_no_weights = macro_averaged_mean_absolute_error(y_true, y_pred)
+
+    sample_weight = [1, 1, 1, 1, 1, 1]
+    ma_mae_unit_weights = macro_averaged_mean_absolute_error(
+        y_true, y_pred, sample_weight=sample_weight,
+    )
+
+    assert ma_mae_unit_weights == pytest.approx(ma_mae_no_weights)

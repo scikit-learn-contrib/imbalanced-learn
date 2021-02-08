@@ -54,8 +54,8 @@ Ordinal classification is used when there is a rank among classes, for example
 levels of functionality or movie ratings.
 
 The :func:`macro_averaged_mean_absolute_error` :cite:`esuli2009ordinal` is used
-for imbalanced ordinal classification. We compute each MAE for each class and
-average them, giving an equal weight to each class.
+for imbalanced ordinal classification. The mean absolute error is computed for
+each class and averaged over classes, giving an equal weight to each class.
 
 .. _classification_report:
 

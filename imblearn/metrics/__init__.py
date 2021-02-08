@@ -18,5 +18,5 @@ __all__ = [
     "geometric_mean_score",
     "make_index_balanced_accuracy",
     "classification_report_imbalanced",
-    "macro_averaged_mean_absolute_error"
+    "macro_averaged_mean_absolute_error",
 ]
