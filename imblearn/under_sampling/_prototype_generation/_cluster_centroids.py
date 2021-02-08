@@ -167,17 +167,16 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
 
         X_resampled, y_resampled = [], []
         for target_class in np.unique(y):
+            estimator = clone(self.estimator_)
             target_class_indices = np.flatnonzero(y == target_class)
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
-                print(n_samples)
-                self.estimator_.set_params(**{"n_clusters": n_samples})
-                self.estimator_.fit(_safe_indexing(X, target_class_indices))
-                print(self.estimator_.cluster_centers_)
+                estimator.set_params(**{"n_clusters": n_samples})
+                estimator.fit(_safe_indexing(X, target_class_indices))
                 X_new, y_new = self._generate_sample(
                     _safe_indexing(X, target_class_indices),
                     _safe_indexing(y, target_class_indices),
-                    self.estimator_.cluster_centers_,
+                    estimator.cluster_centers_,
                     target_class,
                 )
                 X_resampled.append(X_new)
