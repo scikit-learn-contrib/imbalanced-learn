@@ -182,7 +182,7 @@ def test_xxx():
     # %%
     from sklearn.cluster import KMeans
 
-    kmeans = KMeans(algorithm="full", random_state=0)
+    kmeans = KMeans(n_clusters=201, algorithm="full", random_state=0)
 
     # %%
     from sklearn.base import clone
