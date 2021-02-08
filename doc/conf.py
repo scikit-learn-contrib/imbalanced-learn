@@ -43,6 +43,9 @@ extensions = [
     'sphinx_gallery.gen_gallery',
 ]
 
+# bibtex file
+bibtex_bibfiles = ['bibtex/refs.bib']
+
 # this is needed for some reason...
 # see https://github.com/numpy/numpydoc/issues/69
 numpydoc_show_class_members = False
@@ -345,8 +348,8 @@ class PatchedClassDocumenter(ClassDocumenter):
 # https://github.com/readthedocs/sphinx_rtd_theme/pull/747/files
 def setup(app):
     app.registry.documenters["class"] = PatchedClassDocumenter
-    app.add_javascript("js/copybutton.js")
-    app.add_stylesheet("basic.css")
+    app.add_js_file("js/copybutton.js")
+    app.add_css_file("basic.css")
     # app.connect('autodoc-process-docstring', generate_example_rst)
 
 
