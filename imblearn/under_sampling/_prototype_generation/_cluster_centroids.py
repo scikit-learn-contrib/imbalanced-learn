@@ -170,8 +170,10 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             target_class_indices = np.flatnonzero(y == target_class)
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
+                print(n_samples)
                 self.estimator_.set_params(**{"n_clusters": n_samples})
                 self.estimator_.fit(_safe_indexing(X, target_class_indices))
+                print(self.estimator_.cluster_centers_)
                 X_new, y_new = self._generate_sample(
                     _safe_indexing(X, target_class_indices),
                     _safe_indexing(y, target_class_indices),
