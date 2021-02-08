@@ -257,11 +257,6 @@ def check_samplers_sparse(name, sampler_orig):
     X_res_sparse, y_res_sparse = sampler.fit_resample(X_sparse, y)
     sampler = clone(sampler)
     X_res, y_res = sampler.fit_resample(X, y)
-    if not np.all(np.isclose(X_res_sparse.A, X_res)):
-        xx = np.nonzero(~np.isclose(X_res_sparse.A, X_res))
-        print(xx)
-        print(X_res_sparse.A[xx[0]])
-        print(X_res[xx[0]])
     assert sparse.issparse(X_res_sparse)
     assert_allclose(X_res_sparse.A, X_res, rtol=1e-5)
     assert_allclose(y_res_sparse, y_res)
