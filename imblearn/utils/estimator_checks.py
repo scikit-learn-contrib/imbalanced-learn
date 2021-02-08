@@ -25,8 +25,8 @@ from sklearn.datasets import (
 from sklearn.cluster import KMeans
 from sklearn.exceptions import SkipTestWarning
 from sklearn.preprocessing import label_binarize
-from sklearn.utils.estimator_checks import _mark_xfail_checks
-from sklearn.utils.estimator_checks import _set_check_estimator_ids
+from sklearn.utils.estimator_checks import _maybe_mark_xfail
+from sklearn.utils.estimator_checks import _get_check_estimator_ids
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_raises_regex
 from sklearn.utils.multiclass import type_of_target
@@ -44,7 +44,7 @@ def _set_checking_parameters(estimator):
     if name == "ClusterCentroids":
         estimator.set_params(
             voting="soft",
-            estimator=KMeans(random_state=0, algorithm="full"),
+            estimator=KMeans(random_state=0, algorithm="full", n_init=1),
         )
     if name == "KMeansSMOTE":
         estimator.set_params(kmeans_estimator=12)
@@ -117,21 +117,19 @@ def parametrize_with_checks(estimators):
     ... def test_sklearn_compatible_estimator(estimator, check):
     ...     check(estimator)
     """
-    names = (type(estimator).__name__ for estimator in estimators)
+    def checks_generator():
+        for estimator in estimators:
+            name = type(estimator).__name__
+            for check in _yield_all_checks(estimator):
+                check = partial(check, name)
+                yield _maybe_mark_xfail(estimator, check, pytest)
 
-    checks_generator = ((clone(estimator), partial(check, name))
-                        for name, estimator in zip(names, estimators)
-                        for check in _yield_all_checks(estimator))
-
-    checks_with_marks = (
-        _mark_xfail_checks(estimator, check, pytest)
-        for estimator, check in checks_generator)
-
-    return pytest.mark.parametrize("estimator, check", checks_with_marks,
-                                   ids=_set_check_estimator_ids)
+    return pytest.mark.parametrize("estimator, check", checks_generator(),
+                                   ids=_get_check_estimator_ids)
 
 
-def check_target_type(name, estimator):
+def check_target_type(name, estimator_orig):
+    estimator = clone(estimator_orig)
     # should raise warning if the target is continuous (we cannot raise error)
     X = np.random.random((20, 2))
     y = np.linspace(0, 1, 20)
@@ -148,7 +146,8 @@ def check_target_type(name, estimator):
     )
 
 
-def check_samplers_one_label(name, sampler):
+def check_samplers_one_label(name, sampler_orig):
+    sampler = clone(sampler_orig)
     error_string_fit = "Sampler can't balance when only one class is present."
     X = np.random.random((20, 2))
     y = np.zeros(20)
@@ -168,7 +167,8 @@ def check_samplers_one_label(name, sampler):
     raise AssertionError(error_string_fit)
 
 
-def check_samplers_fit(name, sampler):
+def check_samplers_fit(name, sampler_orig):
+    sampler = clone(sampler_orig)
     np.random.seed(42)  # Make this test reproducible
     X = np.random.random((30, 2))
     y = np.array([1] * 20 + [0] * 10)
@@ -178,7 +178,8 @@ def check_samplers_fit(name, sampler):
     ), "No fitted attribute sampling_strategy_"
 
 
-def check_samplers_fit_resample(name, sampler):
+def check_samplers_fit_resample(name, sampler_orig):
+    sampler = clone(sampler_orig)
     X, y = make_classification(
         n_samples=1000,
         n_classes=3,
@@ -213,7 +214,8 @@ def check_samplers_fit_resample(name, sampler):
         )
 
 
-def check_samplers_sampling_strategy_fit_resample(name, sampler):
+def check_samplers_sampling_strategy_fit_resample(name, sampler_orig):
+    sampler = clone(sampler_orig)
     # in this test we will force all samplers to not change the class 1
     X, y = make_classification(
         n_samples=1000,
@@ -240,7 +242,8 @@ def check_samplers_sampling_strategy_fit_resample(name, sampler):
         assert Counter(y_res)[1] == expected_stat
 
 
-def check_samplers_sparse(name, sampler):
+def check_samplers_sparse(name, sampler_orig):
+    sampler = clone(sampler_orig)
     # check that sparse matrices can be passed through the sampler leading to
     # the same results than dense
     X, y = make_classification(
@@ -252,14 +255,16 @@ def check_samplers_sparse(name, sampler):
     )
     X_sparse = sparse.csr_matrix(X)
     X_res_sparse, y_res_sparse = sampler.fit_resample(X_sparse, y)
+    sampler = clone(sampler)
     X_res, y_res = sampler.fit_resample(X, y)
     assert sparse.issparse(X_res_sparse)
-    assert_allclose(X_res_sparse.A, X_res)
+    assert_allclose(X_res_sparse.A, X_res, rtol=1e-5)
     assert_allclose(y_res_sparse, y_res)
 
 
-def check_samplers_pandas(name, sampler):
+def check_samplers_pandas(name, sampler_orig):
     pd = pytest.importorskip("pandas")
+    sampler = clone(sampler_orig)
     # Check that the samplers handle pandas dataframe and pandas series
     X, y = make_classification(
         n_samples=1000,
@@ -290,7 +295,8 @@ def check_samplers_pandas(name, sampler):
     assert_allclose(y_res_s.to_numpy(), y_res)
 
 
-def check_samplers_list(name, sampler):
+def check_samplers_list(name, sampler_orig):
+    sampler = clone(sampler_orig)
     # Check that the can samplers handle simple lists
     X, y = make_classification(
         n_samples=1000,
@@ -312,7 +318,8 @@ def check_samplers_list(name, sampler):
     assert_allclose(y_res, y_res_list)
 
 
-def check_samplers_multiclass_ova(name, sampler):
+def check_samplers_multiclass_ova(name, sampler_orig):
+    sampler = clone(sampler_orig)
     # Check that multiclass target lead to the same results than OVA encoding
     X, y = make_classification(
         n_samples=1000,
@@ -329,7 +336,8 @@ def check_samplers_multiclass_ova(name, sampler):
     assert_allclose(y_res, y_res_ova.argmax(axis=1))
 
 
-def check_samplers_2d_target(name, sampler):
+def check_samplers_2d_target(name, sampler_orig):
+    sampler = clone(sampler_orig)
     X, y = make_classification(
         n_samples=100,
         n_classes=3,
@@ -342,7 +350,8 @@ def check_samplers_2d_target(name, sampler):
     sampler.fit_resample(X, y)
 
 
-def check_samplers_preserve_dtype(name, sampler):
+def check_samplers_preserve_dtype(name, sampler_orig):
+    sampler = clone(sampler_orig)
     X, y = make_classification(
         n_samples=1000,
         n_classes=3,
@@ -358,7 +367,8 @@ def check_samplers_preserve_dtype(name, sampler):
     assert y.dtype == y_res.dtype, "y dtype is not preserved"
 
 
-def check_samplers_sample_indices(name, sampler):
+def check_samplers_sample_indices(name, sampler_orig):
+    sampler = clone(sampler_orig)
     X, y = make_classification(
         n_samples=1000,
         n_classes=3,
@@ -374,17 +384,21 @@ def check_samplers_sample_indices(name, sampler):
         assert not hasattr(sampler, "sample_indices_")
 
 
-def check_classifier_on_multilabel_or_multioutput_targets(name, estimator):
+def check_classifier_on_multilabel_or_multioutput_targets(
+    name, estimator_orig
+):
+    estimator = clone(estimator_orig)
     X, y = make_multilabel_classification(n_samples=30)
     msg = "Multilabel and multioutput targets are not supported."
     with pytest.raises(ValueError, match=msg):
         estimator.fit(X, y)
 
 
-def check_classifiers_with_encoded_labels(name, classifier):
+def check_classifiers_with_encoded_labels(name, classifier_orig):
     # Non-regression test for #709
     # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/709
     pytest.importorskip("pandas")
+    classifier = clone(classifier_orig)
     df, y = fetch_openml("iris", version=1, as_frame=True, return_X_y=True)
     df, y = make_imbalance(
         df, y, sampling_strategy={

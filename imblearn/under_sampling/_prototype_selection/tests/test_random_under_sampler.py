@@ -101,7 +101,7 @@ def test_multiclass_fit_resample():
 
 def test_random_under_sampling_heterogeneous_data():
     X_hetero = np.array(
-        [["xxx", 1, 1.0], ["yyy", 2, 2.0], ["zzz", 3, 3.0]], dtype=np.object
+        [["xxx", 1, 1.0], ["yyy", 2, 2.0], ["zzz", 3, 3.0]], dtype=object
     )
     y = np.array([0, 0, 1])
     rus = RandomUnderSampler(random_state=RND_SEED)
