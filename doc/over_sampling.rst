@@ -203,13 +203,17 @@ other extra interpolation.
 ROSE (Random Over-Sampling Examples)
 ------------------------------------
 
-ROSE uses smoothed bootstrapping to draw artificial samples from the
+:class:`ROSE` uses smoothed bootstrapping to draw artificial samples from the
 feature space neighborhood around selected classes, using a multivariate
 Gaussian kernel around randomly selected samples. First, random samples are
 selected from original classes. Then the smoothing kernel distribution
-is computed around the samples: :math:`\hat f(x|y=Y_i) = \sum_i^{n_j}
-p_i Pr(x|x_i)=\sum_i^{n_j} \frac{1}{n_j} Pr(x|x_i)=\sum_i^{n_j}
-\frac{1}{n_j} K_{H_j}(x|x_i)`.
+is computed around the samples:
+
+.. math::
+
+   \hat f(x|y=Y_i) &= \sum_i^{n_j} p_i Pr(x|x_i) \\
+                   &= \sum_i^{n_j} \frac{1}{n_j} Pr(x|x_i) \\
+                   &= \sum_i^{n_j} \frac{1}{n_j} K_{H_j}(x|x_i).
 
 Then new samples are drawn from the computed distribution.
 
@@ -219,8 +223,8 @@ Mathematical formulation
 Sample generation
 -----------------
 
-Both SMOTE and ADASYN use the same algorithm to generate new samples.
-Considering a sample :math:`x_i`, a new sample :math:`x_{new}` will be
+Both :class:`SMOTE` and :class:`ADASYN` use the same algorithm to generate new
+samples. Considering a sample :math:`x_i`, a new sample :math:`x_{new}` will be
 generated considering its k neareast-neighbors (corresponding to
 ``k_neighbors``). For instance, the 3 nearest-neighbors are included in the
 blue circle as illustrated in the figure below. Then, one of these
