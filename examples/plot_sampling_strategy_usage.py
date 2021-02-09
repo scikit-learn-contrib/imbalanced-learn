@@ -38,13 +38,17 @@ def plot_pie(y):
         def my_autopct(pct):
             total = sum(values)
             val = int(round(pct * total / 100.0))
-            return "{p:.2f}%  ({v:d})".format(p=pct, v=val)
+            return f"{pct:.2f}%  ({val:d})"
 
         return my_autopct
 
     fig, ax = plt.subplots()
     ax.pie(
-        sizes, explode=explode, labels=labels, shadow=True, autopct=make_autopct(sizes),
+        sizes,
+        explode=explode,
+        labels=labels,
+        shadow=True,
+        autopct=make_autopct(sizes),
     )
     ax.axis("equal")
 
@@ -54,17 +58,16 @@ def plot_pie(y):
 
 iris = load_iris()
 
-print("Information of the original iris data set: \n {}".format(Counter(iris.target)))
+print(f"Information of the original iris data set: \n {Counter(iris.target)}")
 plot_pie(iris.target)
 
 sampling_strategy = {0: 10, 1: 20, 2: 47}
 X, y = make_imbalance(iris.data, iris.target, sampling_strategy=sampling_strategy)
 
 print(
-    "Information of the iris data set after making it"
-    " imbalanced using a dict: \n sampling_strategy={} \n y: {}".format(
-        sampling_strategy, Counter(y)
-    )
+    f"Information of the iris data set after making it"
+    f" imbalanced using a dict: \n sampling_strategy={sampling_strategy} \n "
+    f"y: {Counter(y)}"
 )
 plot_pie(y)
 
@@ -92,9 +95,9 @@ sampling_strategy = 0.8
 rus = RandomUnderSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = rus.fit_resample(binary_X, binary_y)
 print(
-    "Information of the iris data set after making it "
-    "balanced using a float and an under-sampling method: \n "
-    "sampling_strategy={} \n y: {}".format(sampling_strategy, Counter(y_res))
+    f"Information of the iris data set after making it "
+    f"balanced using a float and an under-sampling method: \n "
+    f"sampling_strategy={sampling_strategy} \n y: {Counter(y_res)}"
 )
 plot_pie(y_res)
 
@@ -108,9 +111,9 @@ plot_pie(y_res)
 ros = RandomOverSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = ros.fit_resample(binary_X, binary_y)
 print(
-    "Information of the iris data set after making it "
-    "balanced using a float and an over-sampling method: \n "
-    "sampling_strategy={} \n y: {}".format(sampling_strategy, Counter(y_res))
+    f"Information of the iris data set after making it "
+    f"balanced using a float and an over-sampling method: \n "
+    f"sampling_strategy={sampling_strategy} \n y: {Counter(y_res)}"
 )
 plot_pie(y_res)
 
@@ -129,10 +132,9 @@ sampling_strategy = "not minority"
 rus = RandomUnderSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = rus.fit_resample(X, y)
 print(
-    "Information of the iris data set after making it "
-    "balanced by under-sampling: \n sampling_strategy={} \n y: {}".format(
-        sampling_strategy, Counter(y_res)
-    )
+    f"Information of the iris data set after making it "
+    f"balanced by under-sampling: \n sampling_strategy={sampling_strategy} \n"
+    f" y: {Counter(y_res)}"
 )
 plot_pie(y_res)
 
@@ -141,10 +143,9 @@ sampling_strategy = "not majority"
 ros = RandomOverSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = ros.fit_resample(X, y)
 print(
-    "Information of the iris data set after making it "
-    "balanced by over-sampling: \n sampling_strategy={} \n y: {}".format(
-        sampling_strategy, Counter(y_res)
-    )
+    f"Information of the iris data set after making it "
+    f"balanced by over-sampling: \n sampling_strategy={sampling_strategy} \n "
+    f"y: {Counter(y_res)}"
 )
 plot_pie(y_res)
 
@@ -156,10 +157,9 @@ sampling_strategy = "not minority"
 tl = TomekLinks(sampling_strategy)
 X_res, y_res = tl.fit_resample(X, y)
 print(
-    "Information of the iris data set after making it "
-    "balanced by cleaning sampling: \n sampling_strategy={} \n y: {}".format(
-        sampling_strategy, Counter(y_res)
-    )
+    f"Information of the iris data set after making it "
+    f"balanced by cleaning sampling: \n sampling_strategy={sampling_strategy} \n "
+    f"y: {Counter(y_res)}"
 )
 plot_pie(y_res)
 
@@ -178,10 +178,9 @@ sampling_strategy = {0: 10, 1: 15, 2: 20}
 rus = RandomUnderSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = rus.fit_resample(X, y)
 print(
-    "Information of the iris data set after making it "
-    "balanced by under-sampling: \n sampling_strategy={} \n y: {}".format(
-        sampling_strategy, Counter(y_res)
-    )
+    f"Information of the iris data set after making it "
+    f"balanced by under-sampling: \n sampling_strategy={sampling_strategy} \n "
+    f"y: {Counter(y_res)}"
 )
 plot_pie(y_res)
 
@@ -190,10 +189,9 @@ sampling_strategy = {0: 25, 1: 35, 2: 47}
 ros = RandomOverSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = ros.fit_resample(X, y)
 print(
-    "Information of the iris data set after making it "
-    "balanced by over-sampling: \n sampling_strategy={} \n y: {}".format(
-        sampling_strategy, Counter(y_res)
-    )
+    f"Information of the iris data set after making it "
+    f"balanced by over-sampling: \n sampling_strategy={sampling_strategy} \n "
+    f"y: {Counter(y_res)}"
 )
 plot_pie(y_res)
 
@@ -209,10 +207,9 @@ sampling_strategy = [0, 1, 2]
 tl = TomekLinks(sampling_strategy=sampling_strategy)
 X_res, y_res = tl.fit_resample(X, y)
 print(
-    "Information of the iris data set after making it "
-    "balanced by cleaning sampling: \n sampling_strategy={} \n y: {}".format(
-        sampling_strategy, Counter(y_res)
-    )
+    f"Information of the iris data set after making it "
+    f"balanced by cleaning sampling: \n sampling_strategy={sampling_strategy} "
+    f"\n y: {Counter(y_res)}"
 )
 plot_pie(y_res)
 
@@ -237,8 +234,8 @@ def ratio_multiplier(y):
 X_res, y_res = RandomUnderSampler(sampling_strategy=ratio_multiplier).fit_resample(X, y)
 
 print(
-    "Information of the iris data set after balancing using a callable"
-    " mode:\n ratio={} \n y: {}".format(ratio_multiplier, Counter(y_res))
+    f"Information of the iris data set after balancing using a callable"
+    f" mode:\n ratio={ratio_multiplier} \n y: {Counter(y_res)}"
 )
 plot_pie(y_res)
 

@@ -52,8 +52,8 @@ X_test = newsgroups_test.data
 y_train = newsgroups_train.target
 y_test = newsgroups_test.target
 
-print("Training class distributions summary: {}".format(Counter(y_train)))
-print("Test class distributions summary: {}".format(Counter(y_test)))
+print(f"Training class distributions summary: {Counter(y_train)}")
+print(f"Test class distributions summary: {Counter(y_test)}")
 
 ###############################################################################
 # The usual scikit-learn pipeline

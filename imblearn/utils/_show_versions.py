@@ -80,9 +80,9 @@ def show_versions(github=False):
         _deps_markup = ""
 
         for k, stat in _sys_info.items():
-            _sys_markup += "* {k:<10}: `{stat}`\n".format(k=k, stat=stat)
+            _sys_markup += f"* {k:<10}: `{stat}`\n"
         for k, stat in _deps_info.items():
-            _deps_markup += "* {k:<10}: `{stat}`\n".format(k=k, stat=stat)
+            _deps_markup += f"* {k:<10}: `{stat}`\n"
 
         print(_github_markup.format(_sys_markup, _deps_markup))
 
@@ -90,8 +90,8 @@ def show_versions(github=False):
 
         print("\nSystem:")
         for k, stat in _sys_info.items():
-            print("{k:>11}: {stat}".format(k=k, stat=stat))
+            print(f"{k:>11}: {stat}")
 
         print("\nPython dependencies:")
         for k, stat in _deps_info.items():
-            print("{k:>11}: {stat}".format(k=k, stat=stat))
+            print(f"{k:>11}: {stat}")

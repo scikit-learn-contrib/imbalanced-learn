@@ -88,7 +88,7 @@ class Pipeline(pipeline.Pipeline):
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
-    >>> print('Original dataset shape {}'.format(Counter(y)))
+    >>> print(f'Original dataset shape {Counter(y)}')
     Original dataset shape Counter({1: 900, 0: 100})
     >>> pca = PCA()
     >>> smt = SMOTE(random_state=42)
@@ -192,11 +192,11 @@ class Pipeline(pipeline.Pipeline):
         for pname, pval in fit_params.items():
             if "__" not in pname:
                 raise ValueError(
-                    "Pipeline.fit does not accept the {} parameter. "
+                    f"Pipeline.fit does not accept the {pname} parameter. "
                     "You can pass parameters to specific steps of your "
                     "pipeline using the stepname__parameter format, e.g. "
                     "`Pipeline.fit(X, y, logisticregression__sample_weight"
-                    "=sample_weight)`.".format(pname)
+                    "=sample_weight)`."
                 )
             step, param = pname.split("__", 1)
             fit_params_steps[step][param] = pval
@@ -441,7 +441,5 @@ def make_pipeline(*steps, **kwargs):
     memory = kwargs.pop("memory", None)
     verbose = kwargs.pop("verbose", False)
     if kwargs:
-        raise TypeError(
-            'Unknown keyword arguments: "{}"'.format(list(kwargs.keys())[0])
-        )
+        raise TypeError(f'Unknown keyword arguments: "{list(kwargs.keys())[0]}"')
     return Pipeline(pipeline._name_estimators(steps), memory=memory, verbose=verbose)

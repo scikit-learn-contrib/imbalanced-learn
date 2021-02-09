@@ -56,7 +56,7 @@ y_pred_bal = pipeline.predict(X_test)
 # sensitivity and specificity. Combining the two metrics should account for
 # the balancing of the dataset.
 
-print("The geometric mean is {}".format(geometric_mean_score(y_test, y_pred_bal)))
+print(f"The geometric mean is {geometric_mean_score(y_test, y_pred_bal)}")
 
 ###############################################################################
 # The index balanced accuracy can transform any metric to be used in
@@ -66,16 +66,12 @@ alpha = 0.1
 geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(geometric_mean_score)
 
 print(
-    "The IBA using alpha = {} and the geometric mean: {}".format(
-        alpha, geo_mean(y_test, y_pred_bal)
-    )
+    f"The IBA using alpha = {alpha} and the geometric mean: {geo_mean(y_test, y_pred_bal)}"
 )
 
 alpha = 0.5
 geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(geometric_mean_score)
 
 print(
-    "The IBA using alpha = {} and the geometric mean: {}".format(
-        alpha, geo_mean(y_test, y_pred_bal)
-    )
+    f"The IBA using alpha = {alpha} and the geometric mean: {geo_mean(y_test, y_pred_bal)}"
 )

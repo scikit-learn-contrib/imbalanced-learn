@@ -126,11 +126,13 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
         elif self.estimator is None:
             self.estimator_ = RandomForestClassifier(
-                n_estimators=100, random_state=self.random_state, n_jobs=self.n_jobs,
+                n_estimators=100,
+                random_state=self.random_state,
+                n_jobs=self.n_jobs,
             )
         else:
             raise ValueError(
-                "Invalid parameter `estimator`. Got {}.".format(type(self.estimator))
+                f"Invalid parameter `estimator`. Got {type(self.estimator)}."
             )
 
     def _fit_resample(self, X, y):
@@ -139,10 +141,17 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
         target_stats = Counter(y)
         skf = StratifiedKFold(
-            n_splits=self.cv, shuffle=True, random_state=random_state,
+            n_splits=self.cv,
+            shuffle=True,
+            random_state=random_state,
         )
         probabilities = cross_val_predict(
-            self.estimator_, X, y, cv=skf, n_jobs=self.n_jobs, method="predict_proba",
+            self.estimator_,
+            X,
+            y,
+            cv=skf,
+            n_jobs=self.n_jobs,
+            method="predict_proba",
         )
         probabilities = probabilities[range(len(y)), y]
 
@@ -162,7 +171,10 @@ class InstanceHardnessThreshold(BaseUnderSampler):
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under, np.flatnonzero(y == target_class)[index_target_class],),
+                (
+                    idx_under,
+                    np.flatnonzero(y == target_class)[index_target_class],
+                ),
                 axis=0,
             )
 

@@ -110,8 +110,8 @@ class SMOTEENN(BaseSampler):
                 self.smote_ = clone(self.smote)
             else:
                 raise ValueError(
-                    "smote needs to be a SMOTE object."
-                    "Got {} instead.".format(type(self.smote))
+                    f"smote needs to be a SMOTE object."
+                    f"Got {type(self.smote)} instead."
                 )
         # Otherwise create a default SMOTE
         else:
@@ -126,8 +126,8 @@ class SMOTEENN(BaseSampler):
                 self.enn_ = clone(self.enn)
             else:
                 raise ValueError(
-                    "enn needs to be an EditedNearestNeighbours."
-                    " Got {} instead.".format(type(self.enn))
+                    f"enn needs to be an EditedNearestNeighbours."
+                    f" Got {type(self.enn)} instead."
                 )
         # Otherwise create a default EditedNearestNeighbours
         else:

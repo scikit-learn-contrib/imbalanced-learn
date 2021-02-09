@@ -40,7 +40,12 @@ from imblearn.metrics import geometric_mean_score
 
 
 def plot_confusion_matrix(
-    cm, classes, ax, normalize=False, title="Confusion matrix", cmap=plt.cm.Blues,
+    cm,
+    classes,
+    ax,
+    normalize=False,
+    title="Confusion matrix",
+    cmap=plt.cm.Blues,
 ):
     """
     This function prints and plots the confusion matrix.
@@ -98,10 +103,8 @@ tree.fit(X_train, y_train)
 y_pred_tree = tree.predict(X_test)
 print("Decision tree classifier performance:")
 print(
-    "Balanced accuracy: {:.2f} - Geometric mean {:.2f}".format(
-        balanced_accuracy_score(y_test, y_pred_tree),
-        geometric_mean_score(y_test, y_pred_tree),
-    )
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_tree):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_tree):.2f}"
 )
 cm_tree = confusion_matrix(y_test, y_pred_tree)
 fig, ax = plt.subplots()
@@ -132,10 +135,8 @@ y_pred_bbc = balanced_bagging.predict(X_test)
 
 print("Bagging classifier performance:")
 print(
-    "Balanced accuracy: {:.2f} - Geometric mean {:.2f}".format(
-        balanced_accuracy_score(y_test, y_pred_bc),
-        geometric_mean_score(y_test, y_pred_bc),
-    )
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_bc):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_bc):.2f}"
 )
 cm_bagging = confusion_matrix(y_test, y_pred_bc)
 fig, ax = plt.subplots(ncols=2)
@@ -145,10 +146,8 @@ plot_confusion_matrix(
 
 print("Balanced Bagging classifier performance:")
 print(
-    "Balanced accuracy: {:.2f} - Geometric mean {:.2f}".format(
-        balanced_accuracy_score(y_test, y_pred_bbc),
-        geometric_mean_score(y_test, y_pred_bbc),
-    )
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_bbc):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_bbc):.2f}"
 )
 cm_balanced_bagging = confusion_matrix(y_test, y_pred_bbc)
 plot_confusion_matrix(
@@ -180,10 +179,8 @@ y_pred_brf = brf.predict(X_test)
 
 print("Random Forest classifier performance:")
 print(
-    "Balanced accuracy: {:.2f} - Geometric mean {:.2f}".format(
-        balanced_accuracy_score(y_test, y_pred_rf),
-        geometric_mean_score(y_test, y_pred_rf),
-    )
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_rf):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_rf):.2f}"
 )
 cm_rf = confusion_matrix(y_test, y_pred_rf)
 fig, ax = plt.subplots(ncols=2)
@@ -193,10 +190,8 @@ plot_confusion_matrix(
 
 print("Balanced Random Forest classifier performance:")
 print(
-    "Balanced accuracy: {:.2f} - Geometric mean {:.2f}".format(
-        balanced_accuracy_score(y_test, y_pred_brf),
-        geometric_mean_score(y_test, y_pred_brf),
-    )
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_brf):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_brf):.2f}"
 )
 cm_brf = confusion_matrix(y_test, y_pred_brf)
 plot_confusion_matrix(
@@ -219,10 +214,8 @@ eec.fit(X_train, y_train)
 y_pred_eec = eec.predict(X_test)
 print("Easy ensemble classifier performance:")
 print(
-    "Balanced accuracy: {:.2f} - Geometric mean {:.2f}".format(
-        balanced_accuracy_score(y_test, y_pred_eec),
-        geometric_mean_score(y_test, y_pred_eec),
-    )
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_eec):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_eec):.2f}"
 )
 cm_eec = confusion_matrix(y_test, y_pred_eec)
 fig, ax = plt.subplots(ncols=2)
@@ -238,10 +231,8 @@ rusboost.fit(X_train, y_train)
 y_pred_rusboost = rusboost.predict(X_test)
 print("RUSBoost classifier performance:")
 print(
-    "Balanced accuracy: {:.2f} - Geometric mean {:.2f}".format(
-        balanced_accuracy_score(y_test, y_pred_rusboost),
-        geometric_mean_score(y_test, y_pred_rusboost),
-    )
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_rusboost):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_rusboost):.2f}"
 )
 cm_rusboost = confusion_matrix(y_test, y_pred_rusboost)
 plot_confusion_matrix(

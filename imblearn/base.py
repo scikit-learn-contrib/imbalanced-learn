@@ -201,8 +201,7 @@ class FunctionSampler(BaseSampler):
     ...                           kw_args={'sampling_strategy': 'auto',
     ...                                    'random_state': 0})
     >>> X_res, y_res = sampler.fit_resample(X, y)
-    >>> print('Resampled dataset shape {}'.format(
-    ...     sorted(Counter(y_res).items())))
+    >>> print(f'Resampled dataset shape {sorted(Counter(y_res).items()}')
     Resampled dataset shape [(0, 100), (1, 100)]
     """
 
@@ -238,9 +237,7 @@ class FunctionSampler(BaseSampler):
         # we need to overwrite SamplerMixin.fit to bypass the validation
         if self.validate:
             check_classification_targets(y)
-            X, y, _ = self._check_X_y(
-                X, y, accept_sparse=self.accept_sparse
-            )
+            X, y, _ = self._check_X_y(X, y, accept_sparse=self.accept_sparse)
 
         self.sampling_strategy_ = check_sampling_strategy(
             self.sampling_strategy, y, self._sampling_type

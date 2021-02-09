@@ -37,7 +37,11 @@ class BaseSMOTE(BaseOverSampler):
     """Base class for the different SMOTE algorithms."""
 
     def __init__(
-        self, sampling_strategy="auto", random_state=None, k_neighbors=5, n_jobs=None,
+        self,
+        sampling_strategy="auto",
+        random_state=None,
+        k_neighbors=5,
+        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
@@ -318,9 +322,9 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
         self.nn_m_.set_params(**{"n_jobs": self.n_jobs})
         if self.kind not in ("borderline-1", "borderline-2"):
             raise ValueError(
-                'The possible "kind" of algorithm are '
-                '"borderline-1" and "borderline-2".'
-                "Got {} instead.".format(self.kind)
+                f'The possible "kind" of algorithm are '
+                f'"borderline-1" and "borderline-2".'
+                f"Got {self.kind} instead."
             )
 
     def _fit_resample(self, X, y):
@@ -852,13 +856,13 @@ class SMOTENC(SMOTE):
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape (%s, %s)' % X.shape)
     Original dataset shape (1000, 20)
-    >>> print('Original dataset samples per class {}'.format(Counter(y)))
+    >>> print(f'Original dataset samples per class {Counter(y)}')
     Original dataset samples per class Counter({1: 900, 0: 100})
     >>> # simulate the 2 last columns to be categorical features
     >>> X[:, -2:] = RandomState(10).randint(0, 4, size=(1000, 2))
     >>> sm = SMOTENC(random_state=42, categorical_features=[18, 19])
     >>> X_res, y_res = sm.fit_resample(X, y)
-    >>> print('Resampled dataset samples per class {}'.format(Counter(y_res)))
+    >>> print(f'Resampled dataset samples per class {Counter(y_res)}')
     Resampled dataset samples per class Counter({0: 900, 1: 900})
     """
 
@@ -901,8 +905,8 @@ class SMOTENC(SMOTE):
                 [cat not in np.arange(self.n_features_) for cat in categorical_features]
             ):
                 raise ValueError(
-                    "Some of the categorical indices are out of range. Indices"
-                    " should be between 0 and {}".format(self.n_features_)
+                    f"Some of the categorical indices are out of range. Indices"
+                    f" should be between 0 and {self.n_features_}"
                 )
             self.categorical_features_ = categorical_features
         self.continuous_features_ = np.setdiff1d(
@@ -973,7 +977,10 @@ class SMOTENC(SMOTE):
 
         if sparse.issparse(X):
             X_resampled = sparse.hstack(
-                (X_resampled[:, : self.continuous_features_.size], X_res_cat_dec,),
+                (
+                    X_resampled[:, : self.continuous_features_.size],
+                    X_res_cat_dec,
+                ),
                 format="csr",
             )
         else:
@@ -1167,7 +1174,8 @@ class KMeansSMOTE(BaseSMOTE):
             self.kmeans_estimator_ = MiniBatchKMeans(random_state=self.random_state)
         elif isinstance(self.kmeans_estimator, int):
             self.kmeans_estimator_ = MiniBatchKMeans(
-                n_clusters=self.kmeans_estimator, random_state=self.random_state,
+                n_clusters=self.kmeans_estimator,
+                random_state=self.random_state,
             )
         else:
             self.kmeans_estimator_ = clone(self.kmeans_estimator)
@@ -1177,8 +1185,8 @@ class KMeansSMOTE(BaseSMOTE):
             param = getattr(self, param_name)
             if isinstance(param, str) and param != "auto":
                 raise ValueError(
-                    "'{}' should be 'auto' when a string is passed. "
-                    "Got {} instead.".format(param_name, repr(param))
+                    f"'{param_name}' should be 'auto' when a string is passed."
+                    f" Got {repr(param)} instead."
                 )
 
         self.cluster_balance_threshold_ = (
@@ -1257,10 +1265,10 @@ class KMeansSMOTE(BaseSMOTE):
 
             if not valid_clusters:
                 raise RuntimeError(
-                    "No clusters found with sufficient samples of "
-                    "class {}. Try lowering the cluster_balance_threshold "
-                    "or increasing the number of "
-                    "clusters.".format(class_sample)
+                    f"No clusters found with sufficient samples of "
+                    f"class {class_sample}. Try lowering the "
+                    f"cluster_balance_threshold or increasing the number of "
+                    f"clusters."
                 )
 
             for valid_cluster_idx, valid_cluster in enumerate(valid_clusters):

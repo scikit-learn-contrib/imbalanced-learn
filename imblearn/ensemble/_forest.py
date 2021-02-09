@@ -352,14 +352,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         `base_estimator_` attribute."""
         if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
             raise ValueError(
-                "n_estimators must be an integer, "
-                "got {}.".format(type(self.n_estimators))
+                f"n_estimators must be an integer, " f"got {type(self.n_estimators)}."
             )
 
         if self.n_estimators <= 0:
             raise ValueError(
-                "n_estimators must be greater than zero, "
-                "got {}.".format(self.n_estimators)
+                f"n_estimators must be greater than zero, " f"got {self.n_estimators}."
             )
 
         if self.base_estimator is not None:
@@ -368,7 +366,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self.base_estimator_ = clone(default)
 
         self.base_sampler_ = RandomUnderSampler(
-            sampling_strategy=self._sampling_strategy, replacement=self.replacement,
+            sampling_strategy=self._sampling_strategy,
+            replacement=self.replacement,
         )
 
     def _make_sampler_estimator(self, random_state=None):
@@ -456,7 +455,9 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             self._sampling_strategy = {
                 np.where(self.classes_[0] == key)[0][0]: value
                 for key, value in check_sampling_strategy(
-                    self.sampling_strategy, y, "under-sampling",
+                    self.sampling_strategy,
+                    y,
+                    "under-sampling",
                 ).items()
             }
         else:
@@ -477,9 +478,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         self._validate_estimator()
 
         if not self.bootstrap and self.oob_score:
-            raise ValueError(
-                "Out of bag estimation only available if bootstrap=True"
-            )
+            raise ValueError("Out of bag estimation only available if bootstrap=True")
 
         random_state = check_random_state(self.random_state)
 

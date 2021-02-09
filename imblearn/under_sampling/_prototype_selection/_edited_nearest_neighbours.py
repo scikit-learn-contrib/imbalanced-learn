@@ -105,7 +105,12 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 
     @_deprecate_positional_args
     def __init__(
-        self, *, sampling_strategy="auto", n_neighbors=3, kind_sel="all", n_jobs=None,
+        self,
+        *,
+        sampling_strategy="auto",
+        n_neighbors=3,
+        kind_sel="all",
+        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
@@ -147,7 +152,10 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under, np.flatnonzero(y == target_class)[index_target_class],),
+                (
+                    idx_under,
+                    np.flatnonzero(y == target_class)[index_target_class],
+                ),
                 axis=0,
             )
 
@@ -267,8 +275,8 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
         """Private function to create the NN estimator"""
         if self.max_iter < 2:
             raise ValueError(
-                "max_iter must be greater than 1."
-                " Got {} instead.".format(type(self.max_iter))
+                f"max_iter must be greater than 1."
+                f" Got {type(self.max_iter)} instead."
             )
 
         self.nn_ = check_neighbors_object(
@@ -318,12 +326,18 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             # Case 3
             b_remove_maj_class = len(stats_enn) < len(target_stats)
 
-            X_, y_, = X_enn, y_enn
+            X_, y_, = (
+                X_enn,
+                y_enn,
+            )
             self.sample_indices_ = self.sample_indices_[self.enn_.sample_indices_]
 
             if b_conv or b_min_bec_maj or b_remove_maj_class:
                 if b_conv:
-                    X_, y_, = X_enn, y_enn
+                    X_, y_, = (
+                        X_enn,
+                        y_enn,
+                    )
                     self.sample_indices_ = self.sample_indices_[
                         self.enn_.sample_indices_
                     ]
@@ -492,7 +506,10 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             # Case 2
             b_remove_maj_class = len(stats_enn) < len(target_stats)
 
-            X_, y_, = X_enn, y_enn
+            X_, y_, = (
+                X_enn,
+                y_enn,
+            )
             self.sample_indices_ = self.sample_indices_[self.enn_.sample_indices_]
 
             if b_min_bec_maj or b_remove_maj_class:

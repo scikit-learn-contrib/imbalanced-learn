@@ -35,7 +35,12 @@ f, axs = plt.subplots(2, 3)
 axs = [a for ax in axs for a in ax]
 
 X.plot.scatter(
-    x="feature 1", y="feature 2", c=y, ax=axs[0], colormap="viridis", colorbar=False,
+    x="feature 1",
+    y="feature 2",
+    c=y,
+    ax=axs[0],
+    colormap="viridis",
+    colorbar=False,
 )
 axs[0].set_title("Original set")
 
@@ -56,9 +61,14 @@ for i, multiplier in enumerate(multipliers, start=1):
         **{"multiplier": multiplier, "minority_class": 1},
     )
     X_.plot.scatter(
-        x="feature 1", y="feature 2", c=y_, ax=ax, colormap="viridis", colorbar=False,
+        x="feature 1",
+        y="feature 2",
+        c=y_,
+        ax=ax,
+        colormap="viridis",
+        colorbar=False,
     )
-    ax.set_title("Sampling ratio = {}".format(multiplier))
+    ax.set_title(f"Sampling ratio = {multiplier}")
 
 plt.tight_layout()
 plt.show()

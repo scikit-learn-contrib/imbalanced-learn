@@ -127,8 +127,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             self.estimator_ = clone(self.estimator)
         else:
             raise ValueError(
-                "`estimator` has to be a KMeans clustering."
-                " Got {} instead.".format(type(self.estimator))
+                f"`estimator` has to be a KMeans clustering."
+                f" Got {type(self.estimator)} instead."
             )
 
     def _generate_sample(self, X, y, centroids, target_class):
@@ -159,8 +159,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                 self.voting_ = self.voting
             else:
                 raise ValueError(
-                    "'voting' needs to be one of {}. Got {}"
-                    " instead.".format(VOTING_KIND, self.voting)
+                    f"'voting' needs to be one of {VOTING_KIND}. "
+                    f"Got {self.voting} instead."
                 )
 
         X_resampled, y_resampled = [], []

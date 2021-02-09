@@ -123,9 +123,9 @@ CondensedNearestNeighbour # doctest: +SKIP
             self.estimator_ = clone(self.n_neighbors)
         else:
             raise ValueError(
-                "`n_neighbors` has to be a int or an object"
-                " inhereited from KNeighborsClassifier."
-                " Got {} instead.".format(type(self.n_neighbors))
+                f"`n_neighbors` has to be a int or an object"
+                f" inhereited from KNeighborsClassifier."
+                f" Got {type(self.n_neighbors)} instead."
             )
 
     def _fit_resample(self, X, y):
@@ -143,7 +143,9 @@ CondensedNearestNeighbour # doctest: +SKIP
                 idx_maj = np.flatnonzero(y == target_class)
                 idx_maj_sample = idx_maj[
                     random_state.randint(
-                        low=0, high=target_stats[target_class], size=self.n_seeds_S,
+                        low=0,
+                        high=target_stats[target_class],
+                        size=self.n_seeds_S,
                     )
                 ]
 

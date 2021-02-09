@@ -79,12 +79,12 @@ def make_imbalance(
 
     >>> data = load_iris()
     >>> X, y = data.data, data.target
-    >>> print('Distribution before imbalancing: {}'.format(Counter(y)))
+    >>> print(f'Distribution before imbalancing: {Counter(y)}')
     Distribution before imbalancing: Counter({0: 50, 1: 50, 2: 50})
     >>> X_res, y_res = make_imbalance(X, y,
     ...                               sampling_strategy={0: 10, 1: 20, 2: 30},
     ...                               random_state=42)
-    >>> print('Distribution after imbalancing: {}'.format(Counter(y_res)))
+    >>> print(f'Distribution after imbalancing: {Counter(y_res)}')
     Distribution after imbalancing: Counter({2: 30, 1: 20, 0: 10})
     """
     target_stats = Counter(y)
@@ -95,16 +95,13 @@ def make_imbalance(
         )
     else:
         raise ValueError(
-            "'sampling_strategy' has to be a dictionary or a "
-            "function returning a dictionary. Got {} instead.".format(
-                type(sampling_strategy)
-            )
+            f"'sampling_strategy' has to be a dictionary or a "
+            f"function returning a dictionary. Got {type(sampling_strategy)} "
+            f"instead."
         )
 
     if verbose:
-        print(
-            "The original target distribution in the dataset is: %s", target_stats,
-        )
+        print(f"The original target distribution in the dataset is: {target_stats}")
     rus = RandomUnderSampler(
         sampling_strategy=sampling_strategy_,
         replacement=False,
@@ -112,6 +109,6 @@ def make_imbalance(
     )
     X_resampled, y_resampled = rus.fit_resample(X, y)
     if verbose:
-        print("Make the dataset imbalanced: %s", Counter(y_resampled))
+        print(f"Make the dataset imbalanced: {Counter(y_resampled)}")
 
     return X_resampled, y_resampled

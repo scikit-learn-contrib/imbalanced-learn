@@ -113,14 +113,14 @@ X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
 clf = LinearSVC().fit(X, y)
 plot_decision_function(X, y, clf, ax1)
-ax1.set_title("Linear SVC with y={}".format(Counter(y)))
+ax1.set_title(f"Linear SVC with y={Counter(y)}")
 sampler = ClusterCentroids(random_state=0)
 clf = make_pipeline(sampler, LinearSVC())
 clf.fit(X, y)
 plot_decision_function(X, y, clf, ax2)
-ax2.set_title("Decision function for {}".format(sampler.__class__.__name__))
+ax2.set_title(f"Decision function for {sampler.__class__.__name__}")
 plot_resampling(X, y, sampler, ax3)
-ax3.set_title("Resampling using {}".format(sampler.__class__.__name__))
+ax3.set_title(f"Resampling using {sampler.__class__.__name__}")
 fig.tight_layout()
 
 ###############################################################################
@@ -144,14 +144,14 @@ X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
 clf = LinearSVC().fit(X, y)
 plot_decision_function(X, y, clf, ax1)
-ax1.set_title("Linear SVC with y={}".format(Counter(y)))
+ax1.set_title(f"Linear SVC with y={Counter(y)}")
 sampler = RandomUnderSampler(random_state=0)
 clf = make_pipeline(sampler, LinearSVC())
 clf.fit(X, y)
 plot_decision_function(X, y, clf, ax2)
-ax2.set_title("Decision function for {}".format(sampler.__class__.__name__))
+ax2.set_title(f"Decision function for {sampler.__class__.__name__}")
 plot_resampling(X, y, sampler, ax3)
-ax3.set_title("Resampling using {}".format(sampler.__class__.__name__))
+ax3.set_title(f"Resampling using {sampler.__class__.__name__}")
 fig.tight_layout()
 
 ###############################################################################
@@ -176,14 +176,10 @@ for ax, sampler in zip(
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
     ax[0].set_title(
-        "Decision function for {}-{}".format(
-            sampler.__class__.__name__, sampler.version
-        )
+        f"Decision function for {sampler.__class__.__name__}-{sampler.version}"
     )
     plot_resampling(X, y, sampler, ax[1])
-    ax[1].set_title(
-        "Resampling using {}-{}".format(sampler.__class__.__name__, sampler.version)
-    )
+    ax[1].set_title(f"Resampling using {sampler.__class__.__name__}-{sampler.version}")
 fig.tight_layout()
 
 ###############################################################################
@@ -209,9 +205,9 @@ for ax, sampler in zip(
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
-    ax[0].set_title("Decision function for {}".format(sampler.__class__.__name__))
+    ax[0].set_title(f"Decision function for {sampler.__class__.__name__}")
     plot_resampling(X, y, sampler, ax[1])
-    ax[1].set_title("Resampling using {}".format(sampler.__class__.__name__))
+    ax[1].set_title(f"Resampling using {sampler.__class__.__name__}")
 fig.tight_layout()
 
 ###############################################################################
@@ -238,9 +234,9 @@ for ax, sampler in zip(
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
-    ax[0].set_title("Decision function for {}".format(sampler.__class__.__name__))
+    ax[0].set_title(f"Decision function for {sampler.__class__.__name__}")
     plot_resampling(X, y, sampler, ax[1])
-    ax[1].set_title("Resampling using {}".format(sampler.__class__.__name__))
+    ax[1].set_title(f"Resampling using {sampler.__class__.__name__}")
 fig.tight_layout()
 
 ###############################################################################
@@ -253,16 +249,17 @@ X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
 clf = LinearSVC().fit(X, y)
 plot_decision_function(X, y, clf, ax1)
-ax1.set_title("Linear SVC with y={}".format(Counter(y)))
+ax1.set_title(f"Linear SVC with y={Counter(y)}")
 sampler = InstanceHardnessThreshold(
-    random_state=0, estimator=LogisticRegression(solver="lbfgs", multi_class="auto"),
+    random_state=0,
+    estimator=LogisticRegression(solver="lbfgs", multi_class="auto"),
 )
 clf = make_pipeline(sampler, LinearSVC())
 clf.fit(X, y)
 plot_decision_function(X, y, clf, ax2)
-ax2.set_title("Decision function for {}".format(sampler.__class__.__name__))
+ax2.set_title(f"Decision function for {sampler.__class__.__name__}")
 plot_resampling(X, y, sampler, ax3)
-ax3.set_title("Resampling using {}".format(sampler.__class__.__name__))
+ax3.set_title(f"Resampling using {sampler.__class__.__name__}")
 fig.tight_layout()
 
 plt.show()

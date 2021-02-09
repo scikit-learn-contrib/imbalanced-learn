@@ -75,16 +75,13 @@ def check_balanced_batch_generator_tf_1_X_X(dataset, sampler):
             for i in range(steps_per_epoch):
                 X_batch, y_batch = next(training_generator)
                 sess.run(
-                    [train_op, loss], feed_dict={data: X_batch, targets: y_batch},
+                    [train_op, loss],
+                    feed_dict={data: X_batch, targets: y_batch},
                 )
 
             # For each epoch, run accuracy on train and test
             predicts_train = sess.run(predict, feed_dict={data: X})
-            print(
-                "epoch: {} train accuracy: {:.3f}".format(
-                    e, accuracy(y, predicts_train)
-                )
-            )
+            print(f"epoch: {e} train accuracy: {accuracy(y, predicts_train):.3f}")
 
 
 def check_balanced_batch_generator_tf_2_X_X_compat_1_X_X(dataset, sampler):
@@ -141,16 +138,13 @@ def check_balanced_batch_generator_tf_2_X_X_compat_1_X_X(dataset, sampler):
             for i in range(steps_per_epoch):
                 X_batch, y_batch = next(training_generator)
                 sess.run(
-                    [train_op, loss], feed_dict={data: X_batch, targets: y_batch},
+                    [train_op, loss],
+                    feed_dict={data: X_batch, targets: y_batch},
                 )
 
             # For each epoch, run accuracy on train and test
             predicts_train = sess.run(predict, feed_dict={data: X})
-            print(
-                "epoch: {} train accuracy: {:.3f}".format(
-                    e, accuracy(y, predicts_train)
-                )
-            )
+            print(f"epoch: {e} train accuracy: {accuracy(y, predicts_train):.3f}")
 
 
 @pytest.mark.parametrize("sampler", [None, NearMiss(), RandomOverSampler()])

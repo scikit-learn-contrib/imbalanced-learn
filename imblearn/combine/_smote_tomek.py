@@ -111,8 +111,8 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
                 self.smote_ = clone(self.smote)
             else:
                 raise ValueError(
-                    "smote needs to be a SMOTE object."
-                    "Got {} instead.".format(type(self.smote))
+                    f"smote needs to be a SMOTE object."
+                    f"Got {type(self.smote)} instead."
                 )
         # Otherwise create a default SMOTE
         else:
@@ -127,8 +127,8 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
                 self.tomek_ = clone(self.tomek)
             else:
                 raise ValueError(
-                    "tomek needs to be a TomekLinks object."
-                    "Got {} instead.".format(type(self.tomek))
+                    f"tomek needs to be a TomekLinks object."
+                    f"Got {type(self.tomek)} instead."
                 )
         # Otherwise create a default TomekLinks
         else:

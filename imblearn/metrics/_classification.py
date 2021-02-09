@@ -287,7 +287,13 @@ def sensitivity_specificity_support(
 
 @_deprecate_positional_args
 def sensitivity_score(
-    y_true, y_pred, *, labels=None, pos_label=1, average="binary", sample_weight=None,
+    y_true,
+    y_pred,
+    *,
+    labels=None,
+    pos_label=1,
+    average="binary",
+    sample_weight=None,
 ):
     """Compute the sensitivity
 
@@ -382,7 +388,13 @@ def sensitivity_score(
 
 @_deprecate_positional_args
 def specificity_score(
-    y_true, y_pred, *, labels=None, pos_label=1, average="binary", sample_weight=None,
+    y_true,
+    y_pred,
+    *,
+    labels=None,
+    pos_label=1,
+    average="binary",
+    sample_weight=None,
 ):
     """Compute the specificity
 
@@ -721,10 +733,10 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
             prohibitied_y_pred = set(["y_score", "y_prob", "y2"])
             if prohibitied_y_pred.intersection(params_scoring_func):
                 raise AttributeError(
-                    "The function {} has an unsupported"
-                    " attribute. Metric with`y_pred` are the"
-                    " only supported metrics is the only"
-                    " supported.".format(scoring_func.__name__)
+                    f"The function {scoring_func.__name__} has an unsupported"
+                    f" attribute. Metric with`y_pred` are the"
+                    f" only supported metrics is the only"
+                    f" supported."
                 )
 
             args_scoring_func = signature_scoring_func.bind(*args, **kwargs)
@@ -897,22 +909,34 @@ def classification_report_imbalanced(
         labels=labels,
         average=None,
         sample_weight=sample_weight,
-        zero_division=zero_division
+        zero_division=zero_division,
     )
     # Specificity
     specificity = specificity_score(
-        y_true, y_pred, labels=labels, average=None, sample_weight=sample_weight,
+        y_true,
+        y_pred,
+        labels=labels,
+        average=None,
+        sample_weight=sample_weight,
     )
     # Geometric mean
     geo_mean = geometric_mean_score(
-        y_true, y_pred, labels=labels, average=None, sample_weight=sample_weight,
+        y_true,
+        y_pred,
+        labels=labels,
+        average=None,
+        sample_weight=sample_weight,
     )
     # Index balanced accuracy
     iba_gmean = make_index_balanced_accuracy(alpha=alpha, squared=True)(
         geometric_mean_score
     )
     iba = iba_gmean(
-        y_true, y_pred, labels=labels, average=None, sample_weight=sample_weight,
+        y_true,
+        y_pred,
+        labels=labels,
+        average=None,
+        sample_weight=sample_weight,
     )
 
     report_dict = {}
@@ -928,7 +952,7 @@ def classification_report_imbalanced(
                 f1[i],
                 geo_mean[i],
                 iba[i],
-            ]
+            ],
         ):
             values += ["{0:0.{1}f}".format(score_value, digits)]
             report_dict_label[score_name] = score_value
@@ -951,7 +975,7 @@ def classification_report_imbalanced(
             np.average(f1, weights=support),
             np.average(geo_mean, weights=support),
             np.average(iba, weights=support),
-        ]
+        ],
     ):
         values += ["{0:0.{1}f}".format(score_value, digits)]
         report_dict[f"avg_{score_name}"] = score_value

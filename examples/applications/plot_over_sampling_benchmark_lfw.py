@@ -68,7 +68,7 @@ samplers = [
 
 pipelines = [
     [
-        "{}-{}".format(sampler[0], classifier[0]),
+        f"{sampler[0]}-{classifier[0]}",
         make_pipeline(sampler[1], classifier[1]),
     ]
     for sampler in samplers
@@ -94,7 +94,7 @@ for name, pipeline in pipelines:
         mean_fpr,
         mean_tpr,
         linestyle="--",
-        label="{} (area = %0.2f)".format(name) % mean_auc,
+        label=f"{name} (area = {mean_auc:.2f})",
         lw=LW,
     )
 

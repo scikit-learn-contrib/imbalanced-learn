@@ -119,9 +119,9 @@ class OneSidedSelection(BaseCleaningSampler):
             self.estimator_ = clone(self.n_neighbors)
         else:
             raise ValueError(
-                "`n_neighbors` has to be a int or an object"
-                " inherited from KNeighborsClassifier."
-                " Got {} instead.".format(type(self.n_neighbors))
+                f"`n_neighbors` has to be a int or an object"
+                f" inherited from KNeighborsClassifier."
+                f" Got {type(self.n_neighbors)} instead."
             )
 
     def _fit_resample(self, X, y):

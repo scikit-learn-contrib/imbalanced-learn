@@ -42,7 +42,7 @@ X_test = testing_data.set_index("id")
 ###############################################################################
 # The data set is imbalanced and it will have an effect on the fitting.
 
-print("The data set is imbalanced: {}".format(Counter(y_train["target"])))
+print(f"The data set is imbalanced: {Counter(y_train['target'])}")
 
 ###############################################################################
 # Define the pre-processing pipeline
@@ -81,7 +81,11 @@ categorical_pipeline = make_pipeline(
 preprocessor = ColumnTransformer(
     [
         ("numerical_preprocessing", numerical_pipeline, numerical_columns),
-        ("categorical_preprocessing", categorical_pipeline, categorical_columns,),
+        (
+            "categorical_preprocessing",
+            categorical_pipeline,
+            categorical_columns,
+        ),
     ],
     remainder="drop",
 )
@@ -141,7 +145,7 @@ def timeit(f):
         start_time = time.time()
         result = f(*args, **kwds)
         elapsed_time = time.time() - start_time
-        print("Elapsed computation time: {:.3f} secs".format(elapsed_time))
+        print(f"Elapsed computation time: {elapsed_time:.3f} secs")
         return (elapsed_time, result)
 
     return wrapper
@@ -227,7 +231,7 @@ df_results = pd.DataFrame(
 df_results = df_results.unstack().reset_index()
 
 df_time = pd.DataFrame(
-        {"Balanced model": cv_time_balanced, "Imbalanced model": cv_time_imbalanced}
+    {"Balanced model": cv_time_balanced, "Imbalanced model": cv_time_imbalanced}
 )
 df_time = df_time.unstack().reset_index()
 

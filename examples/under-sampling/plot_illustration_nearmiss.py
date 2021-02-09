@@ -63,10 +63,18 @@ X_majority = np.transpose(
 
 fig, ax = plt.subplots(1, 1, figsize=(6, 6))
 ax.scatter(
-    X_minority[:, 0], X_minority[:, 1], label="Minority class", s=200, marker="_",
+    X_minority[:, 0],
+    X_minority[:, 1],
+    label="Minority class",
+    s=200,
+    marker="_",
 )
 ax.scatter(
-    X_majority[:, 0], X_majority[:, 1], label="Majority class", s=200, marker="+",
+    X_majority[:, 0],
+    X_majority[:, 1],
+    label="Majority class",
+    s=200,
+    marker="+",
 )
 
 nearest_neighbors = NearestNeighbors(n_neighbors=3)
@@ -83,7 +91,7 @@ for positive_idx, (neighbors, distance, color) in enumerate(
             [X_majority[positive_idx, 1], X_minority[sample_idx, 1]],
             "--" + color,
             alpha=0.3,
-            label="Avg. dist.={:.2f}".format(distance) if make_plot == 0 else "",
+            label=f"Avg. dist.={distance:.2f}" if make_plot == 0 else "",
         )
 ax.set_title("NearMiss-1")
 make_plot_despine(ax)
@@ -101,10 +109,18 @@ make_plot_despine(ax)
 
 fig, ax = plt.subplots(1, 1, figsize=(6, 6))
 ax.scatter(
-    X_minority[:, 0], X_minority[:, 1], label="Minority class", s=200, marker="_",
+    X_minority[:, 0],
+    X_minority[:, 1],
+    label="Minority class",
+    s=200,
+    marker="_",
 )
 ax.scatter(
-    X_majority[:, 0], X_majority[:, 1], label="Majority class", s=200, marker="+",
+    X_majority[:, 0],
+    X_majority[:, 1],
+    label="Majority class",
+    s=200,
+    marker="+",
 )
 
 nearest_neighbors = NearestNeighbors(n_neighbors=X_minority.shape[0])
@@ -123,7 +139,7 @@ for positive_idx, (neighbors, distance, color) in enumerate(
             [X_majority[positive_idx, 1], X_minority[sample_idx, 1]],
             "--" + color,
             alpha=0.3,
-            label="Avg. dist.={:.2f}".format(distance) if make_plot == 0 else "",
+            label=f"Avg. dist.={distance:.2f}" if make_plot == 0 else "",
         )
 ax.set_title("NearMiss-2")
 make_plot_despine(ax)
@@ -140,10 +156,18 @@ make_plot_despine(ax)
 
 fig, ax = plt.subplots(1, 1, figsize=(6, 6))
 ax.scatter(
-    X_minority[:, 0], X_minority[:, 1], label="Minority class", s=200, marker="_",
+    X_minority[:, 0],
+    X_minority[:, 1],
+    label="Minority class",
+    s=200,
+    marker="_",
 )
 ax.scatter(
-    X_majority[:, 0], X_majority[:, 1], label="Majority class", s=200, marker="+",
+    X_majority[:, 0],
+    X_majority[:, 1],
+    label="Majority class",
+    s=200,
+    marker="+",
 )
 
 nearest_neighbors = NearestNeighbors(n_neighbors=3)
@@ -174,7 +198,7 @@ for positive_idx, (neighbors, distance, color) in enumerate(
             [X_majority[positive_idx, 1], X_minority[sample_idx, 1]],
             "--" + color,
             alpha=0.3,
-            label="Avg. dist.={:.2f}".format(distance) if make_plot == 0 else "",
+            label=f"Avg. dist.={distance:.2f}" if make_plot == 0 else "",
         )
 ax.set_title("NearMiss-3")
 make_plot_despine(ax)
