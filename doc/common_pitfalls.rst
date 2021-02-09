@@ -17,12 +17,10 @@ As mentioned in the scikit-learn documentation, data leakage occurs when
 information that would not be available at prediction time is used when
 building the model.
 
-In the resampling setting, there is two common pitfalls: (i) resample the
-**entire** dataset before splitting it into a train and a test partitions and
-(ii) resample both the train and test partitions.
-
-Resampling the entire dataset
------------------------------
+In the resampling setting, there is a common pitfall that corresponds to
+resample the **entire** dataset before splitting it into a train and a test
+partitions. Note that it would be equivalent to resample the train and test
+partitions as well.
 
 Such of a processing leads to two issues:
 
