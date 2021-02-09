@@ -194,7 +194,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
 
         if self.version not in (1, 2, 3):
             raise ValueError(
-                "Parameter `version` must be 1, 2 or 3, got" " {}".format(self.version)
+                "Parameter `version` must be 1, 2 or 3, got {}".format(self.version)
             )
 
     def _fit_resample(self, X, y):

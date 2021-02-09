@@ -218,23 +218,18 @@ for train_idx, valid_idx in skf.split(X_train, y_train):
 # Plot of the results and computation time
 ###############################################################################
 
-df_results = (
-    pd.DataFrame(
-        {
-            "Balanced model": cv_results_balanced,
-            "Imbalanced model": cv_results_imbalanced,
-        }
-    )
-    .unstack()
-    .reset_index()
+df_results = pd.DataFrame(
+    {
+        "Balanced model": cv_results_balanced,
+        "Imbalanced model": cv_results_imbalanced,
+    }
 )
-df_time = (
-    pd.DataFrame(
+df_results = df_results.unstack().reset_index()
+
+df_time = pd.DataFrame(
         {"Balanced model": cv_time_balanced, "Imbalanced model": cv_time_imbalanced}
-    )
-    .unstack()
-    .reset_index()
 )
+df_time = df_time.unstack().reset_index()
 
 import seaborn as sns
 import matplotlib.pyplot as plt

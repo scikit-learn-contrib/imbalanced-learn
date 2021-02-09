@@ -163,7 +163,7 @@ def _sampling_strategy_majority(y, sampling_type):
     """Returns sampling target by targeting the majority class only."""
     if sampling_type == "over-sampling":
         raise ValueError(
-            "'sampling_strategy'='majority' cannot be used with" " over-sampler."
+            "'sampling_strategy'='majority' cannot be used with over-sampler."
         )
     elif sampling_type == "under-sampling" or sampling_type == "clean-sampling":
         target_stats = _count_class_sample(y)
@@ -401,7 +401,7 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
             )
     else:
         raise ValueError(
-            "'clean-sampling' methods do let the user " "specify the sampling ratio."
+            "'clean-sampling' methods do let the user specify the sampling ratio."
         )
     return sampling_strategy_
 

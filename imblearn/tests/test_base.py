@@ -32,7 +32,7 @@ def test_function_sampler_reject_sparse():
     X_sparse = sparse.csr_matrix(X)
     sampler = FunctionSampler(accept_sparse=False)
     with pytest.raises(
-        TypeError, match="A sparse matrix was passed, " "but dense data is required",
+        TypeError, match="A sparse matrix was passed, but dense data is required",
     ):
         sampler.fit_resample(X_sparse, y)
 

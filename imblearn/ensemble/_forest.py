@@ -478,7 +478,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         if not self.bootstrap and self.oob_score:
             raise ValueError(
-                "Out of bag estimation only available" " if bootstrap=True"
+                "Out of bag estimation only available if bootstrap=True"
             )
 
         random_state = check_random_state(self.random_state)

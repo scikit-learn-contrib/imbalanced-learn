@@ -149,7 +149,7 @@ class Pipeline(pipeline.Pipeline):
 
             if isinstance(t, pipeline.Pipeline):
                 raise TypeError(
-                    "All intermediate steps of the chain should not be" " Pipelines"
+                    "All intermediate steps of the chain should not be Pipelines"
                 )
 
         # We allow last estimator to be None as an identity transformation

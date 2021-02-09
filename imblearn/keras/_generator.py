@@ -164,7 +164,7 @@ class BalancedBatchGenerator(*ParentClass):
         self.sampler_.fit_resample(self.X, self.y)
         if not hasattr(self.sampler_, "sample_indices_"):
             raise ValueError(
-                "'sampler' needs to have an attribute " "'sample_indices_'."
+                "'sampler' needs to have an attribute 'sample_indices_'."
             )
         self.indices_ = self.sampler_.sample_indices_
         # shuffle the indices since the sampler are packing them by class

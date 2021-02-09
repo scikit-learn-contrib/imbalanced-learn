@@ -204,7 +204,7 @@ def test_pipeline_init():
     # Check that we can't instantiate pipelines with objects without fit
     # method
     error_regex = (
-        "Last step of Pipeline should implement fit or be the " "string 'passthrough'"
+        "Last step of Pipeline should implement fit or be the string 'passthrough'"
     )
     with raises(TypeError, match=error_regex):
         Pipeline([("clf", NoFit())])
@@ -1225,7 +1225,7 @@ def test_score_samples_on_pipeline_without_score_samples():
     pipe.fit(X, y)
     with pytest.raises(
         AttributeError,
-        match="'LogisticRegression' object has no attribute " "'score_samples'",
+        match="'LogisticRegression' object has no attribute 'score_samples'",
     ):
         pipe.score_samples(X)
 
@@ -1233,7 +1233,7 @@ def test_score_samples_on_pipeline_without_score_samples():
 def test_pipeline_param_error():
     clf = make_pipeline(LogisticRegression())
     with pytest.raises(
-        ValueError, match="Pipeline.fit does not accept " "the sample_weight parameter",
+        ValueError, match="Pipeline.fit does not accept the sample_weight parameter",
     ):
         clf.fit([[0], [0]], [0, 1], sample_weight=[1, 1])
 

@@ -73,7 +73,7 @@ def balanced_batch_generator(
         sampler_ = clone(sampler)
     sampler_.fit_resample(X, y)
     if not hasattr(sampler_, "sample_indices_"):
-        raise ValueError("'sampler' needs to have an attribute " "'sample_indices_'.")
+        raise ValueError("'sampler' needs to have an attribute 'sample_indices_'.")
     indices = sampler_.sample_indices_
     # shuffle the indices since the sampler are packing them by class
     random_state.shuffle(indices)
