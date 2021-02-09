@@ -108,3 +108,4 @@ def test_function_resampler_fit():
 
     sampler = FunctionSampler(func=func, validate=False)
     sampler.fit(X, y)
+    sampler.fit_resample(X, y)

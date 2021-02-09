@@ -54,6 +54,10 @@ Bug fixes
   the targeted class.
   :pr:`769` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Fix a bug in :class:`imblearn.FunctionSampler` where validation was performed
+  even with `validate=False` when calling `fit`.
+  :pr:`790` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancements
 ............
 
