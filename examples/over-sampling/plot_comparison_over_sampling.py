@@ -279,15 +279,17 @@ print(X_resampled[-5:])
 ###############################################################################
 # ROSE section
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
+fig, axs = plt.subplots(1, 2, figsize=(20, 6))
 X, y = create_dataset(n_samples=10000, weights=(0.01, 0.05, 0.94))
+
 clf = LinearSVC().fit(X, y)
-plot_decision_function(X, y, clf, ax1)
-ax1.set_title(f"Linear SVC with y={Counter(y)}")
-pipe = make_pipeline(ROSE(random_state=0), LinearSVC())
-pipe.fit(X, y)
-plot_decision_function(X, y, pipe, ax2)
-ax2.set_title("Decision function for ROSE")
+plot_decision_function(X, y, clf, axs[0])
+axs[0].set_title(f"Linear SVC with y={Counter(y)}")
+sampler = ROSE()
+clf = make_pipeline(sampler, LinearSVC())
+clf.fit(X, y)
+plot_decision_function(X, y, clf, axs[1])
+axs[1].set_title(f"Decision function for {sampler.__class__.__name__}")
 fig.tight_layout()
 
 plt.show()
