@@ -45,6 +45,18 @@ The :func:`make_index_balanced_accuracy` :cite:`garcia2012effectiveness` can
 wrap any metric and give more importance to a specific class using the
 parameter ``alpha``.
 
+.. _macro_averaged_mean_absolute_error:
+
+Macro-Averaged Mean Absolute Error (MA-MAE)
+-------------------------------------------
+
+Ordinal classification is used when there is a rank among classes, for example
+levels of functionality or movie ratings.
+
+The :func:`macro_averaged_mean_absolute_error` :cite:`esuli2009ordinal` is used
+for imbalanced ordinal classification. The mean absolute error is computed for
+each class and averaged over classes, giving an equal weight to each class.
+
 .. _classification_report:
 
 Summary of important metrics

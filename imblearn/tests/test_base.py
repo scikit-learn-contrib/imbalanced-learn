@@ -94,3 +94,18 @@ def test_function_sampler_validate():
     y_pred = pipeline.fit(X, y).predict(X)
 
     assert type_of_target(y_pred) == 'continuous'
+
+
+def test_function_resampler_fit():
+    # Check that the validation is bypass when calling `fit`
+    # Non-regression test for:
+    # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/782
+    X = np.array([[1, np.nan], [2, 3], [np.inf, 4]])
+    y = np.array([0, 1, 1])
+
+    def func(X, y):
+        return X[:1], y[:1]
+
+    sampler = FunctionSampler(func=func, validate=False)
+    sampler.fit(X, y)
+    sampler.fit_resample(X, y)
