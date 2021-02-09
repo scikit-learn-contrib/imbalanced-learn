@@ -226,13 +226,9 @@ def sensitivity_specificity_support(
             # Pathological case
             true_sum = pred_sum = tp_sum = np.zeros(len(labels))
         if len(y_pred):
-            pred_sum = np.bincount(
-                y_pred, weights=sample_weight, minlength=len(labels)
-            )
+            pred_sum = np.bincount(y_pred, weights=sample_weight, minlength=len(labels))
         if len(y_true):
-            true_sum = np.bincount(
-                y_true, weights=sample_weight, minlength=len(labels)
-            )
+            true_sum = np.bincount(y_true, weights=sample_weight, minlength=len(labels))
 
         # Compute the true negative
         tn_sum = y_true.size - (pred_sum + true_sum - tp_sum)
@@ -630,10 +626,7 @@ def geometric_mean_score(
         else:
             n_labels = len(labels)
             labels = np.hstack(
-                [
-                    labels,
-                    np.setdiff1d(present_labels, labels, assume_unique=True),
-                ]
+                [labels, np.setdiff1d(present_labels, labels, assume_unique=True)]
             )
 
         le = LabelEncoder()
@@ -659,9 +652,7 @@ def geometric_mean_score(
             # Pathological case
             true_sum = tp_sum = np.zeros(len(labels))
         if len(y_true):
-            true_sum = np.bincount(
-                y_true, weights=sample_weight, minlength=len(labels)
-            )
+            true_sum = np.bincount(y_true, weights=sample_weight, minlength=len(labels))
 
         # Retain only selected labels
         indices = np.searchsorted(sorted_labels, labels[:n_labels])
@@ -669,9 +660,7 @@ def geometric_mean_score(
         true_sum = true_sum[indices]
 
         with np.errstate(divide="ignore", invalid="ignore"):
-            recall = _prf_divide(
-                tp_sum, true_sum, "recall", "true", None, "recall"
-            )
+            recall = _prf_divide(tp_sum, true_sum, "recall", "true", None, "recall")
         recall[recall == 0] = correction
 
         with np.errstate(divide="ignore", invalid="ignore"):
@@ -744,17 +733,15 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
             prohibitied_y_pred = set(["y_score", "y_prob", "y2"])
             if prohibitied_y_pred.intersection(params_scoring_func):
                 raise AttributeError(
-                    "The function {} has an unsupported"
-                    " attribute. Metric with`y_pred` are the"
-                    " only supported metrics is the only"
-                    " supported.".format(scoring_func.__name__)
+                    f"The function {scoring_func.__name__} has an unsupported"
+                    f" attribute. Metric with`y_pred` are the"
+                    f" only supported metrics is the only"
+                    f" supported."
                 )
 
             args_scoring_func = signature_scoring_func.bind(*args, **kwargs)
             args_scoring_func.apply_defaults()
-            _score = scoring_func(
-                *args_scoring_func.args, **args_scoring_func.kwargs
-            )
+            _score = scoring_func(*args_scoring_func.args, **args_scoring_func.kwargs)
             if squared:
                 _score = np.power(_score, 2)
 
@@ -764,9 +751,7 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
                 set(args_scoring_func.arguments.keys())
             )
 
-            args_sens_spec = {
-                k: args_scoring_func.arguments[k] for k in common_params
-            }
+            args_sens_spec = {k: args_scoring_func.arguments[k] for k in common_params}
 
             if scoring_func.__name__ == "geometric_mean_score":
                 if "average" in args_sens_spec:
@@ -924,7 +909,7 @@ def classification_report_imbalanced(
         labels=labels,
         average=None,
         sample_weight=sample_weight,
-        zero_division=zero_division
+        zero_division=zero_division,
     )
     # Specificity
     specificity = specificity_score(
@@ -967,7 +952,7 @@ def classification_report_imbalanced(
                 f1[i],
                 geo_mean[i],
                 iba[i],
-            ]
+            ],
         ):
             values += ["{0:0.{1}f}".format(score_value, digits)]
             report_dict_label[score_name] = score_value
@@ -990,7 +975,7 @@ def classification_report_imbalanced(
             np.average(f1, weights=support),
             np.average(geo_mean, weights=support),
             np.average(iba, weights=support),
-        ]
+        ],
     ):
         values += ["{0:0.{1}f}".format(score_value, digits)]
         report_dict[f"avg_{score_name}"] = score_value

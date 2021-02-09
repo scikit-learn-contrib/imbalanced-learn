@@ -88,9 +88,7 @@ def test_sample_regular_pass_smote_enn():
 
 def test_sample_regular_half():
     sampling_strategy = {0: 10, 1: 12}
-    smote = SMOTEENN(
-        sampling_strategy=sampling_strategy, random_state=RND_SEED
-    )
+    smote = SMOTEENN(sampling_strategy=sampling_strategy, random_state=RND_SEED)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
 
     X_gt = np.array(

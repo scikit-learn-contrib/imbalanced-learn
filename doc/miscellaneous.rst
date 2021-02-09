@@ -121,8 +121,7 @@ data and minimizing the loss previously defined::
   ...         # For each epoch, run accuracy on train and test
   ...         feed_dict = dict()
   ...         predicts_train = sess.run(predict, feed_dict={data: X})
-  ...         print("epoch: {} train accuracy: {:.3f}"
-  ...               .format(e, accuracy(y, predicts_train)))
+  ...         print(f"epoch: {e} train accuracy: {accuracy(y, predicts_train):.3f}")
   ... # doctest: +ELLIPSIS
   Starting training
   [...

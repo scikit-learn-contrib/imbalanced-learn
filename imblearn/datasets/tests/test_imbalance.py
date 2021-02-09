@@ -55,19 +55,23 @@ def test_make_imbalance_dict(iris, sampling_strategy, expected_counts):
     assert Counter(y_) == expected_counts
 
 
-@pytest.mark.parametrize("as_frame", [True, False], ids=['dataframe', 'array'])
+@pytest.mark.parametrize("as_frame", [True, False], ids=["dataframe", "array"])
 @pytest.mark.parametrize(
     "sampling_strategy, expected_counts",
     [
-        ({'Iris-setosa': 10, 'Iris-versicolor': 20, 'Iris-virginica': 30},
-         {'Iris-setosa': 10, 'Iris-versicolor': 20, 'Iris-virginica': 30}),
-        ({'Iris-setosa': 10, 'Iris-versicolor': 20},
-         {'Iris-setosa': 10, 'Iris-versicolor': 20, 'Iris-virginica': 50}),
+        (
+            {"Iris-setosa": 10, "Iris-versicolor": 20, "Iris-virginica": 30},
+            {"Iris-setosa": 10, "Iris-versicolor": 20, "Iris-virginica": 30},
+        ),
+        (
+            {"Iris-setosa": 10, "Iris-versicolor": 20},
+            {"Iris-setosa": 10, "Iris-versicolor": 20, "Iris-virginica": 50},
+        ),
     ],
 )
 def test_make_imbalanced_iris(as_frame, sampling_strategy, expected_counts):
     pytest.importorskip("pandas")
-    X, y = fetch_openml('iris', version=1, return_X_y=True, as_frame=as_frame)
+    X, y = fetch_openml("iris", version=1, return_X_y=True, as_frame=as_frame)
     X_res, y_res = make_imbalance(X, y, sampling_strategy=sampling_strategy)
     if as_frame:
         assert hasattr(X_res, "loc")

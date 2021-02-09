@@ -32,7 +32,6 @@ RANDOM_STATE = 42
 
 
 class DummySampler:
-
     def sample(self, X, y):
         return X, y
 
@@ -58,18 +57,20 @@ y = data.target[idxs]
 y[y == majority_person] = 0
 y[y == minority_person] = 1
 
-classifier = ['3NN', neighbors.KNeighborsClassifier(3)]
+classifier = ["3NN", neighbors.KNeighborsClassifier(3)]
 
 samplers = [
-    ['Standard', DummySampler()],
-    ['ADASYN', ADASYN(random_state=RANDOM_STATE)],
-    ['ROS', RandomOverSampler(random_state=RANDOM_STATE)],
-    ['SMOTE', SMOTE(random_state=RANDOM_STATE)],
+    ["Standard", DummySampler()],
+    ["ADASYN", ADASYN(random_state=RANDOM_STATE)],
+    ["ROS", RandomOverSampler(random_state=RANDOM_STATE)],
+    ["SMOTE", SMOTE(random_state=RANDOM_STATE)],
 ]
 
 pipelines = [
-    ['{}-{}'.format(sampler[0], classifier[0]),
-     make_pipeline(sampler[1], classifier[1])]
+    [
+        f"{sampler[0]}-{classifier[0]}",
+        make_pipeline(sampler[1], classifier[1]),
+    ]
     for sampler in samplers
 ]
 
@@ -89,24 +90,28 @@ for name, pipeline in pipelines:
     mean_tpr /= cv.get_n_splits(X, y)
     mean_tpr[-1] = 1.0
     mean_auc = auc(mean_fpr, mean_tpr)
-    plt.plot(mean_fpr, mean_tpr, linestyle='--',
-             label='{} (area = %0.2f)'.format(name) % mean_auc, lw=LW)
+    plt.plot(
+        mean_fpr,
+        mean_tpr,
+        linestyle="--",
+        label=f"{name} (area = {mean_auc:.2f})",
+        lw=LW,
+    )
 
-plt.plot([0, 1], [0, 1], linestyle='--', lw=LW, color='k',
-         label='Luck')
+plt.plot([0, 1], [0, 1], linestyle="--", lw=LW, color="k", label="Luck")
 
 # make nice plotting
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
 ax.get_xaxis().tick_bottom()
 ax.get_yaxis().tick_left()
-ax.spines['left'].set_position(('outward', 10))
-ax.spines['bottom'].set_position(('outward', 10))
+ax.spines["left"].set_position(("outward", 10))
+ax.spines["bottom"].set_position(("outward", 10))
 plt.xlim([0, 1])
 plt.ylim([0, 1])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Receiver operating characteristic example')
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("Receiver operating characteristic example")
 
 plt.legend(loc="lower right")
 

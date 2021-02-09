@@ -204,17 +204,14 @@ def test_pipeline_init():
     # Check that we can't instantiate pipelines with objects without fit
     # method
     error_regex = (
-        "Last step of Pipeline should implement fit or be the "
-        "string 'passthrough'"
+        "Last step of Pipeline should implement fit or be the string 'passthrough'"
     )
     with raises(TypeError, match=error_regex):
         Pipeline([("clf", NoFit())])
     # Smoke test with only an estimator
     clf = NoTrans()
     pipe = Pipeline([("svc", clf)])
-    expected = dict(
-        svc__a=None, svc__b=None, svc=clf, **pipe.get_params(deep=False)
-    )
+    expected = dict(svc__a=None, svc__b=None, svc=clf, **pipe.get_params(deep=False))
     assert pipe.get_params(deep=True) == expected
 
     # Check that params are set
@@ -356,10 +353,7 @@ def test_pipeline_methods_preprocessing_svm():
     scaler = StandardScaler()
     pca = PCA(n_components=2, svd_solver="randomized", whiten=True)
     clf = SVC(
-        gamma="scale",
-        probability=True,
-        random_state=0,
-        decision_function_shape="ovr",
+        gamma="scale", probability=True, random_state=0, decision_function_shape="ovr",
     )
 
     for preprocessing in [scaler, pca]:
@@ -399,9 +393,7 @@ def test_fit_predict_on_pipeline():
     separate_pred = km.fit_predict(scaled)
 
     # use a pipeline to do the transform and clustering in one step
-    pipe = Pipeline(
-        [("scaler", scaler_for_pipeline), ("Kmeans", km_for_pipeline)]
-    )
+    pipe = Pipeline([("scaler", scaler_for_pipeline), ("Kmeans", km_for_pipeline)])
     pipeline_pred = pipe.fit_predict(iris.data)
 
     assert_array_almost_equal(pipeline_pred, separate_pred)
@@ -677,9 +669,7 @@ def test_pipeline_memory_transformer():
         clf = SVC(gamma="scale", probability=True, random_state=0)
         transf = DummyTransf()
         pipe = Pipeline([("transf", clone(transf)), ("svc", clf)])
-        cached_pipe = Pipeline(
-            [("transf", transf), ("svc", clf)], memory=memory
-        )
+        cached_pipe = Pipeline([("transf", transf), ("svc", clf)], memory=memory)
 
         # Memoize the transformer at the first fit
         cached_pipe.fit(X, y)
@@ -689,13 +679,10 @@ def test_pipeline_memory_transformer():
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
         assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
-        assert_array_equal(
-            pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X)
-        )
+        assert_array_equal(pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(
-            pipe.named_steps["transf"].means_,
-            cached_pipe.named_steps["transf"].means_,
+            pipe.named_steps["transf"].means_, cached_pipe.named_steps["transf"].means_,
         )
         assert not hasattr(transf, "means_")
         # Check that we are reading the cache while fitting
@@ -704,13 +691,10 @@ def test_pipeline_memory_transformer():
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
         assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
-        assert_array_equal(
-            pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X)
-        )
+        assert_array_equal(pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(
-            pipe.named_steps["transf"].means_,
-            cached_pipe.named_steps["transf"].means_,
+            pipe.named_steps["transf"].means_, cached_pipe.named_steps["transf"].means_,
         )
         assert cached_pipe.named_steps["transf"].timestamp_ == expected_ts
         # Create a new pipeline with cloned estimators
@@ -724,9 +708,7 @@ def test_pipeline_memory_transformer():
 
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe_2.predict(X))
-        assert_array_equal(
-            pipe.predict_proba(X), cached_pipe_2.predict_proba(X)
-        )
+        assert_array_equal(pipe.predict_proba(X), cached_pipe_2.predict_proba(X))
         assert_array_equal(
             pipe.predict_log_proba(X), cached_pipe_2.predict_log_proba(X)
         )
@@ -760,9 +742,7 @@ def test_pipeline_memory_sampler():
         clf = SVC(gamma="scale", probability=True, random_state=0)
         transf = DummySampler()
         pipe = Pipeline([("transf", clone(transf)), ("svc", clf)])
-        cached_pipe = Pipeline(
-            [("transf", transf), ("svc", clf)], memory=memory
-        )
+        cached_pipe = Pipeline([("transf", transf), ("svc", clf)], memory=memory)
 
         # Memoize the transformer at the first fit
         cached_pipe.fit(X, y)
@@ -772,13 +752,10 @@ def test_pipeline_memory_sampler():
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
         assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
-        assert_array_equal(
-            pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X)
-        )
+        assert_array_equal(pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(
-            pipe.named_steps["transf"].means_,
-            cached_pipe.named_steps["transf"].means_,
+            pipe.named_steps["transf"].means_, cached_pipe.named_steps["transf"].means_,
         )
         assert not hasattr(transf, "means_")
         # Check that we are reading the cache while fitting
@@ -787,13 +764,10 @@ def test_pipeline_memory_sampler():
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe.predict(X))
         assert_array_equal(pipe.predict_proba(X), cached_pipe.predict_proba(X))
-        assert_array_equal(
-            pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X)
-        )
+        assert_array_equal(pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(
-            pipe.named_steps["transf"].means_,
-            cached_pipe.named_steps["transf"].means_,
+            pipe.named_steps["transf"].means_, cached_pipe.named_steps["transf"].means_,
         )
         assert cached_pipe.named_steps["transf"].timestamp_ == expected_ts
         # Create a new pipeline with cloned estimators
@@ -807,9 +781,7 @@ def test_pipeline_memory_sampler():
 
         # Check that cached_pipe and pipe yield identical results
         assert_array_equal(pipe.predict(X), cached_pipe_2.predict(X))
-        assert_array_equal(
-            pipe.predict_proba(X), cached_pipe_2.predict_proba(X)
-        )
+        assert_array_equal(pipe.predict_proba(X), cached_pipe_2.predict_proba(X))
         assert_array_equal(
             pipe.predict_log_proba(X), cached_pipe_2.predict_log_proba(X)
         )
@@ -1141,9 +1113,7 @@ def test_pipeline_fit_then_sample_with_sampler_last_estimator():
     rus = RandomUnderSampler(random_state=42)
     enn = ENN()
     pipeline = make_pipeline(rus, enn)
-    X_fit_resample_resampled, y_fit_resample_resampled = pipeline.fit_resample(
-        X, y
-    )
+    X_fit_resample_resampled, y_fit_resample_resampled = pipeline.fit_resample(X, y)
     pipeline = make_pipeline(rus, enn)
     pipeline.fit(X, y)
     X_fit_then_sample_res, y_fit_then_sample_res = pipeline.fit_resample(X, y)
@@ -1168,9 +1138,7 @@ def test_pipeline_fit_then_sample_3_samplers_with_sampler_last_estimator():
     rus = RandomUnderSampler(random_state=42)
     enn = ENN()
     pipeline = make_pipeline(rus, enn, rus)
-    X_fit_resample_resampled, y_fit_resample_resampled = pipeline.fit_resample(
-        X, y
-    )
+    X_fit_resample_resampled, y_fit_resample_resampled = pipeline.fit_resample(X, y)
     pipeline = make_pipeline(rus, enn, rus)
     pipeline.fit(X, y)
     X_fit_then_sample_res, y_fit_then_sample_res = pipeline.fit_resample(X, y)
@@ -1182,9 +1150,7 @@ def test_make_pipeline_memory():
     cachedir = mkdtemp()
     try:
         memory = Memory(cachedir, verbose=10)
-        pipeline = make_pipeline(
-            DummyTransf(), SVC(gamma="scale"), memory=memory
-        )
+        pipeline = make_pipeline(DummyTransf(), SVC(gamma="scale"), memory=memory)
         assert pipeline.memory is memory
         pipeline = make_pipeline(DummyTransf(), SVC(gamma="scale"))
         assert pipeline.memory is None
@@ -1259,57 +1225,83 @@ def test_score_samples_on_pipeline_without_score_samples():
     pipe.fit(X, y)
     with pytest.raises(
         AttributeError,
-        match="'LogisticRegression' object has no attribute "
-        "'score_samples'",
+        match="'LogisticRegression' object has no attribute 'score_samples'",
     ):
         pipe.score_samples(X)
 
 
 def test_pipeline_param_error():
     clf = make_pipeline(LogisticRegression())
-    with pytest.raises(ValueError, match="Pipeline.fit does not accept "
-                                         "the sample_weight parameter"):
+    with pytest.raises(
+        ValueError, match="Pipeline.fit does not accept the sample_weight parameter",
+    ):
         clf.fit([[0], [0]], [0, 1], sample_weight=[1, 1])
 
 
-parameter_grid_test_verbose = ((est, pattern, method) for
-                               (est, pattern), method in itertools.product(
-    [
-     (Pipeline([('transf', Transf()), ('clf', FitParamT())]),
-      r'\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n'
-      r'\[Pipeline\].*\(step 2 of 2\) Processing clf.* total=.*\n$'),
-     (Pipeline([('transf', Transf()), ('noop', None),
-               ('clf', FitParamT())]),
-      r'\[Pipeline\].*\(step 1 of 3\) Processing transf.* total=.*\n'
-      r'\[Pipeline\].*\(step 2 of 3\) Processing noop.* total=.*\n'
-      r'\[Pipeline\].*\(step 3 of 3\) Processing clf.* total=.*\n$'),
-     (Pipeline([('transf', Transf()), ('noop', 'passthrough'),
-               ('clf', FitParamT())]),
-      r'\[Pipeline\].*\(step 1 of 3\) Processing transf.* total=.*\n'
-      r'\[Pipeline\].*\(step 2 of 3\) Processing noop.* total=.*\n'
-      r'\[Pipeline\].*\(step 3 of 3\) Processing clf.* total=.*\n$'),
-     (Pipeline([('transf', Transf()), ('clf', None)]),
-      r'\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n'
-      r'\[Pipeline\].*\(step 2 of 2\) Processing clf.* total=.*\n$'),
-     (Pipeline([('transf', None), ('mult', Mult())]),
-      r'\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n'
-      r'\[Pipeline\].*\(step 2 of 2\) Processing mult.* total=.*\n$'),
-     (Pipeline([('transf', 'passthrough'), ('mult', Mult())]),
-      r'\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n'
-      r'\[Pipeline\].*\(step 2 of 2\) Processing mult.* total=.*\n$'),
-     (FeatureUnion([('mult1', Mult()), ('mult2', Mult())]),
-      r'\[FeatureUnion\].*\(step 1 of 2\) Processing mult1.* total=.*\n'
-      r'\[FeatureUnion\].*\(step 2 of 2\) Processing mult2.* total=.*\n$'),
-     (FeatureUnion([('mult1', 'drop'), ('mult2', Mult()), ('mult3', 'drop')]),
-      r'\[FeatureUnion\].*\(step 1 of 1\) Processing mult2.* total=.*\n$')
-    ], ['fit', 'fit_transform', 'fit_predict'])
-    if hasattr(est, method) and not (
-        method == 'fit_transform' and hasattr(est, 'steps') and
-        isinstance(est.steps[-1][1], FitParamT))
+parameter_grid_test_verbose = (
+    (est, pattern, method)
+    for (est, pattern), method in itertools.product(
+        [
+            (
+                Pipeline([("transf", Transf()), ("clf", FitParamT())]),
+                r"\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n"
+                r"\[Pipeline\].*\(step 2 of 2\) Processing clf.* total=.*\n$",
+            ),
+            (
+                Pipeline([("transf", Transf()), ("noop", None), ("clf", FitParamT())]),
+                r"\[Pipeline\].*\(step 1 of 3\) Processing transf.* total=.*\n"
+                r"\[Pipeline\].*\(step 2 of 3\) Processing noop.* total=.*\n"
+                r"\[Pipeline\].*\(step 3 of 3\) Processing clf.* total=.*\n$",
+            ),
+            (
+                Pipeline(
+                    [
+                        ("transf", Transf()),
+                        ("noop", "passthrough"),
+                        ("clf", FitParamT()),
+                    ]
+                ),
+                r"\[Pipeline\].*\(step 1 of 3\) Processing transf.* total=.*\n"
+                r"\[Pipeline\].*\(step 2 of 3\) Processing noop.* total=.*\n"
+                r"\[Pipeline\].*\(step 3 of 3\) Processing clf.* total=.*\n$",
+            ),
+            (
+                Pipeline([("transf", Transf()), ("clf", None)]),
+                r"\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n"
+                r"\[Pipeline\].*\(step 2 of 2\) Processing clf.* total=.*\n$",
+            ),
+            (
+                Pipeline([("transf", None), ("mult", Mult())]),
+                r"\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n"
+                r"\[Pipeline\].*\(step 2 of 2\) Processing mult.* total=.*\n$",
+            ),
+            (
+                Pipeline([("transf", "passthrough"), ("mult", Mult())]),
+                r"\[Pipeline\].*\(step 1 of 2\) Processing transf.* total=.*\n"
+                r"\[Pipeline\].*\(step 2 of 2\) Processing mult.* total=.*\n$",
+            ),
+            (
+                FeatureUnion([("mult1", Mult()), ("mult2", Mult())]),
+                r"\[FeatureUnion\].*\(step 1 of 2\) Processing mult1.* total=.*\n"
+                r"\[FeatureUnion\].*\(step 2 of 2\) Processing mult2.* total=.*\n$",
+            ),
+            (
+                FeatureUnion([("mult1", "drop"), ("mult2", Mult()), ("mult3", "drop")]),
+                r"\[FeatureUnion\].*\(step 1 of 1\) Processing mult2.* total=.*\n$",
+            ),
+        ],
+        ["fit", "fit_transform", "fit_predict"],
+    )
+    if hasattr(est, method)
+    and not (
+        method == "fit_transform"
+        and hasattr(est, "steps")
+        and isinstance(est.steps[-1][1], FitParamT)
+    )
 )
 
 
-@pytest.mark.parametrize('est, pattern, method', parameter_grid_test_verbose)
+@pytest.mark.parametrize("est, pattern, method", parameter_grid_test_verbose)
 def test_verbose(est, method, pattern, capsys):
     func = getattr(est, method)
 
@@ -1318,7 +1310,7 @@ def test_verbose(est, method, pattern, capsys):
 
     est.set_params(verbose=False)
     func(X, y)
-    assert not capsys.readouterr().out, 'Got output for verbose=False'
+    assert not capsys.readouterr().out, "Got output for verbose=False"
 
     est.set_params(verbose=True)
     func(X, y)
@@ -1333,9 +1325,9 @@ def test_pipeline_score_samples_pca_lof():
     # Test that the score_samples method on pipeline yields same results as
     # applying transform and score_samples steps separately.
     rus = RandomUnderSampler()
-    pca = PCA(svd_solver='full', n_components='mle', whiten=True)
+    pca = PCA(svd_solver="full", n_components="mle", whiten=True)
     lof = LocalOutlierFactor(novelty=True)
-    pipe = Pipeline([('rus', rus), ('pca', pca), ('lof', lof)])
+    pipe = Pipeline([("rus", rus), ("pca", pca), ("lof", lof)])
     pipe.fit(X, y)
     # Check the shapes
     assert pipe.score_samples(X).shape == (X.shape[0],)

@@ -151,34 +151,7 @@ def test_renn_fit_resample():
         ]
     )
     y_gt = np.array(
-        [
-            0,
-            0,
-            0,
-            0,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-        ]
+        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     )
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
@@ -364,11 +337,7 @@ def test_renn_not_good_object():
 
 
 @pytest.mark.parametrize(
-    "max_iter, n_iter",
-    [
-        (2, 2),
-        (5, 3),
-    ],
+    "max_iter, n_iter", [(2, 2), (5, 3)],
 )
 def test_renn_iter_attribute(max_iter, n_iter):
     renn = RepeatedEditedNearestNeighbours(max_iter=max_iter)

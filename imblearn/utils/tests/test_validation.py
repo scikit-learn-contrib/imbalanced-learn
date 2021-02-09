@@ -73,9 +73,7 @@ def test_check_target_type_ova(target, output_target, is_ova):
 def test_check_sampling_strategy_warning():
     msg = "dict for cleaning methods is not supported"
     with pytest.raises(ValueError, match=msg):
-        check_sampling_strategy(
-            {1: 0, 2: 0, 3: 0}, multiclass_target, "clean-sampling"
-        )
+        check_sampling_strategy({1: 0, 2: 0, 3: 0}, multiclass_target, "clean-sampling")
 
 
 @pytest.mark.parametrize(
@@ -131,13 +129,9 @@ def test_check_sampling_strategy_error_wrong_string(
 ):
     with pytest.raises(
         ValueError,
-        match=(
-            "'{}' cannot be used with {}".format(sampling_strategy, err_msg)
-        ),
+        match=("'{}' cannot be used with {}".format(sampling_strategy, err_msg)),
     ):
-        check_sampling_strategy(
-            sampling_strategy, np.array([1, 2, 3]), sampling_type
-        )
+        check_sampling_strategy(sampling_strategy, np.array([1, 2, 3]), sampling_type)
 
 
 @pytest.mark.parametrize(
@@ -148,9 +142,7 @@ def test_check_sampling_strategy_error_wrong_string(
         ([10], "clean-sampling"),
     ],
 )
-def test_sampling_strategy_class_target_unknown(
-    sampling_strategy, sampling_method
-):
+def test_sampling_strategy_class_target_unknown(sampling_strategy, sampling_method):
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     with pytest.raises(ValueError, match="are not present in the data."):
         check_sampling_strategy(sampling_strategy, y, sampling_method)
@@ -195,9 +187,7 @@ def test_sampling_strategy_float_error_not_binary():
         check_sampling_strategy(sampling_strategy, y, "under-sampling")
 
 
-@pytest.mark.parametrize(
-    "sampling_method", ["over-sampling", "under-sampling"]
-)
+@pytest.mark.parametrize("sampling_method", ["over-sampling", "under-sampling"])
 def test_sampling_strategy_list_error_not_clean_sampling(sampling_method):
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     with pytest.raises(ValueError, match="cannot be a list for samplers"):
@@ -282,8 +272,7 @@ def test_sampling_strategy_callable_args():
         """samples such that each class will be affected by the multiplier."""
         target_stats = Counter(y)
         return {
-            key: int(values * multiplier[key])
-            for key, values in target_stats.items()
+            key: int(values * multiplier[key]) for key, values in target_stats.items()
         }
 
     sampling_strategy_ = check_sampling_strategy(
@@ -295,16 +284,8 @@ def test_sampling_strategy_callable_args():
 @pytest.mark.parametrize(
     "sampling_strategy, sampling_type, expected_result",
     [
-        (
-            {3: 25, 1: 25, 2: 25},
-            "under-sampling",
-            OrderedDict({1: 25, 2: 25, 3: 25}),
-        ),
-        (
-            {3: 100, 1: 100, 2: 100},
-            "over-sampling",
-            OrderedDict({1: 50, 2: 0, 3: 75}),
-        ),
+        ({3: 25, 1: 25, 2: 25}, "under-sampling", OrderedDict({1: 25, 2: 25, 3: 25}),),
+        ({3: 100, 1: 100, 2: 100}, "over-sampling", OrderedDict({1: 50, 2: 0, 3: 75}),),
     ],
 )
 def test_sampling_strategy_check_order(
@@ -313,9 +294,7 @@ def test_sampling_strategy_check_order(
     # We pass on purpose a non sorted dictionary and check that the resulting
     # dictionary is sorted. Refer to issue #428.
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    sampling_strategy_ = check_sampling_strategy(
-        sampling_strategy, y, sampling_type
-    )
+    sampling_strategy_ = check_sampling_strategy(sampling_strategy, y, sampling_type)
     assert sampling_strategy_ == expected_result
 
 
@@ -347,7 +326,7 @@ def test_arrays_transformer_pandas():
 
     X_df = pd.DataFrame(X, columns=["a", "b"])
     X_df = X_df.astype(int)
-    y_df = pd.DataFrame(y, columns=["target", ])
+    y_df = pd.DataFrame(y, columns=["target"])
     y_df = y_df.astype(int)
     y_s = pd.Series(y, name="target", dtype=int)
 
@@ -370,25 +349,21 @@ def test_arrays_transformer_pandas():
 
 
 def test_deprecate_positional_args_warns_for_function():
-
     @_deprecate_positional_args
     def f1(a, b, *, c=1, d=1):
         pass
 
-    with pytest.warns(FutureWarning,
-                      match=r"Pass c=3 as keyword args"):
+    with pytest.warns(FutureWarning, match=r"Pass c=3 as keyword args"):
         f1(1, 2, 3)
 
-    with pytest.warns(FutureWarning,
-                      match=r"Pass c=3, d=4 as keyword args"):
+    with pytest.warns(FutureWarning, match=r"Pass c=3, d=4 as keyword args"):
         f1(1, 2, 3, 4)
 
     @_deprecate_positional_args
     def f2(a=1, *, b=1, c=1, d=1):
         pass
 
-    with pytest.warns(FutureWarning,
-                      match=r"Pass b=2 as keyword args"):
+    with pytest.warns(FutureWarning, match=r"Pass b=2 as keyword args"):
         f2(1, 2)
 
     # The * is place before a keyword only argument without a default value
@@ -396,6 +371,5 @@ def test_deprecate_positional_args_warns_for_function():
     def f3(a, *, b, c=1, d=1):
         pass
 
-    with pytest.warns(FutureWarning,
-                      match=r"Pass b=2 as keyword args"):
+    with pytest.warns(FutureWarning, match=r"Pass b=2 as keyword args"):
         f3(1, 2)

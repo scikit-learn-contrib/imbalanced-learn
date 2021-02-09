@@ -132,8 +132,8 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
 
         if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
             raise ValueError(
-                "'threshold_cleaning' is a value between 0 and 1."
-                " Got {} instead.".format(self.threshold_cleaning)
+                f"'threshold_cleaning' is a value between 0 and 1."
+                f" Got {self.threshold_cleaning} instead."
             )
 
     def _fit_resample(self, X, y):

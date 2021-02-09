@@ -80,7 +80,7 @@ class IssueRole(object):
     EXTERNAL_REPO_REGEX = re.compile(r"^(\w+)/(.+)([#@])([\w]+)$")
 
     def __init__(
-        self, uri_config_option, format_kwarg, github_uri_template, format_text=None
+        self, uri_config_option, format_kwarg, github_uri_template, format_text=None,
     ):
         self.uri_config_option = uri_config_option
         self.format_kwarg = format_kwarg
@@ -103,7 +103,7 @@ class IssueRole(object):
                 )
             path = name_map.get(name)
             ref = "https://github.com/{issues_github_path}/{path}/{n}".format(
-                issues_github_path="{}/{}".format(username, repo), path=path, n=issue
+                issues_github_path="{}/{}".format(username, repo), path=path, n=issue,
             )
             formatted_issue = self.format_text(issue).lstrip("#")
             text = "{username}/{repo}{symbol}{formatted_issue}".format(**locals())

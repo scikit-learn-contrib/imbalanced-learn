@@ -35,10 +35,14 @@ f, axs = plt.subplots(2, 3)
 axs = [a for ax in axs for a in ax]
 
 X.plot.scatter(
-    x='feature 1', y='feature 2', c=y, ax=axs[0], colormap='viridis',
-    colorbar=False
+    x="feature 1",
+    y="feature 2",
+    c=y,
+    ax=axs[0],
+    colormap="viridis",
+    colorbar=False,
 )
-axs[0].set_title('Original set')
+axs[0].set_title("Original set")
 
 
 def ratio_func(y, multiplier, minority_class):
@@ -50,14 +54,21 @@ multipliers = [0.9, 0.75, 0.5, 0.25, 0.1]
 for i, multiplier in enumerate(multipliers, start=1):
     ax = axs[i]
 
-    X_, y_ = make_imbalance(X, y, sampling_strategy=ratio_func,
-                            **{"multiplier": multiplier,
-                               "minority_class": 1})
-    X_.plot.scatter(
-        x='feature 1', y='feature 2', c=y_, ax=ax, colormap='viridis',
-        colorbar=False
+    X_, y_ = make_imbalance(
+        X,
+        y,
+        sampling_strategy=ratio_func,
+        **{"multiplier": multiplier, "minority_class": 1},
     )
-    ax.set_title('Sampling ratio = {}'.format(multiplier))
+    X_.plot.scatter(
+        x="feature 1",
+        y="feature 2",
+        c=y_,
+        ax=ax,
+        colormap="viridis",
+        colorbar=False,
+    )
+    ax.set_title(f"Sampling ratio = {multiplier}")
 
 plt.tight_layout()
 plt.show()

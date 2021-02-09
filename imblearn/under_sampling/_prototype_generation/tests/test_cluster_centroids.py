@@ -40,9 +40,7 @@ def test_fit_resample_check_voting(X, expected_voting):
 
 def test_fit_resample_auto():
     sampling_strategy = "auto"
-    cc = ClusterCentroids(
-        sampling_strategy=sampling_strategy, random_state=RND_SEED
-    )
+    cc = ClusterCentroids(sampling_strategy=sampling_strategy, random_state=RND_SEED)
     X_resampled, y_resampled = cc.fit_resample(X, Y)
     assert X_resampled.shape == (6, 2)
     assert y_resampled.shape == (6,)
@@ -50,9 +48,7 @@ def test_fit_resample_auto():
 
 def test_fit_resample_half():
     sampling_strategy = {0: 3, 1: 6}
-    cc = ClusterCentroids(
-        sampling_strategy=sampling_strategy, random_state=RND_SEED
-    )
+    cc = ClusterCentroids(sampling_strategy=sampling_strategy, random_state=RND_SEED)
     X_resampled, y_resampled = cc.fit_resample(X, Y)
     assert X_resampled.shape == (9, 2)
     assert y_resampled.shape == (9,)
@@ -74,9 +70,7 @@ def test_fit_resample_object():
     sampling_strategy = "auto"
     cluster = KMeans(random_state=RND_SEED)
     cc = ClusterCentroids(
-        sampling_strategy=sampling_strategy,
-        random_state=RND_SEED,
-        estimator=cluster,
+        sampling_strategy=sampling_strategy, random_state=RND_SEED, estimator=cluster,
     )
 
     X_resampled, y_resampled = cc.fit_resample(X, Y)

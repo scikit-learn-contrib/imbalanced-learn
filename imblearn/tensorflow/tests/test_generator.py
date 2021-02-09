@@ -81,11 +81,7 @@ def check_balanced_batch_generator_tf_1_X_X(dataset, sampler):
 
             # For each epoch, run accuracy on train and test
             predicts_train = sess.run(predict, feed_dict={data: X})
-            print(
-                "epoch: {} train accuracy: {:.3f}".format(
-                    e, accuracy(y, predicts_train)
-                )
-            )
+            print(f"epoch: {e} train accuracy: {accuracy(y, predicts_train):.3f}")
 
 
 def check_balanced_batch_generator_tf_2_X_X_compat_1_X_X(dataset, sampler):
@@ -148,16 +144,12 @@ def check_balanced_batch_generator_tf_2_X_X_compat_1_X_X(dataset, sampler):
 
             # For each epoch, run accuracy on train and test
             predicts_train = sess.run(predict, feed_dict={data: X})
-            print(
-                "epoch: {} train accuracy: {:.3f}".format(
-                    e, accuracy(y, predicts_train)
-                )
-            )
+            print(f"epoch: {e} train accuracy: {accuracy(y, predicts_train):.3f}")
 
 
 @pytest.mark.parametrize("sampler", [None, NearMiss(), RandomOverSampler()])
 def test_balanced_batch_generator(data, sampler):
-    if LooseVersion(tf.__version__) < '2':
+    if LooseVersion(tf.__version__) < "2":
         check_balanced_batch_generator_tf_1_X_X(data, sampler)
     else:
         check_balanced_batch_generator_tf_2_X_X_compat_1_X_X(data, sampler)

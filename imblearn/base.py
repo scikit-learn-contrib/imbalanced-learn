@@ -82,8 +82,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         output = self._fit_resample(X, y)
 
-        y_ = (label_binarize(output[1], np.unique(y))
-              if binarize_y else output[1])
+        y_ = label_binarize(output[1], np.unique(y)) if binarize_y else output[1]
 
         X_, y_ = arrays_transformer.transform(output[0], y_)
         return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
@@ -128,9 +127,7 @@ class BaseSampler(SamplerMixin):
         if accept_sparse is None:
             accept_sparse = ["csr", "csc"]
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X, y, reset=True, accept_sparse=accept_sparse
-        )
+        X, y = self._validate_data(X, y, reset=True, accept_sparse=accept_sparse)
         return X, y, binarize_y
 
 
@@ -204,16 +201,14 @@ class FunctionSampler(BaseSampler):
     ...                           kw_args={'sampling_strategy': 'auto',
     ...                                    'random_state': 0})
     >>> X_res, y_res = sampler.fit_resample(X, y)
-    >>> print('Resampled dataset shape {}'.format(
-    ...     sorted(Counter(y_res).items())))
+    >>> print(f'Resampled dataset shape {sorted(Counter(y_res).items())}')
     Resampled dataset shape [(0, 100), (1, 100)]
     """
 
     _sampling_type = "bypass"
 
     @_deprecate_positional_args
-    def __init__(self, *, func=None, accept_sparse=True, kw_args=None,
-                 validate=True):
+    def __init__(self, *, func=None, accept_sparse=True, kw_args=None, validate=True):
         super().__init__()
         self.func = func
         self.accept_sparse = accept_sparse
@@ -242,9 +237,7 @@ class FunctionSampler(BaseSampler):
         # we need to overwrite SamplerMixin.fit to bypass the validation
         if self.validate:
             check_classification_targets(y)
-            X, y, _ = self._check_X_y(
-                X, y, accept_sparse=self.accept_sparse
-            )
+            X, y, _ = self._check_X_y(X, y, accept_sparse=self.accept_sparse)
 
         self.sampling_strategy_ = check_sampling_strategy(
             self.sampling_strategy, y, self._sampling_type
@@ -276,9 +269,7 @@ class FunctionSampler(BaseSampler):
 
         if self.validate:
             check_classification_targets(y)
-            X, y, binarize_y = self._check_X_y(
-                X, y, accept_sparse=self.accept_sparse
-            )
+            X, y, binarize_y = self._check_X_y(X, y, accept_sparse=self.accept_sparse)
 
         self.sampling_strategy_ = check_sampling_strategy(
             self.sampling_strategy, y, self._sampling_type
@@ -288,8 +279,7 @@ class FunctionSampler(BaseSampler):
 
         if self.validate:
 
-            y_ = (label_binarize(output[1], np.unique(y))
-                  if binarize_y else output[1])
+            y_ = label_binarize(output[1], np.unique(y)) if binarize_y else output[1]
             X_, y_ = arrays_transformer.transform(output[0], y_)
             return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 

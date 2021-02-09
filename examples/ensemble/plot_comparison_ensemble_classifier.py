@@ -39,33 +39,41 @@ from imblearn.ensemble import RUSBoostClassifier
 from imblearn.metrics import geometric_mean_score
 
 
-def plot_confusion_matrix(cm, classes, ax,
-                          normalize=False,
-                          title='Confusion matrix',
-                          cmap=plt.cm.Blues):
+def plot_confusion_matrix(
+    cm,
+    classes,
+    ax,
+    normalize=False,
+    title="Confusion matrix",
+    cmap=plt.cm.Blues,
+):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
     """
     print(cm)
-    print('')
+    print("")
 
-    ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    ax.imshow(cm, interpolation="nearest", cmap=cmap)
     ax.set_title(title)
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=45)
     plt.sca(ax)
     plt.yticks(tick_marks, classes)
 
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
+    fmt = ".2f" if normalize else "d"
+    thresh = cm.max() / 2.0
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        ax.text(j, i, format(cm[i, j], fmt),
-                horizontalalignment="center",
-                color="white" if cm[i, j] > thresh else "black")
+        ax.text(
+            j,
+            i,
+            format(cm[i, j], fmt),
+            horizontalalignment="center",
+            color="white" if cm[i, j] > thresh else "black",
+        )
 
-    ax.set_ylabel('True label')
-    ax.set_xlabel('Predicted label')
+    ax.set_ylabel("True label")
+    ax.set_xlabel("Predicted label")
 
 
 ###############################################################################
@@ -75,10 +83,9 @@ def plot_confusion_matrix(cm, classes, ax,
 # (number of majority sample for a minority sample). The data are then split
 # into training and testing.
 
-satimage = fetch_datasets()['satimage']
+satimage = fetch_datasets()["satimage"]
 X, y = satimage.data, satimage.target
-X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y,
-                                                    random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=0)
 
 ###############################################################################
 # Classification using a single decision tree
@@ -94,14 +101,16 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y,
 tree = DecisionTreeClassifier()
 tree.fit(X_train, y_train)
 y_pred_tree = tree.predict(X_test)
-print('Decision tree classifier performance:')
-print('Balanced accuracy: {:.2f} - Geometric mean {:.2f}'
-      .format(balanced_accuracy_score(y_test, y_pred_tree),
-              geometric_mean_score(y_test, y_pred_tree)))
+print("Decision tree classifier performance:")
+print(
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_tree):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_tree):.2f}"
+)
 cm_tree = confusion_matrix(y_test, y_pred_tree)
 fig, ax = plt.subplots()
-plot_confusion_matrix(cm_tree, classes=np.unique(satimage.target), ax=ax,
-                      title='Decision tree')
+plot_confusion_matrix(
+    cm_tree, classes=np.unique(satimage.target), ax=ax, title="Decision tree"
+)
 
 ###############################################################################
 # Classification using bagging classifier with and without sampling
@@ -124,22 +133,29 @@ y_pred_bbc = balanced_bagging.predict(X_test)
 # Balancing each bootstrap sample allows to increase significantly the balanced
 # accuracy and the geometric mean.
 
-print('Bagging classifier performance:')
-print('Balanced accuracy: {:.2f} - Geometric mean {:.2f}'
-      .format(balanced_accuracy_score(y_test, y_pred_bc),
-              geometric_mean_score(y_test, y_pred_bc)))
+print("Bagging classifier performance:")
+print(
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_bc):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_bc):.2f}"
+)
 cm_bagging = confusion_matrix(y_test, y_pred_bc)
 fig, ax = plt.subplots(ncols=2)
-plot_confusion_matrix(cm_bagging, classes=np.unique(satimage.target), ax=ax[0],
-                      title='Bagging')
+plot_confusion_matrix(
+    cm_bagging, classes=np.unique(satimage.target), ax=ax[0], title="Bagging"
+)
 
-print('Balanced Bagging classifier performance:')
-print('Balanced accuracy: {:.2f} - Geometric mean {:.2f}'
-      .format(balanced_accuracy_score(y_test, y_pred_bbc),
-              geometric_mean_score(y_test, y_pred_bbc)))
+print("Balanced Bagging classifier performance:")
+print(
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_bbc):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_bbc):.2f}"
+)
 cm_balanced_bagging = confusion_matrix(y_test, y_pred_bbc)
-plot_confusion_matrix(cm_balanced_bagging, classes=np.unique(satimage.target),
-                      ax=ax[1], title='Balanced bagging')
+plot_confusion_matrix(
+    cm_balanced_bagging,
+    classes=np.unique(satimage.target),
+    ax=ax[1],
+    title="Balanced bagging",
+)
 
 ###############################################################################
 # Classification using random forest classifier with and without sampling
@@ -161,22 +177,29 @@ y_pred_brf = brf.predict(X_test)
 # classifier which learn from imbalanced bootstrap samples. In addition, random
 # forest outsperforms the bagging classifier.
 
-print('Random Forest classifier performance:')
-print('Balanced accuracy: {:.2f} - Geometric mean {:.2f}'
-      .format(balanced_accuracy_score(y_test, y_pred_rf),
-              geometric_mean_score(y_test, y_pred_rf)))
+print("Random Forest classifier performance:")
+print(
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_rf):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_rf):.2f}"
+)
 cm_rf = confusion_matrix(y_test, y_pred_rf)
 fig, ax = plt.subplots(ncols=2)
-plot_confusion_matrix(cm_rf, classes=np.unique(satimage.target), ax=ax[0],
-                      title='Random forest')
+plot_confusion_matrix(
+    cm_rf, classes=np.unique(satimage.target), ax=ax[0], title="Random forest"
+)
 
-print('Balanced Random Forest classifier performance:')
-print('Balanced accuracy: {:.2f} - Geometric mean {:.2f}'
-      .format(balanced_accuracy_score(y_test, y_pred_brf),
-              geometric_mean_score(y_test, y_pred_brf)))
+print("Balanced Random Forest classifier performance:")
+print(
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_brf):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_brf):.2f}"
+)
 cm_brf = confusion_matrix(y_test, y_pred_brf)
-plot_confusion_matrix(cm_brf, classes=np.unique(satimage.target), ax=ax[1],
-                      title='Balanced random forest')
+plot_confusion_matrix(
+    cm_brf,
+    classes=np.unique(satimage.target),
+    ax=ax[1],
+    title="Balanced random forest",
+)
 
 ###############################################################################
 # Boosting classifier
@@ -186,29 +209,37 @@ plot_confusion_matrix(cm_brf, classes=np.unique(satimage.target), ax=ax[1],
 # achieve worse performance.
 
 base_estimator = AdaBoostClassifier(n_estimators=10)
-eec = EasyEnsembleClassifier(n_estimators=10,
-                             base_estimator=base_estimator)
+eec = EasyEnsembleClassifier(n_estimators=10, base_estimator=base_estimator)
 eec.fit(X_train, y_train)
 y_pred_eec = eec.predict(X_test)
-print('Easy ensemble classifier performance:')
-print('Balanced accuracy: {:.2f} - Geometric mean {:.2f}'
-      .format(balanced_accuracy_score(y_test, y_pred_eec),
-              geometric_mean_score(y_test, y_pred_eec)))
+print("Easy ensemble classifier performance:")
+print(
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_eec):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_eec):.2f}"
+)
 cm_eec = confusion_matrix(y_test, y_pred_eec)
 fig, ax = plt.subplots(ncols=2)
-plot_confusion_matrix(cm_eec, classes=np.unique(satimage.target), ax=ax[0],
-                      title='Easy ensemble classifier')
+plot_confusion_matrix(
+    cm_eec,
+    classes=np.unique(satimage.target),
+    ax=ax[0],
+    title="Easy ensemble classifier",
+)
 
-rusboost = RUSBoostClassifier(n_estimators=10,
-                              base_estimator=base_estimator)
+rusboost = RUSBoostClassifier(n_estimators=10, base_estimator=base_estimator)
 rusboost.fit(X_train, y_train)
 y_pred_rusboost = rusboost.predict(X_test)
-print('RUSBoost classifier performance:')
-print('Balanced accuracy: {:.2f} - Geometric mean {:.2f}'
-      .format(balanced_accuracy_score(y_test, y_pred_rusboost),
-              geometric_mean_score(y_test, y_pred_rusboost)))
+print("RUSBoost classifier performance:")
+print(
+    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_rusboost):.2f} - "
+    f"Geometric mean {geometric_mean_score(y_test, y_pred_rusboost):.2f}"
+)
 cm_rusboost = confusion_matrix(y_test, y_pred_rusboost)
-plot_confusion_matrix(cm_rusboost, classes=np.unique(satimage.target),
-                      ax=ax[1], title='RUSBoost classifier')
+plot_confusion_matrix(
+    cm_rusboost,
+    classes=np.unique(satimage.target),
+    ax=ax[1],
+    title="RUSBoost classifier",
+)
 
 plt.show()

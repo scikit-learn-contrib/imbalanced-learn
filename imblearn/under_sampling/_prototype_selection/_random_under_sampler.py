@@ -82,7 +82,11 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = self._validate_data(
-            X, y, reset=True, accept_sparse=["csr", "csc"], dtype=None,
+            X,
+            y,
+            reset=True,
+            accept_sparse=["csr", "csc"],
+            dtype=None,
             force_all_finite=False,
         )
         return X, y, binarize_y
@@ -104,10 +108,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (
-                    idx_under,
-                    np.flatnonzero(y == target_class)[index_target_class],
-                ),
+                (idx_under, np.flatnonzero(y == target_class)[index_target_class],),
                 axis=0,
             )
 

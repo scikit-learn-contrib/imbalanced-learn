@@ -32,14 +32,27 @@ print(__doc__)
 # The following function will be used to create toy dataset. It using the
 # ``make_classification`` from scikit-learn but fixing some parameters.
 
-def create_dataset(n_samples=1000, weights=(0.01, 0.01, 0.98), n_classes=3,
-                   class_sep=0.8, n_clusters=1):
-    return make_classification(n_samples=n_samples, n_features=2,
-                               n_informative=2, n_redundant=0, n_repeated=0,
-                               n_classes=n_classes,
-                               n_clusters_per_class=n_clusters,
-                               weights=list(weights),
-                               class_sep=class_sep, random_state=0)
+
+def create_dataset(
+    n_samples=1000,
+    weights=(0.01, 0.01, 0.98),
+    n_classes=3,
+    class_sep=0.8,
+    n_clusters=1,
+):
+    return make_classification(
+        n_samples=n_samples,
+        n_features=2,
+        n_informative=2,
+        n_redundant=0,
+        n_repeated=0,
+        n_classes=n_classes,
+        n_clusters_per_class=n_clusters,
+        weights=list(weights),
+        class_sep=class_sep,
+        random_state=0,
+    )
+
 
 ###############################################################################
 # The following function will be used to plot the sample space after resampling
@@ -48,15 +61,16 @@ def create_dataset(n_samples=1000, weights=(0.01, 0.01, 0.98), n_classes=3,
 
 def plot_resampling(X, y, sampling, ax):
     X_res, y_res = sampling.fit_resample(X, y)
-    ax.scatter(X_res[:, 0], X_res[:, 1], c=y_res, alpha=0.8, edgecolor='k')
+    ax.scatter(X_res[:, 0], X_res[:, 1], c=y_res, alpha=0.8, edgecolor="k")
     # make nice plotting
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
     ax.get_xaxis().tick_bottom()
     ax.get_yaxis().tick_left()
-    ax.spines['left'].set_position(('outward', 10))
-    ax.spines['bottom'].set_position(('outward', 10))
+    ax.spines["left"].set_position(("outward", 10))
+    ax.spines["bottom"].set_position(("outward", 10))
     return Counter(y_res)
+
 
 ###############################################################################
 # The following function will be used to plot the decision function of a
@@ -67,13 +81,15 @@ def plot_decision_function(X, y, clf, ax):
     plot_step = 0.02
     x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
     y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),
-                         np.arange(y_min, y_max, plot_step))
+    xx, yy = np.meshgrid(
+        np.arange(x_min, x_max, plot_step), np.arange(y_min, y_max, plot_step)
+    )
 
     Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
     ax.contourf(xx, yy, Z, alpha=0.4)
-    ax.scatter(X[:, 0], X[:, 1], alpha=0.8, c=y, edgecolor='k')
+    ax.scatter(X[:, 0], X[:, 1], alpha=0.8, c=y, edgecolor="k")
+
 
 ###############################################################################
 # ``SMOTE`` allows to generate samples. However, this method of over-sampling
@@ -87,23 +103,24 @@ def plot_decision_function(X, y, clf, ax):
 # ``SMOTETomek``.
 
 
-fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2,
-                                                         figsize=(15, 25))
+fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(15, 25))
 X, y = create_dataset(n_samples=1000, weights=(0.1, 0.2, 0.7))
 
 ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6))
-for ax, sampler in zip(ax_arr, (
+for ax, sampler in zip(
+    ax_arr,
+    (
         SMOTE(random_state=0),
         SMOTEENN(random_state=0),
-        SMOTETomek(random_state=0))):
+        SMOTETomek(random_state=0),
+    ),
+):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
-    ax[0].set_title('Decision function for {}'.format(
-        sampler.__class__.__name__))
+    ax[0].set_title(f"Decision function for {sampler.__class__.__name__}")
     plot_resampling(X, y, sampler, ax[1])
-    ax[1].set_title('Resampling using {}'.format(
-        sampler.__class__.__name__))
+    ax[1].set_title(f"Resampling using {sampler.__class__.__name__}")
 fig.tight_layout()
 
 plt.show()

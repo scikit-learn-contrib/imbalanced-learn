@@ -41,8 +41,7 @@ ESTIMATOR = GradientBoostingClassifier(random_state=RND_SEED)
 def test_iht_init():
     sampling_strategy = "auto"
     iht = InstanceHardnessThreshold(
-        estimator=ESTIMATOR, sampling_strategy=sampling_strategy,
-        random_state=RND_SEED,
+        estimator=ESTIMATOR, sampling_strategy=sampling_strategy, random_state=RND_SEED,
     )
 
     assert iht.sampling_strategy == sampling_strategy
@@ -50,9 +49,7 @@ def test_iht_init():
 
 
 def test_iht_fit_resample():
-    iht = InstanceHardnessThreshold(
-        estimator=ESTIMATOR, random_state=RND_SEED
-    )
+    iht = InstanceHardnessThreshold(estimator=ESTIMATOR, random_state=RND_SEED)
     X_resampled, y_resampled = iht.fit_resample(X, Y)
     assert X_resampled.shape == (12, 2)
     assert y_resampled.shape == (12,)
@@ -61,8 +58,7 @@ def test_iht_fit_resample():
 def test_iht_fit_resample_half():
     sampling_strategy = {0: 3, 1: 3}
     iht = InstanceHardnessThreshold(
-        estimator=NB(), sampling_strategy=sampling_strategy,
-        random_state=RND_SEED
+        estimator=NB(), sampling_strategy=sampling_strategy, random_state=RND_SEED,
     )
     X_resampled, y_resampled = iht.fit_resample(X, Y)
     assert X_resampled.shape == (6, 2)
@@ -88,6 +84,7 @@ def test_iht_fit_resample_wrong_class_obj():
 
 def test_iht_reproducibility():
     from sklearn.datasets import load_digits
+
     X_digits, y_digits = load_digits(return_X_y=True)
     idx_sampled = []
     for seed in range(5):

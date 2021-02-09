@@ -92,9 +92,7 @@ def test_sensitivity_specificity_score_binary():
     y_true, y_pred, _ = make_prediction(binary=True)
 
     # detailed measures for each class
-    sen, spe, sup = sensitivity_specificity_support(
-        y_true, y_pred, average=None
-    )
+    sen, spe, sup = sensitivity_specificity_support(y_true, y_pred, average=None)
     assert_allclose(sen, [0.88, 0.68], rtol=R_TOL)
     assert_allclose(spe, [0.68, 0.88], rtol=R_TOL)
     assert_array_equal(sup, [25, 25])
@@ -135,9 +133,7 @@ def test_sensitivity_specificity_extra_labels(average, expected_specificty):
     y_true = [1, 3, 3, 2]
     y_pred = [1, 1, 3, 2]
 
-    actual = specificity_score(
-        y_true, y_pred, labels=[0, 1, 2, 3, 4], average=average
-    )
+    actual = specificity_score(y_true, y_pred, labels=[0, 1, 2, 3, 4], average=average)
     assert_allclose(expected_specificty, actual, rtol=R_TOL)
 
 
@@ -149,17 +145,13 @@ def test_sensitivity_specificity_ignored_labels():
     specificity_all = partial(specificity_score, y_true, y_pred, labels=None)
 
     assert_allclose([1.0, 0.33], specificity_13(average=None), rtol=R_TOL)
-    assert_allclose(
-        np.mean([1.0, 0.33]), specificity_13(average="macro"), rtol=R_TOL
-    )
+    assert_allclose(np.mean([1.0, 0.33]), specificity_13(average="macro"), rtol=R_TOL)
     assert_allclose(
         np.average([1.0, 0.33], weights=[2.0, 1.0]),
         specificity_13(average="weighted"),
         rtol=R_TOL,
     )
-    assert_allclose(
-        3.0 / (3.0 + 2.0), specificity_13(average="micro"), rtol=R_TOL
-    )
+    assert_allclose(3.0 / (3.0 + 2.0), specificity_13(average="micro"), rtol=R_TOL)
 
     # ensure the above were meaningful tests:
     for each in ["macro", "weighted", "micro"]:
@@ -181,9 +173,7 @@ def test_sensitivity_specificity_support_errors():
 
     # Bad pos_label
     with pytest.raises(ValueError):
-        sensitivity_specificity_support(
-            y_true, y_pred, pos_label=2, average="binary"
-        )
+        sensitivity_specificity_support(y_true, y_pred, pos_label=2, average="binary")
 
     # Bad average option
     with pytest.raises(ValueError):
@@ -216,12 +206,7 @@ def test_geometric_mean_support_binary():
         ([0, 0, 0, 0], [0, 0, 0, 0], 0.001, 1.0),
         ([0, 0, 0, 0], [1, 1, 1, 1], 0.001, 0.001),
         ([0, 0, 1, 1], [0, 1, 1, 0], 0.001, 0.5),
-        (
-            [0, 1, 2, 0, 1, 2],
-            [0, 2, 1, 0, 0, 1],
-            0.001,
-            (0.001 ** 2) ** (1 / 3),
-        ),
+        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], 0.001, (0.001 ** 2) ** (1 / 3),),
         ([0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5], 0.001, 1),
         ([0, 1, 1, 1, 1, 0], [0, 0, 1, 1, 1, 1], 0.001, (0.5 * 0.75) ** 0.5),
     ],
@@ -270,11 +255,7 @@ def test_geometric_mean_sample_weight(
     y_true, y_pred, sample_weight, average, expected_gmean
 ):
     gmean = geometric_mean_score(
-        y_true,
-        y_pred,
-        labels=[0, 1],
-        sample_weight=sample_weight,
-        average=average,
+        y_true, y_pred, labels=[0, 1], sample_weight=sample_weight, average=average,
     )
     assert gmean == pytest.approx(expected_gmean, rel=R_TOL)
 
@@ -454,12 +435,7 @@ def test_iba_sklearn_metrics(score, expected_score):
 
 @pytest.mark.parametrize(
     "score_loss",
-    [
-        average_precision_score,
-        brier_score_loss,
-        cohen_kappa_score,
-        roc_auc_score,
-    ],
+    [average_precision_score, brier_score_loss, cohen_kappa_score, roc_auc_score],
 )
 def test_iba_error_y_score_prob_error(score_loss):
     y_true, y_pred, _ = make_prediction(binary=True)

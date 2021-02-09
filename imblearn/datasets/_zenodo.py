@@ -59,10 +59,7 @@ from sklearn.utils import check_random_state
 
 from ..utils._validation import _deprecate_positional_args
 
-URL = (
-    "https://zenodo.org/record/61452/files/"
-    "benchmark-imbalanced-learn.tar.gz"
-)
+URL = "https://zenodo.org/record/61452/files/benchmark-imbalanced-learn.tar.gz"
 PRE_FILENAME = "x"
 POST_FILENAME = "data.npz"
 
@@ -239,17 +236,17 @@ def fetch_datasets(
             if isinstance(it, str):
                 if it not in list_data:
                     raise ValueError(
-                        "{} is not a dataset available. "
-                        "The available datasets are {}".format(it, list_data)
+                        f"{it} is not a dataset available. "
+                        f"The available datasets are {list_data}"
                     )
                 else:
                     filter_data_.append(it)
             elif isinstance(it, int):
                 if it < 1 or it > 27:
                     raise ValueError(
-                        "The dataset with the ID={} is not an "
-                        "available dataset. The IDs are "
-                        "{}".format(it, range(1, 28))
+                        f"The dataset with the ID={it} is not an "
+                        f"available dataset. The IDs are "
+                        f"{range(1, 28)}"
                     )
                 else:
                     # The index start at one, then we need to remove one
@@ -257,8 +254,8 @@ def fetch_datasets(
                     filter_data_.append(MAP_ID_NAME[it])
             else:
                 raise ValueError(
-                    "The value in the tuple should be str or int."
-                    " Got {} instead.".format(type(it))
+                    f"The value in the tuple should be str or int."
+                    f" Got {type(it)} instead."
                 )
 
     # go through the list and check if the data are available

@@ -68,15 +68,11 @@ def test_fetch():
 
 def test_fetch_filter():
     try:
-        datasets1 = fetch(
-            filter_data=tuple([1]), shuffle=True, random_state=42
-        )
+        datasets1 = fetch(filter_data=tuple([1]), shuffle=True, random_state=42)
     except IOError:
         raise SkipTest("Zenodo dataset can not be loaded.")
 
-    datasets2 = fetch(
-        filter_data=tuple(["ecoli"]), shuffle=True, random_state=37
-    )
+    datasets2 = fetch(filter_data=tuple(["ecoli"]), shuffle=True, random_state=37)
 
     X1, X2 = datasets1["ecoli"].data, datasets2["ecoli"].data
     assert DATASET_SHAPE["ecoli"] == X1.shape

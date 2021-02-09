@@ -29,16 +29,14 @@ y_2 = np.array([3.3, 3.6])
 z_2 = np.array([0.58, 0.34])
 
 # plot the majority and minority samples
-ax.scatter(z, y, label='Minority class', s=100)
-ax.scatter(z_2, y_2, label='Majority class', s=100)
+ax.scatter(z, y, label="Minority class", s=100)
+ax.scatter(z_2, y_2, label="Majority class", s=100)
 
 idx = rng.randint(len(y), size=2)
-annotation = [r'$x_i$', r'$x_{zi}$']
+annotation = [r"$x_i$", r"$x_{zi}$"]
 
 for a, i in zip(annotation, idx):
-    ax.annotate(a, (z[i], y[i]),
-                xytext=tuple([z[i] + 0.01, y[i] + 0.005]),
-                fontsize=15)
+    ax.annotate(a, (z[i], y[i]), xytext=tuple([z[i] + 0.01, y[i] + 0.005]), fontsize=15)
 
 # draw the circle in which the new sample will generated
 radius = np.sqrt((z[idx[0]] - z[idx[1]]) ** 2 + (y[idx[0]] - y[idx[1]]) ** 2)
@@ -46,7 +44,7 @@ circle = plt.Circle((z[idx[0]], y[idx[0]]), radius=radius, alpha=0.2)
 ax.add_artist(circle)
 
 # plot the line on which the sample will be generated
-ax.plot(z[idx], y[idx], '--', alpha=0.5)
+ax.plot(z[idx], y[idx], "--", alpha=0.5)
 
 # create and plot the new sample
 step = rng.uniform()
@@ -54,21 +52,24 @@ y_gen = y[idx[0]] + step * (y[idx[1]] - y[idx[0]])
 z_gen = z[idx[0]] + step * (z[idx[1]] - z[idx[0]])
 
 ax.scatter(z_gen, y_gen, s=100)
-ax.annotate(r'$x_{new}$', (z_gen, y_gen),
-            xytext=tuple([z_gen + 0.01, y_gen + 0.005]),
-            fontsize=15)
+ax.annotate(
+    r"$x_{new}$",
+    (z_gen, y_gen),
+    xytext=tuple([z_gen + 0.01, y_gen + 0.005]),
+    fontsize=15,
+)
 
 # make the plot nicer with legend and label
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
 ax.get_xaxis().tick_bottom()
 ax.get_yaxis().tick_left()
-ax.spines['left'].set_position(('outward', 10))
-ax.spines['bottom'].set_position(('outward', 10))
+ax.spines["left"].set_position(("outward", 10))
+ax.spines["bottom"].set_position(("outward", 10))
 ax.set_xlim([0.2, 0.7])
 ax.set_ylim([3.2, 3.7])
-plt.xlabel(r'$X_1$')
-plt.ylabel(r'$X_2$')
+plt.xlabel(r"$X_1$")
+plt.ylabel(r"$X_2$")
 plt.legend()
 plt.tight_layout()
 plt.show()

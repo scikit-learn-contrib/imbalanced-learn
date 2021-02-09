@@ -73,9 +73,7 @@ def balanced_batch_generator(
         sampler_ = clone(sampler)
     sampler_.fit_resample(X, y)
     if not hasattr(sampler_, "sample_indices_"):
-        raise ValueError(
-            "'sampler' needs to have an attribute " "'sample_indices_'."
-        )
+        raise ValueError("'sampler' needs to have an attribute 'sample_indices_'.")
     indices = sampler_.sample_indices_
     # shuffle the indices since the sampler are packing them by class
     random_state.shuffle(indices)
@@ -83,15 +81,15 @@ def balanced_batch_generator(
     def generator(X, y, sample_weight, indices, batch_size):
         while True:
             for index in range(0, len(indices), batch_size):
-                X_res = _safe_indexing(X, indices[index:index + batch_size])
-                y_res = _safe_indexing(y, indices[index:index + batch_size])
+                X_res = _safe_indexing(X, indices[index : index + batch_size])
+                y_res = _safe_indexing(y, indices[index : index + batch_size])
                 if issparse(X_res) and not keep_sparse:
                     X_res = X_res.toarray()
                 if sample_weight is None:
                     yield X_res, y_res
                 else:
                     sw_res = _safe_indexing(
-                        sample_weight, indices[index:index + batch_size]
+                        sample_weight, indices[index : index + batch_size]
                     )
                     yield X_res, y_res, sw_res
 

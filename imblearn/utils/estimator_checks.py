@@ -75,8 +75,7 @@ def _yield_all_checks(estimator):
     tags = estimator._get_tags()
     if tags["_skip_test"]:
         warnings.warn(
-            f"Explicit SKIP via _skip_test tag for estimator {name}.",
-            SkipTestWarning
+            f"Explicit SKIP via _skip_test tag for estimator {name}.", SkipTestWarning,
         )
         return
     # trigger our checks if this is a SamplerMixin
@@ -124,8 +123,11 @@ def parametrize_with_checks(estimators):
                 check = partial(check, name)
                 yield _maybe_mark_xfail(estimator, check, pytest)
 
-    return pytest.mark.parametrize("estimator, check", checks_generator(),
-                                   ids=_get_check_estimator_ids)
+    return pytest.mark.parametrize(
+        "estimator, check",
+        checks_generator(),
+        ids=_get_check_estimator_ids
+    )
 
 
 def check_target_type(name, estimator_orig):
@@ -199,8 +201,7 @@ def check_samplers_fit_resample(name, sampler_orig):
             # IHT does not enforce the number of samples but provide a number
             # of samples the closest to the desired target.
             assert all(
-                Counter(y_res)[k] <= target_stats[k]
-                for k in target_stats.keys()
+                Counter(y_res)[k] <= target_stats[k] for k in target_stats.keys()
             )
         else:
             assert all(value == n_samples for value in Counter(y_res).values())
@@ -401,15 +402,15 @@ def check_classifiers_with_encoded_labels(name, classifier_orig):
     classifier = clone(classifier_orig)
     df, y = fetch_openml("iris", version=1, as_frame=True, return_X_y=True)
     df, y = make_imbalance(
-        df, y, sampling_strategy={
-            "Iris-setosa": 30, "Iris-versicolor": 20, "Iris-virginica": 50,
-        }
-    )
-    classifier.set_params(
+        df,
+        y,
         sampling_strategy={
-            "Iris-setosa": 20, "Iris-virginica": 20,
-        }
+            "Iris-setosa": 30,
+            "Iris-versicolor": 20,
+            "Iris-virginica": 50,
+        },
     )
+    classifier.set_params(sampling_strategy={"Iris-setosa": 20, "Iris-virginica": 20})
     classifier.fit(df, y)
     assert set(classifier.classes_) == set(y.cat.categories.tolist())
     y_pred = classifier.predict(df)

@@ -29,19 +29,20 @@ RANDOM_STATE = 42
 
 # Create a folder to fetch the dataset
 iris = load_iris()
-X, y = make_imbalance(iris.data, iris.target,
-                      sampling_strategy={0: 25, 1: 50, 2: 50},
-                      random_state=RANDOM_STATE)
+X, y = make_imbalance(
+    iris.data,
+    iris.target,
+    sampling_strategy={0: 25, 1: 50, 2: 50},
+    random_state=RANDOM_STATE,
+)
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, random_state=RANDOM_STATE)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=RANDOM_STATE)
 
-print('Training target statistics: {}'.format(Counter(y_train)))
-print('Testing target statistics: {}'.format(Counter(y_test)))
+print(f"Training target statistics: {Counter(y_train)}")
+print(f"Testing target statistics: {Counter(y_test)}")
 
 # Create a pipeline
-pipeline = make_pipeline(NearMiss(version=2),
-                         LinearSVC(random_state=RANDOM_STATE))
+pipeline = make_pipeline(NearMiss(version=2), LinearSVC(random_state=RANDOM_STATE))
 pipeline.fit(X_train, y_train)
 
 # Classify and report the results

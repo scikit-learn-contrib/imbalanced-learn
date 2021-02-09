@@ -132,9 +132,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             )
         else:
             raise ValueError(
-                "Invalid parameter `estimator`. Got {}.".format(
-                    type(self.estimator)
-                )
+                f"Invalid parameter `estimator`. Got {type(self.estimator)}."
             )
 
     def _fit_resample(self, X, y):
@@ -143,11 +141,17 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
         target_stats = Counter(y)
         skf = StratifiedKFold(
-            n_splits=self.cv, shuffle=True, random_state=random_state,
+            n_splits=self.cv,
+            shuffle=True,
+            random_state=random_state,
         )
         probabilities = cross_val_predict(
-            self.estimator_, X, y, cv=skf, n_jobs=self.n_jobs,
-            method='predict_proba'
+            self.estimator_,
+            X,
+            y,
+            cv=skf,
+            n_jobs=self.n_jobs,
+            method="predict_proba",
         )
         probabilities = probabilities[range(len(y)), y]
 

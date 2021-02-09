@@ -176,8 +176,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
         super()._validate_estimator()
 
         self.base_sampler_ = RandomUnderSampler(
-            sampling_strategy=self.sampling_strategy,
-            replacement=self.replacement,
+            sampling_strategy=self.sampling_strategy, replacement=self.replacement,
         )
 
     def _make_sampler_estimator(self, append=True, random_state=None):
@@ -186,9 +185,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
         sub-estimators.
         """
         estimator = clone(self.base_estimator_)
-        estimator.set_params(
-            **{p: getattr(self, p) for p in self.estimator_params}
-        )
+        estimator.set_params(**{p: getattr(self, p) for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
         if random_state is not None:
@@ -206,14 +203,10 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
     def _boost_real(self, iboost, X, y, sample_weight, random_state):
         """Implement a single boost using the SAMME.R real algorithm."""
-        estimator, sampler = self._make_sampler_estimator(
-            random_state=random_state
-        )
+        estimator, sampler = self._make_sampler_estimator(random_state=random_state)
 
         X_res, y_res = sampler.fit_resample(X, y)
-        sample_weight_res = _safe_indexing(
-            sample_weight, sampler.sample_indices_
-        )
+        sample_weight_res = _safe_indexing(sample_weight, sampler.sample_indices_)
         estimator.fit(X_res, y_res, sample_weight=sample_weight_res)
 
         y_predict_proba = estimator.predict_proba(X)
@@ -222,17 +215,13 @@ class RUSBoostClassifier(AdaBoostClassifier):
             self.classes_ = getattr(estimator, "classes_", None)
             self.n_classes_ = len(self.classes_)
 
-        y_predict = self.classes_.take(
-            np.argmax(y_predict_proba, axis=1), axis=0
-        )
+        y_predict = self.classes_.take(np.argmax(y_predict_proba, axis=1), axis=0)
 
         # Instances incorrectly classified
         incorrect = y_predict != y
 
         # Error fraction
-        estimator_error = np.mean(
-            np.average(incorrect, weights=sample_weight, axis=0)
-        )
+        estimator_error = np.mean(np.average(incorrect, weights=sample_weight, axis=0))
 
         # Stop if classification is perfect
         if estimator_error <= 0:
@@ -268,22 +257,17 @@ class RUSBoostClassifier(AdaBoostClassifier):
         if not iboost == self.n_estimators - 1:
             # Only boost positive weights
             sample_weight *= np.exp(
-                estimator_weight
-                * ((sample_weight > 0) | (estimator_weight < 0))
+                estimator_weight * ((sample_weight > 0) | (estimator_weight < 0))
             )
 
         return sample_weight, 1.0, estimator_error
 
     def _boost_discrete(self, iboost, X, y, sample_weight, random_state):
         """Implement a single boost using the SAMME discrete algorithm."""
-        estimator, sampler = self._make_sampler_estimator(
-            random_state=random_state
-        )
+        estimator, sampler = self._make_sampler_estimator(random_state=random_state)
 
         X_res, y_res = sampler.fit_resample(X, y)
-        sample_weight_res = _safe_indexing(
-            sample_weight, sampler.sample_indices_
-        )
+        sample_weight_res = _safe_indexing(sample_weight, sampler.sample_indices_)
         estimator.fit(X_res, y_res, sample_weight=sample_weight_res)
 
         y_predict = estimator.predict(X)
@@ -296,9 +280,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
         incorrect = y_predict != y
 
         # Error fraction
-        estimator_error = np.mean(
-            np.average(incorrect, weights=sample_weight, axis=0)
-        )
+        estimator_error = np.mean(np.average(incorrect, weights=sample_weight, axis=0))
 
         # Stop if classification is perfect
         if estimator_error <= 0:
@@ -321,17 +303,12 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
         # Boost weight using multi-class AdaBoost SAMME alg
         estimator_weight = self.learning_rate * (
-            np.log((1.0 - estimator_error) / estimator_error)
-            + np.log(n_classes - 1.0)
+            np.log((1.0 - estimator_error) / estimator_error) + np.log(n_classes - 1.0)
         )
 
         # Only boost the weights if I will fit again
         if not iboost == self.n_estimators - 1:
             # Only boost positive weights
-            sample_weight *= np.exp(
-                estimator_weight
-                * incorrect
-                * (sample_weight > 0)
-            )
+            sample_weight *= np.exp(estimator_weight * incorrect * (sample_weight > 0))
 
         return sample_weight, estimator_weight, estimator_error

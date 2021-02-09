@@ -30,7 +30,7 @@ X = np.array(
 Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 
-@pytest.mark.parametrize("as_frame", [True, False], ids=['dataframe', 'array'])
+@pytest.mark.parametrize("as_frame", [True, False], ids=["dataframe", "array"])
 def test_rus_fit_resample(as_frame):
     if as_frame:
         pd = pytest.importorskip("pandas")
@@ -63,9 +63,7 @@ def test_rus_fit_resample(as_frame):
 def test_rus_fit_resample_half():
     sampling_strategy = {0: 3, 1: 6}
     rus = RandomUnderSampler(
-        sampling_strategy=sampling_strategy,
-        random_state=RND_SEED,
-        replacement=True,
+        sampling_strategy=sampling_strategy, random_state=RND_SEED, replacement=True,
     )
     X_resampled, y_resampled = rus.fit_resample(X, Y)
 

@@ -33,13 +33,11 @@ Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
 
 def test_ros_init():
     sampling_strategy = "auto"
-    ros = RandomOverSampler(
-        sampling_strategy=sampling_strategy, random_state=RND_SEED
-    )
+    ros = RandomOverSampler(sampling_strategy=sampling_strategy, random_state=RND_SEED)
     assert ros.random_state == RND_SEED
 
 
-@pytest.mark.parametrize("as_frame", [True, False], ids=['dataframe', 'array'])
+@pytest.mark.parametrize("as_frame", [True, False], ids=["dataframe", "array"])
 def test_ros_fit_resample(as_frame):
     if as_frame:
         pd = pytest.importorskip("pandas")
@@ -78,9 +76,7 @@ def test_ros_fit_resample(as_frame):
 
 def test_ros_fit_resample_half():
     sampling_strategy = {0: 3, 1: 7}
-    ros = RandomOverSampler(
-        sampling_strategy=sampling_strategy, random_state=RND_SEED
-    )
+    ros = RandomOverSampler(sampling_strategy=sampling_strategy, random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_resample(X, Y)
     X_gt = np.array(
         [

@@ -119,7 +119,7 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         if self.n_jobs != "deprecated":
             warnings.warn(
                 "'n_jobs' was deprecated in 0.7 and will be removed in 0.9",
-                FutureWarning
+                FutureWarning,
             )
         if self.estimator is None:
             self.estimator_ = KMeans(random_state=self.random_state)
@@ -127,17 +127,15 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             self.estimator_ = clone(self.estimator)
         else:
             raise ValueError(
-                "`estimator` has to be a KMeans clustering."
-                " Got {} instead.".format(type(self.estimator))
+                f"`estimator` has to be a KMeans clustering."
+                f" Got {type(self.estimator)} instead."
             )
 
     def _generate_sample(self, X, y, centroids, target_class):
         if self.voting_ == "hard":
             nearest_neighbors = NearestNeighbors(n_neighbors=1)
             nearest_neighbors.fit(X, y)
-            indices = nearest_neighbors.kneighbors(
-                centroids, return_distance=False
-            )
+            indices = nearest_neighbors.kneighbors(centroids, return_distance=False)
             X_new = _safe_indexing(X, np.squeeze(indices))
         else:
             if sparse.issparse(X):
@@ -161,8 +159,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                 self.voting_ = self.voting
             else:
                 raise ValueError(
-                    "'voting' needs to be one of {}. Got {}"
-                    " instead.".format(VOTING_KIND, self.voting)
+                    f"'voting' needs to be one of {VOTING_KIND}. "
+                    f"Got {self.voting} instead."
                 )
 
         X_resampled, y_resampled = [], []

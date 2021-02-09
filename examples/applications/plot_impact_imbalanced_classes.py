@@ -20,13 +20,13 @@ print(__doc__)
 
 from sklearn.datasets import fetch_openml
 
-df, y = fetch_openml('adult', version=2, as_frame=True, return_X_y=True)
+df, y = fetch_openml("adult", version=2, as_frame=True, return_X_y=True)
 # we are dropping the following features:
 # - "fnlwgt": this feature was created while studying the "adult" dataset.
 #   Thus, we will not use this feature which is not acquired during the survey.
 # - "education-num": it is encoding the same information than "education".
 #   Thus, we are removing one of these 2 features.
-df = df.drop(columns=['fnlwgt', 'education-num'])
+df = df.drop(columns=["fnlwgt", "education-num"])
 
 ###############################################################################
 # The "adult" dataset as a class ratio of about 3:1
@@ -42,9 +42,7 @@ from imblearn.datasets import make_imbalance
 
 ratio = 30
 df_res, y_res = make_imbalance(
-    df, y, sampling_strategy={
-        classes_count.idxmin(): classes_count.max() // ratio
-    }
+    df, y, sampling_strategy={classes_count.idxmin(): classes_count.max() // ratio},
 )
 y_res.value_counts()
 
@@ -93,6 +91,7 @@ import pandas as pd
 
 def evaluate_classifier(clf, df_scores, clf_name=None):
     from sklearn.pipeline import Pipeline
+
     if clf_name is None:
         if isinstance(clf, Pipeline):
             clf_name = clf[-1].__class__.__name__
@@ -102,8 +101,7 @@ def evaluate_classifier(clf, df_scores, clf_name=None):
     y_pred = clf.predict(X_test)
     bal_acc = balanced_accuracy_score(y_test, y_pred)
     clf_score = pd.DataFrame(
-        {clf_name: [acc, bal_acc]},
-        index=['Accuracy', 'Balanced accuracy']
+        {clf_name: [acc, bal_acc]}, index=["Accuracy", "Balanced accuracy"]
     )
     df_scores = pd.concat([df_scores, clf_score], axis=1).round(decimals=3)
     return df_scores
@@ -143,7 +141,7 @@ num_pipe = make_pipeline(
 )
 cat_pipe = make_pipeline(
     SimpleImputer(strategy="constant", fill_value="missing"),
-    OneHotEncoder(handle_unknown="ignore")
+    OneHotEncoder(handle_unknown="ignore"),
 )
 
 ###############################################################################
@@ -156,9 +154,11 @@ from sklearn.compose import ColumnTransformer
 from sklearn.compose import make_column_selector as selector
 
 preprocessor_linear = ColumnTransformer(
-    [("num-pipe", num_pipe, selector(dtype_include=np.number)),
-     ("cat-pipe", cat_pipe, selector(dtype_include=pd.CategoricalDtype))],
-    n_jobs=2
+    [
+        ("num-pipe", num_pipe, selector(dtype_include=np.number)),
+        ("cat-pipe", cat_pipe, selector(dtype_include=pd.CategoricalDtype)),
+    ],
+    n_jobs=2,
 )
 
 ###############################################################################
@@ -167,9 +167,7 @@ preprocessor_linear = ColumnTransformer(
 
 from sklearn.linear_model import LogisticRegression
 
-lr_clf = make_pipeline(
-    preprocessor_linear, LogisticRegression(max_iter=1000)
-)
+lr_clf = make_pipeline(preprocessor_linear, LogisticRegression(max_iter=1000))
 df_scores = evaluate_classifier(lr_clf, df_scores, "LR")
 df_scores
 
@@ -186,14 +184,15 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.ensemble import RandomForestClassifier
 
 cat_pipe = make_pipeline(
-    SimpleImputer(strategy="constant", fill_value="missing"),
-    OrdinalEncoder()
+    SimpleImputer(strategy="constant", fill_value="missing"), OrdinalEncoder()
 )
 
 preprocessor_tree = ColumnTransformer(
-    [("num-pipe", num_pipe, selector(dtype_include=np.number)),
-     ("cat-pipe", cat_pipe, selector(dtype_include=pd.CategoricalDtype))],
-    n_jobs=2
+    [
+        ("num-pipe", num_pipe, selector(dtype_include=np.number)),
+        ("cat-pipe", cat_pipe, selector(dtype_include=pd.CategoricalDtype)),
+    ],
+    n_jobs=2,
 )
 
 rf_clf = make_pipeline(
@@ -220,18 +219,14 @@ df_scores
 # linear model and tree-based model.
 
 lr_clf.set_params(logisticregression__class_weight="balanced")
-df_scores = evaluate_classifier(
-    lr_clf, df_scores, "LR with class weight"
-)
+df_scores = evaluate_classifier(lr_clf, df_scores, "LR with class weight")
 df_scores
 
 ###############################################################################
 #
 
 rf_clf.set_params(randomforestclassifier__class_weight="balanced")
-df_scores = evaluate_classifier(
-    rf_clf, df_scores, "RF with class weight"
-)
+df_scores = evaluate_classifier(rf_clf, df_scores, "RF with class weight")
 df_scores
 
 ###############################################################################
@@ -254,11 +249,9 @@ from imblearn.under_sampling import RandomUnderSampler
 lr_clf = make_pipeline_with_sampler(
     preprocessor_linear,
     RandomUnderSampler(random_state=42),
-    LogisticRegression(max_iter=1000)
+    LogisticRegression(max_iter=1000),
 )
-df_scores = evaluate_classifier(
-    lr_clf, df_scores, "LR with under-sampling"
-)
+df_scores = evaluate_classifier(lr_clf, df_scores, "LR with under-sampling")
 df_scores
 
 ###############################################################################
@@ -267,12 +260,10 @@ df_scores
 rf_clf = make_pipeline_with_sampler(
     preprocessor_tree,
     RandomUnderSampler(random_state=42),
-    RandomForestClassifier(random_state=42, n_jobs=2)
+    RandomForestClassifier(random_state=42, n_jobs=2),
 )
 
-df_scores = evaluate_classifier(
-    rf_clf, df_scores, "RF with under-sampling"
-)
+df_scores = evaluate_classifier(rf_clf, df_scores, "RF with under-sampling")
 df_scores
 
 ###############################################################################
@@ -299,8 +290,7 @@ df_scores
 from imblearn.ensemble import BalancedRandomForestClassifier
 
 rf_clf = make_pipeline(
-    preprocessor_tree,
-    BalancedRandomForestClassifier(random_state=42, n_jobs=2)
+    preprocessor_tree, BalancedRandomForestClassifier(random_state=42, n_jobs=2),
 )
 
 df_scores = evaluate_classifier(rf_clf, df_scores, "Balanced RF")
@@ -319,13 +309,13 @@ bag_clf = make_pipeline(
     preprocessor_tree,
     BalancedBaggingClassifier(
         base_estimator=HistGradientBoostingClassifier(random_state=42),
-        n_estimators=10, random_state=42, n_jobs=2
-    )
+        n_estimators=10,
+        random_state=42,
+        n_jobs=2,
+    ),
 )
 
-df_scores = evaluate_classifier(
-    bag_clf, df_scores, "Balanced bagging"
-)
+df_scores = evaluate_classifier(bag_clf, df_scores, "Balanced bagging")
 df_scores
 
 ###############################################################################
@@ -342,9 +332,7 @@ df_scores
 
 ratio = 100
 df_res, y_res = make_imbalance(
-    df, y, sampling_strategy={
-        classes_count.idxmin(): classes_count.max() // ratio
-    }
+    df, y, sampling_strategy={classes_count.idxmin(): classes_count.max() // ratio},
 )
 X_train, X_test, y_train, y_test = train_test_split(
     df_res, y_res, stratify=y_res, random_state=42
@@ -352,46 +340,33 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 df_scores = pd.DataFrame()
 df_scores = evaluate_classifier(dummy_clf, df_scores, "Dummy")
-lr_clf = make_pipeline(
-    preprocessor_linear, LogisticRegression(max_iter=1000)
-)
+lr_clf = make_pipeline(preprocessor_linear, LogisticRegression(max_iter=1000))
 df_scores = evaluate_classifier(lr_clf, df_scores, "LR")
 rf_clf = make_pipeline(
     preprocessor_tree, RandomForestClassifier(random_state=42, n_jobs=2)
 )
 df_scores = evaluate_classifier(rf_clf, df_scores, "RF")
 lr_clf.set_params(logisticregression__class_weight="balanced")
-df_scores = evaluate_classifier(
-    lr_clf, df_scores, "LR with class weight"
-)
+df_scores = evaluate_classifier(lr_clf, df_scores, "LR with class weight")
 rf_clf.set_params(randomforestclassifier__class_weight="balanced")
-df_scores = evaluate_classifier(
-    rf_clf, df_scores, "RF with class weight"
-)
+df_scores = evaluate_classifier(rf_clf, df_scores, "RF with class weight")
 lr_clf = make_pipeline_with_sampler(
     preprocessor_linear,
     RandomUnderSampler(random_state=42),
-    LogisticRegression(max_iter=1000)
+    LogisticRegression(max_iter=1000),
 )
-df_scores = evaluate_classifier(
-    lr_clf, df_scores, "LR with under-sampling"
-)
+df_scores = evaluate_classifier(lr_clf, df_scores, "LR with under-sampling")
 rf_clf = make_pipeline_with_sampler(
     preprocessor_tree,
     RandomUnderSampler(random_state=42),
-    RandomForestClassifier(random_state=42, n_jobs=2)
+    RandomForestClassifier(random_state=42, n_jobs=2),
 )
-df_scores = evaluate_classifier(
-    rf_clf, df_scores, "RF with under-sampling"
-)
+df_scores = evaluate_classifier(rf_clf, df_scores, "RF with under-sampling")
 rf_clf = make_pipeline(
-    preprocessor_tree,
-    BalancedRandomForestClassifier(random_state=42, n_jobs=2)
+    preprocessor_tree, BalancedRandomForestClassifier(random_state=42, n_jobs=2),
 )
 df_scores = evaluate_classifier(rf_clf, df_scores)
-df_scores = evaluate_classifier(
-    bag_clf, df_scores, "Balanced bagging"
-)
+df_scores = evaluate_classifier(bag_clf, df_scores, "Balanced bagging")
 df_scores
 
 ###############################################################################

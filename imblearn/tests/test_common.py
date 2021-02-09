@@ -7,8 +7,9 @@ import pytest
 
 from sklearn.base import clone
 from sklearn.exceptions import ConvergenceWarning
-from sklearn.utils.estimator_checks import parametrize_with_checks as \
-    parametrize_with_checks_sklearn
+from sklearn.utils.estimator_checks import (
+    parametrize_with_checks as parametrize_with_checks_sklearn,
+)
 from sklearn.utils.estimator_checks import _construct_instance
 from sklearn.utils._testing import ignore_warnings
 from sklearn.utils._testing import set_random_state
@@ -24,10 +25,7 @@ from imblearn.under_sampling import NearMiss
 @pytest.mark.parametrize("name, Estimator", all_estimators())
 def test_all_estimator_no_base_class(name, Estimator):
     # test that all_estimators doesn't find abstract classes.
-    msg = (
-        f"Base estimators such as {name} should not be included"
-        f" in all_estimators"
-    )
+    msg = f"Base estimators such as {name} should not be included" f" in all_estimators"
     assert not name.lower().startswith("base"), msg
 
 
@@ -56,8 +54,8 @@ def test_estimators_compatibility_sklearn(estimator, check, request):
 @parametrize_with_checks(list(_tested_estimators()))
 def test_estimators_imblearn(estimator, check, request):
     # Common tests for estimator instances
-    with ignore_warnings(category=(FutureWarning,
-                                   ConvergenceWarning,
-                                   UserWarning, FutureWarning)):
+    with ignore_warnings(
+        category=(FutureWarning, ConvergenceWarning, UserWarning, FutureWarning,)
+    ):
         _set_checking_parameters(estimator)
         check(estimator)

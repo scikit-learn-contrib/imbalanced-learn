@@ -90,7 +90,11 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = self._validate_data(
-            X, y, reset=True, accept_sparse=["csr", "csc"], dtype=None,
+            X,
+            y,
+            reset=True,
+            accept_sparse=["csr", "csc"],
+            dtype=None,
             force_all_finite=False,
         )
         return X, y, binarize_y
@@ -107,9 +111,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                 low=0, high=target_stats[class_sample], size=num_samples
             )
 
-            sample_indices = np.append(
-                sample_indices, target_class_indices[indices]
-            )
+            sample_indices = np.append(sample_indices, target_class_indices[indices])
         self.sample_indices_ = np.array(sample_indices)
 
         return (

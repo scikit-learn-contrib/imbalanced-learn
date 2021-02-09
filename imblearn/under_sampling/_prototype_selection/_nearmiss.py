@@ -144,13 +144,10 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         """
 
         # Compute the distance considering the farthest neighbour
-        dist_avg_vec = np.sum(dist_vec[:, -self.nn_.n_neighbors:], axis=1)
+        dist_avg_vec = np.sum(dist_vec[:, -self.nn_.n_neighbors :], axis=1)
 
         target_class_indices = np.flatnonzero(y == key)
-        if (
-            dist_vec.shape[0]
-            != _safe_indexing(X, target_class_indices).shape[0]
-        ):
+        if dist_vec.shape[0] != _safe_indexing(X, target_class_indices).shape[0]:
             raise RuntimeError(
                 "The samples to be selected do not correspond"
                 " to the distance matrix given. Ensure that"
@@ -199,8 +196,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
 
         if self.version not in (1, 2, 3):
             raise ValueError(
-                "Parameter `version` must be 1, 2 or 3, got"
-                " {}".format(self.version)
+                f"Parameter `version` must be 1, 2 or 3, got {self.version}"
             )
 
     def _fit_resample(self, X, y):
@@ -251,10 +247,8 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                         _safe_indexing(X, minority_class_indices)
                     )
                     idx_vec_farthest = np.unique(idx_vec.reshape(-1))
-                    X_class_selected = _safe_indexing(
-                        X_class, idx_vec_farthest)
-                    y_class_selected = _safe_indexing(
-                        y_class, idx_vec_farthest)
+                    X_class_selected = _safe_indexing(X_class, idx_vec_farthest)
+                    y_class_selected = _safe_indexing(y_class, idx_vec_farthest)
 
                     dist_vec, idx_vec = self.nn_.kneighbors(
                         X_class_selected, n_neighbors=self.nn_.n_neighbors
@@ -285,6 +279,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
 
         return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
+    # fmt: off
     def _more_tags(self):
         return {
             "sample_indices": True,
@@ -293,3 +288,4 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                 "Fails for NearMiss-3 with less samples than expected"
             }
         }
+    # fmt: on

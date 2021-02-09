@@ -72,9 +72,7 @@ def test_sample_regular():
 
 def test_sample_regular_half():
     sampling_strategy = {0: 9, 1: 12}
-    smote = SMOTETomek(
-        sampling_strategy=sampling_strategy, random_state=RND_SEED
-    )
+    smote = SMOTETomek(sampling_strategy=sampling_strategy, random_state=RND_SEED)
     X_resampled, y_resampled = smote.fit_resample(X, Y)
     X_gt = np.array(
         [

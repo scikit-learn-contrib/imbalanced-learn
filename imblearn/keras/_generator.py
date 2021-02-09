@@ -164,7 +164,7 @@ class BalancedBatchGenerator(*ParentClass):
         self.sampler_.fit_resample(self.X, self.y)
         if not hasattr(self.sampler_, "sample_indices_"):
             raise ValueError(
-                "'sampler' needs to have an attribute " "'sample_indices_'."
+                "'sampler' needs to have an attribute 'sample_indices_'."
             )
         self.indices_ = self.sampler_.sample_indices_
         # shuffle the indices since the sampler are packing them by class
@@ -176,24 +176,18 @@ class BalancedBatchGenerator(*ParentClass):
     def __getitem__(self, index):
         X_resampled = _safe_indexing(
             self.X,
-            self.indices_[
-                index * self.batch_size:(index + 1) * self.batch_size
-            ],
+            self.indices_[index * self.batch_size : (index + 1) * self.batch_size],
         )
         y_resampled = _safe_indexing(
             self.y,
-            self.indices_[
-                index * self.batch_size:(index + 1) * self.batch_size
-            ],
+            self.indices_[index * self.batch_size : (index + 1) * self.batch_size],
         )
         if issparse(X_resampled) and not self.keep_sparse:
             X_resampled = X_resampled.toarray()
         if self.sample_weight is not None:
             sample_weight_resampled = _safe_indexing(
                 self.sample_weight,
-                self.indices_[
-                    index * self.batch_size:(index + 1) * self.batch_size
-                ],
+                self.indices_[index * self.batch_size : (index + 1) * self.batch_size],
             )
 
         if self.sample_weight is None:

@@ -37,12 +37,14 @@ print(__doc__)
 # Note the class \#3 is the minority class and has almost twice less samples
 # than the majority class.
 
-categories = ['alt.atheism', 'talk.religion.misc',
-              'comp.graphics', 'sci.space']
-newsgroups_train = fetch_20newsgroups(subset='train',
-                                      categories=categories)
-newsgroups_test = fetch_20newsgroups(subset='test',
-                                     categories=categories)
+categories = [
+    "alt.atheism",
+    "talk.religion.misc",
+    "comp.graphics",
+    "sci.space",
+]
+newsgroups_train = fetch_20newsgroups(subset="train", categories=categories)
+newsgroups_test = fetch_20newsgroups(subset="test", categories=categories)
 
 X_train = newsgroups_train.data
 X_test = newsgroups_test.data
@@ -50,8 +52,8 @@ X_test = newsgroups_test.data
 y_train = newsgroups_train.target
 y_test = newsgroups_test.target
 
-print('Training class distributions summary: {}'.format(Counter(y_train)))
-print('Test class distributions summary: {}'.format(Counter(y_test)))
+print(f"Training class distributions summary: {Counter(y_train)}")
+print(f"Test class distributions summary: {Counter(y_test)}")
 
 ###############################################################################
 # The usual scikit-learn pipeline
@@ -84,9 +86,7 @@ print(classification_report_imbalanced(y_test, y_pred))
 # It is also important to note that we are using the ``make_pipeline`` function
 # implemented in imbalanced-learn to properly handle the samplers.
 
-pipe = make_pipeline_imb(TfidfVectorizer(),
-                         RandomUnderSampler(),
-                         MultinomialNB())
+pipe = make_pipeline_imb(TfidfVectorizer(), RandomUnderSampler(), MultinomialNB())
 
 pipe.fit(X_train, y_train)
 y_pred = pipe.predict(X_test)
