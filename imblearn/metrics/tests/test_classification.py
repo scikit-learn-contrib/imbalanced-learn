@@ -14,7 +14,6 @@ from sklearn import datasets
 from sklearn import svm
 
 from sklearn.preprocessing import label_binarize
-from sklearn.utils.fixes import np_version
 from sklearn.utils.validation import check_random_state
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_array_equal
@@ -30,6 +29,7 @@ from imblearn.metrics import specificity_score
 from imblearn.metrics import geometric_mean_score
 from imblearn.metrics import make_index_balanced_accuracy
 from imblearn.metrics import classification_report_imbalanced
+from imblearn.metrics import macro_averaged_mean_absolute_error
 
 from imblearn.utils.testing import warns
 
@@ -394,12 +394,8 @@ def test_classification_report_imbalanced_multiclass_with_unicode_label():
         "red¢ 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total "
         "0.51 0.53 0.80 0.47 0.58 0.40 75"
     )
-    if np_version[:3] < (1, 7, 0):
-        with pytest.raises(RuntimeError, match="NumPy < 1.7.0"):
-            classification_report_imbalanced(y_true, y_pred)
-    else:
-        report = classification_report_imbalanced(y_true, y_pred)
-        assert _format_report(report) == expected_report
+    report = classification_report_imbalanced(y_true, y_pred)
+    assert _format_report(report) == expected_report
 
 
 def test_classification_report_imbalanced_multiclass_with_long_string_label():
@@ -447,3 +443,64 @@ def test_iba_error_y_score_prob_error(score_loss):
     aps = make_index_balanced_accuracy(alpha=0.5, squared=True)(score_loss)
     with pytest.raises(AttributeError):
         aps(y_true, y_pred)
+
+
+def test_classification_report_imbalanced_dict():
+    iris = datasets.load_iris()
+    y_true, y_pred, _ = make_prediction(dataset=iris, binary=False)
+
+    report = classification_report_imbalanced(
+        y_true,
+        y_pred,
+        labels=np.arange(len(iris.target_names)),
+        target_names=iris.target_names,
+        output_dict=True,
+    )
+    outer_keys = set(report.keys())
+    inner_keys = set(report[0].keys())
+
+    expected_outer_keys = {
+        0,
+        1,
+        2,
+        "avg_pre",
+        "avg_rec",
+        "avg_spe",
+        "avg_f1",
+        "avg_geo",
+        "avg_iba",
+        "total_support",
+    }
+    expected_inner_keys = {'spe', 'f1', 'sup', 'rec', 'geo', 'iba', 'pre'}
+
+    assert outer_keys == expected_outer_keys
+    assert inner_keys == expected_inner_keys
+
+
+@pytest.mark.parametrize(
+    "y_true, y_pred, expected_ma_mae",
+    [
+        ([1, 1, 1, 2, 2, 2], [1, 2, 1, 2, 1, 2], 0.333),
+        ([1, 1, 1, 1, 1, 2], [1, 2, 1, 2, 1, 2], 0.2),
+        ([1, 1, 1, 2, 2, 2, 3, 3, 3], [1, 3, 1, 2, 1, 1, 2, 3, 3], 0.555),
+        ([1, 1, 1, 1, 1, 1, 2, 3, 3], [1, 3, 1, 2, 1, 1, 2, 3, 3], 0.166),
+
+    ],
+)
+def test_macro_averaged_mean_absolute_error(y_true, y_pred, expected_ma_mae):
+    ma_mae = macro_averaged_mean_absolute_error(y_true, y_pred)
+    assert ma_mae == pytest.approx(expected_ma_mae, rel=R_TOL)
+
+
+def test_macro_averaged_mean_absolute_error_sample_weight():
+    y_true = [1, 1, 1, 2, 2, 2]
+    y_pred = [1, 2, 1, 2, 1, 2]
+
+    ma_mae_no_weights = macro_averaged_mean_absolute_error(y_true, y_pred)
+
+    sample_weight = [1, 1, 1, 1, 1, 1]
+    ma_mae_unit_weights = macro_averaged_mean_absolute_error(
+        y_true, y_pred, sample_weight=sample_weight,
+    )
+
+    assert ma_mae_unit_weights == pytest.approx(ma_mae_no_weights)

@@ -215,7 +215,7 @@ class Pipeline(pipeline.Pipeline):
             finally:
                 cloned_transformer = clone(transformer) if mem else transformer
 
-            # Fit or load from cache the current transfomer
+            # Fit or load from cache the current transformer
             if hasattr(cloned_transformer, "transform") or hasattr(
                 cloned_transformer, "fit_transform"
             ):

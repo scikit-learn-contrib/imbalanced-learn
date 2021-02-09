@@ -37,13 +37,13 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
     Parameters
     ----------
-    estimator : object, default=None
+    estimator : estimator object, default=None
         Classifier to be used to estimate instance hardness of the samples.  By
-        default a :class:`sklearn.ensemble.RandomForestClassifier` will be used.
-        If ``str``, the choices using a string are the following: ``'knn'``,
-        ``'decision-tree'``, ``'random-forest'``, ``'adaboost'``,
+        default a :class:`~sklearn.ensemble.RandomForestClassifier` will be
+        used. If ``str``, the choices using a string are the following:
+        ``'knn'``, ``'decision-tree'``, ``'random-forest'``, ``'adaboost'``,
         ``'gradient-boosting'`` and ``'linear-svm'``.  If object, an estimator
-        inherited from :class:`sklearn.base.ClassifierMixin` and having an
+        inherited from :class:`~sklearn.base.ClassifierMixin` and having an
         attribute :func:`predict_proba`.
 
     {sampling_strategy}
@@ -57,7 +57,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
     Attributes
     ----------
-    sample_indices_ : ndarray of shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
@@ -83,7 +83,6 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import InstanceHardnessThreshold

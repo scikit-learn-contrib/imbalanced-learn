@@ -18,12 +18,16 @@ import warnings
 import numpy as np
 import scipy as sp
 
+from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics._classification import _check_targets
 from sklearn.metrics._classification import _prf_divide
-
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.multiclass import unique_labels
+from sklearn.utils.validation import (
+    check_consistent_length,
+    column_or_1d,
+)
 
 try:
     from inspect import signature
@@ -64,13 +68,13 @@ def sensitivity_specificity_support(
 
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
+    y_true : ndarray of shape (n_samples,)
         Ground truth (correct) target values.
 
-    y_pred : ndarray, shape (n_samples, )
+    y_pred : ndarray of shape (n_samples,)
         Estimated targets as returned by a classifier.
 
-    labels : list, optional
+    labels : list, default=None
         The set of labels to include when ``average != 'binary'``, and their
         order if ``average is None``. Labels present in the data can be
         excluded, for example to calculate a multiclass average ignoring a
@@ -79,13 +83,13 @@ def sensitivity_specificity_support(
         labels are column indices. By default, all labels in ``y_true`` and
         ``y_pred`` are used in sorted order.
 
-    pos_label : str or int, optional (default=1)
+    pos_label : str or int, default=1
         The class to report if ``average='binary'`` and the data is binary.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : str or None, optional (default=None)
+    average : str, default=None
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
@@ -107,23 +111,26 @@ def sensitivity_specificity_support(
             Calculate metrics for each instance, and find their average (only
             meaningful for multilabel classification where this differs from
             :func:`accuracy_score`).
-    warn_for : tuple or set, for internal use
+
+    warn_for : tuple or set of {{"sensitivity", "specificity"}}, for internal use
         This determines which warnings will be made in the case that this
         function is being used to return only one of its metrics.
 
-    sample_weight : ndarray, shape (n_samples, )
+    sample_weight : ndarray of shape (n_samples,), default=None
         Sample weights.
 
     Returns
     -------
-    sensitivity : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    sensitivity : float (if `average is None`) or ndarray of \
+            shape (n_unique_labels,)
+        The sensitivity metric.
 
-    specificity : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    specificity : float (if `average is None`) or ndarray of \
+            shape (n_unique_labels,)
+        The specificity metric.
 
-    support : int (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    support : int (if `average is None`) or ndarray of \
+            shape (n_unique_labels,)
         The number of occurrences of each label in ``y_true``.
 
     References
@@ -143,7 +150,6 @@ def sensitivity_specificity_support(
     (0.33333333333333331, 0.66666666666666663, None)
     >>> sensitivity_specificity_support(y_true, y_pred, average='weighted')
     (0.33333333333333331, 0.66666666666666663, None)
-
     """
     average_options = (None, "micro", "macro", "weighted", "samples")
     if average not in average_options and average != "binary":
@@ -295,26 +301,26 @@ def sensitivity_score(
 
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
+    y_true : ndarray of shape (n_samples,)
         Ground truth (correct) target values.
 
-    y_pred : ndarray, shape (n_samples, )
+    y_pred : ndarray of shape (n_samples,)
         Estimated targets as returned by a classifier.
 
-    labels : list, optional
+    labels : list, default=None
         The set of labels to include when ``average != 'binary'``, and their
         order if ``average is None``. Labels present in the data can be
         excluded, for example to calculate a multiclass average ignoring a
         majority negative class, while labels not present in the data will
         result in 0 components in a macro average.
 
-    pos_label : str or int, optional (default=1)
+    pos_label : str or int, default=1
         The class to report if ``average='binary'`` and the data is binary.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : str or None, optional (default=None)
+    average : str, default=None
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
@@ -337,17 +343,14 @@ def sensitivity_score(
             meaningful for multilabel classification where this differs from
             :func:`accuracy_score`).
 
-    warn_for : tuple or set, for internal use
-        This determines which warnings will be made in the case that this
-        function is being used to return only one of its metrics.
-
-    sample_weight : ndarray, shape (n_samples, )
+    sample_weight : ndarray of shape (n_samples,), default=None
         Sample weights.
 
     Returns
     -------
-    specificity : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    specificity : float (if `average is None`) or ndarray of \
+            shape (n_unique_labels,)
+        The specifcity metric.
 
     Examples
     --------
@@ -363,7 +366,6 @@ def sensitivity_score(
     0.33333333333333331
     >>> sensitivity_score(y_true, y_pred, average=None)
     array([ 1.,  0.,  0.])
-
     """
     s, _, _ = sensitivity_specificity_support(
         y_true,
@@ -394,26 +396,26 @@ def specificity_score(
 
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
+    y_true : ndarray of shape (n_samples,)
         Ground truth (correct) target values.
 
-    y_pred : ndarray, shape (n_samples, )
+    y_pred : ndarray of shape (n_samples,)
         Estimated targets as returned by a classifier.
 
-    labels : list, optional
+    labels : list, default=None
         The set of labels to include when ``average != 'binary'``, and their
         order if ``average is None``. Labels present in the data can be
         excluded, for example to calculate a multiclass average ignoring a
         majority negative class, while labels not present in the data will
         result in 0 components in a macro average.
 
-    pos_label : str or int, optional (default=1)
+    pos_label : str or int, default=1
         The class to report if ``average='binary'`` and the data is binary.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : str or None, optional (default=None)
+    average : str, default=None
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
@@ -436,17 +438,14 @@ def specificity_score(
             meaningful for multilabel classification where this differs from
             :func:`accuracy_score`).
 
-    warn_for : tuple or set, for internal use
-        This determines which warnings will be made in the case that this
-        function is being used to return only one of its metrics.
-
-    sample_weight : ndarray, shape (n_samples, )
+    sample_weight : ndarray of shape (n_samples,), default=None
         Sample weights.
 
     Returns
     -------
-    specificity : float (if ``average`` = None) or ndarray, \
-        shape (n_unique_labels, )
+    specificity : float (if `average is None`) or ndarray of \
+            shape (n_unique_labels,)
+        The specificity metric.
 
     Examples
     --------
@@ -462,7 +461,6 @@ def specificity_score(
     0.66666666666666663
     >>> specificity_score(y_true, y_pred, average=None)
     array([ 0.75,  0.5 ,  0.75])
-
     """
     _, s, _ = sensitivity_specificity_support(
         y_true,
@@ -511,26 +509,26 @@ def geometric_mean_score(
 
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
+    y_true : ndarray of shape (n_samples,)
         Ground truth (correct) target values.
 
-    y_pred : ndarray, shape (n_samples, )
+    y_pred : ndarray of shape (n_samples,)
         Estimated targets as returned by a classifier.
 
-    labels : list, optional
+    labels : list, default=None
         The set of labels to include when ``average != 'binary'``, and their
         order if ``average is None``. Labels present in the data can be
         excluded, for example to calculate a multiclass average ignoring a
         majority negative class, while labels not present in the data will
         result in 0 components in a macro average.
 
-    pos_label : str or int, optional (default=1)
+    pos_label : str or int, default=1
         The class to report if ``average='binary'`` and the data is binary.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
 
-    average : str or None, optional (default='multiclass')
+    average : str or None, default='multiclass'
         If ``None``, the scores for each class are returned. Otherwise, this
         determines the type of averaging performed on the data:
 
@@ -553,10 +551,10 @@ def geometric_mean_score(
             meaningful for multilabel classification where this differs from
             :func:`accuracy_score`).
 
-    sample_weight : ndarray, shape (n_samples, )
+    sample_weight : ndarray of shape (n_samples,), default=None
         Sample weights.
 
-    correction: float, optional (default=0.0)
+    correction: float, default=0.0
         Substitutes sensitivity of unrecognized classes from zero to a given
         value.
 
@@ -594,7 +592,6 @@ def geometric_mean_score(
     0.47140452079103168
     >>> geometric_mean_score(y_true, y_pred, average=None)
     array([ 0.8660254,  0.       ,  0.       ])
-
     """
     if average is None or average != "multiclass":
         sen, spe, _ = sensitivity_specificity_support(
@@ -678,10 +675,10 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
 
     Parameters
     ----------
-    alpha : float, optional (default=0.1)
+    alpha : float, default=0.1
         Weighting factor.
 
-    squared : bool, optional (default=True)
+    squared : bool, default=True
         If ``squared`` is True, then the metric computed will be squared
         before to be weighted.
 
@@ -711,7 +708,6 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
     >>> y_pred = [0, 0, 1, 1, 0, 1]
     >>> print(gmean(y_true, y_pred, average=None))
     [ 0.44444444  0.44444444]
-
     """
 
     def decorate(scoring_func):
@@ -779,6 +775,8 @@ def classification_report_imbalanced(
     sample_weight=None,
     digits=2,
     alpha=0.1,
+    output_dict=False,
+    zero_division="warn",
 ):
     """Build a classification report based on metrics used with imbalanced
     dataset
@@ -789,38 +787,59 @@ def classification_report_imbalanced(
     mean, and index balanced accuracy of the
     geometric mean.
 
+    Read more in the :ref:`User Guide <classification_report>`.
+
     Parameters
     ----------
-    y_true : ndarray, shape (n_samples, )
+    y_true : 1d array-like, or label indicator array / sparse matrix
         Ground truth (correct) target values.
 
-    y_pred : ndarray, shape (n_samples, )
+    y_pred : 1d array-like, or label indicator array / sparse matrix
         Estimated targets as returned by a classifier.
 
-    labels : list, optional
-        The set of labels to include when ``average != 'binary'``, and their
-        order if ``average is None``. Labels present in the data can be
-        excluded, for example to calculate a multiclass average ignoring a
-        majority negative class, while labels not present in the data will
-        result in 0 components in a macro average.
+    labels : array-like of shape (n_labels,), default=None
+        Optional list of label indices to include in the report.
 
-    target_names : list of strings, optional
+    target_names : list of str of shape (n_labels,), default=None
         Optional display names matching the labels (same order).
 
-    sample_weight : ndarray, shape (n_samples, )
+    sample_weight : array-like of shape (n_samples,), default=None
         Sample weights.
 
-    digits : int, optional (default=2)
-        Number of digits for formatting output floating point values
+    digits : int, default=2
+        Number of digits for formatting output floating point values.
+        When ``output_dict`` is ``True``, this will be ignored and the
+        returned values will not be rounded.
 
-    alpha : float, optional (default=0.1)
+    alpha : float, default=0.1
         Weighting factor.
+
+    output_dict : bool, default=False
+        If True, return output as dict.
+
+        .. versionadded:: 0.7
+
+    zero_division : "warn" or {0, 1}, default="warn"
+        Sets the value to return when there is a zero division. If set to
+        "warn", this acts as 0, but warnings are also raised.
+
+        .. versionadded:: 0.7
 
     Returns
     -------
-    report : string
+    report : string / dict
         Text summary of the precision, recall, specificity, geometric mean,
         and index balanced accuracy.
+        Dictionary returned if output_dict is True. Dictionary has the
+        following structure::
+
+            {'label 1': {'pre':0.5,
+                         'rec':1.0,
+                         ...
+                        },
+             'label 2': { ... },
+              ...
+            }
 
     Examples
     --------
@@ -856,7 +875,7 @@ def classification_report_imbalanced(
     last_line_heading = "avg / total"
 
     if target_names is None:
-        target_names = ["%s" % l for l in labels]
+        target_names = [f"{label}" for label in labels]
     name_width = max(len(cn) for cn in target_names)
     width = max(name_width, len(last_line_heading), digits)
 
@@ -873,7 +892,12 @@ def classification_report_imbalanced(
     # Compute the different metrics
     # Precision/recall/f1
     precision, recall, f1, support = precision_recall_fscore_support(
-        y_true, y_pred, labels=labels, average=None, sample_weight=sample_weight,
+        y_true,
+        y_pred,
+        labels=labels,
+        average=None,
+        sample_weight=sample_weight,
+        zero_division=zero_division
     )
     # Specificity
     specificity = specificity_score(
@@ -891,33 +915,115 @@ def classification_report_imbalanced(
         y_true, y_pred, labels=labels, average=None, sample_weight=sample_weight,
     )
 
+    report_dict = {}
     for i, label in enumerate(labels):
+        report_dict_label = {}
         values = [target_names[i]]
-        for v in (
-            precision[i],
-            recall[i],
-            specificity[i],
-            f1[i],
-            geo_mean[i],
-            iba[i],
+        for score_name, score_value in zip(
+            headers[1:-1],
+            [
+                precision[i],
+                recall[i],
+                specificity[i],
+                f1[i],
+                geo_mean[i],
+                iba[i],
+            ]
         ):
-            values += ["{0:0.{1}f}".format(v, digits)]
-        values += ["{}".format(support[i])]
+            values += ["{0:0.{1}f}".format(score_value, digits)]
+            report_dict_label[score_name] = score_value
+        values += [f"{support[i]}"]
+        report_dict_label[headers[-1]] = support[i]
         report += fmt % tuple(values)
+
+        report_dict[label] = report_dict_label
 
     report += "\n"
 
     # compute averages
     values = [last_line_heading]
-    for v in (
-        np.average(precision, weights=support),
-        np.average(recall, weights=support),
-        np.average(specificity, weights=support),
-        np.average(f1, weights=support),
-        np.average(geo_mean, weights=support),
-        np.average(iba, weights=support),
+    for score_name, score_value in zip(
+        headers[1:-1],
+        [
+            np.average(precision, weights=support),
+            np.average(recall, weights=support),
+            np.average(specificity, weights=support),
+            np.average(f1, weights=support),
+            np.average(geo_mean, weights=support),
+            np.average(iba, weights=support),
+        ]
     ):
-        values += ["{0:0.{1}f}".format(v, digits)]
-    values += ["{}".format(np.sum(support))]
+        values += ["{0:0.{1}f}".format(score_value, digits)]
+        report_dict[f"avg_{score_name}"] = score_value
+    values += [f"{np.sum(support)}"]
     report += fmt % tuple(values)
+    report_dict["total_support"] = np.sum(support)
+
+    if output_dict:
+        return report_dict
     return report
+
+
+def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
+    """Compute Macro-Averaged Mean Absolute Error (MA-MAE)
+    for imbalanced ordinal classification.
+
+    This function computes each MAE for each class and average them,
+    giving an equal weight to each class.
+
+    Read more in the :ref:`User Guide <macro_averaged_mean_absolute_error>`.
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated targets as returned by a classifier.
+
+    sample_weight : array-like of shape (n_samples,), default=None
+        Sample weights.
+
+    Returns
+    -------
+    loss : float or ndarray of floats
+        Macro-Averaged MAE output is non-negative floating point.
+        The best value is 0.0.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from sklearn.metrics import mean_absolute_error
+    >>> from imblearn.metrics import macro_averaged_mean_absolute_error
+    >>> y_true_balanced = [1, 1, 2, 2]
+    >>> y_true_imbalanced = [1, 2, 2, 2]
+    >>> y_pred = [1, 2, 1, 2]
+    >>> mean_absolute_error(y_true_balanced, y_pred)
+    0.5
+    >>> mean_absolute_error(y_true_imbalanced, y_pred)
+    0.25
+    >>> macro_averaged_mean_absolute_error(y_true_balanced, y_pred)
+    0.5
+    >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
+    0.16666666666666666
+    """
+    _, y_true, y_pred = _check_targets(y_true, y_pred)
+    if sample_weight is not None:
+        sample_weight = column_or_1d(sample_weight)
+    else:
+        sample_weight = np.ones(y_true.shape)
+    check_consistent_length(y_true, y_pred, sample_weight)
+    labels = unique_labels(y_true, y_pred)
+    mae = []
+    for possible_class in labels:
+        indices = np.flatnonzero(y_true == possible_class)
+
+        mae.append(
+            mean_absolute_error(
+                y_true[indices],
+                y_pred[indices],
+                sample_weight=sample_weight[indices],
+            )
+        )
+
+    return np.sum(mae) / len(mae)

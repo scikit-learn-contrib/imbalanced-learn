@@ -11,7 +11,7 @@ def deprecate_parameter(sampler, version_deprecation, param_deprecated, new_para
 
     Parameters
     ----------
-    sampler : object,
+    sampler : sampler object,
         The object which will be inspected.
 
     version_deprecation : str,

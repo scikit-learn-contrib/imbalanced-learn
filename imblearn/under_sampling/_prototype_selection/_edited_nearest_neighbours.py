@@ -41,7 +41,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors.
 
     kind_sel : {{'all', 'mode'}}, default='all'
@@ -52,11 +52,14 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
+        The strategy `"all"` will be less conservative than `'mode'`. Thus,
+        more samples will be removed when `kind_sel="all"` generally.
+
     {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray of shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
@@ -174,7 +177,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors.
 
     max_iter : int, default=100
@@ -189,11 +192,14 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
 
+        The strategy `"all"` will be less conservative than `'mode'`. Thus,
+        more samples will be removed when `kind_sel="all"` generally.
+
     {n_jobs}
 
     Attributes
     ----------
-    sample_indices_ : ndarray of shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
@@ -226,7 +232,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import \
@@ -349,11 +354,11 @@ class AllKNN(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    n_neighbors : int or object, default=3
+    n_neighbors : int or estimator object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbors.
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the nearest-neighbors. By default, it will be a 3-NN.
 
     kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
@@ -362,6 +367,9 @@ class AllKNN(BaseCleaningSampler):
           interest to not be excluded.
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
+
+        The strategy `"all"` will be less conservative than `'mode'`. Thus,
+        more samples will be removed when `kind_sel="all"` generally.
 
     allow_minority : bool, default=False
         If ``True``, it allows the majority classes to become the minority
@@ -373,7 +381,7 @@ class AllKNN(BaseCleaningSampler):
 
     Attributes
     ----------
-    sample_indices_ : ndarray of shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
@@ -401,7 +409,6 @@ class AllKNN(BaseCleaningSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import \

@@ -161,9 +161,9 @@ class BaseSMOTE(BaseOverSampler):
 
         Parameters
         ----------
-        nn_estimator : estimator
+        nn_estimator : estimator object
             An estimator that inherits from
-            :class:`sklearn.neighbors.base.KNeighborsMixin` use to determine if
+            :class:`~sklearn.neighbors.base.KNeighborsMixin` use to determine if
             a sample is in danger/noise.
 
         samples : {array-like, sparse matrix} of shape (n_samples, n_features)
@@ -226,7 +226,7 @@ class BorderlineSMOTE(BaseSMOTE):
     k_neighbors : int or object, default=5
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
     {n_jobs}
@@ -234,7 +234,7 @@ class BorderlineSMOTE(BaseSMOTE):
     m_neighbors : int or object, default=10
         If int, number of nearest neighbours to use to determine if a minority
         sample is in danger. If object, an estimator that inherits
-        from :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used
+        from :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used
         to find the m_neighbors.
 
     kind : {{"borderline-1", "borderline-2"}}, default='borderline-1'
@@ -243,6 +243,8 @@ class BorderlineSMOTE(BaseSMOTE):
 
     See Also
     --------
+    ROSE : Random Over-Sampling Examples.
+
     SMOTE : Over-sample using SMOTE.
 
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
@@ -273,7 +275,6 @@ class BorderlineSMOTE(BaseSMOTE):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.over_sampling import \
@@ -422,7 +423,7 @@ class SVMSMOTE(BaseSMOTE):
     k_neighbors : int or object, default=5
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
     {n_jobs}
@@ -430,17 +431,19 @@ class SVMSMOTE(BaseSMOTE):
     m_neighbors : int or object, default=10
         If int, number of nearest neighbours to use to determine if a minority
         sample is in danger. If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the m_neighbors.
 
-    svm_estimator : object, default=SVC()
-        A parametrized :class:`sklearn.svm.SVC` classifier can be passed.
+    svm_estimator : estimator object, default=SVC()
+        A parametrized :class:`~sklearn.svm.SVC` classifier can be passed.
 
     out_step : float, default=0.5
         Step size when extrapolating.
 
     See Also
     --------
+    ROSE : Random Over-Sampling Examples.
+
     SMOTE : Over-sample using SMOTE.
 
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
@@ -471,7 +474,6 @@ class SVMSMOTE(BaseSMOTE):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.over_sampling import \
@@ -632,13 +634,15 @@ class SMOTE(BaseSMOTE):
     k_neighbors : int or object, default=5
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
     {n_jobs}
 
     See Also
     --------
+    ROSE : Random Over-Sampling Examples.
+
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
     BorderlineSMOTE : Over-sample using the borderline-SMOTE variant.
@@ -665,7 +669,6 @@ class SMOTE(BaseSMOTE):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.over_sampling import \
@@ -796,7 +799,7 @@ class SMOTENC(SMOTE):
     k_neighbors : int or object, default=5
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
     n_jobs : int, default=None
@@ -808,6 +811,8 @@ class SMOTENC(SMOTE):
 
     See Also
     --------
+    ROSE : Random Over-Sampling Examples.
+
     SMOTE : Over-sample using SMOTE.
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
@@ -838,7 +843,6 @@ class SMOTENC(SMOTE):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from numpy.random import RandomState
     >>> from sklearn.datasets import make_classification
@@ -1062,14 +1066,14 @@ class KMeansSMOTE(BaseSMOTE):
     k_neighbors : int or object, default=2
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
     {n_jobs}
 
     kmeans_estimator : int or object, default=None
         A KMeans instance or the number of clusters to be used. By default,
-        we used a :class:`sklearn.cluster.MiniBatchKMeans` which tend to be
+        we used a :class:`~sklearn.cluster.MiniBatchKMeans` which tend to be
         better with large number of samples.
 
     cluster_balance_threshold : "auto" or float, default="auto"
@@ -1095,6 +1099,8 @@ class KMeansSMOTE(BaseSMOTE):
 
     See Also
     --------
+    ROSE : Random Over-Sampling Examples.
+
     SMOTE : Over-sample using SMOTE.
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
@@ -1111,7 +1117,6 @@ class KMeansSMOTE(BaseSMOTE):
 
     Examples
     --------
-
     >>> import numpy as np
     >>> from imblearn.over_sampling import KMeansSMOTE
     >>> from sklearn.datasets import make_blobs

@@ -69,7 +69,7 @@ Forest of randomized trees
 :class:`BalancedRandomForestClassifier` is another ensemble method in which
 each tree of the forest will be provided a balanced bootstrap sample
 :cite:`chen2004using`. This class provides all functionality of the
-:class:`sklearn.ensemble.RandomForestClassifier` and notably the
+:class:`~sklearn.ensemble.RandomForestClassifier` and notably the
 `feature_importances_` attributes::
 
   >>> from imblearn.ensemble import BalancedRandomForestClassifier

@@ -37,14 +37,27 @@ class RandomOverSampler(BaseOverSampler):
 
     Attributes
     ----------
-    sample_indices_ : ndarray of shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
 
     See Also
     --------
-    SMOTE : Oversample by generating synthetic samples.
+    ROSE : Random Over-Sampling Examples.
+
+    BorderlineSMOTE : Over-sample using the bordeline-SMOTE variant.
+
+    SMOTE : Over-sample using SMOTE.
+
+    SMOTENC : Over-sample using SMOTE for continuous and categorical features.
+
+    SVMSMOTE : Over-sample using SVM-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
+
+    KMeansSMOTE : Over-sample applying a clustering before to oversample using
+        SMOTE.
 
     Notes
     -----
@@ -54,7 +67,6 @@ class RandomOverSampler(BaseOverSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.over_sampling import \

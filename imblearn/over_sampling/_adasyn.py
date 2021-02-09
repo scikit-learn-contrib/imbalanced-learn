@@ -38,10 +38,10 @@ class ADASYN(BaseOverSampler):
 
     {random_state}
 
-    n_neighbors : int int or object, optional (default=5)
+    n_neighbors : int or estimator object, default=5
         If ``int``, number of nearest neighbours to used to construct synthetic
         samples.  If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
 
     {n_jobs}
@@ -65,7 +65,6 @@ class ADASYN(BaseOverSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.over_sampling import \

@@ -63,7 +63,7 @@ def convert_float64(X):
 ###############################################################################
 # We want to standard scale the numerical features while we want to one-hot
 # encode the categorical features. In this regard, we make use of the
-# :class:`sklearn.compose.ColumnTransformer`.
+# :class:`~sklearn.compose.ColumnTransformer`.
 
 numerical_columns = [
     name for name in X_train.columns if "_calc_" in name and "_bin" not in name
@@ -94,9 +94,13 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 ###############################################################################
 # Create a neural-network
 ###############################################################################
-
-from keras.models import Sequential
-from keras.layers import Activation, Dense, Dropout, BatchNormalization
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import (
+    Activation,
+    Dense,
+    Dropout,
+    BatchNormalization,
+)
 
 
 def make_model(n_features):
@@ -171,8 +175,8 @@ def fit_predict_balanced_model(X_train, y_train, X_test, y_test):
     training_generator = BalancedBatchGenerator(
         X_train, y_train, batch_size=1000, random_state=42
     )
-    model.fit_generator(generator=training_generator, epochs=5, verbose=1)
-    y_pred = model.predict_proba(X_test, batch_size=1000)
+    model.fit(training_generator, epochs=5, verbose=1)
+    y_pred = model.predict(X_test, batch_size=1000)
     return roc_auc_score(y_test, y_pred)
 
 

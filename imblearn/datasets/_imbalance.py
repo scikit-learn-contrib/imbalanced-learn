@@ -26,13 +26,13 @@ def make_imbalance(
 
     Parameters
     ----------
-    X : {array-like, dataframe}, shape (n_samples, n_features)
+    X : {array-like, dataframe} of shape (n_samples, n_features)
         Matrix containing the data to be imbalanced.
 
-    y : ndarray, shape (n_samples, )
+    y : ndarray of shape (n_samples,)
         Corresponding label for each sample in X.
 
-    sampling_strategy : dict, or callable,
+    sampling_strategy : dict or callable,
         Ratio to use for resampling the data set.
 
         - When ``dict``, the keys correspond to the targeted classes. The
@@ -43,25 +43,25 @@ def make_imbalance(
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
 
-    random_state : int, RandomState instance or None, optional (default=None)
+    random_state : int, RandomState instance or None, default=None
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by np.random.
 
-    verbose : bool, optional (default=False)
+    verbose : bool, default=False
         Show information regarding the sampling.
 
-    kwargs : dict, optional
+    kwargs : dict
         Dictionary of additional keyword arguments to pass to
         ``sampling_strategy``.
 
     Returns
     -------
-    X_resampled : {ndarray, dataframe}, shape (n_samples_new, n_features)
+    X_resampled : {ndarray, dataframe} of shape (n_samples_new, n_features)
         The array containing the imbalanced data.
 
-    y_resampled : ndarray, shape (n_samples_new)
+    y_resampled : ndarray of shape (n_samples_new)
         The corresponding label of `X_resampled`
 
     Notes
@@ -86,7 +86,6 @@ def make_imbalance(
     ...                               random_state=42)
     >>> print('Distribution after imbalancing: {}'.format(Counter(y_res)))
     Distribution after imbalancing: Counter({2: 30, 1: 20, 0: 10})
-
     """
     target_stats = Counter(y)
     # restrict ratio to be a dict or a callable

@@ -36,11 +36,11 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     ----------
     {sampling_strategy}
 
-    n_neighbors : int or object, default=3
+    n_neighbors : int or estimator object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
-        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbors.
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the nearest-neighbors. By default, it will be a 3-NN.
 
     kind_sel : {{"all", "mode"}}, default='all'
         Strategy to use in order to exclude samples in the ENN sampling.
@@ -49,6 +49,9 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
           interest to not be excluded.
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order to exclude a sample.
+
+        The strategy `"all"` will be less conservative than `'mode'`. Thus,
+        more samples will be removed when `kind_sel="all"` generally.
 
     threshold_cleaning : float, default=0.5
         Threshold used to whether consider a class or not during the cleaning
@@ -63,7 +66,7 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
     Attributes
     ----------
-    sample_indices_ : ndarray of shape (n_new_samples)
+    sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
@@ -86,7 +89,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.under_sampling import \
