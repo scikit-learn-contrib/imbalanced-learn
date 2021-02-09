@@ -201,7 +201,7 @@ class FunctionSampler(BaseSampler):
     ...                           kw_args={'sampling_strategy': 'auto',
     ...                                    'random_state': 0})
     >>> X_res, y_res = sampler.fit_resample(X, y)
-    >>> print(f'Resampled dataset shape {sorted(Counter(y_res).items()}')
+    >>> print(f'Resampled dataset shape {sorted(Counter(y_res).items())}')
     Resampled dataset shape [(0, 100), (1, 100)]
     """
 

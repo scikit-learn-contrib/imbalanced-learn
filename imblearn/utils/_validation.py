@@ -274,7 +274,7 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
     if len(set_diff_sampling_strategy_target) > 0:
         raise ValueError(
             f"The {set_diff_sampling_strategy_target} target class is/are not "
-            f" present in the data."
+            f"present in the data."
         )
     # check that there is no negative number
     if any(n_samples < 0 for n_samples in sampling_strategy.values()):
