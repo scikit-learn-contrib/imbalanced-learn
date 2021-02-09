@@ -18,7 +18,7 @@ Install
 =======
 
 From PyPi or conda-forge repositories
-.....................................
+-------------------------------------
 
 imbalanced-learn is currently available on the PyPi's repositories and you can
 install it via `pip`::
@@ -30,7 +30,7 @@ The package is release also in Anaconda Cloud platform::
   conda install -c conda-forge imbalanced-learn
 
 From source available on GitHub
-...............................
+-------------------------------
 
 If you prefer, you can clone it and run the setup.py file. Use the following
 commands to get a copy from Github and install all dependencies::

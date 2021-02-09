@@ -65,7 +65,10 @@ pandas(>=0.22).
 Installation
 ~~~~~~~~~~~~
 
-imbalanced-learn is currently available on the PyPi's repository and you can
+From PyPi or conda-forge repositories
+.....................................
+
+imbalanced-learn is currently available on the PyPi's repositories and you can
 install it via `pip`::
 
   pip install -U imbalanced-learn
@@ -74,16 +77,25 @@ The package is release also in Anaconda Cloud platform::
 
   conda install -c conda-forge imbalanced-learn
 
+From source available on GitHub
+...............................
+
 If you prefer, you can clone it and run the setup.py file. Use the following
-commands to get a copy from GitHub and install all dependencies::
+commands to get a copy from Github and install all dependencies::
 
   git clone https://github.com/scikit-learn-contrib/imbalanced-learn.git
   cd imbalanced-learn
   pip install .
 
-Or install using pip and GitHub::
+Be aware that you can install in developer mode with::
 
-  pip install -U git+https://github.com/scikit-learn-contrib/imbalanced-learn.git
+  pip install --no-build-isolation --editable .
+
+If you wish to make pull-requests on GitHub, we advise you to install
+pre-commit::
+
+  pip install pre-commit
+  pre-commit install
 
 Testing
 ~~~~~~~
