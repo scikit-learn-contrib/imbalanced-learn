@@ -220,6 +220,38 @@ class FunctionSampler(BaseSampler):
         self.kw_args = kw_args
         self.validate = validate
 
+    def fit(self, X, y):
+        """Check inputs and statistics of the sampler.
+
+        You should use ``fit_resample`` in all cases.
+
+        Parameters
+        ----------
+        X : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples, n_features)
+            Data array.
+
+        y : array-like of shape (n_samples,)
+            Target array.
+
+        Returns
+        -------
+        self : object
+            Return the instance itself.
+        """
+        # we need to overwrite SamplerMixin.fit to bypass the validation
+        if self.validate:
+            check_classification_targets(y)
+            X, y, _ = self._check_X_y(
+                X, y, accept_sparse=self.accept_sparse
+            )
+
+        self.sampling_strategy_ = check_sampling_strategy(
+            self.sampling_strategy, y, self._sampling_type
+        )
+
+        return self
+
     def fit_resample(self, X, y):
         """Resample the dataset.
 
