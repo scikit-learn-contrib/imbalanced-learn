@@ -66,12 +66,14 @@ alpha = 0.1
 geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(geometric_mean_score)
 
 print(
-    f"The IBA using alpha = {alpha} and the geometric mean: {geo_mean(y_test, y_pred_bal)}"
+    f"The IBA using alpha = {alpha} and the geometric mean: "
+    f"{geo_mean(y_test, y_pred_bal)}"
 )
 
 alpha = 0.5
 geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(geometric_mean_score)
 
 print(
-    f"The IBA using alpha = {alpha} and the geometric mean: {geo_mean(y_test, y_pred_bal)}"
+    f"The IBA using alpha = {alpha} and the geometric mean: "
+    f"{geo_mean(y_test, y_pred_bal)}"
 )

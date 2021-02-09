@@ -510,7 +510,8 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
         if sampling_strategy not in SAMPLING_TARGET_KIND.keys():
             raise ValueError(
                 f"When 'sampling_strategy' is a string, it needs"
-                f" to be one of {SAMPLING_TARGET_KIND}. Got '{sampling_strategy}' instead."
+                f" to be one of {SAMPLING_TARGET_KIND}. Got '{sampling_strategy}' "
+                f"instead."
             )
         return OrderedDict(
             sorted(SAMPLING_TARGET_KIND[sampling_strategy](y, sampling_type).items())

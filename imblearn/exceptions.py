@@ -9,5 +9,6 @@ classes and functions used across imbalanced-learn.
 
 def raise_isinstance_error(variable_name, possible_type, variable):
     raise ValueError(
-        f"{variable_name} has to be one of {possible_type}. Got {type(variable)} instead."
+        f"{variable_name} has to be one of {possible_type}. "
+        f"Got {type(variable)} instead."
     )
