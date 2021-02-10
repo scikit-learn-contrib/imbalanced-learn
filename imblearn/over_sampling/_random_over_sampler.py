@@ -4,11 +4,13 @@
 #          Christos Aridas
 # License: MIT
 
-from collections import Counter
+from numbers import Real
 
 import numpy as np
+from scipy import sparse
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
+from sklearn.utils.sparsefuncs import mean_variance_axis
 
 from .base import BaseOverSampler
 from ..utils import check_target_type
@@ -34,6 +36,17 @@ class RandomOverSampler(BaseOverSampler):
     {sampling_strategy}
 
     {random_state}
+
+    smoothed_bootstrap : bool, default=False
+        Whether or not to generate smoothed bootstrap samples.
+
+    shrinkage : float or dict, default=1.0
+        Factor used to shrink the covariance matrix used to generate the
+        smoothed bootstrap. If a float is given, the same factor is applied to
+        generate the bootstrap samples for the classes provided in
+        `sampling_strategy`. If a dictionary is given, different factors will
+        be used to generate the bootstrap samples. The key of the dictionary
+        corresponds to the class and the value to the shrinkage factor.
 
     Attributes
     ----------
@@ -83,9 +96,18 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     """
 
     @_deprecate_positional_args
-    def __init__(self, *, sampling_strategy="auto", random_state=None):
+    def __init__(
+        self,
+        *,
+        sampling_strategy="auto",
+        random_state=None,
+        smoothed_bootstrap=False,
+        shrinkage=1.0,
+    ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
+        self.smoothed_bootstrap = smoothed_bootstrap
+        self.shrinkage = shrinkage
 
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
@@ -101,23 +123,67 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
 
     def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
-        target_stats = Counter(y)
+
+        if self.smoothed_bootstrap:
+            if isinstance(self.shrinkage, Real):
+                self.shrinkage_ = {
+                    klass: self.shrinkage for klass in self.sampling_strategy_
+                }
+            else:
+                missing_shrinkage_keys = (
+                    self.sampling_strategy_.keys() - self.shrinkage.keys()
+                )
+                if missing_shrinkage_keys:
+                    raise ValueError
+                self.shrinkage_ = self.shrinkage
+            # TODO: validate X because we need to apply some math operation
+
+        X_resampled = [X.copy()]
+        y_resampled = [y.copy()]
 
         sample_indices = range(X.shape[0])
-
         for class_sample, num_samples in self.sampling_strategy_.items():
             target_class_indices = np.flatnonzero(y == class_sample)
-            indices = random_state.randint(
-                low=0, high=target_stats[class_sample], size=num_samples
+            bootstrap_indices = random_state.choice(
+                target_class_indices,
+                size=num_samples,
+                replace=True,
             )
+            sample_indices = np.append(sample_indices, bootstrap_indices)
+            if self.smoothed_bootstrap:
+                n_samples, n_features = X.shape
+                smoothing_constant = (4 / ((n_features + 2) * n_samples)) ** (
+                    1 / (n_features + 4)
+                )
+                if sparse.issparse(X):
+                    _, X_class_variance, _ = mean_variance_axis(
+                        X[target_class_indices, :], axis=0
+                    )
+                    X_class_scale = np.sqrt(X_class_variance)
+                else:
+                    X_class_scale = np.std(X[target_class_indices, :], axis=0)
+                smoothing_matrix = np.diagflat(
+                    self.shrinkage_[class_sample] * smoothing_constant * X_class_scale
+                )
+                X_new = random_state.randn(num_samples, n_features)
+                X_new = X_new.dot(smoothing_matrix) + X[bootstrap_indices, :]
+                if sparse.issparse(X):
+                    X_new = sparse.csr_matrix(X_new, dtype=X.dtype)
+                X_resampled.append(X_new)
+                y_resampled.append(_safe_indexing(y, bootstrap_indices))
+            else:
+                X_resampled.append(_safe_indexing(X, bootstrap_indices))
+                y_resampled.append(_safe_indexing(y, bootstrap_indices))
 
-            sample_indices = np.append(sample_indices, target_class_indices[indices])
         self.sample_indices_ = np.array(sample_indices)
 
-        return (
-            _safe_indexing(X, sample_indices),
-            _safe_indexing(y, sample_indices),
-        )
+        if sparse.issparse(X):
+            X_resampled = sparse.vstack(X_resampled, format=X.format)
+        else:
+            X_resampled = np.vstack(X_resampled)
+        y_resampled = np.hstack(y_resampled)
+
+        return X_resampled, y_resampled
 
     def _more_tags(self):
         return {

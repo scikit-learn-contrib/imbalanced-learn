@@ -141,3 +141,11 @@ def test_random_over_sampling_nan_inf():
     assert y_res.shape == (14,)
     assert X_res.shape == (14, 2)
     assert np.any(~np.isfinite(X_res))
+
+
+def test_random_over_sampler_smoothed_bootstrap():
+    sampler = RandomOverSampler(smoothed_bootstrap=True)
+    X_res, y_res = sampler.fit_resample(X, Y)
+
+    assert y_res.shape == (14,)
+    assert X_res.shape == (14, 2)
