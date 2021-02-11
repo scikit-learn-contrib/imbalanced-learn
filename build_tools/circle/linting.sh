@@ -140,7 +140,7 @@ else
 
     check_files "$(echo "$MODIFIED_FILES" | grep -v ^examples)"
     check_files "$(echo "$MODIFIED_FILES" | grep ^examples)" \
-        --config ./examples/.flake8
+        --config ./setup.cfg
 fi
 echo -e "No problem detected by flake8\n"
 
