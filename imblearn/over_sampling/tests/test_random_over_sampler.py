@@ -10,25 +10,31 @@ import pytest
 
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_array_equal
+from sklearn.utils._testing import _convert_container
 
 from imblearn.over_sampling import RandomOverSampler
 
 RND_SEED = 0
-X = np.array(
-    [
-        [0.04352327, -0.20515826],
-        [0.92923648, 0.76103773],
-        [0.20792588, 1.49407907],
-        [0.47104475, 0.44386323],
-        [0.22950086, 0.33367433],
-        [0.15490546, 0.3130677],
-        [0.09125309, -0.85409574],
-        [0.12372842, 0.6536186],
-        [0.13347175, 0.12167502],
-        [0.094035, -2.55298982],
-    ]
-)
-Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
+
+
+@pytest.fixture
+def data():
+    X = np.array(
+        [
+            [0.04352327, -0.20515826],
+            [0.92923648, 0.76103773],
+            [0.20792588, 1.49407907],
+            [0.47104475, 0.44386323],
+            [0.22950086, 0.33367433],
+            [0.15490546, 0.3130677],
+            [0.09125309, -0.85409574],
+            [0.12372842, 0.6536186],
+            [0.13347175, 0.12167502],
+            [0.094035, -2.55298982],
+        ]
+    )
+    Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
+    return X, Y
 
 
 def test_ros_init():
@@ -37,13 +43,10 @@ def test_ros_init():
     assert ros.random_state == RND_SEED
 
 
-@pytest.mark.parametrize("as_frame", [True, False], ids=["dataframe", "array"])
-def test_ros_fit_resample(as_frame):
-    if as_frame:
-        pd = pytest.importorskip("pandas")
-        X_ = pd.DataFrame(X)
-    else:
-        X_ = X
+@pytest.mark.parametrize("X_type", ["array", "dataframe"])
+def test_ros_fit_resample(X_type, data):
+    X, Y = data
+    X_ = _convert_container(X, X_type)
     ros = RandomOverSampler(random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_resample(X_, Y)
     X_gt = np.array(
@@ -66,7 +69,7 @@ def test_ros_fit_resample(as_frame):
     )
     y_gt = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0])
 
-    if as_frame:
+    if X_type == "dataframe":
         assert hasattr(X_resampled, "loc")
         X_resampled = X_resampled.to_numpy()
 
@@ -74,7 +77,8 @@ def test_ros_fit_resample(as_frame):
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_ros_fit_resample_half():
+def test_ros_fit_resample_half(data):
+    X, Y = data
     sampling_strategy = {0: 3, 1: 7}
     ros = RandomOverSampler(sampling_strategy=sampling_strategy, random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_resample(X, Y)
@@ -97,7 +101,8 @@ def test_ros_fit_resample_half():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_multiclass_fit_resample():
+def test_multiclass_fit_resample(data):
+    X, Y = data
     y = Y.copy()
     y[5] = 2
     y[6] = 2
@@ -110,6 +115,8 @@ def test_multiclass_fit_resample():
 
 
 def test_random_over_sampling_heterogeneous_data():
+    # check that resampling with heterogeneous dtype is working with basic
+    # resampling
     X_hetero = np.array(
         [["xxx", 1, 1.0], ["yyy", 2, 2.0], ["zzz", 3, 3.0]], dtype=object
     )
@@ -123,9 +130,10 @@ def test_random_over_sampling_heterogeneous_data():
     assert X_res[-1, 0] in X_hetero[:, 0]
 
 
-def test_random_over_sampling_nan_inf():
+def test_random_over_sampling_nan_inf(data):
     # check that we can oversample even with missing or infinite data
     # regression tests for #605
+    X, Y = data
     rng = np.random.RandomState(42)
     n_not_finite = X.shape[0] // 3
     row_indices = rng.choice(np.arange(X.shape[0]), size=n_not_finite)
@@ -143,9 +151,28 @@ def test_random_over_sampling_nan_inf():
     assert np.any(~np.isfinite(X_res))
 
 
-def test_random_over_sampler_smoothed_bootstrap():
+def test_random_over_sampling_heterogeneous_data_smoothed_bootstrap():
+    # check that we raise an error when heterogeneous dtype data are given
+    # and a smoothed bootstrap is requested
+    X_hetero = np.array(
+        [["xxx", 1, 1.0], ["yyy", 2, 2.0], ["zzz", 3, 3.0]], dtype=object
+    )
+    y = np.array([0, 0, 1])
+    ros = RandomOverSampler(
+        smoothed_bootstrap=True,
+        random_state=RND_SEED,
+    )
+    err_msg = "When smoothed_bootstrap=True, X needs to contain only numerical"
+    with pytest.raises(ValueError, match=err_msg):
+        ros.fit_resample(X_hetero, y)
+
+
+@pytest.mark.parametrize("X_type", ["array", "sparse_csr", "sparse_csc"])
+def test_random_over_sampler_smoothed_bootstrap(X_type, data):
+    X, y = data
     sampler = RandomOverSampler(smoothed_bootstrap=True)
-    X_res, y_res = sampler.fit_resample(X, Y)
+    X = _convert_container(X, X_type)
+    X_res, y_res = sampler.fit_resample(X, y)
 
     assert y_res.shape == (14,)
     assert X_res.shape == (14, 2)
