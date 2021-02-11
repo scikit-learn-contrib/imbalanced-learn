@@ -27,7 +27,6 @@ from imblearn.over_sampling import (
     SVMSMOTE,
     SMOTENC,
     KMeansSMOTE,
-    ROSE,
 )
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.base import BaseSampler
@@ -275,21 +274,3 @@ print("Dataset after resampling:")
 print(sorted(Counter(y_resampled).items()))
 print("SMOTE-NC will generate categories for the categorical features:")
 print(X_resampled[-5:])
-
-###############################################################################
-# ROSE section
-
-fig, axs = plt.subplots(1, 2, figsize=(20, 6))
-X, y = create_dataset(n_samples=10000, weights=(0.01, 0.05, 0.94))
-
-clf = LinearSVC().fit(X, y)
-plot_decision_function(X, y, clf, axs[0])
-axs[0].set_title(f"Linear SVC with y={Counter(y)}")
-sampler = ROSE()
-clf = make_pipeline(sampler, LinearSVC())
-clf.fit(X, y)
-plot_decision_function(X, y, clf, axs[1])
-axs[1].set_title(f"Decision function for {sampler.__class__.__name__}")
-fig.tight_layout()
-
-plt.show()

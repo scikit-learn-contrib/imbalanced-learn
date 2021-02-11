@@ -10,7 +10,6 @@ from ._smote import BorderlineSMOTE
 from ._smote import KMeansSMOTE
 from ._smote import SVMSMOTE
 from ._smote import SMOTENC
-from ._rose import ROSE
 
 __all__ = [
     "ADASYN",
@@ -20,5 +19,4 @@ __all__ = [
     "BorderlineSMOTE",
     "SVMSMOTE",
     "SMOTENC",
-    "ROSE"
 ]

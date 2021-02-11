@@ -57,8 +57,6 @@ class RandomOverSampler(BaseOverSampler):
 
     See Also
     --------
-    ROSE : Random Over-Sampling Examples.
-
     BorderlineSMOTE : Over-sample using the bordeline-SMOTE variant.
 
     SMOTE : Over-sample using SMOTE.

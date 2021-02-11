@@ -247,8 +247,6 @@ class BorderlineSMOTE(BaseSMOTE):
 
     See Also
     --------
-    ROSE : Random Over-Sampling Examples.
-
     SMOTE : Over-sample using SMOTE.
 
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
@@ -446,8 +444,6 @@ class SVMSMOTE(BaseSMOTE):
 
     See Also
     --------
-    ROSE : Random Over-Sampling Examples.
-
     SMOTE : Over-sample using SMOTE.
 
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
@@ -645,8 +641,6 @@ class SMOTE(BaseSMOTE):
 
     See Also
     --------
-    ROSE : Random Over-Sampling Examples.
-
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
     BorderlineSMOTE : Over-sample using the borderline-SMOTE variant.
@@ -815,8 +809,6 @@ class SMOTENC(SMOTE):
 
     See Also
     --------
-    ROSE : Random Over-Sampling Examples.
-
     SMOTE : Over-sample using SMOTE.
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
@@ -1106,8 +1098,6 @@ class KMeansSMOTE(BaseSMOTE):
 
     See Also
     --------
-    ROSE : Random Over-Sampling Examples.
-
     SMOTE : Over-sample using SMOTE.
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
