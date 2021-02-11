@@ -169,10 +169,51 @@ def test_random_over_sampling_heterogeneous_data_smoothed_bootstrap():
 
 @pytest.mark.parametrize("X_type", ["array", "sparse_csr", "sparse_csc"])
 def test_random_over_sampler_smoothed_bootstrap(X_type, data):
+    # check that smoothed bootstrap is working for numerical array
     X, y = data
-    sampler = RandomOverSampler(smoothed_bootstrap=True)
+    sampler = RandomOverSampler(smoothed_bootstrap=True, shrinkage=1)
     X = _convert_container(X, X_type)
     X_res, y_res = sampler.fit_resample(X, y)
 
     assert y_res.shape == (14,)
     assert X_res.shape == (14, 2)
+
+
+def test_random_over_sampler_equivalence_shrinkage(data):
+    # check that a shrinkage factor of 0 is equivalent to not create a smoothed
+    # bootstrap
+    X, y = data
+
+    ros_not_shrink = RandomOverSampler(
+        smoothed_bootstrap=True, shrinkage=0, random_state=0
+    )
+    ros_hard_bootstrap = RandomOverSampler(smoothed_bootstrap=False, random_state=0)
+
+    X_res_not_shrink, y_res_not_shrink = ros_not_shrink.fit_resample(X, y)
+    X_res, y_res = ros_hard_bootstrap.fit_resample(X, y)
+
+    assert_allclose(X_res_not_shrink, X_res)
+    assert_allclose(y_res_not_shrink, y_res)
+
+    assert y_res.shape == (14,)
+    assert X_res.shape == (14, 2)
+    assert y_res_not_shrink.shape == (14,)
+    assert X_res_not_shrink.shape == (14, 2)
+
+
+def test_random_over_sampler_shrinkage_behaviour(data):
+    # check the behaviour of the shrinkage parameter
+    # the covariance of the data generated with the larger shrinkage factor
+    # should also be larger.
+    X, y = data
+
+    ros = RandomOverSampler(smoothed_bootstrap=True, shrinkage=1, random_state=0)
+    X_res_shink_1, y_res_shrink_1 = ros.fit_resample(X, y)
+
+    ros.set_params(shrinkage=5)
+    X_res_shink_5, y_res_shrink_5 = ros.fit_resample(X, y)
+
+    disperstion_shrink_1 = np.linalg.det(np.cov(X_res_shink_1[y_res_shrink_1 == 0].T))
+    disperstion_shrink_5 = np.linalg.det(np.cov(X_res_shink_5[y_res_shrink_5 == 0].T))
+
+    assert disperstion_shrink_1 < disperstion_shrink_5
