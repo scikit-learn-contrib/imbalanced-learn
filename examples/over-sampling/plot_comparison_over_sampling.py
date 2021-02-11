@@ -128,7 +128,7 @@ fig.tight_layout()
 ###############################################################################
 # Random over-sampling can be used to repeat some samples and balance the
 # number of samples between the dataset. It can be seen that with this trivial
-# approach the boundary decision is already less biaised toward the majority
+# approach the boundary decision is already less biased toward the majority
 # class.
 
 fig, axs = plt.subplots(1, 2, figsize=(15, 7))
@@ -142,6 +142,26 @@ plot_decision_function(X, y, pipe, axs[1])
 axs[1].set_title("Decision function for RandomOverSampler")
 fig.tight_layout()
 
+###############################################################################
+# By default, random over-sampling generates a bootstrap. The parameter
+# `smoothed_bootstrap` allows adding a small perturbation to the generated data
+# to generate a smoothed bootstrap instead. The plot below shows the difference
+# between the two data generation strategies.
+
+fig, axs = plt.subplots(1, 2, figsize=(15, 7))
+sampler = RandomOverSampler(random_state=0)
+plot_resampling(X, y, sampler, ax=axs[0])
+axs[0].set_title("RandomOverSampler with normal bootstrap")
+sampler = RandomOverSampler(smoothed_bootstrap=True, shrinkage=0.2, random_state=0)
+plot_resampling(X, y, sampler, ax=axs[1])
+axs[1].set_title("RandomOverSampler with smoothed bootstrap")
+fig.tight_layout()
+
+###############################################################################
+# It looks like more samples are generated with smoothed bootstrap. This is due
+# to the fact that the samples generated are not superimposing with the
+# original samples.
+#
 ###############################################################################
 # More advanced over-sampling using ADASYN and SMOTE
 ###############################################################################
