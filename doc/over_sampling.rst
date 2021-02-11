@@ -84,7 +84,9 @@ If repeating samples is an issue, the parameter `smoothed_bootstrap` can be
 turned to `True` to create a smoothed bootstrap. However, the original data
 needs to be numerical. The `shrinkage` parameter controls the dispersion of the
 new generated samples. We show an example illustrate that the new samples are
-not overlapping anymore once using a smoothed bootstrap.
+not overlapping anymore once using a smoothed bootstrap. This ways of
+generating smoothed bootstrap is also known a Random Over-Sampler Examples
+(ROSE) :cite:`torelli2014rose`.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_003.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
