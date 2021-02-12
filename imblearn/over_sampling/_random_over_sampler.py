@@ -38,7 +38,7 @@ class RandomOverSampler(BaseOverSampler):
     {random_state}
 
     shrinkage : float or dict, default=None
-        Parameter controlling the shrinkage applied to the covariance matrix
+        Parameter controlling the shrinkage applied to the covariance matrix.
         when a smoothed bootstrap is generated. The options are:
 
         - if `None`, a normal bootstrap will be generated without perturbation.
@@ -48,6 +48,9 @@ class RandomOverSampler(BaseOverSampler):
         - if a `dict` is given, the shrinkage factor will specific for each
           class. The key correspond to the targeted class and the value is
           the shrinkage factor.
+
+        The value needs of the shrinkage parameter needs to be higher or equal
+        to 0.
 
         .. versionadded:: 0.7
 
@@ -144,15 +147,16 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
 
-        if self.shrinkage is None:
-            self.shrinkage_ = None
-        elif isinstance(self.shrinkage, Real):
+        if isinstance(self.shrinkage, Real):
             self.shrinkage_ = {
                 klass: self.shrinkage for klass in self.sampling_strategy_
             }
         else:
+            self.shrinkage_ = self.shrinkage
+
+        if self.shrinkage_ is not None:
             missing_shrinkage_keys = (
-                self.sampling_strategy_.keys() - self.shrinkage.keys()
+                self.sampling_strategy_.keys() - self.shrinkage_.keys()
             )
             if missing_shrinkage_keys:
                 raise ValueError(
@@ -160,9 +164,14 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                     f"each class that will be resampled. The missing "
                     f"classes are: {repr(missing_shrinkage_keys)}"
                 )
-            self.shrinkage_ = self.shrinkage
 
-        if self.shrinkage_ is not None:
+            for klass, shrink_factor in self.shrinkage_.items():
+                if shrink_factor < 0:
+                    raise ValueError(
+                        f"The shrinkage factor needs to be >= 0. "
+                        f"Got {shrink_factor} for class {klass}."
+                    )
+
             # smoothed bootstrap imposes to make numerical operation; we need
             # to be sure to have only numerical data in X
             try:

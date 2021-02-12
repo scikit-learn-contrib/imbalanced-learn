@@ -238,12 +238,17 @@ def test_random_over_sampler_shrinkage_behaviour(data):
     assert disperstion_shrink_1 < disperstion_shrink_5
 
 
-def test_random_over_sampler_shrinkage_error(data):
-    # check that we raise proper error when shrinkage do not contain the
-    # necessary information
+@pytest.mark.parametrize(
+    "shrinkage, err_msg",
+    [
+        ({}, "`shrinkage` should contain a shrinkage factor for each class"),
+        (-1, "The shrinkage factor needs to be >= 0"),
+        ({0: -1}, "The shrinkage factor needs to be >= 0"),
+    ]
+)
+def test_random_over_sampler_shrinkage_error(data, shrinkage, err_msg):
+    # check the validation of the shrinkage parameter
     X, y = data
-    shrinkage = {}
     ros = RandomOverSampler(shrinkage=shrinkage)
-    err_msg = "`shrinkage` should contain a shrinkage factor for each class"
     with pytest.raises(ValueError, match=err_msg):
         ros.fit_resample(X, y)
