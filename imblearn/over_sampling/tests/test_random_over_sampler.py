@@ -43,10 +43,7 @@ def test_ros_init():
     assert ros.random_state == RND_SEED
 
 
-@pytest.mark.parametrize(
-    "params",
-    [{"smoothed_bootstrap": False}, {"smoothed_bootstrap": True, "shrinkage": 0}]
-)
+@pytest.mark.parametrize("params", [{"shrinkage": None}, {"shrinkage": 0}])
 @pytest.mark.parametrize("X_type", ["array", "dataframe"])
 def test_ros_fit_resample(X_type, data, params):
     X, Y = data
@@ -80,16 +77,13 @@ def test_ros_fit_resample(X_type, data, params):
     assert_allclose(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
-    if not params["smoothed_bootstrap"]:
+    if params["shrinkage"] is None:
         assert ros.shrinkage_ is None
     else:
         assert ros.shrinkage_ == {0: 0}
 
 
-@pytest.mark.parametrize(
-    "params",
-    [{"smoothed_bootstrap": False}, {"smoothed_bootstrap": True, "shrinkage": 0}]
-)
+@pytest.mark.parametrize("params", [{"shrinkage": None}, {"shrinkage": 0}])
 def test_ros_fit_resample_half(data, params):
     X, Y = data
     sampling_strategy = {0: 3, 1: 7}
@@ -115,16 +109,13 @@ def test_ros_fit_resample_half(data, params):
     assert_allclose(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
-    if not params["smoothed_bootstrap"]:
+    if params["shrinkage"] is None:
         assert ros.shrinkage_ is None
     else:
         assert ros.shrinkage_ == {0: 0, 1: 0}
 
 
-@pytest.mark.parametrize(
-    "params",
-    [{"smoothed_bootstrap": False}, {"smoothed_bootstrap": True, "shrinkage": 0}]
-)
+@pytest.mark.parametrize("params", [{"shrinkage": None}, {"shrinkage": 0}])
 def test_multiclass_fit_resample(data, params):
     # check the random over-sampling with a multiclass problem
     X, Y = data
@@ -138,7 +129,7 @@ def test_multiclass_fit_resample(data, params):
     assert count_y_res[1] == 5
     assert count_y_res[2] == 5
 
-    if not params["smoothed_bootstrap"]:
+    if params["shrinkage"] is None:
         assert ros.shrinkage_ is None
     else:
         assert ros.shrinkage_ == {0: 0, 2: 0}
@@ -188,11 +179,8 @@ def test_random_over_sampling_heterogeneous_data_smoothed_bootstrap():
         [["xxx", 1, 1.0], ["yyy", 2, 2.0], ["zzz", 3, 3.0]], dtype=object
     )
     y = np.array([0, 0, 1])
-    ros = RandomOverSampler(
-        smoothed_bootstrap=True,
-        random_state=RND_SEED,
-    )
-    err_msg = "When smoothed_bootstrap=True, X needs to contain only numerical"
+    ros = RandomOverSampler(shrinkage=1, random_state=RND_SEED)
+    err_msg = "When shrinkage is not None, X needs to contain only numerical"
     with pytest.raises(ValueError, match=err_msg):
         ros.fit_resample(X_hetero, y)
 
@@ -201,7 +189,7 @@ def test_random_over_sampling_heterogeneous_data_smoothed_bootstrap():
 def test_random_over_sampler_smoothed_bootstrap(X_type, data):
     # check that smoothed bootstrap is working for numerical array
     X, y = data
-    sampler = RandomOverSampler(smoothed_bootstrap=True, shrinkage=1)
+    sampler = RandomOverSampler(shrinkage=1)
     X = _convert_container(X, X_type)
     X_res, y_res = sampler.fit_resample(X, y)
 
@@ -217,10 +205,8 @@ def test_random_over_sampler_equivalence_shrinkage(data):
     # bootstrap
     X, y = data
 
-    ros_not_shrink = RandomOverSampler(
-        smoothed_bootstrap=True, shrinkage=0, random_state=0
-    )
-    ros_hard_bootstrap = RandomOverSampler(smoothed_bootstrap=False, random_state=0)
+    ros_not_shrink = RandomOverSampler(shrinkage=0, random_state=0)
+    ros_hard_bootstrap = RandomOverSampler(shrinkage=None, random_state=0)
 
     X_res_not_shrink, y_res_not_shrink = ros_not_shrink.fit_resample(X, y)
     X_res, y_res = ros_hard_bootstrap.fit_resample(X, y)
@@ -240,7 +226,7 @@ def test_random_over_sampler_shrinkage_behaviour(data):
     # should also be larger.
     X, y = data
 
-    ros = RandomOverSampler(smoothed_bootstrap=True, shrinkage=1, random_state=0)
+    ros = RandomOverSampler(shrinkage=1, random_state=0)
     X_res_shink_1, y_res_shrink_1 = ros.fit_resample(X, y)
 
     ros.set_params(shrinkage=5)
@@ -257,7 +243,7 @@ def test_random_over_sampler_shrinkage_error(data):
     # necessary information
     X, y = data
     shrinkage = {}
-    ros = RandomOverSampler(smoothed_bootstrap=True, shrinkage=shrinkage)
+    ros = RandomOverSampler(shrinkage=shrinkage)
     err_msg = "`shrinkage` should contain a shrinkage factor for each class"
     with pytest.raises(ValueError, match=err_msg):
         ros.fit_resample(X, y)
