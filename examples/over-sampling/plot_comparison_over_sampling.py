@@ -144,7 +144,7 @@ fig.tight_layout()
 
 ###############################################################################
 # By default, random over-sampling generates a bootstrap. The parameter
-# `smoothed_bootstrap` allows adding a small perturbation to the generated data
+# `shrinkage` allows adding a small perturbation to the generated data
 # to generate a smoothed bootstrap instead. The plot below shows the difference
 # between the two data generation strategies.
 
@@ -152,7 +152,7 @@ fig, axs = plt.subplots(1, 2, figsize=(15, 7))
 sampler = RandomOverSampler(random_state=0)
 plot_resampling(X, y, sampler, ax=axs[0])
 axs[0].set_title("RandomOverSampler with normal bootstrap")
-sampler = RandomOverSampler(smoothed_bootstrap=True, shrinkage=0.2, random_state=0)
+sampler = RandomOverSampler(shrinkage=0.2, random_state=0)
 plot_resampling(X, y, sampler, ax=axs[1])
 axs[1].set_title("RandomOverSampler with smoothed bootstrap")
 fig.tight_layout()

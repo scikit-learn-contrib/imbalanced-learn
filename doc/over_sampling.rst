@@ -80,12 +80,12 @@ It would also work with pandas dataframe::
   >>> df_resampled, y_resampled = ros.fit_resample(df_adult, y_adult)
   >>> df_resampled.head()  # doctest: +SKIP
 
-If repeating samples is an issue, the parameter `smoothed_bootstrap` can be
-turned to `True` to create a smoothed bootstrap. However, the original data
-needs to be numerical. The `shrinkage` parameter controls the dispersion of the
-new generated samples. We show an example illustrate that the new samples are
-not overlapping anymore once using a smoothed bootstrap. This ways of
-generating smoothed bootstrap is also known a Random Over-Sampler Examples
+If repeating samples is an issue, the parameter `shrinkage` allows to create a
+smoothed bootstrap. However, the original data needs to be numerical. The
+`shrinkage` parameter controls the dispersion of the new generated samples. We
+show an example illustrate that the new samples are not overlapping anymore
+once using a smoothed bootstrap. This ways of generating smoothed bootstrap is
+also known a Random Over-Sampling Examples
 (ROSE) :cite:`torelli2014rose`.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_003.png

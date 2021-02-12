@@ -4,6 +4,7 @@
 #          Christos Aridas
 # License: MIT
 
+from collections.abc import Mapping
 from numbers import Real
 
 import numpy as np
@@ -37,20 +38,20 @@ class RandomOverSampler(BaseOverSampler):
 
     {random_state}
 
-    smoothed_bootstrap : bool, default=False
-        Whether or not to generate smoothed bootstrap samples. When this option
-        is triggered, be aware that the data to be resampled needs to be
-        numerical data since a Gaussian perturbation will be generated and
-        added to the bootstrap.
+    shrinkage : float or dict, default=None
+        Parameter controlling the shrinkage applied to the covariance matrix.
+        when a smoothed bootstrap is generated. The options are:
 
-        .. versionadded:: 0.7
+        - if `None`, a normal bootstrap will be generated without perturbation.
+          It is equivalent to `shrinkage=0` as well;
+        - if a `float` is given, the shrinkage factor will be used for all
+          classes to generate the smoothed bootstrap;
+        - if a `dict` is given, the shrinkage factor will specific for each
+          class. The key correspond to the targeted class and the value is
+          the shrinkage factor.
 
-    shrinkage : float or dict, default=1.0
-        Factor to shrink the covariance matrix used to generate the
-        smoothed bootstrap. A factor could be shared by all classes by
-        providing a floating number or different for each class over-sampled
-        by providing a dictionary where the key are the class targeted and the
-        value is the shrinkage factor.
+        The value needs of the shrinkage parameter needs to be higher or equal
+        to 0.
 
         .. versionadded:: 0.7
 
@@ -63,7 +64,7 @@ class RandomOverSampler(BaseOverSampler):
 
     shrinkage_ : dict or None
         The per-class shrinkage factor used to generate the smoothed bootstrap
-        sample. `None` when `smoothed_bootstrap=False`.
+        sample. When `shrinkage=None` a normal bootstrap will be generated.
 
         .. versionadded:: 0.7
 
@@ -125,12 +126,10 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
         *,
         sampling_strategy="auto",
         random_state=None,
-        smoothed_bootstrap=False,
-        shrinkage=1.0,
+        shrinkage=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
-        self.smoothed_bootstrap = smoothed_bootstrap
         self.shrinkage = shrinkage
 
     def _check_X_y(self, X, y):
@@ -148,34 +147,47 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)
 
-        if self.smoothed_bootstrap:
-            if isinstance(self.shrinkage, Real):
-                self.shrinkage_ = {
-                    klass: self.shrinkage for klass in self.sampling_strategy_
-                }
-            else:
-                missing_shrinkage_keys = (
-                    self.sampling_strategy_.keys() - self.shrinkage.keys()
+        if isinstance(self.shrinkage, Real):
+            self.shrinkage_ = {
+                klass: self.shrinkage for klass in self.sampling_strategy_
+            }
+        elif self.shrinkage is None or isinstance(self.shrinkage, Mapping):
+            self.shrinkage_ = self.shrinkage
+        else:
+            raise ValueError(
+                f"`shrinkage` should either be a positive floating number or "
+                f"a dictionary mapping a class to a positive floating number. "
+                f"Got {repr(self.shrinkage)} instead."
+            )
+
+        if self.shrinkage_ is not None:
+            missing_shrinkage_keys = (
+                self.sampling_strategy_.keys() - self.shrinkage_.keys()
+            )
+            if missing_shrinkage_keys:
+                raise ValueError(
+                    f"`shrinkage` should contain a shrinkage factor for "
+                    f"each class that will be resampled. The missing "
+                    f"classes are: {repr(missing_shrinkage_keys)}"
                 )
-                if missing_shrinkage_keys:
+
+            for klass, shrink_factor in self.shrinkage_.items():
+                if shrink_factor < 0:
                     raise ValueError(
-                        f"`shrinkage` should contain a shrinkage factor for "
-                        f"each class that will be resampled. The missing "
-                        f"classes are: {repr(missing_shrinkage_keys)}"
+                        f"The shrinkage factor needs to be >= 0. "
+                        f"Got {shrink_factor} for class {klass}."
                     )
-                self.shrinkage_ = self.shrinkage
+
             # smoothed bootstrap imposes to make numerical operation; we need
             # to be sure to have only numerical data in X
             try:
                 X = check_array(X, accept_sparse=["csr", "csc"], dtype="numeric")
             except ValueError as exc:
                 raise ValueError(
-                    "When smoothed_bootstrap=True, X needs to contain only "
+                    "When shrinkage is not None, X needs to contain only "
                     "numerical data to later generate a smoothed bootstrap "
                     "sample."
                 ) from exc
-        else:
-            self.shrinkage_ = None
 
         X_resampled = [X.copy()]
         y_resampled = [y.copy()]
@@ -189,7 +201,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                 replace=True,
             )
             sample_indices = np.append(sample_indices, bootstrap_indices)
-            if self.smoothed_bootstrap:
+            if self.shrinkage_ is not None:
                 # generate a smoothed bootstrap with a perturbation
                 n_samples, n_features = X.shape
                 smoothing_constant = (4 / ((n_features + 2) * n_samples)) ** (

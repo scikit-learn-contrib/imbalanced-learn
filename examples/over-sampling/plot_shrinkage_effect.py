@@ -61,9 +61,9 @@ _ = ax.set_ylabel("Feature #2")
 # from the majority class. Indeed, it is due to the fact that these samples
 # of the minority class are repeated during the bootstrap generation.
 #
-# We can set `smoothed_bootstrap=True` to add a small perturbation to the
+# We can set `shrinkage` to a floating value to add a small perturbation to the
 # samples created and therefore create a smoothed bootstrap.
-sampler = RandomOverSampler(smoothed_bootstrap=True, random_state=0)
+sampler = RandomOverSampler(shrinkage=1, random_state=0)
 X_res, y_res = sampler.fit_resample(X, y)
 Counter(y_res)
 
@@ -81,7 +81,7 @@ _ = ax.set_ylabel("Feature #2")
 #
 # The parameter `shrinkage` allows to add more or less perturbation. Let's
 # add more perturbation when generating the smoothed bootstrap.
-sampler = RandomOverSampler(smoothed_bootstrap=True, shrinkage=3, random_state=0)
+sampler = RandomOverSampler(shrinkage=3, random_state=0)
 X_res, y_res = sampler.fit_resample(X, y)
 Counter(y_res)
 
@@ -96,7 +96,7 @@ _ = ax.set_ylabel("Feature #2")
 # %%
 # Increasing the value of `shrinkage` will disperse the new samples. Forcing
 # the shrinkage to 0 will be equivalent to generating a normal bootstrap.
-sampler = RandomOverSampler(smoothed_bootstrap=True, shrinkage=0, random_state=0)
+sampler = RandomOverSampler(shrinkage=0, random_state=0)
 X_res, y_res = sampler.fit_resample(X, y)
 Counter(y_res)
 

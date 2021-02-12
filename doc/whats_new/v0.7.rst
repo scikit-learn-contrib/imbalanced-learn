@@ -74,8 +74,8 @@ Enhancements
 
 - Added an option to generate smoothed bootstrap in
   :class:`imblearn.over_sampling.RandomOverSampler`. It is controls by the
-  parameters `smoothed_bootstrap` and `shrinkage`. This method is also known as
-  Random Over-Sampling Examples (ROSE).
+  parameter `shrinkage`. This method is also known as Random Over-Sampling
+  Examples (ROSE).
   :pr:`754` by :user:`Andrea Lorenzon <andrealorenzon>` and
   :user:`Guillaume Lemaitre <glemaitre>`.
 
