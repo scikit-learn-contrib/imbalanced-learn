@@ -59,9 +59,15 @@ class RandomOverSampler(BaseOverSampler):
 
         .. versionadded:: 0.4
 
+    shrinkage_ : dict or None
+        The per-class shrinkage factor used to generate the smoothed bootstrap
+        sample. `None` when `smoothed_bootstrap=False`.
+
+        .. versionadded:: 0.7
+
     See Also
     --------
-    BorderlineSMOTE : Over-sample using the bordeline-SMOTE variant.
+    BorderlineSMOTE : Over-sample using the borderline-SMOTE variant.
 
     SMOTE : Over-sample using SMOTE.
 
@@ -150,24 +156,24 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                     self.sampling_strategy_.keys() - self.shrinkage.keys()
                 )
                 if missing_shrinkage_keys:
-                    raise ValueError
+                    raise ValueError(
+                        f"`shrinkage` should contain a shrinkage factor for "
+                        f"each class that will be resampled. The missing "
+                        f"classes are: {repr(missing_shrinkage_keys)}"
+                    )
                 self.shrinkage_ = self.shrinkage
             # smoothed bootstrap imposes to make numerical operation; we need
             # to be sure to have only numerical data in X
             try:
-                X = check_array(
-                    X,
-                    accept_sparse=["csr", "csc"],
-                    dtype="numeric",
-                )
+                X = check_array(X, accept_sparse=["csr", "csc"], dtype="numeric")
             except ValueError as exc:
-                if "could not convert" in str(exc):
-                    raise ValueError(
-                        "When smoothed_bootstrap=True, X needs to contain "
-                        "only numerical data to later generate a smoothed "
-                        "bootstrap sample."
-                    ) from exc
-                raise
+                raise ValueError(
+                    "When smoothed_bootstrap=True, X needs to contain only "
+                    "numerical data to later generate a smoothed bootstrap "
+                    "sample."
+                ) from exc
+        else:
+            self.shrinkage_ = None
 
         X_resampled = [X.copy()]
         y_resampled = [y.copy()]
@@ -182,7 +188,7 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
             )
             sample_indices = np.append(sample_indices, bootstrap_indices)
             if self.smoothed_bootstrap:
-                # generate data with a smoothed bootstrap known as ROSE
+                # generate a smoothed bootstrap with a perturbation
                 n_samples, n_features = X.shape
                 smoothing_constant = (4 / ((n_features + 2) * n_samples)) ** (
                     1 / (n_features + 4)
@@ -203,10 +209,11 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
                 if sparse.issparse(X):
                     X_new = sparse.csr_matrix(X_new, dtype=X.dtype)
                 X_resampled.append(X_new)
-                y_resampled.append(_safe_indexing(y, bootstrap_indices))
             else:
+                # generate a bootstrap
                 X_resampled.append(_safe_indexing(X, bootstrap_indices))
-                y_resampled.append(_safe_indexing(y, bootstrap_indices))
+
+            y_resampled.append(_safe_indexing(y, bootstrap_indices))
 
         self.sample_indices_ = np.array(sample_indices)
 
