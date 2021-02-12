@@ -64,7 +64,7 @@ class RandomOverSampler(BaseOverSampler):
 
     shrinkage_ : dict or None
         The per-class shrinkage factor used to generate the smoothed bootstrap
-        sample. `None` when `shrinkage=None` meaning that a normal bootstrap
+        sample. When `shrinkage=None` a normal bootstrap
         will be generated.
 
         .. versionadded:: 0.7
