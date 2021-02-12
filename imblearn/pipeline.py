@@ -63,7 +63,7 @@ class Pipeline(pipeline.Pipeline):
 
     Attributes
     ----------
-    named_steps : bunch object, a dictionary with attribute access
+    named_steps : :class:`~sklearn.utils.Bunch`
         Read-only attribute to access any step parameter by user given name.
         Keys are step names and values are steps parameters.
 
@@ -179,7 +179,7 @@ class Pipeline(pipeline.Pipeline):
 
     # Estimator interface
 
-    def _fit(self, X, y=None, **fit_params):
+    def _fit(self, X, y=None, **fit_params_steps):
         self.steps = list(self.steps)
         self._validate_steps()
         # Setup the memory
@@ -188,18 +188,6 @@ class Pipeline(pipeline.Pipeline):
         fit_transform_one_cached = memory.cache(pipeline._fit_transform_one)
         fit_resample_one_cached = memory.cache(_fit_resample_one)
 
-        fit_params_steps = {name: {} for name, step in self.steps if step is not None}
-        for pname, pval in fit_params.items():
-            if "__" not in pname:
-                raise ValueError(
-                    f"Pipeline.fit does not accept the {pname} parameter. "
-                    "You can pass parameters to specific steps of your "
-                    "pipeline using the stepname__parameter format, e.g. "
-                    "`Pipeline.fit(X, y, logisticregression__sample_weight"
-                    "=sample_weight)`."
-                )
-            step, param = pname.split("__", 1)
-            fit_params_steps[step][param] = pval
         for (step_idx, name, transformer) in self._iter(
             with_final=False, filter_passthrough=False, filter_resample=False
         ):
@@ -241,9 +229,7 @@ class Pipeline(pipeline.Pipeline):
             # transformer. This is necessary when loading the transformer
             # from the cache.
             self.steps[step_idx] = (name, fitted_transformer)
-        if self._final_estimator == "passthrough":
-            return X, y, {}
-        return X, y, fit_params_steps[self.steps[-1][0]]
+        return X, y
 
     def fit(self, X, y=None, **fit_params):
         """Fit the model.
@@ -272,10 +258,12 @@ class Pipeline(pipeline.Pipeline):
         self : Pipeline
             This estimator.
         """
-        Xt, yt, fit_params = self._fit(X, y, **fit_params)
+        fit_params_steps = self._check_fit_params(**fit_params)
+        Xt, yt = self._fit(X, y, **fit_params_steps)
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
             if self._final_estimator != "passthrough":
-                self._final_estimator.fit(Xt, yt, **fit_params)
+                fit_params_last_step = fit_params_steps[self.steps[-1][0]]
+                self._final_estimator.fit(Xt, yt, **fit_params_last_step)
         return self
 
     def fit_transform(self, X, y=None, **fit_params):
@@ -305,15 +293,18 @@ class Pipeline(pipeline.Pipeline):
         Xt : array-like of shape (n_samples, n_transformed_features)
             Transformed samples.
         """
+        fit_params_steps = self._check_fit_params(**fit_params)
+        Xt, yt = self._fit(X, y, **fit_params_steps)
+
         last_step = self._final_estimator
-        Xt, yt, fit_params = self._fit(X, y, **fit_params)
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
             if last_step == "passthrough":
                 return Xt
-            elif hasattr(last_step, "fit_transform"):
-                return last_step.fit_transform(Xt, yt, **fit_params)
+            fit_params_last_step = fit_params_steps[self.steps[-1][0]]
+            if hasattr(last_step, "fit_transform"):
+                return last_step.fit_transform(Xt, yt, **fit_params_last_step)
             else:
-                return last_step.fit(Xt, yt, **fit_params).transform(Xt)
+                return last_step.fit(Xt, yt, **fit_params_last_step).transform(Xt)
 
     def fit_resample(self, X, y=None, **fit_params):
         """Fit the model and sample with the final estimator.
@@ -345,13 +336,15 @@ class Pipeline(pipeline.Pipeline):
         yt : array-like of shape (n_samples, n_transformed_features)
             Transformed target.
         """
+        fit_params_steps = self._check_fit_params(**fit_params)
+        Xt, yt = self._fit(X, y, **fit_params_steps)
         last_step = self._final_estimator
-        Xt, yt, fit_params = self._fit(X, y, **fit_params)
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
             if last_step == "passthrough":
                 return Xt
-            elif hasattr(last_step, "fit_resample"):
-                return last_step.fit_resample(Xt, yt, **fit_params)
+            fit_params_last_step = fit_params_steps[self.steps[-1][0]]
+            if hasattr(last_step, "fit_resample"):
+                return last_step.fit_resample(Xt, yt, **fit_params_last_step)
 
     @if_delegate_has_method(delegate="_final_estimator")
     def fit_predict(self, X, y=None, **fit_params):
@@ -381,9 +374,12 @@ class Pipeline(pipeline.Pipeline):
         y_pred : ndarray of shape (n_samples,)
             The predicted target.
         """
-        Xt, yt, fit_params = self._fit(X, y, **fit_params)
+        fit_params_steps = self._check_fit_params(**fit_params)
+        Xt, yt = self._fit(X, y, **fit_params_steps)
+
+        fit_params_last_step = fit_params_steps[self.steps[-1][0]]
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
-            y_pred = self.steps[-1][-1].fit_predict(Xt, yt, **fit_params)
+            y_pred = self.steps[-1][-1].fit_predict(Xt, yt, **fit_params_last_step)
         return y_pred
 
 
@@ -394,7 +390,7 @@ def _fit_resample_one(sampler, X, y, message_clsname="", message=None, **fit_par
         return X_res, y_res, sampler
 
 
-def make_pipeline(*steps, **kwargs):
+def make_pipeline(*steps, memory=None, verbose=False):
     """Construct a Pipeline from the given estimators.
 
     This is a shorthand for the Pipeline constructor; it does not require, and
@@ -438,8 +434,4 @@ def make_pipeline(*steps, **kwargs):
     Pipeline(steps=[('standardscaler', StandardScaler()),
                     ('gaussiannb', GaussianNB())])
     """
-    memory = kwargs.pop("memory", None)
-    verbose = kwargs.pop("verbose", False)
-    if kwargs:
-        raise TypeError(f'Unknown keyword arguments: "{list(kwargs.keys())[0]}"')
     return Pipeline(pipeline._name_estimators(steps), memory=memory, verbose=verbose)
