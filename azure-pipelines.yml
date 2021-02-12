@@ -18,7 +18,7 @@ jobs:
 
 - template: build_tools/azure/posix.yml
   parameters:
-    name: Linux
+    name: Linux_Runs
     vmImage: ubuntu-18.04
     matrix:
       pylatest_pip_openblas_pandas:
