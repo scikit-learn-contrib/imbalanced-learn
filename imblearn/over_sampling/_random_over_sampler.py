@@ -38,17 +38,19 @@ class RandomOverSampler(BaseOverSampler):
     {random_state}
 
     smoothed_bootstrap : bool, default=False
-        Whether or not to generate smoothed bootstrap samples.
+        Whether or not to generate smoothed bootstrap samples. When this option
+        is triggered, be aware that the data to be resampled needs to be
+        numerical data since a Gaussian perturbation will be generated and
+        added to the bootstrap.
 
         .. versionadded:: 0.7
 
     shrinkage : float or dict, default=1.0
-        Factor used to shrink the covariance matrix used to generate the
-        smoothed bootstrap. If a float is given, the same factor is applied to
-        generate the bootstrap samples for the classes provided in
-        `sampling_strategy`. If a dictionary is given, different factors will
-        be used to generate the bootstrap samples. The key of the dictionary
-        corresponds to the class and the value to the shrinkage factor.
+        Factor to shrink the covariance matrix used to generate the
+        smoothed bootstrap. A factor could be shared by all classes by
+        providing a floating number or different for each class over-sampled
+        by providing a dictionary where the key are the class targeted and the
+        value is the shrinkage factor.
 
         .. versionadded:: 0.7
 
@@ -86,7 +88,7 @@ class RandomOverSampler(BaseOverSampler):
     Supports heterogeneous data as object array containing string and numeric
     data.
 
-    When generating smoothed bootstrap, this method is also known as Random
+    When generating a smoothed bootstrap, this method is also known as Random
     Over-Sampling Examples (ROSE) [1]_.
 
     .. warning::

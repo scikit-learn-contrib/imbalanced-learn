@@ -20,6 +20,20 @@ jobs:
   parameters:
     name: Linux
     vmImage: ubuntu-18.04
+    matrix:
+      pylatest_pip_openblas_pandas:
+        DISTRIB: 'conda-pip-latest'
+        PYTHON_VERSION: '3.9'
+        COVERAGE: 'true'
+        PANDAS_VERSION: '*'
+        TEST_DOCSTRINGS: 'true'
+        JOBLIB_VERSION: '*'
+        CHECK_WARNINGS: 'true'
+
+- template: build_tools/azure/posix.yml
+  parameters:
+    name: Linux
+    vmImage: ubuntu-18.04
     dependsOn: [linting]
     matrix:
       # Linux environment to test that scikit-learn can be built against
@@ -29,15 +43,6 @@ jobs:
         DISTRIB: 'ubuntu'
         PYTHON_VERSION: '3.6'
         JOBLIB_VERSION: '*'
-      # Linux environment to test the latest available dependencies and MKL.
-      pylatest_pip_openblas_pandas:
-        DISTRIB: 'conda-pip-latest'
-        PYTHON_VERSION: '3.9'
-        COVERAGE: 'true'
-        PANDAS_VERSION: '*'
-        TEST_DOCSTRINGS: 'true'
-        JOBLIB_VERSION: '*'
-        CHECK_WARNINGS: 'true'
       pylatest_conda_pandas_keras:
         DISTRIB: 'conda'
         PYTHON_VERSION: '3.7'

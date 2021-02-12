@@ -93,7 +93,9 @@ def test_ros_fit_resample(X_type, data, params):
 def test_ros_fit_resample_half(data, params):
     X, Y = data
     sampling_strategy = {0: 3, 1: 7}
-    ros = RandomOverSampler(**params, sampling_strategy=sampling_strategy, random_state=RND_SEED)
+    ros = RandomOverSampler(
+        **params, sampling_strategy=sampling_strategy, random_state=RND_SEED
+    )
     X_resampled, y_resampled = ros.fit_resample(X, Y)
     X_gt = np.array(
         [
