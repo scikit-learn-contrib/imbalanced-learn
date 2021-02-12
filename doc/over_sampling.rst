@@ -80,6 +80,19 @@ It would also work with pandas dataframe::
   >>> df_resampled, y_resampled = ros.fit_resample(df_adult, y_adult)
   >>> df_resampled.head()  # doctest: +SKIP
 
+If repeating samples is an issue, the parameter `smoothed_bootstrap` can be
+turned to `True` to create a smoothed bootstrap. However, the original data
+needs to be numerical. The `shrinkage` parameter controls the dispersion of the
+new generated samples. We show an example illustrate that the new samples are
+not overlapping anymore once using a smoothed bootstrap. This ways of
+generating smoothed bootstrap is also known a Random Over-Sampler Examples
+(ROSE) :cite:`torelli2014rose`.
+
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_003.png
+   :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
+   :scale: 60
+   :align: center
+
 .. _smote_adasyn:
 
 From random over-sampling to SMOTE and ADASYN
@@ -104,7 +117,7 @@ the same manner::
 The figure below illustrates the major difference of the different
 over-sampling methods.
 
-.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_003.png
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_004.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :scale: 60
    :align: center
@@ -122,14 +135,14 @@ implementation of :class:`SMOTE` will not make any distinction between easy and
 hard samples to be classified using the nearest neighbors rule. Therefore, the
 decision function found during training will be different among the algorithms.
 
-.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_004.png
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_005.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :align: center
 
 The sampling particularities of these two algorithms can lead to some peculiar
 behavior as shown below.
 
-.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_005.png
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_006.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :scale: 60
    :align: center
@@ -144,7 +157,7 @@ samples. Those methods focus on samples near of the border of the optimal
 decision function and will generate samples in the opposite direction of the
 nearest neighbors class. Those variants are presented in the figure below.
 
-.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_006.png
+.. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_007.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html
    :scale: 60
    :align: center
@@ -198,29 +211,14 @@ Therefore, it can be seen that the samples generated in the first and last
 columns are belonging to the same categories originally presented without any
 other extra interpolation.
 
-.. _rose:
-
-ROSE (Random Over-Sampling Examples)
-------------------------------------
-
-ROSE uses smoothed bootstrapping to draw artificial samples from the
-feature space neighborhood around selected classes, using a multivariate
-Gaussian kernel around randomly selected samples. First, random samples are
-selected from original classes. Then the smoothing kernel distribution
-is computed around the samples: :math:`\hat f(x|y=Y_i) = \sum_i^{n_j}
-p_i Pr(x|x_i)=\sum_i^{n_j} \frac{1}{n_j} Pr(x|x_i)=\sum_i^{n_j}
-\frac{1}{n_j} K_{H_j}(x|x_i)`.
-
-Then new samples are drawn from the computed distribution.
-
 Mathematical formulation
 ========================
 
 Sample generation
 -----------------
 
-Both SMOTE and ADASYN use the same algorithm to generate new samples.
-Considering a sample :math:`x_i`, a new sample :math:`x_{new}` will be
+Both :class:`SMOTE` and :class:`ADASYN` use the same algorithm to generate new
+samples. Considering a sample :math:`x_i`, a new sample :math:`x_{new}` will be
 generated considering its k neareast-neighbors (corresponding to
 ``k_neighbors``). For instance, the 3 nearest-neighbors are included in the
 blue circle as illustrated in the figure below. Then, one of these

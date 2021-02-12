@@ -72,8 +72,12 @@ Enhancements
 - Lazy import `keras` module when importing `imblearn.keras`
   :pr:`719` by :user:`Guillaume Lemaitre <glemaitre>`.
 
-- Added Random Over-Sampling Examples (ROSE) class.
-  :pr:`754` by :user:`Andrea Lorenzon <andrealorenzon>`.
+- Added an option to generate smoothed bootstrap in
+  :class:`imblearn.over_sampling.RandomOverSampler`. It is controls by the
+  parameters `smoothed_bootstrap` and `shrinkage`. This method is also known as
+  Random Over-Sampling Examples (ROSE).
+  :pr:`754` by :user:`Andrea Lorenzon <andrealorenzon>` and
+  :user:`Guillaume Lemaitre <glemaitre>`.
 
 - Add option `output_dict` in
   :func:`imblearn.metrics.classification_report_imbalanced` to return a

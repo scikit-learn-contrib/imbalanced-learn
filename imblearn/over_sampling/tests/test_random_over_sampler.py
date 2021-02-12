@@ -10,25 +10,31 @@ import pytest
 
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_array_equal
+from sklearn.utils._testing import _convert_container
 
 from imblearn.over_sampling import RandomOverSampler
 
 RND_SEED = 0
-X = np.array(
-    [
-        [0.04352327, -0.20515826],
-        [0.92923648, 0.76103773],
-        [0.20792588, 1.49407907],
-        [0.47104475, 0.44386323],
-        [0.22950086, 0.33367433],
-        [0.15490546, 0.3130677],
-        [0.09125309, -0.85409574],
-        [0.12372842, 0.6536186],
-        [0.13347175, 0.12167502],
-        [0.094035, -2.55298982],
-    ]
-)
-Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
+
+
+@pytest.fixture
+def data():
+    X = np.array(
+        [
+            [0.04352327, -0.20515826],
+            [0.92923648, 0.76103773],
+            [0.20792588, 1.49407907],
+            [0.47104475, 0.44386323],
+            [0.22950086, 0.33367433],
+            [0.15490546, 0.3130677],
+            [0.09125309, -0.85409574],
+            [0.12372842, 0.6536186],
+            [0.13347175, 0.12167502],
+            [0.094035, -2.55298982],
+        ]
+    )
+    Y = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1])
+    return X, Y
 
 
 def test_ros_init():
@@ -37,14 +43,15 @@ def test_ros_init():
     assert ros.random_state == RND_SEED
 
 
-@pytest.mark.parametrize("as_frame", [True, False], ids=["dataframe", "array"])
-def test_ros_fit_resample(as_frame):
-    if as_frame:
-        pd = pytest.importorskip("pandas")
-        X_ = pd.DataFrame(X)
-    else:
-        X_ = X
-    ros = RandomOverSampler(random_state=RND_SEED)
+@pytest.mark.parametrize(
+    "params",
+    [{"smoothed_bootstrap": False}, {"smoothed_bootstrap": True, "shrinkage": 0}]
+)
+@pytest.mark.parametrize("X_type", ["array", "dataframe"])
+def test_ros_fit_resample(X_type, data, params):
+    X, Y = data
+    X_ = _convert_container(X, X_type)
+    ros = RandomOverSampler(**params, random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_resample(X_, Y)
     X_gt = np.array(
         [
@@ -66,17 +73,29 @@ def test_ros_fit_resample(as_frame):
     )
     y_gt = np.array([1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0])
 
-    if as_frame:
+    if X_type == "dataframe":
         assert hasattr(X_resampled, "loc")
         X_resampled = X_resampled.to_numpy()
 
     assert_allclose(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
+    if not params["smoothed_bootstrap"]:
+        assert ros.shrinkage_ is None
+    else:
+        assert ros.shrinkage_ == {0: 0}
 
-def test_ros_fit_resample_half():
+
+@pytest.mark.parametrize(
+    "params",
+    [{"smoothed_bootstrap": False}, {"smoothed_bootstrap": True, "shrinkage": 0}]
+)
+def test_ros_fit_resample_half(data, params):
+    X, Y = data
     sampling_strategy = {0: 3, 1: 7}
-    ros = RandomOverSampler(sampling_strategy=sampling_strategy, random_state=RND_SEED)
+    ros = RandomOverSampler(
+        **params, sampling_strategy=sampling_strategy, random_state=RND_SEED
+    )
     X_resampled, y_resampled = ros.fit_resample(X, Y)
     X_gt = np.array(
         [
@@ -96,20 +115,38 @@ def test_ros_fit_resample_half():
     assert_allclose(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
+    if not params["smoothed_bootstrap"]:
+        assert ros.shrinkage_ is None
+    else:
+        assert ros.shrinkage_ == {0: 0, 1: 0}
 
-def test_multiclass_fit_resample():
+
+@pytest.mark.parametrize(
+    "params",
+    [{"smoothed_bootstrap": False}, {"smoothed_bootstrap": True, "shrinkage": 0}]
+)
+def test_multiclass_fit_resample(data, params):
+    # check the random over-sampling with a multiclass problem
+    X, Y = data
     y = Y.copy()
     y[5] = 2
     y[6] = 2
-    ros = RandomOverSampler(random_state=RND_SEED)
+    ros = RandomOverSampler(**params, random_state=RND_SEED)
     X_resampled, y_resampled = ros.fit_resample(X, y)
     count_y_res = Counter(y_resampled)
     assert count_y_res[0] == 5
     assert count_y_res[1] == 5
     assert count_y_res[2] == 5
 
+    if not params["smoothed_bootstrap"]:
+        assert ros.shrinkage_ is None
+    else:
+        assert ros.shrinkage_ == {0: 0, 2: 0}
+
 
 def test_random_over_sampling_heterogeneous_data():
+    # check that resampling with heterogeneous dtype is working with basic
+    # resampling
     X_hetero = np.array(
         [["xxx", 1, 1.0], ["yyy", 2, 2.0], ["zzz", 3, 3.0]], dtype=object
     )
@@ -123,9 +160,10 @@ def test_random_over_sampling_heterogeneous_data():
     assert X_res[-1, 0] in X_hetero[:, 0]
 
 
-def test_random_over_sampling_nan_inf():
+def test_random_over_sampling_nan_inf(data):
     # check that we can oversample even with missing or infinite data
     # regression tests for #605
+    X, Y = data
     rng = np.random.RandomState(42)
     n_not_finite = X.shape[0] // 3
     row_indices = rng.choice(np.arange(X.shape[0]), size=n_not_finite)
@@ -141,3 +179,85 @@ def test_random_over_sampling_nan_inf():
     assert y_res.shape == (14,)
     assert X_res.shape == (14, 2)
     assert np.any(~np.isfinite(X_res))
+
+
+def test_random_over_sampling_heterogeneous_data_smoothed_bootstrap():
+    # check that we raise an error when heterogeneous dtype data are given
+    # and a smoothed bootstrap is requested
+    X_hetero = np.array(
+        [["xxx", 1, 1.0], ["yyy", 2, 2.0], ["zzz", 3, 3.0]], dtype=object
+    )
+    y = np.array([0, 0, 1])
+    ros = RandomOverSampler(
+        smoothed_bootstrap=True,
+        random_state=RND_SEED,
+    )
+    err_msg = "When smoothed_bootstrap=True, X needs to contain only numerical"
+    with pytest.raises(ValueError, match=err_msg):
+        ros.fit_resample(X_hetero, y)
+
+
+@pytest.mark.parametrize("X_type", ["dataframe", "array", "sparse_csr", "sparse_csc"])
+def test_random_over_sampler_smoothed_bootstrap(X_type, data):
+    # check that smoothed bootstrap is working for numerical array
+    X, y = data
+    sampler = RandomOverSampler(smoothed_bootstrap=True, shrinkage=1)
+    X = _convert_container(X, X_type)
+    X_res, y_res = sampler.fit_resample(X, y)
+
+    assert y_res.shape == (14,)
+    assert X_res.shape == (14, 2)
+
+    if X_type == "dataframe":
+        assert hasattr(X_res, "loc")
+
+
+def test_random_over_sampler_equivalence_shrinkage(data):
+    # check that a shrinkage factor of 0 is equivalent to not create a smoothed
+    # bootstrap
+    X, y = data
+
+    ros_not_shrink = RandomOverSampler(
+        smoothed_bootstrap=True, shrinkage=0, random_state=0
+    )
+    ros_hard_bootstrap = RandomOverSampler(smoothed_bootstrap=False, random_state=0)
+
+    X_res_not_shrink, y_res_not_shrink = ros_not_shrink.fit_resample(X, y)
+    X_res, y_res = ros_hard_bootstrap.fit_resample(X, y)
+
+    assert_allclose(X_res_not_shrink, X_res)
+    assert_allclose(y_res_not_shrink, y_res)
+
+    assert y_res.shape == (14,)
+    assert X_res.shape == (14, 2)
+    assert y_res_not_shrink.shape == (14,)
+    assert X_res_not_shrink.shape == (14, 2)
+
+
+def test_random_over_sampler_shrinkage_behaviour(data):
+    # check the behaviour of the shrinkage parameter
+    # the covariance of the data generated with the larger shrinkage factor
+    # should also be larger.
+    X, y = data
+
+    ros = RandomOverSampler(smoothed_bootstrap=True, shrinkage=1, random_state=0)
+    X_res_shink_1, y_res_shrink_1 = ros.fit_resample(X, y)
+
+    ros.set_params(shrinkage=5)
+    X_res_shink_5, y_res_shrink_5 = ros.fit_resample(X, y)
+
+    disperstion_shrink_1 = np.linalg.det(np.cov(X_res_shink_1[y_res_shrink_1 == 0].T))
+    disperstion_shrink_5 = np.linalg.det(np.cov(X_res_shink_5[y_res_shrink_5 == 0].T))
+
+    assert disperstion_shrink_1 < disperstion_shrink_5
+
+
+def test_random_over_sampler_shrinkage_error(data):
+    # check that we raise proper error when shrinkage do not contain the
+    # necessary information
+    X, y = data
+    shrinkage = {}
+    ros = RandomOverSampler(smoothed_bootstrap=True, shrinkage=shrinkage)
+    err_msg = "`shrinkage` should contain a shrinkage factor for each class"
+    with pytest.raises(ValueError, match=err_msg):
+        ros.fit_resample(X, y)

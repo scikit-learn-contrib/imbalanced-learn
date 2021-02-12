@@ -106,16 +106,15 @@ def plot_decision_function(X, y, clf, ax):
 # data using a linear SVM classifier. Greater is the difference between the
 # number of samples in each class, poorer are the classfication results.
 
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
+fig, axs = plt.subplots(2, 2, figsize=(15, 12))
 
-ax_arr = (ax1, ax2, ax3, ax4)
 weights_arr = (
     (0.01, 0.01, 0.98),
     (0.01, 0.05, 0.94),
     (0.2, 0.1, 0.7),
     (0.33, 0.33, 0.33),
 )
-for ax, weights in zip(ax_arr, weights_arr):
+for ax, weights in zip(axs.ravel(), weights_arr):
     X, y = create_dataset(n_samples=1000, weights=weights)
     clf = LinearSVC().fit(X, y)
     plot_decision_function(X, y, clf, ax)
@@ -129,20 +128,40 @@ fig.tight_layout()
 ###############################################################################
 # Random over-sampling can be used to repeat some samples and balance the
 # number of samples between the dataset. It can be seen that with this trivial
-# approach the boundary decision is already less biaised toward the majority
+# approach the boundary decision is already less biased toward the majority
 # class.
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
+fig, axs = plt.subplots(1, 2, figsize=(15, 7))
 X, y = create_dataset(n_samples=10000, weights=(0.01, 0.05, 0.94))
 clf = LinearSVC().fit(X, y)
-plot_decision_function(X, y, clf, ax1)
-ax1.set_title(f"Linear SVC with y={Counter(y)}")
+plot_decision_function(X, y, clf, axs[0])
+axs[0].set_title(f"Linear SVC with y={Counter(y)}")
 pipe = make_pipeline(RandomOverSampler(random_state=0), LinearSVC())
 pipe.fit(X, y)
-plot_decision_function(X, y, pipe, ax2)
-ax2.set_title("Decision function for RandomOverSampler")
+plot_decision_function(X, y, pipe, axs[1])
+axs[1].set_title("Decision function for RandomOverSampler")
 fig.tight_layout()
 
+###############################################################################
+# By default, random over-sampling generates a bootstrap. The parameter
+# `smoothed_bootstrap` allows adding a small perturbation to the generated data
+# to generate a smoothed bootstrap instead. The plot below shows the difference
+# between the two data generation strategies.
+
+fig, axs = plt.subplots(1, 2, figsize=(15, 7))
+sampler = RandomOverSampler(random_state=0)
+plot_resampling(X, y, sampler, ax=axs[0])
+axs[0].set_title("RandomOverSampler with normal bootstrap")
+sampler = RandomOverSampler(smoothed_bootstrap=True, shrinkage=0.2, random_state=0)
+plot_resampling(X, y, sampler, ax=axs[1])
+axs[1].set_title("RandomOverSampler with smoothed bootstrap")
+fig.tight_layout()
+
+###############################################################################
+# It looks like more samples are generated with smoothed bootstrap. This is due
+# to the fact that the samples generated are not superimposing with the
+# original samples.
+#
 ###############################################################################
 # More advanced over-sampling using ADASYN and SMOTE
 ###############################################################################
@@ -161,16 +180,15 @@ class FakeSampler(BaseSampler):
         return X, y
 
 
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 15))
+fig, axs = plt.subplots(2, 2, figsize=(15, 15))
 X, y = create_dataset(n_samples=10000, weights=(0.01, 0.05, 0.94))
 sampler = FakeSampler()
 clf = make_pipeline(sampler, LinearSVC())
-plot_resampling(X, y, sampler, ax1)
-ax1.set_title(f"Original data - y={Counter(y)}")
+plot_resampling(X, y, sampler, axs[0, 0])
+axs[0, 0].set_title(f"Original data - y={Counter(y)}")
 
-ax_arr = (ax2, ax3, ax4)
 for ax, sampler in zip(
-    ax_arr,
+    axs.ravel()[1:],
     (
         RandomOverSampler(random_state=0),
         SMOTE(random_state=0),
@@ -189,33 +207,32 @@ fig.tight_layout()
 # nearest-neighbors rule while regular SMOTE will not make any distinction.
 # Therefore, the decision function depending of the algorithm.
 
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 6))
+fig, axs = plt.subplots(1, 3, figsize=(20, 6))
 X, y = create_dataset(n_samples=10000, weights=(0.01, 0.05, 0.94))
 
 clf = LinearSVC().fit(X, y)
-plot_decision_function(X, y, clf, ax1)
-ax1.set_title(f"Linear SVC with y={Counter(y)}")
+plot_decision_function(X, y, clf, axs[0])
+axs[0].set_title(f"Linear SVC with y={Counter(y)}")
 sampler = SMOTE()
 clf = make_pipeline(sampler, LinearSVC())
 clf.fit(X, y)
-plot_decision_function(X, y, clf, ax2)
-ax2.set_title(f"Decision function for {sampler.__class__.__name__}")
+plot_decision_function(X, y, clf, axs[1])
+axs[1].set_title(f"Decision function for {sampler.__class__.__name__}")
 sampler = ADASYN()
 clf = make_pipeline(sampler, LinearSVC())
 clf.fit(X, y)
-plot_decision_function(X, y, clf, ax3)
-ax3.set_title(f"Decision function for {sampler.__class__.__name__}")
+plot_decision_function(X, y, clf, axs[2])
+axs[2].set_title(f"Decision function for {sampler.__class__.__name__}")
 fig.tight_layout()
 
 ###############################################################################
 # Due to those sampling particularities, it can give rise to some specific
 # issues as illustrated below.
 
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 15))
+fig, axs = plt.subplots(2, 2, figsize=(15, 15))
 X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
-ax_arr = ((ax1, ax2), (ax3, ax4))
-for ax, sampler in zip(ax_arr, (SMOTE(random_state=0), ADASYN(random_state=0))):
+for ax, sampler in zip(axs, (SMOTE(random_state=0), ADASYN(random_state=0))):
     clf = make_pipeline(sampler, LinearSVC())
     clf.fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
@@ -232,16 +249,11 @@ fig.tight_layout()
 # the KMeans version will make a clustering before to generate samples in each
 # cluster independently depending each cluster density.
 
-(
-    fig,
-    ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10)),
-) = plt.subplots(5, 2, figsize=(15, 30))
+fig, axs = plt.subplots(5, 2, figsize=(15, 30))
 X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
-
-ax_arr = ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10))
 for ax, sampler in zip(
-    ax_arr,
+    axs,
     (
         SMOTE(random_state=0),
         BorderlineSMOTE(random_state=0, kind="borderline-1"),
@@ -282,5 +294,3 @@ print("Dataset after resampling:")
 print(sorted(Counter(y_resampled).items()))
 print("SMOTE-NC will generate categories for the categorical features:")
 print(X_resampled[-5:])
-
-plt.show()
