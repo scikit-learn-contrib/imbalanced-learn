@@ -4,6 +4,7 @@
 #          Christos Aridas
 # License: MIT
 
+from collections.abc import Mapping
 from numbers import Real
 
 import numpy as np
@@ -151,8 +152,14 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
             self.shrinkage_ = {
                 klass: self.shrinkage for klass in self.sampling_strategy_
             }
-        else:
+        elif self.shrinkage is None or isinstance(self.shrinkage, Mapping):
             self.shrinkage_ = self.shrinkage
+        else:
+            raise ValueError(
+                f"`shrinkage` should either be a positive floating number or "
+                f"a dictionary mapping a class to a positive floating number. "
+                f"Got {repr(self.shrinkage)} instead."
+            )
 
         if self.shrinkage_ is not None:
             missing_shrinkage_keys = (
