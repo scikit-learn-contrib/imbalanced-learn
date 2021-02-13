@@ -3,7 +3,7 @@ from scipy.spatial import distance_matrix
 
 
 class ValueDifferenceMetric:
-    """Class implementing the Value Difference Metric.
+    r"""Class implementing the Value Difference Metric.
 
     This metric computes the distance between samples containing only nominal
     categorical features. The distance between feature values of two samples
