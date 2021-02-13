@@ -1,3 +1,8 @@
+"""Metrics to perform pairwise computation."""
+
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
 import numpy as np
 from scipy.spatial import distance_matrix
 
@@ -51,7 +56,7 @@ class ValueDifferenceMetric:
         for each category given a class.
     """
 
-    def __init__(self, classes, categories, k=1, r=2):
+    def __init__(self, classes, categories, *, k=1, r=2):
         self.classes = classes
         self.categories = categories
         self.k = k
@@ -73,6 +78,8 @@ class ValueDifferenceMetric:
         -------
         self
         """
+        if X.dtype.kind != "i":
+            X = X.astype(np.int64)
         n_features = X.shape[1]
 
         # list of length n_features of ndarray (n_categories, n_classes)
