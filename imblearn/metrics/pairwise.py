@@ -85,7 +85,7 @@ class ValueDifferenceMetric:
         -------
         self
         """
-        X = np.array(X, dtype=np.int64, copy=False)
+        X = np.array(X, dtype=np.int32, copy=False)
         n_features = X.shape[1]
 
         # list of length n_features of ndarray (n_categories, n_classes)
@@ -130,12 +130,12 @@ class ValueDifferenceMetric:
             The VDM pairwise distance.
         """
         if X1.dtype.kind != "i":
-            X1 = X1.astype(np.int64)
+            X1 = X1.astype(np.int32)
         n_samples_X1, n_features = X1.shape
 
         if X2 is not None:
             if X2.dtype.kind != "i":
-                X2 = X2.astype(np.int64)
+                X2 = X2.astype(np.int32)
             n_samples_X2 = X2.shape[0]
         else:
             n_samples_X2 = n_samples_X1
