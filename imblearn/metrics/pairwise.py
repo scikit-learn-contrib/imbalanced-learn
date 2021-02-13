@@ -85,8 +85,7 @@ class ValueDifferenceMetric:
         -------
         self
         """
-        if X.dtype.kind != "i":
-            X = X.astype(np.int64)
+        X = np.array(X, dtype=np.int64, copy=False)
         n_features = X.shape[1]
 
         # list of length n_features of ndarray (n_categories, n_classes)
