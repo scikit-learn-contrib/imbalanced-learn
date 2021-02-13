@@ -62,7 +62,7 @@ class ValueDifferenceMetric:
 
         Parameters
         ----------
-        X : ndarray of shape (n_samples, n_features)
+        X : ndarray of shape (n_samples, n_features), dtype={np.int32, np.int64}
             The input data. The data are expected to be encoded with an
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
@@ -76,29 +76,25 @@ class ValueDifferenceMetric:
         n_features = X.shape[1]
 
         # list of length n_features of ndarray (n_categories, n_classes)
-        counts_per_class = [
-            np.transpose(
+        # compute the counts
+        self.proba_per_class_ = [
+            np.array(
                 [
                     np.bincount(
                         X[y == klass, feature_idx],
                         minlength=len(self.categories[feature_idx]),
                     )
                     for klass in self.classes
-                ]
-            )
+                ],
+                dtype=np.float64,
+            ).T
             for feature_idx in range(n_features)
         ]
-
-        # list of length n_features of ndarray (n_categories,)
-        proba_per_class = [
-            (
-                counts_per_class[feature_idx]
-                / counts_per_class[feature_idx].sum(axis=1)[:, np.newaxis]
+        # normalize by the summing over the classes
+        for feature_idx in range(n_features):
+            self.proba_per_class_[feature_idx] /= (
+                self.proba_per_class_[feature_idx].sum(axis=1).reshape(-1, 1)
             )
-            for feature_idx in range(n_features)
-        ]
-
-        self.proba_per_class_ = proba_per_class
 
         return self
 
@@ -107,11 +103,11 @@ class ValueDifferenceMetric:
 
         Parameters
         ----------
-        X1 : ndarray of shape (n_samples, n_features)
+        X1 : ndarray of shape (n_samples, n_features), dtype={np.int32, np.int64}
             The input data. The data are expected to be encoded with an
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
-        X2 : ndarray of shape (n_samples, n_features)
+        X2 : ndarray of shape (n_samples, n_features), dtype={np.int32, np.int64}
             The input data. The data are expected to be encoded with an
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
@@ -120,8 +116,16 @@ class ValueDifferenceMetric:
         distance_matrix : ndarray of shape (n_samples, n_samples)
             The VDM pairwise distance.
         """
+        if X1.dtype.kind != "i":
+            X1 = X1.astype(np.int64)
         n_samples_X1, n_features = X1.shape
-        n_samples_X2 = X2.shape[0] if X2 is not None else n_samples_X1
+
+        if X2 is not None:
+            if X2.dtype.kind != "i":
+                X2 = X2.astype(np.int64)
+            n_samples_X2 = X2.shape[0]
+        else:
+            n_samples_X2 = n_samples_X1
 
         distance = np.zeros(shape=(n_samples_X1, n_samples_X2), dtype=np.float64)
         for feature_idx in range(n_features):
