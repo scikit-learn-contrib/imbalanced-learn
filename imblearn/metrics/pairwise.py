@@ -90,30 +90,19 @@ class ValueDifferenceMetric:
 
         # list of length n_features of ndarray (n_categories, n_classes)
         # compute the counts
-        # self.proba_per_class_ = [
-        #     np.array(
-        #         [
-        #             np.bincount(
-        #                 X[y == klass, feature_idx],
-        #                 minlength=len(self.categories[feature_idx]),
-        #             )
-        #             for klass in self.classes
-        #         ],
-        #         dtype=np.float64,
-        #     ).T
-        #     for feature_idx in range(n_features)
-        # ]
-        self.proba_per_class_ = []
-        for feature_idx in range(n_features):
-            arr = []
-            for klass in self.classes:
-                tmp = np.bincount(
-                    X[y == klass, feature_idx],
-                    minlength=len(self.categories[feature_idx]),
-                )
-                tmp = np.array(tmp, dtype=np.float64).T
-                arr.append(tmp)
-            self.proba_per_class_.append(arr)
+        self.proba_per_class_ = [
+            np.array(
+                [
+                    np.bincount(
+                        X[y == klass, feature_idx],
+                        minlength=len(self.categories[feature_idx]),
+                    )
+                    for klass in self.classes
+                ],
+                dtype=np.float64,
+            ).T
+            for feature_idx in range(n_features)
+        ]
         # normalize by the summing over the classes
         for feature_idx in range(n_features):
             self.proba_per_class_[feature_idx] /= (
