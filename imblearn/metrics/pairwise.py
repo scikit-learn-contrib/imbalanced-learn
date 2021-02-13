@@ -32,6 +32,8 @@ class ValueDifferenceMetric:
     where :math:`F` is the number of feature and :math:`r` an exponent usually
     defined equal to 1 or 2.
 
+    The definition of this distance was propoed in [1]_.
+
     Parameters
     ----------
     classes : ndarray of shape (n_classes,)
@@ -54,6 +56,11 @@ class ValueDifferenceMetric:
     proba_per_class_ : list of ndarray of shape (n_categories, n_classes)
         List of length `n_features` containing the conditional probabilities
         for each category given a class.
+
+    References
+    ----------
+    .. [1] Stanfill, Craig, and David Waltz. "Toward memory-based reasoning."
+       Communications of the ACM 29.12 (1986): 1213-1228.
     """
 
     def __init__(self, classes, categories, *, k=1, r=2):
@@ -84,19 +91,30 @@ class ValueDifferenceMetric:
 
         # list of length n_features of ndarray (n_categories, n_classes)
         # compute the counts
-        self.proba_per_class_ = [
-            np.array(
-                [
-                    np.bincount(
-                        X[y == klass, feature_idx],
-                        minlength=len(self.categories[feature_idx]),
-                    )
-                    for klass in self.classes
-                ],
-                dtype=np.float64,
-            ).T
-            for feature_idx in range(n_features)
-        ]
+        # self.proba_per_class_ = [
+        #     np.array(
+        #         [
+        #             np.bincount(
+        #                 X[y == klass, feature_idx],
+        #                 minlength=len(self.categories[feature_idx]),
+        #             )
+        #             for klass in self.classes
+        #         ],
+        #         dtype=np.float64,
+        #     ).T
+        #     for feature_idx in range(n_features)
+        # ]
+        self.proba_per_class_ = []
+        for feature_idx in range(n_features):
+            arr = []
+            for klass in self.classes:
+                tmp = np.bincount(
+                    X[y == klass, feature_idx],
+                    minlength=len(self.categories[feature_idx]),
+                )
+                tmp = np.array(tmp, dtype=np.float64).T
+                arr.append(tmp)
+            self.proba_per_class_.append(arr)
         # normalize by the summing over the classes
         for feature_idx in range(n_features):
             self.proba_per_class_[feature_idx] /= (
