@@ -67,7 +67,7 @@ def test_value_difference_metric_property(dtype, k, r, y_type, encode_label):
     #
     # "if an attribute color has three values red, green and blue, and the
     # application is to identify whether or not an object is an apple, red and
-    # green would be considered closer thanred and blue because the former two
+    # green would be considered closer than red and blue because the former two
     # both have similar correlations with the output class apple."
 
     # defined our feature
