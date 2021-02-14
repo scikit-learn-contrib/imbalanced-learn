@@ -195,7 +195,7 @@ intersphinx_mapping = {
 # sphinx-gallery configuration
 sphinx_gallery_conf = {
     "doc_module": "imblearn",
-    "backreferences_dir": os.path.join("generated"),
+    "backreferences_dir": os.path.join("references", "generated"),
     "show_memory": True,
     "reference_url": {"imblearn": None},
 }
