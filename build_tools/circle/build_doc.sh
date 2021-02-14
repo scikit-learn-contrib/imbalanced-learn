@@ -97,7 +97,7 @@ conda update --yes --quiet conda
 
 # Configure the conda environment and put it in the path using the
 # provided versions
-conda create -n $CONDA_ENV_NAME --yes --quiet python=3.8
+conda create -n $CONDA_ENV_NAME --yes --quiet python=3.7
 source activate $CONDA_ENV_NAME
 
 conda install --yes pip numpy scipy joblib pillow matplotlib memory_profiler \
