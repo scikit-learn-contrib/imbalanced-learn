@@ -119,10 +119,8 @@ class ValueDifferenceMetric(BaseEstimator):
         X, y = self._validate_data(X, y, reset=True, dtype=np.int32)
 
         if isinstance(self.n_categories, str) and self.n_categories == "auto":
-            self.n_categories_ = [
-                len(np.unique(X[:, feature_idx]))
-                for feature_idx in range(self.n_features_in_)
-            ]
+            # categories are expected to be encoded from 0 to n_categories - 1
+            self.n_categories_ = X.max(axis=0) + 1
         else:
             if len(self.n_categories) != self.n_features_in_:
                 raise ValueError(
@@ -132,7 +130,6 @@ class ValueDifferenceMetric(BaseEstimator):
                     f"X."
                 )
             self.n_categories_ = np.array(self.n_categories, copy=False)
-
         classes = unique_labels(y)
 
         # list of length n_features of ndarray (n_categories, n_classes)
@@ -193,6 +190,3 @@ class ValueDifferenceMetric(BaseEstimator):
                 distance_matrix(proba_feature_X, proba_feature_Y, p=self.k) ** self.r
             )
         return distance
-
-    # def _more_tags(self):
-    #     return {"X_types": ["categorical"]}
