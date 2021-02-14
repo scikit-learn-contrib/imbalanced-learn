@@ -6,6 +6,9 @@ Metrics
 
 .. currentmodule:: imblearn.metrics
 
+Classification metrics
+----------------------
+
 Currently, scikit-learn only offers the
 ``sklearn.metrics.balanced_accuracy_score`` (in 0.20) as metric to deal with
 imbalanced datasets. The module :mod:`imblearn.metrics` offers a couple of
@@ -15,7 +18,7 @@ classifiers.
 .. _sensitivity_specificity:
 
 Sensitivity and specificity metrics
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Sensitivity and specificity are metrics which are well known in medical
 imaging. Sensitivity (also called true positive rate or recall) is the
@@ -34,7 +37,7 @@ use those metrics.
 .. _imbalanced_metrics:
 
 Additional metrics specific to imbalanced datasets
---------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The :func:`geometric_mean_score`
 :cite:`barandela2003strategies,kubat1997addressing` is the root of the product
@@ -48,7 +51,7 @@ parameter ``alpha``.
 .. _macro_averaged_mean_absolute_error:
 
 Macro-Averaged Mean Absolute Error (MA-MAE)
--------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Ordinal classification is used when there is a rank among classes, for example
 levels of functionality or movie ratings.
@@ -60,9 +63,16 @@ each class and averaged over classes, giving an equal weight to each class.
 .. _classification_report:
 
 Summary of important metrics
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The :func:`classification_report_imbalanced` will compute a set of metrics
 per class and summarize it in a table. The parameter `output_dict` allows
 to get a string or a Python dictionary. This dictionary can be reused to create
 a Pandas dataframe for instance.
+
+.. _pairwise_metrics:
+
+Pairwise metrics
+----------------
+
+TODO: add documentation regarding ValueDifferenceMetric

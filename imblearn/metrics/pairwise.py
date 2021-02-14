@@ -57,6 +57,13 @@ class ValueDifferenceMetric:
         List of length `n_features` containing the conditional probabilities
         for each category given a class.
 
+    Notes
+    -----
+    The input data `X` are expected to be encoded by an
+    :class:`~sklearn.preprocessing.OrdinalEncoder` and the data type is used
+    should be `np.int32`. If other data types are given, `X` will be converted
+    to `np.int32`.
+
     References
     ----------
     .. [1] Stanfill, Craig, and David Waltz. "Toward memory-based reasoning."
@@ -74,7 +81,7 @@ class ValueDifferenceMetric:
 
         Parameters
         ----------
-        X : ndarray of shape (n_samples, n_features), dtype={np.int32, np.int64}
+        X : ndarray of shape (n_samples, n_features), dtype=np.int32
             The input data. The data are expected to be encoded with an
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
@@ -116,11 +123,11 @@ class ValueDifferenceMetric:
 
         Parameters
         ----------
-        X1 : ndarray of shape (n_samples, n_features), dtype={np.int32, np.int64}
+        X1 : ndarray of shape (n_samples, n_features), dtype=np.int32
             The input data. The data are expected to be encoded with an
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
-        X2 : ndarray of shape (n_samples, n_features), dtype={np.int32, np.int64}
+        X2 : ndarray of shape (n_samples, n_features), dtype=np.int32
             The input data. The data are expected to be encoded with an
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
