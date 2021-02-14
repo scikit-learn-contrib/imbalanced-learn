@@ -3,9 +3,9 @@
 Create an imbalanced dataset
 ============================
 
-An illustration of the :func:`imblearn.datasets.make_imbalance` function to
+An illustration of the :func:`~imblearn.datasets.make_imbalance` function to
 create an imbalanced dataset from a balanced dataset. We show the ability of
-:func:`imblearn.datasets.make_imbalance` of dealing with Pandas DataFrame.
+:func:`~imblearn.datasets.make_imbalance` of dealing with Pandas DataFrame.
 
 """
 

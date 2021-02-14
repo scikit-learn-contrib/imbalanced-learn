@@ -69,7 +69,7 @@ will generate balanced mini-batches.
 TensorFlow generator
 ~~~~~~~~~~~~~~~~~~~~
 
-The :func:`imblearn.tensorflow.balanced_batch_generator` allow to generate
+The :func:`~imblearn.tensorflow.balanced_batch_generator` allow to generate
 balanced mini-batches using an imbalanced-learn sampler which returns indices::
 
   >>> X = X.astype(np.float32)
@@ -143,8 +143,9 @@ define a logistic regression model::
   >>> model.compile(optimizer='sgd', loss='categorical_crossentropy',
   ...               metrics=['accuracy'])
 
-:func:`imblearn.keras.balanced_batch_generator` creates a balanced mini-batches
-generator with the associated number of mini-batches which will be generated::
+:func:`~imblearn.keras.balanced_batch_generator` creates a balanced
+mini-batches generator with the associated number of mini-batches which will be
+generated::
 
   >>> from imblearn.keras import balanced_batch_generator
   >>> training_generator, steps_per_epoch = balanced_batch_generator(
