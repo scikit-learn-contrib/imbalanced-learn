@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Metrics to assess performance on classification task given class
+"""Metrics to assess performance on a classification task given class
 predictions. The available metrics are complementary from the metrics available
 in scikit-learn.
 
