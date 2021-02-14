@@ -125,7 +125,7 @@ def test_value_difference_metric_categories(data):
     np.testing.assert_array_equal(vdm_auto.n_categories_, vdm_categories.n_categories_)
 
 
-def test_value_difference_metric_categorie_error(data):
+def test_value_difference_metric_categories_error(data):
     # Check that we raise an error if n_categories is inconsistent with the
     # number of features in X
     X, y = data
@@ -138,3 +138,23 @@ def test_value_difference_metric_categorie_error(data):
     err_msg = "The length of n_categories is not consistent with the number"
     with pytest.raises(ValueError, match=err_msg):
         vdm.fit(X_encoded, y)
+
+
+def test_value_difference_metric_missing_categories(data):
+    # Check that we don't get issue when a category is missing between 0
+    # n_categories - 1
+    X, y = data
+
+    encoder = OrdinalEncoder(dtype=np.int32)
+    X_encoded = encoder.fit_transform(X)
+    n_categories = np.array([len(cat) for cat in encoder.categories_])
+
+    # remove a categories that could be between 0 and n_categories
+    X_encoded[X_encoded[:, -1] == 1] = 0
+    np.testing.assert_array_equal(np.unique(X_encoded[:, -1]), [0, 2, 3])
+
+    vdm = ValueDifferenceMetric(n_categories=n_categories)
+    vdm.fit(X_encoded, y)
+
+    for n_cats, proba in zip(n_categories, vdm.proba_per_class_):
+        assert proba.shape == (n_cats, len(np.unique(y)))

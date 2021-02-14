@@ -105,7 +105,7 @@ class ValueDifferenceMetric(BaseEstimator):
         Parameters
         ----------
         X : ndarray of shape (n_samples, n_features), dtype=np.int32
-            The input data. The data are expected to be encoded with an
+            The input data. The data are expected to be encoded with a
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
         y : ndarray of shape (n_features,)
@@ -144,11 +144,15 @@ class ValueDifferenceMetric(BaseEstimator):
                     X[y == klass, feature_idx],
                     minlength=self.n_categories_[feature_idx],
                 )
+
         # normalize by the summing over the classes
-        for feature_idx in range(self.n_features_in_):
-            self.proba_per_class_[feature_idx] /= (
-                self.proba_per_class_[feature_idx].sum(axis=1).reshape(-1, 1)
-            )
+        with np.errstate(invalid="ignore"):
+            # silence potential warning due to in-place division by zero
+            for feature_idx in range(self.n_features_in_):
+                self.proba_per_class_[feature_idx] /= (
+                    self.proba_per_class_[feature_idx].sum(axis=1).reshape(-1, 1)
+                )
+                np.nan_to_num(self.proba_per_class_[feature_idx], copy=False)
 
         return self
 
@@ -158,11 +162,11 @@ class ValueDifferenceMetric(BaseEstimator):
         Parameters
         ----------
         X : ndarray of shape (n_samples, n_features), dtype=np.int32
-            The input data. The data are expected to be encoded with an
+            The input data. The data are expected to be encoded with a
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
         Y : ndarray of shape (n_samples, n_features), dtype=np.int32
-            The input data. The data are expected to be encoded with an
+            The input data. The data are expected to be encoded with a
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
         Returns
