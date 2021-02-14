@@ -97,11 +97,11 @@ conda update --yes --quiet conda
 
 # Configure the conda environment and put it in the path using the
 # provided versions
-conda create -n $CONDA_ENV_NAME --yes --quiet python=3.7
+conda create -n $CONDA_ENV_NAME --yes --quiet python=3.8
 source activate $CONDA_ENV_NAME
 
 conda install --yes pip numpy scipy joblib pillow matplotlib memory_profiler \
-        sphinx=3.2.1 pandas keras tensorflow=1
+        sphinx=3.2.1 pandas tensorflow=2
 pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
 pip install -U git+https://github.com/sphinx-gallery/sphinx-gallery.git
 pip install -U git+https://github.com/numpy/numpydoc.git
