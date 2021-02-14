@@ -4,7 +4,7 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Azure|_ |Travis|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_
+|Azure|_ |Travis|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_ |Black|_
 
 .. |Azure| image:: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_apis/build/status/scikit-learn-contrib.imbalanced-learn?branchName=master
 .. _Azure: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_build
@@ -26,6 +26,11 @@
 
 .. |Gitter| image:: https://badges.gitter.im/scikit-learn-contrib/imbalanced-learn.svg
 .. _Gitter: https://gitter.im/scikit-learn-contrib/imbalanced-learn?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+.. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+.. _Black: :target: https://github.com/psf/black
+
+
 
 imbalanced-learn
 ================
