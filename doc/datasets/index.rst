@@ -6,10 +6,10 @@ Dataset loading utilities
 
 .. currentmodule:: imblearn.datasets
 
-The ``imblearn.datasets`` package is complementing the ``sklearn.datasets``
-package. The package provides both: (i) a set of imbalanced datasets to perform
-systematic benchmark and (ii) a utility to create an imbalanced dataset from an
-original balanced dataset.
+The :mod:`imblearn.datasets` package is complementing the
+:mod:`sklearn.datasets` package. The package provides both: (i) a set of
+imbalanced datasets to perform systematic benchmark and (ii) a utility to
+create an imbalanced dataset from an original balanced dataset.
 
 .. _zenodo:
 
