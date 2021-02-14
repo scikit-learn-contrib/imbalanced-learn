@@ -105,7 +105,7 @@ conda install --yes pip numpy scipy joblib pillow matplotlib memory_profiler \
 pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
 pip install -U git+https://github.com/sphinx-gallery/sphinx-gallery.git
 pip install -U git+https://github.com/numpy/numpydoc.git
-pip install -U sphinxcontrib-bibtex
+pip install sphinxcontrib-bibtex=1
 pip install -U git+https://github.com/pandas-dev/pydata-sphinx-theme.git@master
 
 # Build and install imbalanced-learn in dev mode
