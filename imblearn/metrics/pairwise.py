@@ -5,6 +5,8 @@
 
 import numpy as np
 from scipy.spatial import distance_matrix
+from sklearn.utils import check_consistent_length, column_or_1d
+from sklearn.utils.multiclass import unique_labels
 
 
 class ValueDifferenceMetric:
@@ -36,9 +38,6 @@ class ValueDifferenceMetric:
 
     Parameters
     ----------
-    classes : ndarray of shape (n_classes,)
-        The unique labels in `y`.
-
     categories : list of arrays
         List of arrays containing the categories for each feature. You can pass
         the fitted attribute `categories_` of the
@@ -68,10 +67,29 @@ class ValueDifferenceMetric:
     ----------
     .. [1] Stanfill, Craig, and David Waltz. "Toward memory-based reasoning."
        Communications of the ACM 29.12 (1986): 1213-1228.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> X = np.array(["green"] * 10 + ["red"] * 10 + ["blue"] * 10).reshape(-1, 1)
+    >>> y = [1] * 8 + [0] * 5 + [1] * 7 + [0] * 9 + [1]
+    >>> from sklearn.preprocessing import OrdinalEncoder
+    >>> encoder = OrdinalEncoder(dtype=np.int32)
+    >>> X_encoded = encoder.fit_transform(X)
+    >>> from imblearn.metrics.pairwise import ValueDifferenceMetric
+    >>> vdm = ValueDifferenceMetric(categories=encoder.categories_).fit(X_encoded, y)
+    >>> pairwise_distance = vdm.pairwise(X_encoded)
+    >>> pairwise_distance.shape
+    (30, 30)
+    >>> X_test = np.array(["green", "red", "blue"]).reshape(-1, 1)
+    >>> X_test_encoded = encoder.transform(X_test)
+    >>> vdm.pairwise(X_test_encoded)
+    array([[ 0.  ,  0.04,  1.96],
+           [ 0.04,  0.  ,  1.44],
+           [ 1.96,  1.44,  0.  ]])
     """
 
-    def __init__(self, classes, categories, *, k=1, r=2):
-        self.classes = classes
+    def __init__(self, categories, *, k=1, r=2):
         self.categories = categories
         self.k = k
         self.r = r
@@ -92,8 +110,12 @@ class ValueDifferenceMetric:
         -------
         self
         """
+        check_consistent_length(X, y)
         X = np.array(X, dtype=np.int32, copy=False)
+        y = column_or_1d(y)
+
         n_features = X.shape[1]
+        classes = unique_labels(y)
 
         # list of length n_features of ndarray (n_categories, n_classes)
         # compute the counts
@@ -104,7 +126,7 @@ class ValueDifferenceMetric:
                         X[y == klass, feature_idx],
                         minlength=len(self.categories[feature_idx]),
                     )
-                    for klass in self.classes
+                    for klass in classes
                 ],
                 dtype=np.float64,
             ).T

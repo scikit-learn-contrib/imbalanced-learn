@@ -6,7 +6,8 @@
 import numpy as np
 import pytest
 
-from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
+from sklearn.utils._testing import _convert_container
 
 from imblearn.metrics.pairwise import ValueDifferenceMetric
 
@@ -20,25 +21,30 @@ def data():
     feature_3 = ["A"] * 20 + ["B"] * 20 + ["C"] * 10 + ["D"] * 10
     X = np.array([feature_1, feature_2, feature_3], dtype=object).T
     rng.shuffle(X)
-    y = rng.randint(low=0, high=3, size=X.shape[0])
+    y = rng.randint(low=0, high=2, size=X.shape[0])
+    y_labels = np.array(["not apple", "apple"], dtype=object)
+    y = y_labels[y]
     return X, y
 
 
 @pytest.mark.parametrize("dtype", [np.int32, np.int64, np.float32, np.float64])
 @pytest.mark.parametrize("k, r", [(1, 1), (1, 2), (2, 1), (2, 2)])
-def test_value_difference_metric(data, dtype, k, r):
+@pytest.mark.parametrize("y_type", ["list", "array"])
+@pytest.mark.parametrize("encode_label", [True, False])
+def test_value_difference_metric(data, dtype, k, r, y_type, encode_label):
     # Check basic feature of the metric:
     # * the shape of the distance matrix is (n_samples, n_samples)
     # * computing pairwise distance of X is the same than explicitely between
     #   X and X.
     X, y = data
+    y = _convert_container(y, y_type)
+    if encode_label:
+        y = LabelEncoder().fit_transform(y)
 
     encoder = OrdinalEncoder(dtype=dtype)
-    classes = np.unique(y)
-
     X_encoded = encoder.fit_transform(X)
 
-    vdm = ValueDifferenceMetric(classes, encoder.categories_, k=k, r=r)
+    vdm = ValueDifferenceMetric(encoder.categories_, k=k, r=r)
     vdm.fit(X_encoded, y)
 
     dist_1 = vdm.pairwise(X_encoded)
@@ -51,7 +57,9 @@ def test_value_difference_metric(data, dtype, k, r):
 
 @pytest.mark.parametrize("dtype", [np.int32, np.int64, np.float32, np.float64])
 @pytest.mark.parametrize("k, r", [(1, 1), (1, 2), (2, 1), (2, 2)])
-def test_value_difference_metric_property(dtype, k, r):
+@pytest.mark.parametrize("y_type", ["list", "array"])
+@pytest.mark.parametrize("encode_label", [True, False])
+def test_value_difference_metric_property(dtype, k, r, y_type, encode_label):
     # Check the property of the vdm distance. Let's check the property
     # described in "Improved Heterogeneous Distance Functions", D.R. Wilson and
     # T.R. Martinez, Journal of Artificial Intelligence Research 6 (1997) 1-34
@@ -65,13 +73,17 @@ def test_value_difference_metric_property(dtype, k, r):
     # defined our feature
     X = np.array(["green"] * 10 + ["red"] * 10 + ["blue"] * 10).reshape(-1, 1)
     # 0 - not an apple / 1 - an apple
-    y = np.array([1] * 8 + [0] * 5 + [1] * 7 + [0] * 9 + [1], dtype=np.int32)
+    y = np.array([1] * 8 + [0] * 5 + [1] * 7 + [0] * 9 + [1])
+    y_labels = np.array(["not apple", "apple"], dtype=object)
+    y = y_labels[y]
+    y = _convert_container(y, y_type)
+    if encode_label:
+        y = LabelEncoder().fit_transform(y)
 
     encoder = OrdinalEncoder(dtype=dtype)
-    classes = np.unique(y)
-
     X_encoded = encoder.fit_transform(X)
-    vdm = ValueDifferenceMetric(classes, encoder.categories_, k=k, r=r)
+
+    vdm = ValueDifferenceMetric(encoder.categories_, k=k, r=r)
     vdm.fit(X_encoded, y)
 
     sample_green = encoder.transform([["green"]])
