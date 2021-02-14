@@ -1,0 +1,8 @@
+[flake8]
+max-line-length = 88
+# Default flake8 3.5 ignored flags
+ignore=E121,E123,E126,E226,E24,E704,W503,W504,E203
+# It's fine not to put the import at the top of the file in the examples
+# folder.
+per-file-ignores =
+    examples/*: E402

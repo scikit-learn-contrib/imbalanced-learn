@@ -1,5 +1,7 @@
 # coding: utf-8
-"""Metrics to assess performance on classification task given class prediction
+"""Metrics to assess performance on a classification task given class
+predictions. The available metrics are complementary from the metrics available
+in scikit-learn.
 
 Functions named as ``*_score`` return a scalar value to maximize: the higher
 the better

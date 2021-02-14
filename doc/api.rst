@@ -205,6 +205,10 @@ Imbalance-learn provides some fast-prototyping tools.
 
 .. currentmodule:: imblearn
 
+Classification metrics
+----------------------
+See the :ref:`metrics` section of the user guide for further details.
+
 .. autosummary::
    :toctree: generated/
    :template: function.rst
@@ -216,6 +220,22 @@ Imbalance-learn provides some fast-prototyping tools.
    metrics.geometric_mean_score
    metrics.macro_averaged_mean_absolute_error
    metrics.make_index_balanced_accuracy
+
+Pairwise metrics
+----------------
+See the :ref:`pairwise_metrics` section of the user guide for further details.
+
+.. automodule:: imblearn.metrics.pairwise
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: imblearn
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+   metrics.pairwise.ValueDifferenceMetric
 
 .. _datasets_ref:
 
