@@ -5,11 +5,12 @@
 
 import numpy as np
 from scipy.spatial import distance_matrix
-from sklearn.utils import check_consistent_length, column_or_1d
+from sklearn.base import BaseEstimator
+from sklearn.utils import check_consistent_length
 from sklearn.utils.multiclass import unique_labels
 
 
-class ValueDifferenceMetric:
+class ValueDifferenceMetric(BaseEstimator):
     r"""Class implementing the Value Difference Metric.
 
     This metric computes the distance between samples containing only nominal
@@ -38,11 +39,12 @@ class ValueDifferenceMetric:
 
     Parameters
     ----------
-    categories : list of arrays
-        List of arrays containing the categories for each feature. You can pass
+    n_categories : "auto" or array-like of shape (n_features,), default="auto"
+        The number of unique categories per features. If `"auto"`, the number
+        of categories will be computed from `X` at `fit`. Otherwise, you can
+        provide an array-like of such counts to avoid computation. You can use
         the fitted attribute `categories_` of the
-        :class:`~sklearn.preprocesssing.OrdinalEncoder` used to encode the
-        data.
+        :class:`~sklearn.preprocesssing.OrdinalEncoder`to deduce these counts.
 
     k : int, default=1
         Exponent used to compute the distance between feature value.
@@ -52,6 +54,9 @@ class ValueDifferenceMetric:
 
     Attributes
     ----------
+    n_categories_ : ndarray of shape (n_features,)
+        The number of categories per features.
+
     proba_per_class_ : list of ndarray of shape (n_categories, n_classes)
         List of length `n_features` containing the conditional probabilities
         for each category given a class.
@@ -77,7 +82,7 @@ class ValueDifferenceMetric:
     >>> encoder = OrdinalEncoder(dtype=np.int32)
     >>> X_encoded = encoder.fit_transform(X)
     >>> from imblearn.metrics.pairwise import ValueDifferenceMetric
-    >>> vdm = ValueDifferenceMetric(categories=encoder.categories_).fit(X_encoded, y)
+    >>> vdm = ValueDifferenceMetric().fit(X_encoded, y)
     >>> pairwise_distance = vdm.pairwise(X_encoded)
     >>> pairwise_distance.shape
     (30, 30)
@@ -89,8 +94,8 @@ class ValueDifferenceMetric:
            [ 1.96,  1.44,  0.  ]])
     """
 
-    def __init__(self, categories, *, k=1, r=2):
-        self.categories = categories
+    def __init__(self, *, n_categories="auto", k=1, r=2):
+        self.n_categories = n_categories
         self.k = k
         self.r = r
 
@@ -111,10 +116,23 @@ class ValueDifferenceMetric:
         self
         """
         check_consistent_length(X, y)
-        X = np.array(X, dtype=np.int32, copy=False)
-        y = column_or_1d(y)
+        X, y = self._validate_data(X, y, reset=True, dtype=np.int32)
 
-        n_features = X.shape[1]
+        if isinstance(self.n_categories, str) and self.n_categories == "auto":
+            self.n_categories_ = [
+                len(np.unique(X[:, feature_idx]))
+                for feature_idx in range(self.n_features_in_)
+            ]
+        else:
+            if len(self.n_categories) != self.n_features_in_:
+                raise ValueError(
+                    f"The length of n_categories is not consistent with the "
+                    f"number of feature in X. Got {len(self.n_categories)} "
+                    f"elements in n_categories and {self.n_features_in_} in "
+                    f"X."
+                )
+            self.n_categories_ = np.array(self.n_categories, copy=False)
+
         classes = unique_labels(y)
 
         # list of length n_features of ndarray (n_categories, n_classes)
@@ -124,32 +142,32 @@ class ValueDifferenceMetric:
                 [
                     np.bincount(
                         X[y == klass, feature_idx],
-                        minlength=len(self.categories[feature_idx]),
+                        minlength=self.n_categories_[feature_idx],
                     )
                     for klass in classes
                 ],
                 dtype=np.float64,
             ).T
-            for feature_idx in range(n_features)
+            for feature_idx in range(self.n_features_in_)
         ]
         # normalize by the summing over the classes
-        for feature_idx in range(n_features):
+        for feature_idx in range(self.n_features_in_):
             self.proba_per_class_[feature_idx] /= (
                 self.proba_per_class_[feature_idx].sum(axis=1).reshape(-1, 1)
             )
 
         return self
 
-    def pairwise(self, X1, X2=None):
+    def pairwise(self, X, Y=None):
         """Compute the VDM distance pairwise.
 
         Parameters
         ----------
-        X1 : ndarray of shape (n_samples, n_features), dtype=np.int32
+        X : ndarray of shape (n_samples, n_features), dtype=np.int32
             The input data. The data are expected to be encoded with an
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
-        X2 : ndarray of shape (n_samples, n_features), dtype=np.int32
+        Y : ndarray of shape (n_samples, n_features), dtype=np.int32
             The input data. The data are expected to be encoded with an
             :class:`~sklearn.preprocessing.OrdinalEncoder`.
 
@@ -158,27 +176,23 @@ class ValueDifferenceMetric:
         distance_matrix : ndarray of shape (n_samples, n_samples)
             The VDM pairwise distance.
         """
-        if X1.dtype.kind != "i":
-            X1 = X1.astype(np.int32)
-        n_samples_X1, n_features = X1.shape
+        X = self._validate_data(X, reset=False, dtype=np.int32)
+        n_samples_X = X.shape[0]
 
-        if X2 is not None:
-            if X2.dtype.kind != "i":
-                X2 = X2.astype(np.int32)
-            n_samples_X2 = X2.shape[0]
+        if Y is not None:
+            Y = self._validate_data(Y, reset=False, dtype=np.int32)
+            n_samples_Y = Y.shape[0]
         else:
-            n_samples_X2 = n_samples_X1
+            n_samples_Y = n_samples_X
 
-        distance = np.zeros(shape=(n_samples_X1, n_samples_X2), dtype=np.float64)
-        for feature_idx in range(n_features):
-            proba_feature_X1 = self.proba_per_class_[feature_idx][X1[:, feature_idx]]
-            if X2 is not None:
-                proba_feature_X2 = self.proba_per_class_[feature_idx][
-                    X2[:, feature_idx]
-                ]
+        distance = np.zeros(shape=(n_samples_X, n_samples_Y), dtype=np.float64)
+        for feature_idx in range(self.n_features_in_):
+            proba_feature_X = self.proba_per_class_[feature_idx][X[:, feature_idx]]
+            if Y is not None:
+                proba_feature_Y = self.proba_per_class_[feature_idx][Y[:, feature_idx]]
             else:
-                proba_feature_X2 = proba_feature_X1
+                proba_feature_Y = proba_feature_X
             distance += (
-                distance_matrix(proba_feature_X1, proba_feature_X2, p=self.k) ** self.r
+                distance_matrix(proba_feature_X, proba_feature_Y, p=self.k) ** self.r
             )
         return distance

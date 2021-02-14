@@ -44,7 +44,7 @@ def test_value_difference_metric(data, dtype, k, r, y_type, encode_label):
     encoder = OrdinalEncoder(dtype=dtype)
     X_encoded = encoder.fit_transform(X)
 
-    vdm = ValueDifferenceMetric(encoder.categories_, k=k, r=r)
+    vdm = ValueDifferenceMetric(k=k, r=r)
     vdm.fit(X_encoded, y)
 
     dist_1 = vdm.pairwise(X_encoded)
@@ -83,7 +83,7 @@ def test_value_difference_metric_property(dtype, k, r, y_type, encode_label):
     encoder = OrdinalEncoder(dtype=dtype)
     X_encoded = encoder.fit_transform(X)
 
-    vdm = ValueDifferenceMetric(encoder.categories_, k=k, r=r)
+    vdm = ValueDifferenceMetric(k=k, r=r)
     vdm.fit(X_encoded, y)
 
     sample_green = encoder.transform([["green"]])
@@ -106,3 +106,35 @@ def test_value_difference_metric_property(dtype, k, r, y_type, encode_label):
     assert dist_1 < dist_2
     assert dist_1 < dist_3
     assert dist_2 < dist_3
+
+
+def test_value_difference_metric_categories(data):
+    # Check that "auto" is equivalent to provide the number categories
+    # beforehand
+    X, y = data
+
+    encoder = OrdinalEncoder(dtype=np.int32)
+    X_encoded = encoder.fit_transform(X)
+    n_categories = np.array([len(cat) for cat in encoder.categories_])
+
+    vdm_auto = ValueDifferenceMetric().fit(X_encoded, y)
+    vdm_categories = ValueDifferenceMetric(n_categories=n_categories)
+    vdm_categories.fit(X_encoded, y)
+
+    np.testing.assert_array_equal(vdm_auto.n_categories_, n_categories)
+    np.testing.assert_array_equal(vdm_auto.n_categories_, vdm_categories.n_categories_)
+
+
+def test_value_difference_metric_categorie_error(data):
+    # Check that we raise an error if n_categories is inconsistent with the
+    # number of features in X
+    X, y = data
+
+    encoder = OrdinalEncoder(dtype=np.int32)
+    X_encoded = encoder.fit_transform(X)
+    n_categories = [1, 2]
+
+    vdm = ValueDifferenceMetric(n_categories=n_categories)
+    err_msg = "The length of n_categories is not consistent with the number"
+    with pytest.raises(ValueError, match=err_msg):
+        vdm.fit(X_encoded, y)
