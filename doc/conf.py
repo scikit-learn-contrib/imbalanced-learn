@@ -14,14 +14,13 @@
 
 import os
 import sys
-import sphinx_rtd_theme
+import pydata_sphinx_theme
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath("sphinxext"))
 from github_link import make_linkcode_resolve
-import sphinx_gallery
 
 # -- General configuration ------------------------------------------------
 
@@ -44,7 +43,7 @@ extensions = [
 ]
 
 # bibtex file
-bibtex_bibfiles = ['bibtex/refs.bib']
+bibtex_bibfiles = ["bibtex/refs.bib"]
 
 # this is needed for some reason...
 # see https://github.com/numpy/numpydoc/issues/69
@@ -77,8 +76,8 @@ plot_gallery = True
 master_doc = "index"
 
 # General information about the project.
-project = 'imbalanced-learn'
-copyright = '2014-2020, The imbalanced-learn developers'
+project = "imbalanced-learn"
+copyright = "2014-2020, The imbalanced-learn developers"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -137,7 +136,7 @@ html_style = "css/imbalanced-learn.css"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -145,7 +144,7 @@ html_theme = "sphinx_rtd_theme"
 # html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme_path = [pydata_sphinx_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -260,7 +259,10 @@ latex_documents = [
 
 # intersphinx configuration
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/{.major}".format(sys.version_info), None,),
+    "python": (
+        "https://docs.python.org/{.major}".format(sys.version_info),
+        None,
+    ),
     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "matplotlib": ("https://matplotlib.org/", None),

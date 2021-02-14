@@ -1,6 +1,6 @@
 sphinx
 sphinx-gallery
-sphinx_rtd_theme
+pydata-sphinx-theme
 sphinxcontrib-bibtex
 numpydoc
 matplotlib
