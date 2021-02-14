@@ -138,18 +138,15 @@ class ValueDifferenceMetric(BaseEstimator):
         # list of length n_features of ndarray (n_categories, n_classes)
         # compute the counts
         self.proba_per_class_ = [
-            np.array(
-                [
-                    np.bincount(
-                        X[y == klass, feature_idx],
-                        minlength=self.n_categories_[feature_idx],
-                    )
-                    for klass in classes
-                ],
-                dtype=np.float64,
-            ).T
-            for feature_idx in range(self.n_features_in_)
+            np.empty(shape=(n_cat, len(classes)), dtype=np.float64)
+            for n_cat in self.n_categories_
         ]
+        for feature_idx in range(self.n_features_in_):
+            for klass_idx, klass in enumerate(classes):
+                self.proba_per_class_[feature_idx][:, klass_idx] = np.bincount(
+                    X[y == klass, feature_idx],
+                    minlength=self.n_categories_[feature_idx],
+                )
         # normalize by the summing over the classes
         for feature_idx in range(self.n_features_in_):
             self.proba_per_class_[feature_idx] /= (
@@ -197,5 +194,5 @@ class ValueDifferenceMetric(BaseEstimator):
             )
         return distance
 
-    def _more_tags(self):
-        return {"X_types": ["categorical"]}
+    # def _more_tags(self):
+    #     return {"X_types": ["categorical"]}
