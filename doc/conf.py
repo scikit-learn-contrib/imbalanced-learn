@@ -21,7 +21,6 @@ import sphinx_rtd_theme
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath("sphinxext"))
 from github_link import make_linkcode_resolve
-import sphinx_gallery
 
 # -- General configuration ------------------------------------------------
 
@@ -44,7 +43,7 @@ extensions = [
 ]
 
 # bibtex file
-bibtex_bibfiles = ['bibtex/refs.bib']
+bibtex_bibfiles = ["bibtex/refs.bib"]
 
 # this is needed for some reason...
 # see https://github.com/numpy/numpydoc/issues/69
@@ -77,8 +76,8 @@ plot_gallery = True
 master_doc = "index"
 
 # General information about the project.
-project = 'imbalanced-learn'
-copyright = '2014-2020, The imbalanced-learn developers'
+project = "imbalanced-learn"
+copyright = "2014-2020, The imbalanced-learn developers"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -260,7 +259,10 @@ latex_documents = [
 
 # intersphinx configuration
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/{.major}".format(sys.version_info), None,),
+    "python": (
+        "https://docs.python.org/{.major}".format(sys.version_info),
+        None,
+    ),
     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "matplotlib": ("https://matplotlib.org/", None),

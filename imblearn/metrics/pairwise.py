@@ -8,6 +8,7 @@ from scipy.spatial import distance_matrix
 from sklearn.base import BaseEstimator
 from sklearn.utils import check_consistent_length
 from sklearn.utils.multiclass import unique_labels
+from sklearn.utils.validation import check_is_fitted
 
 
 class ValueDifferenceMetric(BaseEstimator):
@@ -36,6 +37,8 @@ class ValueDifferenceMetric(BaseEstimator):
     defined equal to 1 or 2.
 
     The definition of this distance was propoed in [1]_.
+
+    Read more in the :ref:`User Guide <vdm>`.
 
     Parameters
     ----------
@@ -174,6 +177,7 @@ class ValueDifferenceMetric(BaseEstimator):
         distance_matrix : ndarray of shape (n_samples, n_samples)
             The VDM pairwise distance.
         """
+        check_is_fitted(self)
         X = self._validate_data(X, reset=False, dtype=np.int32)
         n_samples_X = X.shape[0]
 

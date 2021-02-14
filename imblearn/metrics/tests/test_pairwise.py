@@ -6,6 +6,7 @@
 import numpy as np
 import pytest
 
+from sklearn.exceptions import NotFittedError
 from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
 from sklearn.utils._testing import _convert_container
 
@@ -158,3 +159,15 @@ def test_value_difference_metric_missing_categories(data):
 
     for n_cats, proba in zip(n_categories, vdm.proba_per_class_):
         assert proba.shape == (n_cats, len(np.unique(y)))
+
+
+def test_value_difference_value_unfitted(data):
+    # Check that we raise a NotFittedError when `fit` is not not called before
+    # pairwise.
+    X, y = data
+
+    encoder = OrdinalEncoder(dtype=np.int32)
+    X_encoded = encoder.fit_transform(X)
+
+    with pytest.raises(NotFittedError):
+        ValueDifferenceMetric().pairwise(X_encoded)
