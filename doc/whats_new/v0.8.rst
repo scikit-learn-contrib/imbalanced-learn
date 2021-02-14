@@ -1,0 +1,47 @@
+.. _changes_0_8:
+
+Version 0.8.0 (Under development)
+=================================
+
+Changelog
+---------
+
+New features
+............
+
+- Add the the function
+  :func:`imblearn.metrics.macro_averaged_mean_absolute_error` returning the
+  average across class of the MAE. This metric is used in ordinal
+  classification.
+  :pr:`780` by :user:`Aurélien Massiot <AurelienMassiot>`.
+
+- Add the class :class:`imblearn.metrics.pairwise.ValueDifferenceMetric` to
+  compute pairwise distances between samples containing only nominal values.
+  :pr:`796` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Enhancements
+............
+
+- Add option `output_dict` in
+  :func:`imblearn.metrics.classification_report_imbalanced` to return a
+  dictionary instead of a string.
+  :pr:`770` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Added an option to generate smoothed bootstrap in
+  :class:`imblearn.over_sampling.RandomOverSampler`. It is controls by the
+  parameter `shrinkage`. This method is also known as Random Over-Sampling
+  Examples (ROSE).
+  :pr:`754` by :user:`Andrea Lorenzon <andrealorenzon>` and
+  :user:`Guillaume Lemaitre <glemaitre>`.
+
+Bug fixes
+.........
+
+- Fix a bug in :class:`imblearn.under_sampling.ClusterCentroids` where
+  `voting="hard"` could have lead to select a sample from any class instead of
+  the targeted class.
+  :pr:`769` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix a bug in :class:`imblearn.FunctionSampler` where validation was performed
+  even with `validate=False` when calling `fit`.
+  :pr:`790` by :user:`Guillaume Lemaitre <glemaitre>`.
