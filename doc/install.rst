@@ -1,6 +1,6 @@
-########################
-Install and contribution
-########################
+#######
+Install
+#######
 
 Prerequisites
 =============

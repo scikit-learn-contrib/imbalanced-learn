@@ -111,12 +111,12 @@ html_theme = "pydata_sphinx_theme"
 html_logo = "_static/img/logo.png"
 
 html_theme_options = {
-    "external_links": [
-        {
-            "url": "https://imbalanced-learn/stable/",
-            "name": "Imbalanced-learn Docs",
-        }
-    ],
+    # "external_links": [
+    #     {
+    #         "url": "https://imbalanced-learn.org/stable/",
+    #         "name": "Imbalanced-learn Docs",
+    #     }
+    # ],
     "github_url": "https://github.com/scikit-learn-contrib/imbalanced-learn",
     # "twitter_url": "https://twitter.com/pandas_dev",
     "use_edit_page_button": True,

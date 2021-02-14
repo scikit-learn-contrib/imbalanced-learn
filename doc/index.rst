@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-##########################################
-Welcome to imbalanced-learn documentation!
-##########################################
+###############################
+imbalanced-learn documentation!
+###############################
 
 .. toctree::
    :maxdepth: 2
@@ -20,7 +20,7 @@ Welcome to imbalanced-learn documentation!
    :caption: Documentation
 
    user_guide
-   api
+   references/index
 
 .. toctree::
    :maxdepth: 2
@@ -48,8 +48,8 @@ Information to install, test, and contribute to the package.
 The main documentation. This contains an in-depth description of all
 algorithms and how to apply them.
 
-`API Documentation <api.html>`_
--------------------------------
+`API Documentation <references/index.html>`_
+-------------------------------------------
 
 The exact API of all functions and classes, as given in the
 doctring. The API documents expected types and allowed features for

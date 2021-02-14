@@ -1,6 +1,6 @@
 .. _general_examples:
 
-General examples
-----------------
+Examples
+--------
 
 General-purpose and introductory examples for the `imbalanced-learn` toolbox.
