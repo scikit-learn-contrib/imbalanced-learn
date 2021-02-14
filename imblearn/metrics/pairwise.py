@@ -13,7 +13,7 @@ class ValueDifferenceMetric:
     r"""Class implementing the Value Difference Metric.
 
     This metric computes the distance between samples containing only nominal
-    categorical features. The distance between feature values of two samples
+    features. The distance between feature values of two samples
     is defined as:
 
     .. math::
