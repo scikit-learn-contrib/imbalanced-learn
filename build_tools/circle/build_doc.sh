@@ -101,11 +101,11 @@ conda create -n $CONDA_ENV_NAME --yes --quiet python=3.8
 source activate $CONDA_ENV_NAME
 
 conda install --yes pip numpy scipy joblib pillow matplotlib memory_profiler \
-        sphinx=3.2.1 pandas tensorflow=2
+        sphinx pandas tensorflow=2
 pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
 pip install -U git+https://github.com/sphinx-gallery/sphinx-gallery.git
 pip install -U git+https://github.com/numpy/numpydoc.git
-pip install -U git+https://github.com/mcmtroffaes/sphinxcontrib-bibtex.git
+pip install -U sphinxcontrib-bibtex
 pip install -U git+https://github.com/pandas-dev/pydata-sphinx-theme.git@master
 
 # Build and install imbalanced-learn in dev mode
