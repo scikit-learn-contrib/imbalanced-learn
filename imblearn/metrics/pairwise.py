@@ -196,3 +196,6 @@ class ValueDifferenceMetric(BaseEstimator):
                 distance_matrix(proba_feature_X, proba_feature_Y, p=self.k) ** self.r
             )
         return distance
+
+    def _more_tags(self):
+        return {"X_types": ["categorical"]}
