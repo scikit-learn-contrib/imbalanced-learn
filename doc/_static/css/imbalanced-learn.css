@@ -1,20 +1,64 @@
 @import url("theme.css");
 
 .highlight a {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .deprecated p {
-    padding: 10px 7px 10px 10px;
-    color: #b94a48;
-    background-color: #F3E5E5;
-    border: 1px solid #eed3d7;
+  padding: 10px 7px 10px 10px;
+  color: #b94a48;
+  background-color: #f3e5e5;
+  border: 1px solid #eed3d7;
 }
 
 .deprecated p span.versionmodified {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .wy-nav-content {
-    max-width: 1200px !important;
+  max-width: 1200px !important;
+}
+
+/* Override some aspects of the pydata-sphinx-theme */
+
+/* Getting started index page */
+
+.intro-card {
+  background: #fff;
+  border-radius: 0;
+  padding: 30px 10px 10px 10px;
+  margin: 10px 0px;
+}
+
+.intro-card .card-text {
+  margin: 20px 0px;
+  /*min-height: 150px; */
+}
+
+.custom-button {
+  background-color: #dcdcdc;
+  border: none;
+  color: #484848;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  max-width: 220px;
+  padding: 0.5rem 0rem;
+}
+
+.custom-button a {
+  color: #484848;
+}
+
+.custom-button p {
+  margin-top: 0;
+  margin-bottom: 0rem;
+  color: #484848;
+}
+
+.navbar-brand img {
+  width: 0%;
+  height: 0%;
 }

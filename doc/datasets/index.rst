@@ -150,4 +150,4 @@ It would also work with pandas dataframe::
   Counter({'Iris-virginica': 50, 'Iris-versicolor': 20, 'Iris-setosa': 10})
 
 See :ref:`sphx_glr_auto_examples_datasets_plot_make_imbalance.py` and
-:ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py`.
+:ref:`sphx_glr_auto_examples_api_plot_sampling_strategy_usage.py`.

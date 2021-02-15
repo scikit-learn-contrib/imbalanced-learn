@@ -1,7 +1,7 @@
 """
-==========================================================================
-Illustration of the sample selection for the different NearMiss algorithms
-==========================================================================
+============================
+Sample selection in NearMiss
+============================
 
 This example illustrates the different way of selecting example in NearMiss.
 

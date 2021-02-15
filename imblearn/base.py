@@ -167,7 +167,7 @@ class FunctionSampler(BaseSampler):
     Notes
     -----
     See
-    :ref:`sphx_glr_auto_examples_plot_outlier_rejections.py`
+    :ref:`sphx_glr_auto_examples_applications_plot_outlier_rejections.py`
 
     Examples
     --------

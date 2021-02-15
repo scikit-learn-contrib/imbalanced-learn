@@ -1,7 +1,7 @@
 """
-====================================================================
-Comparison of the combination of over- and under-sampling algorithms
-====================================================================
+==================================================
+Compare sampler combining over- and under-sampling
+==================================================
 
 This example shows the effect of applying an under-sampling algorithms after
 SMOTE over-sampling. In the literature, Tomek's link and edited nearest

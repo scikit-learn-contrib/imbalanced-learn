@@ -1,6 +1,8 @@
-########################
-Install and contribution
-########################
+.. _getting_started:
+
+###############
+Getting Started
+###############
 
 Prerequisites
 =============

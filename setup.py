@@ -39,17 +39,17 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.9",
 ]
 INSTALL_REQUIRES = [
-    'numpy>=1.13.3',
-    'scipy>=0.19.1',
-    'scikit-learn>=0.24',
-    'joblib>=0.11'
+    "numpy>=1.13.3",
+    "scipy>=0.19.1",
+    "scikit-learn>=0.24",
+    "joblib>=0.11",
 ]
 EXTRAS_REQUIRE = {
     "tests": ["pytest", "pytest-cov"],
     "docs": [
         "sphinx",
         "sphinx-gallery",
-        "sphinx_rtd_theme",
+        "pydata-sphinx-theme",
         "sphinxcontrib-bibtex",
         "numpydoc",
         "matplotlib",
