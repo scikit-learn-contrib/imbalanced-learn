@@ -168,11 +168,12 @@ Below is a list of the methods currently implemented in this module.
     1. Random minority over-sampling with replacement
     2. SMOTE - Synthetic Minority Over-sampling Technique [8]_
     3. SMOTENC - SMOTE for Nominal Continuous [8]_
-    4. bSMOTE(1 & 2) - Borderline SMOTE of types 1 and 2 [9]_
-    5. SVM SMOTE - Support Vectors SMOTE [10]_
-    6. ADASYN - Adaptive synthetic sampling approach for imbalanced learning [15]_
-    7. KMeans-SMOTE [17]_
-    8. ROSE - Random OverSampling Examples [19]_
+    4. SMOTEN - SMMOTE for Nominal only [8]_
+    5. bSMOTE(1 & 2) - Borderline SMOTE of types 1 and 2 [9]_
+    6. SVM SMOTE - Support Vectors SMOTE [10]_
+    7. ADASYN - Adaptive synthetic sampling approach for imbalanced learning [15]_
+    8. KMeans-SMOTE [17]_
+    9. ROSE - Random OverSampling Examples [19]_
 
 * Over-sampling followed by under-sampling
     1. SMOTE + Tomek links [12]_
