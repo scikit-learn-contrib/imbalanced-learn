@@ -108,7 +108,10 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
                 index_target_class = slice(None)
 
             idx_under = np.concatenate(
-                (idx_under, np.flatnonzero(y == target_class)[index_target_class],),
+                (
+                    idx_under,
+                    np.flatnonzero(y == target_class)[index_target_class],
+                ),
                 axis=0,
             )
 
@@ -118,7 +121,7 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
 
     def _more_tags(self):
         return {
-            "X_types": ["2darray", "string"],
+            "X_types": ["2darray", "string", "sparse", "dataframe"],
             "sample_indices": True,
             "allow_nan": True,
         }
