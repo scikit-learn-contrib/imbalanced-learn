@@ -79,6 +79,11 @@ add_function_parentheses = False
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
+# -- Options for math equations -----------------------------------------------
+
+extensions.append("sphinx.ext.imgmath")
+imgmath_image_format = "svg"
+
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -87,6 +92,9 @@ html_theme = "pydata_sphinx_theme"
 html_favicon = "_static/img/favicon.ico"
 html_logo = "_static/img/logo.png"
 html_style = "css/imbalanced-learn.css"
+html_css_files = [
+    "css/imbalanced-learn.css",
+]
 
 html_theme_options = {
     "github_url": "https://github.com/scikit-learn-contrib/imbalanced-learn",
@@ -127,11 +135,6 @@ autosummary_generate = True
 # see https://github.com/numpy/numpydoc/issues/69
 numpydoc_show_class_members = False
 
-# -- Options for math equations -----------------------------------------------
-
-extensions.append("sphinx.ext.imgmath")
-imgmath_image_format = "svg"
-
 # -- Options for sphinxcontrib-bibtex -----------------------------------------
 
 # bibtex file
@@ -149,6 +152,7 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "matplotlib": ("https://matplotlib.org/", None),
     "sklearn": ("http://scikit-learn.org/stable", None),
+    "pandas": ("http://pandas.pydata.org/pandas-docs/stable/", None),
 }
 
 # -- Options for sphinx-gallery -----------------------------------------------

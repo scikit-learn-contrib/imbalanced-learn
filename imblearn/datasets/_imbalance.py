@@ -69,7 +69,7 @@ def make_imbalance(
     See
     :ref:`sphx_glr_auto_examples_applications_plot_multi_class_under_sampling.py`,
     :ref:`sphx_glr_auto_examples_datasets_plot_make_imbalance.py`, and
-    :ref:`sphx_glr_auto_examples_plot_sampling_strategy_usage.py`.
+    :ref:`sphx_glr_auto_examples_api_plot_sampling_strategy_usage.py`.
 
     Examples
     --------

@@ -26,15 +26,29 @@ and adding a sampling functionality through the ``sample`` method:
 
 Imbalanced-learn samplers accept the same inputs that in scikit-learn:
 
-* ``data``: array-like (2-D list, pandas.Dataframe, numpy.array) or sparse
-  matrices;
-* ``targets``: array-like (1-D list, pandas.Series, numpy.array).
+* `data`:
+   * 2-D :class:`list`,
+   * 2-D :class:`numpy.ndarray`,
+   * :class:`pandas.DataFrame`,
+   * :class:`scipy.sparse.csr_matrix` or :class:`scipy.sparse.csc_matrix`;
+* `targets`:
+   * 1-D :class:`numpy.ndarray`,
+   * :class:`pandas.Series`.
 
 The output will be of the following type:
 
-* ``data_resampled``: array-like (2-D list, pandas.Dataframe, numpy.array) or
-   sparse matrices;
-* ``targets_resampled``: 1-D numpy.array or pd.Series.
+* `data_resampled`:
+   * 2-D :class:`numpy.ndarray`,
+   * :class:`pandas.DataFrame`,
+   * :class:`scipy.sparse.csr_matrix` or :class:`scipy.sparse.csc_matrix`;
+* `targets_resampled`:
+   * 1-D :class:`numpy.ndarray`,
+   * :class:`pandas.Series`.
+
+.. topic:: Pandas in/out
+
+   Unlike scikit-learn, imbalanced-learn provides support for pandas in/out.
+   Therefore providing a dataframe, will output as well a dataframe.
 
 .. topic:: Sparse input
 

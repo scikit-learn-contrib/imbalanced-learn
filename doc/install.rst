@@ -1,6 +1,8 @@
-#######
-Install
-#######
+.. _getting_started:
+
+###############
+Getting Started
+###############
 
 Prerequisites
 =============

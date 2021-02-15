@@ -54,7 +54,7 @@ sampling for regression targets.
 We illustrate the use of such sampler to implement an outlier rejection
 estimator which can be easily used within a
 :class:`~imblearn.pipeline.Pipeline`:
-:ref:`sphx_glr_auto_examples_plot_outlier_rejections.py`
+:ref:`sphx_glr_auto_examples_applications_plot_outlier_rejections.py`
 
 .. _generators:
 

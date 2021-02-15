@@ -1,3 +1,5 @@
+.. _api:
+
 #############
 API reference
 #############
@@ -17,4 +19,4 @@ This is the full API documentation of the `imbalanced-learn` toolbox.
    pipeline
    metrics
    datasets
-   Utilities
+   utils
