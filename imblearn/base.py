@@ -130,6 +130,9 @@ class BaseSampler(SamplerMixin):
         X, y = self._validate_data(X, y, reset=True, accept_sparse=accept_sparse)
         return X, y, binarize_y
 
+    def _more_tags(self):
+        return {"X_types": ["2darray", "sparse", "dataframe"]}
+
 
 def _identity(X, y):
     return X, y
