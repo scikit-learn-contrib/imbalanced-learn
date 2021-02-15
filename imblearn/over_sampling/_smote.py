@@ -1381,13 +1381,19 @@ class SMOTEN(SMOTE):
     """
 
     def _check_X_y(self, X, y):
+        """Check should accept strings and not sparse matrices."""
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = self._validate_data(
-            X, y, reset=True, dtype=None, accept_sparse=["csr", "csc"]
+            X,
+            y,
+            reset=True,
+            dtype=None,
+            accept_sparse=False,
         )
         return X, y, binarize_y
 
     def _validate_estimator(self):
+        """Force to use precomputed distance matrix."""
         super()._validate_estimator()
         self.nn_k_.set_params(metric="precomputed")
 
@@ -1427,7 +1433,8 @@ class SMOTEN(SMOTE):
 
             X_class_dist = vdm.pairwise(X_class)
             self.nn_k_.fit(X_class_dist)
-            # should countain the point itself
+            # the kneigbors search will include the sample itself which is
+            # expected from the original algorithm
             nn_indices = self.nn_k_.kneighbors(X_class_dist, return_distance=False)
             X_new, y_new = self._make_samples(
                 X_class, class_sample, y.dtype, nn_indices, n_samples
@@ -1437,10 +1444,7 @@ class SMOTEN(SMOTE):
             X_resampled.append(X_new)
             y_resampled.append(y_new)
 
-        if sparse.issparse(X):
-            X_resampled = sparse.vstack(X_resampled, format=X.format)
-        else:
-            X_resampled = np.vstack(X_resampled)
+        X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
 
         return X_resampled, y_resampled
