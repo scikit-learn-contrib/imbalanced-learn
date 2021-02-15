@@ -14,6 +14,7 @@
 
 import os
 import sys
+from datetime import datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -52,7 +53,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "imbalanced-learn"
-copyright = "2014-2020, The imbalanced-learn developers"
+copyright = f"2014-{datetime.now().year}, The imbalanced-learn developers"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -202,7 +203,7 @@ latex_documents = [
         "index",
         "imbalanced-learn.tex",
         "imbalanced-learn Documentation",
-        "G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas",
+        "The imbalanced-learn developers",
         "manual",
     ),
 ]
@@ -220,7 +221,7 @@ man_pages = [
         "index",
         "imbalanced-learn",
         "imbalanced-learn Documentation",
-        ["G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas"],
+        ["The imbalanced-learn developers"],
         1,
     )
 ]
@@ -238,7 +239,7 @@ texinfo_documents = [
         "index",
         "imbalanced-learn",
         "imbalanced-learn Documentation",
-        "G. Lemaitre, F. Nogueira, D. Oliveira, C. Aridas",
+        "The imbalanced-learn developerss",
         "imbalanced-learn",
         "Toolbox for imbalanced dataset in machine learning.",
         "Miscellaneous",
@@ -253,6 +254,8 @@ texinfo_documents = [
 # through a change in sphinx basic.css except rtd_theme does not use basic.css.
 # In an ideal world, this would get fixed in this PR:
 # https://github.com/readthedocs/sphinx_rtd_theme/pull/747/files
+
+
 def setup(app):
     app.add_js_file("js/copybutton.js")
     app.add_css_file("basic.css")

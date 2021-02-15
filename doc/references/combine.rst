@@ -7,11 +7,11 @@ Combination of over- and under-sampling methods
    :no-members:
    :no-inherited-members:
 
-.. currentmodule:: imblearn
+.. currentmodule:: imblearn.combine
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-   combine.SMOTEENN
-   combine.SMOTETomek
+   SMOTEENN
+   SMOTETomek

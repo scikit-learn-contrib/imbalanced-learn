@@ -12,5 +12,3 @@ Imbalance-learn provides some fast-prototyping tools.
    :template: class.rst
 
    FunctionSampler
-
-.. _pipeline_ref:

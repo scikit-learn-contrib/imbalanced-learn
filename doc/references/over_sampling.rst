@@ -7,7 +7,7 @@ Over-sampling methods
     :no-members:
     :no-inherited-members:
 
-.. currentmodule:: imblearn
+.. currentmodule:: imblearn.over_sampling
 
 Basic over-sampling
 -------------------
@@ -16,7 +16,7 @@ Basic over-sampling
    :toctree: generated/
    :template: class.rst
 
-   over_sampling.RandomOverSampler
+   RandomOverSampler
 
 SMOTE algorithms
 ----------------
@@ -25,9 +25,9 @@ SMOTE algorithms
    :toctree: generated/
    :template: class.rst
 
-   over_sampling.SMOTE
-   over_sampling.SMOTENC
-   over_sampling.ADASYN
-   over_sampling.BorderlineSMOTE
-   over_sampling.KMeansSMOTE
-   over_sampling.SVMSMOTE
+   SMOTE
+   SMOTENC
+   ADASYN
+   BorderlineSMOTE
+   KMeansSMOTE
+   SVMSMOTE

@@ -7,8 +7,6 @@ Under-sampling methods
     :no-members:
     :no-inherited-members:
 
-.. currentmodule:: imblearn
-
 Prototype generation
 --------------------
 
@@ -16,13 +14,13 @@ Prototype generation
    :no-members:
    :no-inherited-members:
 
-.. currentmodule:: imblearn
+.. currentmodule:: imblearn.under_sampling
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-   under_sampling.ClusterCentroids
+   ClusterCentroids
 
 Prototype selection
 -------------------
@@ -31,19 +29,19 @@ Prototype selection
    :no-members:
    :no-inherited-members:
 
-.. currentmodule:: imblearn
+.. currentmodule:: imblearn.under_sampling
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-   under_sampling.CondensedNearestNeighbour
-   under_sampling.EditedNearestNeighbours
-   under_sampling.RepeatedEditedNearestNeighbours
-   under_sampling.AllKNN
-   under_sampling.InstanceHardnessThreshold
-   under_sampling.NearMiss
-   under_sampling.NeighbourhoodCleaningRule
-   under_sampling.OneSidedSelection
-   under_sampling.RandomUnderSampler
-   under_sampling.TomekLinks
+   CondensedNearestNeighbour
+   EditedNearestNeighbours
+   RepeatedEditedNearestNeighbours
+   AllKNN
+   InstanceHardnessThreshold
+   NearMiss
+   NeighbourhoodCleaningRule
+   OneSidedSelection
+   RandomUnderSampler
+   TomekLinks

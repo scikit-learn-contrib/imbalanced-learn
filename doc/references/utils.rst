@@ -5,12 +5,12 @@ Utilities
     :no-members:
     :no-inherited-members:
 
-.. currentmodule:: imblearn
+.. currentmodule:: imblearn.utils
 
 .. autosummary::
    :toctree: generated/
    :template: function.rst
 
-   utils.estimator_checks.parametrize_with_checks
-   utils.check_neighbors_object
-   utils.check_sampling_strategy
+   estimator_checks.parametrize_with_checks
+   check_neighbors_object
+   check_sampling_strategy

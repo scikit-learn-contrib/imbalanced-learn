@@ -1,3 +1,5 @@
+.. _pipeline_ref:
+
 Pipeline
 ========
 
@@ -5,16 +7,16 @@ Pipeline
     :no-members:
     :no-inherited-members:
 
-.. currentmodule:: imblearn
+.. currentmodule:: imblearn.pipeline
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-   pipeline.Pipeline
+   Pipeline
 
 .. autosummary::
    :toctree: generated/
    :template: function.rst
 
-   pipeline.make_pipeline
+   make_pipeline

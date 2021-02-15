@@ -7,7 +7,7 @@ Ensemble methods
     :no-members:
     :no-inherited-members:
 
-.. currentmodule:: imblearn
+.. currentmodule:: imblearn.ensemble
 
 Boosting algorithms
 -------------------
@@ -16,8 +16,8 @@ Boosting algorithms
    :toctree: generated/
    :template: class.rst
 
-   ensemble.EasyEnsembleClassifier
-   ensemble.RUSBoostClassifier
+   EasyEnsembleClassifier
+   RUSBoostClassifier
 
 Bagging algorithms
 ------------------
@@ -26,5 +26,5 @@ Bagging algorithms
    :toctree: generated/
    :template: class.rst
 
-   ensemble.BalancedBaggingClassifier
-   ensemble.BalancedRandomForestClassifier
+   BalancedBaggingClassifier
+   BalancedRandomForestClassifier

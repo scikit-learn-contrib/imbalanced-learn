@@ -7,11 +7,11 @@ Datasets
     :no-members:
     :no-inherited-members:
 
-.. currentmodule:: imblearn
+.. currentmodule:: imblearn.datasets
 
 .. autosummary::
    :toctree: generated/
    :template: function.rst
 
-   datasets.make_imbalance
-   datasets.fetch_datasets
+   make_imbalance
+   fetch_datasets
