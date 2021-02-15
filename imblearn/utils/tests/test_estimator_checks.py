@@ -2,16 +2,18 @@ import pytest
 import numpy as np
 
 from sklearn.base import BaseEstimator
-from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import check_classification_targets
 
 from imblearn.base import BaseSampler
-
+from imblearn.over_sampling.base import BaseOverSampler
+from imblearn.utils import check_target_type as target_check
 from imblearn.utils.estimator_checks import check_target_type
 from imblearn.utils.estimator_checks import check_samplers_one_label
 from imblearn.utils.estimator_checks import check_samplers_fit
 from imblearn.utils.estimator_checks import check_samplers_sparse
 from imblearn.utils.estimator_checks import check_samplers_preserve_dtype
+from imblearn.utils.estimator_checks import check_samplers_string
+from imblearn.utils.estimator_checks import check_samplers_nan
 
 
 class BaseBadSampler(BaseEstimator):
@@ -62,6 +64,34 @@ class NotPreservingDtypeSampler(BaseSampler):
 
     def _fit_resample(self, X, y):
         return X.astype(np.float64), y.astype(np.int64)
+
+
+class IndicesSampler(BaseOverSampler):
+    def _check_X_y(self, X, y):
+        y, binarize_y = target_check(y, indicate_one_vs_all=True)
+        X, y = self._validate_data(
+            X,
+            y,
+            reset=True,
+            dtype=None,
+            force_all_finite=False,
+        )
+        return X, y, binarize_y
+
+    def _fit_resample(self, X, y):
+        n_max_count_class = np.bincount(y).max()
+        indices = np.random.choice(np.arange(X.shape[0]), size=n_max_count_class * 2)
+        return X[indices], y[indices]
+
+
+def test_check_samplers_string():
+    sampler = IndicesSampler()
+    check_samplers_string(sampler.__class__.__name__, sampler)
+
+
+def test_check_samplers_nan():
+    sampler = IndicesSampler()
+    check_samplers_nan(sampler.__class__.__name__, sampler)
 
 
 mapping_estimator_error = {
