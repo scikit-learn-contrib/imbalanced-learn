@@ -1,0 +1,14 @@
+<div class="navbar-brand-box">
+  <a class="navbar-brand text-wrap" href="{{ pathto('index') }}">
+    {% if logo %}
+    <img
+      src="{{ pathto('_static/' + logo, 1) }}"
+      class="logo"
+      style="width: 60%"
+      alt="logo"
+    />
+    {% endif %} {% if docstitle %}
+    <h4 class="site-logo" id="site-title">{{ docstitle }}</h4>
+    {% endif %}
+  </a>
+</div>

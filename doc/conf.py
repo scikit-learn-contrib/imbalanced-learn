@@ -90,14 +90,20 @@ imgmath_image_format = "svg"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = "pydata_sphinx_theme"
+html_title = f"Version {version}"
 html_favicon = "_static/img/favicon.ico"
 html_logo = "_static/img/logo.png"
 html_style = "css/imbalanced-learn.css"
 html_css_files = [
     "css/imbalanced-learn.css",
 ]
+html_sidebars = {
+    "contributing": ["sidebar-search-bs.html"],
+    "changelog": [],
+}
 
 html_theme_options = {
+    "external_links": [],
     "github_url": "https://github.com/scikit-learn-contrib/imbalanced-learn",
     # "twitter_url": "https://twitter.com/pandas_dev",
     "use_edit_page_button": True,

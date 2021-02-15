@@ -47,7 +47,7 @@ class ValueDifferenceMetric(BaseEstimator):
         of categories will be computed from `X` at `fit`. Otherwise, you can
         provide an array-like of such counts to avoid computation. You can use
         the fitted attribute `categories_` of the
-        :class:`~sklearn.preprocesssing.OrdinalEncoder`to deduce these counts.
+        :class:`~sklearn.preprocesssing.OrdinalEncoder` to deduce these counts.
 
     k : int, default=1
         Exponent used to compute the distance between feature value.

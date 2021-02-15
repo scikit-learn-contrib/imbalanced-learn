@@ -1,7 +1,7 @@
 .. _metrics_ref:
 
-:mod:`imblearn.metrics`: Metrics
-================================
+Metrics
+=======
 
 .. automodule:: imblearn.metrics
    :no-members:

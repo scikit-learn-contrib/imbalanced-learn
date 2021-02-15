@@ -57,3 +57,8 @@
   margin-bottom: 0rem;
   color: #484848;
 }
+
+.navbar-brand img {
+  width: 0%;
+  height: 0%;
+}
