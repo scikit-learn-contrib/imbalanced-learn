@@ -28,6 +28,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils.estimator_checks import _maybe_mark_xfail
 from sklearn.utils.estimator_checks import _get_check_estimator_ids
 from sklearn.utils._testing import assert_allclose
+from sklearn.utils._testing import assert_array_equal
 from sklearn.utils._testing import assert_raises_regex
 from sklearn.utils.multiclass import type_of_target
 
@@ -61,6 +62,10 @@ def _yield_sampler_checks(sampler):
         yield check_samplers_sparse
     if "dataframe" in tags["X_types"]:
         yield check_samplers_pandas
+    if "string" in tags["X_types"]:
+        yield check_samplers_string
+    if tags["allow_nan"]:
+        yield check_samplers_nan
     yield check_samplers_list
     yield check_samplers_multiclass_ova
     yield check_samplers_preserve_dtype
@@ -397,6 +402,36 @@ def check_samplers_sample_indices(name, sampler_orig):
         assert hasattr(sampler, "sample_indices_") is sample_indices
     else:
         assert not hasattr(sampler, "sample_indices_")
+
+
+def check_samplers_string(name, sampler_orig):
+    rng = np.random.RandomState(0)
+    sampler = clone(sampler_orig)
+    categories = np.array(["A", "B", "C"], dtype=object)
+    n_samples = 30
+    X = rng.randint(low=0, high=3, size=n_samples).reshape(-1, 1)
+    X = categories[X]
+    y = rng.permutation([0] * 10 + [1] * 20)
+
+    X_res, y_res = sampler.fit_resample(X, y)
+    assert X_res.dtype == object
+    assert X_res.shape[0] == y_res.shape[0]
+    assert_array_equal(np.unique(X_res.ravel()), categories)
+
+
+def check_samplers_nan(name, sampler_orig):
+    rng = np.random.RandomState(0)
+    sampler = clone(sampler_orig)
+    categories = np.array([0, 1, np.nan], dtype=np.float64)
+    n_samples = 100
+    X = rng.randint(low=0, high=3, size=n_samples).reshape(-1, 1)
+    X = categories[X]
+    y = rng.permutation([0] * 40 + [1] * 60)
+
+    X_res, y_res = sampler.fit_resample(X, y)
+    assert X_res.dtype == np.float64
+    assert X_res.shape[0] == y_res.shape[0]
+    assert np.any(np.isnan(X_res.ravel()))
 
 
 def check_classifier_on_multilabel_or_multioutput_targets(name, estimator_orig):
