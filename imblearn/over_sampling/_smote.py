@@ -1297,7 +1297,75 @@ class KMeansSMOTE(BaseSMOTE):
         return X_resampled, y_resampled
 
 
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
+    random_state=_random_state_docstring,
+)
 class SMOTEN(SMOTE):
+    """Perform SMOTE over-sampling for nominal categorical features only.
+
+    This method is refered as SMOTEN in [1]_.
+
+    Read more in the :ref:`User Guide <smote_adasyn>`.
+
+    Parameters
+    ----------
+    {sampling_strategy}
+
+    {random_state}
+
+    k_neighbors : int or object, default=5
+        If ``int``, number of nearest neighbours to used to construct synthetic
+        samples.  If object, an estimator that inherits from
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
+
+    {n_jobs}
+
+    See Also
+    --------
+    SMOTE : Over-sample using SMOTE.
+
+    SMOTENC : Over-sample using SMOTE for continuous and categorical features.
+
+    BorderlineSMOTE : Over-sample using the borderline-SMOTE variant.
+
+    SVMSMOTE : Over-sample using the SVM-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
+
+    KMeansSMOTE : Over-sample applying a clustering before to oversample using
+        SMOTE.
+
+    Notes
+    -----
+    See the original papers: [1]_ for more details.
+
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
+    originally proposed in [1]_.
+
+    References
+    ----------
+    .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
+       synthetic minority over-sampling technique," Journal of artificial
+       intelligence research, 321-357, 2002.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> X = np.array(["A"] * 10 + ["B"] * 20 + ["C"] * 30, dtype=object).reshape(-1, 1)
+    >>> y = np.array([0] * 20 + [1] * 40, dtype=np.int32)
+    >>> from collections import Counter
+    >>> print(f"Original class counts: {{Counter(y)}}")
+    Original class counts: Counter({{1: 40, 0: 20}})
+    >>> from imblearn.over_sampling import SMOTEN
+    >>> sampler = SMOTEN(random_state=0)
+    >>> X_res, y_res = sampler.fit_resample(X, y)
+    >>> print(f"Class counts after resampling {{Counter(y_res)}}")
+    Class counts after resampling Counter({{0: 40, 1: 40}})
+    """
+
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = self._validate_data(
@@ -1315,9 +1383,12 @@ class SMOTEN(SMOTE):
         samples_indices = random_state.choice(
             np.arange(X_class.shape[0]), size=n_samples, replace=True
         )
-        X_new = np.empty(shape=(n_samples, X_class.shape[1]), dtype=X_class.dtype)
-        for idx, sample_idx in enumerate(samples_indices):
-            X_new[idx, :] = stats.mode(X_class[nn_indices[sample_idx]], axis=0).mode
+        # for each drawn samples, select its k-neighbors and generate a sample
+        # where for each feature individually, each category generated is the
+        # most common category
+        X_new = np.squeeze(
+            stats.mode(X_class[nn_indices[samples_indices]], axis=1).mode, axis=1
+        )
         y_new = np.full(n_samples, fill_value=klass, dtype=y_dtype)
         return X_new, y_new
 
