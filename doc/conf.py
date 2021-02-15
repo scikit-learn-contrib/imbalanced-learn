@@ -51,10 +51,10 @@ numpydoc_show_class_members = False
 extensions.append("sphinx.ext.imgmath")
 imgmath_image_format = "svg"
 
-autodoc_default_options = {
-    "members": True,
-    "inherited-members": True,
-}
+# autodoc_default_options = {
+#     "members": True,
+#     "inherited-members": True,
+# }
 
 # generate autosummary even if no references
 autosummary_generate = True
@@ -95,13 +95,10 @@ exclude_patterns = ["_build", "_templates"]
 default_role = "literal"
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-add_function_parentheses = False
+# add_function_parentheses = False
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
-
-# Custom style
-html_style = "css/imbalanced-learn.css"
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -109,16 +106,10 @@ html_style = "css/imbalanced-learn.css"
 # a list of builtin themes.
 html_theme = "pydata_sphinx_theme"
 html_logo = "_static/img/logo.png"
+html_style = "css/imbalanced-learn.css"
 
 html_theme_options = {
-    # "external_links": [
-    #     {
-    #         "url": "https://imbalanced-learn.org/stable/",
-    #         "name": "Imbalanced-learn Docs",
-    #     }
-    # ],
     "github_url": "https://github.com/scikit-learn-contrib/imbalanced-learn",
-    # "twitter_url": "https://twitter.com/pandas_dev",
     "use_edit_page_button": True,
     "show_toc_level": 1,
     # "navbar_align": "right",  # For testing that the navbar items align properly
@@ -138,6 +129,26 @@ html_static_path = ["_static"]
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "imbalanced-learndoc"
+
+# intersphinx configuration
+intersphinx_mapping = {
+    "python": (
+        "https://docs.python.org/{.major}".format(sys.version_info),
+        None,
+    ),
+    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    "matplotlib": ("https://matplotlib.org/", None),
+    "sklearn": ("http://scikit-learn.org/stable", None),
+}
+
+# sphinx-gallery configuration
+sphinx_gallery_conf = {
+    "doc_module": "imblearn",
+    "backreferences_dir": os.path.join("references", "generated"),
+    "show_memory": True,
+    "reference_url": {"imblearn": None},
+}
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -162,43 +173,6 @@ latex_documents = [
         "manual",
     ),
 ]
-
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-# latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-# latex_use_parts = False
-
-# If true, show page references after internal links.
-# latex_show_pagerefs = False
-
-# If true, show URL addresses after external links.
-# latex_show_urls = False
-
-# Documents to append as an appendix to all manuals.
-# latex_appendices = []
-
-# intersphinx configuration
-intersphinx_mapping = {
-    "python": (
-        "https://docs.python.org/{.major}".format(sys.version_info),
-        None,
-    ),
-    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
-    "matplotlib": ("https://matplotlib.org/", None),
-    "sklearn": ("http://scikit-learn.org/stable", None),
-}
-
-# sphinx-gallery configuration
-sphinx_gallery_conf = {
-    "doc_module": "imblearn",
-    "backreferences_dir": os.path.join("references", "generated"),
-    "show_memory": True,
-    "reference_url": {"imblearn": None},
-}
 
 # -- Options for manual page output ---------------------------------------
 
@@ -238,16 +212,7 @@ texinfo_documents = [
     ),
 ]
 
-
-# def generate_example_rst(app, what, name, obj, options, lines):
-#     # generate empty examples files, so that we don't get
-#     # inclusion errors if there are no examples for a class / module
-#     examples_path = os.path.join(app.srcdir, "generated",
-#                                  "%s.examples" % name)
-#     if not os.path.exists(examples_path):
-#         # touch file
-#         open(examples_path, 'w').close()
-
+# -- Options for some extra config --------------------------------------------
 
 # Config for sphinx_issues
 
@@ -256,28 +221,28 @@ issues_github_path = "scikit-learn-contrib/imbalanced-learn"
 issues_user_uri = "https://github.com/{user}"
 
 # Hack to get kwargs to appear in docstring #18434
-# TODO: Remove when https://github.com/sphinx-doc/sphinx/pull/8234 gets
-# merged
-from sphinx.util import inspect  # noqa
-from sphinx.ext.autodoc import ClassDocumenter  # noqa
+# # TODO: Remove when https://github.com/sphinx-doc/sphinx/pull/8234 gets
+# # merged
+# from sphinx.util import inspect  # noqa
+# from sphinx.ext.autodoc import ClassDocumenter  # noqa
 
 
-class PatchedClassDocumenter(ClassDocumenter):
-    def _get_signature(self):
-        old_signature = inspect.signature
+# class PatchedClassDocumenter(ClassDocumenter):
+#     def _get_signature(self):
+#         old_signature = inspect.signature
 
-        def patch_signature(subject, bound_method=False, follow_wrapped=True):
-            # changes the default of follow_wrapped to True
-            return old_signature(
-                subject,
-                bound_method=bound_method,
-                follow_wrapped=follow_wrapped,
-            )
+#         def patch_signature(subject, bound_method=False, follow_wrapped=True):
+#             # changes the default of follow_wrapped to True
+#             return old_signature(
+#                 subject,
+#                 bound_method=bound_method,
+#                 follow_wrapped=follow_wrapped,
+#             )
 
-        inspect.signature = patch_signature
-        result = super()._get_signature()
-        inspect.signature = old_signature
-        return result
+#         inspect.signature = patch_signature
+#         result = super()._get_signature()
+#         inspect.signature = old_signature
+#         return result
 
 
 # Temporary work-around for spacing problem between parameter and parameter
@@ -287,23 +252,9 @@ class PatchedClassDocumenter(ClassDocumenter):
 # In an ideal world, this would get fixed in this PR:
 # https://github.com/readthedocs/sphinx_rtd_theme/pull/747/files
 def setup(app):
-    app.registry.documenters["class"] = PatchedClassDocumenter
     app.add_js_file("js/copybutton.js")
-    app.add_css_file("basic.css")
-    # app.connect('autodoc-process-docstring', generate_example_rst)
+    # app.add_css_file("basic.css")
 
-
-# Documents to append as an appendix to all manuals.
-# texinfo_appendices = []
-
-# If false, no module index is generated.
-# texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-# texinfo_show_urls = 'footnote'
-
-# If true, do not generate a @detailmenu in the "Top" node's menu.
-# texinfo_no_detailmenu = False
 
 # The following is used by sphinx.ext.linkcode to provide links to github
 linkcode_resolve = make_linkcode_resolve(
