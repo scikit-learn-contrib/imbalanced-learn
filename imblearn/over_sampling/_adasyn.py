@@ -50,6 +50,15 @@ class ADASYN(BaseOverSampler):
     --------
     SMOTE : Over-sample using SMOTE.
 
+    SMOTENC : Over-sample using SMOTE for continuous and categorical features.
+
+    SMOTEN : Over-sample using the SMOTE variable specifically for categorical
+        features only.
+
+    SVMSMOTE : Over-sample using SVM-SMOTE variant.
+
+    BorderlineSMOTE : Over-sample using Borderline-SMOTE variant.
+
     Notes
     -----
     The implementation is based on [1]_.
@@ -169,3 +178,8 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         y_resampled = np.hstack(y_resampled)
 
         return X_resampled, y_resampled
+
+    def _more_tags(self):
+        return {
+            "X_types": ["2darray"],
+        }

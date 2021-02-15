@@ -11,11 +11,12 @@ from collections import Counter
 
 import numpy as np
 from scipy import sparse
+from scipy import stats
 
 from sklearn.base import clone
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.metrics import pairwise_distances
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.svm import SVC
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
@@ -25,6 +26,7 @@ from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
 
 from .base import BaseOverSampler
 from ..exceptions import raise_isinstance_error
+from ..metrics.pairwise import ValueDifferenceMetric
 from ..utils import check_neighbors_object
 from ..utils import check_target_type
 from ..utils import Substitution
@@ -448,6 +450,9 @@ class SVMSMOTE(BaseSMOTE):
 
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
+    SMOTEN : Over-sample using the SMOTE variable specifically for categorical
+        features only.
+
     BorderlineSMOTE : Over-sample using Borderline-SMOTE.
 
     ADASYN : Over-sample using ADASYN.
@@ -643,6 +648,9 @@ class SMOTE(BaseSMOTE):
     --------
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
+    SMOTEN : Over-sample using the SMOTE variable specifically for categorical
+        features only.
+
     BorderlineSMOTE : Over-sample using the borderline-SMOTE variant.
 
     SVMSMOTE : Over-sample using the SVM-SMOTE variant.
@@ -765,6 +773,9 @@ class SMOTENC(SMOTE):
     See Also
     --------
     SMOTE : Over-sample using SMOTE.
+
+    SMOTEN : Over-sample using the SMOTE variable specifically for categorical
+        features only.
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
 
@@ -1055,6 +1066,11 @@ class KMeansSMOTE(BaseSMOTE):
     --------
     SMOTE : Over-sample using SMOTE.
 
+    SMOTENC : Over-sample using SMOTE for continuous and categorical features.
+
+    SMOTEN : Over-sample using the SMOTE variable specifically for categorical
+        features only.
+
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
 
     BorderlineSMOTE : Over-sample using Borderline-SMOTE variant.
@@ -1248,3 +1264,145 @@ class KMeansSMOTE(BaseSMOTE):
                 y_resampled = np.hstack((y_resampled, y_new))
 
         return X_resampled, y_resampled
+
+
+@Substitution(
+    sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
+    n_jobs=_n_jobs_docstring,
+    random_state=_random_state_docstring,
+)
+class SMOTEN(SMOTE):
+    """Perform SMOTE over-sampling for nominal categorical features only.
+
+    This method is refered as SMOTEN in [1]_.
+
+    Read more in the :ref:`User Guide <smote_adasyn>`.
+
+    Parameters
+    ----------
+    {sampling_strategy}
+
+    {random_state}
+
+    k_neighbors : int or object, default=5
+        If ``int``, number of nearest neighbours to used to construct synthetic
+        samples.  If object, an estimator that inherits from
+        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
+        find the k_neighbors.
+
+    {n_jobs}
+
+    See Also
+    --------
+    SMOTE : Over-sample using SMOTE.
+
+    SMOTENC : Over-sample using SMOTE for continuous and categorical features.
+
+    BorderlineSMOTE : Over-sample using the borderline-SMOTE variant.
+
+    SVMSMOTE : Over-sample using the SVM-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
+
+    KMeansSMOTE : Over-sample applying a clustering before to oversample using
+        SMOTE.
+
+    Notes
+    -----
+    See the original papers: [1]_ for more details.
+
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
+    originally proposed in [1]_.
+
+    References
+    ----------
+    .. [1] N. V. Chawla, K. W. Bowyer, L. O.Hall, W. P. Kegelmeyer, "SMOTE:
+       synthetic minority over-sampling technique," Journal of artificial
+       intelligence research, 321-357, 2002.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> X = np.array(["A"] * 10 + ["B"] * 20 + ["C"] * 30, dtype=object).reshape(-1, 1)
+    >>> y = np.array([0] * 20 + [1] * 40, dtype=np.int32)
+    >>> from collections import Counter
+    >>> print(f"Original class counts: {{Counter(y)}}")
+    Original class counts: Counter({{1: 40, 0: 20}})
+    >>> from imblearn.over_sampling import SMOTEN
+    >>> sampler = SMOTEN(random_state=0)
+    >>> X_res, y_res = sampler.fit_resample(X, y)
+    >>> print(f"Class counts after resampling {{Counter(y_res)}}")
+    Class counts after resampling Counter({{0: 40, 1: 40}})
+    """
+
+    def _check_X_y(self, X, y):
+        """Check should accept strings and not sparse matrices."""
+        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
+        X, y = self._validate_data(
+            X,
+            y,
+            reset=True,
+            dtype=None,
+            accept_sparse=False,
+        )
+        return X, y, binarize_y
+
+    def _validate_estimator(self):
+        """Force to use precomputed distance matrix."""
+        super()._validate_estimator()
+        self.nn_k_.set_params(metric="precomputed")
+
+    def _make_samples(self, X_class, klass, y_dtype, nn_indices, n_samples):
+        random_state = check_random_state(self.random_state)
+        # generate sample indices that will be used to generate new samples
+        samples_indices = random_state.choice(
+            np.arange(X_class.shape[0]), size=n_samples, replace=True
+        )
+        # for each drawn samples, select its k-neighbors and generate a sample
+        # where for each feature individually, each category generated is the
+        # most common category
+        X_new = np.squeeze(
+            stats.mode(X_class[nn_indices[samples_indices]], axis=1).mode, axis=1
+        )
+        y_new = np.full(n_samples, fill_value=klass, dtype=y_dtype)
+        return X_new, y_new
+
+    def _fit_resample(self, X, y):
+        self._validate_estimator()
+
+        X_resampled = [X.copy()]
+        y_resampled = [y.copy()]
+
+        encoder = OrdinalEncoder(dtype=np.int32)
+        X_encoded = encoder.fit_transform(X)
+
+        vdm = ValueDifferenceMetric(
+            n_categories=[len(cat) for cat in encoder.categories_]
+        ).fit(X_encoded, y)
+
+        for class_sample, n_samples in self.sampling_strategy_.items():
+            if n_samples == 0:
+                continue
+            target_class_indices = np.flatnonzero(y == class_sample)
+            X_class = _safe_indexing(X_encoded, target_class_indices)
+
+            X_class_dist = vdm.pairwise(X_class)
+            self.nn_k_.fit(X_class_dist)
+            # the kneigbors search will include the sample itself which is
+            # expected from the original algorithm
+            nn_indices = self.nn_k_.kneighbors(X_class_dist, return_distance=False)
+            X_new, y_new = self._make_samples(
+                X_class, class_sample, y.dtype, nn_indices, n_samples
+            )
+
+            X_new = encoder.inverse_transform(X_new)
+            X_resampled.append(X_new)
+            y_resampled.append(y_new)
+
+        X_resampled = np.vstack(X_resampled)
+        y_resampled = np.hstack(y_resampled)
+
+        return X_resampled, y_resampled
+
+    def _more_tags(self):
+        return {"X_types": ["2darray", "dataframe", "string"]}

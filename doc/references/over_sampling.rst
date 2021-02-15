@@ -27,6 +27,7 @@ SMOTE algorithms
 
    SMOTE
    SMOTENC
+   SMOTEN
    ADASYN
    BorderlineSMOTE
    KMeansSMOTE

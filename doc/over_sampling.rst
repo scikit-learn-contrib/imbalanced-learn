@@ -211,6 +211,44 @@ Therefore, it can be seen that the samples generated in the first and last
 columns are belonging to the same categories originally presented without any
 other extra interpolation.
 
+However, :class:`SMOTENC` is working with data composed of categorical data
+only. WHen data are made of only nominal categorical data, one can use the
+:class:`SMOTEN` variant :cite:`chawla2002smote`. The algorithm changes in
+two ways:
+
+* the nearest neighbors search does not rely on the Euclidean distance. Indeed,
+  the value difference metric (VDM) also implemented in the class
+  :class:`~imblearn.metrics.ValueDifferenceMetric` is used.
+* the new sample generation is based on majority vote per feature to generate
+  the most common category seen in the neighbors samples.
+
+Let's take the following example::
+
+   >>> import numpy as np
+   >>> X = np.array(["green"] * 5 + ["red"] * 10 + ["blue"] * 7,
+   ...              dtype=object).reshape(-1, 1)
+   >>> y = np.array(["apple"] * 5 + ["not apple"] * 3 + ["apple"] * 7 +
+   ...              ["not apple"] * 5 + ["apple"] * 2, dtype=object)
+
+We generate a dataset associating a color to being an apple or not an apple.
+We strongly associated "green" and "red" to being an apple. The minority class
+being "not apple", we expect new data generated belonging to the category
+"blue"::
+
+   >>> from imblearn.over_sampling import SMOTEN
+   >>> sampler = SMOTEN(random_state=0)
+   >>> X_res, y_res = sampler.fit_resample(X, y)
+   >>> X_res[y.size:]
+   array([['blue'],
+           ['blue'],
+           ['blue'],
+           ['blue'],
+           ['blue'],
+           ['blue']], dtype=object)
+   >>> y_res[y.size:]
+   array(['not apple', 'not apple', 'not apple', 'not apple', 'not apple',
+          'not apple'], dtype=object)
+
 Mathematical formulation
 ========================
 
