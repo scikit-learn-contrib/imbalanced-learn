@@ -11,11 +11,12 @@ from collections import Counter
 
 import numpy as np
 from scipy import sparse
+from scipy import stats
 
 from sklearn.base import clone
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.metrics import pairwise_distances
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.svm import SVC
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
@@ -25,6 +26,7 @@ from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
 
 from .base import BaseOverSampler
 from ..exceptions import raise_isinstance_error
+from ..metrics.pairwise import ValueDifferenceMetric
 from ..utils import check_neighbors_object
 from ..utils import check_target_type
 from ..utils import Substitution
@@ -1291,5 +1293,69 @@ class KMeansSMOTE(BaseSMOTE):
                 stack = [np.vstack, sparse.vstack][int(sparse.issparse(X_new))]
                 X_resampled = stack((X_resampled, X_new))
                 y_resampled = np.hstack((y_resampled, y_new))
+
+        return X_resampled, y_resampled
+
+
+class SMOTEN(SMOTE):
+    def _check_X_y(self, X, y):
+        y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
+        X, y = self._validate_data(
+            X, y, reset=True, dtype=None, accept_sparse=["csr", "csc"]
+        )
+        return X, y, binarize_y
+
+    def _validate_estimator(self):
+        super()._validate_estimator()
+        self.nn_k_.set_params(metric="precomputed")
+
+    def _make_samples(self, X_class, klass, y_dtype, nn_indices, n_samples):
+        random_state = check_random_state(self.random_state)
+        # generate sample indices that will be used to generate new samples
+        samples_indices = random_state.choice(
+            np.arange(X_class.shape[0]), size=n_samples, replace=True
+        )
+        X_new = np.empty(shape=(n_samples, X_class.shape[1]), dtype=X_class.dtype)
+        for idx, sample_idx in enumerate(samples_indices):
+            X_new[idx, :] = stats.mode(X_class[nn_indices[sample_idx]], axis=0).mode
+        y_new = np.full(n_samples, fill_value=klass, dtype=y_dtype)
+        return X_new, y_new
+
+    def _fit_resample(self, X, y):
+        self._validate_estimator()
+
+        X_resampled = [X.copy()]
+        y_resampled = [y.copy()]
+
+        encoder = OrdinalEncoder(dtype=np.int32)
+        X_encoded = encoder.fit_transform(X)
+
+        vdm = ValueDifferenceMetric(
+            n_categories=[len(cat) for cat in encoder.categories_]
+        ).fit(X_encoded, y)
+
+        for class_sample, n_samples in self.sampling_strategy_.items():
+            if n_samples == 0:
+                continue
+            target_class_indices = np.flatnonzero(y == class_sample)
+            X_class = _safe_indexing(X_encoded, target_class_indices)
+
+            X_class_dist = vdm.pairwise(X_class)
+            self.nn_k_.fit(X_class_dist)
+            # should countain the point itself
+            nn_indices = self.nn_k_.kneighbors(X_class_dist, return_distance=False)
+            X_new, y_new = self._make_samples(
+                X_class, class_sample, y.dtype, nn_indices, n_samples
+            )
+
+            X_new = encoder.inverse_transform(X_new)
+            X_resampled.append(X_new)
+            y_resampled.append(y_new)
+
+        if sparse.issparse(X):
+            X_resampled = sparse.vstack(X_resampled, format=X.format)
+        else:
+            X_resampled = np.vstack(X_resampled)
+        y_resampled = np.hstack(y_resampled)
 
         return X_resampled, y_resampled
