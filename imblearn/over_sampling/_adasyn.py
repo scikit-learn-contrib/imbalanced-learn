@@ -178,3 +178,8 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         y_resampled = np.hstack(y_resampled)
 
         return X_resampled, y_resampled
+
+    def _more_tags(self):
+        return {
+            "X_types": ["2darray", "string"],
+        }
