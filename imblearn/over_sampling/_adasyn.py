@@ -181,5 +181,5 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
 
     def _more_tags(self):
         return {
-            "X_types": ["2darray", "string"],
+            "X_types": ["2darray"],
         }
