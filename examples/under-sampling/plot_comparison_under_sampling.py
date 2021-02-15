@@ -1,7 +1,7 @@
 """
-=====================================================
-Comparison of the different under-sampling algorithms
-=====================================================
+===============================
+Compare under-sampling samplers
+===============================
 
 The following example attends to make a qualitative comparison between the
 different under-sampling algorithms available in the imbalanced-learn package.

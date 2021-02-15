@@ -1,7 +1,7 @@
 """
-====================================================
-Comparison of the different over-sampling algorithms
-====================================================
+==============================
+Compare over-sampling samplers
+==============================
 
 The following example attends to make a qualitative comparison between the
 different over-sampling algorithms available in the imbalanced-learn package.

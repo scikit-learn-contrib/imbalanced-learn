@@ -1,7 +1,7 @@
 """
-==============================================================
-Comparison of ensembling classifiers internally using sampling
-==============================================================
+=============================================
+Compare ensemble classifiers using resampling
+=============================================
 
 Ensembling classifiers have shown to improve classification performance compare
 to single learner. However, they will be affected by class imbalance. This

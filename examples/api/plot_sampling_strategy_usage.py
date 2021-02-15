@@ -1,7 +1,7 @@
 """
-=========================================================================
-Usage of the ``sampling_strategy`` parameter for the different algorithms
-=========================================================================
+====================================================
+How to use ``sampling_strategy`` in imbalanced-learn
+====================================================
 
 This example shows the different usage of the parameter ``sampling_strategy``
 for the different family of samplers (i.e. over-sampling, under-sampling. or
