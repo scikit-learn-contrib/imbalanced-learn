@@ -41,32 +41,11 @@ extensions = [
     "sphinx_gallery.gen_gallery",
 ]
 
-# bibtex file
-bibtex_bibfiles = ["bibtex/refs.bib"]
-
-# this is needed for some reason...
-# see https://github.com/numpy/numpydoc/issues/69
-numpydoc_show_class_members = False
-
-extensions.append("sphinx.ext.imgmath")
-imgmath_image_format = "svg"
-
-# autodoc_default_options = {
-#     "members": True,
-#     "inherited-members": True,
-# }
-
-# generate autosummary even if no references
-autosummary_generate = True
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
 source_suffix = ".rst"
-
-# Generate the plot for the gallery
-plot_gallery = True
 
 # The master toctree document.
 master_doc = "index"
@@ -95,7 +74,7 @@ exclude_patterns = ["_build", "_templates"]
 default_role = "literal"
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-# add_function_parentheses = False
+add_function_parentheses = False
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
@@ -105,11 +84,13 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = "pydata_sphinx_theme"
+html_favicon = "_static/img/favicon.ico"
 html_logo = "_static/img/logo.png"
 html_style = "css/imbalanced-learn.css"
 
 html_theme_options = {
     "github_url": "https://github.com/scikit-learn-contrib/imbalanced-learn",
+    # "twitter_url": "https://twitter.com/pandas_dev",
     "use_edit_page_button": True,
     "show_toc_level": 1,
     # "navbar_align": "right",  # For testing that the navbar items align properly
@@ -130,6 +111,34 @@ html_static_path = ["_static"]
 # Output file base name for HTML help builder.
 htmlhelp_basename = "imbalanced-learndoc"
 
+# -- Options for autodoc ------------------------------------------------------
+
+autodoc_default_options = {
+    "members": True,
+    "inherited-members": True,
+}
+
+# generate autosummary even if no references
+autosummary_generate = True
+
+# -- Options for numpydoc -----------------------------------------------------
+
+# this is needed for some reason...
+# see https://github.com/numpy/numpydoc/issues/69
+numpydoc_show_class_members = False
+
+# -- Options for math equations -----------------------------------------------
+
+extensions.append("sphinx.ext.imgmath")
+imgmath_image_format = "svg"
+
+# -- Options for sphinxcontrib-bibtex -----------------------------------------
+
+# bibtex file
+bibtex_bibfiles = ["bibtex/refs.bib"]
+
+# -- Options for intersphinx --------------------------------------------------
+
 # intersphinx configuration
 intersphinx_mapping = {
     "python": (
@@ -142,13 +151,33 @@ intersphinx_mapping = {
     "sklearn": ("http://scikit-learn.org/stable", None),
 }
 
+# -- Options for sphinx-gallery -----------------------------------------------
+
+# Generate the plot for the gallery
+plot_gallery = True
+
 # sphinx-gallery configuration
 sphinx_gallery_conf = {
     "doc_module": "imblearn",
-    "backreferences_dir": os.path.join("references", "generated"),
+    "backreferences_dir": os.path.join("references/generated"),
     "show_memory": True,
     "reference_url": {"imblearn": None},
 }
+
+# -- Options for github link for what's new -----------------------------------
+
+# Config for sphinx_issues
+issues_uri = "https://github.com/scikit-learn-contrib/imbalanced-learn/issues/{issue}"
+issues_github_path = "scikit-learn-contrib/imbalanced-learn"
+issues_user_uri = "https://github.com/{user}"
+
+# The following is used by sphinx.ext.linkcode to provide links to github
+linkcode_resolve = make_linkcode_resolve(
+    "imblearn",
+    "https://github.com/scikit-learn-contrib/"
+    "imbalanced-learn/blob/{revision}/"
+    "{package}/{path}#L{lineno}",
+)
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -212,37 +241,29 @@ texinfo_documents = [
     ),
 ]
 
-# -- Options for some extra config --------------------------------------------
-
-# Config for sphinx_issues
-
-issues_uri = "https://github.com/scikit-learn-contrib/imbalanced-learn/issues/{issue}"
-issues_github_path = "scikit-learn-contrib/imbalanced-learn"
-issues_user_uri = "https://github.com/{user}"
-
 # Hack to get kwargs to appear in docstring #18434
-# # TODO: Remove when https://github.com/sphinx-doc/sphinx/pull/8234 gets
-# # merged
-# from sphinx.util import inspect  # noqa
-# from sphinx.ext.autodoc import ClassDocumenter  # noqa
+# TODO: Remove when https://github.com/sphinx-doc/sphinx/pull/8234 gets
+# merged
+from sphinx.util import inspect  # noqa
+from sphinx.ext.autodoc import ClassDocumenter  # noqa
 
 
-# class PatchedClassDocumenter(ClassDocumenter):
-#     def _get_signature(self):
-#         old_signature = inspect.signature
+class PatchedClassDocumenter(ClassDocumenter):
+    def _get_signature(self):
+        old_signature = inspect.signature
 
-#         def patch_signature(subject, bound_method=False, follow_wrapped=True):
-#             # changes the default of follow_wrapped to True
-#             return old_signature(
-#                 subject,
-#                 bound_method=bound_method,
-#                 follow_wrapped=follow_wrapped,
-#             )
+        def patch_signature(subject, bound_method=False, follow_wrapped=True):
+            # changes the default of follow_wrapped to True
+            return old_signature(
+                subject,
+                bound_method=bound_method,
+                follow_wrapped=follow_wrapped,
+            )
 
-#         inspect.signature = patch_signature
-#         result = super()._get_signature()
-#         inspect.signature = old_signature
-#         return result
+        inspect.signature = patch_signature
+        result = super()._get_signature()
+        inspect.signature = old_signature
+        return result
 
 
 # Temporary work-around for spacing problem between parameter and parameter
@@ -252,14 +273,6 @@ issues_user_uri = "https://github.com/{user}"
 # In an ideal world, this would get fixed in this PR:
 # https://github.com/readthedocs/sphinx_rtd_theme/pull/747/files
 def setup(app):
+    app.registry.documenters["class"] = PatchedClassDocumenter
     app.add_js_file("js/copybutton.js")
-    # app.add_css_file("basic.css")
-
-
-# The following is used by sphinx.ext.linkcode to provide links to github
-linkcode_resolve = make_linkcode_resolve(
-    "imblearn",
-    "https://github.com/scikit-learn-contrib/"
-    "imbalanced-learn/blob/{revision}/"
-    "{package}/{path}#L{lineno}",
-)
+    app.add_css_file("basic.css")
