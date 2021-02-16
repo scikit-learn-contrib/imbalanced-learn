@@ -19,6 +19,7 @@ print(__doc__)
 # ------------------
 #
 # We are dropping the following features:
+#
 # - "fnlwgt": this feature was created while studying the "adult" dataset.
 #   Thus, we will not use this feature which is not acquired during the survey.
 # - "education-num": it is encoding the same information than "education".
