@@ -68,7 +68,7 @@ from sklearn.metrics import plot_confusion_matrix
 
 sns.set_context("poster")
 
-disp = plot_confusion_matrix(tree, X_test, y_test)
+disp = plot_confusion_matrix(tree, X_test, y_test, colorbar=False)
 _ = disp.ax_.set_title("Decision tree")
 
 # %% [markdown]
@@ -112,10 +112,10 @@ print(
 import matplotlib.pyplot as plt
 
 fig, axs = plt.subplots(ncols=2, figsize=(10, 5))
-plot_confusion_matrix(bagging, X_test, y_test, ax=axs[0])
+plot_confusion_matrix(bagging, X_test, y_test, ax=axs[0], colorbar=False)
 axs[0].set_title("Bagging")
 
-plot_confusion_matrix(balanced_bagging, X_test, y_test, ax=axs[1])
+plot_confusion_matrix(balanced_bagging, X_test, y_test, ax=axs[1], colorbar=False)
 axs[1].set_title("Balanced Bagging")
 
 fig.tight_layout()
@@ -159,10 +159,10 @@ print(
 
 # %%
 fig, axs = plt.subplots(ncols=2, figsize=(10, 5))
-plot_confusion_matrix(rf, X_test, y_test, ax=axs[0])
+plot_confusion_matrix(rf, X_test, y_test, ax=axs[0], colorbar=False)
 axs[0].set_title("Random forest")
 
-plot_confusion_matrix(brf, X_test, y_test, ax=axs[1])
+plot_confusion_matrix(brf, X_test, y_test, ax=axs[1], colorbar=False)
 axs[1].set_title("Balanced random forest")
 
 fig.tight_layout()
@@ -200,8 +200,12 @@ print(
 )
 
 # %%
-fig, axs = plt.subplots(ncols=2)
-plot_confusion_matrix(eec, X_test, y_test, ax=axs[0])
-plot_confusion_matrix(rusboost, X_test, y_test, ax=axs[1])
+fig, axs = plt.subplots(ncols=2, figsize=(10, 5))
+
+plot_confusion_matrix(eec, X_test, y_test, ax=axs[0], colorbar=False)
+axs[0].set_title("Easy Ensemble")
+plot_confusion_matrix(rusboost, X_test, y_test, ax=axs[1], colorbar=False)
 axs[1].set_title("RUSBoost classifier")
+
+fig.tight_layout()
 plt.show()

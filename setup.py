@@ -54,6 +54,7 @@ EXTRAS_REQUIRE = {
         "numpydoc",
         "matplotlib",
         "pandas",
+        "seaborn",
     ],
 }
 
