@@ -15,8 +15,9 @@ not differ from the binary case.
 from collections import Counter
 
 from sklearn.datasets import load_iris
-from sklearn.svm import LinearSVC
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 from imblearn.datasets import make_imbalance
 from imblearn.under_sampling import NearMiss
@@ -42,7 +43,9 @@ print(f"Training target statistics: {Counter(y_train)}")
 print(f"Testing target statistics: {Counter(y_test)}")
 
 # Create a pipeline
-pipeline = make_pipeline(NearMiss(version=2), LinearSVC(random_state=RANDOM_STATE))
+pipeline = make_pipeline(
+    NearMiss(version=2), StandardScaler(), LogisticRegression(random_state=RANDOM_STATE)
+)
 pipeline.fit(X_train, y_train)
 
 # Classify and report the results
