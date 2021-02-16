@@ -59,6 +59,10 @@ class BalancedBaggingClassifier(BaggingClassifier):
     bootstrap : bool, default=True
         Whether samples are drawn with replacement.
 
+        .. note::
+           It is important to note that the bootstrap will be generated from
+           the resampled dataset.
+
     bootstrap_features : bool, default=False
         Whether features are drawn with replacement.
 
@@ -84,6 +88,13 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     verbose : int, default=0
         Controls the verbosity of the building process.
+
+    sampler : sampler object, default=None
+        The sampler used to balanced the dataset before to bootstrap
+        (if `bootstrap=True`) and `fit` a base estimator. By default, a
+        :class:`~sklearn.under_sampling.RandomUnderSampler` is used.
+
+        .. versionadded:: 0.8
 
     Attributes
     ----------
