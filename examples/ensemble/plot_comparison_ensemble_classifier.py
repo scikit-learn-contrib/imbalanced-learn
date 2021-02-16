@@ -21,7 +21,8 @@ set.
 print(__doc__)
 
 # %% [markdown]
-# # Load an imbalanced dataset
+# Load an imbalanced dataset
+# --------------------------
 #
 # We will load the UCI SatImage dataset which has an imbalanced ratio of 9.3:1
 # (number of majority sample for a minority sample). The data are then split
@@ -36,7 +37,8 @@ X, y = satimage.data, satimage.target
 X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=0)
 
 # %% [markdown]
-# # Classification using a single decision tree
+# Classification using a single decision tree
+# -------------------------------------------
 #
 # We train a decision tree classifier which will be used as a baseline for the
 # rest of this example.
@@ -72,7 +74,8 @@ disp = plot_confusion_matrix(tree, X_test, y_test, colorbar=False)
 _ = disp.ax_.set_title("Decision tree")
 
 # %% [markdown]
-# # Classification using bagging classifier with and without sampling
+# Classification using bagging classifier with and without sampling
+# -----------------------------------------------------------------
 #
 # Instead of using a single tree, we will check if an ensemble of decsion tree
 # can actually alleviate the issue induced by the class imbalancing. First, we
@@ -121,7 +124,8 @@ axs[1].set_title("Balanced Bagging")
 fig.tight_layout()
 
 # %% [markdown]
-# # Classification using random forest classifier with and without sampling
+# Classification using random forest classifier with and without sampling
+# -----------------------------------------------------------------------
 #
 # Random forest is another popular ensemble method and it is usually
 # outperforming bagging. Here, we used a vanilla random forest and its balanced
@@ -168,7 +172,8 @@ axs[1].set_title("Balanced random forest")
 fig.tight_layout()
 
 # %% [markdown]
-# # Boosting classifier
+# Boosting classifier
+# -------------------
 #
 # In the same manner, easy ensemble classifier is a bag of balanced AdaBoost
 # classifier. However, it will be slower to train than random forest and will
