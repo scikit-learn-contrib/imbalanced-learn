@@ -1,8 +1,11 @@
 .. _developers-utils:
 
-========================
-Utilities for Developers
-========================
+===================
+Developer guideline
+===================
+
+Developer utilities
+-------------------
 
 Imbalanced-learn contains a number of utilities to help with development. These are
 located in :mod:`imblearn.utils`, and include tools in a number of categories.
@@ -17,7 +20,7 @@ All the following functions and classes are in the module :mod:`imblearn.utils`.
 
 
 Validation Tools
-================
+~~~~~~~~~~~~~~~~
 
 .. currentmodule:: imblearn.utils
 
@@ -33,7 +36,7 @@ should be used when applicable.
 
 
 Deprecation
-===========
+~~~~~~~~~~~
 
 .. currentmodule:: imblearn.utils.deprecation
 
@@ -103,7 +106,7 @@ provides :func:`deprecate_parameter`: which is used to deprecate a sampler's
 parameter (attribute) by another one.
 
 Testing utilities
-=================
+~~~~~~~~~~~~~~~~~
 Currently, imbalanced-learn provide a warning management utility. This feature
 is going to be merge in pytest and will be removed when the pytest release will
 have it.
@@ -144,3 +147,65 @@ that the exception matches a text or regex::
     Traceback (most recent call last):
       ...
     AssertionError: 'must be \d+$' pattern not found in ['this is not here']
+
+Making a release
+----------------
+This section document the different steps that are necessary to make a new
+imbalanced-learn release.
+
+Major release
+~~~~~~~~~~~~~
+
+* Update the release note `whats_new/v0.<version number>.rst` by giving a date
+  and removing the status "Under development" from the title.
+* Run `bumpversion release`. It will remove the `dev0` tag.
+* Commit the change `git commit -am "bumpversion 0.<version number>.0"`
+  (e.g., `git commit -am "bumpversion 0.5.0"`).
+* Create a branch for this version
+  (e.g., `git checkout -b 0.<version number>.X`).
+* Push the new branch into the upstream remote imbalanced-learn repository.
+* Change the `symlink` in the
+  `imbalanced-learn website repository <https://github.com/imbalanced-learn/imbalanced-learn.github.io>`_
+  such that stable points to the latest release version,
+  i.e, `0.<version number>`. To do this, clone the repository,
+  `run unlink stable`, followed by `ln -s 0.<version number> stable`. To check
+  that this was performed correctly, ensure that stable has the new version
+  number using `ls -l`.
+* Return to your imbalanced-learn repository, in the branch
+  `0.<version number>.X`.
+* Create the source distribution and wheel: `python setup.py sdist` and
+  `python setup.py bdist_wheel`.
+* Upload these file to PyPI using `twine upload dist/*`
+* Switch to the `master` branch and run `bumpversion minor`, commit and push on
+  upstream. We are officially at `0.<version number + 1>.0.dev0`.
+* Create a GitHub release by clicking on "Draft a new release" here.
+  "Tag version" should be the latest version number (e.g., `0.<version>.0`),
+  "Target" should be the branch for that the release
+  (e.g., `0.<version number>.X`) and "Release title" should be
+  "Version <version number>". Add the notes from the release notes there.
+* Add a new `v0.<version number + 1>.rst` file in `doc/whats_new/` and
+  `.. include::` this new file in `doc/whats_new.rst`. Mark the version as the
+  version under development.
+* Finally, go to the `conda-forge feedstock <https://github.com/conda-forge/imbalanced-learn-feedstock>`_
+  and a new PR will be created when the feedstock will synchronizing with the
+  PyPI repository. Merge this PR such that we have the binary for `conda`
+  available.
+
+Bug fix release
+~~~~~~~~~~~~~~~
+
+* Find the commit(s) hash of the bug fix commit you wish to back port using
+  `git log`.
+* Checkout the branch for the lastest release, e.g.,
+  `git checkout 0.<version number>.X`.
+* Append the bug fix commit(s) to the branch using `git cherry-pick <hash>`.
+  Alternatively, you can use interactive rebasing from the `master` branch.
+* Bump the version number with bumpversion patch. This will bump the patch
+  version, for example from `0.X.0` to `0.X.* dev0`.
+* Mark the current version as a release version (as opposed to `dev` version)
+  with `bumpversion release --allow-dirty`. It will bump the version, for
+  example from `0.X.* dev0` to `0.X.1`.
+* Commit the changes with `git commit -am 'bumpversion <new version>'`.
+* Push the changes to the release branch in upstream, e.g.
+  `git push <upstream remote> <release branch>`.
+* Use the same process as in a major release to upload on PyPI and conda-forge.
