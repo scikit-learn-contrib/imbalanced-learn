@@ -351,7 +351,7 @@ bag_clf = make_pipeline(
 )
 
 index += ["Balanced bag of histogram gradient boosting"]
-cv_result = cross_validate(lr_clf, df_res, y_res, scoring=scoring)
+cv_result = cross_validate(bag_clf, df_res, y_res, scoring=scoring)
 scores["Accuracy"].append(cv_result["test_accuracy"].mean())
 scores["Balanced accuracy"].append(cv_result["test_balanced_accuracy"].mean())
 
