@@ -164,8 +164,8 @@ class BaseSMOTE(BaseOverSampler):
         ----------
         nn_estimator : estimator object
             An estimator that inherits from
-            :class:`~sklearn.neighbors.base.KNeighborsMixin` use to determine if
-            a sample is in danger/noise.
+            :class:`~sklearn.neighbors.base.KNeighborsMixin` use to determine
+            if a sample is in danger/noise.
 
         samples : {array-like, sparse matrix} of shape (n_samples, n_features)
             The samples to check if either they are in danger or not.
@@ -382,7 +382,7 @@ class SMOTENC(SMOTE):
 
     See
     :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
-    and :ref:`sphx_glr_auto_examples_over-sampling_plot_illustration_generation_sample.py`.
+    and :ref:`sphx_glr_auto_examples_over-sampling_plot_illustration_generation_sample.py`.  # noqa
 
     References
     ----------
