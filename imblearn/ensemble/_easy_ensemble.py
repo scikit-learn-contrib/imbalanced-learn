@@ -37,6 +37,8 @@ class EasyEnsembleClassifier(BaggingClassifier):
 
     Read more in the :ref:`User Guide <boosting>`.
 
+    .. versionadded:: 0.4
+
     Parameters
     ----------
     n_estimators : int, default=10

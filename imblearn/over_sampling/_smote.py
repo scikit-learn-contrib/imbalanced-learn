@@ -223,6 +223,8 @@ class BorderlineSMOTE(BaseSMOTE):
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
+    .. versionadded:: 0.4
+
     Parameters
     ----------
     {sampling_strategy}
@@ -417,6 +419,8 @@ class SVMSMOTE(BaseSMOTE):
     use for generating new synthetic samples as proposed in [2]_.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
+
+    .. versionadded:: 0.4
 
     Parameters
     ----------
@@ -749,6 +753,8 @@ class SMOTENC(SMOTE):
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
+    .. versionadded:: 0.4
+
     Parameters
     ----------
     categorical_features : ndarray of shape (n_cat_features,) or (n_features,)
@@ -1022,6 +1028,8 @@ class KMeansSMOTE(BaseSMOTE):
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
+    .. versionadded:: 0.5
+
     Parameters
     ----------
     {sampling_strategy}
@@ -1278,6 +1286,8 @@ class SMOTEN(SMOTE):
     resample are only made of categorical features.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
+
+    .. versionadded:: 0.8
 
     Parameters
     ----------
