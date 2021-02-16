@@ -75,7 +75,9 @@ def test_kmeans_smote(data):
 def test_sample_kmeans_custom(data, k_neighbors, kmeans_estimator):
     X, y = data
     kmeans_smote = KMeansSMOTE(
-        random_state=42, kmeans_estimator=kmeans_estimator, k_neighbors=k_neighbors,
+        random_state=42,
+        kmeans_estimator=kmeans_estimator,
+        k_neighbors=k_neighbors,
     )
     X_resampled, y_resampled = kmeans_smote.fit_resample(X, y)
     assert X_resampled.shape == (24, 2)
@@ -110,7 +112,8 @@ def test_sample_kmeans_density_estimation(
 
 
 @pytest.mark.parametrize(
-    "density_exponent, cluster_balance_threshold", [("xxx", "auto"), ("auto", "xxx")],
+    "density_exponent, cluster_balance_threshold",
+    [("xxx", "auto"), ("auto", "xxx")],
 )
 def test_kmeans_smote_param_error(data, density_exponent, cluster_balance_threshold):
     X, y = data

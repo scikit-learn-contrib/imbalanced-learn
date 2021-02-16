@@ -162,6 +162,8 @@ class FunctionSampler(BaseSampler):
         validation allows to use the ``FunctionSampler`` with any type of
         data.
 
+        .. versionadded:: 0.6
+
     See Also
     --------
 

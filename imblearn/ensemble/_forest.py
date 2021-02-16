@@ -86,6 +86,8 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     Read more in the :ref:`User Guide <forest>`.
 
+    .. versionadded:: 0.4
+
     Parameters
     ----------
     n_estimators : int, default=100

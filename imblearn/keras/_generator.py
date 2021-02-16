@@ -62,6 +62,8 @@ class BalancedBatchGenerator(*ParentClass):
     creating the batch. The sampler should have an attribute
     ``sample_indices_``.
 
+    .. versionadded:: 0.4
+
     Parameters
     ----------
     X : ndarray of shape (n_samples, n_features)
@@ -163,9 +165,7 @@ class BalancedBatchGenerator(*ParentClass):
             self.sampler_ = clone(self.sampler)
         self.sampler_.fit_resample(self.X, self.y)
         if not hasattr(self.sampler_, "sample_indices_"):
-            raise ValueError(
-                "'sampler' needs to have an attribute 'sample_indices_'."
-            )
+            raise ValueError("'sampler' needs to have an attribute 'sample_indices_'.")
         self.indices_ = self.sampler_.sample_indices_
         # shuffle the indices since the sampler are packing them by class
         random_state.shuffle(self.indices_)

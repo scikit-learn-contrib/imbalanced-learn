@@ -31,6 +31,8 @@ def balanced_batch_generator(
     used to balance the dataset ahead of creating the batch. The sampler should
     have an attribute ``sample_indices_``.
 
+    .. versionadded:: 0.4
+
     Parameters
     ----------
     X : ndarray of shape (n_samples, n_features)

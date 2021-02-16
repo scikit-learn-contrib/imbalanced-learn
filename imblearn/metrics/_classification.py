@@ -831,13 +831,13 @@ def classification_report_imbalanced(
     output_dict : bool, default=False
         If True, return output as dict.
 
-        .. versionadded:: 0.7
+        .. versionadded:: 0.8
 
     zero_division : "warn" or {0, 1}, default="warn"
         Sets the value to return when there is a zero division. If set to
         "warn", this acts as 0, but warnings are also raised.
 
-        .. versionadded:: 0.7
+        .. versionadded:: 0.8
 
     Returns
     -------
@@ -998,6 +998,8 @@ def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
     giving an equal weight to each class.
 
     Read more in the :ref:`User Guide <macro_averaged_mean_absolute_error>`.
+
+    .. versionadded:: 0.8
 
     Parameters
     ----------
