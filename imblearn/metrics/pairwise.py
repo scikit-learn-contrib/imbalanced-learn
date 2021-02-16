@@ -40,6 +40,8 @@ class ValueDifferenceMetric(BaseEstimator):
 
     Read more in the :ref:`User Guide <vdm>`.
 
+    .. versionadded:: 0.8
+
     Parameters
     ----------
     n_categories : "auto" or array-like of shape (n_features,), default="auto"

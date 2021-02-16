@@ -36,6 +36,8 @@ class KMeansSMOTE(BaseSMOTE):
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
+    .. versionadded:: 0.5
+
     Parameters
     ----------
     {sampling_strategy}

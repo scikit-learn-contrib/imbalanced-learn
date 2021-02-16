@@ -11,15 +11,14 @@ Changelog
 
 - Allow column vectors to be passed as targets.
   :pr:`673` by :user:`Christos Aridas <chkoar>`.
-- Better input/output handling for pandas, numpy and plain lists. 
-  :pr:`681` by :user:`Christos Aridas <chkoar>`.
 
+- Better input/output handling for pandas, numpy and plain lists.
+  :pr:`681` by :user:`Christos Aridas <chkoar>`.
 
 .. _changes_0_6_1:
 
 Version 0.6.1
 ==============
-
 
 This is a bug-fix release to primarily resolve some packaging issues in version
 0.6.0. It also includes minor documentation improvements and some bug fixes.

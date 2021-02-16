@@ -53,7 +53,7 @@ class RandomOverSampler(BaseOverSampler):
         The value needs of the shrinkage parameter needs to be higher or equal
         to 0.
 
-        .. versionadded:: 0.7
+        .. versionadded:: 0.8
 
     Attributes
     ----------
@@ -66,7 +66,7 @@ class RandomOverSampler(BaseOverSampler):
         The per-class shrinkage factor used to generate the smoothed bootstrap
         sample. When `shrinkage=None` a normal bootstrap will be generated.
 
-        .. versionadded:: 0.7
+        .. versionadded:: 0.8
 
     See Also
     --------

@@ -39,6 +39,8 @@ class BorderlineSMOTE(BaseSMOTE):
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
+    .. versionadded:: 0.4
+
     Parameters
     ----------
     {sampling_strategy}
@@ -233,6 +235,8 @@ class SVMSMOTE(BaseSMOTE):
     use for generating new synthetic samples as proposed in [2]_.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
+
+    .. versionadded:: 0.4
 
     Parameters
     ----------

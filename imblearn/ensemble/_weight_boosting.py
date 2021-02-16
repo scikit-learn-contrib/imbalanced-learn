@@ -27,6 +27,8 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
     Read more in the :ref:`User Guide <boosting>`.
 
+    .. versionadded:: 0.4
+
     Parameters
     ----------
     base_estimator : estimator object, default=None
@@ -176,7 +178,8 @@ class RUSBoostClassifier(AdaBoostClassifier):
         super()._validate_estimator()
 
         self.base_sampler_ = RandomUnderSampler(
-            sampling_strategy=self.sampling_strategy, replacement=self.replacement,
+            sampling_strategy=self.sampling_strategy,
+            replacement=self.replacement,
         )
 
     def _make_sampler_estimator(self, append=True, random_state=None):

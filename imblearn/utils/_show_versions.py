@@ -54,6 +54,9 @@ def _get_deps_info():
 
 def show_versions(github=False):
     """Print debugging information.
+
+    .. versionadded:: 0.5
+
     Parameters
     ----------
     github : bool,

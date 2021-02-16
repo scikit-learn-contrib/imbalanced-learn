@@ -112,6 +112,8 @@ def fetch_datasets(
 ):
     """Load the benchmark datasets from Zenodo, downloading it if necessary.
 
+    .. versionadded:: 0.3
+
     Parameters
     ----------
     data_home : str, default=None

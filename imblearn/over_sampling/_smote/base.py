@@ -336,6 +336,8 @@ class SMOTENC(SMOTE):
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 
+    .. versionadded:: 0.4
+
     Parameters
     ----------
     categorical_features : ndarray of shape (n_cat_features,) or (n_features,)
@@ -609,6 +611,8 @@ class SMOTEN(SMOTE):
     resample are only made of categorical features.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
+
+    .. versionadded:: 0.8
 
     Parameters
     ----------
