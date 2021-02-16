@@ -165,7 +165,7 @@ Major release
   (e.g., `git checkout -b 0.<version number>.X`).
 * Push the new branch into the upstream remote imbalanced-learn repository.
 * Change the `symlink` in the
-  `imbalanced-learn website repository<https://github.com/imbalanced-learn/imbalanced-learn.github.io>`_
+  `imbalanced-learn website repository <https://github.com/imbalanced-learn/imbalanced-learn.github.io>`_
   such that stable points to the latest release version,
   i.e, `0.<version number>`. To do this, clone the repository,
   `run unlink stable`, followed by `ln -s 0.<version number> stable`. To check
