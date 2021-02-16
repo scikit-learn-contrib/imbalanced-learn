@@ -131,7 +131,7 @@ _ = ax.set_title("Cleaning")
 # `sampling_strategy as a `dict`
 # ------------------------------
 #
-# When `sampling_strategy` is a `dict, the keys correspond to the targeted
+# When `sampling_strategy` is a `dict`, the keys correspond to the targeted
 # classes. The values correspond to the desired number of samples for each
 # targeted class. This is working for both **under- and over-sampling**
 # algorithms but not for the **cleaning algorithms**. Use a `list` instead.
