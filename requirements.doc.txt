@@ -5,3 +5,4 @@ sphinxcontrib-bibtex
 numpydoc
 matplotlib
 pandas
+seaborn
