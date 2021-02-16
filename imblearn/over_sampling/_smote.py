@@ -450,7 +450,7 @@ class SVMSMOTE(BaseSMOTE):
 
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
-    SMOTEN : Over-sample using the SMOTE variant specifically for nominal
+    SMOTEN : Over-sample using the SMOTE variant specifically for categorical
         features only.
 
     BorderlineSMOTE : Over-sample using Borderline-SMOTE.
@@ -648,7 +648,7 @@ class SMOTE(BaseSMOTE):
     --------
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
-    SMOTEN : Over-sample using the SMOTE variant specifically for nominal
+    SMOTEN : Over-sample using the SMOTE variant specifically for categorical
         features only.
 
     BorderlineSMOTE : Over-sample using the borderline-SMOTE variant.
@@ -743,7 +743,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 class SMOTENC(SMOTE):
     """Synthetic Minority Over-sampling Technique for Nominal and Continuous.
 
-    Unlike :class:`SMOTE`, SMOTE-NC for dataset containing continuous and
+    Unlike :class:`SMOTE`, SMOTE-NC for dataset containing numerical and
     categorical features. However, it is not designed to work with only
     categorical features.
 
@@ -774,7 +774,7 @@ class SMOTENC(SMOTE):
     --------
     SMOTE : Over-sample using SMOTE.
 
-    SMOTEN : Over-sample using the SMOTE variant specifically for nominal
+    SMOTEN : Over-sample using the SMOTE variant specifically for categorical
         features only.
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
@@ -1068,7 +1068,7 @@ class KMeansSMOTE(BaseSMOTE):
 
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
-    SMOTEN : Over-sample using the SMOTE variant specifically for nominal
+    SMOTEN : Over-sample using the SMOTE variant specifically for categorical
         features only.
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
@@ -1272,9 +1272,10 @@ class KMeansSMOTE(BaseSMOTE):
     random_state=_random_state_docstring,
 )
 class SMOTEN(SMOTE):
-    """Perform SMOTE over-sampling for nominal categorical features only.
+    """Synthetic Minority Over-sampling Technique for Nominal.
 
-    This method is refered as SMOTEN in [1]_.
+    This method is refered as SMOTEN in [1]_. It expects that the data to
+    resample are only made of categorical features.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
 

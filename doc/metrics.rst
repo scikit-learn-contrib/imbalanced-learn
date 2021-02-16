@@ -87,7 +87,7 @@ Value Difference Metric
 The class :class:`~imblearn.metrics.pairwise.ValueDifferenceMetric` is
 implementing the Value Difference Metric proposed in
 :cite:`stanfill1986toward`. This measure is used to compute the proximity
-of two samples composed of only nominal values.
+of two samples composed of only categorical values.
 
 Given a single feature, categories with similar correlation with the target
 vector will be considered closer. Let's give an example to illustrate this

@@ -16,11 +16,12 @@ New features
   :pr:`780` by :user:`Aurélien Massiot <AurelienMassiot>`.
 
 - Add the class :class:`imblearn.metrics.pairwise.ValueDifferenceMetric` to
-  compute pairwise distances between samples containing only nominal values.
+  compute pairwise distances between samples containing only categorical
+  values.
   :pr:`796` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - Add the class :class:`imblearn.over_sampling.SMOTEN` to over-sample data
-  only containing nominal categorical features.
+  only containing categorical features.
   :pr:`802` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Enhancements

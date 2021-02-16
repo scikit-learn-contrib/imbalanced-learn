@@ -14,9 +14,9 @@ from sklearn.utils.validation import check_is_fitted
 class ValueDifferenceMetric(BaseEstimator):
     r"""Class implementing the Value Difference Metric.
 
-    This metric computes the distance between samples containing only nominal
-    features. The distance between feature values of two samples
-    is defined as:
+    This metric computes the distance between samples containing only
+    categorical features. The distance between feature values of two samples is
+    defined as:
 
     .. math::
        \delta(x, y) = \sum_{c=1}^{C} |p(c|x_{f}) - p(c|y_{f})|^{k} \ ,

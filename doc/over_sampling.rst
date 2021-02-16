@@ -212,9 +212,9 @@ columns are belonging to the same categories originally presented without any
 other extra interpolation.
 
 However, :class:`SMOTENC` is only working when data is a mixed of numerical and
-categorical features. If data are made of only nominal categorical data, one
-can use the :class:`SMOTEN` variant :cite:`chawla2002smote`. The algorithm
-changes in two ways:
+categorical features. If data are made of only categorical data, one can use
+the :class:`SMOTEN` variant :cite:`chawla2002smote`. The algorithm changes in
+two ways:
 
 * the nearest neighbors search does not rely on the Euclidean distance. Indeed,
   the value difference metric (VDM) also implemented in the class
