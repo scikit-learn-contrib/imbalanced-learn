@@ -211,16 +211,16 @@ Therefore, it can be seen that the samples generated in the first and last
 columns are belonging to the same categories originally presented without any
 other extra interpolation.
 
-However, :class:`SMOTENC` is working with data composed of categorical data
-only. WHen data are made of only nominal categorical data, one can use the
-:class:`SMOTEN` variant :cite:`chawla2002smote`. The algorithm changes in
-two ways:
+However, :class:`SMOTENC` is only working when data is a mixed of numerical and
+categorical features. If data are made of only nominal categorical data, one
+can use the :class:`SMOTEN` variant :cite:`chawla2002smote`. The algorithm
+changes in two ways:
 
 * the nearest neighbors search does not rely on the Euclidean distance. Indeed,
   the value difference metric (VDM) also implemented in the class
   :class:`~imblearn.metrics.ValueDifferenceMetric` is used.
-* the new sample generation is based on majority vote per feature to generate
-  the most common category seen in the neighbors samples.
+* a new sample is generated where each feature value corresponds to the most
+  common category seen in the neighbors samples belonging to the same class.
 
 Let's take the following example::
 

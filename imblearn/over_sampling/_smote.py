@@ -450,7 +450,7 @@ class SVMSMOTE(BaseSMOTE):
 
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
-    SMOTEN : Over-sample using the SMOTE variable specifically for categorical
+    SMOTEN : Over-sample using the SMOTE variant specifically for nominal
         features only.
 
     BorderlineSMOTE : Over-sample using Borderline-SMOTE.
@@ -648,7 +648,7 @@ class SMOTE(BaseSMOTE):
     --------
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
-    SMOTEN : Over-sample using the SMOTE variable specifically for categorical
+    SMOTEN : Over-sample using the SMOTE variant specifically for nominal
         features only.
 
     BorderlineSMOTE : Over-sample using the borderline-SMOTE variant.
@@ -774,7 +774,7 @@ class SMOTENC(SMOTE):
     --------
     SMOTE : Over-sample using SMOTE.
 
-    SMOTEN : Over-sample using the SMOTE variable specifically for categorical
+    SMOTEN : Over-sample using the SMOTE variant specifically for nominal
         features only.
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
@@ -1068,7 +1068,7 @@ class KMeansSMOTE(BaseSMOTE):
 
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
-    SMOTEN : Over-sample using the SMOTE variable specifically for categorical
+    SMOTEN : Over-sample using the SMOTE variant specifically for nominal
         features only.
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.

@@ -76,7 +76,7 @@ class RandomOverSampler(BaseOverSampler):
 
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
 
-    SMOTEN : Over-sample using the SMOTE variable specifically for categorical
+    SMOTEN : Over-sample using the SMOTE variant specifically for nominal
         features only.
 
     SVMSMOTE : Over-sample using SVM-SMOTE variant.
