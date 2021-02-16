@@ -18,9 +18,9 @@ Bagging classifier
 
 In ensemble classifiers, bagging methods build several estimators on different
 randomly selected subset of data. In scikit-learn, this classifier is named
-``BaggingClassifier``. However, this classifier does not allow to balance each
-subset of data. Therefore, when training on imbalanced data set, this
-classifier will favor the majority classes::
+:class:`~sklearn.ensemble.BaggingClassifier`. However, this classifier does not
+allow to balance each subset of data. Therefore, when training on imbalanced
+data set, this classifier will favor the majority classes::
 
   >>> from sklearn.datasets import make_classification
   >>> X, y = make_classification(n_samples=10000, n_features=2, n_informative=2,
@@ -41,14 +41,13 @@ classifier will favor the majority classes::
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
   0.77...
 
-:class:`BalancedBaggingClassifier` allows to resample each subset of data
-before to train each estimator of the ensemble. In short, it combines the
-output of an :class:`EasyEnsemble` sampler with an ensemble of classifiers
-(i.e. ``BaggingClassifier``). Therefore, :class:`BalancedBaggingClassifier`
-takes the same parameters than the scikit-learn
-``BaggingClassifier``. Additionally, there is two additional parameters,
-``sampling_strategy`` and ``replacement`` to control the behaviour of the
-random under-sampler::
+In :class:`BalancedBaggingClassifier`, each bootstrap sample will be further
+resampled to achieve the `sampling_strategy` desired. Therefore,
+:class:`BalancedBaggingClassifier` takes the same parameters than the
+scikit-learn :class:`~sklearn.ensemble.BaggingClassifier`. In addition, the
+sampling is controlled by the parameter `sampler` or the two parameters
+`sampling_strategy` and `replacement`, if one wants to use the
+:class:`~imblearn.under_sampling.RandomUnderSampler`::
 
   >>> from imblearn.ensemble import BalancedBaggingClassifier
   >>> bbc = BalancedBaggingClassifier(base_estimator=DecisionTreeClassifier(),
@@ -69,8 +68,7 @@ Forest of randomized trees
 :class:`BalancedRandomForestClassifier` is another ensemble method in which
 each tree of the forest will be provided a balanced bootstrap sample
 :cite:`chen2004using`. This class provides all functionality of the
-:class:`~sklearn.ensemble.RandomForestClassifier` and notably the
-`feature_importances_` attributes::
+:class:`~sklearn.ensemble.RandomForestClassifier`::
 
   >>> from imblearn.ensemble import BalancedRandomForestClassifier
   >>> brf = BalancedRandomForestClassifier(n_estimators=100, random_state=0)
@@ -99,11 +97,11 @@ a boosting iteration :cite:`seiffert2009rusboost`::
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
   0...
 
-A specific method which uses ``AdaBoost`` as learners in the bagging classifier
-is called EasyEnsemble. The :class:`EasyEnsembleClassifier` allows to bag
-AdaBoost learners which are trained on balanced bootstrap samples
-:cite:`liu2008exploratory`. Similarly to the :class:`BalancedBaggingClassifier`
-API, one can construct the ensemble as::
+A specific method which uses :class:`~sklearn.ensemble.AdaBoostClassifier` as
+learners in the bagging classifier is called "EasyEnsemble". The
+:class:`EasyEnsembleClassifier` allows to bag AdaBoost learners which are
+trained on balanced bootstrap samples :cite:`liu2008exploratory`. Similarly to
+the :class:`BalancedBaggingClassifier` API, one can construct the ensemble as::
 
   >>> from imblearn.ensemble import EasyEnsembleClassifier
   >>> eec = EasyEnsembleClassifier(random_state=0)
