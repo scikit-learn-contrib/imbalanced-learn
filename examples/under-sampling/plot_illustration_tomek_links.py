@@ -25,7 +25,6 @@ sns.set_context("poster")
 
 def make_plot_despine(ax):
     sns.despine(ax=ax, offset=10)
-    # ax.axis("square")
     ax.set_xlim([0, 3])
     ax.set_ylim([0, 3])
     ax.set_xlabel(r"$X_1$")
