@@ -4,28 +4,26 @@ Metrics specific to imbalanced learning
 =======================================
 
 Specific metrics have been developed to evaluate classifier which
-has been trained using imbalanced data. `imblearn` provides mainly
-two additional metrics which are not implemented in `sklearn`: (i)
+has been trained using imbalanced data. :mod:`imblearn` provides mainly
+two additional metrics which are not implemented in :mod:`sklearn`: (i)
 geometric mean and (ii) index balanced accuracy.
 """
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
-from sklearn import datasets
-from sklearn.svm import LinearSVC
-from sklearn.model_selection import train_test_split
-
-from imblearn import over_sampling as os
-from imblearn import pipeline as pl
-from imblearn.metrics import geometric_mean_score, make_index_balanced_accuracy
-
+# %%
 print(__doc__)
 
 RANDOM_STATE = 42
 
-# Generate a dataset
-X, y = datasets.make_classification(
+# %% [markdown]
+# First, we will generate some imbalanced dataset.
+
+# %%
+from sklearn.datasets import make_classification
+
+X, y = make_classification(
     n_classes=3,
     class_sep=2,
     weights=[0.1, 0.9],
@@ -38,42 +36,69 @@ X, y = datasets.make_classification(
     random_state=RANDOM_STATE,
 )
 
-pipeline = pl.make_pipeline(
-    os.SMOTE(random_state=RANDOM_STATE), LinearSVC(random_state=RANDOM_STATE)
+# %% [markdown]
+# We will split the data into a training and testing set.
+
+# %%
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, stratify=y, random_state=RANDOM_STATE
 )
 
-# Split the data
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=RANDOM_STATE)
+# %% [markdown]
+# We will create a pipeline made of a :class:`~imblearn.over_sampling.SMOTE`
+# over-sampler followed by a :class:`~sklearn.svm.LinearSVC` classifier.
 
-# Train the classifier with balancing
-pipeline.fit(X_train, y_train)
+# %%
+from imblearn.pipeline import make_pipeline
+from imblearn.over_sampling import SMOTE
+from sklearn.svm import LinearSVC
 
-# Test the classifier and get the prediction
-y_pred_bal = pipeline.predict(X_test)
+model = make_pipeline(
+    SMOTE(random_state=RANDOM_STATE), LinearSVC(random_state=RANDOM_STATE)
+)
 
-###############################################################################
+# %% [markdown]
+# Now, we will train the model on the training set and get the prediction
+# associated with the testing set. Be aware that the resampling will happen
+# only when calling `fit`: the number of samples in `y_pred` is the same than
+# in `y_test`.
+
+# %%
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+# %% [markdown]
 # The geometric mean corresponds to the square root of the product of the
 # sensitivity and specificity. Combining the two metrics should account for
 # the balancing of the dataset.
 
-print(f"The geometric mean is {geometric_mean_score(y_test, y_pred_bal)}")
+# %%
+from imblearn.metrics import geometric_mean_score
 
-###############################################################################
+print(f"The geometric mean is {geometric_mean_score(y_test, y_pred):.3f}")
+
+# %% [markdown]
 # The index balanced accuracy can transform any metric to be used in
 # imbalanced learning problems.
+
+# %%
+from imblearn.metrics import make_index_balanced_accuracy
 
 alpha = 0.1
 geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(geometric_mean_score)
 
 print(
-    f"The IBA using alpha = {alpha} and the geometric mean: "
-    f"{geo_mean(y_test, y_pred_bal)}"
+    f"The IBA using alpha={alpha} and the geometric mean: "
+    f"{geo_mean(y_test, y_pred):.3f}"
 )
 
+# %%
 alpha = 0.5
 geo_mean = make_index_balanced_accuracy(alpha=alpha, squared=True)(geometric_mean_score)
 
 print(
-    f"The IBA using alpha = {alpha} and the geometric mean: "
-    f"{geo_mean(y_test, y_pred_bal)}"
+    f"The IBA using alpha={alpha} and the geometric mean: "
+    f"{geo_mean(y_test, y_pred):.3f}"
 )

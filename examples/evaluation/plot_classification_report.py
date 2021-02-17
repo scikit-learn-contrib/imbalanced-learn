@@ -4,8 +4,8 @@ Evaluate classification by compiling a report
 =============================================
 
 Specific metrics have been developed to evaluate classifier which has been
-trained using imbalanced data. `imblearn` provides a classification
-report similar to `sklearn`, with additional metrics specific to imbalanced
+trained using imbalanced data. "mod:`imblearn` provides a classification report
+similar to :mod:`sklearn`, with additional metrics specific to imbalanced
 learning problem.
 """
 
