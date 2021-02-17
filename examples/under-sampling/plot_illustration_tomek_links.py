@@ -134,5 +134,3 @@ for ax, (title, sampler) in zip(axs, samplers.items()):
 fig.tight_layout()
 
 plt.show()
-
-# %%
