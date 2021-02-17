@@ -50,3 +50,10 @@ Bug fixes
 - Fix a bug in :class:`imblearn.FunctionSampler` where validation was performed
   even with `validate=False` when calling `fit`.
   :pr:`790` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Deprecation
+...........
+
+- The context manager :func:`imblearn.utils.testing.warns` is deprecated in 0.8
+  and will be removed 1.0.
+  :pr:`815` by :user:`Guillaume Lemaitre <glemaitre>`.
