@@ -56,11 +56,12 @@ ax.scatter(X[:, 0], X[:, 1], c=y, alpha=0.8, edgecolor="k")
 from collections import Counter
 
 
-def plot_resampling(X, y, sampling, ax):
+def plot_resampling(X, y, sampler, ax):
     """Plot the resampled dataset using the sampler."""
-    X_res, y_res = sampling.fit_resample(X, y)
+    X_res, y_res = sampler.fit_resample(X, y)
     ax.scatter(X_res[:, 0], X_res[:, 1], c=y_res, alpha=0.8, edgecolor="k")
     sns.despine(ax=ax, offset=10)
+    ax.set_title(f"Decision function for {sampler.__class__.__name__}")
     return Counter(y_res)
 
 
@@ -85,6 +86,7 @@ def plot_decision_function(X, y, clf, ax):
     Z = Z.reshape(xx.shape)
     ax.contourf(xx, yy, Z, alpha=0.4)
     ax.scatter(X[:, 0], X[:, 1], alpha=0.8, c=y, edgecolor="k")
+    ax.set_title(f"Resampling using {clf[0].__class__.__name__}")
 
 
 # %% [markdown]
@@ -112,9 +114,7 @@ fig, axs = plt.subplots(3, 2, figsize=(15, 25))
 for ax, sampler in zip(axs, samplers):
     clf = make_pipeline(sampler, LinearSVC()).fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
-    ax[0].set_title(f"Decision function for {sampler.__class__.__name__}")
     plot_resampling(X, y, sampler, ax[1])
-    ax[1].set_title(f"Resampling using {sampler.__class__.__name__}")
 fig.tight_layout()
 
 plt.show()
