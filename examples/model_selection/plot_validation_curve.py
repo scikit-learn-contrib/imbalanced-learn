@@ -3,31 +3,33 @@
 Plotting Validation Curves
 ==========================
 
-In this example the impact of the SMOTE's k_neighbors parameter is examined.
-In the plot you can see the validation scores of a SMOTE-CART classifier for
-different values of the SMOTE's k_neighbors parameter.
+In this example the impact of the :class:`~imblearn.over_sampling.SMOTE`'s
+`k_neighbors` parameter is examined. In the plot you can see the validation
+scores of a SMOTE-CART classifier for different values of the
+:class:`~imblearn.over_sampling.SMOTE`'s `k_neighbors` parameter.
 """
 
 # Authors: Christos Aridas
 #          Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn import model_selection as ms
-from sklearn import datasets, metrics, tree
-
-from imblearn import over_sampling as os
-from imblearn import pipeline as pl
-
+# %%
 print(__doc__)
+
+import seaborn as sns
+
+sns.set_context("poster")
+
 
 RANDOM_STATE = 42
 
-scorer = metrics.make_scorer(metrics.cohen_kappa_score)
+# %% [markdown]
+# Let's first generate a dataset with imbalanced class distribution.
 
-# Generate the dataset
-X, y = datasets.make_classification(
+# %%
+from sklearn.datasets import make_classification
+
+X, y = make_classification(
     n_classes=2,
     class_sep=2,
     weights=[0.1, 0.9],
@@ -39,13 +41,36 @@ X, y = datasets.make_classification(
     n_samples=5000,
     random_state=RANDOM_STATE,
 )
-smote = os.SMOTE(random_state=RANDOM_STATE)
-cart = tree.DecisionTreeClassifier(random_state=RANDOM_STATE)
-pipeline = pl.make_pipeline(smote, cart)
 
+# %% [markdown]
+# We will use an over-sampler :class:`~imblearn.over_sampling.SMOTE` followed
+# by a :class:`~sklearn.tree.DecisionTreeClassifier`. The aim will be to
+# search which `k_neighbors` parameter is the most adequate with the dataset
+# that we generated.
+
+# %%
+from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import make_pipeline
+from sklearn.tree import DecisionTreeClassifier
+
+model = make_pipeline(
+    SMOTE(random_state=RANDOM_STATE), DecisionTreeClassifier(random_state=RANDOM_STATE)
+)
+
+# %% [markdown]
+# We can use the :class:`~sklearn.model_selection.validation_curve` to inspect
+# the impact of varying the parameter `k_neighbors`. In this case, we need
+# to use a score to evaluate the generalization score during the
+# cross-validation.
+
+# %%
+from sklearn.metrics import cohen_kappa_score, make_scorer
+from sklearn.model_selection import validation_curve
+
+scorer = make_scorer(cohen_kappa_score)
 param_range = range(1, 11)
-train_scores, test_scores = ms.validation_curve(
-    pipeline,
+train_scores, test_scores = validation_curve(
+    model,
     X,
     y,
     param_name="smote__k_neighbors",
@@ -53,23 +78,30 @@ train_scores, test_scores = ms.validation_curve(
     cv=3,
     scoring=scorer,
 )
-train_scores_mean = np.mean(train_scores, axis=1)
-train_scores_std = np.std(train_scores, axis=1)
-test_scores_mean = np.mean(test_scores, axis=1)
-test_scores_std = np.std(test_scores, axis=1)
 
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
+# %%
+train_scores_mean = train_scores.mean(axis=1)
+train_scores_std = train_scores.std(axis=1)
+test_scores_mean = test_scores.mean(axis=1)
+test_scores_std = test_scores.std(axis=1)
 
-plt.plot(param_range, test_scores_mean, label="SMOTE")
+# %% [markdown]
+# We can now plot the results of the cross-validation for the different
+# parameter values that we tried.
+
+# %%
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.plot(param_range, test_scores_mean, label="SMOTE")
 ax.fill_between(
     param_range,
     test_scores_mean + test_scores_std,
     test_scores_mean - test_scores_std,
     alpha=0.2,
 )
-idx_max = np.argmax(test_scores_mean)
-plt.scatter(
+idx_max = test_scores_mean.argmax()
+ax.scatter(
     param_range[idx_max],
     test_scores_mean[idx_max],
     label=r"Cohen Kappa: ${:.2f}\pm{:.2f}$".format(
@@ -77,19 +109,14 @@ plt.scatter(
     ),
 )
 
-plt.title("Validation Curve with SMOTE-CART")
-plt.xlabel("k_neighbors")
-plt.ylabel("Cohen's kappa")
+fig.suptitle("Validation Curve with SMOTE-CART")
+ax.set_xlabel("k_neighbors")
+ax.set_ylabel("Cohen's kappa")
 
 # make nice plotting
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
-ax.spines["left"].set_position(("outward", 10))
-ax.spines["bottom"].set_position(("outward", 10))
-plt.xlim([1, 10])
-plt.ylim([0.4, 0.8])
+sns.despine(ax=ax, offset=10)
+ax.set_xlim([1, 10])
+ax.set_ylim([0.4, 0.8])
+ax.legend(loc="lower right")
 
-plt.legend(loc="best")
 plt.show()

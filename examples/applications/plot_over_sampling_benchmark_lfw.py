@@ -8,111 +8,144 @@ In this face recognition example two faces are used from the LFW
 methods are used in conjunction with a 3NN classifier in order
 to examine the improvement of the classifier's output quality
 by using an over-sampler.
-
 """
 
 # Authors: Christos Aridas
 #          Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy import interp
-from sklearn import datasets, neighbors
-from sklearn.metrics import auc, roc_curve
-from sklearn.model_selection import StratifiedKFold
-
-from imblearn.over_sampling import ADASYN, SMOTE, RandomOverSampler
-from imblearn.pipeline import make_pipeline
-
+# %%
 print(__doc__)
 
-LW = 2
-RANDOM_STATE = 42
+import seaborn as sns
 
+sns.set_context("poster")
 
-class DummySampler:
-    def sample(self, X, y):
-        return X, y
+# %% [markdown]
+# Load the dataset
+# ----------------
+#
+# We will use a dataset containing image from know person where we will
+# build a model to recognize the person on the image. We will make this problem
+# a binary problem by taking picture of only George W. Bush and Bill Clinton.
 
-    def fit(self, X, y):
-        return self
+# %%
+import numpy as np
+from sklearn.datasets import fetch_lfw_people
 
-    def fit_resample(self, X, y):
-        return self.sample(X, y)
+data = fetch_lfw_people()
+george_bush_id = 1871  # Photos of George W. Bush
+bill_clinton_id = 531  # Photos of Bill Clinton
+classes = [george_bush_id, bill_clinton_id]
+classes_name = np.array(["B. Clinton", "G.W. Bush"], dtype=np.object)
 
+# %%
+mask_photos = np.isin(data.target, classes)
+X, y = data.data[mask_photos], data.target[mask_photos]
+y = (y == george_bush_id).astype(np.int8)
+y = classes_name[y]
+
+# %% [markdown]
+# We can check the ratio between the two classes.
+
+# %%
+import pandas as pd
+
+class_distribution = pd.Series(y).value_counts(normalize=True)
+ax = class_distribution.plot.barh()
+ax.set_title("Class distribution")
+pos_label = class_distribution.idxmin()
+print(f"The positive label considered as the minority class is {pos_label}")
+
+# %% [markdown]
+# We see that we have an imbalanced classification problem with ~95% of the
+# data belonging to the class G.W. Bush.
+#
+# Compare over-sampling approaches
+# --------------------------------
+#
+# We will use different over-sampling approaches and use a kNN classifier
+# to check if we can recognize the 2 presidents. The evaluation will be
+# performed through cross-validation and we will plot the mean ROC curve.
+#
+# We will create different pipelines and evaluate them.
+
+# %%
+from imblearn import FunctionSampler
+from imblearn.over_sampling import ADASYN, RandomOverSampler, SMOTE
+from imblearn.pipeline import make_pipeline
+from sklearn.neighbors import KNeighborsClassifier
+
+classifier = KNeighborsClassifier(n_neighbors=3)
+
+pipeline = [
+    make_pipeline(FunctionSampler(), classifier),
+    make_pipeline(RandomOverSampler(random_state=42), classifier),
+    make_pipeline(ADASYN(random_state=42), classifier),
+    make_pipeline(SMOTE(random_state=42), classifier),
+]
+
+# %%
+from sklearn.model_selection import StratifiedKFold
 
 cv = StratifiedKFold(n_splits=3)
 
-# Load the dataset
-data = datasets.fetch_lfw_people()
-majority_person = 1871  # 530 photos of George W Bush
-minority_person = 531  # 29 photos of Bill Clinton
-majority_idxs = np.flatnonzero(data.target == majority_person)
-minority_idxs = np.flatnonzero(data.target == minority_person)
-idxs = np.hstack((majority_idxs, minority_idxs))
+# %% [markdown]
+# We will compute the mean ROC curve for each pipeline using a different splits
+# provided by the :class:`~sklearn.model_selection.StratifiedKFold`
+# cross-validation.
 
-X = data.data[idxs]
-y = data.target[idxs]
-y[y == majority_person] = 0
-y[y == minority_person] = 1
+# %%
+import matplotlib.pyplot as plt
+from sklearn.metrics import RocCurveDisplay, roc_curve, auc
 
-classifier = ["3NN", neighbors.KNeighborsClassifier(3)]
-
-samplers = [
-    ["Standard", DummySampler()],
-    ["ADASYN", ADASYN(random_state=RANDOM_STATE)],
-    ["ROS", RandomOverSampler(random_state=RANDOM_STATE)],
-    ["SMOTE", SMOTE(random_state=RANDOM_STATE)],
-]
-
-pipelines = [
-    [
-        f"{sampler[0]}-{classifier[0]}",
-        make_pipeline(sampler[1], classifier[1]),
-    ]
-    for sampler in samplers
-]
-
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
-
-for name, pipeline in pipelines:
-    mean_tpr = 0.0
-    mean_fpr = np.linspace(0, 1, 100)
+disp = []
+for model in pipeline:
+    # compute the mean fpr/tpr to get the mean ROC curve
+    mean_tpr, mean_fpr = 0.0, np.linspace(0, 1, 100)
     for train, test in cv.split(X, y):
-        probas_ = pipeline.fit(X[train], y[train]).predict_proba(X[test])
-        fpr, tpr, thresholds = roc_curve(y[test], probas_[:, 1])
-        mean_tpr += interp(mean_fpr, fpr, tpr)
+        model.fit(X[train], y[train])
+        y_proba = model.predict_proba(X[test])
+
+        pos_label_idx = np.flatnonzero(model.classes_ == pos_label)[0]
+        fpr, tpr, thresholds = roc_curve(
+            y[test], y_proba[:, pos_label_idx], pos_label=pos_label
+        )
+        mean_tpr += np.interp(mean_fpr, fpr, tpr)
         mean_tpr[0] = 0.0
-        roc_auc = auc(fpr, tpr)
 
     mean_tpr /= cv.get_n_splits(X, y)
     mean_tpr[-1] = 1.0
     mean_auc = auc(mean_fpr, mean_tpr)
-    plt.plot(
-        mean_fpr,
-        mean_tpr,
-        linestyle="--",
-        label=f"{name} (area = {mean_auc:.2f})",
-        lw=LW,
+
+    # Create a display that we will reuse to make the aggregated plots for
+    # all methods
+    disp.append(
+        RocCurveDisplay(
+            fpr=mean_fpr,
+            tpr=mean_tpr,
+            roc_auc=mean_auc,
+            estimator_name=f"{model[0].__class__.__name__}",
+        )
     )
 
-plt.plot([0, 1], [0, 1], linestyle="--", lw=LW, color="k", label="Luck")
+# %% [markdown]
+# In the previous cell, we created the different mean ROC curve and we can plot
+# them on the same plot.
 
-# make nice plotting
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
-ax.spines["left"].set_position(("outward", 10))
-ax.spines["bottom"].set_position(("outward", 10))
-plt.xlim([0, 1])
-plt.ylim([0, 1])
-plt.xlabel("False Positive Rate")
-plt.ylabel("True Positive Rate")
-plt.title("Receiver operating characteristic example")
-
-plt.legend(loc="lower right")
-
+# %%
+fig, ax = plt.subplots(figsize=(9, 9))
+for d in disp:
+    d.plot(ax=ax, linestyle="--")
+ax.plot([0, 1], [0, 1], linestyle="--", color="k")
+ax.axis("square")
+fig.suptitle("Comparison of over-sampling methods with a 3NN classifier")
+ax.set_xlim([0, 1])
+ax.set_ylim([0, 1])
+sns.despine(offset=10, ax=ax)
 plt.show()
+
+# %% [markdown]
+# We see that for this task, methods that are generating new samples with some
+# interpolation (i.e. ADASYN and SMOTE) perform better than random
+# over-sampling or no resampling.
