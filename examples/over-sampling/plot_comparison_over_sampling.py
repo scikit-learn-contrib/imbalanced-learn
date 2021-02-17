@@ -5,7 +5,6 @@ Compare over-sampling samplers
 
 The following example attends to make a qualitative comparison between the
 different over-sampling algorithms available in the imbalanced-learn package.
-
 """
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
@@ -19,6 +18,7 @@ import numpy as np
 from sklearn.datasets import make_classification
 from sklearn.svm import LinearSVC
 
+from imblearn import FunctionSampler
 from imblearn.pipeline import make_pipeline
 from imblearn.over_sampling import ADASYN
 from imblearn.over_sampling import (
@@ -29,9 +29,12 @@ from imblearn.over_sampling import (
     KMeansSMOTE,
 )
 from imblearn.over_sampling import RandomOverSampler
-from imblearn.base import BaseSampler
 
 print(__doc__)
+
+import seaborn as sns
+
+sns.set_context("poster")
 
 
 ###############################################################################
@@ -68,13 +71,7 @@ def create_dataset(
 def plot_resampling(X, y, sampling, ax):
     X_res, y_res = sampling.fit_resample(X, y)
     ax.scatter(X_res[:, 0], X_res[:, 1], c=y_res, alpha=0.8, edgecolor="k")
-    # make nice plotting
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.get_xaxis().tick_bottom()
-    ax.get_yaxis().tick_left()
-    ax.spines["left"].set_position(("outward", 10))
-    ax.spines["bottom"].set_position(("outward", 10))
+    sns.despine(ax=ax, offset=10)
     return Counter(y_res)
 
 
@@ -170,19 +167,9 @@ fig.tight_layout()
 # Instead of repeating the same samples when over-sampling, we can use some
 # specific heuristic instead. ADASYN and SMOTE can be used in this case.
 
-
-# Make an identity sampler
-class FakeSampler(BaseSampler):
-
-    _sampling_type = "bypass"
-
-    def _fit_resample(self, X, y):
-        return X, y
-
-
 fig, axs = plt.subplots(2, 2, figsize=(15, 15))
 X, y = create_dataset(n_samples=10000, weights=(0.01, 0.05, 0.94))
-sampler = FakeSampler()
+sampler = FunctionSampler()
 clf = make_pipeline(sampler, LinearSVC())
 plot_resampling(X, y, sampler, axs[0, 0])
 axs[0, 0].set_title(f"Original data - y={Counter(y)}")
