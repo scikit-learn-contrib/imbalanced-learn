@@ -57,3 +57,10 @@ Maintenance
 - Remove requirements files in favour of adding the packages in the
   `extras_require` within the `setup.py` file.
   :pr:`816` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Deprecation
+...........
+
+- The context manager :func:`imblearn.utils.testing.warns` is deprecated in 0.8
+  and will be removed 1.0.
+  :pr:`815` by :user:`Guillaume Lemaitre <glemaitre>`.
