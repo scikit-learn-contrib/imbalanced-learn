@@ -25,6 +25,9 @@ sns.set_context("poster")
 
 
 # %%
+from sklearn.datasets import make_classification
+
+
 def create_dataset(
     n_samples=1000,
     weights=(0.01, 0.01, 0.98),

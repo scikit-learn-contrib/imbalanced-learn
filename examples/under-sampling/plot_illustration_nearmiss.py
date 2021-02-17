@@ -7,6 +7,9 @@ This example illustrates the different way of selecting example in NearMiss.
 
 """
 
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
+
 import matplotlib.pyplot as plt
 import numpy as np
 
