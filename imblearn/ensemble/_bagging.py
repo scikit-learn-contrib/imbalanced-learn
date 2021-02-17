@@ -33,6 +33,10 @@ class BalancedBaggingClassifier(BaggingClassifier):
     implementation. It includes an additional step to balance the training set
     at fit time using a given sampler.
 
+    This classifier can serves as a basis to implement various methods such as
+    Exactly Balanced Bagging [6]_, Roughly Balanced Bagging [7]_,
+    Over-Bagging [6]_, or SMOTE-Bagging [8]_.
+
     Read more in the :ref:`User Guide <bagging>`.
 
     Parameters
@@ -60,8 +64,8 @@ class BalancedBaggingClassifier(BaggingClassifier):
         Whether samples are drawn with replacement.
 
         .. note::
-           It is important to note that the bootstrap will be generated from
-           the resampled dataset.
+           Note that this bootstrap will be generated from the resampled
+           dataset.
 
     bootstrap_features : bool, default=False
         Whether features are drawn with replacement.
@@ -92,7 +96,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
     sampler : sampler object, default=None
         The sampler used to balanced the dataset before to bootstrap
         (if `bootstrap=True`) and `fit` a base estimator. By default, a
-        :class:`~sklearn.under_sampling.RandomUnderSampler` is used.
+        :class:`~imblearn.under_sampling.RandomUnderSampler` is used.
 
         .. versionadded:: 0.8
 
@@ -164,9 +168,20 @@ class BalancedBaggingClassifier(BaggingClassifier):
     .. [4] G. Louppe and P. Geurts, "Ensembles on Random Patches", Machine
            Learning and Knowledge Discovery in Databases, 346-361, 2012.
 
-    .. [5] Chen, Chao, Andy Liaw, and Leo Breiman. "Using random forest to
+    .. [5] C. Chen Chao, A. Liaw, and L. Breiman. "Using random forest to
            learn imbalanced data." University of California, Berkeley 110,
            2004.
+
+    .. [6] R. Maclin, and D. Opitz. "An empirical evaluation of bagging and
+           boosting." AAAI/IAAI 1997 (1997): 546-551.
+
+    .. [7] S. Hido, H. Kashima, and Y. Takahashi. "Roughly balanced bagging
+           for imbalanced data." Statistical Analysis and Data Mining: The ASA
+           Data Science Journal 2.5‐6 (2009): 412-426.
+
+    .. [8] S. Wang, and X. Yao. "Diversity analysis on imbalanced data sets by
+           using ensemble models." 2009 IEEE symposium on computational
+           intelligence and data mining. IEEE, 2009.
 
     Examples
     --------
