@@ -11,7 +11,12 @@ smoothed bootstrap using the
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
+# %%
 print(__doc__)
+
+import seaborn as sns
+
+sns.set_context("poster")
 
 # %%
 # First, we will generate a toy classification dataset with only few samples.
@@ -32,7 +37,7 @@ Counter(y)
 # %%
 import matplotlib.pyplot as plt
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(7, 7))
 scatter = plt.scatter(X[:, 0], X[:, 1], c=y, alpha=0.4)
 class_legend = ax.legend(*scatter.legend_elements(), loc="lower left", title="Classes")
 ax.add_artist(class_legend)
@@ -50,7 +55,7 @@ X_res, y_res = sampler.fit_resample(X, y)
 Counter(y_res)
 
 # %%
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(7, 7))
 scatter = plt.scatter(X_res[:, 0], X_res[:, 1], c=y_res, alpha=0.4)
 class_legend = ax.legend(*scatter.legend_elements(), loc="lower left", title="Classes")
 ax.add_artist(class_legend)
@@ -68,7 +73,7 @@ X_res, y_res = sampler.fit_resample(X, y)
 Counter(y_res)
 
 # %%
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(7, 7))
 scatter = plt.scatter(X_res[:, 0], X_res[:, 1], c=y_res, alpha=0.4)
 class_legend = ax.legend(*scatter.legend_elements(), loc="lower left", title="Classes")
 ax.add_artist(class_legend)
@@ -86,7 +91,7 @@ X_res, y_res = sampler.fit_resample(X, y)
 Counter(y_res)
 
 # %%
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(7, 7))
 scatter = plt.scatter(X_res[:, 0], X_res[:, 1], c=y_res, alpha=0.4)
 class_legend = ax.legend(*scatter.legend_elements(), loc="lower left", title="Classes")
 ax.add_artist(class_legend)
@@ -101,7 +106,7 @@ X_res, y_res = sampler.fit_resample(X, y)
 Counter(y_res)
 
 # %%
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(7, 7))
 scatter = plt.scatter(X_res[:, 0], X_res[:, 1], c=y_res, alpha=0.4)
 class_legend = ax.legend(*scatter.legend_elements(), loc="lower left", title="Classes")
 ax.add_artist(class_legend)
