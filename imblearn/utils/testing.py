@@ -6,6 +6,7 @@
 
 import inspect
 import pkgutil
+import warnings
 from contextlib import contextmanager
 from importlib import import_module
 from re import compile
@@ -18,7 +19,9 @@ from sklearn.base import BaseEstimator
 from sklearn.utils._testing import ignore_warnings
 
 
-def all_estimators(type_filter=None,):
+def all_estimators(
+    type_filter=None,
+):
     """Get a list of all estimators from imblearn.
 
     This function crawls the module and gets all classes that inherit
@@ -120,6 +123,10 @@ def warns(expected_warning, match=None):
     and raise a failure exception otherwise. It can be used within a context
     manager ``with``.
 
+    .. deprecated:: 0.8
+       This function is deprecated in 0.8 and will be removed in 0.10.
+       Use `pytest.warns()` instead.
+
     Parameters
     ----------
     expected_warning : Warning
@@ -134,13 +141,16 @@ def warns(expected_warning, match=None):
 
     Examples
     --------
-
     >>> import warnings
     >>> from imblearn.utils.testing import warns
     >>> with warns(UserWarning, match=r'must be \d+$'):
     ...     warnings.warn("value must be 42", UserWarning)
-
     """
+    warnings.warn(
+        "The warns function is deprecated in 0.8 and will be removed in 0.10. "
+        "Use pytest.warns() instead."
+    )
+
     with _warns(expected_warning) as record:
         yield
 
