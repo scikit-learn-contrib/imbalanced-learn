@@ -3,46 +3,49 @@
 Sample selection in NearMiss
 ============================
 
-This example illustrates the different way of selecting example in NearMiss.
-
+This example illustrates the different way of selecting example in
+:class:`~imblearn.under_sampling.NearMiss`.
 """
 
-import matplotlib.pyplot as plt
-import numpy as np
+# Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
+# License: MIT
 
-from sklearn.neighbors import NearestNeighbors
-
+# %%
 print(__doc__)
 
-rng = np.random.RandomState(18)
+import seaborn as sns
 
-###############################################################################
-# This function allows to make nice plotting
+sns.set_context("poster")
+
+# %% [markdown]
+# We define a function allowing to make some nice decoration on the plot.
+
+# %%
 
 
 def make_plot_despine(ax):
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.get_xaxis().tick_bottom()
-    ax.get_yaxis().tick_left()
-    ax.spines["left"].set_position(("outward", 10))
-    ax.spines["bottom"].set_position(("outward", 10))
-    ax.set_xlim([0.0, 3.5])
-    ax.set_ylim([0.0, 3.5])
+    sns.despine(ax=ax, offset=10)
+    ax.set_xlim([0, 3.5])
+    ax.set_ylim([0, 3.5])
+    ax.set_xticks(np.arange(0, 3.6, 0.5))
+    ax.set_yticks(np.arange(0, 3.6, 0.5))
     ax.set_xlabel(r"$X_1$")
     ax.set_ylabel(r"$X_2$")
-    ax.legend()
+    ax.legend(loc="upper left")
 
 
-###############################################################################
+# %% [markdown]
 # We can start by generating some data to later illustrate the principle of
-# each NearMiss heuritic rules.
+# each :class:`~imblearn.under_sampling.NearMiss` heuristic rules.
 
-# minority class
+# %%
+import numpy as np
+
+rng = np.random.RandomState(18)
+
 X_minority = np.transpose(
     [[1.1, 1.3, 1.15, 0.8, 0.8, 0.6, 0.55], [1.0, 1.5, 1.7, 2.5, 2.0, 1.2, 0.55]]
 )
-# majority class
 X_majority = np.transpose(
     [
         [2.1, 2.12, 2.13, 2.14, 2.2, 2.3, 2.5, 2.45],
@@ -50,18 +53,21 @@ X_majority = np.transpose(
     ]
 )
 
-###############################################################################
+# %% [mardown]
 # NearMiss-1
-###############################################################################
-
-###############################################################################
+# ----------
+#
 # NearMiss-1 selects samples from the majority class for which the average
 # distance to some nearest neighbours is the smallest. In the following
 # example, we use a 3-NN to compute the average distance on 2 specific samples
 # of the majority class. Therefore, in this case the point linked by the
 # green-dashed line will be selected since the average distance is smaller.
 
-fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+# %%
+import matplotlib.pyplot as plt
+from sklearn.neighbors import NearestNeighbors
+
+fig, ax = plt.subplots(figsize=(8, 8))
 ax.scatter(
     X_minority[:, 0],
     X_minority[:, 1],
@@ -96,18 +102,18 @@ for positive_idx, (neighbors, distance, color) in enumerate(
 ax.set_title("NearMiss-1")
 make_plot_despine(ax)
 
-###############################################################################
+# %% [mardown]
 # NearMiss-2
-###############################################################################
-
-###############################################################################
+# ----------
+#
 # NearMiss-2 selects samples from the majority class for which the average
 # distance to the farthest neighbors is the smallest. With the same
 # configuration as previously presented, the sample linked to the green-dashed
 # line will be selected since its distance the 3 farthest neighbors is the
 # smallest.
 
-fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+# %%
+fig, ax = plt.subplots(figsize=(8, 8))
 ax.scatter(
     X_minority[:, 0],
     X_minority[:, 1],
@@ -144,17 +150,17 @@ for positive_idx, (neighbors, distance, color) in enumerate(
 ax.set_title("NearMiss-2")
 make_plot_despine(ax)
 
-###############################################################################
+# %% [mardown]
 # NearMiss-3
-###############################################################################
-
-###############################################################################
+# ----------
+#
 # NearMiss-3 can be divided into 2 steps. First, a nearest-neighbors is used to
 # short-list samples from the majority class (i.e. correspond to the
 # highlighted samples in the following plot). Then, the sample with the largest
 # average distance to the *k* nearest-neighbors are selected.
 
-fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+# %%
+fig, ax = plt.subplots(figsize=(8.5, 8.5))
 ax.scatter(
     X_minority[:, 0],
     X_minority[:, 1],

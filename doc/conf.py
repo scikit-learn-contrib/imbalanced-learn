@@ -160,6 +160,7 @@ intersphinx_mapping = {
     "matplotlib": ("https://matplotlib.org/", None),
     "sklearn": ("http://scikit-learn.org/stable", None),
     "pandas": ("http://pandas.pydata.org/pandas-docs/stable/", None),
+    "seaborn": ("https://seaborn.pydata.org/", None),
 }
 
 # -- Options for sphinx-gallery -----------------------------------------------

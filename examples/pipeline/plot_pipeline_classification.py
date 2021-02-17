@@ -1,32 +1,27 @@
 """
+====================================
+Usage of pipeline embedding samplers
+====================================
 
-=========================
-Pipeline Object
-=========================
-
-An example of the Pipeline object working with transformers and resamplers.
-
+An example of the :class:~imblearn.pipeline.Pipeline` object (or
+:func:`~imblearn.pipeline.make_pipeline` helper function) working with
+transformers and resamplers.
 """
 
 # Authors: Christos Aridas
 #          Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
-from sklearn.model_selection import train_test_split as tts
-from sklearn.datasets import make_classification
-from sklearn.decomposition import PCA
-from sklearn.metrics import classification_report
-from sklearn.neighbors import KNeighborsClassifier as KNN
-
-from imblearn.pipeline import make_pipeline
-from imblearn.under_sampling import (
-    EditedNearestNeighbours,
-    RepeatedEditedNearestNeighbours,
-)
-
+# %%
 print(__doc__)
 
-# Generate the dataset
+# %% [markdown]
+# Let's first create an imbalanced dataset and split in to two sets.
+
+# %%
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+
 X, y = make_classification(
     n_classes=2,
     class_sep=1.25,
@@ -40,23 +35,40 @@ X, y = make_classification(
     random_state=10,
 )
 
-# Instanciate a PCA object for the sake of easy visualisation
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=42)
+
+# %% [markdown]
+# Now, we will create each individual steps that we would like later to combine
+
+# %%
+from sklearn.decomposition import PCA
+from sklearn.neighbors import KNeighborsClassifier
+from imblearn.under_sampling import EditedNearestNeighbours
+from imblearn.over_sampling import SMOTE
+
 pca = PCA(n_components=2)
-
-# Create the samplers
 enn = EditedNearestNeighbours()
-renn = RepeatedEditedNearestNeighbours()
+smote = SMOTE(random_state=0)
+knn = KNeighborsClassifier(n_neighbors=1)
 
-# Create the classifier
-knn = KNN(1)
+# %% [markdown]
+# Now, we can finally create a pipeline to specify in which order the different
+# transformers and samplers should be executed before to provide the data to
+# the final classifier.
 
-# Make the splits
-X_train, X_test, y_train, y_test = tts(X, y, random_state=42)
+# %%
+from imblearn.pipeline import make_pipeline
 
-# Add one transformers and two samplers in the pipeline object
-pipeline = make_pipeline(pca, enn, renn, knn)
+model = make_pipeline(pca, enn, smote, knn)
 
-pipeline.fit(X_train, y_train)
-y_hat = pipeline.predict(X_test)
+# %% [markdown]
+# We can now use the pipeline created as a normal classifier where resampling
+# will happen when calling `fit` and disabled when calling `decision_function`,
+# `predict_proba`, or `predict`.
 
-print(classification_report(y_test, y_hat))
+# %%
+from sklearn.metrics import classification_report
+
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print(classification_report(y_test, y_pred))
