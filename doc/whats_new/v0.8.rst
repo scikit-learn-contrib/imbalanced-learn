@@ -63,6 +63,9 @@ Maintenance
   `extras_require` within the `setup.py` file.
   :pr:`816` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Change the website template to use `pydata-sphinx-theme`.
+  :pr:`801` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 
