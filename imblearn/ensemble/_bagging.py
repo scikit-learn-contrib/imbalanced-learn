@@ -31,7 +31,11 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     This implementation of Bagging is similar to the scikit-learn
     implementation. It includes an additional step to balance the training set
-    at fit time using a ``RandomUnderSampler``.
+    at fit time using a given sampler.
+
+    This classifier can serves as a basis to implement various methods such as
+    Exactly Balanced Bagging [6]_, Roughly Balanced Bagging [7]_,
+    Over-Bagging [6]_, or SMOTE-Bagging [8]_.
 
     Read more in the :ref:`User Guide <bagging>`.
 
@@ -59,6 +63,10 @@ class BalancedBaggingClassifier(BaggingClassifier):
     bootstrap : bool, default=True
         Whether samples are drawn with replacement.
 
+        .. note::
+           Note that this bootstrap will be generated from the resampled
+           dataset.
+
     bootstrap_features : bool, default=False
         Whether features are drawn with replacement.
 
@@ -74,7 +82,9 @@ class BalancedBaggingClassifier(BaggingClassifier):
     {sampling_strategy}
 
     replacement : bool, default=False
-        Whether or not to sample randomly with replacement or not.
+        Whether or not to randomly sample with replacement or not when
+        `sampler is None`, corresponding to a
+        :class:`~imblearn.under_sampling.RandomUnderSampler`.
 
     {n_jobs}
 
@@ -82,6 +92,13 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     verbose : int, default=0
         Controls the verbosity of the building process.
+
+    sampler : sampler object, default=None
+        The sampler used to balanced the dataset before to bootstrap
+        (if `bootstrap=True`) and `fit` a base estimator. By default, a
+        :class:`~imblearn.under_sampling.RandomUnderSampler` is used.
+
+        .. versionadded:: 0.8
 
     Attributes
     ----------
@@ -151,9 +168,20 @@ class BalancedBaggingClassifier(BaggingClassifier):
     .. [4] G. Louppe and P. Geurts, "Ensembles on Random Patches", Machine
            Learning and Knowledge Discovery in Databases, 346-361, 2012.
 
-    .. [5] Chen, Chao, Andy Liaw, and Leo Breiman. "Using random forest to
+    .. [5] C. Chen Chao, A. Liaw, and L. Breiman. "Using random forest to
            learn imbalanced data." University of California, Berkeley 110,
            2004.
+
+    .. [6] R. Maclin, and D. Opitz. "An empirical evaluation of bagging and
+           boosting." AAAI/IAAI 1997 (1997): 546-551.
+
+    .. [7] S. Hido, H. Kashima, and Y. Takahashi. "Roughly balanced bagging
+           for imbalanced data." Statistical Analysis and Data Mining: The ASA
+           Data Science Journal 2.5‐6 (2009): 412-426.
+
+    .. [8] S. Wang, and X. Yao. "Diversity analysis on imbalanced data sets by
+           using ensemble models." 2009 IEEE symposium on computational
+           intelligence and data mining. IEEE, 2009.
 
     Examples
     --------
@@ -196,6 +224,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         n_jobs=None,
         random_state=None,
         verbose=0,
+        sampler=None,
     ):
 
         super().__init__(
@@ -213,16 +242,20 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         )
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
+        self.sampler = sampler
 
     def _validate_y(self, y):
         y_encoded = super()._validate_y(y)
-        if isinstance(self.sampling_strategy, dict):
+        if (
+            isinstance(self.sampling_strategy, dict)
+            and self.sampler_._sampling_type != "bypass"
+        ):
             self._sampling_strategy = {
                 np.where(self.classes_ == key)[0][0]: value
                 for key, value in check_sampling_strategy(
                     self.sampling_strategy,
                     y,
-                    "under-sampling",
+                    self.sampler_._sampling_type,
                 ).items()
             }
         else:
@@ -247,15 +280,12 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         else:
             base_estimator = clone(default)
 
+        if self.sampler_._sampling_type != "bypass":
+            self.sampler_.set_params(sampling_strategy=self._sampling_strategy)
+
         self.base_estimator_ = Pipeline(
             [
-                (
-                    "sampler",
-                    RandomUnderSampler(
-                        sampling_strategy=self._sampling_strategy,
-                        replacement=self.replacement,
-                    ),
-                ),
+                ("sampler", self.sampler_),
                 ("classifier", base_estimator),
             ]
         )
@@ -277,6 +307,15 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             Returns self.
         """
         check_target_type(y)
+        # the sampler needs to be validated before to call _fit because
+        # _validate_y is called before _validate_estimator and would require
+        # to know which type of sampler we are using.
+        if self.sampler is None:
+            self.sampler_ = RandomUnderSampler(
+                replacement=self.replacement,
+            )
+        else:
+            self.sampler_ = clone(self.sampler)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return self._fit(X, y, self.max_samples, sample_weight=None)

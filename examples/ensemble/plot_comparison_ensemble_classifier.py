@@ -3,7 +3,7 @@
 Compare ensemble classifiers using resampling
 =============================================
 
-Ensembling classifiers have shown to improve classification performance compare
+Ensemble classifiers have shown to improve classification performance compare
 to single learner. However, they will be affected by class imbalance. This
 example shows the benefit of balancing the training set before to learn
 learners. We are making the comparison with non-balanced ensemble methods.
@@ -11,7 +11,6 @@ learners. We are making the comparison with non-balanced ensemble methods.
 We make a comparison using the balanced accuracy and geometric mean which are
 metrics widely used in the literature to evaluate models learned on imbalanced
 set.
-
 """
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>

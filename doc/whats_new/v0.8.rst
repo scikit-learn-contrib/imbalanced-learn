@@ -24,6 +24,11 @@ New features
   only containing categorical features.
   :pr:`802` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add the possibility to pass any type of samplers in
+  :class:`imblearn.ensemble.BalancedBaggingClassifier` unlocking the
+  implementation of methods based on resampled bagging.
+  :pr:`808` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancements
 ............
 
