@@ -1,7 +1,9 @@
 .. _changes_0_8:
 
-Version 0.8.0 (Under development)
-=================================
+Version 0.8.0
+=============
+
+February 18, 2021
 
 Changelog
 ---------
