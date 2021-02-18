@@ -8,7 +8,7 @@ from collections import Counter
 import numpy as np
 import pytest
 
-from sklearn.datasets import load_iris, make_hastie_10_2
+from sklearn.datasets import load_iris, make_hastie_10_2, make_classification
 from sklearn.model_selection import (
     GridSearchCV,
     ParameterGrid,
@@ -24,6 +24,7 @@ from sklearn.utils._testing import assert_array_equal
 from sklearn.utils._testing import assert_array_almost_equal
 from sklearn.utils._testing import assert_allclose
 
+from imblearn import FunctionSampler
 from imblearn.datasets import make_imbalance
 from imblearn.ensemble import BalancedBaggingClassifier
 from imblearn.over_sampling import RandomOverSampler, SMOTE
@@ -550,3 +551,56 @@ def test_balanced_bagging_classifier_samplers(sampler, n_samples_bootstrap):
     assert_array_equal(
         list(clf.estimators_[0][-1].class_counts_.values()), n_samples_bootstrap
     )
+
+
+@pytest.mark.parametrize("replace", [True, False])
+def test_balanced_bagging_classifier_with_function_sampler(replace):
+    # check that we can provide a FunctionSampler in BalancedBaggingClassifier
+    X, y = make_classification(
+        n_samples=1_000,
+        n_features=10,
+        n_classes=2,
+        weights=[0.3, 0.7],
+        random_state=0,
+    )
+
+    def roughly_balanced_bagging(X, y, replace=False):
+        """Implementation of Roughly Balanced Bagging for binary problem."""
+        # find the minority and majority classes
+        class_counts = Counter(y)
+        majority_class = max(class_counts, key=class_counts.get)
+        minority_class = min(class_counts, key=class_counts.get)
+
+        # compute the number of sample to draw from the majority class using
+        # a negative binomial distribution
+        n_minority_class = class_counts[minority_class]
+        n_majority_resampled = np.random.negative_binomial(n=n_minority_class, p=0.5)
+
+        # draw randomly with or without replacement
+        majority_indices = np.random.choice(
+            np.flatnonzero(y == majority_class),
+            size=n_majority_resampled,
+            replace=replace,
+        )
+        minority_indices = np.random.choice(
+            np.flatnonzero(y == minority_class),
+            size=n_minority_class,
+            replace=replace,
+        )
+        indices = np.hstack([majority_indices, minority_indices])
+
+        return X[indices], y[indices]
+
+    # Roughly Balanced Bagging
+    rbb = BalancedBaggingClassifier(
+        base_estimator=CountDecisionTreeClassifier(),
+        n_estimators=2,
+        sampler=FunctionSampler(
+            func=roughly_balanced_bagging, kw_args={"replace": replace}
+        ),
+    )
+    rbb.fit(X, y)
+
+    for estimator in rbb.estimators_:
+        class_counts = estimator[-1].class_counts_
+        assert (class_counts[0] / class_counts[1]) > 0.9

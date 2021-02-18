@@ -105,7 +105,17 @@ print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std(
 # %% [markdown]
 # Roughly Balanced Bagging
 # ------------------------
-# FIXME: narration based on [3]_.
+# While using a :class:`~imblearn.under_sampling.RandomUnderSampler` or
+# :class:`~imblearn.over_sampling.RandomOverSampler` will create exactly the
+# desired number of samples, it does not follow the statistical spirit wanted
+# in the bagging framework. The authors in [3]_ proposes to use a negative
+# binomial distribution to compute the number of samples of the majority
+# class to be selected and then perform a random under-sampling.
+#
+# Here, we illustrate this method by implementing a function in charge of
+# resampling and use the :class:`~imblearn.FunctionSampler` to integrate it
+# within a :class:`~imblearn.pipeline.Pipeline` and
+# :class:`~sklearn.model_selection.cross_validate`.
 
 # %%
 from collections import Counter
@@ -113,32 +123,38 @@ import numpy as np
 from imblearn import FunctionSampler
 
 
-def binomial_resampling(X, y):
+def roughly_balanced_bagging(X, y, replace=False):
+    """Implementation of Roughly Balanced Bagging for binary problem."""
+    # find the minority and majority classes
     class_counts = Counter(y)
     majority_class = max(class_counts, key=class_counts.get)
     minority_class = min(class_counts, key=class_counts.get)
 
+    # compute the number of sample to draw from the majority class using
+    # a negative binomial distribution
     n_minority_class = class_counts[minority_class]
-    n_majority_resampled = np.random.negative_binomial(n_minority_class, 0.5)
+    n_majority_resampled = np.random.negative_binomial(n=n_minority_class, p=0.5)
 
+    # draw randomly with or without replacement
     majority_indices = np.random.choice(
         np.flatnonzero(y == majority_class),
         size=n_majority_resampled,
-        replace=True,
+        replace=replace,
     )
     minority_indices = np.random.choice(
         np.flatnonzero(y == minority_class),
         size=n_minority_class,
-        replace=True,
+        replace=replace,
     )
     indices = np.hstack([majority_indices, minority_indices])
 
-    X_res, y_res = X[indices], y[indices]
-    return X_res, y_res
+    return X[indices], y[indices]
 
 
 # Roughly Balanced Bagging
-rbb = BalancedBaggingClassifier(sampler=FunctionSampler(func=binomial_resampling))
+rbb = BalancedBaggingClassifier(
+    sampler=FunctionSampler(func=roughly_balanced_bagging, kw_args={"replace": True})
+)
 cv_results = cross_validate(rbb, X, y, scoring="balanced_accuracy")
 
 print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std():.3f}")
