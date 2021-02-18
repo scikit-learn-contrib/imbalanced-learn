@@ -60,6 +60,12 @@ sampling is controlled by the parameter `sampler` or the two parameters
   >>> balanced_accuracy_score(y_test, y_pred)  # doctest: +ELLIPSIS
   0.8...
 
+Changing the `sampler` will give rise to different known implementation
+:cite:`maclin1997empirical`, :cite:`hido2009roughly`,
+:cite:`wang2009diversity`. You can refer to the following example shows in
+practice these different methods:
+:ref:`sphx_glr_auto_examples_ensemble_plot_bagging_classifier.py`
+
 .. _forest:
 
 Forest of randomized trees
