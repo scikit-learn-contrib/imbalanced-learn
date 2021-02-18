@@ -45,7 +45,18 @@ INSTALL_REQUIRES = [
     "joblib>=0.11",
 ]
 EXTRAS_REQUIRE = {
-    "tests": ["pytest", "pytest-cov"],
+    "optional": [
+        "keras",
+        "tensorflow",
+    ],
+    "dev": [
+        "black",
+        "flake8",
+    ],
+    "tests": [
+        "pytest",
+        "pytest-cov",
+    ],
     "docs": [
         "sphinx",
         "sphinx-gallery",
