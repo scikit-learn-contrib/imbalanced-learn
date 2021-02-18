@@ -103,6 +103,48 @@ cv_results = cross_validate(smote_bagging, X, y, scoring="balanced_accuracy")
 print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std():.3f}")
 
 # %% [markdown]
+# Roughly Balanced Bagging
+# ------------------------
+# FIXME: narration based on [3]_.
+
+# %%
+from collections import Counter
+import numpy as np
+from imblearn import FunctionSampler
+
+
+def binomial_resampling(X, y):
+    class_counts = Counter(y)
+    majority_class = max(class_counts, key=class_counts.get)
+    minority_class = min(class_counts, key=class_counts.get)
+
+    n_minority_class = class_counts[minority_class]
+    n_majority_resampled = np.random.negative_binomial(n_minority_class, 0.5)
+
+    majority_indices = np.random.choice(
+        np.flatnonzero(y == majority_class),
+        size=n_majority_resampled,
+        replace=True,
+    )
+    minority_indices = np.random.choice(
+        np.flatnonzero(y == minority_class),
+        size=n_minority_class,
+        replace=True,
+    )
+    indices = np.hstack([majority_indices, minority_indices])
+
+    X_res, y_res = X[indices], y[indices]
+    return X_res, y_res
+
+
+# Roughly Balanced Bagging
+rbb = BalancedBaggingClassifier(sampler=FunctionSampler(func=binomial_resampling))
+cv_results = cross_validate(rbb, X, y, scoring="balanced_accuracy")
+
+print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std():.3f}")
+
+
+# %% [markdown]
 # .. topic:: References:
 #
 #    .. [1] R. Maclin, and D. Opitz. "An empirical evaluation of bagging and
@@ -111,3 +153,7 @@ print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std(
 #    .. [2] S. Wang, and X. Yao. "Diversity analysis on imbalanced data sets by
 #           using ensemble models." 2009 IEEE symposium on computational
 #           intelligence and data mining. IEEE, 2009.
+#
+#    .. [3] S. Hido, H. Kashima, and Y. Takahashi. "Roughly balanced bagging
+#          for imbalanced data." Statistical Analysis and Data Mining: The ASA
+#          Data Science Journal 2.5‐6 (2009): 412-426.

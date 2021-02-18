@@ -246,7 +246,10 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_y(self, y):
         y_encoded = super()._validate_y(y)
-        if isinstance(self.sampling_strategy, dict):
+        if (
+            isinstance(self.sampling_strategy, dict)
+            and self.sampler_._sampling_type != "bypass"
+        ):
             self._sampling_strategy = {
                 np.where(self.classes_ == key)[0][0]: value
                 for key, value in check_sampling_strategy(
@@ -277,7 +280,8 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         else:
             base_estimator = clone(default)
 
-        self.sampler_.set_params(sampling_strategy=self._sampling_strategy)
+        if self.sampler_._sampling_type != "bypass":
+            self.sampler_.set_params(sampling_strategy=self._sampling_strategy)
 
         self.base_estimator_ = Pipeline(
             [
