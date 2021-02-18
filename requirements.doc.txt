@@ -1,8 +1,0 @@
-sphinx
-sphinx-gallery
-pydata-sphinx-theme
-sphinxcontrib-bibtex
-numpydoc
-matplotlib
-pandas
-seaborn

@@ -51,6 +51,13 @@ Bug fixes
   even with `validate=False` when calling `fit`.
   :pr:`790` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+Maintenance
+...........
+
+- Remove requirements files in favour of adding the packages in the
+  `extras_require` within the `setup.py` file.
+  :pr:`816` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 
