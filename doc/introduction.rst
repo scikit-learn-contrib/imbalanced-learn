@@ -73,6 +73,7 @@ different level of class balancing.
    :scale: 60
    :align: center
 
-As expected, the decision function of the linear SVM is highly impacted. With a
-greater imbalanced ratio, the decision function favor the class with the larger
-number of samples, usually referred as the majority class.
+As expected, the decision function of the linear SVM varies greatly depending
+upon how imbalanced the data is. With a greater imbalanced ratio, the decision
+function favors the class with the larger number of samples, usually referred
+as the majority class.
