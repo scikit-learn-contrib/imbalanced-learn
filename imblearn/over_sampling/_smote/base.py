@@ -52,6 +52,7 @@ class BaseSMOTE(BaseOverSampler):
         self.nn_k_ = check_neighbors_object(
             "k_neighbors", self.k_neighbors, additional_neighbor=1
         )
+        self.nn_k_.set_params(**{"n_jobs": self.n_jobs})
 
     def _make_samples(
         self, X, y_dtype, y_type, nn_data, nn_num, n_samples, step_size=1.0
