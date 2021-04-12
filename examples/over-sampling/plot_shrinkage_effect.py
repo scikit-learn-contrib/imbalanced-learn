@@ -43,6 +43,7 @@ class_legend = ax.legend(*scatter.legend_elements(), loc="lower left", title="Cl
 ax.add_artist(class_legend)
 ax.set_xlabel("Feature #1")
 _ = ax.set_ylabel("Feature #2")
+plt.tight_layout()
 
 # %%
 # Now, we will use a :class:`~imblearn.over_sampling.RandomOverSampler` to
@@ -61,6 +62,7 @@ class_legend = ax.legend(*scatter.legend_elements(), loc="lower left", title="Cl
 ax.add_artist(class_legend)
 ax.set_xlabel("Feature #1")
 _ = ax.set_ylabel("Feature #2")
+plt.tight_layout()
 # %%
 # We observe that the minority samples are less transparent than the samples
 # from the majority class. Indeed, it is due to the fact that these samples
@@ -79,6 +81,7 @@ class_legend = ax.legend(*scatter.legend_elements(), loc="lower left", title="Cl
 ax.add_artist(class_legend)
 ax.set_xlabel("Feature #1")
 _ = ax.set_ylabel("Feature #2")
+plt.tight_layout()
 
 # %%
 # In this case, we see that the samples in the minority class are not
@@ -97,6 +100,7 @@ class_legend = ax.legend(*scatter.legend_elements(), loc="lower left", title="Cl
 ax.add_artist(class_legend)
 ax.set_xlabel("Feature #1")
 _ = ax.set_ylabel("Feature #2")
+plt.tight_layout()
 
 # %%
 # Increasing the value of `shrinkage` will disperse the new samples. Forcing
@@ -112,6 +116,7 @@ class_legend = ax.legend(*scatter.legend_elements(), loc="lower left", title="Cl
 ax.add_artist(class_legend)
 ax.set_xlabel("Feature #1")
 _ = ax.set_ylabel("Feature #2")
+plt.tight_layout()
 
 # %%
 # Therefore, the `shrinkage` is handy to manually tune the dispersion of the
