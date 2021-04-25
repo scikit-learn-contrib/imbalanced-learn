@@ -153,7 +153,7 @@ SMOTE variants
 SMOTE might connect inliers and outliers while ADASYN might focus solely on
 outliers which, in both cases, might lead to a sub-optimal decision
 function. In this regard, SMOTE offers three additional options to generate
-samples. Those methods focus on samples near of the border of the optimal
+samples. Those methods focus on samples near the border of the optimal
 decision function and will generate samples in the opposite direction of the
 nearest neighbors class. Those variants are presented in the figure below.
 
