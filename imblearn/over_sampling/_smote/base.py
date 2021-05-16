@@ -379,7 +379,7 @@ class SMOTENC(SMOTE):
     -----
     See the original paper [1]_ for more details.
 
-    Supports mutli-class resampling. A one-vs.-rest scheme is used as
+    Supports multi-class resampling. A one-vs.-rest scheme is used as
     originally proposed in [1]_.
 
     See
