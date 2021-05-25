@@ -59,7 +59,7 @@ The dependency requirements are based on the last scikit-learn release:
 
 * scipy(>=0.19.1)
 * numpy(>=1.13.3)
-* scikit-learn(>=0.23)
+* scikit-learn(>=0.24)
 * joblib(>=0.11)
 * keras 2 (optional)
 * tensorflow (optional)
