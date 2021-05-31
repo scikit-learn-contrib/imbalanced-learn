@@ -36,14 +36,16 @@ from imblearn.datasets import make_imbalance
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
 
+
 def _make_X_y():
     return make_classification(
-            n_samples=1000,
-            n_classes=3,
-            n_informative=4,
-            weights=[0.2, 0.3, 0.5],
-            random_state=0,
-        )
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
+
 
 def _set_checking_parameters(estimator):
     params = estimator.get_params()
