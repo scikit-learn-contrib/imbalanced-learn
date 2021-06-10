@@ -102,7 +102,7 @@ class BaseSMOTE(BaseOverSampler):
 
         X_new = self._generate_samples(X, nn_data, nn_num, rows, cols, steps)
         y_new = np.full(n_samples, fill_value=y_type, dtype=y_dtype)
-        return X_new, y_new
+        return X_new, y_new, rows, cols
 
     def _generate_samples(self, X, nn_data, nn_num, rows, cols, steps):
         r"""Generate a synthetic sample.
@@ -299,6 +299,9 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         X_resampled = [X.copy()]
         y_resampled = [y.copy()]
 
+        self.real_indices=[i for i in range(len(y))]
+        self.which_neighbors=[0]*len(y)
+
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
                 continue
@@ -307,19 +310,38 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
 
             self.nn_k_.fit(X_class)
             nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
-            X_new, y_new = self._make_samples(
+            X_new, y_new, rows, cols = self._make_samples(
                 X_class, y.dtype, class_sample, X_class, nns, n_samples, 1.0
             )
             X_resampled.append(X_new)
             y_resampled.append(y_new)
+            self.real_indices.append(target_class_indices[rows])
+            self.which_neighbors.append(cols)
 
         if sparse.issparse(X):
             X_resampled = sparse.vstack(X_resampled, format=X.format)
         else:
             X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
+        self.real_indices=np.hstack(self.real_indices)
+        self.which_neighbors=np.hstack(self.which_neighbors)
 
         return X_resampled, y_resampled
+        
+    def sample_indices(self,get_which_neighbors=False):
+        """return indices
+        - for real sample, return its own index
+        - for synthetic sample, return the index of its "mother" real sample 
+        -----------
+        if get_which_neighbors=True:
+        also return which nearest neighbor is used
+        (for real sample, it is 0)
+        """
+
+        if get_which_neighbors is True:
+            return [(i,j) for i, j in zip(self.real_indices, self.which_neighbors)]
+        else: 
+            return self.real_indices
 
 
 @Substitution(
