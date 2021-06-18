@@ -299,8 +299,8 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         X_resampled = [X.copy()]
         y_resampled = [y.copy()]
 
-        self.real_indices=[i for i in range(len(y))]
-        self.which_neighbors=[0]*len(y)
+        self.real_indices = [i for i in range(len(y))]
+        self.which_neighbors = [0]*len(y)
 
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
@@ -323,24 +323,25 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         else:
             X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
-        self.real_indices=np.hstack(self.real_indices)
-        self.which_neighbors=np.hstack(self.which_neighbors)
+        self.real_indices = np.hstack(self.real_indices)
+        self.which_neighbors = np.hstack(self.which_neighbors)
 
         return X_resampled, y_resampled
         
-    def sample_indices(self,get_which_neighbors=False):
+    def sample_indices(self, get_which_neighbors=False):
         """return indices
         - for real sample, return its own index
-        - for synthetic sample, return the index of its "mother" real sample 
+        - for synthetic sample, return the index of its "mother" real sample
+
+        Parameters
         -----------
-        if get_which_neighbors=True:
-        also return which nearest neighbor is used
-        (for real sample, it is 0)
+        get_which_neighbors: if ==True returns which nearest neighbor is used
+            For samples that are not generated, returns 0
         """
 
         if get_which_neighbors is True:
-            return [(i,j) for i, j in zip(self.real_indices, self.which_neighbors)]
-        else: 
+            return [(i, j) for i, j in zip(self.real_indices, self.which_neighbors)]
+        else:
             return self.real_indices
 
 
@@ -540,7 +541,7 @@ class SMOTENC(SMOTE):
         X_resampled, y_resampled = super()._fit_resample(X_encoded, y)
 
         # reverse the encoding of the categorical features
-        X_res_cat = X_resampled[:, self.continuous_features_.size :]
+        X_res_cat = X_resampled[:, self.continuous_features_.size:]
         X_res_cat.data = np.ones_like(X_res_cat.data)
         X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
 
@@ -595,7 +596,7 @@ class SMOTENC(SMOTE):
         # create non-null entry based on the encoded of OHE
         if math.isclose(self.median_std_, 0):
             nn_data[
-                :, self.continuous_features_.size :
+                :, self.continuous_features_.size:
             ] = self._X_categorical_minority_encoded
 
         all_neighbors = nn_data[nn_num[rows]]
