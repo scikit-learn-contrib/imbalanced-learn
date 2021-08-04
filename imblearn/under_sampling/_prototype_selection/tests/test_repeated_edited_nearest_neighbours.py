@@ -117,7 +117,7 @@ def test_renn_iter_wrong():
 
 
 def test_renn_fit_resample():
-    renn = RepeatedEditedNearestNeighbours()
+    renn = RepeatedEditedNearestNeighbours(n_neighbors=4)
     X_resampled, y_resampled = renn.fit_resample(X, Y)
 
     X_gt = np.array(
@@ -153,13 +153,15 @@ def test_renn_fit_resample():
     y_gt = np.array(
         [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     )
+    assert renn.nn_.n_neighbors == 4
+    assert renn.enn_.nn_.n_neighbors == 4
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert 0 < renn.n_iter_ <= renn.max_iter
 
 
 def test_renn_fit_resample_mode_object():
-    renn = RepeatedEditedNearestNeighbours(kind_sel="mode")
+    renn = RepeatedEditedNearestNeighbours(kind_sel="mode", n_neighbors=4)
     X_resampled, y_resampled = renn.fit_resample(X, Y)
 
     X_gt = np.array(
@@ -238,6 +240,8 @@ def test_renn_fit_resample_mode_object():
             2,
         ]
     )
+    assert renn.nn_.n_neighbors == 4
+    assert renn.enn_.nn_.n_neighbors == 4
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert 0 < renn.n_iter_ <= renn.max_iter
