@@ -68,12 +68,12 @@ class ArraysTransformer:
 
 
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
-    """Check the objects is consistent to be a NN.
+    """Check the object is consistent with a NN.
 
-    Several methods in imblearn relies on NN. Until version 0.4, these
+    Several methods in imblearn rely on NN. Until version 0.4, these
     objects can be passed at initialisation as an integer or a
-    KNeighborsMixin. After only KNeighborsMixin will be accepted. This
-    utility allows for type checking and raise if the type is wrong.
+    KNeighborsMixin. After, only KNeighborsMixin will be accepted. This
+    utility allows for type checking and raises an error if the type is wrong.
 
     Parameters
     ----------
@@ -84,7 +84,7 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
         The object to be checked.
 
     additional_neighbor : int, default=0
-        Sometimes, some algorithm need an additional neighbors.
+        Some algorithms need an additional neighbor.
 
     Returns
     -------

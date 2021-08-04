@@ -1,4 +1,4 @@
-"""Class to perform under-sampling based on the edited nearest neighbour
+"""Classes to perform under-sampling based on the edited nearest neighbour
 method."""
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
@@ -42,18 +42,18 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbors.
+        find the nearest-neighbours.
 
     kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
 
-        - If ``'all'``, all neighbours will have to agree with the samples of
-          interest to not be excluded.
+        - If ``'all'``, all neighbours will have to agree with a sample in order
+          not be excluded.
         - If ``'mode'``, the majority vote of the neighbours will be used in
-          order to exclude a sample.
+          order not to exclude a sample.
 
         The strategy `"all"` will be less conservative than `'mode'`. Thus,
-        more samples will be removed when `kind_sel="all"` generally.
+        more samples will be removed when `kind_sel="all"`, generally.
 
     {n_jobs}
 
@@ -120,7 +120,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         """Validate the estimator created in the ENN."""
         self.nn_ = check_neighbors_object(
-            "n_neighbors", self.n_neighbors, additional_neighbor=1
+            "n_neighbors", self.n_neighbors, additional_neighbor=0
         )
         self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
@@ -174,7 +174,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Undersample based on the repeated edited nearest neighbour method.
 
-    This method will repeat several time the ENN algorithm.
+    This method will repeat several times the ENN algorithm.
 
     Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
@@ -189,19 +189,18 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         find the nearest-neighbors.
 
     max_iter : int, default=100
-        Maximum number of iterations of the edited nearest neighbours
-        algorithm for a single run.
+        Maximum number of iterations of the edited nearest neighbours algorithm.
 
     kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
 
-        - If ``'all'``, all neighbours will have to agree with the samples of
-          interest to not be excluded.
+        - If ``'all'``, all neighbours will have to agree with a sample in order
+          not be excluded.
         - If ``'mode'``, the majority vote of the neighbours will be used in
-          order to exclude a sample.
+          order not to exclude a sample.
 
         The strategy `"all"` will be less conservative than `'mode'`. Thus,
-        more samples will be removed when `kind_sel="all"` generally.
+        more samples will be removed when `kind_sel="all"`, generally.
 
     {n_jobs}
 
@@ -280,7 +279,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             )
 
         self.nn_ = check_neighbors_object(
-            "n_neighbors", self.n_neighbors, additional_neighbor=1
+            "n_neighbors", self.n_neighbors, additional_neighbor=0
         )
 
         self.enn_ = EditedNearestNeighbours(
@@ -303,11 +302,12 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             prev_len = y_.shape[0]
             X_enn, y_enn = self.enn_.fit_resample(X_, y_)
 
-            # Check the stopping criterion
-            # 1. If there is no changes for the vector y
-            # 2. If the number of samples in the other class become inferior to
-            # the number of samples in the majority class
-            # 3. If one of the class is disappearing
+            # Check the stopping criterion:
+            # 1. If there are no changes in the vector y
+            # (that is, if no further observations are removed)
+            # 2. If the number of samples in any of the other (majority) classes becomes
+            # smaller than the number of samples in the minority class
+            # 3. If one of the classes disappears
 
             # Case 1
             b_conv = prev_len == y_enn.shape[0]
@@ -359,8 +359,8 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 class AllKNN(BaseCleaningSampler):
     """Undersample based on the AllKNN method.
 
-    This method will apply ENN several time and will vary the number of nearest
-    neighbours.
+    This method will apply ENN several times increasing the number of nearest
+    neighbours at each round.
 
     Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
@@ -377,13 +377,13 @@ class AllKNN(BaseCleaningSampler):
     kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
 
-        - If ``'all'``, all neighbours will have to agree with the samples of
-          interest to not be excluded.
+        - If ``'all'``, all neighbours will have to agree with a sample in order
+          not be excluded.
         - If ``'mode'``, the majority vote of the neighbours will be used in
-          order to exclude a sample.
+          order not to exclude a sample.
 
         The strategy `"all"` will be less conservative than `'mode'`. Thus,
-        more samples will be removed when `kind_sel="all"` generally.
+        more samples will be removed when `kind_sel="all"`, generally.
 
     allow_minority : bool, default=False
         If ``True``, it allows the majority classes to become the minority
@@ -460,7 +460,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             raise NotImplementedError
 
         self.nn_ = check_neighbors_object(
-            "n_neighbors", self.n_neighbors, additional_neighbor=1
+            "n_neighbors", self.n_neighbors, additional_neighbor=0
         )
 
         self.enn_ = EditedNearestNeighbours(
@@ -484,10 +484,10 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
             X_enn, y_enn = self.enn_.fit_resample(X_, y_)
 
-            # Check the stopping criterion
-            # 1. If the number of samples in the other class become inferior to
-            # the number of samples in the majority class
-            # 2. If one of the class is disappearing
+            # Stopping criterion:
+            # 1. If the number of samples in any of the majority classes ends up
+            # smaller than the number of samples in the minority class
+            # 2. If one of the classes disappears
             # Case 1else:
 
             stats_enn = Counter(y_enn)
