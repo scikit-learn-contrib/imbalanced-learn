@@ -379,13 +379,16 @@ class AllKNN(BaseCleaningSampler):
     {sampling_strategy}
 
     n_neighbors : int or estimator object, default=3
-        If ``int``, maximum size of the neighbourhood to consider to compute the
-        nearest neighbours. The method will start by looking at the 1 closest
-        neighbour, and then repeat the edited nearest neighbours increasing
-        the neighbourhood by 1, until examining `n_neighbors`.
+        If ``int``, the maximum size of the neighbourhood to evaluate.
+        The method will start by looking at the 1 closest neighbour, and
+        then repeat the edited nearest neighbours increasing
+        the neighbourhood by 1, until examining a neighbourhood of
+        `n_neighbors` in the final iteration.
         If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbours in the final round.
+        find the nearest-neighbours in the final round. In this case,
+        AllKNN will repeat edited nearest neighbours starting from a 2-KNN
+        up to the specified KNN in the object.
 
     kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
