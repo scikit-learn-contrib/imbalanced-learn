@@ -63,8 +63,9 @@ def test_enn_fit_resample():
             [0.52726792, -0.38735648],
         ]
     )
-    assert enn.nn_.n_neighbors == 4
     y_gt = np.array([0, 0, 1, 1, 2, 2, 2])
+
+    assert enn.nn_.n_neighbors == 4
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -91,8 +92,9 @@ def test_enn_fit_resample_mode():
             [0.2821046, -0.07862747],
         ]
     )
-    assert enn.nn_.n_neighbors == 4
     y_gt = np.array([0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+
+    assert enn.nn_.n_neighbors == 4
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -121,6 +123,8 @@ def test_enn_fit_resample_with_nn_object():
         ]
     )
     y_gt = np.array([0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+
+    assert enn.nn_.n_neighbors == 4
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
