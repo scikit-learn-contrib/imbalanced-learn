@@ -70,7 +70,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     RepeatedEditedNearestNeighbours : Undersample by repeating ENN algorithm.
 
-    AllKNN : Undersample using ENN and varying number of neighbours.
+    AllKNN : Undersample using ENN and various number of neighbours.
 
     Notes
     -----
@@ -226,7 +226,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     EditedNearestNeighbours : Undersample by editing samples.
 
-    AllKNN : Undersample using ENN and varying number of neighbours.
+    AllKNN : Undersample using ENN and various number of neighbours.
 
     Notes
     -----
@@ -363,13 +363,12 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 class AllKNN(BaseCleaningSampler):
     """Undersample based on the AllKNN method.
 
-    This method will apply ENN several times, increasing the number
-    of nearest neighbours by 1 at each round.
+    This method will apply ENN several times, starting by 1-KNN and
+    increasing the number of nearest neighbours by 1 at each round.
 
-    The repetitions will stop when i) the maximum number of iterations
-    is reached, or ii) one of the majority classes becomes a minority
-    class or iii) one of the majority classes disappears from the target
-    after undersampling.
+    The repetitions will stop when i) one of the majority classes
+    becomes a minority class or ii) one of the majority classes
+    disappears from the target after undersampling.
 
     Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
@@ -453,7 +452,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
         *,
         sampling_strategy="auto",
         n_neighbors=3,
-        max_iter=100,
         kind_sel="all",
         allow_minority=False,
         n_jobs=None,
@@ -463,7 +461,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
         self.kind_sel = kind_sel
         self.allow_minority = allow_minority
         self.n_jobs = n_jobs
-        self.max_iter = max_iter
 
     def _validate_estimator(self):
         """Create objects required by AllKNN"""
