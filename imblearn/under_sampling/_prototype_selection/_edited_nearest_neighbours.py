@@ -120,7 +120,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     def _validate_estimator(self):
         """Validate the estimator created in the ENN."""
         self.nn_ = check_neighbors_object(
-            "n_neighbors", self.n_neighbors, additional_neighbor=0
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
         )
         self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
@@ -283,7 +283,7 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
             )
 
         self.nn_ = check_neighbors_object(
-            "n_neighbors", self.n_neighbors, additional_neighbor=0
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
         )
 
         self.enn_ = EditedNearestNeighbours(

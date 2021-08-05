@@ -135,9 +135,7 @@ def test_allknn_fit_resample():
     y_gt = np.array(
         [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
     )
-    assert allknn.nn_.n_neighbors == 3
-    assert allknn.enn_.nn_.n_neighbors == 8
-    assert allknn.n_iter_ == 6
+    assert allknn.n_iter_ == 5
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_allclose(y_resampled, y_gt, rtol=R_TOL)
 
@@ -177,7 +175,6 @@ def test_allknn_fit_resample_mode():
             [1.02956816, 0.36061601],
             [1.12202806, 0.33811558],
             [-0.35946678, 0.72510189],
-            [1.32326943, 0.28393874],
             [2.94290565, -0.13986434],
             [0.73489726, 0.43915195],
             [-0.28479268, 0.70459548],
@@ -187,15 +184,13 @@ def test_allknn_fit_resample_mode():
             [0.62649535, 0.46600596],
             [1.67314371, 0.19231498],
             [0.98382284, 0.37184502],
-            [0.69804044, 0.44810796]
+            [0.69804044, 0.44810796],
         ]
     )
     y_gt = np.array(
-        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     )
-    assert allknn.nn_.n_neighbors == 3
-    assert allknn.enn_.nn_.n_neighbors == 17
-    assert allknn.n_iter_ == 15
+    assert allknn.n_iter_ == 14
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -215,7 +210,6 @@ def test_allknn_fit_resample_with_nn_object():
             [1.02956816, 0.36061601],
             [1.12202806, 0.33811558],
             [-0.35946678, 0.72510189],
-            [1.32326943, 0.28393874],
             [2.94290565, -0.13986434],
             [0.73489726, 0.43915195],
             [-0.28479268, 0.70459548],
@@ -225,15 +219,13 @@ def test_allknn_fit_resample_with_nn_object():
             [0.62649535, 0.46600596],
             [1.67314371, 0.19231498],
             [0.98382284, 0.37184502],
-            [0.69804044, 0.44810796]
+            [0.69804044, 0.44810796],
         ]
     )
     y_gt = np.array(
-        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     )
-    assert allknn.nn_.n_neighbors == 3
-    assert allknn.enn_.nn_.n_neighbors == 17
-    assert allknn.n_iter_ == 15
+    assert allknn.n_iter_ == 14
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
