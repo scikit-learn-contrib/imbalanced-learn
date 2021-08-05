@@ -153,11 +153,13 @@ def test_renn_fit_resample():
     y_gt = np.array(
         [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     )
+
     assert renn.nn_.n_neighbors == 4
     assert renn.enn_.nn_.n_neighbors == 4
+    assert renn.n_iter_ == 3
+    assert 0 < renn.n_iter_ <= renn.max_iter
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-    assert 0 < renn.n_iter_ <= renn.max_iter
 
 
 def test_renn_fit_resample_mode_object():
@@ -328,6 +330,8 @@ def test_renn_fit_resample_mode():
             2,
         ]
     )
+    assert renn.nn_.n_neighbors == 4
+    assert renn.enn_.nn_.n_neighbors == 4
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert 0 < renn.n_iter_ <= renn.max_iter
