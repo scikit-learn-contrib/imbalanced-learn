@@ -383,9 +383,6 @@ class AllKNN(BaseCleaningSampler):
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbours. By default, it will be a 3-NN.
 
-    max_iter : int, default=100
-        Maximum number of iterations of the edited nearest neighbours algorithm.
-
     kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
 
@@ -411,11 +408,6 @@ class AllKNN(BaseCleaningSampler):
         Indices of the samples selected.
 
         .. versionadded:: 0.4
-
-    n_iter_ : int
-        Number of iterations that were actually run.
-
-        .. versionadded:: 0.9
 
     See Also
     --------
@@ -498,17 +490,10 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
         self.sample_indices_ = np.arange(X.shape[0], dtype=int)
 
-        # find current number of neighbours
-        curr_size_ngh = self.nn_.n_neighbors
-
-        for n_iter in range(self.max_iter):
-
+        for curr_size_ngh in range(1, self.nn_.n_neighbors):
             self.enn_.n_neighbors = curr_size_ngh
 
             X_enn, y_enn = self.enn_.fit_resample(X_, y_)
-
-            # add a neighbour for the next round
-            curr_size_ngh = curr_size_ngh + 1
 
             # Stopping criterion:
             # 1. If the number of samples in any of the majority classes ends up
@@ -541,7 +526,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             if b_min_bec_maj or b_remove_maj_class:
                 break
 
-        self.n_iter_ = n_iter + 1
         X_resampled, y_resampled = X_, y_
 
         return X_resampled, y_resampled
