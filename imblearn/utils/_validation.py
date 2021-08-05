@@ -68,12 +68,13 @@ class ArraysTransformer:
 
 
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
-    """Check the object is consistent with a NN.
+    """Check that the object is consistent with a NN.
 
     Several methods in imblearn rely on NN. Until version 0.4, these
     objects can be passed at initialisation as an integer or a
-    KNeighborsMixin. After, only KNeighborsMixin will be accepted. This
-    utility allows for type checking and raises an error if the type is wrong.
+    KNeighborsMixin. In later versions, only KNeighborsMixin will be
+    accepted. This utility allows for type checking and raises an error
+    if the type is wrong.
 
     Parameters
     ----------
@@ -84,7 +85,9 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
         The object to be checked.
 
     additional_neighbor : int, default=0
-        Some algorithms need an additional neighbor.
+        Some algorithms need an additional neighbour. This is because to
+        explore a neighbourhood of 3, we need to train a 4-KNN algorithm
+        as the sample to examine is a neighbour itself.
 
     Returns
     -------
@@ -105,7 +108,7 @@ def _count_class_sample(y):
 
 
 def check_target_type(y, indicate_one_vs_all=False):
-    """Check the target types to be conform to the current samplers.
+    """Check the target types conform to the current samplers.
 
     The current samplers should be compatible with ``'binary'``,
     ``'multilabel-indicator'`` and ``'multiclass'`` targets only.
@@ -116,7 +119,7 @@ def check_target_type(y, indicate_one_vs_all=False):
         The array containing the target.
 
     indicate_one_vs_all : bool, default=False
-        Either to indicate if the targets are encoded in a one-vs-all fashion.
+        Indicate if the targets are encoded in a one-vs-all fashion.
 
     Returns
     -------
@@ -407,7 +410,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
 
     Checks that ``sampling_strategy`` is of consistent type and return a
     dictionary containing each targeted class with its corresponding
-    number of sample. It is used in :class:`~imblearn.base.BaseSampler`.
+    number of samples. It is used in :class:`~imblearn.base.BaseSampler`.
 
     Parameters
     ----------
@@ -435,7 +438,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
 
         - When ``str``, specify the class targeted by the resampling. For
           **under- and over-sampling methods**, the number of samples in the
-          different classes will be equalized. For **cleaning methods**, the
+          different classes will be equal. For **cleaning methods**, the
           number of samples will not be equal. Possible choices are:
 
             ``'minority'``: resample only the minority class;
@@ -461,8 +464,8 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
              methods**. An error is raised with **cleaning methods**. Use a
              ``list`` instead.
 
-        - When ``list``, the list contains the targeted classes. It used only
-          for **cleaning methods**.
+        - When ``list``, the list contains the targeted classes. It is used
+         only in **cleaning methods**.
 
           .. warning::
              ``list`` is available for **cleaning methods**. An error is raised
