@@ -48,9 +48,7 @@ def test_sample_regular():
 
     X_gt = np.array(
         [
-            [0.53366841, -0.30312976],
             [1.52091956, -0.49283504],
-            [1.70580611, -0.11219234],
             [0.84976473, -0.15570176],
             [0.61319159, -0.11571667],
             [0.66052536, -0.28246518],
@@ -59,7 +57,7 @@ def test_sample_regular():
             [0.08711622, 0.93259929],
         ]
     )
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1])
+    y_gt = np.array([0, 0, 0, 0, 1, 1, 1])
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
@@ -74,9 +72,7 @@ def test_sample_regular_pass_smote_enn():
 
     X_gt = np.array(
         [
-            [0.53366841, -0.30312976],
             [1.52091956, -0.49283504],
-            [1.70580611, -0.11219234],
             [0.84976473, -0.15570176],
             [0.61319159, -0.11571667],
             [0.66052536, -0.28246518],
@@ -85,7 +81,7 @@ def test_sample_regular_pass_smote_enn():
             [0.08711622, 0.93259929],
         ]
     )
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1])
+    y_gt = np.array([0, 0, 0, 0, 1, 1, 1])
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
@@ -98,13 +94,12 @@ def test_sample_regular_half():
     X_gt = np.array(
         [
             [1.52091956, -0.49283504],
-            [1.70580611, -0.11219234],
             [-0.28162401, -2.10400981],
             [0.83680821, 1.72827342],
             [0.08711622, 0.93259929],
         ]
     )
-    y_gt = np.array([0, 0, 1, 1, 1])
+    y_gt = np.array([0, 1, 1, 1])
     assert_allclose(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -114,12 +109,9 @@ def test_validate_estimator_init():
     enn = EditedNearestNeighbours(sampling_strategy="all")
     smt = SMOTEENN(smote=smote, enn=enn, random_state=RND_SEED)
     X_resampled, y_resampled = smt.fit_resample(X, Y)
-
     X_gt = np.array(
         [
-            [0.53366841, -0.30312976],
             [1.52091956, -0.49283504],
-            [1.70580611, -0.11219234],
             [0.84976473, -0.15570176],
             [0.61319159, -0.11571667],
             [0.66052536, -0.28246518],
@@ -128,7 +120,7 @@ def test_validate_estimator_init():
             [0.08711622, 0.93259929],
         ]
     )
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1])
+    y_gt = np.array([0, 0, 0, 0, 1, 1, 1])
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 
@@ -136,12 +128,9 @@ def test_validate_estimator_init():
 def test_validate_estimator_default():
     smt = SMOTEENN(random_state=RND_SEED)
     X_resampled, y_resampled = smt.fit_resample(X, Y)
-
     X_gt = np.array(
         [
-            [0.53366841, -0.30312976],
             [1.52091956, -0.49283504],
-            [1.70580611, -0.11219234],
             [0.84976473, -0.15570176],
             [0.61319159, -0.11571667],
             [0.66052536, -0.28246518],
@@ -150,7 +139,7 @@ def test_validate_estimator_default():
             [0.08711622, 0.93259929],
         ]
     )
-    y_gt = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1])
+    y_gt = np.array([0, 0, 0, 0, 1, 1, 1])
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
 

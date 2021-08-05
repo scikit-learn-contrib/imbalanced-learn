@@ -49,7 +49,7 @@ def test_enn_init():
 
 
 def test_enn_fit_resample():
-    enn = EditedNearestNeighbours(n_neighbors=4)
+    enn = EditedNearestNeighbours()
     X_resampled, y_resampled = enn.fit_resample(X, Y)
 
     X_gt = np.array(
@@ -64,14 +64,12 @@ def test_enn_fit_resample():
         ]
     )
     y_gt = np.array([0, 0, 1, 1, 2, 2, 2])
-
-    assert enn.nn_.n_neighbors == 4
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
 
 def test_enn_fit_resample_mode():
-    enn = EditedNearestNeighbours(n_neighbors=4, kind_sel="mode")
+    enn = EditedNearestNeighbours(kind_sel="mode")
     X_resampled, y_resampled = enn.fit_resample(X, Y)
 
     X_gt = np.array(
@@ -93,8 +91,6 @@ def test_enn_fit_resample_mode():
         ]
     )
     y_gt = np.array([0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2])
-
-    assert enn.nn_.n_neighbors == 4
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -123,8 +119,6 @@ def test_enn_fit_resample_with_nn_object():
         ]
     )
     y_gt = np.array([0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2])
-
-    assert enn.nn_.n_neighbors == 4
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -144,8 +138,8 @@ def test_enn_check_kind_selection():
         n_samples=1000, n_classes=2, weights=[0.3, 0.7], random_state=0,
     )
 
-    enn_all = EditedNearestNeighbours(kind_sel="all", n_neighbors=4)
-    enn_mode = EditedNearestNeighbours(kind_sel="mode", n_neighbors=4)
+    enn_all = EditedNearestNeighbours(kind_sel="all")
+    enn_mode = EditedNearestNeighbours(kind_sel="mode")
 
     enn_all.fit_resample(X, y)
     enn_mode.fit_resample(X, y)
