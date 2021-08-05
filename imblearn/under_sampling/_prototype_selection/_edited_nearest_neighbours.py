@@ -29,7 +29,7 @@ SEL_KIND = ("all", "mode")
 class EditedNearestNeighbours(BaseCleaningSampler):
     """Undersample based on the edited nearest neighbour method.
 
-    This method will clean the database by removing samples close to the
+    This method will clean the data set by removing samples close to the
     decision boundary.
 
     Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
@@ -40,7 +40,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
-        nearest neighbors. If object, an estimator that inherits from
+        nearest neighbours. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbours.
 
@@ -48,7 +48,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         Strategy to use in order to exclude samples.
 
         - If ``'all'``, all neighbours will have to agree with a sample in order
-          not be excluded.
+          not to be excluded.
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order not to exclude a sample.
 
@@ -70,7 +70,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     RepeatedEditedNearestNeighbours : Undersample by repeating ENN algorithm.
 
-    AllKNN : Undersample using ENN and various number of neighbours.
+    AllKNN : Undersample using ENN and varying number of neighbours.
 
     Notes
     -----
@@ -81,8 +81,8 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     References
     ----------
-    .. [1] D. Wilson, Asymptotic" Properties of Nearest Neighbor Rules Using
-       Edited Data," In IEEE Transactions on Systems, Man, and Cybernetrics,
+    .. [1] D. Wilson, "Asymptotic Properties of Nearest Neighbor Rules Using
+       Edited Data", in IEEE Transactions on Systems, Man, and Cybernetics,
        vol. 2 (3), pp. 408-421, 1972.
 
     Examples
@@ -184,9 +184,9 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     n_neighbors : int or object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
-        nearest neighbors. If object, an estimator that inherits from
+        nearest neighbours. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbors.
+        find the nearest-neighbours.
 
     max_iter : int, default=100
         Maximum number of iterations of the edited nearest neighbours algorithm.
@@ -195,7 +195,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         Strategy to use in order to exclude samples.
 
         - If ``'all'``, all neighbours will have to agree with a sample in order
-          not be excluded.
+          not to be excluded.
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order not to exclude a sample.
 
@@ -212,7 +212,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         .. versionadded:: 0.4
 
     n_iter_ : int
-        Number of iterations run.
+        Number of iterations that were actually run.
 
         .. versionadded:: 0.6
 
@@ -222,14 +222,14 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     EditedNearestNeighbours : Undersample by editing samples.
 
-    AllKNN : Undersample using ENN and various number of neighbours.
+    AllKNN : Undersample using ENN and varying number of neighbours.
 
     Notes
     -----
-    The method is based on [1]_. A one-vs.-rest scheme is used when
-    sampling a class as proposed in [1]_.
+    The method is based on [1]_.
 
-    Supports multi-class resampling.
+    Supports multi-class resampling. A one-vs.-rest scheme is used when
+    sampling a class as proposed in [1]_.
 
     References
     ----------
@@ -370,9 +370,9 @@ class AllKNN(BaseCleaningSampler):
 
     n_neighbors : int or estimator object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
-        nearest neighbors. If object, an estimator that inherits from
+        nearest neighbours. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbors. By default, it will be a 3-NN.
+        find the nearest-neighbours. By default, it will be a 3-NN.
 
     max_iter : int, default=100
         Maximum number of iterations of the edited nearest neighbours algorithm.
@@ -381,7 +381,7 @@ class AllKNN(BaseCleaningSampler):
         Strategy to use in order to exclude samples.
 
         - If ``'all'``, all neighbours will have to agree with a sample in order
-          not be excluded.
+          not to be excluded.
         - If ``'mode'``, the majority vote of the neighbours will be used in
           order not to exclude a sample.
 
@@ -403,8 +403,8 @@ class AllKNN(BaseCleaningSampler):
 
         .. versionadded:: 0.4
 
-        n_iter_ : int
-        Number of iterations run.
+    n_iter_ : int
+        Number of iterations that were actually run.
 
         .. versionadded:: 0.9
 
