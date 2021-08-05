@@ -498,7 +498,8 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
         self.sample_indices_ = np.arange(X.shape[0], dtype=int)
 
-        curr_size_ngh = self.n_neighbors
+        # find current number of neighbours
+        curr_size_ngh = self.nn_.n_neighbors
 
         for n_iter in range(self.max_iter):
 
@@ -540,6 +541,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             if b_min_bec_maj or b_remove_maj_class:
                 break
 
+        self.n_iter_ = n_iter + 1
         X_resampled, y_resampled = X_, y_
 
         return X_resampled, y_resampled

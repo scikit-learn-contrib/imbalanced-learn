@@ -103,6 +103,15 @@ Y = np.array(
 R_TOL = 1e-4
 
 
+def test_allknn_init():
+    allknn = AllKNN()
+
+    assert allknn.n_neighbors == 3
+    assert allknn.kind_sel == "all"
+    assert allknn.n_jobs is None
+    assert allknn.max_iter == 100
+
+
 def test_allknn_fit_resample():
     allknn = AllKNN()
     X_resampled, y_resampled = allknn.fit_resample(X, Y)
@@ -126,6 +135,9 @@ def test_allknn_fit_resample():
     y_gt = np.array(
         [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
     )
+    assert allknn.nn_.n_neighbors == 3
+    assert allknn.enn_.nn_.n_neighbors == 8
+    assert allknn.n_iter_ == 6
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_allclose(y_resampled, y_gt, rtol=R_TOL)
 
@@ -181,6 +193,9 @@ def test_allknn_fit_resample_mode():
     y_gt = np.array(
         [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     )
+    assert allknn.nn_.n_neighbors == 3
+    assert allknn.enn_.nn_.n_neighbors == 17
+    assert allknn.n_iter_ == 15
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
@@ -216,6 +231,9 @@ def test_allknn_fit_resample_with_nn_object():
     y_gt = np.array(
         [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     )
+    assert allknn.nn_.n_neighbors == 3
+    assert allknn.enn_.nn_.n_neighbors == 17
+    assert allknn.n_iter_ == 15
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
 
