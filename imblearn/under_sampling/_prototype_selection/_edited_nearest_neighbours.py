@@ -479,7 +479,7 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
             raise NotImplementedError
 
         self.nn_ = check_neighbors_object(
-            "n_neighbors", self.n_neighbors, additional_neighbor=0
+            "n_neighbors", self.n_neighbors, additional_neighbor=1
         )
 
         self.enn_ = EditedNearestNeighbours(

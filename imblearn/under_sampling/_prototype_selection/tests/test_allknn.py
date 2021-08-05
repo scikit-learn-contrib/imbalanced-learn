@@ -135,7 +135,7 @@ def test_allknn_fit_resample():
     y_gt = np.array(
         [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
     )
-    assert allknn.n_iter_ == 5
+    assert allknn.n_iter_ == 2
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_allclose(y_resampled, y_gt, rtol=R_TOL)
 
