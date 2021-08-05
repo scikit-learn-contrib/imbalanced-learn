@@ -174,7 +174,11 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Undersample based on the repeated edited nearest neighbour method.
 
-    This method will repeat several times the ENN algorithm.
+    This method will repeat the ENN algorithm several times. The repetitions
+    will stop when i) the maximum number of iterations is reached, or ii) no
+    more observations are being removed, or iii) one of the majority classes
+    becomes a minority class or iv) one of the majority classes disappears
+    from the target after undersampling.
 
     Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
@@ -359,8 +363,13 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 class AllKNN(BaseCleaningSampler):
     """Undersample based on the AllKNN method.
 
-    This method will apply ENN several times increasing the number of nearest
-    neighbours at each round.
+    This method will apply ENN several times, increasing the number
+    of nearest neighbours by 1 at each round.
+
+    The repetitions will stop when i) the maximum number of iterations
+    is reached, or ii) one of the majority classes becomes a minority
+    class or iii) one of the majority classes disappears from the target
+    after undersampling.
 
     Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
