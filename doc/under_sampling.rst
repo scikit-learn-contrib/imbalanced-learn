@@ -198,7 +198,7 @@ Cleaning under-sampling techniques
 ----------------------------------
 
 Cleaning under-sampling techniques do not allow to specify the number of
-samples to have in each class. In fact, each algorithm implement an heuristic
+samples to have in each class. In fact, each algorithm implements an heuristic
 which will clean the dataset.
 
 .. _tomek_links:
@@ -311,15 +311,19 @@ Condensed nearest neighbors and derived algorithms
 
 :class:`CondensedNearestNeighbour` uses a 1 nearest neighbor rule to
 iteratively decide if a sample should be removed or not
-:cite:`hart1968condensed`. The algorithm is running as followed:
+:cite:`hart1968condensed`. The algorithm runs as follows:
 
 1. Get all minority samples in a set :math:`C`.
 2. Add a sample from the targeted class (class to be under-sampled) in
    :math:`C` and all other samples of this class in a set :math:`S`.
-3. Go through the set :math:`S`, sample by sample, and classify each sample
-   using a 1 nearest neighbor rule.
-4. If the sample is misclassified, add it to :math:`C`, otherwise do nothing.
-5. Reiterate on :math:`S` until there is no samples to be added.
+3. Train a 1-KNN on `C`.
+4. Go through the samples in set :math:`S`, sample by sample, and classify each one
+   using a 1 nearest neighbor rule (trained in 3).
+5. If the sample is misclassified, add it to :math:`C`, otherwise do nothing.
+6. Repeat steps 3 to 5 until all observations in `S` have been examined.
+
+The final dataset is `S`, containing all observations from the minority class and
+those from the majority that were missclassified by the 1-KNN algorithms.
 
 The :class:`CondensedNearestNeighbour` can be used in the following manner::
 
@@ -329,7 +333,7 @@ The :class:`CondensedNearestNeighbour` can be used in the following manner::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 24), (2, 115)]
 
-However as illustrated in the figure below, :class:`CondensedNearestNeighbour`
+However, as illustrated in the figure below, :class:`CondensedNearestNeighbour`
 is sensitive to noise and will add noisy samples.
 
 In the contrary, :class:`OneSidedSelection` will use :class:`TomekLinks` to
