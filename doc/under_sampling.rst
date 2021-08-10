@@ -323,7 +323,7 @@ iteratively decide if a sample should be removed or not
 6. Repeat steps 3 to 5 until all observations in `S` have been examined.
 
 The final dataset is `S`, containing all observations from the minority class and
-those from the majority that were missclassified by the 1-KNN algorithms.
+those from the majority that were miss-classified by the 1-KNN algorithms.
 
 The :class:`CondensedNearestNeighbour` can be used in the following manner::
 
@@ -336,11 +336,26 @@ The :class:`CondensedNearestNeighbour` can be used in the following manner::
 However, as illustrated in the figure below, :class:`CondensedNearestNeighbour`
 is sensitive to noise and will add noisy samples.
 
-In the contrary, :class:`OneSidedSelection` will use :class:`TomekLinks` to
-remove noisy samples :cite:`hart1968condensed`. In addition, the 1 nearest
-neighbor rule is applied to all samples and the one which are misclassified
-will be added to the set :math:`C`. No iteration on the set :math:`S` will take
-place. The class can be used as::
+In an attempt to remove noisy observations, :class:`OneSidedSelection`
+will first find the observations that are hard to classify, and then will use
+:class:`TomekLinks` to remove noisy samples :cite:`hart1968condensed`.
+:class:`OneSidedSelection` runs as follows:
+
+1. Get all minority samples in a set :math:`C`.
+2. Add a sample from the targeted class (class to be under-sampled) in
+   :math:`C` and all other samples of this class in a set :math:`S`.
+3. Train a 1-KNN on `C`.
+4. Using a 1 nearest neighbor rule trained in 3, classify all samples
+in set :math:`S`.
+5. Add all misclassified samples to :math:`C`.
+6. Remove Tomek Links from :math:`C`.
+
+The final dataset is `S`, containing all observations from the minority class,
+plus the observations from the majority that were added at random, plus all
+those from the majority that were miss-classified by the 1-KNN algorithms. Note
+that differently from :class:`CondensedNearestNeighbour`, :class:`OneSidedSelection`
+does not train a KNN after each sample is missclassified. It uses the one KNN
+to classify all samples from the majority in 1 pass. The class can be used as::
 
   >>> from imblearn.under_sampling import OneSidedSelection
   >>> oss = OneSidedSelection(random_state=0)
@@ -348,8 +363,8 @@ place. The class can be used as::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 174), (2, 4404)]
 
-Our implementation offer to set the number of seeds to put in the set :math:`C`
-originally by setting the parameter ``n_seeds_S``.
+Our implementation offers the possibility to set the number of observations
+to put at random in the set :math:`C` through the parameter ``n_seeds_S``.
 
 :class:`NeighbourhoodCleaningRule` will focus on cleaning the data than
 condensing them :cite:`laurikkala2001improving`. Therefore, it will used the

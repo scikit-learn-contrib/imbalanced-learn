@@ -41,7 +41,7 @@ class OneSidedSelection(BaseCleaningSampler):
         nearest neighbors. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors. If `None`, a
-        :class:`~sklearn.neighbors.KNeighborsClassifier` with a 1-NN rules will
+        :class:`~sklearn.neighbors.KNeighborsClassifier` with a 1-NN rule will
         be used.
 
     n_seeds_S : int, default=1
@@ -71,7 +71,7 @@ class OneSidedSelection(BaseCleaningSampler):
     References
     ----------
     .. [1] M. Kubat, S. Matwin, "Addressing the curse of imbalanced training
-       sets: one-sided selection," In ICML, vol. 97, pp. 179-186, 1997.
+       sets: one-sided selection", in ICML, vol. 97, pp. 179-186, 1997.
 
     Examples
     --------
@@ -150,8 +150,9 @@ class OneSidedSelection(BaseCleaningSampler):
                 C_x = _safe_indexing(X, C_indices)
                 C_y = _safe_indexing(y, C_indices)
 
-                # create the set S with removing the seed from S
-                # since that it will be added anyway
+                # create the set S with all samples of the current class
+                # except those in the seed from S
+                # since they were added to C_x already
                 idx_maj_extracted = np.delete(idx_maj, sel_idx_maj, axis=0)
                 S_x = _safe_indexing(X, idx_maj_extracted)
                 S_y = _safe_indexing(y, idx_maj_extracted)
