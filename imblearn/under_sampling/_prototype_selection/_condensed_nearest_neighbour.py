@@ -75,8 +75,8 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
 
     References
     ----------
-    .. [1] P. Hart, "The condensed nearest neighbor rule,"
-       In Information Theory, IEEE Transactions on, vol. 14(3),
+    .. [1] P. Hart, "The condensed nearest neighbor rule",
+       in Information Theory, IEEE Transactions on, vol. 14(3),
        pp. 515-516, 1968.
 
     Examples
