@@ -214,20 +214,20 @@ defined such that for any sample :math:`z`:
 
    d(x, y) < d(x, z) \text{ and } d(x, y) < d(y, z)
 
-where :math:`d(.)` is the distance between the two samples. In some other
-words, a Tomek's link exist if the two samples are the nearest neighbors of
-each other. In the figure below, a Tomek's link is illustrated by highlighting
-the samples of interest in green.
+where :math:`d(.)` is the distance between the two samples. In other words,
+a Tomek's link exists if two samples are nearest neighbors of each other,
+but belong to a different class. In the figure below, a Tomek's link is illustrated
+highlighting the samples of interest in green.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_001.png
    :target: ./auto_examples/under-sampling/plot_illustration_tomek_links.html
    :scale: 60
    :align: center
 
-The parameter ``sampling_strategy`` control which sample of the link will be
+The parameter ``sampling_strategy`` controls which sample of the Tomek link will be
 removed. For instance, the default (i.e., ``sampling_strategy='auto'``) will
-remove the sample from the majority class. Both samples from the majority and
-minority class can be removed by setting ``sampling_strategy`` to ``'all'``. The
+remove the sample from the majority class. However, both the samples from the majority
+and minority class can be removed by setting ``sampling_strategy`` to ``'all'``. The
 figure illustrates this behaviour.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_002.png
