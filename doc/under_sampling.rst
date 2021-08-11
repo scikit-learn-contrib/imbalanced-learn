@@ -125,9 +125,9 @@ It would also work with pandas dataframe::
   >>> df_resampled, y_resampled = rus.fit_resample(df_adult, y_adult)
   >>> df_resampled.head()  # doctest: +SKIP
 
-:class:`NearMiss` adds some heuristic rules to select samples
-:cite:`mani2003knn`. :class:`NearMiss` implements 3 different types of
-heuristic which can be selected with the parameter ``version``::
+:class:`NearMiss` undersamples data based on heuristic rules to select the
+observations :cite:`mani2003knn`. :class:`NearMiss` implements 3 different
+methods to undersample, which can be selected with the parameter ``version``::
 
   >>> from imblearn.under_sampling import NearMiss
   >>> nm1 = NearMiss(version=1)
@@ -135,12 +135,14 @@ heuristic which can be selected with the parameter ``version``::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
-As later stated in the next section, :class:`NearMiss` heuristic rules are
-based on nearest neighbors algorithm. Therefore, the parameters ``n_neighbors``
-and ``n_neighbors_ver3`` accept classifier derived from ``KNeighborsMixin``
-from scikit-learn. The former parameter is used to compute the average distance
-to the neighbors while the latter is used for the pre-selection of the samples
-of interest.
+
+:class:`NearMiss` heuristic rules are based on the nearest neighbors algorithm.
+Therefore, the parameters ``n_neighbors`` and ``n_neighbors_ver3`` accept either
+integers with the size of the neighbourhood to explore or a classifier derived
+from the ``KNeighborsMixin`` from scikit-learn. The parameter ``n_neighbors`` is
+used to compute the average distance to the neighbors while ``n_neighbors_ver3``
+is used for the pre-selection of the samples from the majority class, only in
+version 3. More details about NearMiss in the next section.
 
 Mathematical formulation
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -175,19 +177,16 @@ is the largest.
    :scale: 60
    :align: center
 
-In the next example, the different :class:`NearMiss` variant are applied on the
-previous toy example. It can be seen that the decision functions obtained in
+In the next example, the different :class:`NearMiss` variants are applied on the
+previous toy example. We can see that the decision functions obtained in
 each case are different.
 
-When under-sampling a specific class, NearMiss-1 can be altered by the presence
-of noise. In fact, it will implied that samples of the targeted class will be
-selected around these samples as it is the case in the illustration below for
-the yellow class. However, in the normal case, samples next to the boundaries
-will be selected. NearMiss-2 will not have this effect since it does not focus
-on the nearest samples but rather on the farthest samples. We can imagine that
-the presence of noise can also altered the sampling mainly in the presence of
-marginal outliers. NearMiss-3 is probably the version which will be less
-affected by noise due to the first step sample selection.
+When under-sampling a specific class, NearMiss-1 can be affected by noise. In
+fact, samples of the targeted class located around observations from the minority
+class tend to be selected, as shown in the illustration below (see yellow class).
+NearMiss-2 might be less affected by noise as it does not focus on the nearest
+samples but rather on the farthest samples. NearMiss-3 is probably the version
+which will be less affected by noise due to the first step of sample selection.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_003.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
