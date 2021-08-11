@@ -111,12 +111,15 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         class_excluded = [c for c in np.unique(y) if c not in class_type]
 
         # there is a Tomek link between two samples if they are nearest
-        # neighbors and from a different class.
+        # neighbors of each other, and from a different class.
         for index_sample, target_sample in enumerate(y):
             if target_sample in class_excluded:
                 continue
 
             if y[nn_index[index_sample]] != target_sample:
+                # corroborate that they are neighbours of each other:
+                # (if A's closest neighbour is B, but B's closest neighbour
+                # is C, then A and B are not a Tomek link)
                 if nn_index[nn_index[index_sample]] == index_sample:
                     links[index_sample] = True
 

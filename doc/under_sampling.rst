@@ -319,11 +319,11 @@ iteratively decide if a sample should be removed or not
 3. Train a 1-KNN on `C`.
 4. Go through the samples in set :math:`S`, sample by sample, and classify each one
    using a 1 nearest neighbor rule (trained in 3).
-5. If the sample is misclassified, add it to :math:`C`, otherwise do nothing.
+5. If the sample is misclassified, add it to :math:`C`, and go to step 6.
 6. Repeat steps 3 to 5 until all observations in `S` have been examined.
 
 The final dataset is `S`, containing all observations from the minority class and
-those from the majority that were miss-classified by the 1-KNN algorithms.
+those from the majority that were miss-classified by the successive 1-KNN algorithms.
 
 The :class:`CondensedNearestNeighbour` can be used in the following manner::
 
@@ -334,7 +334,7 @@ The :class:`CondensedNearestNeighbour` can be used in the following manner::
   [(0, 64), (1, 24), (2, 115)]
 
 However, as illustrated in the figure below, :class:`CondensedNearestNeighbour`
-is sensitive to noise and will add noisy samples.
+is sensitive to noise and may select noisy samples.
 
 In an attempt to remove noisy observations, :class:`OneSidedSelection`
 will first find the observations that are hard to classify, and then will use
@@ -345,8 +345,8 @@ will first find the observations that are hard to classify, and then will use
 2. Add a sample from the targeted class (class to be under-sampled) in
    :math:`C` and all other samples of this class in a set :math:`S`.
 3. Train a 1-KNN on `C`.
-4. Using a 1 nearest neighbor rule trained in 3, classify all samples
-in set :math:`S`.
+4. Using a 1 nearest neighbor rule trained in 3, classify all samples in
+   set :math:`S`.
 5. Add all misclassified samples to :math:`C`.
 6. Remove Tomek Links from :math:`C`.
 

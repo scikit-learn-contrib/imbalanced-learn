@@ -171,7 +171,7 @@ CondensedNearestNeighbour # doctest: +SKIP
                 # Check each sample in S if we keep it or drop it
                 for idx_sam, (x_sam, y_sam) in enumerate(zip(S_x, S_y)):
 
-                    # Do not select sample which are already well classified
+                    # Do not select samples which are already well classified
                     # (or were already selected -randomly- to be part of C)
                     if idx_sam in good_classif_label:
                         continue
