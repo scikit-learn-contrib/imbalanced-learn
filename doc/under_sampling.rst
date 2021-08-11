@@ -347,10 +347,29 @@ place. The class can be used as::
 Our implementation offer to set the number of seeds to put in the set :math:`C`
 originally by setting the parameter ``n_seeds_S``.
 
-:class:`NeighbourhoodCleaningRule` will focus on cleaning the data than
-condensing them :cite:`laurikkala2001improving`. Therefore, it will used the
-union of samples to be rejected between the :class:`EditedNearestNeighbours`
-and the output a 3 nearest neighbors classifier. The class can be used as::
+:class:`NeighbourhoodCleaningRule` focuses more on cleaning the data than on
+reducing the number of samples :cite:`laurikkala2001improving`. It expands
+the :class:`EditedNearestNeighbours` in that, it further eliminates samples from
+the majority class, if they belong to the 3 closest neighbours of a sample from
+the majority class, where the majority, or all of the neighbours disagree with the
+minority. The procedure for the :class:`NeighbourhoodCleaningRule` is as follows:
+
+1. Split dataset into the class of interest C (minority) and the rest of the data O.
+2. Identify noisy data A1 in O, with edited nearest neighbor rule.
+3. For each (majority) class in O, if its observations are one of the 3 closest
+neighbors of a minority sample where all or most of those neighbors are not minority,
+add the observation to group A2.
+4. Reduce the original data S = T - ( A1 union A2 )
+
+The first step is an ENN, where most of neighbours need to disagree to remove a sample
+from the majority. The second step is a cleaning step, that further removes samples
+from the majority classes. To carry on the cleaning step there is one condition:
+it will only clean samples from classes that contain a minimum number of observations.
+The minimum number is regulated by the `threshold_cleaning` parameter. In the original
+article :cite:`laurikkala2001improving` samples would be removed if the class had at
+least half as many observations as those in the minority class.
+
+The class can be used as::
 
   >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
   >>> ncr = NeighbourhoodCleaningRule()
