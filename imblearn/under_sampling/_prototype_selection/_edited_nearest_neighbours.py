@@ -1,4 +1,4 @@
-"""Classes to perform under-sampling based on the edited nearest neighbour
+"""Classes to perform under-sampling based on the edited nearest neighbor
 method."""
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
@@ -27,7 +27,7 @@ SEL_KIND = ("all", "mode")
     n_jobs=_n_jobs_docstring,
 )
 class EditedNearestNeighbours(BaseCleaningSampler):
-    """Undersample based on the edited nearest neighbour method.
+    """Undersample based on the edited nearest neighbor method.
 
     This method will clean the data set by removing samples close to the
     decision boundary.
@@ -39,17 +39,17 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     {sampling_strategy}
 
     n_neighbors : int or object, default=3
-        If ``int``, size of the neighbourhood to consider to compute the
-        nearest neighbours. If object, an estimator that inherits from
+        If ``int``, size of the neighborhood to consider to compute the
+        nearest neighbors. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbours.
+        find the nearest-neighbors.
 
     kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
 
-        - If ``'all'``, all neighbours will have to agree with a sample in order
+        - If ``'all'``, all neighbors will have to agree with a sample in order
           not to be excluded.
-        - If ``'mode'``, the majority of the neighbours will have to agree with
+        - If ``'mode'``, the majority of the neighbors will have to agree with
          a sample in order not to be excluded.
 
         The strategy `"all"` will be less conservative than `'mode'`. Thus,
@@ -70,7 +70,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     RepeatedEditedNearestNeighbours : Undersample by repeating ENN algorithm.
 
-    AllKNN : Undersample using ENN and various number of neighbours.
+    AllKNN : Undersample using ENN and various number of neighbors.
 
     Notes
     -----
@@ -172,7 +172,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     n_jobs=_n_jobs_docstring,
 )
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
-    """Undersample based on the repeated edited nearest neighbour method.
+    """Undersample based on the repeated edited nearest neighbor method.
 
     This method will repeat the ENN algorithm several times. The repetitions
     will stop when i) the maximum number of iterations is reached, or ii) no
@@ -187,20 +187,20 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     {sampling_strategy}
 
     n_neighbors : int or object, default=3
-        If ``int``, size of the neighbourhood to consider to compute the
-        nearest neighbours. If object, an estimator that inherits from
+        If ``int``, size of the neighborhood to consider to compute the
+        nearest neighbors. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbours.
+        find the nearest-neighbors.
 
     max_iter : int, default=100
-        Maximum number of repetitions of the edited nearest neighbours algorithm.
+        Maximum number of repetitions of the edited nearest neighbors algorithm.
 
     kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
 
-        - If ``'all'``, all neighbours will have to agree with a sample in order
+        - If ``'all'``, all neighbors will have to agree with a sample in order
           not to be excluded.
-        - If ``'mode'``, the majority of the neighbours will have to agree with
+        - If ``'mode'``, the majority of the neighbors will have to agree with
          a sample in order not to be excluded.
 
         The strategy `"all"` will be less conservative than `'mode'`. Thus,
@@ -226,7 +226,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     EditedNearestNeighbours : Undersample by editing samples.
 
-    AllKNN : Undersample using ENN and various number of neighbours.
+    AllKNN : Undersample using ENN and various number of neighbors.
 
     Notes
     -----
@@ -364,8 +364,8 @@ class AllKNN(BaseCleaningSampler):
     """Undersample based on the AllKNN method.
 
     This method will apply ENN several times, starting by looking at the
-    1 closest neighbour, and increasing the number of nearest neighbours
-    by 1 at each round, up to the number of neighbours specified in
+    1 closest neighbor, and increasing the number of nearest neighbors
+    by 1 at each round, up to the number of neighbors specified in
     `n_neighbors`.
 
     The repetitions will stop when i) one of the majority classes
@@ -379,23 +379,24 @@ class AllKNN(BaseCleaningSampler):
     {sampling_strategy}
 
     n_neighbors : int or estimator object, default=3
-        If ``int``, the maximum size of the neighbourhood to evaluate.
-        The method will start by looking at the 1 closest neighbour, and
-        then repeat the edited nearest neighbours increasing
-        the neighbourhood by 1, until examining a neighbourhood of
+        If ``int``, the maximum size of the the neighborhood to evaluate.
+        The method will start by looking at the 1 closest neighbor, and
+        then repeat the edited nearest neighbors increasing
+        the neighborhood by 1, until examining a neighborhood of
         `n_neighbors` in the final iteration.
+
         If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbours in the final round. In this case,
-        AllKNN will repeat edited nearest neighbours starting from a 2-KNN
+        find the nearest-neighbors in the final round. In this case,
+        AllKNN will repeat edited nearest neighbors starting from a 2-KNN
         up to the specified KNN in the object.
 
     kind_sel : {{'all', 'mode'}}, default='all'
         Strategy to use in order to exclude samples.
 
-        - If ``'all'``, all neighbours will have to agree with a sample in order
+        - If ``'all'``, all neighbors will have to agree with a sample in order
           not to be excluded.
-        - If ``'mode'``, the majority of the neighbours will have to agree with
+        - If ``'mode'``, the majority of the neighbors will have to agree with
          a sample in order not to be excluded.
 
         The strategy `"all"` will be less conservative than `'mode'`. Thus,
@@ -434,7 +435,7 @@ class AllKNN(BaseCleaningSampler):
     References
     ----------
     .. [1] I. Tomek, "An Experiment with the Edited Nearest-Neighbor
-       Rule," IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
+       Rule", IEEE Transactions on Systems, Man, and Cybernetics, vol. 6(6),
        pp. 448-452, June 1976.
 
     Examples

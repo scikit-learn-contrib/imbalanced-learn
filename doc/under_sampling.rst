@@ -198,7 +198,7 @@ Cleaning under-sampling techniques
 ----------------------------------
 
 Cleaning under-sampling techniques do not allow to specify the number of
-samples to have in each class. In fact, each algorithm implements an heuristic
+samples to have in each class. In fact, each algorithm implement an heuristic
 which will clean the dataset.
 
 .. _tomek_links:
@@ -237,20 +237,18 @@ figure illustrates this behaviour.
 
 .. _edited_nearest_neighbors:
 
-Edited data set using nearest neighbours
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Edited data set using nearest neighbors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:class:`EditedNearestNeighbours` trains a nearest-neighbors algorithm and
-then looks at the closest neighbours of each data point of the class to be
+:class:`EditedNearestNeighbours` trains a nearest neighbors algorithm and
+then looks at the closest neighbors of each data point of the class to be
 under-sampled, and "edits" the dataset by removing samples which do not agree
 "enough" with their neighborhood :cite:`wilson1972asymptotic`. In short,
-a KNN algorithm is trained on the data. Then, for each sample in the class
-to be under-sampled, the (K-1) nearest-neighbours are identified. Note that
-if a 4-KNN algorithm is trained, only 3 neighbours will be examined, because
-the sample being inspected is the fourth neighbour returned by the algorithm.
-Once the neighbours are identified, if all the neighbours or most of the
-neighbours agree with the class of the sample being inspected, the sample is
-kept, otherwise removed. Check the selection criteria below::
+a nearest neighbors algorithm algorithm is trained on the data. Then, for each
+sample in the class to be under-sampled, the nearest neighbors are identified.
+Once the neighbors are identified, if all the neighbors or most of the neighbors
+agree with the class of the sample being inspected, the sample is kept, otherwise
+removed::
 
   >>> sorted(Counter(y).items())
   [(0, 64), (1, 262), (2, 4674)]
@@ -261,8 +259,8 @@ kept, otherwise removed. Check the selection criteria below::
   [(0, 64), (1, 213), (2, 4568)]
 
 Two selection criteria are currently available: (i) the majority (i.e.,
-``kind_sel='mode'``) or (ii) all (i.e., ``kind_sel='all'``) the
-nearest-neighbors must belong to the same class than the sample inspected to
+``kind_sel='mode'``) or (ii) all (i.e., ``kind_sel='all'``) of the
+nearest neighbors must belong to the same class than the sample inspected to
 keep it in the dataset. This means that `kind_sel='all'` will be less
 conservative than `kind_sel='mode'`, and more samples will be excluded::
 
@@ -277,11 +275,12 @@ conservative than `kind_sel='mode'`, and more samples will be excluded::
 
 The parameter ``n_neighbors`` can take a classifier subclassed from
 ``KNeighborsMixin`` from scikit-learn to find the nearest neighbors.
-Alternatively, an integer can be passed to indicate the size of the
-neighborhood to examine to make a decision. Note that if ``n_neighbors=3``
-this means that the edited nearest neighbors will look at the 3 closest
-neighbours of each sample, thus a 4-KNN algorithm will be trained
-on the data.
+Note that if a 4-KNN classifier is passed, 3 neighbors will be
+examined for the selection criteria, because the sample being inspected
+is the fourth neighbor returned by the algorithm. Alternatively, an integer
+can be passed to ``n_neighbors`` to indicate the size of the neighborhood
+to examine to make a decision. Thus, if ``n_neighbors=3`` the edited nearest
+neighbors will look at the 3 closest neighbors of each sample.
 
 :class:`RepeatedEditedNearestNeighbours` extends
 :class:`EditedNearestNeighbours` by repeating the algorithm multiple times
@@ -295,16 +294,21 @@ through the parameter ``max_iter``::
    >>> print(sorted(Counter(y_resampled).items()))
    [(0, 64), (1, 208), (2, 4551)]
 
+Note that :class:`RepeatedEditedNearestNeighbours` will end before reaching
+``max_iter`` if no more samples are removed from the data, or one of the
+majority classes ends up disappearing or with less samples than the minority
+after being "edited".
+
 :class:`AllKNN` extends :class:`EditedNearestNeighbours` by repeating
-the algorithm multiple times, each time with an additional neighbour
+the algorithm multiple times, each time with an additional neighbor
 :cite:`tomek1976experiment`. In other words, :class:`AllKNN` differs
 from :class:`RepeatedEditedNearestNeighbours` in that the number of
 neighbors of the internal nearest neighbors algorithm increases at
 each iteration. In short, in the first iteration, a 2-KNN algorithm
-is trained on the data to examine the 1 closest neighbour of each
+is trained on the data to examine the 1 closest neighbor of each
 sample from the class to be under-sampled. In each subsequent
-iteration, the neighbourhood examined is increased by 1, until the
-number of neighbours to examine indicated in the parameter ``n_neighbors``::
+iteration, the neighborhood examined is increased by 1, until the
+number of neighbors indicated in the parameter ``n_neighbors``::
 
   >>> from imblearn.under_sampling import AllKNN
   >>> allknn = AllKNN()
@@ -314,16 +318,16 @@ number of neighbours to examine indicated in the parameter ``n_neighbors``::
 
 
 The parameter ``n_neighbors`` can take an integer to indicate the size
-of the neighborhood to examine to make a decision in the last iteration.
-Thus, if ``n_neighbors=3``, AlKNN will examine the 1 closest neighbour
-in the first iteration, the 2 closest neighbours in the second iteration
+of the neighborhood to examine in the last iteration. Thus, if
+``n_neighbors=3``, AlKNN will examine the 1 closest neighbor in the
+first iteration, the 2 closest neighbors in the second iteration
 and the 3 closest neighbors in the third iteration. The parameter
 ``n_neighbors`` can also take a classifier subclassed from
 ``KNeighborsMixin`` from scikit-learn to find the nearest neighbors.
 Again, this will be the KNN used in the last iteration.
 
-In the example below, it can be seen that the three algorithms have similar
-impact by cleaning noisy samples next to the boundaries of the classes.
+In the example below, we can see that the three algorithms have a similar
+impact on cleaning noisy samples at the boundaries of the classes.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_004.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
