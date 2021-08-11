@@ -45,7 +45,10 @@ class OneSidedSelection(BaseCleaningSampler):
         be used.
 
     n_seeds_S : int, default=1
-        Number of samples to extract in order to build the set S.
+        Number of samples from the majority class to add randomly to the set
+        with all minority observations before training the first KNN model. In
+        the original implementation is 1, but more samples can be added with this
+        parameter.
 
     {n_jobs}
 
