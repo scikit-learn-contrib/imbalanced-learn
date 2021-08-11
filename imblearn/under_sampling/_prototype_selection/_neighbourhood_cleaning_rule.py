@@ -28,7 +28,7 @@ SEL_KIND = ("all", "mode")
 class NeighbourhoodCleaningRule(BaseCleaningSampler):
     """Undersample based on the neighbourhood cleaning rule.
 
-    This class uses ENN and a k-NN to remove noisy samples from the datasets.
+    This class uses ENN and a k-NN to remove noisy samples from the dataset.
 
     Read more in the :ref:`User Guide <condensed_nearest_neighbors>`.
 
@@ -40,19 +40,24 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         If ``int``, size of the neighbourhood to consider to compute the
         nearest neighbors. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbors. By default, it will be a 3-NN.
+        find the nearest-neighbors. By default, it explores the 3 closest
+        neighbors.
 
     kind_sel : {{"all", "mode"}}, default='all'
         Strategy to use in order to exclude samples in the ENN sampling.
 
-        - If ``'all'``, all neighbours will have to agree with the samples of
-          interest to not be excluded.
-        - If ``'mode'``, the majority vote of the neighbours will be used in
-          order to exclude a sample.
+        - If ``'all'``, all neighbours will have to agree with a sample in order
+          not to be excluded.
+        - If ``'mode'``, the majority of the neighbours will have to agree with
+         a sample in order not to be excluded.
 
         The strategy `"all"` will be less conservative than `'mode'`. Thus,
-        more samples will be removed when `kind_sel="all"` generally.
+        more samples will be removed when `kind_sel="all"`, generally.
 
+        Note that this parameter only applies to the cleaning step of the NCL.
+        The ENN is done using majority vote, as described in the original article.
+
+    #TODO: this is not the originally described threshold, fix
     threshold_cleaning : float, default=0.5
         Threshold used to whether consider a class or not during the cleaning
         after applying ENN. A class will be considered during cleaning when:
