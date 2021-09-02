@@ -93,8 +93,6 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     """
     if isinstance(nn_object, Integral):
         return NearestNeighbors(n_neighbors=nn_object + additional_neighbor)
-    elif isinstance(nn_object, KNeighborsMixin):
-        return clone(nn_object)
     elif hasattr(nn_object, 'kneighbors') and hasattr(nn_object, 'kneighbors_graph'):
         return clone(nn_object)
     else:
