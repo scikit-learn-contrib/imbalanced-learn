@@ -95,6 +95,8 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
         return NearestNeighbors(n_neighbors=nn_object + additional_neighbor)
     elif isinstance(nn_object, KNeighborsMixin):
         return clone(nn_object)
+    elif hasattr(nn_object, 'kneighbors') and hasattr(nn_object, 'kneighbors_graph'):
+        return clone(nn_object)
     else:
         raise_isinstance_error(nn_name, [int, KNeighborsMixin], nn_object)
 
