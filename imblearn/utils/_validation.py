@@ -66,12 +66,14 @@ class ArraysTransformer:
             ret = array
         return ret
 
+
 def _is_neighbors_object(kneighbors_estimator):
     neighbors_attributes = [
         "kneighbors",
         "kneighbors_graph"
     ]
     return all(hasattr(kneighbors_estimator, attr) for attr in neighbors_attributes)
+
 
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     """Check the objects is consistent to be a NN.
