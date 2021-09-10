@@ -345,10 +345,8 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
 
         if self.svm_estimator is None:
             self.svm_estimator_ = SVC(gamma="scale", random_state=self.random_state)
-        elif isinstance(self.svm_estimator, SVC):
-            self.svm_estimator_ = clone(self.svm_estimator)
         else:
-            raise_isinstance_error("svm_estimator", [SVC], self.svm_estimator)
+            self.svm_estimator_ = clone(self.svm_estimator)
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
