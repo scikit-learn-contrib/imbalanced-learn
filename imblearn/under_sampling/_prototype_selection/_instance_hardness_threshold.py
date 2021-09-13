@@ -10,7 +10,7 @@ from collections import Counter
 
 import numpy as np
 
-from sklearn.base import ClassifierMixin, clone
+from sklearn.base import clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.model_selection import StratifiedKFold

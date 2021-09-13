@@ -118,7 +118,6 @@ class OneSidedSelection(BaseCleaningSampler):
         else:
             self.estimator_ = clone(self.n_neighbors)
 
-
     def _fit_resample(self, X, y):
         self._validate_estimator()
 

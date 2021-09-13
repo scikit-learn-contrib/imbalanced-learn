@@ -15,7 +15,6 @@ from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 
 from ..base import BaseOverSampler
-from ...exceptions import raise_isinstance_error
 from ...utils import check_neighbors_object
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
