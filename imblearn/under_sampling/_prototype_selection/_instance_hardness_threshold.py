@@ -118,7 +118,6 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
         if (
             self.estimator is not None
-            and isinstance(self.estimator, ClassifierMixin)
             and hasattr(self.estimator, "predict_proba")
         ):
             self.estimator_ = clone(self.estimator)
