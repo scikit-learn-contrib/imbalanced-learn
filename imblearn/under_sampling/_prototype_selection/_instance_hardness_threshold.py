@@ -116,10 +116,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     def _validate_estimator(self, random_state):
         """Private function to create the classifier"""
 
-        if (
-            self.estimator is not None and
-            hasattr(self.estimator, "predict_proba")
-        ):
+        if self.estimator is not None and hasattr(self.estimator, "predict_proba"):
             self.estimator_ = clone(self.estimator)
             _set_random_states(self.estimator_, random_state)
 
