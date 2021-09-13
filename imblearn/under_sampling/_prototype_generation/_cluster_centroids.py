@@ -123,13 +123,8 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             )
         if self.estimator is None:
             self.estimator_ = KMeans(random_state=self.random_state)
-        elif isinstance(self.estimator, KMeans):
-            self.estimator_ = clone(self.estimator)
         else:
-            raise ValueError(
-                f"`estimator` has to be a KMeans clustering."
-                f" Got {type(self.estimator)} instead."
-            )
+            self.estimator_ = clone(self.estimator)
 
     def _generate_sample(self, X, y, centroids, target_class):
         if self.voting_ == "hard":
