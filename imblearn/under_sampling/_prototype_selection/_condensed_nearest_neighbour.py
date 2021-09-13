@@ -119,14 +119,8 @@ CondensedNearestNeighbour # doctest: +SKIP
             self.estimator_ = KNeighborsClassifier(
                 n_neighbors=self.n_neighbors, n_jobs=self.n_jobs
             )
-        elif isinstance(self.n_neighbors, KNeighborsClassifier):
-            self.estimator_ = clone(self.n_neighbors)
         else:
-            raise ValueError(
-                f"`n_neighbors` has to be a int or an object"
-                f" inhereited from KNeighborsClassifier."
-                f" Got {type(self.n_neighbors)} instead."
-            )
+            self.estimator_ = clone(self.n_neighbors)
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
