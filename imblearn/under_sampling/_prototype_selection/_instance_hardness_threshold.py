@@ -10,7 +10,7 @@ from collections import Counter
 
 import numpy as np
 
-from sklearn.base import clone
+from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.model_selection import StratifiedKFold
@@ -116,7 +116,11 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     def _validate_estimator(self, random_state):
         """Private function to create the classifier"""
 
-        if self.estimator is not None and hasattr(self.estimator, "predict_proba"):
+        if (
+            self.estimator is not None
+            and isinstance(self.estimator, ClassifierMixin)
+            and hasattr(self.estimator, "predict_proba")
+        ):
             self.estimator_ = clone(self.estimator)
             _set_random_states(self.estimator_, random_state)
 
