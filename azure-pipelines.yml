@@ -18,9 +18,6 @@ jobs:
     - bash: |
         ./build_tools/circle/linting.sh
       displayName: Run linting
-    - bash: |
-        mypy imblearn/
-      displayName: Run mypy
 
 - template: build_tools/azure/posix.yml
   parameters:
