@@ -428,9 +428,6 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             # ensemble sorts the indices.
             X.sort_indices()
 
-        # Remap output
-        # _, self.n_features_ = X.shape
-
         y = np.atleast_1d(y)
         if y.ndim == 2 and y.shape[1] == 1:
             warn(
