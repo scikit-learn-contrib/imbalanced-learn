@@ -429,7 +429,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             X.sort_indices()
 
         # Remap output
-        _, self.n_features_ = X.shape
+        # _, self.n_features_ = X.shape
 
         y = np.atleast_1d(y)
         if y.ndim == 2 and y.shape[1] == 1:
@@ -628,4 +628,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         self.oob_score_ = oob_score / self.n_outputs_
 
     def _more_tags(self):
-        return {"multioutput": False}
+        return {
+            "multioutput": False,
+            "multilabel": False,
+        }
