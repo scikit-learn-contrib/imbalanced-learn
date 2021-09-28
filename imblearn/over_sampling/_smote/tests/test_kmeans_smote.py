@@ -88,12 +88,15 @@ def test_sample_kmeans_custom(data, k_neighbors, kmeans_estimator):
     assert kmeans_smote.kmeans_estimator_.n_clusters == 3
 
 
-def test_sample_kmeans_not_enough_clusters():
-    rng = np.random.RandomState(42)
-    X = rng.randn(30, 2)
-    y = np.array([1] * 20 + [0] * 10)
-
-    smote = KMeansSMOTE(random_state=42, kmeans_estimator=10, k_neighbors=2)
+def test_sample_kmeans_not_enough_clusters(data):
+    X, y = data
+    smote = KMeansSMOTE(
+        density_exponent=2,
+        cluster_balance_threshold=1,
+        random_state=42,
+        kmeans_estimator=10,
+        k_neighbors=2,
+    )
     with pytest.raises(RuntimeError):
         smote.fit_resample(X, y)
 
