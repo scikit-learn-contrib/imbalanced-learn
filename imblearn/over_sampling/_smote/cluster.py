@@ -200,9 +200,6 @@ class KMeansSMOTE(BaseSMOTE):
             if n_samples == 0:
                 continue
 
-            # target_class_indices = np.flatnonzero(y == class_sample)
-            # X_class = _safe_indexing(X, target_class_indices)
-
             X_clusters = self.kmeans_estimator_.fit_predict(X)
             valid_clusters = []
             cluster_sparsities = []

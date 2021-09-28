@@ -6,6 +6,7 @@ from sklearn.utils._testing import assert_array_equal
 
 from sklearn.cluster import KMeans
 from sklearn.cluster import MiniBatchKMeans
+from sklearn.datasets import make_classification
 from sklearn.neighbors import NearestNeighbors
 
 from imblearn.over_sampling import KMeansSMOTE
@@ -92,19 +93,19 @@ def test_sample_kmeans_not_enough_clusters():
     X = rng.randn(30, 2)
     y = np.array([1] * 20 + [0] * 10)
 
-    smote = KMeansSMOTE(random_state=42, kmeans_estimator=30, k_neighbors=2)
+    smote = KMeansSMOTE(random_state=42, kmeans_estimator=10, k_neighbors=2)
     with pytest.raises(RuntimeError):
         smote.fit_resample(X, y)
 
 
 @pytest.mark.parametrize("density_exponent", ["auto", 2])
-@pytest.mark.parametrize("cluster_balance_threshold", ["auto", 0.8])
-def test_sample_kmeans_density_estimation(
-    data, density_exponent, cluster_balance_threshold
-):
-    X, y = data
+@pytest.mark.parametrize("cluster_balance_threshold", ["auto", 0.5])
+def test_sample_kmeans_density_estimation(density_exponent, cluster_balance_threshold):
+    X, y = make_classification(
+        n_samples=10_000, n_classes=2, weights=[0.1, 0.9], random_state=42
+    )
     smote = KMeansSMOTE(
-        random_state=42,
+        random_state=0,
         density_exponent=density_exponent,
         cluster_balance_threshold=cluster_balance_threshold,
     )
