@@ -98,8 +98,8 @@ def test_sample_kmeans_not_enough_clusters():
         smote.fit_resample(X, y)
 
 
-@pytest.mark.parametrize("density_exponent", ["auto", 2])
-@pytest.mark.parametrize("cluster_balance_threshold", ["auto", 0.5])
+@pytest.mark.parametrize("density_exponent", ["auto", 18])
+@pytest.mark.parametrize("cluster_balance_threshold", ["auto", 0.2])
 def test_sample_kmeans_density_estimation(density_exponent, cluster_balance_threshold):
     X, y = make_classification(
         n_samples=10_000, n_classes=2, weights=[0.1, 0.9], random_state=42
