@@ -52,8 +52,7 @@ R_TOL = 1e-4
 
 
 class NoFit:
-    """Small class to test parameter dispatching.
-    """
+    """Small class to test parameter dispatching."""
 
     def __init__(self, a=None, b=None):
         self.a = a
@@ -114,8 +113,7 @@ class Mult(BaseEstimator):
 
 
 class FitParamT(BaseEstimator):
-    """Mock classifier
-    """
+    """Mock classifier"""
 
     def __init__(self):
         self.successful = False
@@ -170,8 +168,7 @@ class DummySampler(NoTrans):
 
 
 class FitTransformSample(NoTrans):
-    """Estimator implementing both transform and sample
-    """
+    """Estimator implementing both transform and sample"""
 
     def fit(self, X, y, should_succeed=False):
         pass
@@ -353,7 +350,10 @@ def test_pipeline_methods_preprocessing_svm():
     scaler = StandardScaler()
     pca = PCA(n_components=2, svd_solver="randomized", whiten=True)
     clf = SVC(
-        gamma="scale", probability=True, random_state=0, decision_function_shape="ovr",
+        gamma="scale",
+        probability=True,
+        random_state=0,
+        decision_function_shape="ovr",
     )
 
     for preprocessing in [scaler, pca]:
@@ -682,7 +682,8 @@ def test_pipeline_memory_transformer():
         assert_array_equal(pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(
-            pipe.named_steps["transf"].means_, cached_pipe.named_steps["transf"].means_,
+            pipe.named_steps["transf"].means_,
+            cached_pipe.named_steps["transf"].means_,
         )
         assert not hasattr(transf, "means_")
         # Check that we are reading the cache while fitting
@@ -694,7 +695,8 @@ def test_pipeline_memory_transformer():
         assert_array_equal(pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(
-            pipe.named_steps["transf"].means_, cached_pipe.named_steps["transf"].means_,
+            pipe.named_steps["transf"].means_,
+            cached_pipe.named_steps["transf"].means_,
         )
         assert cached_pipe.named_steps["transf"].timestamp_ == expected_ts
         # Create a new pipeline with cloned estimators
@@ -755,7 +757,8 @@ def test_pipeline_memory_sampler():
         assert_array_equal(pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(
-            pipe.named_steps["transf"].means_, cached_pipe.named_steps["transf"].means_,
+            pipe.named_steps["transf"].means_,
+            cached_pipe.named_steps["transf"].means_,
         )
         assert not hasattr(transf, "means_")
         # Check that we are reading the cache while fitting
@@ -767,7 +770,8 @@ def test_pipeline_memory_sampler():
         assert_array_equal(pipe.predict_log_proba(X), cached_pipe.predict_log_proba(X))
         assert_array_equal(pipe.score(X, y), cached_pipe.score(X, y))
         assert_array_equal(
-            pipe.named_steps["transf"].means_, cached_pipe.named_steps["transf"].means_,
+            pipe.named_steps["transf"].means_,
+            cached_pipe.named_steps["transf"].means_,
         )
         assert cached_pipe.named_steps["transf"].timestamp_ == expected_ts
         # Create a new pipeline with cloned estimators
@@ -1187,7 +1191,7 @@ def test_resampler_last_stage_passthrough():
     pipe.fit_resample(X, y)
 
 
-def test_pipeline_score_samples_pca_lof():
+def test_pipeline_score_samples_pca_lof_binary():
     X, y = make_classification(
         n_classes=2,
         class_sep=2,
@@ -1233,7 +1237,8 @@ def test_score_samples_on_pipeline_without_score_samples():
 def test_pipeline_param_error():
     clf = make_pipeline(LogisticRegression())
     with pytest.raises(
-        ValueError, match="Pipeline.fit does not accept the sample_weight parameter",
+        ValueError,
+        match="Pipeline.fit does not accept the sample_weight parameter",
     ):
         clf.fit([[0], [0]], [0, 1], sample_weight=[1, 1])
 
@@ -1317,7 +1322,7 @@ def test_verbose(est, method, pattern, capsys):
     assert re.match(pattern, capsys.readouterr().out)
 
 
-def test_pipeline_score_samples_pca_lof():
+def test_pipeline_score_samples_pca_lof_multiclass():
     X, y = load_iris(return_X_y=True)
     sampling_strategy = {0: 50, 1: 30, 2: 20}
     X, y = make_imbalance(X, y, sampling_strategy=sampling_strategy)

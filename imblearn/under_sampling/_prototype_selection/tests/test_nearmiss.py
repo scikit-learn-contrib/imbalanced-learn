@@ -224,7 +224,9 @@ def test_nm_fit_resample_nn_obj():
     ]
     for version_idx, version in enumerate(VERSION_NEARMISS):
         nm = NearMiss(
-            sampling_strategy=sampling_strategy, version=version, n_neighbors=nn,
+            sampling_strategy=sampling_strategy,
+            version=version,
+            n_neighbors=nn,
         )
         X_resampled, y_resampled = nm.fit_resample(X, Y)
         assert_array_equal(X_resampled, X_gt[version_idx])

@@ -127,7 +127,10 @@ def test_ada_fit_resample_nn_obj():
 @pytest.mark.parametrize(
     "adasyn_params, err_msg",
     [
-        ({"sampling_strategy": {0: 9, 1: 12}}, "No samples will be generated.",),
+        (
+            {"sampling_strategy": {0: 9, 1: 12}},
+            "No samples will be generated.",
+        ),
         ({"n_neighbors": "rnd"}, "has to be one of"),
     ],
 )

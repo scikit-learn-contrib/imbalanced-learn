@@ -48,7 +48,10 @@ Y = np.array([1, 2, 2, 2, 1, 0, 1, 1, 1, 0])
 def test_easy_ensemble_classifier(n_estimators, base_estimator):
     # Check classification for various parameter settings.
     X, y = make_imbalance(
-        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
+        iris.data,
+        iris.target,
+        sampling_strategy={0: 20, 1: 25, 2: 50},
+        random_state=0,
     )
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
@@ -72,7 +75,10 @@ def test_easy_ensemble_classifier(n_estimators, base_estimator):
 def test_base_estimator():
     # Check base_estimator and its default values.
     X, y = make_imbalance(
-        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
+        iris.data,
+        iris.target,
+        sampling_strategy={0: 20, 1: 25, 2: 50},
+        random_state=0,
     )
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
@@ -91,7 +97,10 @@ def test_base_estimator():
 
 def test_bagging_with_pipeline():
     X, y = make_imbalance(
-        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
+        iris.data,
+        iris.target,
+        sampling_strategy={0: 20, 1: 25, 2: 50},
+        random_state=0,
     )
     estimator = EasyEnsembleClassifier(
         n_estimators=2,
@@ -109,7 +118,9 @@ def test_warm_start(random_state=42):
     for n_estimators in [5, 10]:
         if clf_ws is None:
             clf_ws = EasyEnsembleClassifier(
-                n_estimators=n_estimators, random_state=random_state, warm_start=True,
+                n_estimators=n_estimators,
+                random_state=random_state,
+                warm_start=True,
             )
         else:
             clf_ws.set_params(n_estimators=n_estimators)
@@ -182,7 +193,10 @@ def test_warm_start_equivalence():
 )
 def test_easy_ensemble_classifier_error(n_estimators, msg_error):
     X, y = make_imbalance(
-        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
+        iris.data,
+        iris.target,
+        sampling_strategy={0: 20, 1: 25, 2: 50},
+        random_state=0,
     )
     with pytest.raises(ValueError, match=msg_error):
         eec = EasyEnsembleClassifier(n_estimators=n_estimators)
@@ -191,7 +205,10 @@ def test_easy_ensemble_classifier_error(n_estimators, msg_error):
 
 def test_easy_ensemble_classifier_single_estimator():
     X, y = make_imbalance(
-        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
+        iris.data,
+        iris.target,
+        sampling_strategy={0: 20, 1: 25, 2: 50},
+        random_state=0,
     )
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
@@ -205,7 +222,10 @@ def test_easy_ensemble_classifier_single_estimator():
 
 def test_easy_ensemble_classifier_grid_search():
     X, y = make_imbalance(
-        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}, random_state=0,
+        iris.data,
+        iris.target,
+        sampling_strategy={0: 20, 1: 25, 2: 50},
+        random_state=0,
     )
 
     parameters = {
@@ -213,6 +233,8 @@ def test_easy_ensemble_classifier_grid_search():
         "base_estimator__n_estimators": [3, 4],
     }
     grid_search = GridSearchCV(
-        EasyEnsembleClassifier(base_estimator=AdaBoostClassifier()), parameters, cv=5,
+        EasyEnsembleClassifier(base_estimator=AdaBoostClassifier()),
+        parameters,
+        cv=5,
     )
     grid_search.fit(X, y)
