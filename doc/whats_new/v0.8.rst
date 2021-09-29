@@ -11,6 +11,7 @@ Maintenance
 ...........
 
 - Make `imbalanced-learn` compatible with `scikit-learn` 1.0.
+  :pr:`864` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Version 0.8.0
 =============
