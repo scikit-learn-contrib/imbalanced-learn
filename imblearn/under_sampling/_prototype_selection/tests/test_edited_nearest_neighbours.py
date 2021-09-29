@@ -135,7 +135,10 @@ def test_enn_check_kind_selection():
     `check_sel="mode"`."""
 
     X, y = make_classification(
-        n_samples=1000, n_classes=2, weights=[0.3, 0.7], random_state=0,
+        n_samples=1000,
+        n_classes=2,
+        weights=[0.3, 0.7],
+        random_state=0,
     )
 
     enn_all = EditedNearestNeighbours(kind_sel="all")

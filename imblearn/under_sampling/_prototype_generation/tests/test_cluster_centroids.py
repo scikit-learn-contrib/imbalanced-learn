@@ -70,7 +70,9 @@ def test_fit_resample_object():
     sampling_strategy = "auto"
     cluster = KMeans(random_state=RND_SEED)
     cc = ClusterCentroids(
-        sampling_strategy=sampling_strategy, random_state=RND_SEED, estimator=cluster,
+        sampling_strategy=sampling_strategy,
+        random_state=RND_SEED,
+        estimator=cluster,
     )
 
     X_resampled, y_resampled = cc.fit_resample(X, Y)

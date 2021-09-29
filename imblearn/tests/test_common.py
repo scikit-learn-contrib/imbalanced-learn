@@ -17,7 +17,6 @@ from sklearn.utils._testing import SkipTest
 
 from imblearn.utils.estimator_checks import parametrize_with_checks
 from imblearn.utils.estimator_checks import _set_checking_parameters
-from imblearn.utils.estimator_checks import _yield_all_checks
 from imblearn.utils.testing import all_estimators
 from imblearn.under_sampling import NearMiss
 
@@ -55,7 +54,12 @@ def test_estimators_compatibility_sklearn(estimator, check, request):
 def test_estimators_imblearn(estimator, check, request):
     # Common tests for estimator instances
     with ignore_warnings(
-        category=(FutureWarning, ConvergenceWarning, UserWarning, FutureWarning,)
+        category=(
+            FutureWarning,
+            ConvergenceWarning,
+            UserWarning,
+            FutureWarning,
+        )
     ):
         _set_checking_parameters(estimator)
         check(estimator)

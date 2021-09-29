@@ -147,11 +147,11 @@ def sensitivity_specificity_support(
     >>> y_true = np.array(['cat', 'dog', 'pig', 'cat', 'dog', 'pig'])
     >>> y_pred = np.array(['cat', 'pig', 'dog', 'cat', 'cat', 'dog'])
     >>> sensitivity_specificity_support(y_true, y_pred, average='macro')
-    (0.33333333333333331, 0.66666666666666663, None)
+    (0.33..., 0.66..., None)
     >>> sensitivity_specificity_support(y_true, y_pred, average='micro')
-    (0.33333333333333331, 0.66666666666666663, None)
+    (0.33..., 0.66..., None)
     >>> sensitivity_specificity_support(y_true, y_pred, average='weighted')
-    (0.33333333333333331, 0.66666666666666663, None)
+    (0.33..., 0.66..., None)
     """
     average_options = (None, "micro", "macro", "weighted", "samples")
     if average not in average_options and average != "binary":
@@ -367,11 +367,11 @@ def sensitivity_score(
     >>> y_true = [0, 1, 2, 0, 1, 2]
     >>> y_pred = [0, 2, 1, 0, 0, 1]
     >>> sensitivity_score(y_true, y_pred, average='macro')
-    0.33333333333333331
+    0.33...
     >>> sensitivity_score(y_true, y_pred, average='micro')
-    0.33333333333333331
+    0.33...
     >>> sensitivity_score(y_true, y_pred, average='weighted')
-    0.33333333333333331
+    0.33...
     >>> sensitivity_score(y_true, y_pred, average=None)
     array([ 1.,  0.,  0.])
     """
@@ -468,11 +468,11 @@ def specificity_score(
     >>> y_true = [0, 1, 2, 0, 1, 2]
     >>> y_pred = [0, 2, 1, 0, 0, 1]
     >>> specificity_score(y_true, y_pred, average='macro')
-    0.66666666666666663
+    0.66...
     >>> specificity_score(y_true, y_pred, average='micro')
-    0.66666666666666663
+    0.66...
     >>> specificity_score(y_true, y_pred, average='weighted')
-    0.66666666666666663
+    0.66...
     >>> specificity_score(y_true, y_pred, average=None)
     array([ 0.75,  0.5 ,  0.75])
     """
@@ -597,15 +597,15 @@ def geometric_mean_score(
     >>> geometric_mean_score(y_true, y_pred)
     0.0
     >>> geometric_mean_score(y_true, y_pred, correction=0.001)
-    0.010000000000000004
+    0.010...
     >>> geometric_mean_score(y_true, y_pred, average='macro')
-    0.47140452079103168
+    0.471...
     >>> geometric_mean_score(y_true, y_pred, average='micro')
-    0.47140452079103168
+    0.471...
     >>> geometric_mean_score(y_true, y_pred, average='weighted')
-    0.47140452079103168
+    0.471...
     >>> geometric_mean_score(y_true, y_pred, average=None)
-    array([ 0.8660254,  0.       ,  0.       ])
+    array([ 0.866...,  0.       ,  0.       ])
     """
     if average is None or average != "multiclass":
         sen, spe, _ = sensitivity_specificity_support(
@@ -721,7 +721,7 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
     >>> y_true = [1, 0, 0, 1, 0, 1]
     >>> y_pred = [0, 0, 1, 1, 0, 1]
     >>> print(gmean(y_true, y_pred, average=None))
-    [ 0.44444444  0.44444444]
+    [ 0.44...  0.44...]
     """
 
     def decorate(scoring_func):
@@ -1033,7 +1033,7 @@ def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
     >>> macro_averaged_mean_absolute_error(y_true_balanced, y_pred)
     0.5
     >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
-    0.16666666666666666
+    0.16...
     """
     _, y_true, y_pred = _check_targets(y_true, y_pred)
     if sample_weight is not None:
