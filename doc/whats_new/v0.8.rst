@@ -3,9 +3,10 @@
 Version 0.8.1
 =============
 
-**In development**
+September 29, 2020
 
 Changelog
+---------
 
 Maintenance
 ...........
