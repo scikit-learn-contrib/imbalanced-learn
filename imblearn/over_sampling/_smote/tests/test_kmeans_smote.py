@@ -91,8 +91,6 @@ def test_sample_kmeans_custom(data, k_neighbors, kmeans_estimator):
 def test_sample_kmeans_not_enough_clusters(data):
     X, y = data
     smote = KMeansSMOTE(
-        density_exponent=2,
-        cluster_balance_threshold=1,
         random_state=42,
         kmeans_estimator=10,
         k_neighbors=2,

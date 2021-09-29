@@ -220,6 +220,8 @@ class KMeansSMOTE(BaseSMOTE):
 
                 # the cluster is already considered balanced
                 if cluster_class_mean < balance_threshold:
+                    print(cluster_class_mean)
+                    print(balance_threshold)
                     continue
 
                 # not enough samples to apply SMOTE
