@@ -12,12 +12,9 @@ from numbers import Integral, Real
 import numpy as np
 
 from sklearn.base import clone
-from sklearn.neighbors._base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import column_or_1d
 from sklearn.utils.multiclass import type_of_target
-
-from ..exceptions import raise_isinstance_error
 
 SAMPLING_KIND = (
     "over-sampling",
