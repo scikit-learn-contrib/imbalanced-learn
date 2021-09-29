@@ -22,7 +22,7 @@ jobs:
 - template: build_tools/azure/posix.yml
   parameters:
     name: Linux_Runs
-    vmImage: ubuntu-18.04
+    vmImage: ubuntu-20.04
     matrix:
       pylatest_pip_openblas_pandas:
         DISTRIB: 'conda-pip-latest'
@@ -44,7 +44,6 @@ jobs:
       # i.e. numpy 1.13.3 and scipy 0.19
       py36_ubuntu_atlas:
         DISTRIB: 'ubuntu'
-        PYTHON_VERSION: '3.6'
         JOBLIB_VERSION: '*'
       pylatest_conda_pandas_keras:
         DISTRIB: 'conda'
@@ -64,6 +63,11 @@ jobs:
         TENSORFLOW_VERSION: '*'
         COVERAGE: 'true'
         TEST_DOCSTRINGS: 'true'
+      sklearn_0_24_conda:
+        DISTRIB: 'conda'
+        PYTHON_VERSION: '3.7'
+        SKLEARN_VERSION: '0.24.2'
+        INSTALL_MKL: 'true'
 
 - template: build_tools/azure/posix-32.yml
   parameters:
