@@ -123,3 +123,6 @@ doc/auto_examples/
 doc/generated/
 doc/references/generated/
 doc/bibtex/auto
+
+# MacOS
+.DS_Store
