@@ -32,9 +32,14 @@ if [[ "$DISTRIB" == "conda" ]]; then
     fi
 
     make_conda $TO_INSTALL
-    python -m pip install scikit-learn
 
     TO_INSTALL=""
+
+    if [[ -n "$SKLEARN_VERSION" ]]; then
+        TO_INSTALL="$TO_INSTALL scikit-learn=$SKLEARN_VERSION"
+    else
+        TO_INSTALL="$TO_INSTALL scikit-learn"
+    fi
 
     if [[ -n "$PANDAS_VERSION" ]]; then
         TO_INSTALL="$TO_INSTALL pandas=$PANDAS_VERSION"

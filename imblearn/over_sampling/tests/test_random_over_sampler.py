@@ -244,8 +244,13 @@ def test_random_over_sampler_shrinkage_behaviour(data):
         ({}, "`shrinkage` should contain a shrinkage factor for each class"),
         (-1, "The shrinkage factor needs to be >= 0"),
         ({0: -1}, "The shrinkage factor needs to be >= 0"),
-        ([1, ], "`shrinkage` should either be a positive floating number or")
-    ]
+        (
+            [
+                1,
+            ],
+            "`shrinkage` should either be a positive floating number or",
+        ),
+    ],
 )
 def test_random_over_sampler_shrinkage_error(data, shrinkage, err_msg):
     # check the validation of the shrinkage parameter

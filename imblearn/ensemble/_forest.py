@@ -422,14 +422,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         )
         if sample_weight is not None:
             sample_weight = _check_sample_weight(sample_weight, X)
+        self._n_features = X.shape[1]
 
         if issparse(X):
             # Pre-sort indices to avoid that each individual tree of the
             # ensemble sorts the indices.
             X.sort_indices()
-
-        # Remap output
-        _, self.n_features_ = X.shape
 
         y = np.atleast_1d(y)
         if y.ndim == 2 and y.shape[1] == 1:
@@ -627,5 +625,13 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         self.oob_score_ = oob_score / self.n_outputs_
 
+    @property
+    def n_features_(self):
+        """Number of features when fitting the estimator."""
+        return getattr(self.n_features_in_, self._n_features)
+
     def _more_tags(self):
-        return {"multioutput": False}
+        return {
+            "multioutput": False,
+            "multilabel": False,
+        }

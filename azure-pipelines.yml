@@ -3,23 +3,26 @@ jobs:
 - job: linting
   displayName: Linting
   pool:
-    vmImage: ubuntu-18.04
+    vmImage: ubuntu-20.04
   steps:
-    - bash: echo "##vso[task.prependpath]$CONDA/bin"
-      displayName: Add conda to PATH
-    - bash: sudo chown -R $USER $CONDA
-      displayName: Take ownership of conda installation
-    - bash: conda create --name flake8_env --yes flake8
-      displayName: Install flake8
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
     - bash: |
-        source activate flake8_env
+        # Include pytest compatibility with mypy
+        pip install pytest flake8 mypy==0.782 black==21.6b0
+      displayName: Install linters
+    - bash: |
+        black --check .
+      displayName: Run black
+    - bash: |
         ./build_tools/circle/linting.sh
       displayName: Run linting
 
 - template: build_tools/azure/posix.yml
   parameters:
     name: Linux_Runs
-    vmImage: ubuntu-18.04
+    vmImage: ubuntu-20.04
     matrix:
       pylatest_pip_openblas_pandas:
         DISTRIB: 'conda-pip-latest'
@@ -33,7 +36,7 @@ jobs:
 - template: build_tools/azure/posix.yml
   parameters:
     name: Linux
-    vmImage: ubuntu-18.04
+    vmImage: ubuntu-20.04
     dependsOn: [linting]
     matrix:
       # Linux environment to test that scikit-learn can be built against
@@ -41,7 +44,6 @@ jobs:
       # i.e. numpy 1.13.3 and scipy 0.19
       py36_ubuntu_atlas:
         DISTRIB: 'ubuntu'
-        PYTHON_VERSION: '3.6'
         JOBLIB_VERSION: '*'
       pylatest_conda_pandas_keras:
         DISTRIB: 'conda'
@@ -61,11 +63,16 @@ jobs:
         TENSORFLOW_VERSION: '*'
         COVERAGE: 'true'
         TEST_DOCSTRINGS: 'true'
+      sklearn_0_24_conda:
+        DISTRIB: 'conda'
+        PYTHON_VERSION: '3.7'
+        SKLEARN_VERSION: '0.24.2'
+        INSTALL_MKL: 'true'
 
 - template: build_tools/azure/posix-32.yml
   parameters:
     name: Linux32
-    vmImage: ubuntu-18.04
+    vmImage: ubuntu-20.04
     dependsOn: [linting]
     matrix:
       py36_ubuntu_atlas_32bit:

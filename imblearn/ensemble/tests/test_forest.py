@@ -32,7 +32,10 @@ def imbalanced_dataset():
     [
         ({"n_estimators": "whatever"}, "n_estimators must be an integer"),
         ({"n_estimators": -100}, "n_estimators must be greater than zero"),
-        ({"bootstrap": False, "oob_score": True}, "Out of bag estimation only",),
+        (
+            {"bootstrap": False, "oob_score": True},
+            "Out of bag estimation only",
+        ),
     ],
 )
 def test_balanced_random_forest_error(imbalanced_dataset, forest_params, err_msg):
@@ -105,7 +108,10 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
         X, y, random_state=42, stratify=y
     )
     est = BalancedRandomForestClassifier(
-        oob_score=True, random_state=0, n_estimators=1000, min_samples_leaf=2,
+        oob_score=True,
+        random_state=0,
+        n_estimators=1000,
+        min_samples_leaf=2,
     )
 
     est.fit(X_train, y_train)
@@ -135,12 +141,16 @@ def test_little_tree_with_small_max_samples():
 
     # First fit with no restriction on max samples
     est1 = BalancedRandomForestClassifier(
-        n_estimators=1, random_state=rng, max_samples=None,
+        n_estimators=1,
+        random_state=rng,
+        max_samples=None,
     )
 
     # Second fit with max samples restricted to just 2
     est2 = BalancedRandomForestClassifier(
-        n_estimators=1, random_state=rng, max_samples=2,
+        n_estimators=1,
+        random_state=rng,
+        max_samples=2,
     )
 
     est1.fit(X, y)

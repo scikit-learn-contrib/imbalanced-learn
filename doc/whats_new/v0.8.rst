@@ -1,5 +1,18 @@
 .. _changes_0_8:
 
+Version 0.8.1
+=============
+
+**In development**
+
+Changelog
+
+Maintenance
+...........
+
+- Make `imbalanced-learn` compatible with `scikit-learn` 1.0.
+  :pr:`864` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Version 0.8.0
 =============
 
