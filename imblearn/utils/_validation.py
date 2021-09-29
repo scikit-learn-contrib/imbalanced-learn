@@ -67,6 +67,14 @@ class ArraysTransformer:
         return ret
 
 
+def _is_neighbors_object(kneighbors_estimator):
+    neighbors_attributes = [
+        "kneighbors",
+        "kneighbors_graph"
+    ]
+    return all(hasattr(kneighbors_estimator, attr) for attr in neighbors_attributes)
+
+
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     """Check the objects is consistent to be a NN.
 
@@ -93,8 +101,10 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     """
     if isinstance(nn_object, Integral):
         return NearestNeighbors(n_neighbors=nn_object + additional_neighbor)
-    else:
+    elif _is_neighbors_object(nn_object):
         return clone(nn_object)
+    else:
+        raise TypeError("nn_object must be NearestNeighbors object or int")
 
 
 def _count_class_sample(y):
