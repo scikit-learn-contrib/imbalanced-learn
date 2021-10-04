@@ -75,10 +75,10 @@ def _is_neighbors_object(kneighbors_estimator):
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     """Check the objects is consistent to be a NN.
 
-    Several methods in imblearn relies on NN. Until version 0.4, these
-    objects can be passed at initialisation as an integer or a
-    KNeighborsMixin. After only KNeighborsMixin will be accepted. This
-    utility allows for type checking and raise if the type is wrong.
+    Several methods in imblearn relies on NN. These objects can
+    be passed at initialisation as an integer or as an object
+    that has KNeighborsMixin-like attributes. This utility will
+    create or clone said object, ensuring it is KNeighbors-like.
 
     Parameters
     ----------
@@ -101,7 +101,7 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     elif _is_neighbors_object(nn_object):
         return clone(nn_object)
     else:
-        raise TypeError("nn_object must be NearestNeighbors object or int")
+        raise ValueError("nn_object must be NearestNeighbors object or int")
 
 
 def _count_class_sample(y):
