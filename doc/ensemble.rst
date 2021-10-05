@@ -43,7 +43,7 @@ data set, this classifier will favor the majority classes::
 
 In :class:`BalancedBaggingClassifier`, each bootstrap sample will be further
 resampled to achieve the `sampling_strategy` desired. Therefore,
-:class:`BalancedBaggingClassifier` takes the same parameters than the
+:class:`BalancedBaggingClassifier` takes the same parameters as the
 scikit-learn :class:`~sklearn.ensemble.BaggingClassifier`. In addition, the
 sampling is controlled by the parameter `sampler` or the two parameters
 `sampling_strategy` and `replacement`, if one wants to use the
