@@ -37,7 +37,7 @@ def test_check_neighbors_object():
     estimator_cloned = check_neighbors_object(name, estimator)
     assert estimator.n_neighbors == estimator_cloned.n_neighbors
     n_neighbors = "rnd"
-    with pytest.raises(ValueError, match="has to be one of"):
+    with pytest.raises(ValueError, match="NearestNeighbors object or int"):
         check_neighbors_object(name, n_neighbors)
 
 

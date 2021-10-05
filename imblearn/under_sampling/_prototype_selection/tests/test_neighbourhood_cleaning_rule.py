@@ -37,7 +37,7 @@ Y = np.array([1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
     [
         ({"threshold_cleaning": -10}, "value between 0 and 1"),
         ({"threshold_cleaning": 10}, "value between 0 and 1"),
-        ({"n_neighbors": "rnd"}, "has to be one of"),
+        ({"n_neighbors": "rnd"}, "NearestNeighbors object or int"),
     ],
 )
 def test_ncr_error(ncr_params, err_msg):

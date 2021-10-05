@@ -99,7 +99,6 @@ def test_fit_hard_voting():
 @pytest.mark.parametrize(
     "cluster_centroids_params, err_msg",
     [
-        ({"estimator": "rnd"}, "has to be a KMeans clustering"),
         ({"voting": "unknown"}, "needs to be one of"),
     ],
 )

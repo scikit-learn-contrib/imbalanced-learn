@@ -39,14 +39,14 @@ VERSION_NEARMISS = (1, 2, 3)
     "nearmiss_params, err_msg",
     [
         ({"version": 1000}, "must be 1, 2 or 3"),
-        ({"version": 1, "n_neighbors": "rnd"}, "has to be one of"),
+        ({"version": 1, "n_neighbors": "rnd"}, "NearestNeighbors object or int"),
         (
             {
                 "version": 3,
                 "n_neighbors": NearestNeighbors(n_neighbors=3),
                 "n_neighbors_ver3": "rnd",
             },
-            "has to be one of",
+            "NearestNeighbors object or int",
         ),
     ],
 )

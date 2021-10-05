@@ -126,7 +126,7 @@ def test_enn_fit_resample_with_nn_object():
 def test_enn_not_good_object():
     nn = "rnd"
     enn = EditedNearestNeighbours(n_neighbors=nn, kind_sel="mode")
-    with pytest.raises(ValueError, match="has to be one of"):
+    with pytest.raises(ValueError, match="NearestNeighbors object or int"):
         enn.fit_resample(X, Y)
 
 
