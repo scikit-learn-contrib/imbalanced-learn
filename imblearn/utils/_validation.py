@@ -479,7 +479,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
         The type of sampling. Can be either ``'over-sampling'``,
         ``'under-sampling'``, or ``'clean-sampling'``.
 
-    kwargs : dict
+    **kwargs : dict
         Dictionary of additional keyword arguments to pass to
         ``sampling_strategy`` when this is a callable.
 
@@ -489,7 +489,6 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
         The converted and validated sampling target. Returns a dictionary with
         the key being the class target and the value being the desired
         number of samples.
-
     """
     if sampling_type not in SAMPLING_KIND:
         raise ValueError(

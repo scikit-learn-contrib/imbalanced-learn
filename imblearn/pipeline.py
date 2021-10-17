@@ -419,6 +419,7 @@ def make_pipeline(*steps, memory=None, verbose=False):
     Returns
     -------
     p : Pipeline
+        Returns an imbalanced-learn `Pipeline` instance that handles samplers.
 
     See Also
     --------

@@ -16,8 +16,7 @@ from ..utils._validation import _deprecate_positional_args
 def make_imbalance(
     X, y, *, sampling_strategy=None, random_state=None, verbose=False, **kwargs
 ):
-    """Turns a dataset into an imbalanced dataset with a specific sampling
-    strategy.
+    """Turn a dataset into an imbalanced dataset with a specific sampling strategy.
 
     A simple toy dataset to visualize clustering and classification
     algorithms.
@@ -52,7 +51,7 @@ def make_imbalance(
     verbose : bool, default=False
         Show information regarding the sampling.
 
-    kwargs : dict
+    **kwargs : dict
         Dictionary of additional keyword arguments to pass to
         ``sampling_strategy``.
 
@@ -62,7 +61,7 @@ def make_imbalance(
         The array containing the imbalanced data.
 
     y_resampled : ndarray of shape (n_samples_new)
-        The corresponding label of `X_resampled`
+        The corresponding label of `X_resampled`.
 
     Notes
     -----
