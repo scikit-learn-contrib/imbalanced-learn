@@ -15,9 +15,15 @@ def import_keras():
 
     def import_from_keras():
         try:
-            import keras
+            import keras  # noqa
 
-            return (keras.utils.Sequence,), True
+            try:
+                # Older versions of Keras provide the Sequence class directly in utils
+                from keras.utils import Sequence
+            except ImportError:
+                from keras.utils.data_utils import Sequence
+
+            return (Sequence,), True
         except ImportError:
             return tuple(), False
 
