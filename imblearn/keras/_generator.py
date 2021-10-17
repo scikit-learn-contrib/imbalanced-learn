@@ -17,13 +17,10 @@ def import_keras():
         try:
             import keras  # noqa
 
-            try:
+            if hasattr(keras.utils, "Sequence"):
                 # Older versions of Keras provide the Sequence class directly in utils
-                from keras.utils import Sequence
-            except ImportError:
-                from keras.utils.data_utils import Sequence
-
-            return (Sequence,), True
+                return (keras.utils.Sequence,), True
+            return (keras.utils.data_utils.Sequence,), True
         except ImportError:
             return tuple(), False
 
