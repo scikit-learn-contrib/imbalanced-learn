@@ -7,7 +7,7 @@ UNAMESTR=`uname`
 
 make_conda() {
     TO_INSTALL="$@"
-    conda create -n $VIRTUALENV --yes $TO_INSTALL
+    conda create -n $VIRTUALENV --yes $TO_INSTALL -c conda-forge
     source activate $VIRTUALENV
 }
 
