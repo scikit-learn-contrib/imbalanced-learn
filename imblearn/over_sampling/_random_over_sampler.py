@@ -57,6 +57,11 @@ class RandomOverSampler(BaseOverSampler):
 
     Attributes
     ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
     sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
@@ -67,6 +72,11 @@ class RandomOverSampler(BaseOverSampler):
         sample. When `shrinkage=None` a normal bootstrap will be generated.
 
         .. versionadded:: 0.8
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------

@@ -111,6 +111,9 @@ class BalancedBaggingClassifier(BaggingClassifier):
     estimators_ : list of estimators
         The collection of fitted base estimators.
 
+    sampler_ : sampler object
+        The validate sampler created from the `sampler` parameter.
+
     estimators_samples_ : list of ndarray
         The subset of drawn samples (i.e., the in-bag samples) for each base
         estimator. Each subset is defined by a boolean mask.
@@ -132,6 +135,11 @@ class BalancedBaggingClassifier(BaggingClassifier):
         set. If n_estimators is small it might be possible that a data point
         was never left out during the bootstrap. In this case,
         ``oob_decision_function_`` might contain NaN.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------

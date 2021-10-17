@@ -68,7 +68,10 @@ class RUSBoostClassifier(AdaBoostClassifier):
     estimators_ : list of classifiers
         The collection of fitted sub-estimators.
 
-    samplers_ : list of RandomUnderSampler
+    base_sampler_ : :class:`~imblearn.under_sampling.RandomUnderSampler`
+        The base sampler used to generate the subsequent samplers.
+
+    samplers_ : list of :class:`~imblearn.under_sampling.RandomUnderSampler`
         The collection of fitted samplers.
 
     pipelines_ : list of Pipeline
@@ -89,6 +92,11 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
     feature_importances_ : ndarray of shape (n_features,)
         The feature importances if supported by the ``base_estimator``.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------

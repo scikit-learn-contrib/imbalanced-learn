@@ -140,6 +140,13 @@ def _identity(X, y):
     return X, y
 
 
+def is_sampler(estimator):
+    """Return True if the given estimator is a sampler, False otherwise."""
+    if estimator._estimator_type == "sampler":
+        return True
+    return False
+
+
 class FunctionSampler(BaseSampler):
     """Construct a sampler from calling an arbitrary callable.
 
@@ -166,9 +173,20 @@ class FunctionSampler(BaseSampler):
 
         .. versionadded:: 0.6
 
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
     See Also
     --------
-
     sklearn.preprocessing.FunctionTransfomer : Stateless transformer.
 
     Notes

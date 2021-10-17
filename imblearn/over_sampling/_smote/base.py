@@ -231,6 +231,21 @@ class SMOTE(BaseSMOTE):
 
     {n_jobs}
 
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    nn_k_ : estimator object
+        Validated k-nearest neighbours created from the `k_neighbors` parameter.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
     See Also
     --------
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
@@ -627,6 +642,21 @@ class SMOTEN(SMOTE):
         find the k_neighbors.
 
     {n_jobs}
+
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    nn_k_ : estimator object
+        Validated k-nearest neighbours created from the `k_neighbors` parameter.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------

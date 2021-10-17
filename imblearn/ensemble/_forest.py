@@ -230,10 +230,17 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     Attributes
     ----------
-    estimators_ : list of DecisionTreeClassifier
+    base_estimator_ : :class:`~sklearn.tree.DecisionTreeClassifier` instance
+        The child estimator template used to create the collection of fitted
+        sub-estimators.
+
+    estimators_ : list of :class:`~sklearn.tree.DecisionTreeClassifier`
         The collection of fitted sub-estimators.
 
-    samplers_ : list of RandomUnderSampler
+    base_sampler_ : :class:`~imblearn.under_sampling.RandomUnderSampler`
+        The base sampler used to construct the subsequent list of samplers.
+
+    samplers_ : list of :class:`~imblearn.under_sampling.RandomUnderSampler`
         The collection of fitted samplers.
 
     pipelines_ : list of Pipeline.
@@ -249,6 +256,11 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     n_features_ : int
         The number of features when ``fit`` is performed.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     n_outputs_ : int
         The number of outputs when ``fit`` is performed.
@@ -628,7 +640,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     @property
     def n_features_(self):
         """Number of features when fitting the estimator."""
-        return getattr(self.n_features_in_, self._n_features)
+        return getattr(self.n_features_in_, "n_features_", self._n_features)
 
     def _more_tags(self):
         return {

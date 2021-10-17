@@ -57,10 +57,23 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
     Attributes
     ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    estimator_ : estimator object
+        The validated classifier used to estimate the instance hardness of the samples.
+
     sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------

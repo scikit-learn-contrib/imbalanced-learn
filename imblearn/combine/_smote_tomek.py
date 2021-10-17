@@ -49,6 +49,24 @@ class SMOTETomek(BaseSampler):
 
     {n_jobs}
 
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    smote_ : sampler object
+        The validated :class:`~imblearn.over_sampling.SMOTE` instance.
+
+    tomek_ : sampler object
+        The validated :class:`~imblearn.under_sampling.TomekLinks` instance.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
     See Also
     --------
     SMOTEENN : Over-sample using SMOTE followed by under-sampling using Edited
