@@ -11,7 +11,7 @@ IF "%PYTHON_ARCH%"=="64" (
     call deactivate
     @rem Clean up any left-over from a previous build
     conda remove --all -q -y -n %VIRTUALENV%
-    conda create -n %VIRTUALENV% -q -y python=%PYTHON_VERSION% numpy scipy cython wheel joblib git
+    conda create -n %VIRTUALENV% -q -y python=%PYTHON_VERSION% numpy scipy cython wheel joblib git -c conda-forge
 
     call activate %VIRTUALENV%
 

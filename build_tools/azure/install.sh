@@ -65,7 +65,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     fi
 
     if [[ -n "$TO_INSTALL" ]]; then
-       conda install --yes $TO_INSTALL
+       conda install --yes $TO_INSTALL -c conda-forge
     fi
 
     if [[ -n "$KERAS_VERSION" ]]; then
