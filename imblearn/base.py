@@ -141,7 +141,18 @@ def _identity(X, y):
 
 
 def is_sampler(estimator):
-    """Return True if the given estimator is a sampler, False otherwise."""
+    """Return True if the given estimator is a sampler, False otherwise.
+
+    Parameters
+    ----------
+    estimator : object
+        Estimator to test.
+
+    Returns
+    -------
+    is_sampler : bool
+        True if estimator is a sampler, otherwise False.
+    """
     if estimator._estimator_type == "sampler":
         return True
     return False
