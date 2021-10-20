@@ -42,6 +42,7 @@ with warnings.catch_warnings():
 
 # functions to ignore args / docstring of
 _DOCSTRING_IGNORES = [
+    "RUSBoostClassifier",  # TODO remove after releasing scikit-learn 1.0.1
     "ValueDifferenceMetric",
 ]
 
