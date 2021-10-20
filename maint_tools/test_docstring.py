@@ -1,8 +1,13 @@
+import inspect
+import importlib
 import re
+import pkgutil
 from inspect import signature
 from typing import Optional
 
 import pytest
+
+import imblearn
 from imblearn.utils.testing import all_estimators
 
 numpydoc_validation = pytest.importorskip("numpydoc.validate")
@@ -15,30 +20,15 @@ DOCSTRING_WHITELIST = [
     "AllKNN$",
     "AllKNN.",
     "BalancedBaggingClassifier$",
-    "BalancedBaggingClassifier.estimators_samples_",
-    "BalancedBaggingClassifier.fit",
-    "BalancedBaggingClassifier.get_params",
-    "BalancedBaggingClassifier.predict",
-    "BalancedBaggingClassifier.score",
-    "BalancedBaggingClassifier.set_params",
+    "BalancedBaggingClassifier.",
     "BalancedRandomForestClassifier$",
-    "BalancedRandomForestClassifier.apply",
-    "BalancedRandomForestClassifier.feature_importances_",
-    "BalancedRandomForestClassifier.fit",
-    "BalancedRandomForestClassifier.predict$",
-    "BalancedRandomForestClassifier.score",
-    "BalancedRandomForestClassifier.set_params",
+    "BalancedRandomForestClassifier.",
     "ClusterCentroids$",
     "ClusterCentroids.",
     "CondensedNearestNeighbour$",
     "CondensedNearestNeighbour.",
     "EasyEnsembleClassifier$",
-    "EasyEnsembleClassifier.estimators_samples_",
-    "EasyEnsembleClassifier.fit",
-    "EasyEnsembleClassifier.get_params",
-    "EasyEnsembleClassifier.predict",
-    "EasyEnsembleClassifier.score",
-    "EasyEnsembleClassifier.set_params",
+    "EasyEnsembleClassifier.",
     "EditedNearestNeighbours$",
     "EditedNearestNeighbours.",
     "FunctionSampler$",
@@ -54,10 +44,7 @@ DOCSTRING_WHITELIST = [
     "OneSidedSelection$",
     "OneSidedSelection.",
     "Pipeline$",
-    "Pipeline.fit$",
-    "Pipeline.fit_transform",
-    "Pipeline.fit_resample",
-    "Pipeline.fit_predict",
+    "Pipeline.",
     "RUSBoostClassifier$",
     "RUSBoostClassifier.",
     "RandomOverSampler$",
@@ -66,7 +53,14 @@ DOCSTRING_WHITELIST = [
     "RandomUnderSampler.",
     "TomekLinks$",
     "TomekLinks",
+    "ValueDifferenceMetric$",
+    "ValueDifferenceMetric.",
 ]
+
+FUNCTION_DOCSTRING_IGNORE_LIST = [
+    "imblearn.tensorflow._generator.balanced_batch_generator",
+]
+FUNCTION_DOCSTRING_IGNORE_LIST = set(FUNCTION_DOCSTRING_IGNORE_LIST)
 
 
 def get_all_methods():
@@ -88,7 +82,48 @@ def get_all_methods():
             yield Estimator, method
 
 
-def filter_errors(errors, method):
+def _is_checked_function(item):
+    if not inspect.isfunction(item):
+        return False
+
+    if item.__name__.startswith("_"):
+        return False
+
+    mod = item.__module__
+    if not mod.startswith("imblearn.") or mod.endswith("estimator_checks"):
+        return False
+
+    return True
+
+
+def get_all_functions_names():
+    """Get all public functions define in the imblearn module"""
+    modules_to_ignore = {
+        "tests",
+        "estimator_checks",
+    }
+
+    all_functions_names = set()
+    for module_finder, module_name, ispkg in pkgutil.walk_packages(
+        path=imblearn.__path__, prefix="imblearn."
+    ):
+        module_parts = module_name.split(".")
+        if (
+            any(part in modules_to_ignore for part in module_parts)
+            or "._" in module_name
+        ):
+            continue
+
+        module = importlib.import_module(module_name)
+        functions = inspect.getmembers(module, _is_checked_function)
+        for name, func in functions:
+            full_name = f"{func.__module__}.{func.__name__}"
+            all_functions_names.add(full_name)
+
+    return sorted(all_functions_names)
+
+
+def filter_errors(errors, method, Estimator=None):
     """
     Ignore some errors based on the method type.
 
@@ -100,11 +135,21 @@ def filter_errors(errors, method):
         #   (as we may need refer to the name of the returned
         #    object)
         #  - GL01: Docstring text (summary) should start in the line
-        #  immediately after the opening quotes (not in the same line,
-        #  or leaving a blank line in between)
+        #    immediately after the opening quotes (not in the same line,
+        #    or leaving a blank line in between)
+        #  - GL02: If there's a blank line, it should be before the
+        #    first line of the Returns section, not after (it allows to have
+        #    short docstrings for properties).
 
-        if code in ["RT02", "GL01"]:
+        if code in ["RT02", "GL01", "GL02"]:
             continue
+
+        # Ignore PR02: Unknown parameters for properties. We sometimes use
+        # properties for ducktyping, i.e. SGDClassifier.predict_proba
+        if code == "PR02" and Estimator is not None and method is not None:
+            method_obj = getattr(Estimator, method)
+            if isinstance(method_obj, property):
+                continue
 
         # Following codes are only taken into account for the
         # top level class docstrings:
@@ -170,6 +215,24 @@ def repr_errors(res, estimator=None, method: Optional[str] = None) -> str:
         ]
     )
     return msg
+
+
+@pytest.mark.parametrize("function_name", get_all_functions_names())
+def test_function_docstring(function_name, request):
+    """Check function docstrings using numpydoc."""
+    if function_name in FUNCTION_DOCSTRING_IGNORE_LIST:
+        request.applymarker(
+            pytest.mark.xfail(run=False, reason="TODO pass numpydoc validation")
+        )
+
+    res = numpydoc_validation.validate(function_name)
+
+    res["errors"] = list(filter_errors(res["errors"], method="function"))
+
+    if res["errors"]:
+        msg = repr_errors(res, method=f"Tested function: {function_name}")
+
+        raise ValueError(msg)
 
 
 @pytest.mark.parametrize("Estimator, method", get_all_methods())

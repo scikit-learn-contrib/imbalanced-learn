@@ -73,11 +73,22 @@ class EasyEnsembleClassifier(BaggingClassifier):
     estimators_ : list of estimators
         The collection of fitted base estimators.
 
+    estimators_samples_ : list of arrays
+        The subset of drawn samples for each base estimator.
+
+    estimators_features_ : list of arrays
+        The subset of drawn features for each base estimator.
+
     classes_ : array, shape (n_classes,)
         The classes labels.
 
     n_classes_ : int or list
         The number of classes.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------

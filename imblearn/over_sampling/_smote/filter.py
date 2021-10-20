@@ -65,6 +65,24 @@ class BorderlineSMOTE(BaseSMOTE):
         The type of SMOTE algorithm to use one of the following options:
         ``'borderline-1'``, ``'borderline-2'``.
 
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    nn_k_ : estimator object
+        Validated k-nearest neighbours created from the `k_neighbors` parameter.
+
+    nn_m_ : estimator object
+        Validated m-nearest neighbours created from the `m_neighbors` parameter.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
     See Also
     --------
     SMOTE : Over-sample using SMOTE.
@@ -263,6 +281,28 @@ class SVMSMOTE(BaseSMOTE):
 
     out_step : float, default=0.5
         Step size when extrapolating.
+
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    nn_k_ : estimator object
+        Validated k-nearest neighbours created from the `k_neighbors` parameter.
+
+    nn_m_ : estimator object
+        Validated m-nearest neighbours created from the `m_neighbors` parameter.
+
+    svm_estimator_ : estimator object
+        The validated SVM classifier used to detect samples from which to
+        generate new synthetic samples.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------

@@ -66,6 +66,10 @@ class ValueDifferenceMetric(BaseEstimator):
         List of length `n_features` containing the conditional probabilities
         for each category given a class.
 
+    See Also
+    --------
+    sklearn.neighbors.DistanceMetric : Interface for fast metric computation.
+
     Notes
     -----
     The input data `X` are expected to be encoded by an
@@ -118,7 +122,8 @@ class ValueDifferenceMetric(BaseEstimator):
 
         Returns
         -------
-        self
+        self : object
+            Return the instance itself.
         """
         check_consistent_length(X, y)
         X, y = self._validate_data(X, y, reset=True, dtype=np.int32)

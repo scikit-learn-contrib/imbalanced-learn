@@ -32,7 +32,7 @@ def all_estimators(
 
     Parameters
     ----------
-    type_filter : string, list of string, or None, default=None
+    type_filter : str, list of str, or None, default=None
         Which kind of estimators should be returned. If None, no
         filter is applied and all estimators are returned.  Possible
         values are 'sampler' to get estimators only of these specific
@@ -44,7 +44,6 @@ def all_estimators(
     estimators : list of tuples
         List of (name, class), where ``name`` is the class name as string
         and ``class`` is the actual type of the class.
-
     """
     from ..base import SamplerMixin
 
@@ -117,15 +116,15 @@ def all_estimators(
 
 @contextmanager
 def warns(expected_warning, match=None):
-    r"""Assert that a warning is raised with an optional matching pattern
-
-    Assert that a code block/function call warns ``expected_warning``
-    and raise a failure exception otherwise. It can be used within a context
-    manager ``with``.
+    r"""Assert that a warning is raised with an optional matching pattern.
 
     .. deprecated:: 0.8
        This function is deprecated in 0.8 and will be removed in 0.10.
        Use `pytest.warns()` instead.
+
+    Assert that a code block/function call warns ``expected_warning``
+    and raise a failure exception otherwise. It can be used within a context
+    manager ``with``.
 
     Parameters
     ----------
@@ -135,9 +134,9 @@ def warns(expected_warning, match=None):
     match : regex str or None, optional
         The pattern to be matched. By default, no check is done.
 
-    Returns
-    -------
-    None
+    Yields
+    ------
+    Nothing.
 
     Examples
     --------

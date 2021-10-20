@@ -46,6 +46,21 @@ class ADASYN(BaseOverSampler):
 
     {n_jobs}
 
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    nn_ : estimator object
+        Validated K-nearest Neighbours estimator linked to the parameter `n_neighbors`.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
     See Also
     --------
     SMOTE : Over-sample using SMOTE.

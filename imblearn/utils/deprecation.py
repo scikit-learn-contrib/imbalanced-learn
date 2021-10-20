@@ -16,7 +16,7 @@ def deprecate_parameter(sampler, version_deprecation, param_deprecated, new_para
 
     version_deprecation : str,
         The version from which the parameter will be deprecated. The format
-        should be ``'x.y'``
+        should be ``'x.y'``.
 
     param_deprecated : str,
         The parameter being deprecated.
@@ -24,11 +24,6 @@ def deprecate_parameter(sampler, version_deprecation, param_deprecated, new_para
     new_param : str,
         The parameter used instead of the deprecated parameter. By default, no
         parameter is expected.
-
-    Returns
-    -------
-    None
-
     """
     x, y = version_deprecation.split(".")
     version_removed = x + "." + str(int(y) + 2)
