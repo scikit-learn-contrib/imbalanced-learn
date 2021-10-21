@@ -136,7 +136,7 @@ calling ``fit_generator`` method to train the model. To illustrate, we will
 define a logistic regression model::
 
   >>> import keras
-  >>> y = keras.utils.to_categorical(y, 3)
+  >>> y = keras.utils.np_utils.to_categorical(y, 3)
   >>> model = keras.Sequential()
   >>> model.add(keras.layers.Dense(y.shape[1], input_dim=X.shape[1],
   ...                              activation='softmax'))

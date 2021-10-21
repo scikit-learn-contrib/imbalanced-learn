@@ -8,7 +8,7 @@ from sklearn.datasets import load_iris
 keras = pytest.importorskip("keras")
 from keras.models import Sequential  # noqa: E402
 from keras.layers import Dense  # noqa: E402
-from keras.utils import to_categorical  # noqa: E402
+from keras.utils.np_utils import to_categorical  # noqa: E402
 
 from imblearn.datasets import make_imbalance  # noqa: E402
 from imblearn.under_sampling import ClusterCentroids  # noqa: E402
