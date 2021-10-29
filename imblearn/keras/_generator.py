@@ -15,7 +15,7 @@ def import_keras():
 
     def import_from_keras():
         try:
-            import keras
+            import keras  # noqa
 
             return (keras.utils.Sequence,), True
         except ImportError:
@@ -33,7 +33,10 @@ def import_keras():
     ParentClassTensorflow, has_keras_tf = import_from_tensforflow()
     has_keras = has_keras_k or has_keras_tf
     if has_keras:
-        ParentClass = ParentClassKeras + ParentClassTensorflow
+        if has_keras_k:
+            ParentClass = ParentClassKeras
+        else:
+            ParentClass = ParentClassTensorflow
     else:
         ParentClass = (object,)
     return ParentClass, has_keras

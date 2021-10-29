@@ -348,7 +348,7 @@ def check_samplers_multiclass_ova(name, sampler_orig):
         weights=[0.2, 0.3, 0.5],
         random_state=0,
     )
-    y_ova = label_binarize(y, np.unique(y))
+    y_ova = label_binarize(y, classes=np.unique(y))
     X_res, y_res = sampler.fit_resample(X, y)
     X_res_ova, y_res_ova = sampler.fit_resample(X, y_ova)
     assert_allclose(X_res, X_res_ova)

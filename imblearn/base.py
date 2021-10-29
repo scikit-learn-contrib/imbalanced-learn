@@ -82,7 +82,9 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
 
         output = self._fit_resample(X, y)
 
-        y_ = label_binarize(output[1], np.unique(y)) if binarize_y else output[1]
+        y_ = (
+            label_binarize(output[1], classes=np.unique(y)) if binarize_y else output[1]
+        )
 
         X_, y_ = arrays_transformer.transform(output[0], y_)
         return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
@@ -138,6 +140,24 @@ def _identity(X, y):
     return X, y
 
 
+def is_sampler(estimator):
+    """Return True if the given estimator is a sampler, False otherwise.
+
+    Parameters
+    ----------
+    estimator : object
+        Estimator to test.
+
+    Returns
+    -------
+    is_sampler : bool
+        True if estimator is a sampler, otherwise False.
+    """
+    if estimator._estimator_type == "sampler":
+        return True
+    return False
+
+
 class FunctionSampler(BaseSampler):
     """Construct a sampler from calling an arbitrary callable.
 
@@ -164,9 +184,20 @@ class FunctionSampler(BaseSampler):
 
         .. versionadded:: 0.6
 
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
     See Also
     --------
-
     sklearn.preprocessing.FunctionTransfomer : Stateless transformer.
 
     Notes
@@ -284,7 +315,11 @@ class FunctionSampler(BaseSampler):
 
         if self.validate:
 
-            y_ = label_binarize(output[1], np.unique(y)) if binarize_y else output[1]
+            y_ = (
+                label_binarize(output[1], classes=np.unique(y))
+                if binarize_y
+                else output[1]
+            )
             X_, y_ = arrays_transformer.transform(output[0], y_)
             return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 

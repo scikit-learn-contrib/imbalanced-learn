@@ -67,6 +67,12 @@ class Pipeline(pipeline.Pipeline):
         Read-only attribute to access any step parameter by user given name.
         Keys are step names and values are steps parameters.
 
+    classes_ : ndarray of shape (n_classes,)
+        The classes labels.
+
+    n_features_in_ : int
+        Number of features seen during first step `fit` method.
+
     See Also
     --------
     make_pipeline : Helper function to make pipeline.
@@ -419,6 +425,7 @@ def make_pipeline(*steps, memory=None, verbose=False):
     Returns
     -------
     p : Pipeline
+        Returns an imbalanced-learn `Pipeline` instance that handles samplers.
 
     See Also
     --------

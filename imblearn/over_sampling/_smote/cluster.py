@@ -69,6 +69,11 @@ class KMeansSMOTE(BaseSMOTE):
 
     Attributes
     ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
     kmeans_estimator_ : estimator
         The fitted clustering method used before to apply SMOTE.
 
@@ -77,6 +82,11 @@ class KMeansSMOTE(BaseSMOTE):
 
     cluster_balance_threshold_ : float
         The threshold used during ``fit`` for calling a cluster balanced.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------
@@ -199,9 +209,6 @@ class KMeansSMOTE(BaseSMOTE):
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
                 continue
-
-            # target_class_indices = np.flatnonzero(y == class_sample)
-            # X_class = _safe_indexing(X, target_class_indices)
 
             X_clusters = self.kmeans_estimator_.fit_predict(X)
             valid_clusters = []

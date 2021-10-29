@@ -230,10 +230,17 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     Attributes
     ----------
-    estimators_ : list of DecisionTreeClassifier
+    base_estimator_ : :class:`~sklearn.tree.DecisionTreeClassifier` instance
+        The child estimator template used to create the collection of fitted
+        sub-estimators.
+
+    estimators_ : list of :class:`~sklearn.tree.DecisionTreeClassifier`
         The collection of fitted sub-estimators.
 
-    samplers_ : list of RandomUnderSampler
+    base_sampler_ : :class:`~imblearn.under_sampling.RandomUnderSampler`
+        The base sampler used to construct the subsequent list of samplers.
+
+    samplers_ : list of :class:`~imblearn.under_sampling.RandomUnderSampler`
         The collection of fitted samplers.
 
     pipelines_ : list of Pipeline.
@@ -249,6 +256,11 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     n_features_ : int
         The number of features when ``fit`` is performed.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     n_outputs_ : int
         The number of outputs when ``fit`` is performed.
@@ -422,14 +434,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         )
         if sample_weight is not None:
             sample_weight = _check_sample_weight(sample_weight, X)
+        self._n_features = X.shape[1]
 
         if issparse(X):
             # Pre-sort indices to avoid that each individual tree of the
             # ensemble sorts the indices.
             X.sort_indices()
-
-        # Remap output
-        _, self.n_features_ = X.shape
 
         y = np.atleast_1d(y)
         if y.ndim == 2 and y.shape[1] == 1:
@@ -627,5 +637,13 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         self.oob_score_ = oob_score / self.n_outputs_
 
+    @property
+    def n_features_(self):
+        """Number of features when fitting the estimator."""
+        return getattr(self.n_features_in_, "n_features_", self._n_features)
+
     def _more_tags(self):
-        return {"multioutput": False}
+        return {
+            "multioutput": False,
+            "multilabel": False,
+        }

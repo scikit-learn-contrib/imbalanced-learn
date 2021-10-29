@@ -50,7 +50,7 @@ def sensitivity_specificity_support(
     warn_for=("sensitivity", "specificity"),
     sample_weight=None,
 ):
-    """Compute sensitivity, specificity, and support for each class
+    """Compute sensitivity, specificity, and support for each class.
 
     The sensitivity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
     of true positives and ``fn`` the number of false negatives. The sensitivity
@@ -147,11 +147,11 @@ def sensitivity_specificity_support(
     >>> y_true = np.array(['cat', 'dog', 'pig', 'cat', 'dog', 'pig'])
     >>> y_pred = np.array(['cat', 'pig', 'dog', 'cat', 'cat', 'dog'])
     >>> sensitivity_specificity_support(y_true, y_pred, average='macro')
-    (0.33333333333333331, 0.66666666666666663, None)
+    (0.33..., 0.66..., None)
     >>> sensitivity_specificity_support(y_true, y_pred, average='micro')
-    (0.33333333333333331, 0.66666666666666663, None)
+    (0.33..., 0.66..., None)
     >>> sensitivity_specificity_support(y_true, y_pred, average='weighted')
-    (0.33333333333333331, 0.66666666666666663, None)
+    (0.33..., 0.66..., None)
     """
     average_options = (None, "micro", "macro", "weighted", "samples")
     if average not in average_options and average != "binary":
@@ -297,7 +297,7 @@ def sensitivity_score(
     average="binary",
     sample_weight=None,
 ):
-    """Compute the sensitivity
+    """Compute the sensitivity.
 
     The sensitivity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
     of true positives and ``fn`` the number of false negatives. The sensitivity
@@ -367,11 +367,11 @@ def sensitivity_score(
     >>> y_true = [0, 1, 2, 0, 1, 2]
     >>> y_pred = [0, 2, 1, 0, 0, 1]
     >>> sensitivity_score(y_true, y_pred, average='macro')
-    0.33333333333333331
+    0.33...
     >>> sensitivity_score(y_true, y_pred, average='micro')
-    0.33333333333333331
+    0.33...
     >>> sensitivity_score(y_true, y_pred, average='weighted')
-    0.33333333333333331
+    0.33...
     >>> sensitivity_score(y_true, y_pred, average=None)
     array([ 1.,  0.,  0.])
     """
@@ -398,7 +398,7 @@ def specificity_score(
     average="binary",
     sample_weight=None,
 ):
-    """Compute the specificity
+    """Compute the specificity.
 
     The specificity is the ratio ``tn / (tn + fp)`` where ``tn`` is the number
     of true negatives and ``fp`` the number of false positives. The specificity
@@ -468,11 +468,11 @@ def specificity_score(
     >>> y_true = [0, 1, 2, 0, 1, 2]
     >>> y_pred = [0, 2, 1, 0, 0, 1]
     >>> specificity_score(y_true, y_pred, average='macro')
-    0.66666666666666663
+    0.66...
     >>> specificity_score(y_true, y_pred, average='micro')
-    0.66666666666666663
+    0.66...
     >>> specificity_score(y_true, y_pred, average='weighted')
-    0.66666666666666663
+    0.66...
     >>> specificity_score(y_true, y_pred, average=None)
     array([ 0.75,  0.5 ,  0.75])
     """
@@ -568,13 +568,14 @@ def geometric_mean_score(
     sample_weight : ndarray of shape (n_samples,), default=None
         Sample weights.
 
-    correction: float, default=0.0
+    correction : float, default=0.0
         Substitutes sensitivity of unrecognized classes from zero to a given
         value.
 
     Returns
     -------
     geometric_mean : float
+        Returns the geometric mean.
 
     Notes
     -----
@@ -597,15 +598,15 @@ def geometric_mean_score(
     >>> geometric_mean_score(y_true, y_pred)
     0.0
     >>> geometric_mean_score(y_true, y_pred, correction=0.001)
-    0.010000000000000004
+    0.010...
     >>> geometric_mean_score(y_true, y_pred, average='macro')
-    0.47140452079103168
+    0.471...
     >>> geometric_mean_score(y_true, y_pred, average='micro')
-    0.47140452079103168
+    0.471...
     >>> geometric_mean_score(y_true, y_pred, average='weighted')
-    0.47140452079103168
+    0.471...
     >>> geometric_mean_score(y_true, y_pred, average=None)
-    array([ 0.8660254,  0.       ,  0.       ])
+    array([ 0.866...,  0.       ,  0.       ])
     """
     if average is None or average != "multiclass":
         sen, spe, _ = sensitivity_specificity_support(
@@ -675,7 +676,7 @@ def geometric_mean_score(
 
 @_deprecate_positional_args
 def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
-    """Balance any scoring function using the index balanced accuracy
+    """Balance any scoring function using the index balanced accuracy.
 
     This factory function wraps scoring function to express it as the
     index balanced accuracy (IBA). You need to use this function to
@@ -721,7 +722,7 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
     >>> y_true = [1, 0, 0, 1, 0, 1]
     >>> y_pred = [0, 0, 1, 1, 0, 1]
     >>> print(gmean(y_true, y_pred, average=None))
-    [ 0.44444444  0.44444444]
+    [ 0.44...  0.44...]
     """
 
     def decorate(scoring_func):
@@ -792,8 +793,7 @@ def classification_report_imbalanced(
     output_dict=False,
     zero_division="warn",
 ):
-    """Build a classification report based on metrics used with imbalanced
-    dataset
+    """Build a classification report based on metrics used with imbalanced dataset.
 
     Specific metrics have been proposed to evaluate the classification
     performed on imbalanced dataset. This report compiles the
@@ -878,7 +878,6 @@ def classification_report_imbalanced(
     avg / total       0.70      0.60      0.90      0.61      0.66      0.54\
          5
     <BLANKLINE>
-
     """
 
     if labels is None:
@@ -991,8 +990,7 @@ def classification_report_imbalanced(
 
 
 def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
-    """Compute Macro-Averaged Mean Absolute Error (MA-MAE)
-    for imbalanced ordinal classification.
+    """Compute Macro-Averaged MAE for imbalanced ordinal classification.
 
     This function computes each MAE for each class and average them,
     giving an equal weight to each class.
@@ -1033,7 +1031,7 @@ def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
     >>> macro_averaged_mean_absolute_error(y_true_balanced, y_pred)
     0.5
     >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
-    0.16666666666666666
+    0.16...
     """
     _, y_true, y_pred = _check_targets(y_true, y_pred)
     if sample_weight is not None:

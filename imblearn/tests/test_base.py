@@ -32,7 +32,8 @@ def test_function_sampler_reject_sparse():
     X_sparse = sparse.csr_matrix(X)
     sampler = FunctionSampler(accept_sparse=False)
     with pytest.raises(
-        TypeError, match="A sparse matrix was passed, but dense data is required",
+        TypeError,
+        match="A sparse matrix was passed, but dense data is required",
     ):
         sampler.fit_resample(X_sparse, y)
 
@@ -92,7 +93,7 @@ def test_function_sampler_validate():
     pipeline = make_pipeline(sampler, LinearRegression())
     y_pred = pipeline.fit(X, y).predict(X)
 
-    assert type_of_target(y_pred) == 'continuous'
+    assert type_of_target(y_pred) == "continuous"
 
 
 def test_function_resampler_fit():

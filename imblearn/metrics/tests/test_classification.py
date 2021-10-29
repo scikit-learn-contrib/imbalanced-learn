@@ -206,7 +206,12 @@ def test_geometric_mean_support_binary():
         ([0, 0, 0, 0], [0, 0, 0, 0], 0.001, 1.0),
         ([0, 0, 0, 0], [1, 1, 1, 1], 0.001, 0.001),
         ([0, 0, 1, 1], [0, 1, 1, 0], 0.001, 0.5),
-        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], 0.001, (0.001 ** 2) ** (1 / 3),),
+        (
+            [0, 1, 2, 0, 1, 2],
+            [0, 2, 1, 0, 0, 1],
+            0.001,
+            (0.001 ** 2) ** (1 / 3),
+        ),
         ([0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5], 0.001, 1),
         ([0, 1, 1, 1, 1, 0], [0, 0, 1, 1, 1, 1], 0.001, (0.5 * 0.75) ** 0.5),
     ],
@@ -255,7 +260,11 @@ def test_geometric_mean_sample_weight(
     y_true, y_pred, sample_weight, average, expected_gmean
 ):
     gmean = geometric_mean_score(
-        y_true, y_pred, labels=[0, 1], sample_weight=sample_weight, average=average,
+        y_true,
+        y_pred,
+        labels=[0, 1],
+        sample_weight=sample_weight,
+        average=average,
     )
     assert gmean == pytest.approx(expected_gmean, rel=R_TOL)
 
@@ -471,7 +480,7 @@ def test_classification_report_imbalanced_dict():
         "avg_iba",
         "total_support",
     }
-    expected_inner_keys = {'spe', 'f1', 'sup', 'rec', 'geo', 'iba', 'pre'}
+    expected_inner_keys = {"spe", "f1", "sup", "rec", "geo", "iba", "pre"}
 
     assert outer_keys == expected_outer_keys
     assert inner_keys == expected_inner_keys
@@ -484,7 +493,6 @@ def test_classification_report_imbalanced_dict():
         ([1, 1, 1, 1, 1, 2], [1, 2, 1, 2, 1, 2], 0.2),
         ([1, 1, 1, 2, 2, 2, 3, 3, 3], [1, 3, 1, 2, 1, 1, 2, 3, 3], 0.555),
         ([1, 1, 1, 1, 1, 1, 2, 3, 3], [1, 3, 1, 2, 1, 1, 2, 3, 3], 0.166),
-
     ],
 )
 def test_macro_averaged_mean_absolute_error(y_true, y_pred, expected_ma_mae):
@@ -500,7 +508,9 @@ def test_macro_averaged_mean_absolute_error_sample_weight():
 
     sample_weight = [1, 1, 1, 1, 1, 1]
     ma_mae_unit_weights = macro_averaged_mean_absolute_error(
-        y_true, y_pred, sample_weight=sample_weight,
+        y_true,
+        y_pred,
+        sample_weight=sample_weight,
     )
 
     assert ma_mae_unit_weights == pytest.approx(ma_mae_no_weights)

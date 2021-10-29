@@ -59,10 +59,23 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     Attributes
     ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    nn_ : estimator object
+        Validated K-nearest Neighbours instance created from `n_neighbors` parameter.
+
     sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------
@@ -207,6 +220,18 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     Attributes
     ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    nn_ : estimator object
+        Validated K-nearest Neighbours estimator linked to the parameter `n_neighbors`.
+
+    enn_ : sampler object
+        The validated :class:`~imblearn.under_sampling.EditedNearestNeighbours`
+        instance.
+
     sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
@@ -216,6 +241,11 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         Number of iterations run.
 
         .. versionadded:: 0.6
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------
@@ -395,10 +425,27 @@ class AllKNN(BaseCleaningSampler):
 
     Attributes
     ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    nn_ : estimator object
+        Validated K-nearest Neighbours estimator linked to the parameter `n_neighbors`.
+
+    enn_ : sampler object
+        The validated :class:`~imblearn.under_sampling.EditedNearestNeighbours`
+        instance.
+
     sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
         .. versionadded:: 0.4
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
 
     See Also
     --------
