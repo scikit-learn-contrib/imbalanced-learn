@@ -147,7 +147,6 @@ jobs:
         BLAS: 'openblas'
         NUMPY_VERSION: 'min'
         SCIPY_VERSION: 'min'
-        JOBLIB_VERSION: 'min'
         SKLEARN_VERSION: 'min'
         MATPLOTLIB_VERSION: 'none'
         PANDAS_VERSION: 'none'
