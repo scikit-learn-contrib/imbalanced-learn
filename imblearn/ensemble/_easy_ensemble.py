@@ -214,22 +214,28 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         )
 
     def fit(self, X, y):
-        """Train the ensemble on the training set.
+        """Build a Bagging ensemble of estimators from the training set (X, y).
 
         Parameters
         ----------
         X : {array-like, sparse matrix} of shape (n_samples, n_features)
-            The training input samples.
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
 
         y : array-like of shape (n_samples,)
-            The target values.
+            The target values (class labels in classification, real numbers in
+            regression).
 
         Returns
         -------
         self : object
-            Returns self.
+            Fitted estimator.
         """
+        # overwrite the base class method by disallowing `sample_weight`
+        return super().fit(X, y)
+
+    def _fit(self, X, y, max_samples=None, max_depth=None, sample_weight=None):
         check_target_type(y)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
-        return self._fit(X, y, self.max_samples, sample_weight=None)
+        return super()._fit(X, y, self.max_samples, sample_weight=None)

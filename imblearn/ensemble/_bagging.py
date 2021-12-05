@@ -141,6 +141,12 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (n_features_in_,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.9
+
     See Also
     --------
     BalancedRandomForestClassifier : Random forest applying random-under
@@ -316,6 +322,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         self : object
             Fitted estimator.
         """
+        # overwrite the base class method by disallowing `sample_weight`
         return super().fit(X, y)
 
     def _fit(self, X, y, max_samples=None, max_depth=None, sample_weight=None):
