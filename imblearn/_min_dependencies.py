@@ -12,6 +12,7 @@ import argparse
 # minimum version of Pandas >= 1.0.5.
 NUMPY_MIN_VERSION = "1.14.6"
 SCIPY_MIN_VERSION = "1.1.0"
+SKLEARN_MIN_VERSION = "0.24.2"
 JOBLIB_MIN_VERSION = "0.11"
 THREADPOOLCTL_MIN_VERSION = "2.0.0"
 PYTEST_MIN_VERSION = "5.0.1"
@@ -21,8 +22,9 @@ PYTEST_MIN_VERSION = "5.0.1"
 # It will NOT be included in setup's extras_require
 # The values are (version_spec, comma separated tags)
 dependent_packages = {
-    "numpy": (NUMPY_MIN_VERSION, "build, install"),
-    "scipy": (SCIPY_MIN_VERSION, "build, install"),
+    "numpy": (NUMPY_MIN_VERSION, "install"),
+    "scipy": (SCIPY_MIN_VERSION, "install"),
+    "scikit-learn": (SKLEARN_MIN_VERSION, "install"),
     "joblib": (JOBLIB_MIN_VERSION, "install"),
     "threadpoolctl": (THREADPOOLCTL_MIN_VERSION, "install"),
     "matplotlib": ("2.2.3", "benchmark, docs, examples, tests"),

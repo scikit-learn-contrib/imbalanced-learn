@@ -43,6 +43,7 @@ if [[ "$DISTRIB" == "conda" || "$DISTRIB" == *"mamba"* ]]; then
 
     TO_INSTALL="$TO_INSTALL $(get_dep numpy $NUMPY_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep scipy $SCIPY_VERSION)"
+    TO_INSTALL="$TO_INSTALL $(get_dep scikit-learn $SKLEARN_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep joblib $JOBLIB_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep pandas $PANDAS_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep Pillow $PILLOW_VERSION)"
