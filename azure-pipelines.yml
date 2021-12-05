@@ -148,7 +148,7 @@ jobs:
         NUMPY_VERSION: 'min'
         SCIPY_VERSION: 'min'
         SKLEARN_VERSION: 'min'
-        MATPLOTLIB_VERSION: 'min'
+        MATPLOTLIB_VERSION: 'none'
         PANDAS_VERSION: 'none'
         THREADPOOLCTL_VERSION: '2.2.0'
       # Linux environment to test the latest available dependencies and MKL.

@@ -1,7 +1,6 @@
 """All minimum dependencies for imbalanced-learn."""
 import argparse
 
-
 # numpy scipy and cython should by in sync with pyproject.toml
 # We pinned PyWavelet (a scikit-image dependence) to 1.1.1 in the minimum
 # documentation CI builds that is the latest version that support our
@@ -27,8 +26,8 @@ dependent_packages = {
     "scikit-learn": (SKLEARN_MIN_VERSION, "install"),
     "joblib": (JOBLIB_MIN_VERSION, "install"),
     "threadpoolctl": (THREADPOOLCTL_MIN_VERSION, "install"),
-    "matplotlib": ("2.2.3", "benchmark, docs, examples, tests"),
-    "pandas": ("0.25.0", "benchmark, docs, examples, tests"),
+    "matplotlib": ("2.2.3", "benchmark, docs, examples"),
+    "pandas": ("1.1.5", "benchmark, docs, examples, tests"),
     "seaborn": ("0.9.0", "docs, examples"),
     "memory_profiler": ("0.57.0", "benchmark, docs"),
     "pytest": (PYTEST_MIN_VERSION, "tests"),
