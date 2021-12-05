@@ -304,16 +304,21 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         Parameters
         ----------
         X : {array-like, sparse matrix} of shape (n_samples, n_features)
-            The training input samples.
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
 
         y : array-like of shape (n_samples,)
-            The target values.
+            The target values (class labels in classification, real numbers in
+            regression).
 
         Returns
         -------
         self : object
-            Returns self.
+            Fitted estimator.
         """
+        return super().fit(X, y)
+
+    def _fit(self, X, y, max_samples=None, max_depth=None, sample_weight=None):
         check_target_type(y)
         # the sampler needs to be validated before to call _fit because
         # _validate_y is called before _validate_estimator and would require
@@ -326,7 +331,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             self.sampler_ = clone(self.sampler)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
-        return self._fit(X, y, self.max_samples, sample_weight=None)
+        return super()._fit(X, y, self.max_samples, sample_weight=None)
 
     def _more_tags(self):
         tags = super()._more_tags()
