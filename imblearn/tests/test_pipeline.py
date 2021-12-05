@@ -1339,22 +1339,3 @@ def test_pipeline_score_samples_pca_lof_multiclass():
     # Check the values
     lof.fit(pca.fit_transform(X))
     assert_allclose(pipe.score_samples(X), lof.score_samples(pca.transform(X)))
-
-
-def test_pipeline_old_joblib_memory(monkeypatch):
-    """Test that Pipeline works with old versions of joblib"""
-
-    monkeypatch.setattr(Memory, "cachedir", "foo", raising=False)
-    monkeypatch.setattr(Memory, "cache", lambda self, x: x, raising=False)
-    memory = Memory()
-
-    del memory.location  # Older versions do not have the location parameter
-
-    iris = load_iris()
-    X = iris.data
-    y = iris.target
-
-    cached_pipe = Pipeline(
-        [("transf", DummyTransf()), ("svc", SVC(gamma="scale"))], memory=memory
-    )
-    cached_pipe.fit(X, y)

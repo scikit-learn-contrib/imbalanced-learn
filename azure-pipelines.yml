@@ -147,6 +147,7 @@ jobs:
         BLAS: 'openblas'
         NUMPY_VERSION: 'min'
         SCIPY_VERSION: 'min'
+        JOBLIB_VERSION: 'min'
         SKLEARN_VERSION: 'min'
         MATPLOTLIB_VERSION: 'none'
         PANDAS_VERSION: 'none'
@@ -182,7 +183,7 @@ jobs:
 - template: build_tools/azure/posix.yml
   parameters:
     name: macOS
-    vmImage: macOS-10.14
+    vmImage: macOS-10.15
     dependsOn: [linting, git_commit]
     condition: |
       and(
