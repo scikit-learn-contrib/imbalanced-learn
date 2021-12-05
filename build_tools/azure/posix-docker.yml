@@ -19,6 +19,7 @@ jobs:
     CPU_COUNT: '2'
     NUMPY_VERSION: 'latest'
     SCIPY_VERSION: 'latest'
+    SKLEARN_VERSION: 'latest'
     JOBLIB_VERSION: 'latest'
     PANDAS_VERSION: 'latest'
     PILLOW_VERSION: 'latest'
@@ -54,6 +55,7 @@ jobs:
         -e VIRTUALENV=testvenv
         -e NUMPY_VERSION=$NUMPY_VERSION
         -e SCIPY_VERSION=$SCIPY_VERSION
+        -e SKLEARN_VERSION=$SKLEARN_VERSION
         -e JOBLIB_VERSION=$JOBLIB_VERSION
         -e PANDAS_VERSION=$PANDAS_VERSION
         -e PILLOW_VERSION=$PILLOW_VERSION

@@ -24,6 +24,7 @@ jobs:
     CCACHE_COMPRESS: '1'
     NUMPY_VERSION: 'latest'
     SCIPY_VERSION: 'latest'
+    SKLEARN_VERSION: 'latest'
     JOBLIB_VERSION: 'latest'
     PANDAS_VERSION: 'latest'
     PILLOW_VERSION: 'latest'
