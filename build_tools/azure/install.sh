@@ -81,7 +81,7 @@ elif [[ "$DISTRIB" == "conda-pip-latest" ]]; then
     setup_ccache
     python -m pip install -U pip
 
-    python -m pip install pandas matplotlib
+    python -m pip install scikit-learn pandas matplotlib
 
 elif [[ "$DISTRIB" == "conda-pip-scipy-dev" ]]; then
     make_conda "ccache python=$PYTHON_VERSION"
@@ -126,10 +126,5 @@ except ImportError:
 "
 
 python -m pip list
-if [[ "$DISTRIB" == "conda-pip-latest" ]]; then
-    # Check that pip can automatically build scikit-learn with the build
-    # dependencies specified in pyproject.toml using an isolated build
-    # environment:
-    pip install --verbose --editable .
-fi
+pip install --verbose --editable .
 ccache -s
