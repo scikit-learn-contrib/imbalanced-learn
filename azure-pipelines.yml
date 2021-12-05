@@ -76,9 +76,7 @@ jobs:
         DISTRIB: 'conda-pip-scipy-dev'
         PYTHON_VERSION: '*'
         CHECK_WARNINGS: 'true'
-        CHECK_PYTEST_SOFT_DEPENDENCY: 'true'
         TEST_DOCSTRINGS: 'true'
-        CREATE_ISSUE_ON_TRACKER: 'true'
 
 # Will run all the time regardless of linting outcome.
 - template: build_tools/azure/posix.yml
@@ -152,12 +150,10 @@ jobs:
         MATPLOTLIB_VERSION: 'min'
         THREADPOOLCTL_VERSION: '2.2.0'
       # Linux environment to test the latest available dependencies and MKL.
-      # It runs tests requiring lightgbm, pandas and PyAMG.
       pylatest_pip_openblas_pandas:
         DISTRIB: 'conda-pip-latest'
         PYTHON_VERSION: '3.9'
         PANDAS_VERSION: 'none'
-        CHECK_PYTEST_SOFT_DEPENDENCY: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
 

@@ -43,7 +43,6 @@ if [[ "$DISTRIB" == "conda" || "$DISTRIB" == *"mamba"* ]]; then
 
     TO_INSTALL="$TO_INSTALL $(get_dep numpy $NUMPY_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep scipy $SCIPY_VERSION)"
-    TO_INSTALL="$TO_INSTALL $(get_dep cython $CYTHON_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep joblib $JOBLIB_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep pandas $PANDAS_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep Pillow $PILLOW_VERSION)"
@@ -60,8 +59,7 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     python3 -m virtualenv --system-site-packages --python=python3 $VIRTUALENV
     source $VIRTUALENV/bin/activate
     setup_ccache
-    python -m pip install $(get_dep cython $CYTHON_VERSION) \
-                          $(get_dep joblib $JOBLIB_VERSION)
+    python -m pip install $(get_dep joblib $JOBLIB_VERSION)
 
 elif [[ "$DISTRIB" == "debian-32" ]]; then
     apt-get update
@@ -72,8 +70,7 @@ elif [[ "$DISTRIB" == "debian-32" ]]; then
     python3 -m virtualenv --system-site-packages --python=python3 $VIRTUALENV
     source $VIRTUALENV/bin/activate
     setup_ccache
-    python -m pip install $(get_dep cython $CYTHON_VERSION) \
-                          $(get_dep joblib $JOBLIB_VERSION)
+    python -m pip install $(get_dep joblib $JOBLIB_VERSION)
 
 elif [[ "$DISTRIB" == "conda-pip-latest" ]]; then
     # Since conda main channel usually lacks behind on the latest releases,
@@ -91,7 +88,6 @@ elif [[ "$DISTRIB" == "conda-pip-scipy-dev" ]]; then
     echo "Installing numpy and scipy master wheels"
     dev_anaconda_url=https://pypi.anaconda.org/scipy-wheels-nightly/simple
     pip install --pre --upgrade --timeout=60 --extra-index $dev_anaconda_url numpy pandas scipy scikit-learn
-    pip install --pre cython
     setup_ccache
     echo "Installing joblib master"
     pip install https://github.com/joblib/joblib/archive/master.zip

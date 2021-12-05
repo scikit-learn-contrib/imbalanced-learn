@@ -4,7 +4,7 @@ set -e
 set -x
 
 if [[ "$PYTHON_ARCH" == "64" ]]; then
-    conda create -n $VIRTUALENV -q -y python=$PYTHON_VERSION numpy scipy scikit-learn cython matplotlib wheel pillow joblib
+    conda create -n $VIRTUALENV -q -y python=$PYTHON_VERSION numpy scipy scikit-learn matplotlib wheel pillow joblib
 
     source activate $VIRTUALENV
 
@@ -16,7 +16,7 @@ if [[ "$PYTHON_ARCH" == "64" ]]; then
         pip install pytest==$PYTEST_VERSION
     fi
 else
-    pip install numpy scipy scikit-learn cython pytest wheel pillow joblib threadpoolctl
+    pip install numpy scipy scikit-learn pytest wheel pillow joblib threadpoolctl
 fi
 
 if [[ "$PYTEST_XDIST_VERSION" != "none" ]]; then
