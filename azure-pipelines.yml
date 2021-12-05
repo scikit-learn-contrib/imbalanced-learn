@@ -149,12 +149,12 @@ jobs:
         SCIPY_VERSION: 'min'
         SKLEARN_VERSION: 'min'
         MATPLOTLIB_VERSION: 'min'
+        PANDAS_VERSION: 'none'
         THREADPOOLCTL_VERSION: '2.2.0'
       # Linux environment to test the latest available dependencies and MKL.
       pylatest_pip_openblas_pandas:
         DISTRIB: 'conda-pip-latest'
         PYTHON_VERSION: '3.9'
-        PANDAS_VERSION: 'none'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
 
