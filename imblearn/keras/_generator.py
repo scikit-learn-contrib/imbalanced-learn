@@ -57,7 +57,7 @@ from ..tensorflow import balanced_batch_generator as tf_bbg  # noqa
 from ..utils._validation import _deprecate_positional_args  # noqa
 
 
-class BalancedBatchGenerator(*ParentClass):
+class BalancedBatchGenerator(*ParentClass):  # type: ignore
     """Create balanced batches when training a keras model.
 
     Create a keras ``Sequence`` which is given to ``fit_generator``. The

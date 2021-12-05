@@ -16,6 +16,7 @@ the lower the better
 
 import functools
 import warnings
+from inspect import signature
 
 import numpy as np
 import scipy as sp
@@ -30,11 +31,6 @@ from sklearn.utils.validation import (
     check_consistent_length,
     column_or_1d,
 )
-
-try:
-    from inspect import signature
-except ImportError:
-    from sklearn.externals.funcsigs import signature
 
 from ..utils._validation import _deprecate_positional_args
 
