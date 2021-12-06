@@ -11,6 +11,7 @@ import argparse
 # minimum version of Pandas >= 1.0.5.
 NUMPY_MIN_VERSION = "1.14.6"
 SCIPY_MIN_VERSION = "1.1.0"
+PANDAS_MIN_VERSION = "0.25.0"
 SKLEARN_MIN_VERSION = "0.24.2"
 TENSORFLOW_MIN_VERSION = "2.4.3"
 KERAS_MIN_VERSION = "2.4.3"
@@ -29,7 +30,7 @@ dependent_packages = {
     "joblib": (JOBLIB_MIN_VERSION, "install"),
     "threadpoolctl": (THREADPOOLCTL_MIN_VERSION, "install"),
     "matplotlib": ("2.2.3", "docs, examples"),
-    "pandas": ("0.25.0", "docs, examples, tests"),
+    "pandas": (PANDAS_MIN_VERSION, "docs, examples, tests"),
     "tensorflow": (TENSORFLOW_MIN_VERSION, "docs, examples, tests"),
     "keras": (KERAS_MIN_VERSION, "docs, examples, tests"),
     "seaborn": ("0.9.0", "docs, examples"),

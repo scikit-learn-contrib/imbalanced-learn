@@ -6,6 +6,8 @@ import os
 
 from setuptools import find_packages, setup
 
+import imblearn._min_dependencies as min_deps  # noqa
+
 # get __version__ from _version.py
 ver_file = os.path.join("imblearn", "_version.py")
 with open(ver_file) as f:
@@ -20,7 +22,7 @@ MAINTAINER_EMAIL = "g.lemaitre58@gmail.com, ichkoar@gmail.com"
 URL = "https://github.com/scikit-learn-contrib/imbalanced-learn"
 LICENSE = "MIT"
 DOWNLOAD_URL = "https://github.com/scikit-learn-contrib/imbalanced-learn"
-VERSION = __version__
+VERSION = __version__  # noqa
 CLASSIFIERS = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
@@ -38,36 +40,8 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
 ]
-INSTALL_REQUIRES = [
-    "numpy>=1.13.3",
-    "scipy>=0.19.1",
-    "scikit-learn>=0.24",
-    "joblib>=0.11",
-]
-EXTRAS_REQUIRE = {
-    "optional": [
-        "keras",
-        "tensorflow",
-    ],
-    "dev": [
-        "black",
-        "flake8",
-    ],
-    "tests": [
-        "pytest",
-        "pytest-cov",
-    ],
-    "docs": [
-        "sphinx",
-        "sphinx-gallery",
-        "pydata-sphinx-theme",
-        "sphinxcontrib-bibtex",
-        "numpydoc",
-        "matplotlib",
-        "pandas",
-        "seaborn",
-    ],
-}
+INSTALL_REQUIRES = (min_deps.tag_to_packages["install"],)
+EXTRAS_REQUIRE = min_deps.tag_to_packages["extra"].pop("install")
 
 
 setup(
