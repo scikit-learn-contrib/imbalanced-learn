@@ -146,7 +146,7 @@ jobs:
         PYTHON_VERSION: '3.7'
         BLAS: 'openblas'
         NUMPY_VERSION: 'min'
-        SCIPY_VERSION: 'min'
+        SCIPY_VERSION: '1.16.6'  # we cannot get an older version of the dependencies resolution
         SKLEARN_VERSION: 'min'
         MATPLOTLIB_VERSION: 'none'
         PANDAS_VERSION: 'none'

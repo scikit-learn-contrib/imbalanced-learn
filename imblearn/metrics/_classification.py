@@ -369,7 +369,7 @@ def sensitivity_score(
     >>> sensitivity_score(y_true, y_pred, average='weighted')
     0.33...
     >>> sensitivity_score(y_true, y_pred, average=None)
-    array([ 1., 0., 0.])
+    array([1., 0., 0.])
     """
     s, _, _ = sensitivity_specificity_support(
         y_true,
@@ -470,7 +470,7 @@ def specificity_score(
     >>> specificity_score(y_true, y_pred, average='weighted')
     0.66...
     >>> specificity_score(y_true, y_pred, average=None)
-    array([ 0.75, 0.5 , 0.75])
+    array([0.75, 0.5 , 0.75])
     """
     _, s, _ = sensitivity_specificity_support(
         y_true,
@@ -602,7 +602,7 @@ def geometric_mean_score(
     >>> geometric_mean_score(y_true, y_pred, average='weighted')
     0.471...
     >>> geometric_mean_score(y_true, y_pred, average=None)
-    array([ 0.866...,  0.       ,  0.       ])
+    array([0.866...,  0.       ,  0.       ])
     """
     if average is None or average != "multiclass":
         sen, spe, _ = sensitivity_specificity_support(
@@ -718,7 +718,7 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
     >>> y_true = [1, 0, 0, 1, 0, 1]
     >>> y_pred = [0, 0, 1, 1, 0, 1]
     >>> print(gmean(y_true, y_pred, average=None))
-    [ 0.44...  0.44...]
+    [0.44...  0.44...]
     """
 
     def decorate(scoring_func):
