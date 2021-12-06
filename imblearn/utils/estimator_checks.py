@@ -307,8 +307,8 @@ def check_samplers_pandas(name, sampler_orig):
     assert isinstance(y_res_df, pd.DataFrame)
     assert isinstance(y_res_s, pd.Series)
 
-    assert X_df.columns.to_list() == X_res_df.columns.to_list()
-    assert y_df.columns.to_list() == y_res_df.columns.to_list()
+    assert X_df.columns.tolist() == X_res_df.columns.tolist()
+    assert y_df.columns.tolist() == y_res_df.columns.tolist()
     assert y_s.name == y_res_s.name
 
     assert_allclose(to_numpy(X_res_df), X_res)
