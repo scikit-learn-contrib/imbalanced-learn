@@ -116,9 +116,9 @@ the different categories::
     >>> X_test = np.array(["green", "red", "blue"]).reshape(-1, 1)
     >>> X_test_encoded = encoder.transform(X_test)
     >>> vdm.pairwise(X_test_encoded)
-    array([[ 0.  ,  0.04,  1.96],
-           [ 0.04,  0.  ,  1.44],
-           [ 1.96,  1.44,  0.  ]])
+    array([[0.  ,  0.04,  1.96],
+           [0.04,  0.  ,  1.44],
+           [1.96,  1.44,  0.  ]])
 
 We see that the minimum distance happen when the categories "red" and "green"
 are compared. Whenever comparing with "blue", the distance is much larger.
