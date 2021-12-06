@@ -116,7 +116,7 @@ class BalancedBatchGenerator(*ParentClass):  # type: ignore
     >>> from imblearn.datasets import make_imbalance
     >>> class_dict = dict()
     >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
-    >>> X, y = make_imbalance(iris.data, iris.target, class_dict)
+    >>> X, y = make_imbalance(iris.data, iris.target, sampling_strategy=class_dict)
     >>> import tensorflow
     >>> y = tensorflow.keras.utils.to_categorical(y, 3)
     >>> model = tensorflow.keras.models.Sequential()
