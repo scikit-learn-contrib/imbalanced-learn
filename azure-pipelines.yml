@@ -166,6 +166,7 @@ jobs:
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
+        COVERAGE: 'true'
       pylatest_conda_tensorflow:
         DISTRIB: 'conda-latest-tensorflow'
         CONDA_CHANNEL: 'conda-forge'
@@ -189,6 +190,7 @@ jobs:
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
+        COVERAGE: 'true'
       pylatest_conda_keras:
         DISTRIB: 'conda-latest-keras'
         CONDA_CHANNEL: 'conda-forge'
