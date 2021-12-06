@@ -29,10 +29,10 @@ dependent_packages = {
     "scikit-learn": (SKLEARN_MIN_VERSION, "install"),
     "joblib": (JOBLIB_MIN_VERSION, "install"),
     "threadpoolctl": (THREADPOOLCTL_MIN_VERSION, "install"),
+    "pandas": (PANDAS_MIN_VERSION, "optional, docs, examples, tests"),
+    "tensorflow": (TENSORFLOW_MIN_VERSION, "optional, docs, examples, tests"),
+    "keras": (KERAS_MIN_VERSION, "optional, docs, examples, tests"),
     "matplotlib": ("2.2.3", "docs, examples"),
-    "pandas": (PANDAS_MIN_VERSION, "docs, examples, tests"),
-    "tensorflow": (TENSORFLOW_MIN_VERSION, "docs, examples, tests"),
-    "keras": (KERAS_MIN_VERSION, "docs, examples, tests"),
     "seaborn": ("0.9.0", "docs, examples"),
     "memory_profiler": ("0.57.0", "docs"),
     "pytest": (PYTEST_MIN_VERSION, "tests"),
@@ -50,7 +50,7 @@ dependent_packages = {
 
 # create inverse mapping for setuptools
 tag_to_packages: dict = {
-    extra: [] for extra in ["install", "docs", "examples", "tests"]
+    extra: [] for extra in ["install", "optional", "docs", "examples", "tests"]
 }
 for package, (min_version, extras) in dependent_packages.items():
     for extra in extras.split(", "):
