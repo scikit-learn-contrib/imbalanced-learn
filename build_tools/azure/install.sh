@@ -88,10 +88,10 @@ elif [[ "$DISTRIB" == "conda-pip-latest-tensorflow" ]]; then
     setup_ccache
     python -m pip install -U pip
 
-    python -m pip install numpy scipy scikit-learn tensorflow
+    python -m pip install numpy scipy scikit-learn pandas tensorflow
 
 elif [[ "$DISTRIB" == "conda-latest-tensorflow" ]]; then
-    make_conda "ccache python=$PYTHON_VERSION numpy scipy scikit-learn tensorflow"
+    make_conda "ccache python=$PYTHON_VERSION numpy scipy scikit-learn pandas tensorflow"
 
 elif [[ "$DISTRIB" == "conda-minimum-tensorflow" ]]; then
     TO_INSTALL="ccache "
@@ -99,6 +99,7 @@ elif [[ "$DISTRIB" == "conda-minimum-tensorflow" ]]; then
     TO_INSTALL="$TO_INSTALL $(get_dep numpy $NUMPY_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep scipy $SCIPY_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep scikit-learn $SKLEARN_VERSION)"
+    TO_INSTALL="$TO_INSTALL $(get_dep pandas $PANDAS_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep tensorflow $TENSORFLOW_VERSION)"
     make_conda $TO_INSTALL
 
