@@ -1,9 +1,9 @@
 version: 2
 
 jobs:
-  python3:
+  doc:
     docker:
-      - image: circleci/python:3.6.1
+      - image: circleci/python:3.7.7-buster
     environment:
       - USERNAME: "glemaitre"
       - ORGANIZATION: "imbalanced-learn"
@@ -12,7 +12,18 @@ jobs:
       - EMAIL: "g.lemaitre58@gmail.com"
       - MINICONDA_PATH: ~/miniconda
       - CONDA_ENV_NAME: testenv
+      - OMP_NUM_THREADS: 1
       - PYTHON_VERSION: 3
+      - NUMPY_VERSION: 'latest'
+      - SCIPY_VERSION: 'latest'
+      - SKLEARN_VERSION: 'latest'
+      - MATPLOTLIB_VERSION: 'latest'
+      - SPHINX_VERSION: 'min'
+      - PANDAS_VERSION: 'latest'
+      - SPHINX_GALLERY_VERSION: 'latest'
+      - NUMPYDOC_VERSION: 'latest'
+      - SPHINXCONTRIB_BIBTEX_VERSION: 'latest'
+      - PYDATA_SPHINX_THEME_VERSION: 'latest'
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -44,4 +55,4 @@ workflows:
   version: 2
   build-doc-and-deploy:
     jobs:
-      - python3
+      - doc

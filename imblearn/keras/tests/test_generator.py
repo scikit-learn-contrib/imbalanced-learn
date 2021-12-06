@@ -22,7 +22,9 @@ from imblearn.keras import balanced_batch_generator  # noqa: E402
 @pytest.fixture
 def data():
     iris = load_iris()
-    X, y = make_imbalance(iris.data, iris.target, {0: 30, 1: 50, 2: 40})
+    X, y = make_imbalance(
+        iris.data, iris.target, sampling_strategy={0: 30, 1: 50, 2: 40}
+    )
     y = to_categorical(y, 3)
     return X, y
 

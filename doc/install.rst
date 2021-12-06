@@ -7,14 +7,9 @@ Getting Started
 Prerequisites
 =============
 
-The imbalanced-learn package requires the following dependencies:
+You can find the complete list of the dependencies in the following table:
 
-* python (>=3.6)
-* numpy (>=1.13.3)
-* scipy (>=0.19.1)
-* scikit-learn (>=0.24)
-* keras 2 (optional)
-* tensorflow (optional)
+.. include:: min_dependency_table.rst
 
 Install
 =======

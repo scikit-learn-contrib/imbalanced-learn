@@ -26,8 +26,8 @@ def balanced_batch_generator(
 ):
     """Create a balanced batch generator to train tensorflow model.
 
-    Returns a generator --- as well as the number of step per epoch --- which
-    is given to ``fit_generator``. The sampler defines the sampling strategy
+    Returns a generator --- as well as the number of step per epoch --- to
+    iterate to get the mini-batches. The sampler defines the sampling strategy
     used to balance the dataset ahead of creating the batch. The sampler should
     have an attribute ``sample_indices_``.
 

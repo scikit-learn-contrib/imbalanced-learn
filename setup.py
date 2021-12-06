@@ -6,6 +6,22 @@ import os
 
 from setuptools import find_packages, setup
 
+try:
+    import builtins
+except ImportError:
+    # Python 2 compat: just to be able to declare that Python >=3.7 is needed.
+    import __builtin__ as builtins
+
+# This is a bit (!) hackish: we are setting a global variable so that the
+# main imblearn __init__ can detect if it is being loaded by the setup
+# routine, to avoid attempting to load components that aren't built yet:
+# the numpy distutils extensions that are used by imbalanced-learn to
+# recursively build the compiled extensions in sub-packages is based on the
+# Python import machinery.
+builtins.__IMBLEARN_SETUP__ = True
+
+import imblearn._min_dependencies as min_deps  # noqa
+
 # get __version__ from _version.py
 ver_file = os.path.join("imblearn", "_version.py")
 with open(ver_file) as f:
@@ -20,7 +36,7 @@ MAINTAINER_EMAIL = "g.lemaitre58@gmail.com, ichkoar@gmail.com"
 URL = "https://github.com/scikit-learn-contrib/imbalanced-learn"
 LICENSE = "MIT"
 DOWNLOAD_URL = "https://github.com/scikit-learn-contrib/imbalanced-learn"
-VERSION = __version__
+VERSION = __version__  # noqa
 CLASSIFIERS = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
@@ -38,35 +54,9 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
 ]
-INSTALL_REQUIRES = [
-    "numpy>=1.13.3",
-    "scipy>=0.19.1",
-    "scikit-learn>=0.24",
-    "joblib>=0.11",
-]
+INSTALL_REQUIRES = (min_deps.tag_to_packages["install"],)
 EXTRAS_REQUIRE = {
-    "optional": [
-        "keras",
-        "tensorflow",
-    ],
-    "dev": [
-        "black",
-        "flake8",
-    ],
-    "tests": [
-        "pytest",
-        "pytest-cov",
-    ],
-    "docs": [
-        "sphinx",
-        "sphinx-gallery",
-        "pydata-sphinx-theme",
-        "sphinxcontrib-bibtex",
-        "numpydoc",
-        "matplotlib",
-        "pandas",
-        "seaborn",
-    ],
+    key: value for key, value in min_deps.tag_to_packages.items() if key != "install"
 }
 
 

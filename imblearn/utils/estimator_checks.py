@@ -306,13 +306,14 @@ def check_samplers_pandas(name, sampler_orig):
     assert isinstance(y_res_df, pd.DataFrame)
     assert isinstance(y_res_s, pd.Series)
 
-    assert X_df.columns.to_list() == X_res_df.columns.to_list()
-    assert y_df.columns.to_list() == y_res_df.columns.to_list()
+    assert X_df.columns.tolist() == X_res_df.columns.tolist()
+    assert y_df.columns.tolist() == y_res_df.columns.tolist()
     assert y_s.name == y_res_s.name
 
-    assert_allclose(X_res_df.to_numpy(), X_res)
-    assert_allclose(y_res_df.to_numpy().ravel(), y_res)
-    assert_allclose(y_res_s.to_numpy(), y_res)
+    # FIXME: we should use to_numpy with pandas >= 0.25
+    assert_allclose(X_res_df.values, X_res)
+    assert_allclose(y_res_df.values.ravel(), y_res)
+    assert_allclose(y_res_s.values, y_res)
 
 
 def check_samplers_list(name, sampler_orig):

@@ -25,6 +25,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
+from sklearn.utils.fixes import _joblib_parallel_args
 from sklearn.utils.validation import _check_sample_weight
 
 from ..pipeline import make_pipeline
@@ -257,8 +258,19 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     n_features_ : int
         The number of features when ``fit`` is performed.
 
+        .. deprecated:: 1.0
+           `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
+           in version 1.2. Depending of the version of `scikit-learn` installed,
+           you will get be warned or not.
+
     n_features_in_ : int
         Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
+    feature_names_in_ : ndarray of shape (n_features_in_,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
 
         .. versionadded:: 0.9
 
@@ -534,7 +546,9 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             # at a higher level, since correctness does not rely on using
             # threads.
             samplers_trees = Parallel(
-                n_jobs=self.n_jobs, verbose=self.verbose, prefer="threads"
+                n_jobs=self.n_jobs,
+                verbose=self.verbose,
+                **_joblib_parallel_args(prefer="threads"),
             )(
                 delayed(_local_parallel_build_trees)(
                     s,
