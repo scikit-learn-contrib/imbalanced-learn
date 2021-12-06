@@ -271,7 +271,7 @@ def balanced_batch_generator(
     >>> class_dict = dict()
     >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
     >>> from imblearn.datasets import make_imbalance
-    >>> X, y = make_imbalance(X, y, class_dict)
+    >>> X, y = make_imbalance(X, y, sampling_strategy=class_dict)
     >>> import tensorflow
     >>> y = tensorflow.keras.utils.to_categorical(y, 3)
     >>> model = tensorflow.keras.models.Sequential()
