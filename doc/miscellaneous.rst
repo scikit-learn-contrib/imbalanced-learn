@@ -88,8 +88,13 @@ balanced::
   >>> from imblearn.under_sampling import RandomUnderSampler
   >>> from imblearn.tensorflow import balanced_batch_generator
   >>> training_generator, steps_per_epoch = balanced_batch_generator(
-  ...     X, y, sample_weight=None, sampler=RandomUnderSampler(,
-  ...     batch_size=32, random_state=42)
+  ...     X,
+  ...     y,
+  ...     sample_weight=None,
+  ...     sampler=RandomUnderSampler(),
+  ...     batch_size=32,
+  ...     random_state=42,
+  ... )
 
 The ``generator`` and ``steps_per_epoch`` is used during the training of the
 Tensorflow model. We will illustrate how to use this generator. First, we can

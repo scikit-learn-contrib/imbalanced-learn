@@ -11,9 +11,6 @@ def import_keras():
     """Try to import keras from keras and tensorflow.
 
     This is possible to import the sequence from keras or tensorflow.
-    Keras is not ducktyping ``Sequence`` before 2.3 and we need import from
-    all possible library to ensure that the ``isinstance(...)`` is not going
-    to fail. This function can be modified when we support Keras 2.3.
     """
 
     def import_from_keras():
