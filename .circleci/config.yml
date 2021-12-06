@@ -1,7 +1,7 @@
-version: 2.1
+version: 2
 
 jobs:
-  python3:
+  doc:
     docker:
       - image: circleci/python:3.7.7-buster
     environment:
@@ -55,4 +55,4 @@ workflows:
   version: 2
   build-doc-and-deploy:
     jobs:
-      - python3
+      - doc
