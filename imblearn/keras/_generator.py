@@ -4,45 +4,45 @@
 # This is a trick to avoid an error during tests collection with pytest. We
 # avoid the error when importing the package raise the error at the moment of
 # creating the instance.
-def import_keras():
-    """Try to import keras from keras and tensorflow.
+# def import_keras():
+#     """Try to import keras from keras and tensorflow.
 
-    This is possible to import the sequence from keras or tensorflow.
-    Keras is not ducktyping ``Sequence`` before 2.3 and we need import from
-    all possible library to ensure that the ``isinstance(...)`` is not going
-    to fail. This function can be modified when we support Keras 2.3.
-    """
+#     This is possible to import the sequence from keras or tensorflow.
+#     Keras is not ducktyping ``Sequence`` before 2.3 and we need import from
+#     all possible library to ensure that the ``isinstance(...)`` is not going
+#     to fail. This function can be modified when we support Keras 2.3.
+#     """
 
-    def import_from_keras():
-        try:
-            import keras  # noqa
+#     def import_from_keras():
+#         try:
+#             import keras  # noqa
 
-            return (keras.utils.Sequence,), True
-        except ImportError:
-            return tuple(), False
+#             return (keras.utils.Sequence,), True
+#         except ImportError:
+#             return tuple(), False
 
-    def import_from_tensforflow():
-        try:
-            from tensorflow import keras
+#     def import_from_tensforflow():
+#         try:
+#             from tensorflow import keras
 
-            return (keras.utils.Sequence,), True
-        except ImportError:
-            return tuple(), False
+#             return (keras.utils.Sequence,), True
+#         except ImportError:
+#             return tuple(), False
 
-    ParentClassKeras, has_keras_k = import_from_keras()
-    ParentClassTensorflow, has_keras_tf = import_from_tensforflow()
-    has_keras = has_keras_k or has_keras_tf
-    if has_keras:
-        if has_keras_k:
-            ParentClass = ParentClassKeras
-        else:
-            ParentClass = ParentClassTensorflow
-    else:
-        ParentClass = (object,)
-    return ParentClass, has_keras
+#     ParentClassKeras, has_keras_k = import_from_keras()
+#     ParentClassTensorflow, has_keras_tf = import_from_tensforflow()
+#     has_keras = has_keras_k or has_keras_tf
+#     if has_keras:
+#         if has_keras_k:
+#             ParentClass = ParentClassKeras
+#         else:
+#             ParentClass = ParentClassTensorflow
+#     else:
+#         ParentClass = (object,)
+#     return ParentClass, has_keras
 
 
-ParentClass, HAS_KERAS = import_keras()
+# ParentClass, HAS_KERAS = import_keras()
 
 from scipy.sparse import issparse  # noqa
 
@@ -57,7 +57,7 @@ from ..tensorflow import balanced_batch_generator as tf_bbg  # noqa
 from ..utils._validation import _deprecate_positional_args  # noqa
 
 
-class BalancedBatchGenerator(*ParentClass):  # type: ignore
+class BalancedBatchGenerator(object):  # type: ignore
     """Create balanced batches when training a keras model.
 
     Create a keras ``Sequence`` which is given to ``fit_generator``. The
@@ -149,8 +149,8 @@ class BalancedBatchGenerator(*ParentClass):  # type: ignore
         keep_sparse=False,
         random_state=None,
     ):
-        if not HAS_KERAS:
-            raise ImportError("'No module named 'keras'")
+        # if not HAS_KERAS:
+        #     raise ImportError("'No module named 'keras'")
         self.X = X
         self.y = y
         self.sample_weight = sample_weight
