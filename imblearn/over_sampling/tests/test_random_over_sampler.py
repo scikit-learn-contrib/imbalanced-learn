@@ -13,6 +13,7 @@ from sklearn.utils._testing import assert_array_equal
 from sklearn.utils._testing import _convert_container
 
 from imblearn.over_sampling import RandomOverSampler
+from imblearn.utils.fixes import to_numpy
 
 RND_SEED = 0
 
@@ -72,7 +73,7 @@ def test_ros_fit_resample(X_type, data, params):
 
     if X_type == "dataframe":
         assert hasattr(X_resampled, "loc")
-        X_resampled = X_resampled.to_numpy()
+        X_resampled = to_numpy(X_resampled)
 
     assert_allclose(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)

@@ -35,6 +35,7 @@ from sklearn.utils.multiclass import type_of_target
 from imblearn.datasets import make_imbalance
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
+from imblearn.utils.fixes import to_numpy
 
 
 def _set_checking_parameters(estimator):
@@ -310,9 +311,9 @@ def check_samplers_pandas(name, sampler_orig):
     assert y_df.columns.to_list() == y_res_df.columns.to_list()
     assert y_s.name == y_res_s.name
 
-    assert_allclose(X_res_df.to_numpy(), X_res)
-    assert_allclose(y_res_df.to_numpy().ravel(), y_res)
-    assert_allclose(y_res_s.to_numpy(), y_res)
+    assert_allclose(to_numpy(X_res_df), X_res)
+    assert_allclose(to_numpy(y_res_df).ravel(), y_res)
+    assert_allclose(to_numpy(y_res_s), y_res)
 
 
 def check_samplers_list(name, sampler_orig):
