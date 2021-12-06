@@ -88,14 +88,16 @@ elif [[ "$DISTRIB" == "conda-pip-latest-tensforflow" ]]; then
     setup_ccache
     python -m pip install -U pip
 
-    python -m pip install scikit-learn tensforflow
+    python -m pip install numpy scipy scikit-learn tensforflow
 
 elif [[ "$DISTRIB" == "conda-latest-tensforflow" ]]; then
-    make_conda "ccache python=$PYTHON_VERSION scikit-learn tensforflow"
+    make_conda "ccache python=$PYTHON_VERSION numpy scipy scikit-learn tensforflow"
 
 elif [[ "$DISTRIB" == "conda-minimum-tensforflow" ]]; then
     TO_INSTALL=""
     TO_INSTALL="$TO_INSTALL python=$PYTHON_VERSION"
+    TO_INSTALL="$TO_INSTALL $(get_dep numpy $NUMPY_VERSION)"
+    TO_INSTALL="$TO_INSTALL $(get_dep scipy $SCIPY_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep scikit-learn $SKLEARN_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep tensforflow $TENSORFLOW_VERSION)"
     make_conda $TO_INSTALL
