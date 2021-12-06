@@ -45,7 +45,7 @@ except NameError:
     __IMBLEARN_SETUP__ = False
 
 if __IMBLEARN_SETUP__:
-    sys.stderr.write("Partial import of sklearn during the build process.\n")
+    sys.stderr.write("Partial import of imblearn during the build process.\n")
     # We are not importing the rest of scikit-learn during the build
     # process, as it may not be compiled yet
 else:
