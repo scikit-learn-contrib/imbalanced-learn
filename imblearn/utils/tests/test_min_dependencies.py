@@ -1,5 +1,6 @@
 """Tests for the minimum dependencies in the README.rst file."""
 import os
+import platform
 import re
 from pathlib import Path
 
@@ -9,6 +10,9 @@ from imblearn._min_dependencies import dependent_packages
 from sklearn.utils.fixes import parse_version
 
 
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="This test is enough on unix system"
+)
 def test_min_dependencies_readme():
     # Test that the minimum dependencies in the README.rst file are
     # consistent with the minimum dependencies defined at the file:
