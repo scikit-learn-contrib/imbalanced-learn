@@ -13,6 +13,7 @@ NUMPY_MIN_VERSION = "1.14.6"
 SCIPY_MIN_VERSION = "1.1.0"
 SKLEARN_MIN_VERSION = "0.24.2"
 TENSORFLOW_MIN_VERSION = "2.4.3"
+KERAS_MIN_VERSION = "2.4.3"
 JOBLIB_MIN_VERSION = "0.11"
 THREADPOOLCTL_MIN_VERSION = "2.0.0"
 PYTEST_MIN_VERSION = "5.0.1"
@@ -30,6 +31,7 @@ dependent_packages = {
     "matplotlib": ("2.2.3", "docs, examples"),
     "pandas": ("0.25.0", "docs, examples, tests"),
     "tensorflow": (TENSORFLOW_MIN_VERSION, "docs, examples, tests"),
+    "keras": (KERAS_MIN_VERSION, "docs, examples, tests"),
     "seaborn": ("0.9.0", "docs, examples"),
     "memory_profiler": ("0.57.0", "docs"),
     "pytest": (PYTEST_MIN_VERSION, "tests"),

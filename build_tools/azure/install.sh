@@ -92,6 +92,7 @@ elif [[ "$DISTRIB" == "conda-pip-latest-tensorflow" ]]; then
 
 elif [[ "$DISTRIB" == "conda-latest-tensorflow" ]]; then
     make_conda "ccache python=$PYTHON_VERSION numpy scipy scikit-learn pandas tensorflow"
+    setup_ccache
 
 elif [[ "$DISTRIB" == "conda-minimum-tensorflow" ]]; then
     TO_INSTALL="ccache "
@@ -102,6 +103,29 @@ elif [[ "$DISTRIB" == "conda-minimum-tensorflow" ]]; then
     TO_INSTALL="$TO_INSTALL $(get_dep pandas $PANDAS_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep tensorflow $TENSORFLOW_VERSION)"
     make_conda $TO_INSTALL
+    setup_ccache
+
+elif [[ "$DISTRIB" == "conda-pip-latest-keras" ]]; then
+    make_conda "ccache python=$PYTHON_VERSION"
+    setup_ccache
+    python -m pip install -U pip
+
+    python -m pip install numpy scipy scikit-learn pandas keras
+
+elif [[ "$DISTRIB" == "conda-latest-keras" ]]; then
+    make_conda "ccache python=$PYTHON_VERSION numpy scipy scikit-learn pandas keras"
+    setup_ccache
+
+elif [[ "$DISTRIB" == "conda-minimum-keras" ]]; then
+    TO_INSTALL="ccache "
+    TO_INSTALL="$TO_INSTALL python=$PYTHON_VERSION"
+    TO_INSTALL="$TO_INSTALL $(get_dep numpy $NUMPY_VERSION)"
+    TO_INSTALL="$TO_INSTALL $(get_dep scipy $SCIPY_VERSION)"
+    TO_INSTALL="$TO_INSTALL $(get_dep scikit-learn $SKLEARN_VERSION)"
+    TO_INSTALL="$TO_INSTALL $(get_dep pandas $PANDAS_VERSION)"
+    TO_INSTALL="$TO_INSTALL $(get_dep keras $KERAS_VERSION)"
+    make_conda $TO_INSTALL
+    setup_ccache
 
 elif [[ "$DISTRIB" == "conda-pip-scipy-dev" ]]; then
     make_conda "ccache python=$PYTHON_VERSION"
