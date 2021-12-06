@@ -30,8 +30,5 @@ fi
 python --version
 pip --version
 
-# Build imbalanced-learn
-python setup.py bdist_wheel
-
-# Install the generated wheel package to test it
-pip install --pre --no-index --find-links dist imbalanced-learn
+python -m pip list
+pip install --verbose --editable .

@@ -5,8 +5,6 @@
 # doc/modules/clustering.rst and use imblearn from the local folder
 # rather than the one from site-packages.
 
-# Set numpy array str/repr to legacy behaviour on numpy > 1.13 to make
-# the doctests pass
 import os
 import pytest
 
