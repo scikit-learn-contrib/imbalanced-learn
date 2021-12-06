@@ -16,7 +16,6 @@ from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_array_equal
 
 from imblearn.over_sampling import SMOTENC
-from imblearn.utils.fixes import to_numpy
 
 
 def data_heterogneous_ordered():
@@ -186,7 +185,8 @@ def test_smotenc_pandas():
     smote = SMOTENC(categorical_features=categorical_features, random_state=0)
     X_res_pd, y_res_pd = smote.fit_resample(X_pd, y)
     X_res, y_res = smote.fit_resample(X, y)
-    assert_array_equal(to_numpy(X_res_pd), X_res)
+    # FIXME: we should use to_numpy with pandas >= 0.25
+    assert_array_equal(X_res_pd.values, X_res)
     assert_allclose(y_res_pd, y_res)
 
 

@@ -11,7 +11,6 @@ import pytest
 from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import RandomUnderSampler
-from imblearn.utils.fixes import to_numpy
 
 RND_SEED = 0
 X = np.array(
@@ -55,7 +54,8 @@ def test_rus_fit_resample(as_frame):
 
     if as_frame:
         assert hasattr(X_resampled, "loc")
-        X_resampled = to_numpy(X_resampled)
+        # FIXME: we should use to_numpy with pandas >= 0.25
+        X_resampled = X_resampled.values
 
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
