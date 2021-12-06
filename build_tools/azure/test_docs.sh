@@ -7,3 +7,5 @@ if [[ "$DISTRIB" =~ ^conda.* ]]; then
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
     source $VIRTUALENV/bin/activate
 fi
+
+make test-doc
