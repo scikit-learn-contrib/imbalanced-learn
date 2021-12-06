@@ -89,28 +89,36 @@ if [[ `type -t deactivate` ]]; then
 fi
 
 # Install dependencies with miniconda
-wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-     -O miniconda.sh
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh \
+    -O miniconda.sh
 chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
 export PATH="$MINICONDA_PATH/bin:$PATH"
 conda update --yes --quiet conda
 
-# Configure the conda environment and put it in the path using the
-# provided versions
-conda create -n $CONDA_ENV_NAME --yes --quiet python=3.8
-source activate $CONDA_ENV_NAME
+# imports get_dep
+source build_tools/shared.sh
 
-conda install --yes pip numpy scipy joblib pillow matplotlib memory_profiler \
-        sphinx pandas tensorflow=2 seaborn
-pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
-pip install -U git+https://github.com/sphinx-gallery/sphinx-gallery.git
-pip install -U git+https://github.com/numpy/numpydoc.git
-pip install -U git+https://github.com/mcmtroffaes/sphinxcontrib-bibtex.git
-pip install -U git+https://github.com/pandas-dev/pydata-sphinx-theme.git@master
+# packaging won't be needed once setuptools starts shipping packaging>=17.0
+mamba create -n $CONDA_ENV_NAME --yes --quiet \
+    python="${PYTHON_VERSION:-*}" \
+    "$(get_dep numpy $NUMPY_VERSION)" \
+    "$(get_dep scipy $SCIPY_VERSION)" \
+    "$(get_dep scikit-learn $SKLEARN_VERSION)" \
+    "$(get_dep matplotlib $MATPLOTLIB_VERSION)" \
+    "$(get_dep sphinx $SPHINX_VERSION)" \
+    "$(get_dep pandas $PANDAS_VERSION)" \
+    "$(get_dep sphinx-gallery $SPHINX_GALLERY_VERSION)" \
+    "$(get_dep numpydoc $NUMPYDOC_VERSION)" \
+    "$(get_dep sphinxcontrib-bibtex $SPHINXCONTRIB_BIBTEX_VERSION)" \
+    "$(get_dep pydata-sphinx-theme $PYDATA_SPHINX_THEME_VERSION)" \
+    memory_profiler packaging seaborn pytest coverage \
+    tensorflow=2
+
+source activate $CONDA_ENV_NAME
 
 # Build and install imbalanced-learn in dev mode
 ls -l
-pip install -e .
+pip install -e . --no-build-isolation
 
 # The pipefail is requested to propagate exit code
 set -o pipefail && cd doc && make $MAKE_TARGET 2>&1 | tee ~/log.txt

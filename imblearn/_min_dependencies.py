@@ -38,9 +38,8 @@ dependent_packages = {
     "sphinx": ("4.0.1", "docs"),
     "sphinx-gallery": ("0.7.0", "docs"),
     "numpydoc": ("1.0.0", "docs"),
-    "Pillow": ("7.1.2", "docs"),
-    "sphinx-prompt": ("1.3.0", "docs"),
-    "sphinxext-opengraph": ("0.4.2", "docs"),
+    "sphinxcontrib-bibtex": ("2.4.1", "docs"),
+    "pydata-sphinx-theme": ("0.7.2", "docs"),
 }
 
 
