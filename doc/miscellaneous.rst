@@ -36,7 +36,7 @@ to retain the 10 first elements of the array ``X`` and ``y``::
 
 In addition, the parameter ``validate`` control input checking. For instance,
 turning ``validate=False`` allows to pass any type of target ``y`` and do some
-sampling for regression targets.
+sampling for regression targets::
 
   >>> from sklearn.datasets import make_regression
   >>> X_reg, y_reg = make_regression(n_samples=100, random_state=42)
