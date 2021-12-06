@@ -39,7 +39,7 @@ if [[ -n "$CHECK_WARNINGS" ]]; then
     TEST_CMD="$TEST_CMD -Werror::DeprecationWarning -Werror::FutureWarning -Wignore:tostring:DeprecationWarning"
 
     # numpy's 1.20's np.object deprecationg is ignored until tensorflow removes its usage
-    TEST_CMD="$TEST_CMD -Wignore:*object*:DeprecationWarning"
+    TEST_CMD='$TEST_CMD -Wignore:`np.object`:DeprecationWarning'
 
     # Python 3.10 deprecates disutils and is imported by numpy interally during import time
     TEST_CMD="$TEST_CMD -Wignore:The\ distutils:DeprecationWarning"
