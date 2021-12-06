@@ -159,6 +159,26 @@ jobs:
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
+      pylatest_pip_tensorflow:
+        DISTRIB: 'conda-pip-latest-tensorflow'
+        PYTHON_VERSION: '3.9'
+        TEST_DOCS: 'true'
+        TEST_DOCSTRINGS: 'true'
+        CHECK_WARNINGS: 'true'
+      pylatest_conda_tensorflow:
+        DISTRIB: 'conda-latest-tensorflow'
+        PYTHON_VERSION: '3.8'
+        TEST_DOCS: 'true'
+        TEST_DOCSTRINGS: 'true'
+        CHECK_WARNINGS: 'true'
+      conda_tensorflow_minimum:
+        DISTRIB: 'conda-min-tensorflow'
+        PYTHON_VERSION: '3.7'
+        SKLEARN_VERSION: 'min'
+        TENSORFLOW_VERSION: 'min'
+        TEST_DOCS: 'true'
+        TEST_DOCSTRINGS: 'true'
+        CHECK_WARNINGS: 'true'
 
 - template: build_tools/azure/posix-docker.yml
   parameters:

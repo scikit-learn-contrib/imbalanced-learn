@@ -25,6 +25,7 @@ jobs:
     NUMPY_VERSION: 'latest'
     SCIPY_VERSION: 'latest'
     SKLEARN_VERSION: 'latest'
+    TENSORFLOW_VERSION: 'none'
     JOBLIB_VERSION: 'latest'
     PANDAS_VERSION: 'latest'
     PILLOW_VERSION: 'latest'
