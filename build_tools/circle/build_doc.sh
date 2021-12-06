@@ -72,16 +72,14 @@ then
     exit 0
 fi
 
-MAKE_TARGET=html
+make_args=html
+make_args="SPHINXOPTS=-T $make_args"  # show full traceback on exception
 
 # Installing required system packages to support the rendering of math
-# notation in the HTML documentation
-sudo -E apt-get -yq update
-sudo -E apt-get -yq remove texlive-binaries --purge
+# notation in the HTML documentation and to optimize the image files
+sudo -E apt-get -yq update --allow-releaseinfo-change
 sudo -E apt-get -yq --no-install-suggests --no-install-recommends \
-    install dvipng texlive-latex-base texlive-latex-extra \
-    texlive-latex-recommended texlive-fonts-recommended \
-    latexmk gsfonts ccache
+    install dvipng gsfonts ccache zip optipng
 
 # deactivate circleci virtualenv and setup a miniconda env instead
 if [[ `type -t deactivate` ]]; then
@@ -111,8 +109,7 @@ mamba create -n $CONDA_ENV_NAME --yes --quiet \
     "$(get_dep numpydoc $NUMPYDOC_VERSION)" \
     "$(get_dep sphinxcontrib-bibtex $SPHINXCONTRIB_BIBTEX_VERSION)" \
     "$(get_dep pydata-sphinx-theme $PYDATA_SPHINX_THEME_VERSION)" \
-    memory_profiler packaging seaborn pytest coverage \
-    tensorflow=2
+    memory_profiler packaging seaborn pytest coverage compilers
 
 source activate $CONDA_ENV_NAME
 
@@ -121,7 +118,7 @@ ls -l
 pip install -e . --no-build-isolation
 
 # The pipefail is requested to propagate exit code
-set -o pipefail && cd doc && make $MAKE_TARGET 2>&1 | tee ~/log.txt
+set -o pipefail && cd doc && make $make_args 2>&1 | tee ~/log.txt
 
 cd -
 set +o pipefail
