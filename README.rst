@@ -4,13 +4,10 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Azure|_ |Travis|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_ |Black|_
+|Azure|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_ |Black|_
 
 .. |Azure| image:: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_apis/build/status/scikit-learn-contrib.imbalanced-learn?branchName=master
-.. _Azure: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_build
-
-.. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn.svg?branch=master
-.. _Travis: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn
+.. _Azure: https://dev.azure.com/imbalanced-learn/imbal
 
 .. |Codecov| image:: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn/branch/master/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn
