@@ -69,7 +69,7 @@ from ..utils._validation import _deprecate_positional_args  # noqa
 class BalancedBatchGenerator(*ParentClass):  # type: ignore
     """Create balanced batches when training a keras model.
 
-    Create a keras ``Sequence`` which is given to ``fit_generator``. The
+    Create a keras ``Sequence`` which is given to ``fit``. The
     sampler defines the sampling strategy used to balance the dataset ahead of
     creating the batch. The sampler should have an attribute
     ``sample_indices_``.
@@ -223,7 +223,7 @@ def balanced_batch_generator(
     """Create a balanced batch generator to train keras model.
 
     Returns a generator --- as well as the number of step per epoch --- which
-    is given to ``fit_generator``. The sampler defines the sampling strategy
+    is given to ``fit``. The sampler defines the sampling strategy
     used to balance the dataset ahead of creating the batch. The sampler should
     have an attribute ``sample_indices_``.
 
