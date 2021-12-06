@@ -12,7 +12,7 @@ jobs:
       - EMAIL: "g.lemaitre58@gmail.com"
       - MINICONDA_PATH: ~/miniconda
       - CONDA_ENV_NAME: testenv
-      - PYTHON_VERSION: 3
+      - PYTHON_VERSION: 3.8
       - NUMPY_VERSION: 'latest'
       - SCIPY_VERSION: 'latest'
       - SKLEARN_VERSION: 'latest'

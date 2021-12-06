@@ -35,7 +35,7 @@ dependent_packages = {
     "flake8": ("3.8.2", "tests"),
     "black": ("21.6b0", "tests"),
     "mypy": ("0.770", "tests"),
-    "sphinx": ("4.0.1", "docs"),
+    "sphinx": ("4.2.0", "docs"),
     "sphinx-gallery": ("0.7.0", "docs"),
     "numpydoc": ("1.0.0", "docs"),
     "sphinxcontrib-bibtex": ("2.4.1", "docs"),
