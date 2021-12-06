@@ -6,6 +6,20 @@ import os
 
 from setuptools import find_packages, setup
 
+try:
+    import builtins
+except ImportError:
+    # Python 2 compat: just to be able to declare that Python >=3.7 is needed.
+    import __builtin__ as builtins
+
+# This is a bit (!) hackish: we are setting a global variable so that the
+# main imblearn __init__ can detect if it is being loaded by the setup
+# routine, to avoid attempting to load components that aren't built yet:
+# the numpy distutils extensions that are used by imbalanced-learn to
+# recursively build the compiled extensions in sub-packages is based on the
+# Python import machinery.
+builtins.__IMBLEARN_SETUP__ = True
+
 import imblearn._min_dependencies as min_deps  # noqa
 
 # get __version__ from _version.py
