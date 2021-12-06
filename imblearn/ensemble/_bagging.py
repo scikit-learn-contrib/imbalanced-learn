@@ -108,6 +108,11 @@ class BalancedBaggingClassifier(BaggingClassifier):
     n_features_ : int
         The number of features when `fit` is performed.
 
+        .. deprecated:: 1.0
+           `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
+           in version 1.2. Depending of the version of `scikit-learn` installed,
+           you will get be warned or not.
+
     estimators_ : list of estimators
         The collection of fitted base estimators.
 
