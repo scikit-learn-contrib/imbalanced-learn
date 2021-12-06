@@ -150,15 +150,12 @@ bibtex_bibfiles = ["bibtex/refs.bib"]
 
 # intersphinx configuration
 intersphinx_mapping = {
-    "python": (
-        "https://docs.python.org/{.major}".format(sys.version_info),
-        None,
-    ),
-    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
+    "python": ("https://docs.python.org/{.major}".format(sys.version_info), None),
+    "numpy": ("https://numpy.org/doc/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "matplotlib": ("https://matplotlib.org/", None),
-    "sklearn": ("http://scikit-learn.org/stable", None),
-    "pandas": ("http://pandas.pydata.org/pandas-docs/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "joblib": ("https://joblib.readthedocs.io/en/latest/", None),
     "seaborn": ("https://seaborn.pydata.org/", None),
 }
 
