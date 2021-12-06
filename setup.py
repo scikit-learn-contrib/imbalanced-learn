@@ -55,7 +55,7 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.9",
 ]
 INSTALL_REQUIRES = (min_deps.tag_to_packages["install"],)
-EXTRAS_REQUIRE = min_deps.tag_to_packages["extra"].pop("install")
+EXTRAS_REQUIRE = min_deps.tag_to_packages.pop("install")
 
 
 setup(

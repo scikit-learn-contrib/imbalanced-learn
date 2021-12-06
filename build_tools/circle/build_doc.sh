@@ -109,7 +109,7 @@ mamba create -n $CONDA_ENV_NAME --yes --quiet \
     "$(get_dep numpydoc $NUMPYDOC_VERSION)" \
     "$(get_dep sphinxcontrib-bibtex $SPHINXCONTRIB_BIBTEX_VERSION)" \
     "$(get_dep pydata-sphinx-theme $PYDATA_SPHINX_THEME_VERSION)" \
-    memory_profiler packaging seaborn pytest coverage compilers tensorflow=2
+    memory_profiler packaging seaborn pytest coverage compilers tensorflow
 
 source activate $CONDA_ENV_NAME
 
