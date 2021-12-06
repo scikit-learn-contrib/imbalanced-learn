@@ -64,3 +64,4 @@ if __name__ == "__main__":
     parser.add_argument("package", choices=dependent_packages)
     args = parser.parse_args()
     min_version = dependent_packages[args.package][0]
+    print(min_version)
