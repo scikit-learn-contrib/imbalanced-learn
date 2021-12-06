@@ -172,7 +172,7 @@ jobs:
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
       conda_tensorflow_minimum:
-        DISTRIB: 'conda-min-tensorflow'
+        DISTRIB: 'conda-minimum-tensorflow'
         PYTHON_VERSION: '3.7'
         SKLEARN_VERSION: 'min'
         TENSORFLOW_VERSION: 'min'
