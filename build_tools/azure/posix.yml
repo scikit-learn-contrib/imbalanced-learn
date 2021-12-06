@@ -33,6 +33,7 @@ jobs:
     PYTEST_XDIST_VERSION: 'latest'
     THREADPOOLCTL_VERSION: 'latest'
     COVERAGE: 'true'
+    TEST_DOCS: 'false'
     TEST_DOCSTRINGS: 'false'
     SHOW_SHORT_SUMMARY: 'false'
   strategy:
@@ -61,6 +62,7 @@ jobs:
     - script: |
         build_tools/azure/test_docs.sh
       displayName: 'Test Docs'
+      condition: eq(variables['TEST_DOCS'], 'true')
     - script: |
         build_tools/azure/test_docstring.sh
       displayName: "Numpydoc validation"

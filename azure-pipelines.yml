@@ -76,6 +76,7 @@ jobs:
         DISTRIB: 'conda-pip-scipy-dev'
         PYTHON_VERSION: '*'
         CHECK_WARNINGS: 'true'
+        TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
 
 # Will run all the time regardless of linting outcome.
@@ -155,6 +156,7 @@ jobs:
       pylatest_pip_openblas_pandas:
         DISTRIB: 'conda-pip-latest'
         PYTHON_VERSION: '3.9'
+        TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
 
@@ -196,11 +198,13 @@ jobs:
         BLAS: 'mkl'
         CONDA_CHANNEL: 'conda-forge'
         CPU_COUNT: '3'
+        TEST_DOCS: 'true'
       pylatest_conda_mkl_no_openmp:
         DISTRIB: 'conda'
         BLAS: 'mkl'
         SKLEARN_SKIP_OPENMP_TEST: 'true'
         CPU_COUNT: '3'
+        TEST_DOCS: 'true'
 
 - template: build_tools/azure/windows.yml
   parameters:
