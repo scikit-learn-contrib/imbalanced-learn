@@ -123,6 +123,7 @@ doc/auto_examples/
 doc/generated/
 doc/references/generated/
 doc/bibtex/auto
+doc/min_dependency_table.rst
 
 # MacOS
 .DS_Store
