@@ -94,7 +94,7 @@ elif [[ "$DISTRIB" == "conda-latest-tensorflow" ]]; then
     make_conda "ccache python=$PYTHON_VERSION numpy scipy scikit-learn tensorflow"
 
 elif [[ "$DISTRIB" == "conda-minimum-tensorflow" ]]; then
-    TO_INSTALL=""
+    TO_INSTALL="ccache "
     TO_INSTALL="$TO_INSTALL python=$PYTHON_VERSION"
     TO_INSTALL="$TO_INSTALL $(get_dep numpy $NUMPY_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep scipy $SCIPY_VERSION)"
@@ -111,8 +111,8 @@ elif [[ "$DISTRIB" == "conda-pip-scipy-dev" ]]; then
     setup_ccache
     echo "Installing joblib master"
     pip install https://github.com/joblib/joblib/archive/master.zip
-    echo "Installing pillow master"
-    pip install https://github.com/python-pillow/Pillow/archive/main.zip
+    echo "Installing tensorflow master"
+    pip install tf-nightly
 fi
 
 python -m pip install $(get_dep threadpoolctl $THREADPOOLCTL_VERSION) \
