@@ -15,12 +15,14 @@
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
+from io import StringIO
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath("sphinxext"))
-from github_link import make_linkcode_resolve
+from github_link import make_linkcode_resolve  # noqa
 
 # -- General configuration ------------------------------------------------
 
@@ -60,7 +62,7 @@ copyright = f"2014-{datetime.now().year}, The imbalanced-learn developers"
 # built documents.
 #
 # The short X.Y version.
-from imblearn import __version__
+from imblearn import __version__  # noqa
 
 version = __version__
 # The full version, including alpha/beta/rc tags.
@@ -150,15 +152,12 @@ bibtex_bibfiles = ["bibtex/refs.bib"]
 
 # intersphinx configuration
 intersphinx_mapping = {
-    "python": (
-        "https://docs.python.org/{.major}".format(sys.version_info),
-        None,
-    ),
-    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
+    "python": ("https://docs.python.org/{.major}".format(sys.version_info), None),
+    "numpy": ("https://numpy.org/doc/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "matplotlib": ("https://matplotlib.org/", None),
-    "sklearn": ("http://scikit-learn.org/stable", None),
-    "pandas": ("http://pandas.pydata.org/pandas-docs/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "joblib": ("https://joblib.readthedocs.io/en/latest/", None),
     "seaborn": ("https://seaborn.pydata.org/", None),
 }
 
@@ -252,6 +251,76 @@ texinfo_documents = [
     ),
 ]
 
+# -- Dependencies generation ----------------------------------------------
+
+
+def generate_min_dependency_table(app):
+    """Generate min dependency table for docs."""
+    from sklearn._min_dependencies import dependent_packages
+
+    # get length of header
+    package_header_len = max(len(package) for package in dependent_packages) + 4
+    version_header_len = len("Minimum Version") + 4
+    tags_header_len = max(len(tags) for _, tags in dependent_packages.values()) + 4
+
+    output = StringIO()
+    output.write(
+        " ".join(
+            ["=" * package_header_len, "=" * version_header_len, "=" * tags_header_len]
+        )
+    )
+    output.write("\n")
+    dependency_title = "Dependency"
+    version_title = "Minimum Version"
+    tags_title = "Purpose"
+
+    output.write(
+        f"{dependency_title:<{package_header_len}} "
+        f"{version_title:<{version_header_len}} "
+        f"{tags_title}\n"
+    )
+
+    output.write(
+        " ".join(
+            ["=" * package_header_len, "=" * version_header_len, "=" * tags_header_len]
+        )
+    )
+    output.write("\n")
+
+    for package, (version, tags) in dependent_packages.items():
+        output.write(
+            f"{package:<{package_header_len}} {version:<{version_header_len}} {tags}\n"
+        )
+
+    output.write(
+        " ".join(
+            ["=" * package_header_len, "=" * version_header_len, "=" * tags_header_len]
+        )
+    )
+    output.write("\n")
+    output = output.getvalue()
+
+    with (Path(".") / "min_dependency_table.rst").open("w") as f:
+        f.write(output)
+
+
+def generate_min_dependency_substitutions(app):
+    """Generate min dependency substitutions for docs."""
+    from sklearn._min_dependencies import dependent_packages
+
+    output = StringIO()
+
+    for package, (version, _) in dependent_packages.items():
+        package = package.capitalize()
+        output.write(f".. |{package}MinVersion| replace:: {version}")
+        output.write("\n")
+
+    output = output.getvalue()
+
+    with (Path(".") / "min_dependency_substitutions.rst").open("w") as f:
+        f.write(output)
+
+
 # -- Additional temporary hacks -----------------------------------------------
 
 # Temporary work-around for spacing problem between parameter and parameter
@@ -263,5 +332,7 @@ texinfo_documents = [
 
 
 def setup(app):
+    app.connect("builder-inited", generate_min_dependency_table)
+    app.connect("builder-inited", generate_min_dependency_substitutions)
     app.add_js_file("js/copybutton.js")
     app.add_css_file("basic.css")

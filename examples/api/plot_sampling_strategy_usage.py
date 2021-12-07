@@ -112,7 +112,7 @@ sampling_strategy = "not majority"
 ros = RandomOverSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = ros.fit_resample(X, y)
 y_res.value_counts().plot.pie(autopct=autopct, ax=axs[1])
-axs[1].set_title("Over-sampling")
+_ = axs[1].set_title("Over-sampling")
 
 # %% [markdown]
 # With **cleaning method**, the number of samples in each class will not be
@@ -122,7 +122,7 @@ axs[1].set_title("Over-sampling")
 from imblearn.under_sampling import TomekLinks
 
 sampling_strategy = "not minority"
-tl = TomekLinks(sampling_strategy)
+tl = TomekLinks(sampling_strategy=sampling_strategy)
 X_res, y_res = tl.fit_resample(X, y)
 ax = y_res.value_counts().plot.pie(autopct=autopct)
 _ = ax.set_title("Cleaning")
@@ -149,7 +149,7 @@ sampling_strategy = {0: 25, 1: 35, 2: 47}
 ros = RandomOverSampler(sampling_strategy=sampling_strategy)
 X_res, y_res = ros.fit_resample(X, y)
 y_res.value_counts().plot.pie(autopct=autopct, ax=axs[1])
-axs[1].set_title("Under-sampling")
+_ = axs[1].set_title("Under-sampling")
 
 # %% [markdown]
 # `sampling_strategy` as a `list`

@@ -37,7 +37,7 @@ data = fetch_lfw_people()
 george_bush_id = 1871  # Photos of George W. Bush
 bill_clinton_id = 531  # Photos of Bill Clinton
 classes = [george_bush_id, bill_clinton_id]
-classes_name = np.array(["B. Clinton", "G.W. Bush"], dtype=np.object)
+classes_name = np.array(["B. Clinton", "G.W. Bush"], dtype=object)
 
 # %%
 mask_photos = np.isin(data.target, classes)
@@ -49,12 +49,14 @@ y = classes_name[y]
 # We can check the ratio between the two classes.
 
 # %%
+import matplotlib.pyplot as plt
 import pandas as pd
 
 class_distribution = pd.Series(y).value_counts(normalize=True)
 ax = class_distribution.plot.barh()
 ax.set_title("Class distribution")
 pos_label = class_distribution.idxmin()
+plt.tight_layout()
 print(f"The positive label considered as the minority class is {pos_label}")
 
 # %% [markdown]
@@ -96,7 +98,6 @@ cv = StratifiedKFold(n_splits=3)
 # cross-validation.
 
 # %%
-import matplotlib.pyplot as plt
 from sklearn.metrics import RocCurveDisplay, roc_curve, auc
 
 disp = []
@@ -139,10 +140,11 @@ for d in disp:
     d.plot(ax=ax, linestyle="--")
 ax.plot([0, 1], [0, 1], linestyle="--", color="k")
 ax.axis("square")
-fig.suptitle("Comparison of over-sampling methods with a 3NN classifier")
+fig.suptitle("Comparison of over-sampling methods \nwith a 3NN classifier")
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1])
 sns.despine(offset=10, ax=ax)
+plt.tight_layout()
 plt.show()
 
 # %% [markdown]

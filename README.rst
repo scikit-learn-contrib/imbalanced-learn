@@ -4,13 +4,10 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Azure|_ |Travis|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_ |Black|_
+|Azure|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_ |Black|_
 
 .. |Azure| image:: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_apis/build/status/scikit-learn-contrib.imbalanced-learn?branchName=master
-.. _Azure: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_build
-
-.. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn.svg?branch=master
-.. _Travis: https://travis-ci.org/scikit-learn-contrib/imbalanced-learn
+.. _Azure: https://dev.azure.com/imbalanced-learn/imbal
 
 .. |Codecov| image:: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn/branch/master/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn
@@ -30,7 +27,16 @@
 .. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
 .. _Black: :target: https://github.com/psf/black
 
-
+.. |PythonMinVersion| replace:: 3.7
+.. |NumPyMinVersion| replace:: 1.14.6
+.. |SciPyMinVersion| replace:: 1.1.0
+.. |ScikitLearnMinVersion| replace:: 0.24.2
+.. |MatplotlibMinVersion| replace:: 2.2.3
+.. |PandasMinVersion| replace:: 0.25.0
+.. |TensorflowMinVersion| replace:: 2.4.3
+.. |KerasMinVersion| replace:: 2.4.3
+.. |SeabornMinVersion| replace:: 0.9.0
+.. |PytestMinVersion| replace:: 5.0.1
 
 imbalanced-learn
 ================
@@ -54,18 +60,23 @@ Installation
 Dependencies
 ~~~~~~~~~~~~
 
-imbalanced-learn is tested to work under Python 3.6+.
-The dependency requirements are based on the last scikit-learn release:
+`imbalanced-learn` requires the following dependencies:
 
-* scipy(>=0.19.1)
-* numpy(>=1.13.3)
-* scikit-learn(>=0.24)
-* joblib(>=0.11)
-* keras 2 (optional)
-* tensorflow (optional)
+- Python (>= |PythonMinVersion|)
+- NumPy (>= |NumPyMinVersion|)
+- SciPy (>= |SciPyMinVersion|)
+- Scikit-learn (>= |ScikitLearnMinVersion|)
 
-Additionally, to run the examples, you need matplotlib(>=2.0.0) and
-pandas(>=0.22).
+Additionally, `imbalanced-learn` requires the following optional dependencies:
+
+- Pandas (>= |PandasMinVersion|) for dealing with dataframes
+- Tensorflow (>= |TensorflowMinVersion|) for dealing with TensorFlow models
+- Keras (>= |KerasMinVersion|) for dealing with Keras models
+
+The examples will requires the following additional dependencies:
+
+- Matplotlib (>= |MatplotlibMinVersion|)
+- Seaborn (>= |SeabornMinVersion|)
 
 Installation
 ~~~~~~~~~~~~

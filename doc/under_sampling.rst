@@ -63,7 +63,7 @@ Prototype selection
 
 On the contrary to prototype generation algorithms, prototype selection
 algorithms will select samples from the original set :math:`S`. Therefore,
-:math:`S'` is defined such as :math:`|S'| < |S|` and :math:`S' \in S`.
+:math:`S'` is defined such as :math:`|S'| < |S|` and :math:`S' \subset S`.
 
 In addition, these algorithms can be divided into two groups: (i) the
 controlled under-sampling techniques and (ii) the cleaning under-sampling

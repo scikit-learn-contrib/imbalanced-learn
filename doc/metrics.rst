@@ -65,10 +65,16 @@ each class and averaged over classes, giving an equal weight to each class.
 Summary of important metrics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :func:`classification_report_imbalanced` will compute a set of metrics
-per class and summarize it in a table. The parameter `output_dict` allows
-to get a string or a Python dictionary. This dictionary can be reused to create
-a Pandas dataframe for instance.
+The :func:`classification_report_imbalanced` will compute a set of metrics per
+class and summarize it in a table. The parameter `output_dict` allows to get a
+string or a Python dictionary. This dictionary can be reused to create a Pandas
+dataframe for instance.
+
+The bottom row (i.e "avg/total") contains the weighted average by the support
+(i.e column "sup") of each column.
+
+Note that the weighted average of the class recalls is also known as the
+classification accuracy.
 
 .. _pairwise_metrics:
 
@@ -116,9 +122,9 @@ the different categories::
     >>> X_test = np.array(["green", "red", "blue"]).reshape(-1, 1)
     >>> X_test_encoded = encoder.transform(X_test)
     >>> vdm.pairwise(X_test_encoded)
-    array([[ 0.  ,  0.04,  1.96],
-           [ 0.04,  0.  ,  1.44],
-           [ 1.96,  1.44,  0.  ]])
+    array([[0.  ,  0.04,  1.96],
+           [0.04,  0.  ,  1.44],
+           [1.96,  1.44,  0.  ]])
 
 We see that the minimum distance happen when the categories "red" and "green"
 are compared. Whenever comparing with "blue", the distance is much larger.

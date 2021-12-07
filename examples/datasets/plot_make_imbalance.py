@@ -29,6 +29,7 @@ sns.set_context("poster")
 # original dataset.
 
 # %%
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.datasets import make_moons
 
@@ -42,6 +43,7 @@ ax = X.plot.scatter(
     colorbar=False,
 )
 sns.despine(ax=ax, offset=10)
+plt.tight_layout()
 
 # %% [markdown]
 # Make a dataset imbalanced
@@ -61,7 +63,6 @@ def ratio_func(y, multiplier, minority_class):
 
 
 # %%
-import matplotlib.pyplot as plt
 from imblearn.datasets import make_imbalance
 
 fig, axs = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
