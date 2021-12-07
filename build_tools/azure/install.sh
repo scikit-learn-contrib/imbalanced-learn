@@ -105,7 +105,7 @@ elif [[ "$DISTRIB" == "conda-minimum-keras" ]]; then
     make_conda $TO_INSTALL
 
 elif [[ "$DISTRIB" == "conda-cuml" ]]; then
-    TO_INSTALL="-c rapidsai -c nvidia python=$PYTHON_VERSION"
+    TO_INSTALL="-c $CONDA_CHANNEL -c rapidsai -c nvidia python=$PYTHON_VERSION"
     TO_INSTALL="$TO_INSTALL $(get_dep numpy $NUMPY_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep scipy $SCIPY_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep scikit-learn $SKLEARN_VERSION)"
