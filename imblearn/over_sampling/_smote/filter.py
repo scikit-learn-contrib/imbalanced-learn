@@ -277,6 +277,8 @@ class SVMSMOTE(BaseSMOTE):
 
     svm_estimator : estimator object, default=SVC()
         A parametrized :class:`~sklearn.svm.SVC` classifier can be passed.
+        A scikit-learn compatible estimator can be passed but it is required
+        to expose a `support_` fitted attribute.
 
     out_step : float, default=0.5
         Step size when extrapolating.
@@ -400,6 +402,12 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
             X_class = _safe_indexing(X, target_class_indices)
 
             self.svm_estimator_.fit(X, y)
+            if not hasattr(self.svm_estimator_, "support_"):
+                raise RuntimeError(
+                    "`svm_estimator` is required to exposed a `support_` fitted "
+                    "attribute. Such estimator belongs to the familly of Support "
+                    "Vector Machine."
+                )
             support_index = self.svm_estimator_.support_[
                 y[self.svm_estimator_.support_] == class_sample
             ]
