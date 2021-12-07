@@ -6,6 +6,7 @@ set -x
 UNAMESTR=`uname`
 
 make_conda() {
+    conda update -yq conda
     TO_INSTALL="$@"
     if [[ "$DISTRIB" == *"mamba"* ]]; then
         mamba create -n $VIRTUALENV --yes $TO_INSTALL
@@ -106,12 +107,13 @@ elif [[ "$DISTRIB" == "conda-minimum-keras" ]]; then
 
 elif [[ "$DISTRIB" == "conda-cuml" ]]; then
     TO_INSTALL="-c rapidsai -c nvidia -c conda-forge python=$PYTHON_VERSION"
+    TO_INSTALL="$TO_INSTALL $(get_dep numpy $NUMPY_VERSION)"
+    TO_INSTALL="$TO_INSTALL $(get_dep scipy $SCIPY_VERSION)"
+    TO_INSTALL="$TO_INSTALL $(get_dep scikit-learn $SKLEARN_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep blazingsql $BLAZINGSQL_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep cuml $CUML_VERSION)"
-    TO_INSTALL="$TO_INSTALL cudatoolkit"
+    TO_INSTALL="$TO_INSTALL $(get_dep cudatoolkit $CUDATOOLKIT_VERSION)"
     make_conda $TO_INSTALL
-
-    python -m pip install numpy scipy scikit-learn
 
 elif [[ "$DISTRIB" == "conda-pip-scipy-dev" ]]; then
     make_conda "python=$PYTHON_VERSION"
