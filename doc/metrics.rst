@@ -65,15 +65,16 @@ each class and averaged over classes, giving an equal weight to each class.
 Summary of important metrics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :func:`classification_report_imbalanced` will compute a set of metrics
-per class and summarize it in a table. The parameter `output_dict` allows
-to get a string or a Python dictionary. This dictionary can be reused to create
-a Pandas dataframe for instance.  Its "avg/total" bottom row contains 
-the Weighted Average of each column (weighting is by the sup (Support), i.e. by
-the true class proportions), except the sup (Support) column whose total
-appears at its bottom.  Also note that the avg value at the bottom of the "rec"
-column is simply the Accuracy because  Weighted Average Recall is just another 
-name for Accuracy.
+The :func:`classification_report_imbalanced` will compute a set of metrics per
+class and summarize it in a table. The parameter `output_dict` allows to get a
+string or a Python dictionary. This dictionary can be reused to create a Pandas
+dataframe for instance.
+
+The bottom row (i.e "avg/total") contains the weighted average by the support
+(i.e column "sup") of each column.
+
+Note that the weighted average of the class recalls is also known as the
+classification accuracy.
 
 .. _pairwise_metrics:
 
