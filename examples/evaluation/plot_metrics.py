@@ -52,11 +52,14 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # %%
 from imblearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE
 from sklearn.svm import LinearSVC
 
 model = make_pipeline(
-    SMOTE(random_state=RANDOM_STATE), LinearSVC(random_state=RANDOM_STATE)
+    StandardScaler(),
+    SMOTE(random_state=RANDOM_STATE),
+    LinearSVC(max_iter=10_000, random_state=RANDOM_STATE),
 )
 
 # %% [markdown]

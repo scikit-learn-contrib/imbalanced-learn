@@ -118,5 +118,5 @@ sns.despine(ax=ax, offset=10)
 ax.set_xlim([1, 10])
 ax.set_ylim([0.4, 0.8])
 ax.legend(loc="lower right")
-
+plt.tight_layout()
 plt.show()

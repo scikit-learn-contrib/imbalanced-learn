@@ -41,9 +41,9 @@ X, y = datasets.make_classification(
 )
 
 pipeline = pl.make_pipeline(
-    os.SMOTE(random_state=RANDOM_STATE),
     StandardScaler(),
-    LinearSVC(random_state=RANDOM_STATE),
+    os.SMOTE(random_state=RANDOM_STATE),
+    LinearSVC(max_iter=10_000, random_state=RANDOM_STATE),
 )
 
 # Split the data

@@ -101,6 +101,7 @@ for positive_idx, (neighbors, distance, color) in enumerate(
         )
 ax.set_title("NearMiss-1")
 make_plot_despine(ax)
+plt.tight_layout()
 
 # %% [mardown]
 # NearMiss-2
@@ -149,6 +150,7 @@ for positive_idx, (neighbors, distance, color) in enumerate(
         )
 ax.set_title("NearMiss-2")
 make_plot_despine(ax)
+plt.tight_layout()
 
 # %% [mardown]
 # NearMiss-3
@@ -208,6 +210,5 @@ for positive_idx, (neighbors, distance, color) in enumerate(
         )
 ax.set_title("NearMiss-3")
 make_plot_despine(ax)
-
-fig.tight_layout()
+plt.tight_layout()
 plt.show()

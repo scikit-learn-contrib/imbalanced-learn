@@ -266,10 +266,10 @@ samplers = [
 for ax, sampler in zip(axs, samplers):
     model = make_pipeline(sampler, clf).fit(X, y)
     plot_decision_function(
-        X, y, clf, ax[0], title=f"Decision function for {sampler.__class__.__name__}"
+        X, y, clf, ax[0], title=f"Decision function for \n{sampler.__class__.__name__}"
     )
     plot_resampling(
-        X, y, sampler, ax[1], title=f"Resampling using {sampler.__class__.__name__}"
+        X, y, sampler, ax[1], title=f"Resampling using \n{sampler.__class__.__name__}"
     )
 fig.tight_layout()
 
