@@ -126,7 +126,11 @@ def test_enn_fit_resample_with_nn_object():
 def test_enn_not_good_object():
     nn = "rnd"
     enn = EditedNearestNeighbours(n_neighbors=nn, kind_sel="mode")
-    with pytest.raises(ValueError, match="NearestNeighbors object or int"):
+    err_msg = (
+        "n_neighbors must be an interger or an object compatible with the "
+        "KNeighborsMixin API of scikit-learn"
+    )
+    with pytest.raises(ValueError, match=err_msg):
         enn.fit_resample(X, Y)
 
 
