@@ -105,7 +105,7 @@ elif [[ "$DISTRIB" == "conda-minimum-keras" ]]; then
     make_conda $TO_INSTALL
 
 elif [[ "$DISTRIB" == "conda-cuml" ]]; then
-    TO_INSTALL="-c $CONDA_CHANNEL -c rapidsai -c nvidia python=$PYTHON_VERSION"
+    TO_INSTALL="-c rapidsai -c nvidia -c conda-forge python=$PYTHON_VERSION"
     TO_INSTALL="$TO_INSTALL $(get_dep blazingsql $BLAZINGSQL_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep cuml $CUML_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep cudatoolkit $CUDATOOLKIT_VERSION)"

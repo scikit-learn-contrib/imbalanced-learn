@@ -209,7 +209,7 @@ jobs:
         CHECK_WARNINGS: 'true'
       pylatest_conda_cuml:
         DISTRIB: 'conda-cuml'
-        CONDA_CHANNEL: 'conda-forge'
+        CONDA_CHANNEL: 'defaults'
         PYTHON_VERSION: '3.8'
         BLAZINGSQL_VERSION: 'min'
         CUML_VERSION: 'min'
