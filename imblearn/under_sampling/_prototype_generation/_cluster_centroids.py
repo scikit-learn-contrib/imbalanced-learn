@@ -49,7 +49,8 @@ class ClusterCentroids(BaseUnderSampler):
     {random_state}
 
     estimator : estimator object, default=None
-        Pass a :class:`~sklearn.cluster.KMeans` estimator. By default, it will
+        A scikit-learn compatible clustering method that exposes a `n_clusters`
+        parameter and a `cluster_centers_` fitted attribute. By default, it will
         be a default :class:`~sklearn.cluster.KMeans` estimator.
 
     voting : {{"hard", "soft", "auto"}}, default='auto'
@@ -143,6 +144,11 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
             self.estimator_ = KMeans(random_state=self.random_state)
         else:
             self.estimator_ = clone(self.estimator)
+            if "n_clusters" not in self.estimator_.get_params():
+                raise ValueError(
+                    "`estimator` should be a clustering estimator exposing a parameter"
+                    " `n_clusters` and a fitted parameter `cluster_centers_`."
+                )
 
     def _generate_sample(self, X, y, centroids, target_class):
         if self.voting_ == "hard":
@@ -183,6 +189,11 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
                 n_samples = self.sampling_strategy_[target_class]
                 self.estimator_.set_params(**{"n_clusters": n_samples})
                 self.estimator_.fit(_safe_indexing(X, target_class_indices))
+                if not hasattr(self.estimator_, "cluster_centers_"):
+                    raise RuntimeError(
+                        "`estimator` should be a clustering estimator exposing a "
+                        "fitted parameter `cluster_centers_`."
+                    )
                 X_new, y_new = self._generate_sample(
                     _safe_indexing(X, target_class_indices),
                     _safe_indexing(y, target_class_indices),
