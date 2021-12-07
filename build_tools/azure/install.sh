@@ -9,7 +9,7 @@ make_conda() {
     conda update -yq conda
     TO_INSTALL="$@"
     if [[ "$DISTRIB" == *"mamba"* ]]; then
-        conda install mamba
+        conda install mamba -c conda-forge
         mamba create -n $VIRTUALENV --yes $TO_INSTALL
     else
         conda config --show
