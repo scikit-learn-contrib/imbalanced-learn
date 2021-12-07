@@ -46,7 +46,7 @@ X, y = make_classification(
 
 # %%
 _, ax = plt.subplots(figsize=(6, 6))
-ax.scatter(X[:, 0], X[:, 1], c=y, alpha=0.8, edgecolor="k")
+_ = ax.scatter(X[:, 0], X[:, 1], c=y, alpha=0.8, edgecolor="k")
 
 # %% [markdown]
 # The following function will be used to plot the sample space after resampling

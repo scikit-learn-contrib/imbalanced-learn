@@ -14,6 +14,7 @@ learning problem.
 
 
 from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
 
@@ -40,7 +41,9 @@ X, y = datasets.make_classification(
 )
 
 pipeline = pl.make_pipeline(
-    os.SMOTE(random_state=RANDOM_STATE), LinearSVC(random_state=RANDOM_STATE)
+    StandardScaler(),
+    os.SMOTE(random_state=RANDOM_STATE),
+    LinearSVC(max_iter=10_000, random_state=RANDOM_STATE),
 )
 
 # Split the data
