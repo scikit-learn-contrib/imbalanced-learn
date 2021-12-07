@@ -105,7 +105,7 @@ elif [[ "$DISTRIB" == "conda-minimum-keras" ]]; then
     TO_INSTALL="$TO_INSTALL $(get_dep keras $KERAS_VERSION)"
     make_conda $TO_INSTALL
 
-elif [[ "$DISTRIB" == "conda-cuml" ]]; then
+elif [[ "$DISTRIB" == "mamba-cuml" ]]; then
     TO_INSTALL="-c rapidsai -c nvidia -c conda-forge python=$PYTHON_VERSION"
     TO_INSTALL="$TO_INSTALL $(get_dep numpy $NUMPY_VERSION)"
     TO_INSTALL="$TO_INSTALL $(get_dep scipy $SCIPY_VERSION)"

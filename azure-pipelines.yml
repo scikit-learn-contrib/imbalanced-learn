@@ -208,7 +208,7 @@ jobs:
         TEST_DOCSTRINGS: 'false'  # it is going to fail because of scikit-learn inheritance
         CHECK_WARNINGS: 'true'
       pylatest_conda_cuml:
-        DISTRIB: 'conda-cuml'
+        DISTRIB: 'mamba-cuml'
         CONDA_CHANNEL: 'defaults'
         PYTHON_VERSION: '3.8'
         BLAZINGSQL_VERSION: 'min'
