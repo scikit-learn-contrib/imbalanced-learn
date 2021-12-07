@@ -21,8 +21,6 @@ jobs:
     CPU_COUNT: '2'
     SKLEARN_SKIP_NETWORK_TESTS: '1'
     SKLEARN_DATA_DIR: $(System.DefaultWorkingDirectory)/scikit_learn_data
-    CCACHE_DIR: $(Pipeline.Workspace)/ccache
-    CCACHE_COMPRESS: '1'
     NUMPY_VERSION: 'latest'
     SCIPY_VERSION: 'latest'
     SKLEARN_VERSION: 'latest'
@@ -55,12 +53,6 @@ jobs:
         key: '"$(Agent.JobName)"'
         path: $(SKLEARN_DATA_DIR)
       displayName: Dataset caching
-      continueOnError: true
-    - task: Cache@2
-      inputs:
-        key: '"$(Agent.JobName)"'
-        path: $(CCACHE_DIR)
-      displayName: ccache
       continueOnError: true
     - script: |
         build_tools/azure/install.sh
