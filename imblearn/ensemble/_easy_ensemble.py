@@ -73,11 +73,36 @@ class EasyEnsembleClassifier(BaggingClassifier):
     estimators_ : list of estimators
         The collection of fitted base estimators.
 
+    estimators_samples_ : list of arrays
+        The subset of drawn samples for each base estimator.
+
+    estimators_features_ : list of arrays
+        The subset of drawn features for each base estimator.
+
     classes_ : array, shape (n_classes,)
         The classes labels.
 
     n_classes_ : int or list
         The number of classes.
+
+    n_features_ : int
+        The number of features when ``fit`` is performed.
+
+        .. deprecated:: 1.0
+           `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
+           in version 1.2. Depending of the version of `scikit-learn` installed,
+           you will get be warned or not.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
+    feature_names_in_ : ndarray of shape (n_features_in_,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.9
 
     See Also
     --------
@@ -203,22 +228,28 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         )
 
     def fit(self, X, y):
-        """Train the ensemble on the training set.
+        """Build a Bagging ensemble of estimators from the training set (X, y).
 
         Parameters
         ----------
         X : {array-like, sparse matrix} of shape (n_samples, n_features)
-            The training input samples.
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
 
         y : array-like of shape (n_samples,)
-            The target values.
+            The target values (class labels in classification, real numbers in
+            regression).
 
         Returns
         -------
         self : object
-            Returns self.
+            Fitted estimator.
         """
+        # overwrite the base class method by disallowing `sample_weight`
+        return super().fit(X, y)
+
+    def _fit(self, X, y, max_samples=None, max_depth=None, sample_weight=None):
         check_target_type(y)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
-        return self._fit(X, y, self.max_samples, sample_weight=None)
+        return super()._fit(X, y, self.max_samples, sample_weight=None)

@@ -49,7 +49,7 @@ from collections import Counter
 print(f"Training class distributions summary: {Counter(y_train)}")
 print(f"Test class distributions summary: {Counter(y_test)}")
 
-# % [markdown]
+# %% [markdown]
 # The usual scikit-learn pipeline
 # -------------------------------
 #

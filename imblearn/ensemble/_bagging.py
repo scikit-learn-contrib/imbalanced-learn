@@ -108,8 +108,16 @@ class BalancedBaggingClassifier(BaggingClassifier):
     n_features_ : int
         The number of features when `fit` is performed.
 
+        .. deprecated:: 1.0
+           `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
+           in version 1.2. Depending of the version of `scikit-learn` installed,
+           you will get be warned or not.
+
     estimators_ : list of estimators
         The collection of fitted base estimators.
+
+    sampler_ : sampler object
+        The validate sampler created from the `sampler` parameter.
 
     estimators_samples_ : list of ndarray
         The subset of drawn samples (i.e., the in-bag samples) for each base
@@ -132,6 +140,17 @@ class BalancedBaggingClassifier(BaggingClassifier):
         set. If n_estimators is small it might be possible that a data point
         was never left out during the bootstrap. In this case,
         ``oob_decision_function_`` might contain NaN.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
+    feature_names_in_ : ndarray of shape (n_features_in_,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.9
 
     See Also
     --------
@@ -296,16 +315,22 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         Parameters
         ----------
         X : {array-like, sparse matrix} of shape (n_samples, n_features)
-            The training input samples.
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
 
         y : array-like of shape (n_samples,)
-            The target values.
+            The target values (class labels in classification, real numbers in
+            regression).
 
         Returns
         -------
         self : object
-            Returns self.
+            Fitted estimator.
         """
+        # overwrite the base class method by disallowing `sample_weight`
+        return super().fit(X, y)
+
+    def _fit(self, X, y, max_samples=None, max_depth=None, sample_weight=None):
         check_target_type(y)
         # the sampler needs to be validated before to call _fit because
         # _validate_y is called before _validate_estimator and would require
@@ -318,7 +343,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             self.sampler_ = clone(self.sampler)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
-        return self._fit(X, y, self.max_samples, sample_weight=None)
+        return super()._fit(X, y, self.max_samples, sample_weight=None)
 
     def _more_tags(self):
         tags = super()._more_tags()

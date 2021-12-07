@@ -18,7 +18,7 @@ tf = pytest.importorskip("tensorflow")
 @pytest.fixture
 def data():
     X, y = load_iris(return_X_y=True)
-    X, y = make_imbalance(X, y, {0: 30, 1: 50, 2: 40})
+    X, y = make_imbalance(X, y, sampling_strategy={0: 30, 1: 50, 2: 40})
     X = X.astype(np.float32)
     return X, y
 

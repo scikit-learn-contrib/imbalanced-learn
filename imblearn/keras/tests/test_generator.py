@@ -8,7 +8,7 @@ from sklearn.datasets import load_iris
 keras = pytest.importorskip("keras")
 from keras.models import Sequential  # noqa: E402
 from keras.layers import Dense  # noqa: E402
-from keras.utils import to_categorical  # noqa: E402
+from keras.utils.np_utils import to_categorical  # noqa: E402
 
 from imblearn.datasets import make_imbalance  # noqa: E402
 from imblearn.under_sampling import ClusterCentroids  # noqa: E402
@@ -22,7 +22,9 @@ from imblearn.keras import balanced_batch_generator  # noqa: E402
 @pytest.fixture
 def data():
     iris = load_iris()
-    X, y = make_imbalance(iris.data, iris.target, {0: 30, 1: 50, 2: 40})
+    X, y = make_imbalance(
+        iris.data, iris.target, sampling_strategy={0: 30, 1: 50, 2: 40}
+    )
     y = to_categorical(y, 3)
     return X, y
 

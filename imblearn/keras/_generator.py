@@ -4,20 +4,23 @@
 # This is a trick to avoid an error during tests collection with pytest. We
 # avoid the error when importing the package raise the error at the moment of
 # creating the instance.
+# This is a trick to avoid an error during tests collection with pytest. We
+# avoid the error when importing the package raise the error at the moment of
+# creating the instance.
 def import_keras():
     """Try to import keras from keras and tensorflow.
 
     This is possible to import the sequence from keras or tensorflow.
-    Keras is not ducktyping ``Sequence`` before 2.3 and we need import from
-    all possible library to ensure that the ``isinstance(...)`` is not going
-    to fail. This function can be modified when we support Keras 2.3.
     """
 
     def import_from_keras():
         try:
-            import keras
+            import keras  # noqa
 
-            return (keras.utils.Sequence,), True
+            if hasattr(keras.utils, "Sequence"):
+                return (keras.utils.Sequence,), True
+            else:
+                return (keras.utils.data_utils.Sequence,), True
         except ImportError:
             return tuple(), False
 
@@ -25,7 +28,10 @@ def import_keras():
         try:
             from tensorflow import keras
 
-            return (keras.utils.Sequence,), True
+            if hasattr(keras.utils, "Sequence"):
+                return (keras.utils.Sequence,), True
+            else:
+                return (keras.utils.data_utils.Sequence,), True
         except ImportError:
             return tuple(), False
 
@@ -33,7 +39,10 @@ def import_keras():
     ParentClassTensorflow, has_keras_tf = import_from_tensforflow()
     has_keras = has_keras_k or has_keras_tf
     if has_keras:
-        ParentClass = ParentClassKeras + ParentClassTensorflow
+        if has_keras_k:
+            ParentClass = ParentClassKeras
+        else:
+            ParentClass = ParentClassTensorflow
     else:
         ParentClass = (object,)
     return ParentClass, has_keras
@@ -54,10 +63,10 @@ from ..tensorflow import balanced_batch_generator as tf_bbg  # noqa
 from ..utils._validation import _deprecate_positional_args  # noqa
 
 
-class BalancedBatchGenerator(*ParentClass):
+class BalancedBatchGenerator(*ParentClass):  # type: ignore
     """Create balanced batches when training a keras model.
 
-    Create a keras ``Sequence`` which is given to ``fit_generator``. The
+    Create a keras ``Sequence`` which is given to ``fit``. The
     sampler defines the sampling strategy used to balance the dataset ahead of
     creating the batch. The sampler should have an attribute
     ``sample_indices_``.
@@ -113,7 +122,7 @@ class BalancedBatchGenerator(*ParentClass):
     >>> from imblearn.datasets import make_imbalance
     >>> class_dict = dict()
     >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
-    >>> X, y = make_imbalance(iris.data, iris.target, class_dict)
+    >>> X, y = make_imbalance(iris.data, iris.target, sampling_strategy=class_dict)
     >>> import tensorflow
     >>> y = tensorflow.keras.utils.to_categorical(y, 3)
     >>> model = tensorflow.keras.models.Sequential()
@@ -211,7 +220,7 @@ def balanced_batch_generator(
     """Create a balanced batch generator to train keras model.
 
     Returns a generator --- as well as the number of step per epoch --- which
-    is given to ``fit_generator``. The sampler defines the sampling strategy
+    is given to ``fit``. The sampler defines the sampling strategy
     used to balance the dataset ahead of creating the batch. The sampler should
     have an attribute ``sample_indices_``.
 
@@ -259,7 +268,7 @@ def balanced_batch_generator(
     >>> class_dict = dict()
     >>> class_dict[0] = 30; class_dict[1] = 50; class_dict[2] = 40
     >>> from imblearn.datasets import make_imbalance
-    >>> X, y = make_imbalance(X, y, class_dict)
+    >>> X, y = make_imbalance(X, y, sampling_strategy=class_dict)
     >>> import tensorflow
     >>> y = tensorflow.keras.utils.to_categorical(y, 3)
     >>> model = tensorflow.keras.models.Sequential()

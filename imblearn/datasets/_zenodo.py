@@ -38,7 +38,6 @@ References
 .. [1] Ding, Zejin, "Diversified Ensemble Classifiers for Highly
    Imbalanced Data Learning and their Application in Bioinformatics."
    Dissertation, Georgia State University, (2011).
-
 """
 
 # Author: Guillaume Lemaitre
@@ -147,12 +146,12 @@ def fetch_datasets(
         The ordered is defined by ``filter_data``. Each Bunch object ---
         referred as dataset --- have the following attributes:
 
-    dataset.data : ndarray of shape (n_samples, n_features)
+        dataset.data : ndarray of shape (n_samples, n_features)
 
-    dataset.target : ndarray of shape (n_samples,)
+        dataset.target : ndarray of shape (n_samples,)
 
-    dataset.DESCR : str
-        Description of the each dataset.
+        dataset.DESCR : str
+            Description of the each dataset.
 
     Notes
     -----

@@ -66,6 +66,10 @@ class ValueDifferenceMetric(BaseEstimator):
         List of length `n_features` containing the conditional probabilities
         for each category given a class.
 
+    See Also
+    --------
+    sklearn.neighbors.DistanceMetric : Interface for fast metric computation.
+
     Notes
     -----
     The input data `X` are expected to be encoded by an
@@ -94,9 +98,9 @@ class ValueDifferenceMetric(BaseEstimator):
     >>> X_test = np.array(["green", "red", "blue"]).reshape(-1, 1)
     >>> X_test_encoded = encoder.transform(X_test)
     >>> vdm.pairwise(X_test_encoded)
-    array([[ 0.  ,  0.04,  1.96],
-           [ 0.04,  0.  ,  1.44],
-           [ 1.96,  1.44,  0.  ]])
+    array([[0.  ,  0.04,  1.96],
+           [0.04,  0.  ,  1.44],
+           [1.96,  1.44,  0.  ]])
     """
 
     def __init__(self, *, n_categories="auto", k=1, r=2):
@@ -118,7 +122,8 @@ class ValueDifferenceMetric(BaseEstimator):
 
         Returns
         -------
-        self
+        self : object
+            Return the instance itself.
         """
         check_consistent_length(X, y)
         X, y = self._validate_data(X, y, reset=True, dtype=np.int32)

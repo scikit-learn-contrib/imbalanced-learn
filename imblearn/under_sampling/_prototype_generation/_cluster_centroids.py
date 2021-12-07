@@ -69,6 +69,24 @@ class ClusterCentroids(BaseUnderSampler):
       .. deprecated:: 0.7
          `n_jobs` was deprecated in 0.7 and will be removed in 0.9.
 
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    estimator_ : estimator object
+        The validated estimator created from the `estimator` parameter.
+
+    voting_ : str
+        The validated voting strategy.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
     See Also
     --------
     EditedNearestNeighbours : Under-sampling by editing samples.

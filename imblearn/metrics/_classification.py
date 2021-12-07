@@ -16,6 +16,7 @@ the lower the better
 
 import functools
 import warnings
+from inspect import signature
 
 import numpy as np
 import scipy as sp
@@ -31,11 +32,6 @@ from sklearn.utils.validation import (
     column_or_1d,
 )
 
-try:
-    from inspect import signature
-except ImportError:
-    from sklearn.externals.funcsigs import signature
-
 from ..utils._validation import _deprecate_positional_args
 
 
@@ -50,7 +46,7 @@ def sensitivity_specificity_support(
     warn_for=("sensitivity", "specificity"),
     sample_weight=None,
 ):
-    """Compute sensitivity, specificity, and support for each class
+    """Compute sensitivity, specificity, and support for each class.
 
     The sensitivity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
     of true positives and ``fn`` the number of false negatives. The sensitivity
@@ -297,7 +293,7 @@ def sensitivity_score(
     average="binary",
     sample_weight=None,
 ):
-    """Compute the sensitivity
+    """Compute the sensitivity.
 
     The sensitivity is the ratio ``tp / (tp + fn)`` where ``tp`` is the number
     of true positives and ``fn`` the number of false negatives. The sensitivity
@@ -373,7 +369,7 @@ def sensitivity_score(
     >>> sensitivity_score(y_true, y_pred, average='weighted')
     0.33...
     >>> sensitivity_score(y_true, y_pred, average=None)
-    array([ 1.,  0.,  0.])
+    array([1., 0., 0.])
     """
     s, _, _ = sensitivity_specificity_support(
         y_true,
@@ -398,7 +394,7 @@ def specificity_score(
     average="binary",
     sample_weight=None,
 ):
-    """Compute the specificity
+    """Compute the specificity.
 
     The specificity is the ratio ``tn / (tn + fp)`` where ``tn`` is the number
     of true negatives and ``fp`` the number of false positives. The specificity
@@ -474,7 +470,7 @@ def specificity_score(
     >>> specificity_score(y_true, y_pred, average='weighted')
     0.66...
     >>> specificity_score(y_true, y_pred, average=None)
-    array([ 0.75,  0.5 ,  0.75])
+    array([0.75, 0.5 , 0.75])
     """
     _, s, _ = sensitivity_specificity_support(
         y_true,
@@ -568,13 +564,14 @@ def geometric_mean_score(
     sample_weight : ndarray of shape (n_samples,), default=None
         Sample weights.
 
-    correction: float, default=0.0
+    correction : float, default=0.0
         Substitutes sensitivity of unrecognized classes from zero to a given
         value.
 
     Returns
     -------
     geometric_mean : float
+        Returns the geometric mean.
 
     Notes
     -----
@@ -605,7 +602,7 @@ def geometric_mean_score(
     >>> geometric_mean_score(y_true, y_pred, average='weighted')
     0.471...
     >>> geometric_mean_score(y_true, y_pred, average=None)
-    array([ 0.866...,  0.       ,  0.       ])
+    array([0.866...,  0.       ,  0.       ])
     """
     if average is None or average != "multiclass":
         sen, spe, _ = sensitivity_specificity_support(
@@ -675,7 +672,7 @@ def geometric_mean_score(
 
 @_deprecate_positional_args
 def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
-    """Balance any scoring function using the index balanced accuracy
+    """Balance any scoring function using the index balanced accuracy.
 
     This factory function wraps scoring function to express it as the
     index balanced accuracy (IBA). You need to use this function to
@@ -721,7 +718,7 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
     >>> y_true = [1, 0, 0, 1, 0, 1]
     >>> y_pred = [0, 0, 1, 1, 0, 1]
     >>> print(gmean(y_true, y_pred, average=None))
-    [ 0.44...  0.44...]
+    [0.44...  0.44...]
     """
 
     def decorate(scoring_func):
@@ -792,8 +789,7 @@ def classification_report_imbalanced(
     output_dict=False,
     zero_division="warn",
 ):
-    """Build a classification report based on metrics used with imbalanced
-    dataset
+    """Build a classification report based on metrics used with imbalanced dataset.
 
     Specific metrics have been proposed to evaluate the classification
     performed on imbalanced dataset. This report compiles the
@@ -878,7 +874,6 @@ def classification_report_imbalanced(
     avg / total       0.70      0.60      0.90      0.61      0.66      0.54\
          5
     <BLANKLINE>
-
     """
 
     if labels is None:
@@ -991,8 +986,7 @@ def classification_report_imbalanced(
 
 
 def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
-    """Compute Macro-Averaged Mean Absolute Error (MA-MAE)
-    for imbalanced ordinal classification.
+    """Compute Macro-Averaged MAE for imbalanced ordinal classification.
 
     This function computes each MAE for each class and average them,
     giving an equal weight to each class.
