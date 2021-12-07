@@ -64,28 +64,40 @@ class ArraysTransformer:
         return ret
 
 
-def _is_neighbors_object(kneighbors_estimator):
-    neighbors_attributes = [
-        "kneighbors",
-        "kneighbors_graph"
-    ]
-    return all(hasattr(kneighbors_estimator, attr) for attr in neighbors_attributes)
+def _is_neighbors_object(estimator):
+    """Check that the estimator exposes a KNeighborsMixin-like API.
+
+    A KNeighborsMixin-like API exposes the following methods: (i) `kneighbors`,
+    (ii) `kneighbors_graph`.
+
+    Parameters
+    ----------
+    estimator : object
+        A scikit-learn compatible estimator.
+
+    Returns
+    -------
+    is_neighbors_object : bool
+        True if the estimator exposes a KNeighborsMixin-like API.
+    """
+    neighbors_attributes = ["kneighbors", "kneighbors_graph"]
+    return all(hasattr(estimator, attr) for attr in neighbors_attributes)
 
 
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
-    """Check the objects is consistent to be a NN.
+    """Check the objects is consistent to be a k nearest neighbors.
 
-    Several methods in imblearn relies on NN. These objects can
-    be passed at initialisation as an integer or as an object
-    that has KNeighborsMixin-like attributes. This utility will
-    create or clone said object, ensuring it is KNeighbors-like.
+    Several methods in `imblearn` relies on k nearest neighbors. These objects
+    can be passed at initialisation as an integer or as an object that has
+    KNeighborsMixin-like attributes. This utility will create or clone said
+    object, ensuring it is KNeighbors-like.
 
     Parameters
     ----------
     nn_name : str
         The name associated to the object to raise an error if needed.
 
-    nn_object : int or KNeighborsMixin,
+    nn_object : int or KNeighborsMixin
         The object to be checked.
 
     additional_neighbor : int, default=0
@@ -101,7 +113,11 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     elif _is_neighbors_object(nn_object):
         return clone(nn_object)
     else:
-        raise ValueError("nn_object must be NearestNeighbors object or int")
+        raise ValueError(
+            f"{nn_name} must be an interger or an object compatible with the "
+            "KNeighborsMixin API of scikit-learn (i.e. implementing `kneighbors` "
+            "method)."
+        )
 
 
 def _count_class_sample(y):
