@@ -26,8 +26,7 @@ mamba create -n $CONDA_ENV_NAME --yes --quiet \
     "$(get_dep scikit-learn $SKLEARN_VERSION)" \
     "$(get_dep blazingsql $BLAZINGSQL_VERSION)" \
     "$(get_dep cuml $CUML_VERSION)" \
-    "$(get_dep cudatoolkit $CUDATOOLKIT_VERSION)" \
-    "$(get_dep pytest $CUDATOOLKIT_VERSION)"
+    "$(get_dep cudatoolkit $CUDATOOLKIT_VERSION)"
 python -m pip install pytest coverage pytest-cov pytest-xdist
 
 source activate $CONDA_ENV_NAME
