@@ -52,9 +52,8 @@ jobs:
         ignore: gh-pages
 
   cuml:
-    machine:
-      image: ubuntu-2004:202101-01
-    resource_class: arm.medium
+    docker:
+      - image: circleci/python:3.7.7-buster
     environment:
       # Use the latest supported version of python
       - PYTHON_VERSION: '3.8'
