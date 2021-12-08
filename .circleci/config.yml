@@ -64,7 +64,7 @@ jobs:
       - SKLEARN_VERSION: 'latest'
       - BLAZINGSQL_VERSION: 'min'
       - CUML_VERSION: 'min'
-      - CUDATOOLKIT_VERSION: 'min'
+      - CUDATOOLKIT_VERSION: 'latest'
     steps:
       - checkout
       - run: ./build_tools/circle/checkout_merge_commit.sh
