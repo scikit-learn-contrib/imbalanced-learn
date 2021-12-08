@@ -19,6 +19,7 @@ source build_tools/shared.sh
 
 # packaging won't be needed once setuptools starts shipping packaging>=17.0
 mamba create -n $CONDA_ENV_NAME --yes --quiet \
+    -c rapidsai -c nvidia -c conda-forge \
     python="${PYTHON_VERSION:-*}" \
     "$(get_dep numpy $NUMPY_VERSION)" \
     "$(get_dep scipy $SCIPY_VERSION)" \
