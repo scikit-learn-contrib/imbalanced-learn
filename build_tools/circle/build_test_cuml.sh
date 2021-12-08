@@ -19,12 +19,11 @@ source build_tools/shared.sh
 
 # packaging won't be needed once setuptools starts shipping packaging>=17.0
 mamba create -n $CONDA_ENV_NAME --yes --quiet \
-    -c rapidsai -c nvidia -c conda-forge \
+    -c rapidsai -c rapidsai-nightly -c nvidia -c conda-forge \
     python="${PYTHON_VERSION:-*}" \
     "$(get_dep numpy $NUMPY_VERSION)" \
     "$(get_dep scipy $SCIPY_VERSION)" \
     "$(get_dep scikit-learn $SKLEARN_VERSION)" \
-    "$(get_dep blazingsql $BLAZINGSQL_VERSION)" \
     "$(get_dep cuml $CUML_VERSION)" \
     "$(get_dep cudatoolkit $CUDATOOLKIT_VERSION)"
 source activate $CONDA_ENV_NAME

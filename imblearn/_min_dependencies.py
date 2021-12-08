@@ -18,9 +18,8 @@ KERAS_MIN_VERSION = "2.4.3"
 JOBLIB_MIN_VERSION = "0.11"
 THREADPOOLCTL_MIN_VERSION = "2.0.0"
 PYTEST_MIN_VERSION = "5.0.1"
-CUML_MIN_VERSION = "21.10"
-BLAZINGSQL_MIN_VERSION = "21.10"
-CUDATOOLKIT_MIN_VERSION = "11.0"
+CUML_MIN_VERSION = "21.12"
+CUDATOOLKIT_MIN_VERSION = "11.2"
 
 
 # 'build' and 'install' is included to have structured metadata for CI.
@@ -36,7 +35,6 @@ dependent_packages = {
     "tensorflow": (TENSORFLOW_MIN_VERSION, "optional, docs, examples, tests"),
     "keras": (KERAS_MIN_VERSION, "optional, docs, examples, tests"),
     "cuml": (CUML_MIN_VERSION, "optional, docs, examples, tests"),
-    "blazingsql": (BLAZINGSQL_MIN_VERSION, "optional, docs, examples, tests"),
     "cudatoolkit": (CUDATOOLKIT_MIN_VERSION, "optional, docs, examples, tests"),
     "matplotlib": ("2.2.3", "docs, examples"),
     "seaborn": ("0.9.0", "docs, examples"),
