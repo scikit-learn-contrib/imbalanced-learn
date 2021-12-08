@@ -2,6 +2,11 @@
 set -x
 set -e
 
+# deactivate circleci virtualenv and setup a miniconda env instead
+if [[ `type -t deactivate` ]]; then
+    deactivate
+fi
+
 # Install dependencies with miniconda
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh \
     -O miniconda.sh
