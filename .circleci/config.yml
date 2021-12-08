@@ -51,8 +51,36 @@ jobs:
       branches:
         ignore: gh-pages
 
+  cuml:
+    machine:
+      image: ubuntu-2004:202101-01
+    resource_class: arm.medium
+    environment:
+      # Use the latest supported version of python
+      - PYTHON_VERSION: '3.8'
+      - NUMPY_VERSION: 'latest'
+      - SCIPY_VERSION: 'latest'
+      - SKLEARN_VERSION: 'latest'
+      - BLAZINGSQL_VERSION: 'min'
+      - CUML_VERSION: 'min'
+      - CUDATOOLKIT_VERSION: 'min'
+    steps:
+      - checkout
+      - run: ./build_tools/circle/checkout_merge_commit.sh
+      - restore_cache:
+          key: cuml-{{ .Branch }}
+      - run: ./build_tools/circle/build_test_cuml.sh
+      - save_cache:
+          key: cuml-{{ .Branch }}
+          paths:
+            - ~/.cache/pip
+            - ~/scikit_learn_data
+
 workflows:
   version: 2
   build-doc-and-deploy:
     jobs:
       - doc
+  cuml:
+    jobs:
+      - cuml
