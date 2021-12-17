@@ -4,6 +4,8 @@ from .base import SMOTENC
 
 from .cluster import KMeansSMOTE
 
+from .geometric import GeometricSMOTE
+
 from .filter import BorderlineSMOTE
 from .filter import SVMSMOTE
 
@@ -12,6 +14,7 @@ __all__ = [
     "SMOTEN",
     "SMOTENC",
     "KMeansSMOTE",
+    "GeometricSMOTE",
     "BorderlineSMOTE",
     "SVMSMOTE",
 ]
