@@ -1,16 +1,18 @@
 """Class to perform over-sampling using Geometric SMOTE."""
 
 # Author: Georgios Douzas <gdouzas@icloud.com>
+#         Joao Fonseca <jpfonseca@novaims.unl.pt>
 # License: BSD 3 clause
 
 import numpy as np
 from numpy.linalg import norm
+from scipy import sparse
 from sklearn.utils import check_random_state
-from imblearn.over_sampling.base import BaseOverSampler
+from ..base import BaseOverSampler
 from imblearn.utils import check_neighbors_object, Substitution
 from imblearn.utils._docstring import _random_state_docstring
 
-SELECTION_STRATEGY = ('combined', 'majority', 'minority')
+SELECTION_STRATEGY = ("combined", "majority", "minority")
 
 
 def _make_geometric_sample(
@@ -119,6 +121,33 @@ class GeometricSMOTE(BaseOverSampler):
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
 
+    Attributes
+    ----------
+
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+    nns_pos_ : estimator object
+        Validated k-nearest neighbours created from the `k_neighbors` parameter. It is
+        used to find the nearest neighbors of the same class of a selected
+        observation.
+
+    nn_neg_ : estimator object
+        Validated k-nearest neighbours created from the `k_neighbors` parameter. It is
+        used to find the nearest neighbor of the remaining classes (k=1) of a selected
+        observation.
+
+    random_state_ : instance of RandomState
+        If the `random_state` parameter is None, it is a RandomState singleton used by
+        np.random. If `random_state` is an int, it is a RandomState instance seeded with
+        seed. If `random_state` is already a RandomState instance, it is the same
+        object.
+
     Notes
     -----
     See the original paper: [1]_ for more details.
@@ -142,7 +171,8 @@ class GeometricSMOTE(BaseOverSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from gsmote import GeometricSMOTE # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.over_sampling import \
+GeometricSMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -157,11 +187,11 @@ class GeometricSMOTE(BaseOverSampler):
 
     def __init__(
         self,
-        sampling_strategy='auto',
+        sampling_strategy="auto",
         random_state=None,
         truncation_factor=1.0,
         deformation_factor=0.0,
-        selection_strategy='combined',
+        selection_strategy="combined",
         k_neighbors=5,
         n_jobs=1,
     ):
@@ -182,23 +212,23 @@ class GeometricSMOTE(BaseOverSampler):
         # Validate strategy
         if self.selection_strategy not in SELECTION_STRATEGY:
             error_msg = (
-                'Unknown selection_strategy for Geometric SMOTE algorithm. '
-                'Choices are {}. Got {} instead.'
+                "Unknown selection_strategy for Geometric SMOTE algorithm. "
+                "Choices are {}. Got {} instead."
             )
             raise ValueError(
                 error_msg.format(SELECTION_STRATEGY, self.selection_strategy)
             )
 
         # Create nearest neighbors object for positive class
-        if self.selection_strategy in ('minority', 'combined'):
+        if self.selection_strategy in ("minority", "combined"):
             self.nns_pos_ = check_neighbors_object(
-                'nns_positive', self.k_neighbors, additional_neighbor=1
+                "nns_positive", self.k_neighbors, additional_neighbor=1
             )
             self.nns_pos_.set_params(n_jobs=self.n_jobs)
 
         # Create nearest neighbors object for negative class
-        if self.selection_strategy in ('majority', 'combined'):
-            self.nn_neg_ = check_neighbors_object('nn_negative', nn_object=1)
+        if self.selection_strategy in ("majority", "combined"):
+            self.nn_neg_ = check_neighbors_object("nn_negative", nn_object=1)
             self.nn_neg_.set_params(n_jobs=self.n_jobs)
 
     def _make_geometric_samples(self, X, y, pos_class_label, n_samples):
@@ -237,11 +267,11 @@ class GeometricSMOTE(BaseOverSampler):
 
         # Force minority strategy if no negative class samples are present
         self.selection_strategy_ = (
-            'minority' if len(X) == len(X_pos) else self.selection_strategy
+            "minority" if X.shape[0] == X_pos.shape[0] else self.selection_strategy
         )
 
         # Minority or combined strategy
-        if self.selection_strategy_ in ('minority', 'combined'):
+        if self.selection_strategy_ in ("minority", "combined"):
             self.nns_pos_.fit(X_pos)
             points_pos = self.nns_pos_.kneighbors(X_pos)[1][:, 1:]
             samples_indices = self.random_state_.randint(
@@ -251,11 +281,11 @@ class GeometricSMOTE(BaseOverSampler):
             cols = np.mod(samples_indices, points_pos.shape[1])
 
         # Majority or combined strategy
-        if self.selection_strategy_ in ('majority', 'combined'):
+        if self.selection_strategy_ in ("majority", "combined"):
             X_neg = X[y != pos_class_label]
             self.nn_neg_.fit(X_neg)
             points_neg = self.nn_neg_.kneighbors(X_pos)[1]
-            if self.selection_strategy_ == 'majority':
+            if self.selection_strategy_ == "majority":
                 samples_indices = self.random_state_.randint(
                     low=0, high=len(points_neg.flatten()), size=n_samples
                 )
@@ -270,11 +300,11 @@ class GeometricSMOTE(BaseOverSampler):
             center = X_pos[row]
 
             # Minority strategy
-            if self.selection_strategy_ == 'minority':
+            if self.selection_strategy_ == "minority":
                 surface_point = X_pos[points_pos[row, col]]
 
             # Majority strategy
-            elif self.selection_strategy_ == 'majority':
+            elif self.selection_strategy_ == "majority":
                 surface_point = X_neg[points_neg[row, col]]
 
             # Combined strategy
@@ -306,19 +336,28 @@ class GeometricSMOTE(BaseOverSampler):
         # Validate estimator's parameters
         self._validate_estimator()
 
+        # Ensure the input data is dense
+        X_dense = X.toarray() if sparse.issparse(X) else X
+
         # Copy data
-        X_resampled, y_resampled = X.copy(), y.copy()
+        X_resampled, y_resampled = [X_dense.copy()], [y.copy()]
 
         # Resample data
         for class_label, n_samples in self.sampling_strategy_.items():
 
             # Apply gsmote mechanism
-            X_new, y_new = self._make_geometric_samples(X, y, class_label, n_samples)
-
-            # Append new data
-            X_resampled, y_resampled = (
-                np.vstack((X_resampled, X_new)),
-                np.hstack((y_resampled, y_new)),
+            X_new, y_new = self._make_geometric_samples(
+                X_dense, y, class_label, n_samples
             )
+
+            X_resampled.append(X_new)
+            y_resampled.append(y_new)
+
+        # Append new data
+        if sparse.issparse(X):
+            X_resampled = sparse.vstack(X_resampled, format=X.format)
+        else:
+            X_resampled = np.vstack(X_resampled).astype(X.dtype)
+        y_resampled = np.hstack(y_resampled).astype(y.dtype)
 
         return X_resampled, y_resampled
