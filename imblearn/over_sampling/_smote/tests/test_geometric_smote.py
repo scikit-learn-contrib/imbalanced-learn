@@ -31,7 +31,7 @@ DEFORMATION_FACTORS = [0.0, 0.25, 0.5, 0.75, 1.0]
 
 
 @pytest.mark.parametrize(
-    'center,surface_point',
+    "center,surface_point",
     [
         (CENTERS[0], SURFACE_POINTS[0]),
         (CENTERS[1], SURFACE_POINTS[1]),
@@ -48,7 +48,7 @@ def test_make_geometric_sample_hypersphere(center, surface_point):
 
 
 @pytest.mark.parametrize(
-    'surface_point,deformation_factor',
+    "surface_point,deformation_factor",
     [
         (np.array([1.0, 0.0]), 0.0),
         (2.6 * np.array([0.0, 1.0]), 0.25),
@@ -68,7 +68,7 @@ def test_make_geometric_sample_half_hypersphere(surface_point, deformation_facto
 
 
 @pytest.mark.parametrize(
-    'center,surface_point,truncation_factor',
+    "center,surface_point,truncation_factor",
     [
         (center, surface_point, truncation_factor)
         for center, surface_point in zip(CENTERS, SURFACE_POINTS)
@@ -94,11 +94,11 @@ def test_make_geometric_sample_line_segment(center, surface_point, truncation_fa
 def test_gsmote_default_init():
     """Test the intialization with default parameters."""
     gsmote = GeometricSMOTE()
-    assert gsmote.sampling_strategy == 'auto'
+    assert gsmote.sampling_strategy == "auto"
     assert gsmote.random_state is None
     assert gsmote.truncation_factor == 1.0
     assert gsmote.deformation_factor == 0.0
-    assert gsmote.selection_strategy == 'combined'
+    assert gsmote.selection_strategy == "combined"
     assert gsmote.k_neighbors == 5
     assert gsmote.n_jobs == 1
 
@@ -119,12 +119,12 @@ def test_gsmote_invalid_selection_strategy():
     X, y = make_classification(
         random_state=RND_SEED, n_samples=n_samples, weights=weights
     )
-    gsmote = GeometricSMOTE(random_state=RANDOM_STATE, selection_strategy='Minority')
+    gsmote = GeometricSMOTE(random_state=RANDOM_STATE, selection_strategy="Minority")
     with pytest.raises(ValueError):
         gsmote.fit_resample(X, y)
 
 
-@pytest.mark.parametrize('selection_strategy', ['combined', 'minority', 'majority'])
+@pytest.mark.parametrize("selection_strategy", ["combined", "minority", "majority"])
 def test_gsmote_nn(selection_strategy):
     """Test nearest neighbors object."""
     n_samples, weights = 200, [0.6, 0.4]
@@ -135,14 +135,14 @@ def test_gsmote_nn(selection_strategy):
         random_state=RANDOM_STATE, selection_strategy=selection_strategy
     )
     _ = gsmote.fit_resample(X, y)
-    if selection_strategy in ('minority', 'combined'):
+    if selection_strategy in ("minority", "combined"):
         assert gsmote.nns_pos_.n_neighbors == gsmote.k_neighbors + 1
-    if selection_strategy in ('majority', 'combined'):
+    if selection_strategy in ("majority", "combined"):
         assert gsmote.nn_neg_.n_neighbors == 1
 
 
 @pytest.mark.parametrize(
-    'selection_strategy, truncation_factor, deformation_factor',
+    "selection_strategy, truncation_factor, deformation_factor",
     [
         (selection_strategy, truncation_factor, deformation_factor)
         for selection_strategy in SELECTION_STRATEGY
@@ -160,7 +160,7 @@ def test_gsmote_fit_resample_binary(
     radius = np.sqrt(0.5) * step
     k_neighbors = 1
     gsmote = GeometricSMOTE(
-        'auto',
+        "auto",
         RANDOM_STATE,
         truncation_factor,
         deformation_factor,
@@ -174,7 +174,7 @@ def test_gsmote_fit_resample_binary(
 
 
 @pytest.mark.parametrize(
-    'selection_strategy, truncation_factor, deformation_factor',
+    "selection_strategy, truncation_factor, deformation_factor",
     [
         (selection_strategy, truncation_factor, deformation_factor)
         for selection_strategy in SELECTION_STRATEGY
@@ -196,7 +196,7 @@ def test_gsmote_fit_resample_multiclass(
     )
     k_neighbors, majority_label = 1, 0
     gsmote = GeometricSMOTE(
-        'auto',
+        "auto",
         RANDOM_STATE,
         truncation_factor,
         deformation_factor,

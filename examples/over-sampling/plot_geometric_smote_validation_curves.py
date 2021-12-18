@@ -18,12 +18,12 @@ import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import validation_curve
-from sklearn.metrics import make_scorer, cohen_kappa_score
+from sklearn.metrics import make_scorer
 from sklearn.datasets import make_classification
 from imblearn.pipeline import make_pipeline
 from imblearn.metrics import geometric_mean_score
 
-from gsmote import GeometricSMOTE
+from imblearn.over_sampling import GeometricSMOTE
 
 print(__doc__)
 
@@ -81,12 +81,12 @@ def plot_validation_curve(validation_curve_info, scoring_name, title):
     plt.scatter(param_range[idx_max], test_scores_mean[idx_max])
     plt.title(title)
     plt.ylabel(scoring_name)
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
     ax.get_xaxis().tick_bottom()
     ax.get_yaxis().tick_left()
-    ax.spines['left'].set_position(('outward', 10))
-    ax.spines['bottom'].set_position(('outward', 10))
+    ax.spines["left"].set_position(("outward", 10))
+    ax.spines["bottom"].set_position(("outward", 10))
     plt.ylim([0.9, 1.0])
 
 
@@ -107,11 +107,11 @@ gsmote_gbc = make_pipeline(
     DecisionTreeClassifier(random_state=RANDOM_STATE),
 )
 
-scoring_name = 'Geometric Mean Score'
+scoring_name = "Geometric Mean Score"
 validation_curve_info = generate_validation_curve_info(
     gsmote_gbc, X, y, range(1, 8), "geometricsmote__k_neighbors", SCORER
 )
-plot_validation_curve(validation_curve_info, scoring_name, 'K Neighbors')
+plot_validation_curve(validation_curve_info, scoring_name, "K Neighbors")
 
 validation_curve_info = generate_validation_curve_info(
     gsmote_gbc,
@@ -121,7 +121,7 @@ validation_curve_info = generate_validation_curve_info(
     "geometricsmote__truncation_factor",
     SCORER,
 )
-plot_validation_curve(validation_curve_info, scoring_name, 'Truncation Factor')
+plot_validation_curve(validation_curve_info, scoring_name, "Truncation Factor")
 
 validation_curve_info = generate_validation_curve_info(
     gsmote_gbc,
@@ -131,17 +131,17 @@ validation_curve_info = generate_validation_curve_info(
     "geometricsmote__deformation_factor",
     SCORER,
 )
-plot_validation_curve(validation_curve_info, scoring_name, 'Deformation Factor')
+plot_validation_curve(validation_curve_info, scoring_name, "Deformation Factor")
 
 validation_curve_info = generate_validation_curve_info(
     gsmote_gbc,
     X,
     y,
-    ['minority', 'majority', 'combined'],
+    ["minority", "majority", "combined"],
     "geometricsmote__selection_strategy",
     SCORER,
 )
-plot_validation_curve(validation_curve_info, scoring_name, 'Selection Strategy')
+plot_validation_curve(validation_curve_info, scoring_name, "Selection Strategy")
 
 ###############################################################################
 # High Imbalance Ratio or low Samples to Features Ratio
@@ -158,11 +158,11 @@ gsmote_gbc = make_pipeline(
     LinearSVC(random_state=RANDOM_STATE, max_iter=1e5),
 )
 
-scoring_name = 'Geometric Mean Score'
+scoring_name = "Geometric Mean Score"
 validation_curve_info = generate_validation_curve_info(
     gsmote_gbc, X, y, range(1, 8), "geometricsmote__k_neighbors", SCORER
 )
-plot_validation_curve(validation_curve_info, scoring_name, 'K Neighbors')
+plot_validation_curve(validation_curve_info, scoring_name, "K Neighbors")
 
 validation_curve_info = generate_validation_curve_info(
     gsmote_gbc,
@@ -172,7 +172,7 @@ validation_curve_info = generate_validation_curve_info(
     "geometricsmote__truncation_factor",
     SCORER,
 )
-plot_validation_curve(validation_curve_info, scoring_name, 'Truncation Factor')
+plot_validation_curve(validation_curve_info, scoring_name, "Truncation Factor")
 
 validation_curve_info = generate_validation_curve_info(
     gsmote_gbc,
@@ -182,14 +182,14 @@ validation_curve_info = generate_validation_curve_info(
     "geometricsmote__deformation_factor",
     SCORER,
 )
-plot_validation_curve(validation_curve_info, scoring_name, 'Deformation Factor')
+plot_validation_curve(validation_curve_info, scoring_name, "Deformation Factor")
 
 validation_curve_info = generate_validation_curve_info(
     gsmote_gbc,
     X,
     y,
-    ['minority', 'majority', 'combined'],
+    ["minority", "majority", "combined"],
     "geometricsmote__selection_strategy",
     SCORER,
 )
-plot_validation_curve(validation_curve_info, scoring_name, 'Selection Strategy')
+plot_validation_curve(validation_curve_info, scoring_name, "Selection Strategy")

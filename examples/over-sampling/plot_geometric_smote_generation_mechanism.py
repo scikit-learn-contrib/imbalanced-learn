@@ -3,8 +3,8 @@
 Data generation mechanism
 =========================
 
-This example illustrates the Geometric SMOTE data 
-generation mechanism and the usage of its 
+This example illustrates the Geometric SMOTE data
+generation mechanism and the usage of its
 hyperparameters.
 
 """
@@ -16,9 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn.datasets import make_blobs
-from imblearn.over_sampling import SMOTE
-
-from gsmote import GeometricSMOTE
+from imblearn.over_sampling import SMOTE, GeometricSMOTE
 
 print(__doc__)
 
@@ -47,11 +45,11 @@ def generate_imbalanced_data(
 def plot_scatter(X, y, title):
     """Function to plot some data as a scatter plot."""
     plt.figure()
-    plt.scatter(X[y == 1, 0], X[y == 1, 1], label='Positive Class')
-    plt.scatter(X[y == 0, 0], X[y == 0, 1], label='Negative Class')
+    plt.scatter(X[y == 1, 0], X[y == 1, 1], label="Positive Class")
+    plt.scatter(X[y == 0, 0], X[y == 0, 1], label="Negative Class")
     plt.xlim(*XLIM)
     plt.ylim(*YLIM)
-    plt.gca().set_aspect('equal', adjustable='box')
+    plt.gca().set_aspect("equal", adjustable="box")
     plt.legend()
     plt.title(title)
 
@@ -66,9 +64,9 @@ def plot_hyperparameters(oversampler, X, y, param, vals, n_subplots):
     for ax, val in zip(ax_arr, vals):
         oversampler.set_params(**{param: val})
         X_res, y_res = oversampler.fit_resample(X, y)
-        ax.scatter(X_res[y_res == 1, 0], X_res[y_res == 1, 1], label='Positive Class')
-        ax.scatter(X_res[y_res == 0, 0], X_res[y_res == 0, 1], label='Negative Class')
-        ax.set_title(f'{val}')
+        ax.scatter(X_res[y_res == 1, 0], X_res[y_res == 1, 1], label="Positive Class")
+        ax.scatter(X_res[y_res == 0, 0], X_res[y_res == 0, 1], label="Negative Class")
+        ax.set_title(f"{val}")
         ax.set_xlim(*XLIM)
         ax.set_ylim(*YLIM)
 
@@ -79,8 +77,8 @@ def plot_comparison(oversamplers, X, y):
     fig, ax_arr = plt.subplots(1, 2, figsize=(15, 5))
     for ax, (name, ovs) in zip(ax_arr, oversamplers):
         X_res, y_res = ovs.fit_resample(X, y)
-        ax.scatter(X_res[y_res == 1, 0], X_res[y_res == 1, 1], label='Positive Class')
-        ax.scatter(X_res[y_res == 0, 0], X_res[y_res == 0, 1], label='Negative Class')
+        ax.scatter(X_res[y_res == 1, 0], X_res[y_res == 1, 1], label="Positive Class")
+        ax.scatter(X_res[y_res == 0, 0], X_res[y_res == 0, 1], label="Negative Class")
         ax.set_title(name)
         ax.set_xlim(*XLIM)
         ax.set_ylim(*YLIM)
@@ -98,7 +96,7 @@ def plot_comparison(oversamplers, X, y):
 X, y = generate_imbalanced_data(
     200, 2, [(-2.0, 2.25), (1.0, 2.0)], 0.25, [-0.7, 2.3], [-0.5, 3.1]
 )
-plot_scatter(X, y, 'Imbalanced data')
+plot_scatter(X, y, "Imbalanced data")
 
 ###############################################################################
 # Geometric hyperparameters
@@ -133,13 +131,13 @@ plot_scatter(X, y, 'Imbalanced data')
 gsmote = GeometricSMOTE(
     k_neighbors=1,
     deformation_factor=0.0,
-    selection_strategy='minority',
+    selection_strategy="minority",
     random_state=RANDOM_STATE,
 )
 truncation_factors = np.array([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
 n_subplots = [2, 3]
-plot_hyperparameters(gsmote, X, y, 'truncation_factor', truncation_factors, n_subplots)
-plot_hyperparameters(gsmote, X, y, 'truncation_factor', -truncation_factors, n_subplots)
+plot_hyperparameters(gsmote, X, y, "truncation_factor", truncation_factors, n_subplots)
+plot_hyperparameters(gsmote, X, y, "truncation_factor", -truncation_factors, n_subplots)
 
 ###############################################################################
 # Deformation factor
@@ -151,12 +149,12 @@ plot_hyperparameters(gsmote, X, y, 'truncation_factor', -truncation_factors, n_s
 gsmote = GeometricSMOTE(
     k_neighbors=1,
     truncation_factor=0.0,
-    selection_strategy='minority',
+    selection_strategy="minority",
     random_state=RANDOM_STATE,
 )
 deformation_factors = np.array([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
 n_subplots = [2, 3]
-plot_hyperparameters(gsmote, X, y, 'deformation_factor', truncation_factors, n_subplots)
+plot_hyperparameters(gsmote, X, y, "deformation_factor", truncation_factors, n_subplots)
 
 ###############################################################################
 # Selection strategy
@@ -177,10 +175,10 @@ gsmote = GeometricSMOTE(
     deformation_factor=0.5,
     random_state=RANDOM_STATE,
 )
-selection_strategies = np.array(['minority', 'majority', 'combined'])
+selection_strategies = np.array(["minority", "majority", "combined"])
 n_subplots = [1, 3]
 plot_hyperparameters(
-    gsmote, X, y, 'selection_strategy', selection_strategies, n_subplots
+    gsmote, X, y, "selection_strategy", selection_strategies, n_subplots
 )
 
 ###############################################################################
@@ -193,7 +191,7 @@ plot_hyperparameters(
 
 X_new = np.vstack([X, np.array([2.0, 2.0])])
 y_new = np.hstack([y, np.ones(1, dtype=np.int8)])
-plot_scatter(X_new, y_new, 'Imbalanced data')
+plot_scatter(X_new, y_new, "Imbalanced data")
 
 ###############################################################################
 # When the number of ``k_neighbors`` is increased, SMOTE results to the
@@ -202,11 +200,11 @@ plot_scatter(X_new, y_new, 'Imbalanced data')
 # ``majority``.
 
 oversamplers = [
-    ('SMOTE', SMOTE(k_neighbors=2, random_state=RANDOM_STATE)),
+    ("SMOTE", SMOTE(k_neighbors=2, random_state=RANDOM_STATE)),
     (
-        'Geometric SMOTE',
+        "Geometric SMOTE",
         GeometricSMOTE(
-            k_neighbors=2, selection_strategy='combined', random_state=RANDOM_STATE
+            k_neighbors=2, selection_strategy="combined", random_state=RANDOM_STATE
         ),
     ),
 ]
