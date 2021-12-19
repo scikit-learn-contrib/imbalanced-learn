@@ -157,7 +157,7 @@ def test_gsmote_fit_resample_binary(
     n_maj, n_min, step, min_coor, max_coor = 12, 5, 0.5, 0.0, 8.5
     X = np.repeat(np.arange(min_coor, max_coor, step), 2).reshape(-1, 2)
     y = np.concatenate([np.repeat(0, n_maj), np.repeat(1, n_min)])
-    radius = np.sqrt(0.5) * step
+    max_radius = np.sqrt(np.sum((X[-1] - X[n_maj - 1]) ** 2))
     k_neighbors = 1
     gsmote = GeometricSMOTE(
         "auto",
@@ -170,7 +170,7 @@ def test_gsmote_fit_resample_binary(
     X_resampled, y_resampled = gsmote.fit_resample(X, y)
     assert gsmote.sampling_strategy_ == {1: (n_maj - n_min)}
     assert y_resampled.sum() == n_maj
-    np.testing.assert_array_less(X[n_maj - 1] - radius, X_resampled[n_maj + n_min])
+    np.testing.assert_array_less(X[-1] - max_radius, X_resampled[n_maj + n_min])
 
 
 @pytest.mark.parametrize(
