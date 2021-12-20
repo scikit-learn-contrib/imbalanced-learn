@@ -91,8 +91,8 @@ def _make_geometric_sample(
 class GeometricSMOTE(BaseOverSampler):
     """Class to to perform over-sampling using Geometric SMOTE.
 
-    This algorithm is an implementation of Geometric SMOTE, a geometrically
-    enhanced drop-in replacement for SMOTE as presented in [1]_.
+    This algorithm is an implementation of Geometric SMOTE, a geometrically enhanced
+    drop-in replacement for SMOTE as presented in [1]_.
 
     Read more in the :ref:`User Guide <user_guide>`.
 
@@ -123,7 +123,6 @@ class GeometricSMOTE(BaseOverSampler):
 
     Attributes
     ----------
-
     sampling_strategy_ : dict
         Dictionary containing the information to sample the dataset. The keys
         corresponds to the class labels from which to sample and the values
@@ -148,6 +147,24 @@ class GeometricSMOTE(BaseOverSampler):
         seed. If `random_state` is already a RandomState instance, it is the same
         object.
 
+    See Also
+    --------
+    SMOTE : Over-sample using SMOTE.
+
+    SMOTEN : Over-sample using the SMOTE variant specifically for categorical
+        features only.
+
+    SMOTENC : Over-sample using SMOTE for continuous and categorical features.
+
+    SVMSMOTE : Over-sample using SVM-SMOTE variant.
+
+    BorderlineSMOTE : Over-sample using Borderline-SMOTE variant.
+
+    ADASYN : Over-sample using ADASYN.
+
+    KMeansSMOTE : Over-sample applying a clustering before to oversample using
+        SMOTE.
+
     Notes
     -----
     See the original paper: [1]_ for more details.
@@ -157,7 +174,6 @@ class GeometricSMOTE(BaseOverSampler):
 
     References
     ----------
-
     .. [1] G. Douzas, F. Bacao, "Geometric SMOTE:
        a geometrically enhanced drop-in replacement for SMOTE",
        Information Sciences, vol. 501, pp. 118-135, 2019.
@@ -168,7 +184,6 @@ class GeometricSMOTE(BaseOverSampler):
 
     Examples
     --------
-
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
     >>> from imblearn.over_sampling import \
@@ -182,7 +197,6 @@ GeometricSMOTE # doctest: +NORMALIZE_WHITESPACE
     >>> X_res, y_res = gsmote.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
-
     """
 
     def __init__(
