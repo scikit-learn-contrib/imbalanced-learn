@@ -77,7 +77,7 @@ def test_rusboost(imbalanced_dataset, algorithm):
     assert rusboost.decision_function(X_test).shape[1] == len(classes)
 
     score = rusboost.score(X_test, y_test)
-    assert score > 0.7, f"Failed with algorithm {algorithm} and score {score}"
+    assert score > 0.6, f"Failed with algorithm {algorithm} and score {score}"
 
     y_pred = rusboost.predict(X_test)
     assert y_pred.shape == y_test.shape
