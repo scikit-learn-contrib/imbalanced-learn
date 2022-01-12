@@ -237,14 +237,18 @@ figure illustrates this behaviour.
 
 .. _edited_nearest_neighbors:
 
-Edited data set using nearest neighbours
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Edited data set using nearest neighbors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:class:`EditedNearestNeighbours` applies a nearest-neighbors algorithm and
-"edit" the dataset by removing samples which do not agree "enough" with their
-neighboorhood :cite:`wilson1972asymptotic`. For each sample in the class to be
-under-sampled, the nearest-neighbours are computed and if the selection
-criterion is not fulfilled, the sample is removed::
+:class:`EditedNearestNeighbours` trains a nearest neighbors algorithm and
+then looks at the closest neighbors of each data point of the class to be
+under-sampled, and "edits" the dataset by removing samples which do not agree
+"enough" with their neighborhood :cite:`wilson1972asymptotic`. In short,
+a nearest neighbors algorithm algorithm is trained on the data. Then, for each
+sample in the class to be under-sampled, the nearest neighbors are identified.
+Once the neighbors are identified, if all the neighbors or most of the neighbors
+agree with the class of the sample being inspected, the sample is kept, otherwise
+removed::
 
   >>> sorted(Counter(y).items())
   [(0, 64), (1, 262), (2, 4674)]
@@ -255,11 +259,10 @@ criterion is not fulfilled, the sample is removed::
   [(0, 64), (1, 213), (2, 4568)]
 
 Two selection criteria are currently available: (i) the majority (i.e.,
-``kind_sel='mode'``) or (ii) all (i.e., ``kind_sel='all'``) the
-nearest-neighbors have to belong to the same class than the sample inspected to
-keep it in the dataset. Thus, it implies that `kind_sel='all'` will be less
-conservative than `kind_sel='mode'`, and more samples will be excluded in
-the former strategy than the latest::
+``kind_sel='mode'``) or (ii) all (i.e., ``kind_sel='all'``) of the
+nearest neighbors must belong to the same class than the sample inspected to
+keep it in the dataset. This means that `kind_sel='all'` will be less
+conservative than `kind_sel='mode'`, and more samples will be excluded::
 
   >>> enn = EditedNearestNeighbours(kind_sel="all")
   >>> X_resampled, y_resampled = enn.fit_resample(X, y)
@@ -270,14 +273,20 @@ the former strategy than the latest::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 234), (2, 4666)]
 
-The parameter ``n_neighbors`` allows to give a classifier subclassed from
-``KNeighborsMixin`` from scikit-learn to find the nearest neighbors and make
-the decision to keep a given sample or not.
+The parameter ``n_neighbors`` can take a classifier subclassed from
+``KNeighborsMixin`` from scikit-learn to find the nearest neighbors.
+Note that if a 4-KNN classifier is passed, 3 neighbors will be
+examined for the selection criteria, because the sample being inspected
+is the fourth neighbor returned by the algorithm. Alternatively, an integer
+can be passed to ``n_neighbors`` to indicate the size of the neighborhood
+to examine to make a decision. Thus, if ``n_neighbors=3`` the edited nearest
+neighbors will look at the 3 closest neighbors of each sample.
 
 :class:`RepeatedEditedNearestNeighbours` extends
 :class:`EditedNearestNeighbours` by repeating the algorithm multiple times
 :cite:`tomek1976experiment`. Generally, repeating the algorithm will delete
-more data::
+more data. The user indicates how many times to repeat the algorithm
+through the parameter ``max_iter``::
 
    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
    >>> renn = RepeatedEditedNearestNeighbours()
@@ -285,10 +294,21 @@ more data::
    >>> print(sorted(Counter(y_resampled).items()))
    [(0, 64), (1, 208), (2, 4551)]
 
-:class:`AllKNN` differs from the previous
-:class:`RepeatedEditedNearestNeighbours` since the number of neighbors of the
-internal nearest neighbors algorithm is increased at each iteration
-:cite:`tomek1976experiment`::
+Note that :class:`RepeatedEditedNearestNeighbours` will end before reaching
+``max_iter`` if no more samples are removed from the data, or one of the
+majority classes ends up disappearing or with less samples than the minority
+after being "edited".
+
+:class:`AllKNN` extends :class:`EditedNearestNeighbours` by repeating
+the algorithm multiple times, each time with an additional neighbor
+:cite:`tomek1976experiment`. In other words, :class:`AllKNN` differs
+from :class:`RepeatedEditedNearestNeighbours` in that the number of
+neighbors of the internal nearest neighbors algorithm increases at
+each iteration. In short, in the first iteration, a 2-KNN algorithm
+is trained on the data to examine the 1 closest neighbor of each
+sample from the class to be under-sampled. In each subsequent
+iteration, the neighborhood examined is increased by 1, until the
+number of neighbors indicated in the parameter ``n_neighbors``::
 
   >>> from imblearn.under_sampling import AllKNN
   >>> allknn = AllKNN()
@@ -296,8 +316,18 @@ internal nearest neighbors algorithm is increased at each iteration
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 220), (2, 4601)]
 
-In the example below, it can be seen that the three algorithms have similar
-impact by cleaning noisy samples next to the boundaries of the classes.
+
+The parameter ``n_neighbors`` can take an integer to indicate the size
+of the neighborhood to examine in the last iteration. Thus, if
+``n_neighbors=3``, AlKNN will examine the 1 closest neighbor in the
+first iteration, the 2 closest neighbors in the second iteration
+and the 3 closest neighbors in the third iteration. The parameter
+``n_neighbors`` can also take a classifier subclassed from
+``KNeighborsMixin`` from scikit-learn to find the nearest neighbors.
+Again, this will be the KNN used in the last iteration.
+
+In the example below, we can see that the three algorithms have a similar
+impact on cleaning noisy samples at the boundaries of the classes.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_004.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
