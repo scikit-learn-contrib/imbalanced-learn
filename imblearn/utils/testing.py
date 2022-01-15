@@ -9,13 +9,14 @@ import pkgutil
 import warnings
 from contextlib import contextmanager
 from importlib import import_module
-from re import compile
-from pathlib import Path
-
 from operator import itemgetter
+from pathlib import Path
+from re import compile
+
 from pytest import warns as _warns
 
 from sklearn.base import BaseEstimator
+from sklearn.neighbors import KDTree
 from sklearn.utils._testing import ignore_warnings
 
 
@@ -163,4 +164,27 @@ def warns(expected_warning, match=None):
             )
             assert False, msg
     else:
+        pass
+
+
+class CustomNearestNeighbors(BaseEstimator):
+    """Basic implementation of nearest neighbors not relying on scikit-learn."""
+
+    def __init__(self, n_neighbors=1):
+        self.n_neighbors = n_neighbors
+
+    def fit(self, X, y=None):
+        self._kd_tree = KDTree(X)
+        return self
+
+    def kneighbors(self, X, n_neighbors=None, return_distance=True):
+        n_neighbors = n_neighbors if n_neighbors is not None else self.n_neighbors
+        distances, indices = self._kd_tree.query(X, k=n_neighbors)
+        if return_distance:
+            return distances, indices
+        return indices
+
+    def kneighbors_graph(X=None, n_neighbors=None, mode="connectivity"):
+        """This method is not used within imblearn but it is required for
+        duck-typing."""
         pass
