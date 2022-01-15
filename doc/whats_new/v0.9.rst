@@ -1,23 +1,10 @@
 .. _changes_0_9:
 
-Version 0.9.0 (under development)
-=================================
+Version 0.9.0
+=============
 
 Changelog
 ---------
 
-New features
-............
-
-
-Enhancements
-............
-
-Bug fixes
-.........
-
-Maintenance
-...........
-
-Deprecation
-...........
+This release is mainly providing fixes that make `imbalaned-learn` works
+with the latest release (`1.0.2`) of scikit-learn.
