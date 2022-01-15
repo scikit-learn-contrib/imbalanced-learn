@@ -207,15 +207,6 @@ jobs:
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'false'  # it is going to fail because of scikit-learn inheritance
         CHECK_WARNINGS: 'true'
-      pylatest_conda_cuml:
-        DISTRIB: 'conda-cuml'
-        CONDA_CHANNEL: 'defaults'
-        PYTHON_VERSION: '3.8'
-        BLAZINGSQL_VERSION: 'min'
-        CUML_VERSION: 'min'
-        CUDATOOLKIT_VERSION: 'min'
-        TEST_DOCS: 'true'
-        TEST_DOCSTRINGS: 'true'
 
 - template: build_tools/azure/posix-docker.yml
   parameters:
