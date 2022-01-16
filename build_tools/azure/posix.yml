@@ -48,12 +48,6 @@ jobs:
     - bash: sudo chown -R $USER $CONDA
       displayName: Take ownership of conda installation
       condition: startsWith(variables['DISTRIB'], 'conda')
-    - task: Cache@2
-      inputs:
-        key: '"$(Agent.JobName)"'
-        path: $(SKLEARN_DATA_DIR)
-      displayName: Dataset caching
-      continueOnError: true
     - script: |
         build_tools/azure/install.sh
       displayName: 'Install'

@@ -7,7 +7,7 @@
 |Azure|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_ |Black|_
 
 .. |Azure| image:: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_apis/build/status/scikit-learn-contrib.imbalanced-learn?branchName=master
-.. _Azure: https://dev.azure.com/imbalanced-learn/imbal
+.. _Azure: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_build
 
 .. |Codecov| image:: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn/branch/master/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn
