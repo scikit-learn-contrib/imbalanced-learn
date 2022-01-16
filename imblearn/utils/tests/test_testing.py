@@ -5,8 +5,12 @@
 
 import pytest
 
+import numpy as np
+
+from sklearn.neighbors._base import KNeighborsMixin
+
 from imblearn.base import SamplerMixin
-from imblearn.utils.testing import all_estimators
+from imblearn.utils.testing import all_estimators, _CustomNearestNeighbors
 
 from imblearn.utils.testing import warns
 
@@ -59,3 +63,25 @@ def test_warns_deprecation():
         with warns(UserWarning):
             warnings.warn("value must be 42")
     assert "The warns function is deprecated" in str(record[0].message)
+
+
+def test_custom_nearest_neighbors():
+    """Check that our custom nearest neighbors can be used for our internal
+    duck-typing."""
+
+    neareat_neighbors = _CustomNearestNeighbors(n_neighbors=3)
+
+    assert not isinstance(neareat_neighbors, KNeighborsMixin)
+    assert hasattr(neareat_neighbors, "kneighbors")
+    assert hasattr(neareat_neighbors, "kneighbors_graph")
+
+    rng = np.random.RandomState(42)
+    X = rng.randn(150, 3)
+    y = rng.randint(0, 2, 150)
+    neareat_neighbors.fit(X, y)
+
+    distances, indices = neareat_neighbors.kneighbors(X)
+    assert distances.shape == (150, 3)
+    assert indices.shape == (150, 3)
+    np.testing.assert_allclose(distances[:, 0], 0.0)
+    np.testing.assert_allclose(indices[:, 0], np.arange(150))

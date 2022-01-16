@@ -131,7 +131,11 @@ def test_ada_fit_resample_nn_obj():
             {"sampling_strategy": {0: 9, 1: 12}},
             "No samples will be generated.",
         ),
-        ({"n_neighbors": "rnd"}, "has to be one of"),
+        (
+            {"n_neighbors": "rnd"},
+            "n_neighbors must be an interger or an object compatible with the "
+            "KNeighborsMixin API of scikit-learn",
+        ),
     ],
 )
 def test_adasyn_error(adasyn_params, err_msg):

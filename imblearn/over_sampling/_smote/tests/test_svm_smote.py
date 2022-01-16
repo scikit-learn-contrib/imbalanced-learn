@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 
+from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 
@@ -54,3 +55,12 @@ def test_svm_smote(data):
 
     assert_allclose(X_res_1, X_res_2)
     assert_array_equal(y_res_1, y_res_2)
+
+
+def test_svm_smote_not_svm(data):
+    """Check that we raise a proper error if passing an estimator that does not
+    expose a `support_` fitted attribute."""
+
+    err_msg = "`svm_estimator` is required to exposed a `support_` fitted attribute."
+    with pytest.raises(RuntimeError, match=err_msg):
+        SVMSMOTE(svm_estimator=LogisticRegression()).fit_resample(*data)

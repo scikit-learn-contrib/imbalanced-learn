@@ -5,3 +5,11 @@ Version 0.10.0 (ongoing)
 
 Changelog
 ---------
+
+Enhancements
+............
+
+- Add support to accept compatible `NearestNeighbors` objects by only
+  duck-typing. For instance, it allows to accept cuML instances.
+  :pr:`858` by :user:`NV-jpt <NV-jpt>` and
+  :user:`Guillaume Lemaitre <glemaitre>`.

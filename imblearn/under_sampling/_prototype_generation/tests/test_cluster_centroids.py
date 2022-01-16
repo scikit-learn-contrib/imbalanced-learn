@@ -5,10 +5,12 @@ import pytest
 import numpy as np
 from scipy import sparse
 
+from sklearn.linear_model import LogisticRegression
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_classification
 
 from imblearn.under_sampling import ClusterCentroids
+from imblearn.utils.testing import _CustomClusterer
 
 RND_SEED = 0
 X = np.array(
@@ -101,7 +103,6 @@ def test_fit_hard_voting():
 @pytest.mark.parametrize(
     "cluster_centroids_params, err_msg",
     [
-        ({"estimator": "rnd"}, "has to be a KMeans clustering"),
         ({"voting": "unknown"}, "needs to be one of"),
     ],
 )
@@ -152,3 +153,21 @@ def test_cluster_centroids_hard_target_class():
         for minority_sample in X_minority_class
     ]
     assert sum(sample_from_minority_in_majority) == 0
+
+
+def test_cluster_centroids_error_estimator():
+    """Check that an error is raised when estimator does not have a cluster API."""
+
+    err_msg = (
+        "`estimator` should be a clustering estimator exposing a parameter "
+        "`n_clusters` and a fitted parameter `cluster_centers_`."
+    )
+    with pytest.raises(ValueError, match=err_msg):
+        ClusterCentroids(estimator=LogisticRegression()).fit_resample(X, Y)
+
+    err_msg = (
+        "`estimator` should be a clustering estimator exposing a fitted parameter "
+        "`cluster_centers_`."
+    )
+    with pytest.raises(RuntimeError, match=err_msg):
+        ClusterCentroids(estimator=_CustomClusterer()).fit_resample(X, Y)

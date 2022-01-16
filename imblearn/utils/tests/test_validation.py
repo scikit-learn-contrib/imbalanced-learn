@@ -13,10 +13,10 @@ from sklearn.neighbors._base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._testing import assert_array_equal
 
-from imblearn.utils.testing import warns
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_sampling_strategy
 from imblearn.utils import check_target_type
+from imblearn.utils.testing import warns, _CustomNearestNeighbors
 from imblearn.utils._validation import ArraysTransformer
 from imblearn.utils._validation import _deprecate_positional_args
 
@@ -36,8 +36,15 @@ def test_check_neighbors_object():
     estimator = NearestNeighbors(n_neighbors=n_neighbors)
     estimator_cloned = check_neighbors_object(name, estimator)
     assert estimator.n_neighbors == estimator_cloned.n_neighbors
+    estimator = _CustomNearestNeighbors()
+    estimator_cloned = check_neighbors_object(name, estimator)
+    assert isinstance(estimator_cloned, _CustomNearestNeighbors)
     n_neighbors = "rnd"
-    with pytest.raises(ValueError, match="has to be one of"):
+    err_msg = (
+        "n_neighbors must be an interger or an object compatible with the "
+        "KNeighborsMixin API of scikit-learn"
+    )
+    with pytest.raises(ValueError, match=err_msg):
         check_neighbors_object(name, n_neighbors)
 
 

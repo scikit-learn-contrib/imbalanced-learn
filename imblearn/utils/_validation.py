@@ -12,12 +12,9 @@ from numbers import Integral, Real
 import numpy as np
 
 from sklearn.base import clone
-from sklearn.neighbors._base import KNeighborsMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import column_or_1d
 from sklearn.utils.multiclass import type_of_target
-
-from ..exceptions import raise_isinstance_error
 
 SAMPLING_KIND = (
     "over-sampling",
@@ -67,20 +64,40 @@ class ArraysTransformer:
         return ret
 
 
-def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
-    """Check the objects is consistent to be a NN.
+def _is_neighbors_object(estimator):
+    """Check that the estimator exposes a KNeighborsMixin-like API.
 
-    Several methods in imblearn relies on NN. Until version 0.4, these
-    objects can be passed at initialisation as an integer or a
-    KNeighborsMixin. After only KNeighborsMixin will be accepted. This
-    utility allows for type checking and raise if the type is wrong.
+    A KNeighborsMixin-like API exposes the following methods: (i) `kneighbors`,
+    (ii) `kneighbors_graph`.
+
+    Parameters
+    ----------
+    estimator : object
+        A scikit-learn compatible estimator.
+
+    Returns
+    -------
+    is_neighbors_object : bool
+        True if the estimator exposes a KNeighborsMixin-like API.
+    """
+    neighbors_attributes = ["kneighbors", "kneighbors_graph"]
+    return all(hasattr(estimator, attr) for attr in neighbors_attributes)
+
+
+def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
+    """Check the objects is consistent to be a k nearest neighbors.
+
+    Several methods in `imblearn` relies on k nearest neighbors. These objects
+    can be passed at initialisation as an integer or as an object that has
+    KNeighborsMixin-like attributes. This utility will create or clone said
+    object, ensuring it is KNeighbors-like.
 
     Parameters
     ----------
     nn_name : str
         The name associated to the object to raise an error if needed.
 
-    nn_object : int or KNeighborsMixin,
+    nn_object : int or KNeighborsMixin
         The object to be checked.
 
     additional_neighbor : int, default=0
@@ -93,10 +110,14 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     """
     if isinstance(nn_object, Integral):
         return NearestNeighbors(n_neighbors=nn_object + additional_neighbor)
-    elif isinstance(nn_object, KNeighborsMixin):
+    elif _is_neighbors_object(nn_object):
         return clone(nn_object)
     else:
-        raise_isinstance_error(nn_name, [int, KNeighborsMixin], nn_object)
+        raise ValueError(
+            f"{nn_name} must be an interger or an object compatible with the "
+            "KNeighborsMixin API of scikit-learn (i.e. implementing `kneighbors` "
+            "method)."
+        )
 
 
 def _count_class_sample(y):

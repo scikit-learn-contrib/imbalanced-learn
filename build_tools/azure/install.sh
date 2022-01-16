@@ -6,6 +6,7 @@ set -x
 UNAMESTR=`uname`
 
 make_conda() {
+    conda update -yq conda
     TO_INSTALL="$@"
     if [[ "$DISTRIB" == *"mamba"* ]]; then
         mamba create -n $VIRTUALENV --yes $TO_INSTALL
