@@ -7,6 +7,7 @@
 # License: MIT
 
 import math
+import warnings
 from collections import Counter
 
 import numpy as np
@@ -238,6 +239,12 @@ class SMOTE(BaseSMOTE):
 
     {n_jobs}
 
+        .. deprecated:: 0.10
+           `n_jobs` has been deprecated in 0.10 and will be removed in 0.12.
+           It was previously used to set `n_jobs` of nearest neighbors
+           algorithm. From now on, you can pass an estimator where `n_jobs` is
+           already set instead.
+
     Attributes
     ----------
     sampling_strategy_ : dict
@@ -316,6 +323,15 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         )
 
     def _fit_resample(self, X, y):
+        # FIXME: to be removed in 0.12
+        if self.n_jobs is not None:
+            warnings.warn(
+                "The parameter `n_jobs` has been deprecated in 0.10 and will be "
+                "removed in 0.12. You can pass an nearest neighbors estimator where "
+                "`n_jobs` is already set instead.",
+                FutureWarning,
+            )
+
         self._validate_estimator()
 
         X_resampled = [X.copy()]
@@ -387,6 +403,12 @@ class SMOTENC(SMOTE):
           any compatible class.
 
     {n_jobs}
+
+        .. deprecated:: 0.10
+           `n_jobs` has been deprecated in 0.10 and will be removed in 0.12.
+           It was previously used to set `n_jobs` of nearest neighbors
+           algorithm. From now on, you can pass an estimator where `n_jobs` is
+           already set instead.
 
     See Also
     --------
@@ -496,6 +518,15 @@ class SMOTENC(SMOTE):
             )
 
     def _fit_resample(self, X, y):
+        # FIXME: to be removed in 0.12
+        if self.n_jobs is not None:
+            warnings.warn(
+                "The parameter `n_jobs` has been deprecated in 0.10 and will be "
+                "removed in 0.12. You can pass an nearest neighbors estimator where "
+                "`n_jobs` is already set instead.",
+                FutureWarning,
+            )
+
         self.n_features_ = X.shape[1]
         self._validate_estimator()
 
@@ -636,7 +667,7 @@ class SMOTENC(SMOTE):
 class SMOTEN(SMOTE):
     """Synthetic Minority Over-sampling Technique for Nominal.
 
-    This method is refered as SMOTEN in [1]_. It expects that the data to
+    This method is referred as SMOTEN in [1]_. It expects that the data to
     resample are only made of categorical features.
 
     Read more in the :ref:`User Guide <smote_adasyn>`.
@@ -663,6 +694,12 @@ class SMOTEN(SMOTE):
           any compatible class.
 
     {n_jobs}
+
+        .. deprecated:: 0.10
+           `n_jobs` has been deprecated in 0.10 and will be removed in 0.12.
+           It was previously used to set `n_jobs` of nearest neighbors
+           algorithm. From now on, you can pass an estimator where `n_jobs` is
+           already set instead.
 
     Attributes
     ----------
@@ -755,6 +792,15 @@ class SMOTEN(SMOTE):
         return X_new, y_new
 
     def _fit_resample(self, X, y):
+        # FIXME: to be removed in 0.12
+        if self.n_jobs is not None:
+            warnings.warn(
+                "The parameter `n_jobs` has been deprecated in 0.10 and will be "
+                "removed in 0.12. You can pass an nearest neighbors estimator where "
+                "`n_jobs` is already set instead.",
+                FutureWarning,
+            )
+
         self._validate_estimator()
 
         X_resampled = [X.copy()]

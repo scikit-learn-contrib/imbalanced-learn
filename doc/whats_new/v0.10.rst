@@ -6,6 +6,19 @@ Version 0.10.0 (ongoing)
 Changelog
 ---------
 
+Deprecation
+...........
+
+- The parameter `n_jobs` has been deprecated from the classes
+  :class:`~imblearn.over_sampling.ADASYN`,
+  :class:`~imblearn.over_sampling.BorderlineSMOTE`,
+  :class:`~imblearn.over_sampling.SMOTE`,
+  :class:`~imblearn.over_sampling.SMOTENC`,
+  :class:`~imblearn.over_sampling.SMOTEN`, and
+  :class:`~imblearn.over_sampling.SVMSMOTE`. Instead, pass a nearest neighbors
+  estimator where `n_jobs` is set.
+  :pr:`887` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancements
 ............
 
