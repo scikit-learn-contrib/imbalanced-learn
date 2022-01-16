@@ -4,6 +4,8 @@
 #          Christos Aridas
 # License: MIT
 
+import warnings
+
 import numpy as np
 from scipy import sparse
 
@@ -52,6 +54,12 @@ class ADASYN(BaseOverSampler):
           any compatible class.
 
     {n_jobs}
+
+        .. deprecated:: 0.10
+           `n_jobs` has been deprecated in 0.10 and will be removed in 0.12.
+           It was previously used to set `n_jobs` of nearest neighbors
+           algorithm. From now on, you can pass an estimator where `n_jobs` is
+           already set instead.
 
     Attributes
     ----------
@@ -133,6 +141,15 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         )
 
     def _fit_resample(self, X, y):
+        # FIXME: to be removed in 0.12
+        if self.n_jobs is not None:
+            warnings.warn(
+                "The parameter `n_jobs` has been deprecated in 0.10 and will be "
+                "removed in 0.12. You can pass an nearest neighbors estimator where "
+                "`n_jobs` is already set instead.",
+                FutureWarning,
+            )
+
         self._validate_estimator()
         random_state = check_random_state(self.random_state)
 
