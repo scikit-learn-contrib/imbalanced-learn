@@ -154,7 +154,6 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
         self.nn_m_ = check_neighbors_object(
             "m_neighbors", self.m_neighbors, additional_neighbor=1
         )
-        self.nn_m_.set_params(**{"n_jobs": self.n_jobs})
         if self.kind not in ("borderline-1", "borderline-2"):
             raise ValueError(
                 f'The possible "kind" of algorithm are '
@@ -382,7 +381,6 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
         self.nn_m_ = check_neighbors_object(
             "m_neighbors", self.m_neighbors, additional_neighbor=1
         )
-        self.nn_m_.set_params(**{"n_jobs": self.n_jobs})
 
         if self.svm_estimator is None:
             self.svm_estimator_ = SVC(gamma="scale", random_state=self.random_state)
