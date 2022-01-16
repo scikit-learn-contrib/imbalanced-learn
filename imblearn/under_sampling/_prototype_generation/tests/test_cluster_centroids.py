@@ -10,7 +10,7 @@ from sklearn.cluster import KMeans
 from sklearn.datasets import make_classification
 
 from imblearn.under_sampling import ClusterCentroids
-from imblearn.utils.testing import CustomClusterer
+from imblearn.utils.testing import _CustomClusterer
 
 RND_SEED = 0
 X = np.array(
@@ -170,4 +170,4 @@ def test_cluster_centroids_error_estimator():
         "`cluster_centers_`."
     )
     with pytest.raises(RuntimeError, match=err_msg):
-        ClusterCentroids(estimator=CustomClusterer()).fit_resample(X, Y)
+        ClusterCentroids(estimator=_CustomClusterer()).fit_resample(X, Y)

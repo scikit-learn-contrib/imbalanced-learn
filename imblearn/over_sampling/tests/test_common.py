@@ -12,7 +12,7 @@ from imblearn.over_sampling import (
     SMOTENC,
     SVMSMOTE,
 )
-from imblearn.utils.testing import CustomNearestNeighbors
+from imblearn.utils.testing import _CustomNearestNeighbors
 
 
 @pytest.fixture
@@ -76,7 +76,7 @@ def test_smote_m_neighbors(numerical_data, smote):
 def test_numerical_smote_custom_nn(numerical_data, smote, neighbor_estimator_name):
     X, y = numerical_data
     params = {
-        neighbor_estimator_name: CustomNearestNeighbors(n_neighbors=5),
+        neighbor_estimator_name: _CustomNearestNeighbors(n_neighbors=5),
     }
     smote.set_params(**params)
     X_res, _ = smote.fit_resample(X, y)
@@ -86,7 +86,7 @@ def test_numerical_smote_custom_nn(numerical_data, smote, neighbor_estimator_nam
 
 def test_categorical_smote_k_custom_nn(categorical_data):
     X, y = categorical_data
-    smote = SMOTEN(k_neighbors=CustomNearestNeighbors(n_neighbors=5))
+    smote = SMOTEN(k_neighbors=_CustomNearestNeighbors(n_neighbors=5))
     X_res, y_res = smote.fit_resample(X, y)
 
     assert X_res.shape == (80, 3)
@@ -96,7 +96,7 @@ def test_categorical_smote_k_custom_nn(categorical_data):
 def test_heterogeneous_smote_k_custom_nn(heterogeneous_data):
     X, y, categorical_features = heterogeneous_data
     smote = SMOTENC(
-        categorical_features, k_neighbors=CustomNearestNeighbors(n_neighbors=5)
+        categorical_features, k_neighbors=_CustomNearestNeighbors(n_neighbors=5)
     )
     X_res, y_res = smote.fit_resample(X, y)
 
@@ -111,7 +111,7 @@ def test_heterogeneous_smote_k_custom_nn(heterogeneous_data):
 )
 def test_numerical_smote_extra_custom_nn(numerical_data, smote):
     X, y = numerical_data
-    smote.set_params(m_neighbors=CustomNearestNeighbors(n_neighbors=5))
+    smote.set_params(m_neighbors=_CustomNearestNeighbors(n_neighbors=5))
     X_res, y_res = smote.fit_resample(X, y)
 
     assert X_res.shape == (120, 2)

@@ -10,7 +10,7 @@ import numpy as np
 from sklearn.neighbors._base import KNeighborsMixin
 
 from imblearn.base import SamplerMixin
-from imblearn.utils.testing import all_estimators, CustomNearestNeighbors
+from imblearn.utils.testing import all_estimators, _CustomNearestNeighbors
 
 from imblearn.utils.testing import warns
 
@@ -69,7 +69,7 @@ def test_custom_nearest_neighbors():
     """Check that our custom nearest neighbors can be used for our internal
     duck-typing."""
 
-    neareat_neighbors = CustomNearestNeighbors(n_neighbors=3)
+    neareat_neighbors = _CustomNearestNeighbors(n_neighbors=3)
 
     assert not isinstance(neareat_neighbors, KNeighborsMixin)
     assert hasattr(neareat_neighbors, "kneighbors")

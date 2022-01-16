@@ -168,7 +168,7 @@ def warns(expected_warning, match=None):
         pass
 
 
-class CustomNearestNeighbors(BaseEstimator):
+class _CustomNearestNeighbors(BaseEstimator):
     """Basic implementation of nearest neighbors not relying on scikit-learn.
 
     `kneighbors_graph` is ignored and `metric` does not have any impact.
@@ -197,7 +197,7 @@ class CustomNearestNeighbors(BaseEstimator):
         pass
 
 
-class CustomClusterer(BaseEstimator):
+class _CustomClusterer(BaseEstimator):
     """Class that mimics a cluster that does not expose `cluster_centers_`."""
 
     def __init__(self, n_clusters=1):
