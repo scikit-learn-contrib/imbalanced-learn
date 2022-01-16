@@ -31,8 +31,6 @@ from imblearn.metrics import make_index_balanced_accuracy
 from imblearn.metrics import classification_report_imbalanced
 from imblearn.metrics import macro_averaged_mean_absolute_error
 
-from imblearn.utils.testing import warns
-
 RND_SEED = 42
 R_TOL = 1e-2
 
@@ -182,7 +180,8 @@ def test_sensitivity_specificity_support_errors():
 
 def test_sensitivity_specificity_unused_pos_label():
     # but average != 'binary'; even if data is binary
-    with warns(UserWarning, r"use labels=\[pos_label\] to specify a single"):
+    msg = r"use labels=\[pos_label\] to specify a single"
+    with pytest.warns(UserWarning, match=msg):
         sensitivity_specificity_support(
             [1, 2, 1], [1, 2, 2], pos_label=2, average="macro"
         )

@@ -6,15 +6,11 @@
 
 import inspect
 import pkgutil
-import warnings
-from contextlib import contextmanager
 from importlib import import_module
 from operator import itemgetter
 from pathlib import Path
-from re import compile
 
 from scipy import sparse
-from pytest import warns as _warns
 
 from sklearn.base import BaseEstimator
 from sklearn.neighbors import KDTree
@@ -114,58 +110,6 @@ def all_estimators(
     # itemgetter is used to ensure the sort does not extend to the 2nd item of
     # the tuple
     return sorted(set(estimators), key=itemgetter(0))
-
-
-@contextmanager
-def warns(expected_warning, match=None):
-    r"""Assert that a warning is raised with an optional matching pattern.
-
-    .. deprecated:: 0.8
-       This function is deprecated in 0.8 and will be removed in 0.10.
-       Use `pytest.warns()` instead.
-
-    Assert that a code block/function call warns ``expected_warning``
-    and raise a failure exception otherwise. It can be used within a context
-    manager ``with``.
-
-    Parameters
-    ----------
-    expected_warning : Warning
-        Warning type.
-
-    match : regex str or None, optional
-        The pattern to be matched. By default, no check is done.
-
-    Yields
-    ------
-    Nothing.
-
-    Examples
-    --------
-    >>> import warnings
-    >>> from imblearn.utils.testing import warns
-    >>> with warns(UserWarning, match=r'must be \d+$'):
-    ...     warnings.warn("value must be 42", UserWarning)
-    """
-    warnings.warn(
-        "The warns function is deprecated in 0.8 and will be removed in 0.10. "
-        "Use pytest.warns() instead."
-    )
-
-    with _warns(expected_warning) as record:
-        yield
-
-    if match is not None:
-        for each in record:
-            if compile(match).search(str(each.message)) is not None:
-                break
-        else:
-            msg = "'{}' pattern not found in {}".format(
-                match, "{}".format([str(r.message) for r in record])
-            )
-            assert False, msg
-    else:
-        pass
 
 
 class _CustomNearestNeighbors(BaseEstimator):

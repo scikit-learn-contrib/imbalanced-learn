@@ -3,8 +3,9 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
+import pytest
+
 from imblearn.utils.deprecation import deprecate_parameter
-from imblearn.utils.testing import warns
 
 
 class Sampler:
@@ -14,7 +15,7 @@ class Sampler:
 
 
 def test_deprecate_parameter():
-    with warns(DeprecationWarning, match="is deprecated from"):
+    with pytest.warns(FutureWarning, match="is deprecated from"):
         deprecate_parameter(Sampler(), "0.2", "a")
-    with warns(DeprecationWarning, match="Use 'b' instead."):
+    with pytest.warns(FutureWarning, match="Use 'b' instead."):
         deprecate_parameter(Sampler(), "0.2", "a", "b")

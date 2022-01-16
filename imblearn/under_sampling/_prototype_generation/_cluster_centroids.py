@@ -6,8 +6,6 @@ clustering."""
 #          Christos Aridas
 # License: MIT
 
-import warnings
-
 import numpy as np
 from scipy import sparse
 
@@ -18,7 +16,6 @@ from sklearn.utils import _safe_indexing
 
 from ..base import BaseUnderSampler
 from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
 from ...utils._docstring import _random_state_docstring
 from ...utils._validation import _deprecate_positional_args
 
@@ -27,7 +24,6 @@ VOTING_KIND = ("auto", "hard", "soft")
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
-    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class ClusterCentroids(BaseUnderSampler):
@@ -64,11 +60,6 @@ class ClusterCentroids(BaseUnderSampler):
           otherwise, ``'soft'`` will be used.
 
         .. versionadded:: 0.3.0
-
-    {n_jobs}
-
-      .. deprecated:: 0.7
-         `n_jobs` was deprecated in 0.7 and will be removed in 0.9.
 
     Attributes
     ----------
@@ -125,21 +116,14 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         random_state=None,
         estimator=None,
         voting="auto",
-        n_jobs="deprecated",
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.estimator = estimator
         self.voting = voting
-        self.n_jobs = n_jobs
 
     def _validate_estimator(self):
         """Private function to create the KMeans estimator"""
-        if self.n_jobs != "deprecated":
-            warnings.warn(
-                "'n_jobs' was deprecated in 0.7 and will be removed in 0.9",
-                FutureWarning,
-            )
         if self.estimator is None:
             self.estimator_ = KMeans(random_state=self.random_state)
         else:

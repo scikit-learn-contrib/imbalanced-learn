@@ -16,7 +16,7 @@ from sklearn.utils._testing import assert_array_equal
 from imblearn.utils import check_neighbors_object
 from imblearn.utils import check_sampling_strategy
 from imblearn.utils import check_target_type
-from imblearn.utils.testing import warns, _CustomNearestNeighbors
+from imblearn.utils.testing import _CustomNearestNeighbors
 from imblearn.utils._validation import ArraysTransformer
 from imblearn.utils._validation import _deprecate_positional_args
 
@@ -262,12 +262,8 @@ def test_check_sampling_strategy(
 def test_sampling_strategy_dict_over_sampling():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     sampling_strategy = {1: 70, 2: 140, 3: 70}
-    expected_msg = (
-        r"After over-sampling, the number of samples \(140\) in"
-        r" class 2 will be larger than the number of samples in"
-        r" the majority class \(class #2 -> 100\)"
-    )
-    with warns(UserWarning, expected_msg):
+    expected_msg = "After over-sampling, the number of samples "
+    with pytest.warns(UserWarning, match=expected_msg):
         check_sampling_strategy(sampling_strategy, y, "over-sampling")
 
 
