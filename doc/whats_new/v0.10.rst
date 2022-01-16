@@ -17,7 +17,7 @@ Deprecation
   :class:`~imblearn.over_sampling.SMOTEN`, and
   :class:`~imblearn.over_sampling.SVMSMOTE`. Instead, pass a nearest neighbors
   estimator where `n_jobs` is set.
-  :pr:`xxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`887` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Enhancements
 ............
