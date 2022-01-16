@@ -224,10 +224,17 @@ class SMOTE(BaseSMOTE):
     {random_state}
 
     k_neighbors : int or object, default=5
-        If ``int``, number of nearest neighbours to used to construct synthetic
-        samples.  If object, an estimator that inherits from
-        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        The nearest neighbors used to define the neighborhood of samples to use
+        to generate the synthetic samples. You can pass:
+
+        - an `int` corresponding to the number of neighbors to use. A
+          `~sklearn.neighbors.NearestNeighbors` instance will be fitted in this
+          case.
+        - an instance of a compatible nearest neighbors algorithm that should
+          implement both methods `kneighbors` and `kneighbors_graph`. For
+          instance, it could correspond to a
+          :class:`~sklearn.neighbors.NearestNeighbors` but could be extended to
+          any compatible class.
 
     {n_jobs}
 
@@ -367,10 +374,17 @@ class SMOTENC(SMOTE):
     {random_state}
 
     k_neighbors : int or object, default=5
-        If ``int``, number of nearest neighbours to used to construct synthetic
-        samples.  If object, an estimator that inherits from
-        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        The nearest neighbors used to define the neighborhood of samples to use
+        to generate the synthetic samples. You can pass:
+
+        - an `int` corresponding to the number of neighbors to use. A
+          `~sklearn.neighbors.NearestNeighbors` instance will be fitted in this
+          case.
+        - an instance of a compatible nearest neighbors algorithm that should
+          implement both methods `kneighbors` and `kneighbors_graph`. For
+          instance, it could correspond to a
+          :class:`~sklearn.neighbors.NearestNeighbors` but could be extended to
+          any compatible class.
 
     {n_jobs}
 
@@ -636,10 +650,17 @@ class SMOTEN(SMOTE):
     {random_state}
 
     k_neighbors : int or object, default=5
-        If ``int``, number of nearest neighbours to used to construct synthetic
-        samples.  If object, an estimator that inherits from
-        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
+        The nearest neighbors used to define the neighborhood of samples to use
+        to generate the synthetic samples. You can pass:
+
+        - an `int` corresponding to the number of neighbors to use. A
+          `~sklearn.neighbors.NearestNeighbors` instance will be fitted in this
+          case.
+        - an instance of a compatible nearest neighbors algorithm that should
+          implement both methods `kneighbors` and `kneighbors_graph`. For
+          instance, it could correspond to a
+          :class:`~sklearn.neighbors.NearestNeighbors` but could be extended to
+          any compatible class.
 
     {n_jobs}
 

@@ -195,3 +195,13 @@ class CustomNearestNeighbors(BaseEstimator):
         """This method is not used within imblearn but it is required for
         duck-typing."""
         pass
+
+
+class CustomClusterer(BaseEstimator):
+    """Class that mimics a cluster that does not expose `cluster_centers_`."""
+
+    def __init__(self, n_clusters=1):
+        self.n_clusters = n_clusters
+
+    def fit(self, X, y=None):
+        return self

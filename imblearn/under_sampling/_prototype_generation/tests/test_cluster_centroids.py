@@ -5,12 +5,12 @@ import pytest
 import numpy as np
 from scipy import sparse
 
-from sklearn.base import BaseEstimator
 from sklearn.linear_model import LogisticRegression
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_classification
 
 from imblearn.under_sampling import ClusterCentroids
+from imblearn.utils.testing import CustomClusterer
 
 RND_SEED = 0
 X = np.array(
@@ -155,16 +155,6 @@ def test_cluster_centroids_hard_target_class():
     assert sum(sample_from_minority_in_majority) == 0
 
 
-class FakeCluster(BaseEstimator):
-    """Class that mimics a cluster that does not expose `cluster_centers_`."""
-
-    def __init__(self, n_clusters=1):
-        self.n_clusters = n_clusters
-
-    def fit(self, X, y=None):
-        return self
-
-
 def test_cluster_centroids_error_estimator():
     """Check that an error is raised when estimator does not have a cluster API."""
 
@@ -180,4 +170,4 @@ def test_cluster_centroids_error_estimator():
         "`cluster_centers_`."
     )
     with pytest.raises(RuntimeError, match=err_msg):
-        ClusterCentroids(estimator=FakeCluster()).fit_resample(X, Y)
+        ClusterCentroids(estimator=CustomClusterer()).fit_resample(X, Y)
