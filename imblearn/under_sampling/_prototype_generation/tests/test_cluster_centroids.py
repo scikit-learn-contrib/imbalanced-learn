@@ -112,15 +112,6 @@ def test_fit_resample_error(cluster_centroids_params, err_msg):
         cc.fit_resample(X, Y)
 
 
-def test_cluster_centroids_n_jobs():
-    # check that we deprecate the `n_jobs` parameter.
-    cc = ClusterCentroids(n_jobs=1)
-    with pytest.warns(FutureWarning) as record:
-        cc.fit_resample(X, Y)
-    assert len(record) == 1
-    assert "'n_jobs' was deprecated" in record[0].message.args[0]
-
-
 def test_cluster_centroids_hard_target_class():
     # check that the samples selecting by the hard voting corresponds to the
     # targeted class
