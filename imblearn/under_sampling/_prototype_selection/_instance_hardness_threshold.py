@@ -38,13 +38,8 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     Parameters
     ----------
     estimator : estimator object, default=None
-        Classifier to be used to estimate instance hardness of the samples.  By
-        default a :class:`~sklearn.ensemble.RandomForestClassifier` will be
-        used. If ``str``, the choices using a string are the following:
-        ``'knn'``, ``'decision-tree'``, ``'random-forest'``, ``'adaboost'``,
-        ``'gradient-boosting'`` and ``'linear-svm'``.  If object, an estimator
-        inherited from :class:`~sklearn.base.ClassifierMixin` and having an
-        attribute :func:`predict_proba`.
+        Classifier to be used to estimate instance hardness of the samples.
+        This classifier should implement `predict_proba`.
 
     {sampling_strategy}
 
