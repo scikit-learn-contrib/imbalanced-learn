@@ -233,9 +233,9 @@ CondensedNearestNeighbour
     def _more_tags(self):
         return {"sample_indices": True}
 
-    @deprecated(
-        "`estimator_` is deprecated in version 0.10 and will be removed in version "
-        "0.12. Use `n_neighbors_` instead."
+    @deprecated(  # type: ignore
+        "`estimator_` is deprecated in version 0.10 and will be "
+        "removed in version 0.12. Use `n_neighbors_` instead."
     )
     @property
     def estimator_(self):

@@ -113,3 +113,8 @@ def test_cnn_estimator_deprecation():
     msg = "`estimator_` is deprecated in version 0.10"
     with pytest.warns(FutureWarning, match=msg):
         assert cnn.estimator_ == cnn.n_neighbors_
+
+
+def test_cnn_custom_knn():
+    # FIXME: accept any arbitrary KNN classifier
+    pass
