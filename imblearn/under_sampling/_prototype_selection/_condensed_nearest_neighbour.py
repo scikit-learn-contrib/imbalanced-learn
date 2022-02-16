@@ -47,7 +47,10 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
         be used.
 
     n_seeds_S : int, default=1
-        Number of samples to extract in order to build the set S.
+        Number of samples from the majority class to add randomly to the set
+        with all minority observations before training the first KNN model. In
+        the original implementation is 1, but more samples can be added with this
+        parameter.
 
     {n_jobs}
 
@@ -83,13 +86,13 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
     -----
     The method is based on [1]_.
 
-    Supports multi-class resampling. A one-vs.-rest scheme is used when
+    Supports multi-class resampling. A one-vs.-one scheme is used when
     sampling a class as proposed in [1]_.
 
     References
     ----------
-    .. [1] P. Hart, "The condensed nearest neighbor rule,"
-       In Information Theory, IEEE Transactions on, vol. 14(3),
+    .. [1] P. Hart, "The condensed nearest neighbor rule",
+       in Information Theory, IEEE Transactions on, vol. 14(3),
        pp. 515-516, 1968.
 
     Examples
@@ -137,7 +140,7 @@ CondensedNearestNeighbour # doctest: +SKIP
         else:
             raise ValueError(
                 f"`n_neighbors` has to be a int or an object"
-                f" inhereited from KNeighborsClassifier."
+                f" inherited from KNeighborsClassifier."
                 f" Got {type(self.n_neighbors)} instead."
             )
 
@@ -181,7 +184,8 @@ CondensedNearestNeighbour # doctest: +SKIP
                 # Check each sample in S if we keep it or drop it
                 for idx_sam, (x_sam, y_sam) in enumerate(zip(S_x, S_y)):
 
-                    # Do not select sample which are already well classified
+                    # Do not select samples which are already well classified
+                    # (or were already selected -randomly- to be part of C)
                     if idx_sam in good_classif_label:
                         continue
 
@@ -190,7 +194,7 @@ CondensedNearestNeighbour # doctest: +SKIP
                         x_sam = x_sam.reshape(1, -1)
                     pred_y = self.estimator_.predict(x_sam)
 
-                    # If the prediction do not agree with the true label
+                    # If the prediction does not agree with the true label
                     # append it in C_x
                     if y_sam != pred_y:
                         # Keep the index for later
@@ -204,9 +208,9 @@ CondensedNearestNeighbour # doctest: +SKIP
                         # fit a knn on C
                         self.estimator_.fit(C_x, C_y)
 
-                        # This experimental to speed up the search
-                        # Classify all the element in S and avoid to test the
-                        # well classified elements
+                        # This is experimental to speed up the search
+                        # Classify all the elements in S and avoid testing the
+                        # correctly classified elements
                         pred_S_y = self.estimator_.predict(S_x)
                         good_classif_label = np.unique(
                             np.append(idx_maj_sample, np.flatnonzero(pred_S_y == S_y))

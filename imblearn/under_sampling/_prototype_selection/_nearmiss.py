@@ -36,20 +36,24 @@ class NearMiss(BaseUnderSampler):
 
     n_neighbors : int or estimator object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an
-        estimator that inherits from
-        :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
-        By default, it will be a 3-NN.
+        average distance to the minority samples. If object, an estimator
+        that inherits from :class:`~sklearn.neighbors.base.KNeighborsMixin`
+        that will be used to find the k_neighbors. By default, it considers
+        the 3 closest neighbours.
 
     n_neighbors_ver3 : int or estimator object, default=3
-        If ``int``, NearMiss-3 algorithm start by a phase of re-sampling. This
-        parameter correspond to the number of neighbours selected create the
-        subset in which the selection will be performed.  If object, an
-        estimator that inherits from
+        NearMiss version 3 starts by a phase of under-sampling where it selects
+        those observations from the majority class that are closest neighbors
+        to the minority class.
+
+        If ``int``, indicates to the number of neighbours to be selected in
+        the first step. The subset in which the selection will be performed.
+        If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the k_neighbors.
-        By default, it will be a 3-NN.
+        find the k_neighbors. By default, the 3 closest neighbours to the
+        minority observations will be selected.
+
+        Only used in version 3.
 
     {n_jobs}
 
@@ -88,7 +92,7 @@ class NearMiss(BaseUnderSampler):
     References
     ----------
     .. [1] I. Mani, I. Zhang. "kNN approach to unbalanced data distributions:
-       a case study involving information extraction," In Proceedings of
+       a case study involving information extraction", in Proceedings of
        workshop on learning from imbalanced datasets, 2003.
 
     Examples
@@ -138,7 +142,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
             Associated label to X.
 
         dist_vec : ndarray, shape (n_samples, )
-            The distance matrix to the nearest neigbour.
+            The distance matrix to the nearest neighbor.
 
         num_samples: int
             The desired number of samples to select.
@@ -146,7 +150,7 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         key : str or int,
             The target class.
 
-        sel_strategy : str, optional (default='nearest')
+        sel_strategy : str, default='nearest'
             Strategy to select the samples. Either 'nearest' or 'farthest'
 
         Returns
@@ -182,13 +186,13 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
             reverse=sort_way,
         )
 
-        # Throw a warning to tell the user that we did not have enough samples
-        # to select and that we just select everything
+        # Raise a warning to tell the user that there were not enough samples
+        # to select from and thus, that all samples will be selected
         if len(sorted_idx) < num_samples:
             warnings.warn(
                 "The number of the samples to be selected is larger"
                 " than the number of samples available. The"
-                " balancing ratio cannot be ensure and all samples"
+                " balancing ratio cannot be ensured and all samples"
                 " will be returned."
             )
 

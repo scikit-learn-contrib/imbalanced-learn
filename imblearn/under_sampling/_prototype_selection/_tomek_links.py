@@ -64,7 +64,7 @@ class TomekLinks(BaseCleaningSampler):
 
     References
     ----------
-    .. [1] I. Tomek, "Two modifications of CNN," In Systems, Man, and
+    .. [1] I. Tomek, "Two modifications of CNN", in Systems, Man, and
        Cybernetics, IEEE Transactions on, vol. 6, pp 769-772, 1976.
 
     Examples
@@ -101,10 +101,10 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         ----------
         y : ndarray of shape (n_samples,)
             Target vector of the data set, necessary to keep track of whether a
-            sample belongs to minority or not.
+            sample belongs to minority class.
 
         nn_index : ndarray of shape (len(y),)
-            The index of the closes nearest neighbour to a sample point.
+            Index with the closest nearest neighbour to a sample.
 
         class_type : int or str
             The label of the minority class.
@@ -112,21 +112,24 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
         Returns
         -------
         is_tomek : ndarray of shape (len(y), )
-            Boolean vector on len( # samples ), with True for majority samples
+            Boolean vector of len( # samples ), with True for majority samples
             that are Tomek links.
         """
         links = np.zeros(len(y), dtype=bool)
 
-        # find which class to not consider
+        # find which class not to consider
         class_excluded = [c for c in np.unique(y) if c not in class_type]
 
-        # there is a Tomek link between two samples if they are both nearest
-        # neighbors of each others.
+        # there is a Tomek link between two samples if they are nearest
+        # neighbors of each other, and from a different class.
         for index_sample, target_sample in enumerate(y):
             if target_sample in class_excluded:
                 continue
 
             if y[nn_index[index_sample]] != target_sample:
+                # corroborate that they are neighbours of each other:
+                # (if A's closest neighbour is B, but B's closest neighbour
+                # is C, then A and B are not a Tomek link)
                 if nn_index[nn_index[index_sample]] == index_sample:
                     links[index_sample] = True
 

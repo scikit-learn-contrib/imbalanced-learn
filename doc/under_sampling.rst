@@ -125,9 +125,9 @@ It would also work with pandas dataframe::
   >>> df_resampled, y_resampled = rus.fit_resample(df_adult, y_adult)
   >>> df_resampled.head()  # doctest: +SKIP
 
-:class:`NearMiss` adds some heuristic rules to select samples
-:cite:`mani2003knn`. :class:`NearMiss` implements 3 different types of
-heuristic which can be selected with the parameter ``version``::
+:class:`NearMiss` undersamples data based on heuristic rules to select the
+observations :cite:`mani2003knn`. :class:`NearMiss` implements 3 different
+methods to undersample, which can be selected with the parameter ``version``::
 
   >>> from imblearn.under_sampling import NearMiss
   >>> nm1 = NearMiss(version=1)
@@ -135,12 +135,14 @@ heuristic which can be selected with the parameter ``version``::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
-As later stated in the next section, :class:`NearMiss` heuristic rules are
-based on nearest neighbors algorithm. Therefore, the parameters ``n_neighbors``
-and ``n_neighbors_ver3`` accept classifier derived from ``KNeighborsMixin``
-from scikit-learn. The former parameter is used to compute the average distance
-to the neighbors while the latter is used for the pre-selection of the samples
-of interest.
+
+:class:`NearMiss` heuristic rules are based on the nearest neighbors algorithm.
+Therefore, the parameters ``n_neighbors`` and ``n_neighbors_ver3`` accept either
+integers with the size of the neighbourhood to explore or a classifier derived
+from the ``KNeighborsMixin`` from scikit-learn. The parameter ``n_neighbors`` is
+used to compute the average distance to the neighbors while ``n_neighbors_ver3``
+is used for the pre-selection of the samples from the majority class, only in
+version 3. More details about NearMiss in the next section.
 
 Mathematical formulation
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -175,19 +177,16 @@ is the largest.
    :scale: 60
    :align: center
 
-In the next example, the different :class:`NearMiss` variant are applied on the
-previous toy example. It can be seen that the decision functions obtained in
+In the next example, the different :class:`NearMiss` variants are applied on the
+previous toy example. We can see that the decision functions obtained in
 each case are different.
 
-When under-sampling a specific class, NearMiss-1 can be altered by the presence
-of noise. In fact, it will implied that samples of the targeted class will be
-selected around these samples as it is the case in the illustration below for
-the yellow class. However, in the normal case, samples next to the boundaries
-will be selected. NearMiss-2 will not have this effect since it does not focus
-on the nearest samples but rather on the farthest samples. We can imagine that
-the presence of noise can also altered the sampling mainly in the presence of
-marginal outliers. NearMiss-3 is probably the version which will be less
-affected by noise due to the first step sample selection.
+When under-sampling a specific class, NearMiss-1 can be affected by noise. In
+fact, samples of the targeted class located around observations from the minority
+class tend to be selected, as shown in the illustration below (see yellow class).
+NearMiss-2 might be less affected by noise as it does not focus on the nearest
+samples but rather on the farthest samples. NearMiss-3 is probably the version
+which will be less affected by noise due to the first step of sample selection.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_003.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
@@ -198,7 +197,7 @@ Cleaning under-sampling techniques
 ----------------------------------
 
 Cleaning under-sampling techniques do not allow to specify the number of
-samples to have in each class. In fact, each algorithm implement an heuristic
+samples to have in each class. In fact, each algorithm implements an heuristic
 which will clean the dataset.
 
 .. _tomek_links:
@@ -214,20 +213,20 @@ defined such that for any sample :math:`z`:
 
    d(x, y) < d(x, z) \text{ and } d(x, y) < d(y, z)
 
-where :math:`d(.)` is the distance between the two samples. In some other
-words, a Tomek's link exist if the two samples are the nearest neighbors of
-each other. In the figure below, a Tomek's link is illustrated by highlighting
-the samples of interest in green.
+where :math:`d(.)` is the distance between the two samples. In other words,
+a Tomek's link exists if two samples are nearest neighbors of each other,
+but belong to a different class. In the figure below, a Tomek's link is illustrated
+highlighting the samples of interest in green.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_001.png
    :target: ./auto_examples/under-sampling/plot_illustration_tomek_links.html
    :scale: 60
    :align: center
 
-The parameter ``sampling_strategy`` control which sample of the link will be
+The parameter ``sampling_strategy`` controls which sample of the Tomek link will be
 removed. For instance, the default (i.e., ``sampling_strategy='auto'``) will
-remove the sample from the majority class. Both samples from the majority and
-minority class can be removed by setting ``sampling_strategy`` to ``'all'``. The
+remove the sample from the majority class. However, both the samples from the majority
+and minority class can be removed by setting ``sampling_strategy`` to ``'all'``. The
 figure illustrates this behaviour.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_002.png
@@ -311,15 +310,19 @@ Condensed nearest neighbors and derived algorithms
 
 :class:`CondensedNearestNeighbour` uses a 1 nearest neighbor rule to
 iteratively decide if a sample should be removed or not
-:cite:`hart1968condensed`. The algorithm is running as followed:
+:cite:`hart1968condensed`. The algorithm runs as follows:
 
 1. Get all minority samples in a set :math:`C`.
 2. Add a sample from the targeted class (class to be under-sampled) in
    :math:`C` and all other samples of this class in a set :math:`S`.
-3. Go through the set :math:`S`, sample by sample, and classify each sample
-   using a 1 nearest neighbor rule.
-4. If the sample is misclassified, add it to :math:`C`, otherwise do nothing.
-5. Reiterate on :math:`S` until there is no samples to be added.
+3. Train a 1-KNN on `C`.
+4. Go through the samples in set :math:`S`, sample by sample, and classify each one
+   using a 1 nearest neighbor rule (trained in 3).
+5. If the sample is misclassified, add it to :math:`C`, and go to step 6.
+6. Repeat steps 3 to 5 until all observations in `S` have been examined.
+
+The final dataset is `S`, containing all observations from the minority class and
+those from the majority that were miss-classified by the successive 1-KNN algorithms.
 
 The :class:`CondensedNearestNeighbour` can be used in the following manner::
 
@@ -329,14 +332,29 @@ The :class:`CondensedNearestNeighbour` can be used in the following manner::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 24), (2, 115)]
 
-However as illustrated in the figure below, :class:`CondensedNearestNeighbour`
-is sensitive to noise and will add noisy samples.
+However, as illustrated in the figure below, :class:`CondensedNearestNeighbour`
+is sensitive to noise and may select noisy samples.
 
-In the contrary, :class:`OneSidedSelection` will use :class:`TomekLinks` to
-remove noisy samples :cite:`hart1968condensed`. In addition, the 1 nearest
-neighbor rule is applied to all samples and the one which are misclassified
-will be added to the set :math:`C`. No iteration on the set :math:`S` will take
-place. The class can be used as::
+In an attempt to remove noisy observations, :class:`OneSidedSelection`
+will first find the observations that are hard to classify, and then will use
+:class:`TomekLinks` to remove noisy samples :cite:`hart1968condensed`.
+:class:`OneSidedSelection` runs as follows:
+
+1. Get all minority samples in a set :math:`C`.
+2. Add a sample from the targeted class (class to be under-sampled) in
+   :math:`C` and all other samples of this class in a set :math:`S`.
+3. Train a 1-KNN on `C`.
+4. Using a 1 nearest neighbor rule trained in 3, classify all samples in
+   set :math:`S`.
+5. Add all misclassified samples to :math:`C`.
+6. Remove Tomek Links from :math:`C`.
+
+The final dataset is `S`, containing all observations from the minority class,
+plus the observations from the majority that were added at random, plus all
+those from the majority that were miss-classified by the 1-KNN algorithms. Note
+that differently from :class:`CondensedNearestNeighbour`, :class:`OneSidedSelection`
+does not train a KNN after each sample is missclassified. It uses the one KNN
+to classify all samples from the majority in 1 pass. The class can be used as::
 
   >>> from imblearn.under_sampling import OneSidedSelection
   >>> oss = OneSidedSelection(random_state=0)
@@ -344,8 +362,8 @@ place. The class can be used as::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 174), (2, 4404)]
 
-Our implementation offer to set the number of seeds to put in the set :math:`C`
-originally by setting the parameter ``n_seeds_S``.
+Our implementation offers the possibility to set the number of observations
+to put at random in the set :math:`C` through the parameter ``n_seeds_S``.
 
 :class:`NeighbourhoodCleaningRule` will focus on cleaning the data than
 condensing them :cite:`laurikkala2001improving`. Therefore, it will used the
