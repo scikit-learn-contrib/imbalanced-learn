@@ -15,6 +15,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import cross_val_predict
+from sklearn.preprocessing import LabelEncoder
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
 
@@ -161,20 +162,23 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             n_jobs=self.n_jobs,
             method="predict_proba",
         )
-        probabilities = probabilities[range(len(y)), y]
+
+        # obtain order of the classes
+        le = LabelEncoder()
+        le.fit(y)
+        classes_ = list(le.classes_)
 
         idx_under = np.empty((0,), dtype=int)
 
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
+                probs = probabilities[y == target_class, classes_.index(target_class)]
                 threshold = np.percentile(
-                    probabilities[y == target_class],
+                    probs,
                     (1.0 - (n_samples / target_stats[target_class])) * 100.0,
                 )
-                index_target_class = np.flatnonzero(
-                    probabilities[y == target_class] >= threshold
-                )
+                index_target_class = np.flatnonzero(probs >= threshold)
             else:
                 index_target_class = slice(None)
 
