@@ -74,7 +74,7 @@ class SMOTETomek(BaseSampler):
 
     Notes
     -----
-    The methos is presented in [1]_.
+    The method is presented in [1]_.
 
     Supports multi-class resampling. Refer to SMOTE and TomekLinks regarding
     the scheme which used.
