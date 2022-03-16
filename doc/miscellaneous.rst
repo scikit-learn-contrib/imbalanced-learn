@@ -73,6 +73,7 @@ The :func:`~imblearn.tensorflow.balanced_batch_generator` allows to generate
 balanced mini-batches using an imbalanced-learn sampler which returns indices.
 
 Let's first generate some data::
+
   >>> n_features, n_classes = 10, 2
   >>> X, y = make_classification(
   ...     n_samples=10_000, n_features=n_features, n_informative=2,
@@ -96,7 +97,7 @@ balanced::
   ...     random_state=42,
   ... )
 
-The ``generator`` and ``steps_per_epoch`` are used during the training of the
+The ``generator`` and ``steps_per_epoch`` are used during the training of a
 Tensorflow model. We will illustrate how to use this generator. First, we can
 define a logistic regression model which will be optimized by a gradient
 descent::
