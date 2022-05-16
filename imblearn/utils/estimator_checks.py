@@ -18,7 +18,7 @@ from scipy import sparse
 
 from sklearn.base import clone
 from sklearn.datasets import (
-    fetch_openml,
+    load_iris,
     make_classification,
     make_multilabel_classification,
 )  # noqa
@@ -446,19 +446,21 @@ def check_classifier_on_multilabel_or_multioutput_targets(name, estimator_orig):
 def check_classifiers_with_encoded_labels(name, classifier_orig):
     # Non-regression test for #709
     # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/709
-    pytest.importorskip("pandas")
+    pd = pytest.importorskip("pandas")
     classifier = clone(classifier_orig)
-    df, y = fetch_openml("iris", version=1, as_frame=True, return_X_y=True)
+    iris = load_iris(as_frame=True)
+    df, y = iris.data, iris.target
+    y = pd.Series(iris.target_names[iris.target], dtype="category")
     df, y = make_imbalance(
         df,
         y,
         sampling_strategy={
-            "Iris-setosa": 30,
-            "Iris-versicolor": 20,
-            "Iris-virginica": 50,
+            "setosa": 30,
+            "versicolor": 20,
+            "virginica": 50,
         },
     )
-    classifier.set_params(sampling_strategy={"Iris-setosa": 20, "Iris-virginica": 20})
+    classifier.set_params(sampling_strategy={"setosa": 20, "virginica": 20})
     classifier.fit(df, y)
     assert set(classifier.classes_) == set(y.cat.categories.tolist())
     y_pred = classifier.predict(df)

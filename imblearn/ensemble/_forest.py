@@ -14,7 +14,7 @@ from scipy.sparse import issparse
 
 from joblib import Parallel, delayed
 
-from sklearn.base import clone
+from sklearn.base import clone, is_classifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.ensemble._forest import _get_n_samples_bootstrap
@@ -22,10 +22,9 @@ from sklearn.ensemble._forest import _parallel_build_trees
 from sklearn.ensemble._forest import _generate_unsampled_indices
 from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
-from sklearn.utils.fixes import _joblib_parallel_args
+from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _check_sample_weight
 
 from ..pipeline import make_pipeline
@@ -43,7 +42,7 @@ MAX_INT = np.iinfo(np.int32).max
 def _local_parallel_build_trees(
     sampler,
     tree,
-    forest,
+    bootstrap,
     X,
     y,
     sample_weight,
@@ -61,7 +60,7 @@ def _local_parallel_build_trees(
         n_samples_bootstrap = min(n_samples_bootstrap, X_resampled.shape[0])
     tree = _parallel_build_trees(
         tree,
-        forest,
+        bootstrap,
         X_resampled,
         y_resampled,
         sample_weight,
@@ -126,7 +125,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         equal weight when sample_weight is not provided.
 
     max_features : {{"auto", "sqrt", "log2"}}, int, float, or None, \
-            default="auto"
+            default="sqrt"
         The number of features to consider when looking for the best split:
 
         - If int, then consider `max_features` features at each split.
@@ -334,7 +333,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         min_samples_split=2,
         min_samples_leaf=1,
         min_weight_fraction_leaf=0.0,
-        max_features="auto",
+        max_features="sqrt",
         max_leaf_nodes=None,
         min_impurity_decrease=0.0,
         bootstrap=True,
@@ -548,12 +547,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             samplers_trees = Parallel(
                 n_jobs=self.n_jobs,
                 verbose=self.verbose,
-                **_joblib_parallel_args(prefer="threads"),
+                prefer="threads",
             )(
                 delayed(_local_parallel_build_trees)(
                     s,
                     t,
-                    self,
+                    self.bootstrap,
                     X,
                     y_encoded,
                     sample_weight,
@@ -580,7 +579,19 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             )
 
         if self.oob_score:
-            self._set_oob_score(X, y_encoded)
+            y_type = type_of_target(y)
+            if y_type in ("multiclass-multioutput", "unknown"):
+                # FIXME: we could consider to support multiclass-multioutput if
+                # we introduce or reuse a constructor parameter (e.g.
+                # oob_score) allowing our user to pass a callable defining the
+                # scoring strategy on OOB sample.
+                raise ValueError(
+                    "The type of target cannot be used to compute OOB "
+                    f"estimates. Got {y_type} while only the following are "
+                    "supported: continuous, continuous-multioutput, binary, "
+                    "multiclass, multilabel-indicator."
+                )
+            self._set_oob_score_and_attributes(X, y_encoded)
 
         # Decapsulate classes_ attributes
         if hasattr(self, "classes_") and self.n_outputs_ == 1:
@@ -589,18 +600,62 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         return self
 
-    def _set_oob_score(self, X, y):
-        """Compute out-of-bag score."""
-        X = check_array(X, dtype=DTYPE, accept_sparse="csr")
+    def _set_oob_score_and_attributes(self, X, y):
+        """Compute and set the OOB score and attributes.
 
-        n_classes_ = self.n_classes_
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The data matrix.
+        y : ndarray of shape (n_samples, n_outputs)
+            The target matrix.
+        """
+        self.oob_decision_function_ = self._compute_oob_predictions(X, y)
+        if self.oob_decision_function_.shape[-1] == 1:
+            # drop the n_outputs axis if there is a single output
+            self.oob_decision_function_ = self.oob_decision_function_.squeeze(axis=-1)
+        from sklearn.metrics import accuracy_score
+
+        self.oob_score_ = accuracy_score(
+            y, np.argmax(self.oob_decision_function_, axis=1)
+        )
+
+    def _compute_oob_predictions(self, X, y):
+        """Compute and set the OOB score.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The data matrix.
+        y : ndarray of shape (n_samples, n_outputs)
+            The target matrix.
+
+        Returns
+        -------
+        oob_pred : ndarray of shape (n_samples, n_classes, n_outputs) or \
+                (n_samples, 1, n_outputs)
+            The OOB predictions.
+        """
+        # Prediction requires X to be in CSR format
+        if issparse(X):
+            X = X.tocsr()
+
         n_samples = y.shape[0]
+        n_outputs = self.n_outputs_
 
-        oob_decision_function = []
-        oob_score = 0.0
-        predictions = [
-            np.zeros((n_samples, n_classes_[k])) for k in range(self.n_outputs_)
-        ]
+        if is_classifier(self) and hasattr(self, "n_classes_"):
+            # n_classes_ is a ndarray at this stage
+            # all the supported type of target will have the same number of
+            # classes in all outputs
+            oob_pred_shape = (n_samples, self.n_classes_[0], n_outputs)
+        else:
+            # for regression, n_classes_ does not exist and we create an empty
+            # axis to be consistent with the classification case and make
+            # the array operations compatible with the 2 settings
+            oob_pred_shape = (n_samples, 1, n_outputs)
+
+        oob_pred = np.zeros(shape=oob_pred_shape, dtype=np.float64)
+        n_oob_pred = np.zeros((n_samples, n_outputs), dtype=np.int64)
 
         for sampler, estimator in zip(self.samplers_, self.estimators_):
             X_resample = X[sampler.sample_indices_]
@@ -614,42 +669,27 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             unsampled_indices = _generate_unsampled_indices(
                 estimator.random_state, n_sample_subset, n_samples_bootstrap
             )
-            p_estimator = estimator.predict_proba(
-                X_resample[unsampled_indices, :], check_input=False
+
+            y_pred = self._get_oob_predictions(
+                estimator, X_resample[unsampled_indices, :]
             )
 
-            if self.n_outputs_ == 1:
-                p_estimator = [p_estimator]
+            indices = sampler.sample_indices_[unsampled_indices]
+            oob_pred[indices, ...] += y_pred
+            n_oob_pred[indices, :] += 1
 
-            for k in range(self.n_outputs_):
-                indices = sampler.sample_indices_[unsampled_indices]
-                predictions[k][indices, :] += p_estimator[k]
-
-        for k in range(self.n_outputs_):
-            if (predictions[k].sum(axis=1) == 0).any():
+        for k in range(n_outputs):
+            if (n_oob_pred == 0).any():
                 warn(
-                    "Some inputs do not have OOB scores. "
-                    "This probably means too few trees were used "
-                    "to compute any reliable oob estimates."
+                    "Some inputs do not have OOB scores. This probably means "
+                    "too few trees were used to compute any reliable OOB "
+                    "estimates.",
+                    UserWarning,
                 )
+                n_oob_pred[n_oob_pred == 0] = 1
+            oob_pred[..., k] /= n_oob_pred[..., [k]]
 
-            with np.errstate(invalid="ignore", divide="ignore"):
-                # with the resampling, we are likely to have rows not included
-                # for the OOB score leading to division by zero
-                decision = predictions[k] / predictions[k].sum(axis=1)[:, np.newaxis]
-            mask_scores = np.isnan(np.sum(decision, axis=1))
-            oob_decision_function.append(decision)
-            oob_score += np.mean(
-                y[~mask_scores, k] == np.argmax(predictions[k][~mask_scores], axis=1),
-                axis=0,
-            )
-
-        if self.n_outputs_ == 1:
-            self.oob_decision_function_ = oob_decision_function[0]
-        else:
-            self.oob_decision_function_ = oob_decision_function
-
-        self.oob_score_ = oob_score / self.n_outputs_
+        return oob_pred
 
     @property
     def n_features_(self):

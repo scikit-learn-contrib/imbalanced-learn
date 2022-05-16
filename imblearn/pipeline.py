@@ -15,7 +15,7 @@ composite estimator, as a chain of transforms, samples and estimators.
 from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.utils import _print_elapsed_time
-from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.validation import check_memory
 
 __all__ = ["Pipeline", "make_pipeline"]
@@ -352,7 +352,7 @@ class Pipeline(pipeline.Pipeline):
             if hasattr(last_step, "fit_resample"):
                 return last_step.fit_resample(Xt, yt, **fit_params_last_step)
 
-    @if_delegate_has_method(delegate="_final_estimator")
+    @available_if(pipeline._final_estimator_has("fit_predict"))
     def fit_predict(self, X, y=None, **fit_params):
         """Apply `fit_predict` of last step in pipeline after transforms.
 
