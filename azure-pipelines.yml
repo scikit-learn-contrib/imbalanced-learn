@@ -73,7 +73,7 @@ jobs:
       )
     matrix:
       pylatest_pip_scipy_dev:
-        DISTRIB: 'mamba-pip-scipy-dev'
+        DISTRIB: 'conda-pip-scipy-dev'
         PYTHON_VERSION: '*'
         CHECK_WARNINGS: 'true'
         TEST_DOCS: 'true'
@@ -92,7 +92,7 @@ jobs:
       )
     matrix:
       pylatest_conda_forge_mkl:
-        DISTRIB: 'mamba'
+        DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '*'
         BLAS: 'mkl'
@@ -113,7 +113,7 @@ jobs:
       )
     matrix:
       py37_conda_forge_openblas_ubuntu_1804:
-        DISTRIB: 'mamba'
+        DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.7'
         BLAS: 'openblas'
@@ -142,7 +142,7 @@ jobs:
         COVERAGE: 'false'
       # Linux + Python 3.7 build with OpenBLAS and without SITE_JOBLIB
       py37_conda_defaults_openblas:
-        DISTRIB: 'mamba'
+        DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.7'
         BLAS: 'openblas'
@@ -154,13 +154,13 @@ jobs:
         THREADPOOLCTL_VERSION: '2.2.0'
       # Linux environment to test the latest available dependencies and MKL.
       pylatest_pip_openblas_pandas:
-        DISTRIB: 'mamba-pip-latest'
+        DISTRIB: 'conda-pip-latest'
         PYTHON_VERSION: '3.9'
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
       pylatest_pip_tensorflow:
-        DISTRIB: 'mamba-pip-latest-tensorflow'
+        DISTRIB: 'conda-pip-latest-tensorflow'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.9'
         TEST_DOCS: 'true'
@@ -168,14 +168,14 @@ jobs:
         CHECK_WARNINGS: 'true'
         COVERAGE: 'true'
       pylatest_conda_tensorflow:
-        DISTRIB: 'mamba-latest-tensorflow'
+        DISTRIB: 'conda-latest-tensorflow'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.8'
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
       conda_tensorflow_minimum:
-        DISTRIB: 'mamba-minimum-tensorflow'
+        DISTRIB: 'conda-minimum-tensorflow'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.7'
         SKLEARN_VERSION: 'min'
@@ -184,7 +184,7 @@ jobs:
         TEST_DOCSTRINGS: 'false'  # it is going to fail because of scikit-learn inheritance
         CHECK_WARNINGS: 'true'
       pylatest_pip_keras:
-        DISTRIB: 'mamba-pip-latest-keras'
+        DISTRIB: 'conda-pip-latest-keras'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.9'
         TEST_DOCS: 'true'
@@ -192,14 +192,14 @@ jobs:
         CHECK_WARNINGS: 'true'
         COVERAGE: 'true'
       pylatest_conda_keras:
-        DISTRIB: 'mamba-latest-keras'
+        DISTRIB: 'conda-latest-keras'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.8'
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
       conda_keras_minimum:
-        DISTRIB: 'mamba-minimum-keras'
+        DISTRIB: 'conda-minimum-keras'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.7'
         SKLEARN_VERSION: 'min'
@@ -242,7 +242,7 @@ jobs:
       )
     matrix:
       pylatest_conda_forge_mkl:
-        DISTRIB: 'mamba'
+        DISTRIB: 'conda'
         BLAS: 'mkl'
         CONDA_CHANNEL: 'conda-forge'
         CPU_COUNT: '3'
@@ -267,7 +267,7 @@ jobs:
       )
     matrix:
       py37_conda_forge_mkl:
-        DISTRIB: 'mamba'
+        DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.7'
         CHECK_WARNINGS: 'true'
