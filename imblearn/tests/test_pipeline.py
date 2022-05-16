@@ -200,11 +200,13 @@ def test_pipeline_init():
         Pipeline()
     # Check that we can't instantiate pipelines with objects without fit
     # method
+    X, y = load_iris(return_X_y=True)
     error_regex = (
         "Last step of Pipeline should implement fit or be the string 'passthrough'"
     )
     with raises(TypeError, match=error_regex):
-        Pipeline([("clf", NoFit())])
+        model = Pipeline([("clf", NoFit())])
+        model.fit(X, y)
     # Smoke test with only an estimator
     clf = NoTrans()
     pipe = Pipeline([("svc", clf)])
@@ -227,7 +229,8 @@ def test_pipeline_init():
     # Note that NoTrans implements fit, but not transform
     error_regex = "implement fit and transform or fit_resample"
     with raises(TypeError, match=error_regex):
-        Pipeline([("t", NoTrans()), ("svc", clf)])
+        model = Pipeline([("t", NoTrans()), ("svc", clf)])
+        model.fit(X, y)
 
     # Check that params are set
     pipe.set_params(svc__C=0.1)
@@ -1074,7 +1077,8 @@ def test_pipeline_with_step_that_implements_both_sample_and_transform():
 
     clf = LogisticRegression(solver="lbfgs")
     with raises(TypeError):
-        Pipeline([("step", FitTransformSample()), ("logistic", clf)])
+        pipeline = Pipeline([("step", FitTransformSample()), ("logistic", clf)])
+        pipeline.fit(X, y)
 
 
 def test_pipeline_with_step_that_it_is_pipeline():
@@ -1097,7 +1101,8 @@ def test_pipeline_with_step_that_it_is_pipeline():
     filter1 = SelectKBest(f_classif, k=2)
     pipe1 = Pipeline([("rus", rus), ("anova", filter1)])
     with raises(TypeError):
-        Pipeline([("pipe1", pipe1), ("logistic", clf)])
+        pipe2 = Pipeline([("pipe1", pipe1), ("logistic", clf)])
+        pipe2.fit(X, y)
 
 
 def test_pipeline_fit_then_sample_with_sampler_last_estimator():
