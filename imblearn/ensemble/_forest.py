@@ -125,7 +125,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         equal weight when sample_weight is not provided.
 
     max_features : {{"auto", "sqrt", "log2"}}, int, float, or None, \
-            default="auto"
+            default="sqrt"
         The number of features to consider when looking for the best split:
 
         - If int, then consider `max_features` features at each split.
@@ -333,7 +333,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         min_samples_split=2,
         min_samples_leaf=1,
         min_weight_fraction_leaf=0.0,
-        max_features="auto",
+        max_features="sqrt",
         max_leaf_nodes=None,
         min_impurity_decrease=0.0,
         bootstrap=True,
