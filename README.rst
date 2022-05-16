@@ -27,7 +27,7 @@
 .. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
 .. _Black: :target: https://github.com/psf/black
 
-.. |PythonMinVersion| replace:: 3.7
+.. |PythonMinVersion| replace:: 3.8
 .. |NumPyMinVersion| replace:: 1.17.3
 .. |SciPyMinVersion| replace:: 1.3.2
 .. |ScikitLearnMinVersion| replace:: 1.1.0

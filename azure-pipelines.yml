@@ -115,7 +115,7 @@ jobs:
       py37_conda_forge_openblas_ubuntu_1804:
         DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
-        PYTHON_VERSION: '3.7'
+        PYTHON_VERSION: '3.8'
         BLAS: 'openblas'
         COVERAGE: 'false'
 
@@ -140,13 +140,13 @@ jobs:
         PANDAS_VERSION: 'none'
         THREADPOOLCTL_VERSION: 'min'
         COVERAGE: 'false'
-      # Linux + Python 3.7 build with OpenBLAS and without SITE_JOBLIB
+      # Linux + Python 3.8 build with OpenBLAS and without SITE_JOBLIB
       py37_conda_defaults_openblas:
         DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
-        PYTHON_VERSION: '3.7'
+        PYTHON_VERSION: '3.8'
         BLAS: 'openblas'
-        NUMPY_VERSION: '1.16.6'  # we cannot get an older version of the dependencies resolution
+        NUMPY_VERSION: 'min'  # we cannot get an older version of the dependencies resolution
         SCIPY_VERSION: 'min'
         SKLEARN_VERSION: 'min'
         MATPLOTLIB_VERSION: 'none'
@@ -177,7 +177,7 @@ jobs:
       conda_tensorflow_minimum:
         DISTRIB: 'conda-minimum-tensorflow'
         CONDA_CHANNEL: 'conda-forge'
-        PYTHON_VERSION: '3.7'
+        PYTHON_VERSION: '3.8'
         SKLEARN_VERSION: 'min'
         TENSORFLOW_VERSION: 'min'
         TEST_DOCS: 'true'
@@ -201,7 +201,7 @@ jobs:
       conda_keras_minimum:
         DISTRIB: 'conda-minimum-keras'
         CONDA_CHANNEL: 'conda-forge'
-        PYTHON_VERSION: '3.7'
+        PYTHON_VERSION: '3.8'
         SKLEARN_VERSION: 'min'
         KERAS_VERSION: 'min'
         TEST_DOCS: 'true'
@@ -269,11 +269,11 @@ jobs:
       py37_conda_forge_mkl:
         DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
-        PYTHON_VERSION: '3.7'
+        PYTHON_VERSION: '3.8'
         CHECK_WARNINGS: 'true'
         PYTHON_ARCH: '64'
         PYTEST_VERSION: '*'
         COVERAGE: 'true'
       py37_pip_openblas_32bit:
-        PYTHON_VERSION: '3.7'
+        PYTHON_VERSION: '3.8'
         PYTHON_ARCH: '32'
