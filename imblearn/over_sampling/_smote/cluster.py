@@ -205,7 +205,7 @@ class KMeansSMOTE(BaseSMOTE):
             if self.density_exponent == "auto"
             else self.density_exponent
         )
-        return (mean_distance ** exponent) / X.shape[0]
+        return (mean_distance**exponent) / X.shape[0]
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
