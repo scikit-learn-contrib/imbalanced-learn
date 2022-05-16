@@ -148,7 +148,7 @@ jobs:
         BLAS: 'openblas'
         NUMPY_VERSION: '1.16.6'  # we cannot get an older version of the dependencies resolution
         SCIPY_VERSION: 'min'
-        SKLEARN_VERSION: 'min'
+        SKLEARN_VERSION: '1.0'
         MATPLOTLIB_VERSION: 'none'
         PANDAS_VERSION: 'none'
         THREADPOOLCTL_VERSION: '2.2.0'
