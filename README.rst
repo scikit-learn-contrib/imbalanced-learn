@@ -28,11 +28,11 @@
 .. _Black: :target: https://github.com/psf/black
 
 .. |PythonMinVersion| replace:: 3.7
-.. |NumPyMinVersion| replace:: 1.14.6
-.. |SciPyMinVersion| replace:: 1.1.0
-.. |ScikitLearnMinVersion| replace:: 1.0.1
-.. |MatplotlibMinVersion| replace:: 2.2.3
-.. |PandasMinVersion| replace:: 0.25.0
+.. |NumPyMinVersion| replace:: 1.17.3
+.. |SciPyMinVersion| replace:: 1.3.2
+.. |ScikitLearnMinVersion| replace:: 1.1.0
+.. |MatplotlibMinVersion| replace:: 3.1.2
+.. |PandasMinVersion| replace:: 1.0.5
 .. |TensorflowMinVersion| replace:: 2.4.3
 .. |KerasMinVersion| replace:: 2.4.3
 .. |SeabornMinVersion| replace:: 0.9.0

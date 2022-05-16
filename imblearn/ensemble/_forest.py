@@ -14,6 +14,7 @@ from scipy.sparse import issparse
 
 from joblib import Parallel, delayed
 
+import sklearn
 from sklearn.base import clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
@@ -21,11 +22,11 @@ from sklearn.ensemble._forest import _get_n_samples_bootstrap
 from sklearn.ensemble._forest import _parallel_build_trees
 from sklearn.ensemble._forest import _generate_unsampled_indices
 from sklearn.exceptions import DataConversionWarning
+from sklearn.externals._packaging.version import parse as parse_version
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
-from sklearn.utils.fixes import _joblib_parallel_args
 from sklearn.utils.validation import _check_sample_weight
 
 from ..pipeline import make_pipeline
@@ -545,11 +546,24 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             # that case. However, we respect any parallel_backend contexts set
             # at a higher level, since correctness does not rely on using
             # threads.
-            samplers_trees = Parallel(
-                n_jobs=self.n_jobs,
-                verbose=self.verbose,
-                **_joblib_parallel_args(prefer="threads"),
-            )(
+            sklearn_version = parse_version(sklearn.__version__)
+            if sklearn_version >= parse_version("1.1"):
+                parallel = Parallel(
+                    n_jobs=self.n_jobs,
+                    verbose=self.verbose,
+                    prefer="threads",
+                )
+            else:
+                from sklearn.utils.fixes import _joblib_parallel_args
+
+                parallel = Parallel(
+                    n_jobs=self.n_jobs,
+                    verbose=self.verbose,
+                    **_joblib_parallel_args(prefer="threads"),
+                    prefer="threads",
+                )
+
+            samplers_trees = parallel(
                 delayed(_local_parallel_build_trees)(
                     s,
                     t,
