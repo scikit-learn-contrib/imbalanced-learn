@@ -8,6 +8,7 @@ from ._random_over_sampler import RandomOverSampler
 from ._smote import SMOTE
 from ._smote import BorderlineSMOTE
 from ._smote import KMeansSMOTE
+from ._smote import GeometricSMOTE
 from ._smote import SVMSMOTE
 from ._smote import SMOTENC
 from ._smote import SMOTEN
@@ -16,6 +17,7 @@ __all__ = [
     "ADASYN",
     "RandomOverSampler",
     "KMeansSMOTE",
+    "GeometricSMOTE",
     "SMOTE",
     "BorderlineSMOTE",
     "SVMSMOTE",
