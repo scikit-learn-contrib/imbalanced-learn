@@ -101,5 +101,20 @@ def test_cnn_fit_resample_with_object():
 def test_cnn_fit_resample_with_wrong_object():
     knn = "rnd"
     cnn = CondensedNearestNeighbour(random_state=RND_SEED, n_neighbors=knn)
-    with pytest.raises(ValueError, match="has to be a int or an "):
+    msg = "`n_neighbors` must be an integer or a KNN classifier"
+    with pytest.raises(ValueError, match=msg):
         cnn.fit_resample(X, Y)
+
+
+def test_cnn_estimator_deprecation():
+    cnn = CondensedNearestNeighbour(random_state=RND_SEED)
+    cnn.fit_resample(X, Y)
+
+    msg = "`estimator_` is deprecated in version 0.10"
+    with pytest.warns(FutureWarning, match=msg):
+        assert cnn.estimator_ == cnn.n_neighbors_
+
+
+def test_cnn_custom_knn():
+    # FIXME: accept any arbitrary KNN classifier
+    pass
