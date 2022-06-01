@@ -101,11 +101,11 @@ class BaseSMOTE(BaseOverSampler):
         rows = np.floor_divide(samples_indices, nn_num.shape[1])
         cols = np.mod(samples_indices, nn_num.shape[1])
 
-        X_new = self._generate_samples(X, nn_data, nn_num, rows, cols, steps)
+        X_new = self._generate_samples(X, nn_data, nn_num, rows, cols, steps, y_type)
         y_new = np.full(n_samples, fill_value=y_type, dtype=y_dtype)
         return X_new, y_new
 
-    def _generate_samples(self, X, nn_data, nn_num, rows, cols, steps):
+    def _generate_samples(self, X, nn_data, nn_num, rows, cols, steps, ytype):
         r"""Generate a synthetic sample.
 
         The rule for the generation is:
@@ -139,6 +139,9 @@ class BaseSMOTE(BaseOverSampler):
 
         steps : ndarray of shape (n_samples,), dtype=float
             Step sizes for new samples.
+
+        ytype: str or int
+            The minority target value, used by SMOTENC
 
         Returns
         -------
@@ -532,6 +535,7 @@ class SMOTENC(SMOTE):
 
         # compute the median of the standard deviation of the minority class
         target_stats = Counter(y)
+        class_majority = max(target_stats, key=target_stats.get)
         class_minority = min(target_stats, key=target_stats.get)
 
         X_continuous = X[:, self.continuous_features_]
@@ -569,8 +573,11 @@ class SMOTENC(SMOTE):
         # categorical encoding which will be later used for inversing the OHE
         if math.isclose(self.median_std_, 0):
             self._X_categorical_minority_encoded = _safe_indexing(
-                X_ohe.toarray(), np.flatnonzero(y == class_minority)
+                X_ohe.toarray(), np.flatnonzero(y != class_majority)
             )
+            # Store which row belongs to which class so we can subset in _generate_samples
+            minority_y = y[y != class_majority]
+            self._X_categorical_class_to_index = {class_: np.flatnonzero(minority_y == class_) for class_ in target_stats}
 
         X_ohe.data = np.ones_like(X_ohe.data, dtype=X_ohe.dtype) * self.median_std_ / 2
         X_encoded = sparse.hstack((X_continuous, X_ohe), format="csr")
@@ -613,7 +620,7 @@ class SMOTENC(SMOTE):
 
         return X_resampled, y_resampled
 
-    def _generate_samples(self, X, nn_data, nn_num, rows, cols, steps):
+    def _generate_samples(self, X, nn_data, nn_num, rows, cols, steps, ytype):
         """Generate a synthetic sample with an additional steps for the
         categorical features.
 
@@ -622,7 +629,7 @@ class SMOTENC(SMOTE):
         of the majority class.
         """
         rng = check_random_state(self.random_state)
-        X_new = super()._generate_samples(X, nn_data, nn_num, rows, cols, steps)
+        X_new = super()._generate_samples(X, nn_data, nn_num, rows, cols, steps, ytype)
         # change in sparsity structure more efficient with LIL than CSR
         X_new = X_new.tolil() if sparse.issparse(X_new) else X_new
 
@@ -634,7 +641,7 @@ class SMOTENC(SMOTE):
         if math.isclose(self.median_std_, 0):
             nn_data[
                 :, self.continuous_features_.size :
-            ] = self._X_categorical_minority_encoded
+            ] = _safe_indexing(self._X_categorical_minority_encoded, self._X_categorical_class_to_index[ytype])
 
         all_neighbors = nn_data[nn_num[rows]]
 
