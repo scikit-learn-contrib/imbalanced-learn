@@ -111,9 +111,9 @@ def test_heterogeneous_zero_variance_data_smotenc():
     X[:, 2] = np.arange(100)
     X[:, 3] = np.array(["a"] * 50 + ["b"] * 25 + ["c"] * 25, dtype=object)
     y = np.array([0] * 80 + [1] * 11 + [2] * 9)
-    sampler = SMOTENC(categorical_features=[3],
-                      k_neighbors=5,
-                      sampling_strategy={0: 80, 1: 20, 2: 20})
+    sampler = SMOTENC(
+        categorical_features=[3], k_neighbors=5, sampling_strategy={0: 80, 1: 20, 2: 20}
+    )
     X_res, y_res = sampler.fit_resample(X, y)
     assert Counter(y_res) == {0: 80, 1: 20, 2: 20}
 

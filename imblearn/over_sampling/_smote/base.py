@@ -577,7 +577,9 @@ class SMOTENC(SMOTE):
             )
             # Store which row belongs to which class so we can subset in _generate_samples
             minority_y = y[y != class_majority]
-            self._X_categorical_class_to_index = {class_: np.flatnonzero(minority_y == class_) for class_ in target_stats}
+            self._X_categorical_class_to_index = {
+                class_: np.flatnonzero(minority_y == class_) for class_ in target_stats
+            }
 
         X_ohe.data = np.ones_like(X_ohe.data, dtype=X_ohe.dtype) * self.median_std_ / 2
         X_encoded = sparse.hstack((X_continuous, X_ohe), format="csr")
@@ -639,9 +641,10 @@ class SMOTENC(SMOTE):
         # In the case that the median std was equal to zeros, we have to
         # create non-null entry based on the encoded of OHE
         if math.isclose(self.median_std_, 0):
-            nn_data[
-                :, self.continuous_features_.size :
-            ] = _safe_indexing(self._X_categorical_minority_encoded, self._X_categorical_class_to_index[ytype])
+            nn_data[:, self.continuous_features_.size :] = _safe_indexing(
+                self._X_categorical_minority_encoded,
+                self._X_categorical_class_to_index[ytype],
+            )
 
         all_neighbors = nn_data[nn_num[rows]]
 
