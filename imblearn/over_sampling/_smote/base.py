@@ -575,7 +575,8 @@ class SMOTENC(SMOTE):
             self._X_categorical_minority_encoded = _safe_indexing(
                 X_ohe.toarray(), np.flatnonzero(y != class_majority)
             )
-            # Store which row belongs to which class so we can subset in _generate_samples
+            # Store which row belongs to which class so we can subset
+            # in _generate_samples
             minority_y = y[y != class_majority]
             self._X_categorical_class_to_index = {
                 class_: np.flatnonzero(minority_y == class_) for class_ in target_stats
