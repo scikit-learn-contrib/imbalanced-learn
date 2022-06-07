@@ -37,9 +37,9 @@ class BaseUnderSampler(BaseSampler):
 
             ``'majority'``: resample only the majority class;
 
-            ``'not minority'``: resample all classes but the minority class;
+            ``'not minority'``: resample all classes but not the minority class;
 
-            ``'not majority'``: resample all classes but the majority class;
+            ``'not majority'``: resample all classes but not the majority class;
 
             ``'all'``: resample all classes;
 
@@ -73,9 +73,9 @@ class BaseCleaningSampler(BaseSampler):
 
             ``'majority'``: resample only the majority class;
 
-            ``'not minority'``: resample all classes but the minority class;
+            ``'not minority'``: resample all classes but not the minority class;
 
-            ``'not majority'``: resample all classes but the majority class;
+            ``'not majority'``: resample all classes but not the majority class;
 
             ``'all'``: resample all classes;
 
