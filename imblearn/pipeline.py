@@ -301,16 +301,12 @@ class Pipeline(pipeline.Pipeline):
         """
         fit_params_steps = self._check_fit_params(**fit_params)
         Xt, yt = self._fit(X, y, **fit_params_steps)
-
-        last_step = self._final_estimator
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
-            if last_step == "passthrough":
-                return Xt
-            fit_params_last_step = fit_params_steps[self.steps[-1][0]]
-            if hasattr(last_step, "fit_transform"):
-                return last_step.fit_transform(Xt, yt, **fit_params_last_step)
-            else:
-                return last_step.fit(Xt, yt, **fit_params_last_step).transform(Xt)
+            if self._final_estimator != "passthrough":
+                fit_params_last_step = fit_params_steps[self.steps[-1][0]]
+                self._final_estimator.fit(Xt, yt, **fit_params_last_step)
+                return self.transform(X)
+            return Xt
 
     def fit_resample(self, X, y=None, **fit_params):
         """Fit the model and sample with the final estimator.

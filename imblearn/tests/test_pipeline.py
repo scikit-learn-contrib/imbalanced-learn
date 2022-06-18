@@ -445,17 +445,22 @@ def test_pipeline_transform():
     assert_array_almost_equal(X_back, X_back2)
 
 
-def test_pipeline_fit_transform():
+@pytest.mark.parametrize(
+    "pipeline",
+    [
+        Pipeline([("mock", Transf())]),
+        Pipeline((("sampler", DummySampler()), ("mock", Transf()))),
+    ],
+)
+def test_pipeline_fit_transform(pipeline):
     # Test whether pipeline works with a transformer missing fit_transform
     iris = load_iris()
     X = iris.data
     y = iris.target
-    transf = Transf()
-    pipeline = Pipeline([("mock", transf)])
 
     # test fit_transform:
     X_trans = pipeline.fit_transform(X, y)
-    X_trans2 = transf.fit(X, y).transform(X)
+    X_trans2 = pipeline.fit(X, y).transform(X)
     assert_array_almost_equal(X_trans, X_trans2)
 
 
