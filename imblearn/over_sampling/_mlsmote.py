@@ -1,5 +1,6 @@
 """Class to perfrom over-sampling using MLSMOTE."""
 
+import itertools
 import numpy as np
 from scipy import sparse
 
@@ -55,7 +56,6 @@ class MLSMOTE:
         self.sampling_strategy_ = sampling_strategy
         self.categorical_features = categorical_features
         self.continuous_features_ = None
-        self.unique_labels = []
         self.labels = []
         self.features = []
 
@@ -96,11 +96,11 @@ class MLSMOTE:
         y_resampled = y.copy()
 
         if type(y) == np.ndarray or type(y) == sparse._csr.csr_matrix:
-            self.labels = y
-            self.unique_labels = range(0, y.shape[1])
+            labels = y
+            unique_labels = range(0, y.shape[1])
         elif type(y) == list:
-            self.labels = np.array([np.array(xi) for xi in y])
-            self.unique_labels = self._collect_unique_labels(y)
+            labels = np.array([np.array(xi) for xi in y], dtype=object)
+            unique_labels = self._collect_unique_labels(y)
         else:
             raise TypeError(
                 "'y' can only be of type 'numpy.ndarray', 'scipy.sparse._csr.csr_matrix'"
@@ -113,17 +113,19 @@ class MLSMOTE:
 
         append_X_synth = X_synth.append
         append_y_synth = y_synth.append
-        mean_ir = self._get_mean_imbalance_ratio()
+        mean_ir = self._get_mean_imbalance_ratio(unique_labels, labels)
 
         if sparse.issparse(y):
             y_synth = None
 
-            for label in self.unique_labels:
-                irlbl = self._get_imbalance_ratio_per_label(label, y_resampled)
+            for label in unique_labels:
+                irlbl = self._get_imbalance_ratio_per_label(
+                    label, unique_labels, y_resampled
+                )
                 if irlbl > mean_ir:
                     min_bag = self._get_all_instances_of_label(label)
                     for sample in min_bag:
-                        distances = self._calc_distances(sample, min_bag)
+                        distances = self._calc_distances(sample, min_bag, unique_labels)
                         distances = np.sort(distances, order="distance")
                         neighbours = distances[: self.k_neighbors]
                         ref_neigh = random_state.choice(neighbours, 1)[0]
@@ -131,18 +133,21 @@ class MLSMOTE:
                             sample,
                             ref_neigh[1],
                             [x[1] for x in neighbours],
+                            unique_labels,
                             random_state,
                         )
                         append_X_synth(X_new)
                         y_resambled = sparse.vstack((y_resampled, y_new))
             return np.concatenate((X_resampled, np.array(X_synth))), y_resampled
         else:
-            for index, label in np.ndenumerate(self.unique_labels):
-                irlbl = self._get_imbalance_ratio_per_label(label, y_resampled)
+            for index, label in np.ndenumerate(unique_labels):
+                irlbl = self._get_imbalance_ratio_per_label(
+                    label, unique_labels, y_resampled
+                )
                 if irlbl > mean_ir:
                     min_bag = self._get_all_instances_of_label(label)
                     for sample in min_bag:
-                        distances = self._calc_distances(sample, min_bag)
+                        distances = self._calc_distances(sample, min_bag, unique_labels)
                         distances = np.sort(distances, order="distance")
                         neighbours = distances[: self.k_neighbors]
                         ref_neigh = random_state.choice(neighbours, 1)[0]
@@ -150,6 +155,7 @@ class MLSMOTE:
                             sample,
                             ref_neigh[1],
                             [x[1] for x in neighbours],
+                            unique_labels,
                             random_state,
                         )
                         append_X_synth(X_new)
@@ -191,7 +197,9 @@ class MLSMOTE:
             )
         )
 
-    def _create_new_sample(self, sample_id, ref_neigh_id, neighbour_ids, random_state):
+    def _create_new_sample(
+        self, sample_id, ref_neigh_id, neighbour_ids, unique_labels, random_state
+    ):
         sample = self.features[sample_id]
         synth_sample = np.copy(sample)
         ref_neigh = self.features[ref_neigh_id]
@@ -211,7 +219,7 @@ class MLSMOTE:
         if sparse.issparse(self.labels):
             neighbours_labels = self.labels[neighbour_ids]
             possible_labels = neighbours_labels.sum(axis=0)
-            y = np.zeros((1, len(self.unique_labels)))
+            y = np.zeros((1, len(unique_labels)))
             if self.sampling_strategy_ == "ranking":
                 head_index = int((self.k_neighbors + 1) / 2)
                 choosen_labels = possible_labels.nonzero()[1][:head_index]
@@ -246,12 +254,15 @@ class MLSMOTE:
 
         return X, y
 
-    def _calc_distances(self, sample, min_bag):
+    def _calc_distances(self, sample, min_bag, unique_labels):
         def calc_dist(bag_sample):
             nominal_distance = sum(
                 [
                     self._get_vdm(
-                        self.features[sample, cat], self.features[bag_sample, cat], cat
+                        self.features[sample, cat],
+                        self.features[bag_sample, cat],
+                        cat,
+                        unique_labels,
                     )
                     for cat in self.categorical_features_
                 ]
@@ -275,7 +286,7 @@ class MLSMOTE:
         euclidean_distance = np.linalg.norm(first - second)
         return euclidean_distance
 
-    def _get_vdm(self, first, second, category):
+    def _get_vdm(self, first, second, category, unique_labels):
         """A support function to compute the Value Difference Metric(VDM) discribed in https://arxiv.org/pdf/cs/9701101.pdf"""
         if sparse.issparse(self.features):
 
@@ -292,7 +303,7 @@ class MLSMOTE:
                 p = np.square(np.abs((N_axc / N_ax) - (N_ayc / N_ay)))
                 return p
 
-            vdm = np.sum(np.array([f_sparse(c) for c in self.unique_labels]))
+            vdm = np.sum(np.array([f_sparse(c) for c in unique_labels]))
             return vdm
 
         category_rows = self.features[:, category]
@@ -307,7 +318,7 @@ class MLSMOTE:
             p = abs((N_axc / N_ax) - (N_ayc / N_ay))
             return p
 
-        vdm = np.array([f(c) for c in self.unique_labels]).sum()
+        vdm = np.array([f(c) for c in unique_labels]).sum()
         return vdm
 
     def _get_all_instances_of_label(self, label):
@@ -320,21 +331,25 @@ class MLSMOTE:
                 append_instance_id(i)
         return np.array(instance_ids)
 
-    def _get_mean_imbalance_ratio(self):
+    def _get_mean_imbalance_ratio(self, unique_labels, labels):
         ratio_sum = np.sum(
-            np.array(list(map(self._get_imbalance_ratio_per_label, self.unique_labels)))
+            np.array(
+                list(
+                    map(
+                        self._get_imbalance_ratio_per_label,
+                        unique_labels,
+                        itertools.repeat(unique_labels),
+                        itertools.repeat(labels),
+                    )
+                )
+            )
         )
-        return ratio_sum / len(self.unique_labels)
+        return ratio_sum / len(unique_labels)
 
-    def _get_imbalance_ratio_per_label(self, label, labels=None):
+    def _get_imbalance_ratio_per_label(self, label, unique_labels, labels):
         sum_h = self._sum_h
-        if labels is None:
-            sum_array = np.array([sum_h(l, self.labels) for l in self.unique_labels])
-            ratio = sum_array.max() / sum_h(label, self.labels)
-        else:
-            sum_array = np.array([sum_h(l, labels) for l in self.unique_labels])
-            ratio = sum_array.max() / sum_h(label, labels)
-
+        sum_array = np.array([sum_h(l, labels) for l in unique_labels])
+        ratio = sum_array.max() / sum_h(label, labels)
         return ratio
 
     def _sum_h(self, label, labels):
