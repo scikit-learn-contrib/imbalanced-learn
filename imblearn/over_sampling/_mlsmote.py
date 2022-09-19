@@ -145,7 +145,7 @@ class MLSMOTE:
                         y_resampled = sparse.vstack((y_resampled, y_new))
             return np.concatenate((X_resampled, np.array(X_synth))), y_resampled
         else:
-            for index, label in np.ndenumerate(unique_labels):
+            for label in unique_labels:
                 irlbl_num = self._get_imbalance_ratio_numerator(
                     unique_labels, y_resampled
                 )
