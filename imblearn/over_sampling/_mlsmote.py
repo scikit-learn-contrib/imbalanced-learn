@@ -56,7 +56,6 @@ class MLSMOTE:
         self.sampling_strategy_ = sampling_strategy
         self.categorical_features = categorical_features
         self.continuous_features_ = None
-        self.features = []
 
     def fit_resample(self, X, y):
         """Resample the dataset.
@@ -105,7 +104,6 @@ class MLSMOTE:
                 "'y' can only be of type 'numpy.ndarray', 'scipy.sparse._csr.csr_matrix'"
                 " or 'list'"
             )
-        self.features = X
 
         X_synth = []
         y_synth = []
@@ -128,7 +126,7 @@ class MLSMOTE:
                     min_bag = self._get_all_instances_of_label(label, labels)
                     for sample in min_bag:
                         distances = self._calc_distances(
-                            sample, min_bag, unique_labels, labels
+                            sample, min_bag, X, unique_labels, labels
                         )
                         distances = np.sort(distances, order="distance")
                         neighbours = distances[: self.k_neighbors]
@@ -137,6 +135,7 @@ class MLSMOTE:
                             sample,
                             ref_neigh[1],
                             [x[1] for x in neighbours],
+                            X,
                             unique_labels,
                             labels,
                             random_state,
@@ -156,7 +155,7 @@ class MLSMOTE:
                     min_bag = self._get_all_instances_of_label(label, labels)
                     for sample in min_bag:
                         distances = self._calc_distances(
-                            sample, min_bag, unique_labels, labels
+                            sample, min_bag, X, unique_labels, labels
                         )
                         distances = np.sort(distances, order="distance")
                         neighbours = distances[: self.k_neighbors]
@@ -165,6 +164,7 @@ class MLSMOTE:
                             sample,
                             ref_neigh[1],
                             [x[1] for x in neighbours],
+                            X,
                             unique_labels,
                             labels,
                             random_state,
@@ -212,13 +212,14 @@ class MLSMOTE:
         sample_id,
         ref_neigh_id,
         neighbour_ids,
+        features,
         unique_labels,
         labels,
         random_state,
     ):
-        sample = self.features[sample_id]
+        sample = features[sample_id]
         synth_sample = np.copy(sample)
-        ref_neigh = self.features[ref_neigh_id]
+        ref_neigh = features[ref_neigh_id]
         sample_labels = labels[sample_id]
 
         for i in range(synth_sample.shape[0]):
@@ -228,7 +229,7 @@ class MLSMOTE:
                 synth_sample[i] = sample[i] + offset
             if i in self.categorical_features_:
                 synth_sample[i] = self._get_most_frequent_value(
-                    self.features[neighbour_ids, i]
+                    features[neighbour_ids, i]
                 )
         X = synth_sample
 
@@ -270,13 +271,14 @@ class MLSMOTE:
 
         return X, y
 
-    def _calc_distances(self, sample, min_bag, unique_labels, labels):
+    def _calc_distances(self, sample, min_bag, features, unique_labels, labels):
         def calc_dist(bag_sample):
             nominal_distance = sum(
                 [
                     self._get_vdm(
-                        self.features[sample, cat],
-                        self.features[bag_sample, cat],
+                        features[sample, cat],
+                        features[bag_sample, cat],
+                        features,
                         cat,
                         unique_labels,
                         labels,
@@ -287,7 +289,7 @@ class MLSMOTE:
             ordinal_distance = sum(
                 [
                     self._get_euclidean_distance(
-                        self.features[sample, num], self.features[bag_sample, num]
+                        features[sample, num], features[bag_sample, num]
                     )
                     for num in self.continuous_features_
                 ]
@@ -303,27 +305,23 @@ class MLSMOTE:
         euclidean_distance = np.linalg.norm(first - second)
         return euclidean_distance
 
-    def _get_vdm(self, first, second, category, unique_labels, labels):
+    def _get_vdm(self, first, second, features, category, unique_labels, labels):
         """A support function to compute the Value Difference Metric(VDM) discribed in https://arxiv.org/pdf/cs/9701101.pdf"""
         if type(labels) == np.ndarray or type(labels) == sparse._csr.csr_matrix:
 
             def f_sparse(c):
-                N_ax = len(sparse.find(self.features[:, category] == first)[0])
-                N_ay = len(sparse.find(self.features[:, category] == second)[0])
+                N_ax = len(sparse.find(features[:, category] == first)[0])
+                N_ay = len(sparse.find(features[:, category] == second)[0])
                 c_instances = self._get_all_instances_of_label(c, labels)
-                N_axc = len(
-                    sparse.find(self.features[c_instances, category] == first)[0]
-                )
-                N_ayc = len(
-                    sparse.find(self.features[c_instances, category] == second)[0]
-                )
+                N_axc = len(sparse.find(features[c_instances, category] == first)[0])
+                N_ayc = len(sparse.find(features[c_instances, category] == second)[0])
                 p = np.square(np.abs((N_axc / N_ax) - (N_ayc / N_ay)))
                 return p
 
             vdm = np.sum(np.array([f_sparse(c) for c in unique_labels]))
             return vdm
 
-        category_rows = self.features[:, category]
+        category_rows = features[:, category]
         N_ax = len(np.where(category_rows == first))
         N_ay = len(np.where(category_rows == second))
 
