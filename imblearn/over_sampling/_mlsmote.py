@@ -142,7 +142,7 @@ class MLSMOTE:
                             random_state,
                         )
                         append_X_synth(X_new)
-                        y_resambled = sparse.vstack((y_resampled, y_new))
+                        y_resampled = sparse.vstack((y_resampled, y_new))
             return np.concatenate((X_resampled, np.array(X_synth))), y_resampled
         else:
             for index, label in np.ndenumerate(unique_labels):
