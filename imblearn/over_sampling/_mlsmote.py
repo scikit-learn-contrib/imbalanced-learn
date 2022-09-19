@@ -105,10 +105,9 @@ class MLSMOTE:
                 " or 'list'"
             )
 
-        X_synth = []
+        X_synth = np.array([]).reshape(0, self.n_features_)
         y_synth = []
 
-        append_X_synth = X_synth.append
         append_y_synth = y_synth.append
 
         """TODO: Handle the case where 'mean_ir' is infinity. Happens when one label has
@@ -144,7 +143,7 @@ class MLSMOTE:
                             labels,
                             random_state,
                         )
-                        append_X_synth(X_new)
+                        X_synth = np.vstack((X_synth, X_new))
                         y_resampled = sparse.vstack((y_resampled, y_new))
             return np.concatenate((X_resampled, np.array(X_synth))), y_resampled
         else:
@@ -173,7 +172,7 @@ class MLSMOTE:
                             labels,
                             random_state,
                         )
-                        append_X_synth(X_new)
+                        X_synth = np.vstack((X_synth, X_new))
                         append_y_synth(y_new)
             y_resampled.extend(y_synth)
             return np.concatenate((X_resampled, np.array(X_synth))), y_resampled
