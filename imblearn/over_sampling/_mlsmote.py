@@ -114,7 +114,7 @@ class MLSMOTE:
         append_y_synth = y_synth.append
         mean_ir = self._get_mean_imbalance_ratio(unique_labels, labels)
 
-        if sparse.issparse(y):
+        if type(y) == np.ndarray or type(y) == sparse._csr.csr_matrix:
             y_synth = None
 
             for label in unique_labels:
@@ -171,9 +171,8 @@ class MLSMOTE:
                         )
                         append_X_synth(X_new)
                         append_y_synth(y_new)
-            return np.concatenate((X_resampled, np.array(X_synth))), np.array(
-                y_resampled.tolist() + y_synth
-            )
+            y_resampled.extend(y_synth)
+            return np.concatenate((X_resampled, np.array(X_synth))), y_resampled
 
     def _validate_estimator(self):
         categorical_features = np.asarray(self.categorical_features)
