@@ -110,6 +110,10 @@ class MLSMOTE:
 
         append_X_synth = X_synth.append
         append_y_synth = y_synth.append
+
+        """TODO: Handle the case where 'mean_ir' is infinity. Happens when one label has
+        no samples
+        """
         mean_ir = self._get_mean_imbalance_ratio(unique_labels, labels)
 
         if type(y) == np.ndarray or type(y) == sparse._csr.csr_matrix:
