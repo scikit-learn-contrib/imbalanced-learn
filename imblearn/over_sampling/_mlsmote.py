@@ -232,7 +232,7 @@ class MLSMOTE:
                 )
         X = synth_sample
 
-        if sparse.issparse(labels):
+        if type(labels) == np.ndarray or type(labels) == sparse._csr.csr_matrix:
             neighbours_labels = labels[neighbour_ids]
             possible_labels = neighbours_labels.sum(axis=0)
             y = np.zeros((1, len(unique_labels)))
@@ -305,7 +305,7 @@ class MLSMOTE:
 
     def _get_vdm(self, first, second, category, unique_labels, labels):
         """A support function to compute the Value Difference Metric(VDM) discribed in https://arxiv.org/pdf/cs/9701101.pdf"""
-        if sparse.issparse(self.features):
+        if type(labels) == np.ndarray or type(labels) == sparse._csr.csr_matrix:
 
             def f_sparse(c):
                 N_ax = len(sparse.find(self.features[:, category] == first)[0])
@@ -339,7 +339,7 @@ class MLSMOTE:
         return vdm
 
     def _get_all_instances_of_label(self, label, labels):
-        if sparse.issparse(labels):
+        if type(labels) == np.ndarray or type(labels) == sparse._csr.csr_matrix:
             return labels[:, label].nonzero()[0]
         instance_ids = []
         append_instance_id = instance_ids.append
@@ -372,21 +372,23 @@ class MLSMOTE:
         return irlbl_numerator / self._sum_h(label, labels)
 
     def _sum_h(self, label, labels):
-        if sparse.issparse(labels):
+        if type(labels) == sparse._csr.csr_matrix:
             return labels[:, label].count_nonzero()
+        elif type(labels) == np.ndarray:
+            return np.count_nonzero(labels[:, label])
+        else:
+            h_sum = 0
 
-        h_sum = 0
+            def h(l, Y):
+                if l in Y:
+                    return 1
+                else:
+                    return 0
 
-        def h(l, Y):
-            if l in Y:
-                return 1
-            else:
-                return 0
+            for label_set in labels:
+                h_sum += h(label, label_set)
 
-        for label_set in labels:
-            h_sum += h(label, label_set)
-
-        return h_sum
+            return h_sum
 
     def _get_label_frequencies(self, labels):
         """A support function to get the frequencies of labels"""
