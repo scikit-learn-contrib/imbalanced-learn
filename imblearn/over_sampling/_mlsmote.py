@@ -56,7 +56,6 @@ class MLSMOTE:
         self.sampling_strategy_ = sampling_strategy
         self.categorical_features = categorical_features
         self.continuous_features_ = None
-        self.labels = []
         self.features = []
 
     def fit_resample(self, X, y):
@@ -126,9 +125,11 @@ class MLSMOTE:
                     label, irlbl_num, y_resampled
                 )
                 if irlbl > mean_ir:
-                    min_bag = self._get_all_instances_of_label(label)
+                    min_bag = self._get_all_instances_of_label(label, labels)
                     for sample in min_bag:
-                        distances = self._calc_distances(sample, min_bag, unique_labels)
+                        distances = self._calc_distances(
+                            sample, min_bag, unique_labels, labels
+                        )
                         distances = np.sort(distances, order="distance")
                         neighbours = distances[: self.k_neighbors]
                         ref_neigh = random_state.choice(neighbours, 1)[0]
@@ -137,6 +138,7 @@ class MLSMOTE:
                             ref_neigh[1],
                             [x[1] for x in neighbours],
                             unique_labels,
+                            labels,
                             random_state,
                         )
                         append_X_synth(X_new)
@@ -151,9 +153,11 @@ class MLSMOTE:
                     label, irlbl_num, y_resampled
                 )
                 if irlbl > mean_ir:
-                    min_bag = self._get_all_instances_of_label(label)
+                    min_bag = self._get_all_instances_of_label(label, labels)
                     for sample in min_bag:
-                        distances = self._calc_distances(sample, min_bag, unique_labels)
+                        distances = self._calc_distances(
+                            sample, min_bag, unique_labels, labels
+                        )
                         distances = np.sort(distances, order="distance")
                         neighbours = distances[: self.k_neighbors]
                         ref_neigh = random_state.choice(neighbours, 1)[0]
@@ -162,6 +166,7 @@ class MLSMOTE:
                             ref_neigh[1],
                             [x[1] for x in neighbours],
                             unique_labels,
+                            labels,
                             random_state,
                         )
                         append_X_synth(X_new)
@@ -204,12 +209,18 @@ class MLSMOTE:
         )
 
     def _create_new_sample(
-        self, sample_id, ref_neigh_id, neighbour_ids, unique_labels, random_state
+        self,
+        sample_id,
+        ref_neigh_id,
+        neighbour_ids,
+        unique_labels,
+        labels,
+        random_state,
     ):
         sample = self.features[sample_id]
         synth_sample = np.copy(sample)
         ref_neigh = self.features[ref_neigh_id]
-        sample_labels = self.labels[sample_id]
+        sample_labels = labels[sample_id]
 
         for i in range(synth_sample.shape[0]):
             if i in self.continuous_features_:
@@ -222,8 +233,8 @@ class MLSMOTE:
                 )
         X = synth_sample
 
-        if sparse.issparse(self.labels):
-            neighbours_labels = self.labels[neighbour_ids]
+        if sparse.issparse(labels):
+            neighbours_labels = labels[neighbour_ids]
             possible_labels = neighbours_labels.sum(axis=0)
             y = np.zeros((1, len(unique_labels)))
             if self.sampling_strategy_ == "ranking":
@@ -241,26 +252,26 @@ class MLSMOTE:
         else:
             neighbours_labels = []
             for ni in neighbour_ids:
-                neighbours_labels.append(self.labels[ni].tolist())
+                neighbours_labels.append(labels[ni].tolist())
 
-            labels = []  # sample_labels.tolist()
-            labels += [
+            new_labels = []  # sample_labels.tolist()
+            new_labels += [
                 a
                 for x in neighbours_labels
                 for a in (x if isinstance(x, list) else [x])
             ]
-            labels = list(set(labels))
+            new_labels = list(set(new_labels))
             if self.sampling_strategy_ == "ranking":
                 head_index = int((self.k_neighbors + 1) / 2)
-                y = labels[:head_index]
+                y = new_labels[:head_index]
             if self.sampling_strategy_ == "union":
-                y = labels[:]
+                y = new_labels[:]
             if self.sampling_strategy_ == "intersection":
                 y = list(set.intersection(*neighbours_labels))
 
         return X, y
 
-    def _calc_distances(self, sample, min_bag, unique_labels):
+    def _calc_distances(self, sample, min_bag, unique_labels, labels):
         def calc_dist(bag_sample):
             nominal_distance = sum(
                 [
@@ -269,6 +280,7 @@ class MLSMOTE:
                         self.features[bag_sample, cat],
                         cat,
                         unique_labels,
+                        labels,
                     )
                     for cat in self.categorical_features_
                 ]
@@ -292,14 +304,14 @@ class MLSMOTE:
         euclidean_distance = np.linalg.norm(first - second)
         return euclidean_distance
 
-    def _get_vdm(self, first, second, category, unique_labels):
+    def _get_vdm(self, first, second, category, unique_labels, labels):
         """A support function to compute the Value Difference Metric(VDM) discribed in https://arxiv.org/pdf/cs/9701101.pdf"""
         if sparse.issparse(self.features):
 
             def f_sparse(c):
                 N_ax = len(sparse.find(self.features[:, category] == first)[0])
                 N_ay = len(sparse.find(self.features[:, category] == second)[0])
-                c_instances = self._get_all_instances_of_label(c)
+                c_instances = self._get_all_instances_of_label(c, labels)
                 N_axc = len(
                     sparse.find(self.features[c_instances, category] == first)[0]
                 )
@@ -317,7 +329,7 @@ class MLSMOTE:
         N_ay = len(np.where(category_rows == second))
 
         def f(c):
-            class_instances = self._get_all_instances_of_label(c)
+            class_instances = self._get_all_instances_of_label(c, labels)
             class_instance_rows = category_rows[class_instances]
             N_axc = len(np.where(class_instance_rows == first)[0])
             N_ayc = len(np.where(class_instance_rows == second)[0])
@@ -327,12 +339,12 @@ class MLSMOTE:
         vdm = np.array([f(c) for c in unique_labels]).sum()
         return vdm
 
-    def _get_all_instances_of_label(self, label):
-        if sparse.issparse(self.labels):
-            return self.labels[:, label].nonzero()[0]
+    def _get_all_instances_of_label(self, label, labels):
+        if sparse.issparse(labels):
+            return labels[:, label].nonzero()[0]
         instance_ids = []
         append_instance_id = instance_ids.append
-        for i, label_set in enumerate(self.labels):
+        for i, label_set in enumerate(labels):
             if label in label_set:
                 append_instance_id(i)
         return np.array(instance_ids)
