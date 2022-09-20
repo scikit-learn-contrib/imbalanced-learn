@@ -149,9 +149,9 @@ class MLSMOTE:
                     len(min_bag) <= 1
                 ):  # If there is only one sample, the neighbor set will be empty
                     continue
-                for sample in min_bag:
+                for sample_id in min_bag:
                     distances = self._calc_distances(
-                        sample, min_bag, X_resampled, unique_labels, y_resampled
+                        sample_id, min_bag, X_resampled, unique_labels, y_resampled
                     )
                     distances = np.sort(distances, order="distance")
                     neighbors = distances[
@@ -159,7 +159,7 @@ class MLSMOTE:
                     ]  # Remove 'sample' from neighbor set
                     ref_neigh = random_state.choice(neighbors, 1)[0]
                     X_new, y_new = self._create_new_sample(
-                        sample,
+                        sample_id,
                         ref_neigh[1],
                         [x[1] for x in neighbors],
                         X_resampled,
@@ -176,42 +176,41 @@ class MLSMOTE:
         sample_id,
         ref_neigh_id,
         neighbor_ids,
-        features,
+        X_resampled,
         unique_labels,
-        labels,
+        y_resampled,
         random_state,
     ):
-        sample = features[sample_id]
-        synth_sample = np.copy(sample)
-        ref_neigh = features[ref_neigh_id]
+        sample = X_resampled[sample_id]
+        synth_sample = np.zeros_like(sample)
+        ref_neigh = X_resampled[ref_neigh_id]
 
         for i in range(synth_sample.shape[0]):
             if i in self.continuous_features_:
                 diff = ref_neigh[i] - sample[i]
                 offset = diff * random_state.uniform(0, 1)
                 synth_sample[i] = sample[i] + offset
-            if i in self.categorical_features_:
+            elif i in self.categorical_features_:
                 synth_sample[i] = self._get_most_frequent_value(
-                    features[neighbor_ids, i]
+                    X_resampled[neighbor_ids, i]
                 )
-        X = synth_sample
 
-        neighbors_labels = labels[neighbor_ids]
+        neighbors_labels = y_resampled[neighbor_ids]
         possible_labels = neighbors_labels.sum(axis=0)
         y = np.zeros((1, len(unique_labels)))
         if self.sampling_strategy_ == "ranking":
             head_index = int((self.k_neighbors + 1) / 2)
             choosen_labels = possible_labels.nonzero()[1][:head_index]
             y[0, choosen_labels] = 1
-        if self.sampling_strategy_ == "union":
+        elif self.sampling_strategy_ == "union":
             choosen_labels = possible_labels.nonzero()[0]
             y[choosen_labels] = 1
-        if self.sampling_strategy_ == "intersection":
+        elif self.sampling_strategy_ == "intersection":
             choosen_labels = sparse.find(possible_labels == len(neighbors_labels))
             y[choosen_labels] = 1
         y = sparse.csr_matrix(y)
 
-        return X, y
+        return synth_sample, y
 
     def _collect_unique_labels(self, y):
         """A support function that flattens the labelsets and return one set of unique
