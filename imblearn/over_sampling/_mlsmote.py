@@ -120,6 +120,10 @@ class MLSMOTE:
             irlbl = self._get_imbalance_ratio_per_label(label, irlbl_num, y_resampled)
             if irlbl > mean_ir:
                 min_bag = self._get_all_instances_of_label(label, y_resampled)
+                if (
+                    len(min_bag) <= 1
+                ):  # If there is only one sample, the neighbor set will be empty
+                    continue
                 for sample in min_bag:
                     distances = self._calc_distances(
                         sample, min_bag, X_resampled, unique_labels, y_resampled
