@@ -43,13 +43,17 @@ class MLSMOTE:
     """
 
     _required_parameters = ["categorical_features"]
-    _sampling_strategies = ["intersection", "ranking", "union"]
+
+    INTERSECTION = "intersection"
+    RANKING = "ranking"
+    UNION = "union"
+    _sampling_strategies = [INTERSECTION, RANKING, UNION]
 
     def __init__(
         self,
         categorical_features,
         *,
-        sampling_strategy="ranking",
+        sampling_strategy=RANKING,
         random_state=None,
         k_neighbors=5,
     ):
@@ -196,21 +200,24 @@ class MLSMOTE:
                 )
 
         neighbors_labels = y_resampled[neighbor_ids]
-        possible_labels = neighbors_labels.sum(axis=0)
-        y = np.zeros((1, len(unique_labels)))
-        if self.sampling_strategy_ == "ranking":
-            head_index = int((self.k_neighbors + 1) / 2)
-            choosen_labels = possible_labels.nonzero()[1][:head_index]
-            y[0, choosen_labels] = 1
-        elif self.sampling_strategy_ == "union":
-            choosen_labels = possible_labels.nonzero()[0]
-            y[choosen_labels] = 1
-        elif self.sampling_strategy_ == "intersection":
-            choosen_labels = sparse.find(possible_labels == len(neighbors_labels))
-            y[choosen_labels] = 1
-        y = sparse.csr_matrix(y)
+        label_counts = np.squeeze(
+            np.asarray(y_resampled[sample_id] + neighbors_labels.sum(axis=0))
+        )
+        synth_sample_labels = sparse.csr_matrix((1, len(unique_labels)))
+        if self.sampling_strategy_ == MLSMOTE.RANKING:
+            # Note: Paper states "present in half or more of the instances considered"
+            # but pseudocode shows: "labels lblCounts > (k + 1)/2" instead of '>='. We
+            # follow the pseudocode for now.
+            quorum = int((len(neighbor_ids) + 1) / 2)
+            chosen_labels = label_counts > quorum
+        elif self.sampling_strategy_ == MLSMOTE.UNION:
+            chosen_labels = label_counts.nonzero()
+        elif self.sampling_strategy_ == MLSMOTE.INTERSECTION:
+            chosen_labels = label_counts == len(neighbor_ids) + 1
 
-        return synth_sample, y
+        synth_sample_labels[0, chosen_labels] = 1
+
+        return synth_sample, synth_sample_labels
 
     def _collect_unique_labels(self, y):
         """A support function that flattens the labelsets and return one set of unique
