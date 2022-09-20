@@ -15,9 +15,8 @@ class MLSMOTE:
     sampling_strategy: 'ranking', 'union' or 'intersection' default: 'ranking'
         Strategy to generate labelsets
 
-
     k_neighbors : int or object, default=5
-        If ``int``, number of nearest neighbours to used to construct synthetic
+        If ``int``, number of nearest neighbors used to construct synthetic
         samples.
 
     categorical_features : ndarray of shape (n_cat_features,) or (n_features,)
@@ -91,91 +90,55 @@ class MLSMOTE:
         random_state = check_random_state(self.random_state)
 
         X_resampled = X.copy()
-        y_resampled = y.copy()
 
-        if type(y) == np.ndarray or type(y) == sparse._csr.csr_matrix:
-            labels = y
-            unique_labels = range(0, y.shape[1])
+        # Convert 'y' to a sparse matrix
+        if type(y) == sparse._csr.csr_matrix:
+            y_resampled = y.copy()
+            unique_labels = range(0, y_resampled.shape[1])
+        elif type(y) == np.ndarray:
+            y_resampled = sparse.csr_matrix(y, dtype=int)
+            unique_labels = range(0, y_resampled.shape[1])
         elif type(y) == list:
-            labels = np.array([np.array(xi) for xi in y], dtype=object)
             unique_labels = self._collect_unique_labels(y)
+            y_resampled = sparse.csr_matrix((len(y), len(unique_labels)))
+            for i, sample in enumerate(y):
+                for label in sample:
+                    y_resampled[i, label] = 1
         else:
             raise TypeError(
-                "'y' can only be of type 'numpy.ndarray', 'scipy.sparse._csr.csr_matrix'"
-                " or 'list'"
+                "'y' can only be of type 'numpy.ndarray', "
+                "'scipy.sparse._csr.csr_matrix' or 'list'"
             )
-
-        X_synth = np.array([]).reshape(0, self.n_features_)
-        y_synth = []
-
-        append_y_synth = y_synth.append
 
         """TODO: Handle the case where 'mean_ir' is infinity. Happens when one label has
         no samples
         """
-        mean_ir = self._get_mean_imbalance_ratio(unique_labels, labels)
+        mean_ir = self._get_mean_imbalance_ratio(unique_labels, y_resampled)
 
-        if type(y) == np.ndarray or type(y) == sparse._csr.csr_matrix:
-            y_synth = None
-
-            for label in unique_labels:
-                irlbl_num = self._get_imbalance_ratio_numerator(
-                    unique_labels, y_resampled
-                )
-                irlbl = self._get_imbalance_ratio_per_label(
-                    label, irlbl_num, y_resampled
-                )
-                if irlbl > mean_ir:
-                    min_bag = self._get_all_instances_of_label(label, labels)
-                    for sample in min_bag:
-                        distances = self._calc_distances(
-                            sample, min_bag, X, unique_labels, labels
-                        )
-                        distances = np.sort(distances, order="distance")
-                        neighbours = distances[: self.k_neighbors]
-                        ref_neigh = random_state.choice(neighbours, 1)[0]
-                        X_new, y_new = self._create_new_sample(
-                            sample,
-                            ref_neigh[1],
-                            [x[1] for x in neighbours],
-                            X,
-                            unique_labels,
-                            labels,
-                            random_state,
-                        )
-                        X_synth = np.vstack((X_synth, X_new))
-                        y_resampled = sparse.vstack((y_resampled, y_new))
-            return np.concatenate((X_resampled, np.array(X_synth))), y_resampled
-        else:
-            for label in unique_labels:
-                irlbl_num = self._get_imbalance_ratio_numerator(
-                    unique_labels, y_resampled
-                )
-                irlbl = self._get_imbalance_ratio_per_label(
-                    label, irlbl_num, y_resampled
-                )
-                if irlbl > mean_ir:
-                    min_bag = self._get_all_instances_of_label(label, labels)
-                    for sample in min_bag:
-                        distances = self._calc_distances(
-                            sample, min_bag, X, unique_labels, labels
-                        )
-                        distances = np.sort(distances, order="distance")
-                        neighbours = distances[: self.k_neighbors]
-                        ref_neigh = random_state.choice(neighbours, 1)[0]
-                        X_new, y_new = self._create_new_sample(
-                            sample,
-                            ref_neigh[1],
-                            [x[1] for x in neighbours],
-                            X,
-                            unique_labels,
-                            labels,
-                            random_state,
-                        )
-                        X_synth = np.vstack((X_synth, X_new))
-                        append_y_synth(y_new)
-            y_resampled.extend(y_synth)
-            return np.concatenate((X_resampled, np.array(X_synth))), y_resampled
+        for label in unique_labels:
+            irlbl_num = self._get_imbalance_ratio_numerator(unique_labels, y_resampled)
+            irlbl = self._get_imbalance_ratio_per_label(label, irlbl_num, y_resampled)
+            if irlbl > mean_ir:
+                min_bag = self._get_all_instances_of_label(label, y_resampled)
+                for sample in min_bag:
+                    distances = self._calc_distances(
+                        sample, min_bag, X_resampled, unique_labels, y_resampled
+                    )
+                    distances = np.sort(distances, order="distance")
+                    neighbors = distances[: self.k_neighbors]
+                    ref_neigh = random_state.choice(neighbors, 1)[0]
+                    X_new, y_new = self._create_new_sample(
+                        sample,
+                        ref_neigh[1],
+                        [x[1] for x in neighbors],
+                        X_resampled,
+                        unique_labels,
+                        y_resampled,
+                        random_state,
+                    )
+                    X_resampled = np.vstack((X_resampled, X_new))
+                    y_resampled = sparse.vstack((y_resampled, y_new))
+        return X_resampled, y_resampled
 
     def _validate_estimator(self):
         categorical_features = np.asarray(self.categorical_features)
@@ -194,27 +157,11 @@ class MLSMOTE:
             np.arange(self.n_features_), self.categorical_features_
         )
 
-    def _collect_unique_labels(self, y):
-        """A support function that flattens the labelsets and return one set of unique
-        labels
-        """
-        return np.unique(
-            np.array(
-                [
-                    label
-                    for label_set in y
-                    for label in (
-                        label_set if isinstance(label_set, list) else [label_set]
-                    )
-                ]
-            )
-        )
-
     def _create_new_sample(
         self,
         sample_id,
         ref_neigh_id,
-        neighbour_ids,
+        neighbor_ids,
         features,
         unique_labels,
         labels,
@@ -223,7 +170,6 @@ class MLSMOTE:
         sample = features[sample_id]
         synth_sample = np.copy(sample)
         ref_neigh = features[ref_neigh_id]
-        sample_labels = labels[sample_id]
 
         for i in range(synth_sample.shape[0]):
             if i in self.continuous_features_:
@@ -232,47 +178,32 @@ class MLSMOTE:
                 synth_sample[i] = sample[i] + offset
             if i in self.categorical_features_:
                 synth_sample[i] = self._get_most_frequent_value(
-                    features[neighbour_ids, i]
+                    features[neighbor_ids, i]
                 )
         X = synth_sample
 
-        if type(labels) == np.ndarray or type(labels) == sparse._csr.csr_matrix:
-            neighbours_labels = labels[neighbour_ids]
-            possible_labels = neighbours_labels.sum(axis=0)
-            y = np.zeros((1, len(unique_labels)))
-            if self.sampling_strategy_ == "ranking":
-                head_index = int((self.k_neighbors + 1) / 2)
-                choosen_labels = possible_labels.nonzero()[1][:head_index]
-                y[0, choosen_labels] = 1
-            if self.sampling_strategy_ == "union":
-                choosen_labels = possible_labels.nonzero()[0]
-                y[choosen_labels] = 1
-            if self.sampling_strategy_ == "intersection":
-                choosen_labels = sparse.find(possible_labels == len(neighbours_labels))
-                y[choosen_labels] = 1
-            y = sparse.csr_matrix(y)
-
-        else:
-            neighbours_labels = []
-            for ni in neighbour_ids:
-                neighbours_labels.append(labels[ni].tolist())
-
-            new_labels = []  # sample_labels.tolist()
-            new_labels += [
-                a
-                for x in neighbours_labels
-                for a in (x if isinstance(x, list) else [x])
-            ]
-            new_labels = list(set(new_labels))
-            if self.sampling_strategy_ == "ranking":
-                head_index = int((self.k_neighbors + 1) / 2)
-                y = new_labels[:head_index]
-            if self.sampling_strategy_ == "union":
-                y = new_labels[:]
-            if self.sampling_strategy_ == "intersection":
-                y = list(set.intersection(*neighbours_labels))
+        neighbors_labels = labels[neighbor_ids]
+        possible_labels = neighbors_labels.sum(axis=0)
+        y = np.zeros((1, len(unique_labels)))
+        if self.sampling_strategy_ == "ranking":
+            head_index = int((self.k_neighbors + 1) / 2)
+            choosen_labels = possible_labels.nonzero()[1][:head_index]
+            y[0, choosen_labels] = 1
+        if self.sampling_strategy_ == "union":
+            choosen_labels = possible_labels.nonzero()[0]
+            y[choosen_labels] = 1
+        if self.sampling_strategy_ == "intersection":
+            choosen_labels = sparse.find(possible_labels == len(neighbors_labels))
+            y[choosen_labels] = 1
+        y = sparse.csr_matrix(y)
 
         return X, y
+
+    def _collect_unique_labels(self, y):
+        """A support function that flattens the labelsets and return one set of unique
+        labels
+        """
+        return np.unique(np.array([label for label_set in y for label in label_set]))
 
     def _calc_distances(self, sample, min_bag, features, unique_labels, labels):
         def calc_dist(bag_sample):
@@ -309,7 +240,9 @@ class MLSMOTE:
         return euclidean_distance
 
     def _get_vdm(self, first, second, features, category, unique_labels, labels):
-        """A support function to compute the Value Difference Metric(VDM) discribed in https://arxiv.org/pdf/cs/9701101.pdf"""
+        """A support function to compute the Value Difference Metric(VDM) discribed in
+        https://arxiv.org/pdf/cs/9701101.pdf
+        """
         if type(labels) == np.ndarray or type(labels) == sparse._csr.csr_matrix:
 
             def f_sparse(c):
@@ -340,14 +273,7 @@ class MLSMOTE:
         return vdm
 
     def _get_all_instances_of_label(self, label, labels):
-        if type(labels) == np.ndarray or type(labels) == sparse._csr.csr_matrix:
-            return labels[:, label].nonzero()[0]
-        instance_ids = []
-        append_instance_id = instance_ids.append
-        for i, label_set in enumerate(labels):
-            if label in label_set:
-                append_instance_id(i)
-        return np.array(instance_ids)
+        return labels[:, label].nonzero()[0]
 
     def _get_mean_imbalance_ratio(self, unique_labels, labels):
         irlbl_num = self._get_imbalance_ratio_numerator(unique_labels, labels)
@@ -373,23 +299,7 @@ class MLSMOTE:
         return irlbl_numerator / self._sum_h(label, labels)
 
     def _sum_h(self, label, labels):
-        if type(labels) == sparse._csr.csr_matrix:
-            return labels[:, label].count_nonzero()
-        elif type(labels) == np.ndarray:
-            return np.count_nonzero(labels[:, label])
-        else:
-            h_sum = 0
-
-            def h(l, Y):
-                if l in Y:
-                    return 1
-                else:
-                    return 0
-
-            for label_set in labels:
-                h_sum += h(label, label_set)
-
-            return h_sum
+        return labels[:, label].count_nonzero()
 
     def _get_label_frequencies(self, labels):
         """A support function to get the frequencies of labels"""
