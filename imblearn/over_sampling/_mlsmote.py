@@ -120,32 +120,33 @@ class MLSMOTE:
 
         X_resampled = X.copy()
 
+        unique_labels = None
         # Convert 'y' to a sparse matrix
         if type(y) == sparse._csr.csr_matrix:
             y_resampled = y.copy()
-            unique_labels = range(0, y_resampled.shape[1])
         elif type(y) == np.ndarray:
             y_resampled = sparse.csr_matrix(y, dtype=int)
-            unique_labels = range(0, y_resampled.shape[1])
         elif type(y) == list:
             unique_labels = self._collect_unique_labels(y)
             y_resampled = sparse.csr_matrix((len(y), len(unique_labels)))
-            for i, sample in enumerate(y):
-                for label in sample:
-                    y_resampled[i, label] = 1
+            for i, sample_labels in enumerate(y):
+                for label in sample_labels:
+                    y_resampled[i, np.where(unique_labels == label)] = 1
         else:
             raise TypeError(
                 "'y' can only be of type 'numpy.ndarray', "
                 "'scipy.sparse._csr.csr_matrix' or 'list'"
             )
 
+        self.n_classes_ = y_resampled.shape[1]
+
         """TODO: Handle the case where 'mean_ir' is infinity. Happens when one label has
         no samples
         """
-        mean_ir = self._get_mean_imbalance_ratio(unique_labels, y_resampled)
+        mean_ir = self._get_mean_imbalance_ratio(y_resampled)
 
-        for label in unique_labels:
-            irlbl_num = self._get_imbalance_ratio_numerator(unique_labels, y_resampled)
+        for label in range(self.n_classes_):
+            irlbl_num = self._get_imbalance_ratio_numerator(y_resampled)
             irlbl = self._get_imbalance_ratio_per_label(label, irlbl_num, y_resampled)
             if irlbl > mean_ir:
                 min_bag = self._get_all_instances_of_label(label, y_resampled)
@@ -155,7 +156,7 @@ class MLSMOTE:
                     continue
                 for sample_id in min_bag:
                     distances = self._calc_distances(
-                        sample_id, min_bag, X_resampled, unique_labels, y_resampled
+                        sample_id, min_bag, X_resampled, y_resampled
                     )
                     distances = np.sort(distances, order="distance")
                     neighbors = distances[
@@ -167,13 +168,14 @@ class MLSMOTE:
                         ref_neigh[1],
                         [x[1] for x in neighbors],
                         X_resampled,
-                        unique_labels,
                         y_resampled,
                         random_state,
                     )
                     X_resampled = np.vstack((X_resampled, X_new))
                     y_resampled = sparse.vstack((y_resampled, y_new))
-        return X_resampled, self.convert_to_input_type(y_resampled, unique_labels, type(y))
+        return X_resampled, self.convert_to_input_type(
+            y_resampled, unique_labels, type(y)
+        )
 
     def _create_new_sample(
         self,
@@ -181,7 +183,6 @@ class MLSMOTE:
         ref_neigh_id,
         neighbor_ids,
         X_resampled,
-        unique_labels,
         y_resampled,
         random_state,
     ):
@@ -203,7 +204,7 @@ class MLSMOTE:
         label_counts = np.squeeze(
             np.asarray(y_resampled[sample_id] + neighbors_labels.sum(axis=0))
         )
-        synth_sample_labels = sparse.csr_matrix((1, len(unique_labels)))
+        synth_sample_labels = sparse.csr_matrix((1, self.n_classes_), dtype=int)
         if self.sampling_strategy_ == MLSMOTE.RANKING:
             # Note: Paper states "present in half or more of the instances considered"
             # but pseudocode shows: "labels lblCounts > (k + 1)/2" instead of '>='. We
@@ -225,7 +226,7 @@ class MLSMOTE:
         """
         return np.unique(np.array([label for label_set in y for label in label_set]))
 
-    def _calc_distances(self, sample, min_bag, features, unique_labels, labels):
+    def _calc_distances(self, sample, min_bag, features, labels):
         def calc_dist(bag_sample):
             nominal_distance = sum(
                 [
@@ -234,7 +235,6 @@ class MLSMOTE:
                         features[bag_sample, cat],
                         features,
                         cat,
-                        unique_labels,
                         labels,
                     )
                     for cat in self.categorical_features_
@@ -259,7 +259,7 @@ class MLSMOTE:
         euclidean_distance = np.linalg.norm(first - second)
         return euclidean_distance
 
-    def _get_vdm(self, first, second, features, category, unique_labels, labels):
+    def _get_vdm(self, first, second, features, category, labels):
         """A support function to compute the Value Difference Metric(VDM) discribed in
         https://arxiv.org/pdf/cs/9701101.pdf
         """
@@ -274,7 +274,7 @@ class MLSMOTE:
                 p = np.square(np.abs((N_axc / N_ax) - (N_ayc / N_ay)))
                 return p
 
-            vdm = np.sum(np.array([f_sparse(c) for c in unique_labels]))
+            vdm = np.sum(np.array([f_sparse(c) for c in range(self.n_classes_)]))
             return vdm
 
         category_rows = features[:, category]
@@ -289,30 +289,32 @@ class MLSMOTE:
             p = abs((N_axc / N_ax) - (N_ayc / N_ay))
             return p
 
-        vdm = np.array([f(c) for c in unique_labels]).sum()
+        vdm = np.array([f(c) for c in range(self.n_classes_)]).sum()
         return vdm
 
     def _get_all_instances_of_label(self, label, labels):
         return labels[:, label].nonzero()[0]
 
-    def _get_mean_imbalance_ratio(self, unique_labels, labels):
-        irlbl_num = self._get_imbalance_ratio_numerator(unique_labels, labels)
+    def _get_mean_imbalance_ratio(self, labels):
+        irlbl_num = self._get_imbalance_ratio_numerator(labels)
         ratio_sum = np.sum(
             np.array(
                 list(
                     map(
                         self._get_imbalance_ratio_per_label,
-                        unique_labels,
+                        range(self.n_classes_),
                         itertools.repeat(irlbl_num),
                         itertools.repeat(labels),
                     )
                 )
             )
         )
-        return ratio_sum / len(unique_labels)
+        return ratio_sum / self.n_classes_
 
-    def _get_imbalance_ratio_numerator(self, unique_labels, labels):
-        sum_array = np.array([self._sum_h(label, labels) for label in unique_labels])
+    def _get_imbalance_ratio_numerator(self, labels):
+        sum_array = np.array(
+            [self._sum_h(label, labels) for label in range(self.n_classes_)]
+        )
         return sum_array.max()
 
     def _get_imbalance_ratio_per_label(self, label, irlbl_numerator, labels):
