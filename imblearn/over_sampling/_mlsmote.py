@@ -321,6 +321,9 @@ class MLSMOTE:
         return frequencies
 
     def _get_most_frequent_value(self, values):
-        """A support function to get most frequent value if a list of values"""
-        uniques, indices = np.unique(values, return_inverse=True)
-        return uniques[np.argmax(np.bincount(indices))]
+        """A support function to get most frequent value if a list of values
+        TODO: We might want to randomize 'unique' and 'counts' to avoid always returning
+        the first occurrence when multiple occurrences of the maximum value.
+        """
+        uniques, counts = np.unique(values, return_counts=True)
+        return uniques[np.argmax(counts)]
