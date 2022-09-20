@@ -42,19 +42,44 @@ class MLSMOTE:
     >>> from sklearn.datasets import make_multilabel_classification
     """
 
+    _required_parameters = ["categorical_features"]
+    _sampling_strategies = ["intersection", "ranking", "union"]
+
     def __init__(
         self,
+        categorical_features,
         *,
         sampling_strategy="ranking",
-        categorical_features,
         random_state=None,
         k_neighbors=5,
     ):
+        if sampling_strategy not in MLSMOTE._sampling_strategies:
+            raise ValueError(
+                "Sampling Strategy can only be one of: 'ranking', 'union' or "
+                "'intersection'"
+            )
+
+        self.categorical_features = categorical_features
+        self.sampling_strategy_ = sampling_strategy
         self.random_state = random_state
         self.k_neighbors = k_neighbors
-        self.sampling_strategy_ = sampling_strategy
-        self.categorical_features = categorical_features
-        self.continuous_features_ = None
+
+    def _validate_estimator(self):
+        categorical_features = np.asarray(self.categorical_features)
+        if categorical_features.dtype.name == "bool":
+            self.categorical_features_ = np.flatnonzero(categorical_features)
+        else:
+            if any(
+                [cat not in np.arange(self.n_features_) for cat in categorical_features]
+            ):
+                raise ValueError(
+                    "Some of the categorical indices are out of range. Indices"
+                    f" should be between 0 and {self.n_features_}"
+                )
+            self.categorical_features_ = categorical_features
+        self.continuous_features_ = np.setdiff1d(
+            np.arange(self.n_features_), self.categorical_features_
+        )
 
     def fit_resample(self, X, y):
         """Resample the dataset.
@@ -145,23 +170,6 @@ class MLSMOTE:
                     X_resampled = np.vstack((X_resampled, X_new))
                     y_resampled = sparse.vstack((y_resampled, y_new))
         return X_resampled, y_resampled
-
-    def _validate_estimator(self):
-        categorical_features = np.asarray(self.categorical_features)
-        if categorical_features.dtype.name == bool:
-            self.categorical_features_ = np.flatnonzero(categorical_features)
-        else:
-            if any(
-                [cat not in np.arange(self.n_features_) for cat in categorical_features]
-            ):
-                raise ValueError(
-                    "Some of the categorical indices are out of range. Indices"
-                    f" should be between 0 and {self.n_features_ - 1}"
-                )
-            self.categorical_features_ = categorical_features
-        self.continuous_features_ = np.setdiff1d(
-            np.arange(self.n_features_), self.categorical_features_
-        )
 
     def _create_new_sample(
         self,
