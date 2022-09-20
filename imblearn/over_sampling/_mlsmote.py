@@ -125,7 +125,9 @@ class MLSMOTE:
                         sample, min_bag, X_resampled, unique_labels, y_resampled
                     )
                     distances = np.sort(distances, order="distance")
-                    neighbors = distances[: self.k_neighbors]
+                    neighbors = distances[
+                        1 : self.k_neighbors + 1
+                    ]  # Remove 'sample' from neighbor set
                     ref_neigh = random_state.choice(neighbors, 1)[0]
                     X_new, y_new = self._create_new_sample(
                         sample,
