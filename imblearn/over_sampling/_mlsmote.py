@@ -248,7 +248,7 @@ class MLSMOTE:
                     for num in self.continuous_features_
                 ]
             )
-            dist = sum([nominal_distance, ordinal_distance])
+            dist = nominal_distance + ordinal_distance
             return (dist, bag_sample)
 
         distances = [calc_dist(bag_sample) for bag_sample in min_bag]
@@ -259,37 +259,21 @@ class MLSMOTE:
         euclidean_distance = np.linalg.norm(first - second)
         return euclidean_distance
 
-    def _get_vdm(self, first, second, features, category, labels):
-        """A support function to compute the Value Difference Metric(VDM) discribed in
+    def _get_vdm(self, x_attr_val, y_attr_val, features, category, labels):
+        """A support function to compute the Value Difference Metric(VDM) described in
         https://arxiv.org/pdf/cs/9701101.pdf
         """
-        if type(labels) == np.ndarray or type(labels) == sparse._csr.csr_matrix:
 
-            def f_sparse(c):
-                N_ax = len(sparse.find(features[:, category] == first)[0])
-                N_ay = len(sparse.find(features[:, category] == second)[0])
-                c_instances = self._get_all_instances_of_label(c, labels)
-                N_axc = len(sparse.find(features[c_instances, category] == first)[0])
-                N_ayc = len(sparse.find(features[c_instances, category] == second)[0])
-                p = np.square(np.abs((N_axc / N_ax) - (N_ayc / N_ay)))
-                return p
-
-            vdm = np.sum(np.array([f_sparse(c) for c in range(self.n_classes_)]))
-            return vdm
-
-        category_rows = features[:, category]
-        N_ax = len(np.where(category_rows == first))
-        N_ay = len(np.where(category_rows == second))
-
-        def f(c):
-            class_instances = self._get_all_instances_of_label(c, labels)
-            class_instance_rows = category_rows[class_instances]
-            N_axc = len(np.where(class_instance_rows == first)[0])
-            N_ayc = len(np.where(class_instance_rows == second)[0])
-            p = abs((N_axc / N_ax) - (N_ayc / N_ay))
+        def f_sparse(_class):
+            c_instances = self._get_all_instances_of_label(_class, labels)
+            N_axc = np.count_nonzero(features[c_instances, category] == x_attr_val)
+            N_ayc = np.count_nonzero(features[c_instances, category] == y_attr_val)
+            p = abs((N_axc / N_ax) - (N_ayc / N_ay)) ** 2
             return p
 
-        vdm = np.array([f(c) for c in range(self.n_classes_)]).sum()
+        N_ax = np.count_nonzero(features[:, category] == x_attr_val)
+        N_ay = np.count_nonzero(features[:, category] == y_attr_val)
+        vdm = sum([f_sparse(_class) for _class in range(self.n_classes_)])
         return vdm
 
     def _get_all_instances_of_label(self, label, labels):
