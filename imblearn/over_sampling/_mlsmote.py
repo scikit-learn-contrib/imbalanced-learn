@@ -39,7 +39,36 @@ class MLSMOTE:
 
     Examples
     --------
+    >>> import numpy as np
     >>> from sklearn.datasets import make_multilabel_classification
+    >>> from imblearn.over_sampling import MLSMOTE
+    >>> X, y = make_multilabel_classification(n_classes=5, n_features=20,
+    ... random_state=42)
+    >>> print("Original Dataset")
+    Original Dataset
+    >>> print(f"Samples: {X.shape[0]}")
+    Samples: 100
+    >>> for _class in range(y.shape[1]):
+    ...     print(f"Class {_class} count: {np.count_nonzero(y[:, _class])}")
+    Class 0 count: 30
+    Class 1 count: 54
+    Class 2 count: 48
+    Class 3 count: 33
+    Class 4 count: 14
+    >>> categorical_features = np.full((20,), True)
+    >>> mlsmote = MLSMOTE(categorical_features, random_state=42)
+    >>> X_res, y_res = mlsmote.fit_resample(X, y)
+    >>> print("Resampled Dataset")
+    Resampled Dataset
+    >>> print(f"Samples: {X_res.shape[0]}")
+    Samples: 114
+    >>> for _class in range(y_res.shape[1]):
+    ...     print(f"Class {_class} count: {np.count_nonzero(y_res[:, _class])}")
+    Class 0 count: 30
+    Class 1 count: 60
+    Class 2 count: 56
+    Class 3 count: 33
+    Class 4 count: 28
     """
 
     _required_parameters = ["categorical_features"]
@@ -95,8 +124,7 @@ class MLSMOTE:
             Matrix containing the data which have to be sampled.
 
         y : {array-like, sparse matrix of shape \
-                (n_samples, n_labels)
-            or a list of lists of labels.
+                (n_samples, n_labels) or a list of lists of labels.
             See "sklearn.datasets.make_multilabel_classification" and \
                 the "return_indicate" input parameter for more \
                 information on possible label sets formats.
@@ -110,7 +138,8 @@ class MLSMOTE:
                 (n_samples_new, n_features)
             The array containing the resampled data.
 
-        y_resampled : array-like of shape (n_samples_new, n_labels)
+        y_resampled : array-like of shape (n_samples_new, n_labels) \
+                or a list of lists of labels.
             The corresponding label sets of `X_resampled`.
         """
         self.n_features_ = X.shape[1]
