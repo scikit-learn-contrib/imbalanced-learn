@@ -336,12 +336,6 @@ class MLSMOTE:
     def _sum_h(self, label, labels):
         return labels[:, label].count_nonzero()
 
-    def _get_label_frequencies(self, labels):
-        """A support function to get the frequencies of labels"""
-        frequency_map = np.array(np.unique(labels, return_counts=True)).T
-        frequencies = np.array([x[1] for x in frequency_map])
-        return frequencies
-
     def _get_most_frequent_value(self, values):
         """A support function to get most frequent value if a list of values
         TODO: We might want to randomize 'unique' and 'counts' to avoid always returning
