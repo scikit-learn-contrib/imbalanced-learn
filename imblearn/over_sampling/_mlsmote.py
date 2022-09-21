@@ -202,7 +202,7 @@ class MLSMOTE:
                     )
                     X_resampled = np.vstack((X_resampled, X_new))
                     y_resampled = sparse.vstack((y_resampled, y_new))
-        return X_resampled, self.convert_to_input_type(
+        return X_resampled, self._convert_to_input_type(
             y_resampled, unique_labels, type(y)
         )
 
@@ -344,7 +344,7 @@ class MLSMOTE:
         uniques, counts = np.unique(values, return_counts=True)
         return uniques[np.argmax(counts)]
 
-    def convert_to_input_type(self, y_resampled, unique_labels, input_type):
+    def _convert_to_input_type(self, y_resampled, unique_labels, input_type):
         """A support function that converts the labels back to its input format"""
         if input_type == sparse._csr.csr_matrix:
             return y_resampled
