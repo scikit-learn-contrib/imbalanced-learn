@@ -1,6 +1,5 @@
 """Class to perfrom over-sampling using MLSMOTE."""
 
-import itertools
 import numpy as np
 from scipy import sparse
 
@@ -309,19 +308,11 @@ class MLSMOTE:
         return labels[:, label].nonzero()[0]
 
     def _get_mean_imbalance_ratio(self, labels):
-        irlbl_num = self._get_imbalance_ratio_numerator(labels)
-        ratio_sum = np.sum(
-            np.array(
-                list(
-                    map(
-                        self._get_imbalance_ratio_per_label,
-                        range(self.n_classes_),
-                        itertools.repeat(irlbl_num),
-                        itertools.repeat(labels),
-                    )
-                )
-            )
+        sum_per_label = np.array(
+            [self._sum_h(label, labels) for label in range(self.n_classes_)]
         )
+        irlbl_num = sum_per_label.max()
+        ratio_sum = np.sum(irlbl_num / sum_per_label)
         return ratio_sum / self.n_classes_
 
     def _get_imbalance_ratio_numerator(self, labels):
