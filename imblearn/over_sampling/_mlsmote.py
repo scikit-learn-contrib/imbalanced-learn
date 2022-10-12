@@ -1,5 +1,6 @@
 """Class to perfrom over-sampling using MLSMOTE."""
 
+from itertools import combinations
 import numpy as np
 from scipy import sparse
 
@@ -178,13 +179,22 @@ class MLSMOTE:
             irlbl = self._get_imbalance_ratio_per_label(label, irlbl_num, y_resampled)
             if irlbl > mean_ir:
                 min_bag = self._get_all_instances_of_label(label, y_resampled)
+                euclidean_dist_cache = np.zeros((y_resampled.shape[0], y_resampled.shape[0]))
+                X_sliced = X_resampled[:][:,self.continuous_features_]
+                pairs = list(combinations(min_bag, 2))
+                for m, n in pairs:
+                    distance = sum(self._get_euclidean_distance(
+                        X_sliced[m, :], X_sliced[n, :]
+                    ))
+                    euclidean_dist_cache[m, n] = distance
+                    euclidean_dist_cache[n, m] = distance
                 if (
                     len(min_bag) <= 1
                 ):  # If there is only one sample, the neighbor set will be empty
                     continue
                 for sample_id in min_bag:
                     distances = self._calc_distances(
-                        sample_id, min_bag, X_resampled, y_resampled
+                        sample_id, min_bag, X_resampled, y_resampled, euclidean_dist_cache,
                     )
                     distances = np.sort(distances, order="distance")
                     neighbors = distances[
@@ -254,7 +264,7 @@ class MLSMOTE:
         """
         return np.unique(np.array([label for label_set in y for label in label_set]))
 
-    def _calc_distances(self, sample, min_bag, features, labels):
+    def _calc_distances(self, sample, min_bag, features, labels, euclidean_dist_cache):
         def calc_dist(bag_sample):
             nominal_distance = sum(
                 [
@@ -268,14 +278,7 @@ class MLSMOTE:
                     for cat in self.categorical_features_
                 ]
             )
-            ordinal_distance = sum(
-                [
-                    self._get_euclidean_distance(
-                        features[sample, num], features[bag_sample, num]
-                    )
-                    for num in self.continuous_features_
-                ]
-            )
+            ordinal_distance = euclidean_dist_cache[sample, bag_sample]
             dist = nominal_distance + ordinal_distance
             return (dist, bag_sample)
 
