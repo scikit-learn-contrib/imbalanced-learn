@@ -284,8 +284,10 @@ class MLSMOTE:
         return np.array(distances, dtype=dtype)
 
     def _get_euclidean_distance(self, first, second):
-        euclidean_distance = np.linalg.norm(first - second)
-        return euclidean_distance
+        """Since the inputs are of type 'float' the euclidean distance is just
+        the absolute value of their difference.
+        """
+        return abs(first - second)
 
     def _get_vdm(self, x_attr_val, y_attr_val, features, category, labels):
         """A support function to compute the Value Difference Metric(VDM) described in
