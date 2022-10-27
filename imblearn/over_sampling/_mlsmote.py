@@ -273,7 +273,7 @@ class MLSMOTE:
                         features[bag_sample, cat],
                         features,
                         cat,
-                        labels,
+                        c_instances,
                     )
                     for cat in self.categorical_features_
                 ]
@@ -282,6 +282,9 @@ class MLSMOTE:
             dist = nominal_distance + ordinal_distance
             return (dist, bag_sample)
 
+        c_instances = [
+            self._get_all_instances_of_label(_class, labels) for _class in range(self.n_classes_)
+        ]
         distances = [calc_dist(bag_sample) for bag_sample in min_bag]
         dtype = np.dtype([("distance", float), ("index", int)])
         return np.array(distances, dtype=dtype)
@@ -292,15 +295,14 @@ class MLSMOTE:
         """
         return abs(first - second)
 
-    def _get_vdm(self, x_attr_val, y_attr_val, features, category, labels):
+    def _get_vdm(self, x_attr_val, y_attr_val, features, category, c_instances):
         """A support function to compute the Value Difference Metric(VDM) described in
         https://arxiv.org/pdf/cs/9701101.pdf
         """
 
         def f_sparse(_class):
-            c_instances = self._get_all_instances_of_label(_class, labels)
-            N_axc = np.count_nonzero(features[c_instances, category] == x_attr_val)
-            N_ayc = np.count_nonzero(features[c_instances, category] == y_attr_val)
+            N_axc = np.count_nonzero(features[c_instances[_class], category] == x_attr_val)
+            N_ayc = np.count_nonzero(features[c_instances[_class], category] == y_attr_val)
             p = abs((N_axc / N_ax) - (N_ayc / N_ay)) ** 2
             return p
 
