@@ -150,14 +150,14 @@ class MLSMOTE:
         X_resampled = X.copy()
 
         unique_labels = None
-        # Convert 'y' to a sparse matrix
+        # Convert 'y' to a numpy array
         if type(y) == sparse._csr.csr_matrix:
-            y_resampled = y.copy()
+            y_resampled = y.toarray()
         elif type(y) == np.ndarray:
-            y_resampled = sparse.csr_matrix(y, dtype=int)
+            y_resampled = np.copy(y)
         elif type(y) == list:
             unique_labels = self._collect_unique_labels(y)
-            y_resampled = sparse.csr_matrix((len(y), len(unique_labels)))
+            y_resampled = np.zeros((len(y), len(unique_labels)))
             for i, sample_labels in enumerate(y):
                 for label in sample_labels:
                     y_resampled[i, np.where(unique_labels == label)] = 1
@@ -219,7 +219,7 @@ class MLSMOTE:
                         random_state,
                     )
                     X_resampled = np.vstack((X_resampled, X_new))
-                    y_resampled = sparse.vstack((y_resampled, y_new))
+                    y_resampled = np.vstack((y_resampled, y_new))
         return X_resampled, self._convert_to_input_type(
             y_resampled, unique_labels, type(y)
         )
@@ -251,7 +251,7 @@ class MLSMOTE:
         label_counts = np.squeeze(
             np.asarray(y_resampled[sample_id] + neighbors_labels.sum(axis=0))
         )
-        synth_sample_labels = sparse.csr_matrix((1, self.n_classes_), dtype=int)
+        synth_sample_labels = np.zeros((1, self.n_classes_), dtype=int)
         if self.sampling_strategy_ == MLSMOTE.RANKING:
             # Note: Paper states "present in half or more of the instances considered"
             # but pseudocode shows: "labels lblCounts > (k + 1)/2" instead of '>='. We
@@ -321,7 +321,7 @@ class MLSMOTE:
         return vdm
 
     def _get_all_instances_of_label(self, label, labels):
-        return labels[:, label].nonzero()[0]
+        return np.nonzero(labels[:, label])[0]
 
     def _get_mean_imbalance_ratio(self, labels):
         sum_per_label = np.array(
@@ -341,7 +341,7 @@ class MLSMOTE:
         return irlbl_numerator / self._sum_h(label, labels)
 
     def _sum_h(self, label, labels):
-        return labels[:, label].count_nonzero()
+        return np.count_nonzero(labels[:, label])
 
     def _get_most_frequent_value(self, values):
         """A support function to get most frequent value if a list of values
@@ -354,9 +354,9 @@ class MLSMOTE:
     def _convert_to_input_type(self, y_resampled, unique_labels, input_type):
         """A support function that converts the labels back to its input format"""
         if input_type == sparse._csr.csr_matrix:
-            return y_resampled
+            return sparse.csr_matrix(y_resampled, dtype=int)
         elif input_type == np.ndarray:
-            return np.asarray(y_resampled.todense())
+            return y_resampled
         elif input_type == list:
             labels = [[] for _ in range(y_resampled.shape[0])]
             rows, cols = y_resampled.nonzero()
