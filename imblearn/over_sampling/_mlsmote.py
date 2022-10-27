@@ -179,19 +179,19 @@ class MLSMOTE:
             irlbl = self._get_imbalance_ratio_per_label(label, irlbl_num, y_resampled)
             if irlbl > mean_ir:
                 min_bag = self._get_all_instances_of_label(label, y_resampled)
-                euclidean_dist_cache = np.zeros((y_resampled.shape[0], y_resampled.shape[0]))
-                X_sliced = X_resampled[:][:,self.continuous_features_]
-                pairs = list(combinations(min_bag, 2))
-                for m, n in pairs:
-                    distance = sum(self._get_euclidean_distance(
-                        X_sliced[m, :], X_sliced[n, :]
-                    ))
-                    euclidean_dist_cache[m, n] = distance
-                    euclidean_dist_cache[n, m] = distance
                 if (
                     len(min_bag) <= 1
                 ):  # If there is only one sample, the neighbor set will be empty
                     continue
+                euclidean_dist_cache = np.zeros((y_resampled.shape[0], y_resampled.shape[0]))
+                X_cont = X_resampled[:][:, self.continuous_features_]
+                pairs = list(combinations(min_bag, 2))
+                for m, n in pairs:
+                    distance = sum(self._get_euclidean_distance(
+                        X_cont[m, :], X_cont[n, :]
+                    ))
+                    euclidean_dist_cache[m, n] = distance
+                    euclidean_dist_cache[n, m] = distance
                 for sample_id in min_bag:
                     distances = self._calc_distances(
                         sample_id, min_bag, X_resampled, y_resampled, euclidean_dist_cache,
