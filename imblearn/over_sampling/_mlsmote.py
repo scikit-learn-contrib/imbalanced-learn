@@ -183,6 +183,15 @@ class MLSMOTE:
                     len(min_bag) <= 1
                 ):  # If there is only one sample, the neighbor set will be empty
                     continue
+                # Note: Only the distance for numeric attributes can be
+                # cached. The Value Difference Metric (VDM) distance for
+                # categorical/nominal attributes CANNOT be cached because VDMs
+                # are dependent on the total number of samples in the dataset
+                # that have specific values for the different attributes.
+                # Given that each synthetic sample is added to the dataset in
+                # the inner loop (line 17 of 'Algorithm 1' of the MLSMOTE,
+                # Charte, F. et al. paper), the VDM between samples has to be
+                # computed in every inner iteration.
                 euclidean_dist_cache = np.zeros((y_resampled.shape[0], y_resampled.shape[0]))
                 X_cont = X_resampled[:][:, self.continuous_features_]
                 pairs = list(combinations(min_bag, 2))
