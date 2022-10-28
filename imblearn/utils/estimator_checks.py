@@ -361,15 +361,9 @@ def check_samplers_multiclass_ova(name, sampler_orig, sample_dataset_generator):
     assert_allclose(y_res, y_res_ova.argmax(axis=1))
 
 
-def check_samplers_2d_target(name, sampler_orig):
+def check_samplers_2d_target(name, sampler_orig, sample_dataset_generator):
     sampler = clone(sampler_orig)
-    X, y = make_classification(
-        n_samples=100,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0,
-    )
+    X, y = sample_dataset_generator()
 
     y = y.reshape(-1, 1)  # Make the target 2d
     sampler.fit_resample(X, y)
