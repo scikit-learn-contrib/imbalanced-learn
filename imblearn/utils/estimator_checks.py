@@ -369,15 +369,9 @@ def check_samplers_2d_target(name, sampler_orig, sample_dataset_generator):
     sampler.fit_resample(X, y)
 
 
-def check_samplers_preserve_dtype(name, sampler_orig):
+def check_samplers_preserve_dtype(name, sampler_orig, sample_dataset_generator):
     sampler = clone(sampler_orig)
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0,
-    )
+    X, y = sample_dataset_generator()
     # Cast X and y to not default dtype
     X = X.astype(np.float32)
     y = y.astype(np.int32)
