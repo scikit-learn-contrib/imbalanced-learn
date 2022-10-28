@@ -268,9 +268,7 @@ def check_samplers_fit_resample(name, sampler_orig):
         )
 
 
-def check_samplers_sampling_strategy_fit_resample(
-    name, sampler_orig, sample_dataset_generator
-):
+def check_samplers_sampling_strategy_fit_resample(name, sampler_orig):
     sampler = clone(sampler_orig)
     # in this test we will force all samplers to not change the class 1
     X, y = sample_dataset_generator()
