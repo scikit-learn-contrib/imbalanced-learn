@@ -239,9 +239,9 @@ def check_samplers_fit(name, sampler_orig):
     ), "No fitted attribute sampling_strategy_"
 
 
-def check_samplers_fit_resample(name, sampler_orig, sample_dataset_generator):
+def check_samplers_fit_resample(name, sampler_orig):
     sampler = clone(sampler_orig)
-    X, y = sample_dataset_generator
+    X, y = sample_dataset_generator()
     target_stats = Counter(y)
     X_res, y_res = sampler.fit_resample(X, y)
     if isinstance(sampler, BaseOverSampler):
