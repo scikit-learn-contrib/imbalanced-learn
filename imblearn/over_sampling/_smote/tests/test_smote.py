@@ -150,3 +150,44 @@ def test_sample_regular_with_nn():
     )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_sample_indices():
+    smote = SMOTE(random_state=RND_SEED)
+    smote.fit_resample(X, Y)
+    indices = smote.get_sample_indices()
+    indices_gt = np.array(
+        [
+            [0, 0],
+            [1, 0],
+            [2, 0],
+            [3, 0],
+            [4, 0],
+            [5, 0],
+            [6, 0],
+            [7, 0],
+            [8, 0],
+            [9, 0],
+            [10, 0],
+            [11, 0],
+            [12, 0],
+            [13, 0],
+            [14, 0],
+            [15, 0],
+            [16, 0],
+            [17, 0],
+            [18, 0],
+            [19, 0],
+            [0, 2],
+            [0, 1],
+            [0, 1],
+            [7, 2]
+        ]
+    )
+    assert_array_equal(indices, indices_gt)
+
+
+def test_sample_indices_is_none():
+    smote = SMOTE(random_state=RND_SEED)
+    indices = smote.get_sample_indices()
+    assert_array_equal(indices, None)

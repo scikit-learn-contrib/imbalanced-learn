@@ -154,6 +154,8 @@ class BaseSMOTE(BaseOverSampler):
         else:
             X_new = X[rows] + steps * diffs
 
+        self._sample_indices = np.stack((rows, nn_num[rows, cols])).T
+
         return X_new.astype(X.dtype)
 
     def _in_danger_noise(self, nn_estimator, samples, target_class, y, kind="danger"):
@@ -203,6 +205,24 @@ class BaseSMOTE(BaseOverSampler):
             return n_maj == nn_estimator.n_neighbors - 1
         else:
             raise NotImplementedError
+
+    def get_sample_indices(self):
+        """Returns a tuple of indexes of the samples used to generate the new point.
+
+            Usable with SMOTE.
+
+        Returns
+        -------
+        _sample_indices : ndarray of shape (mother_sample_index, random_neighbour_index)
+            If the sample belongs to original dataset:
+                mother_sample : index of the original sample
+                random_neighbour_index : index of the neighbour sample
+        """
+        try:
+            self._sample_indices
+        except AttributeError:
+            return None
+        return self._sample_indices
 
 
 @Substitution(
@@ -356,6 +376,21 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         else:
             X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
+
+        try:
+            self._sample_indices
+        except AttributeError:
+            self._sample_indices = np.stack(
+                (np.arange(len(y)),
+                 np.zeros(len(y)))
+            ).T
+
+        self._sample_indices = np.concatenate(
+            (np.stack((np.arange(len(y)),
+                       np.zeros(len(y)))).T,
+             self._sample_indices),
+            axis=0
+        )
 
         return X_resampled, y_resampled
 
@@ -578,7 +613,7 @@ class SMOTENC(SMOTE):
         X_resampled, y_resampled = super()._fit_resample(X_encoded, y)
 
         # reverse the encoding of the categorical features
-        X_res_cat = X_resampled[:, self.continuous_features_.size :]
+        X_res_cat = X_resampled[:, self.continuous_features_.size:]
         X_res_cat.data = np.ones_like(X_res_cat.data)
         X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
 
@@ -633,7 +668,7 @@ class SMOTENC(SMOTE):
         # create non-null entry based on the encoded of OHE
         if math.isclose(self.median_std_, 0):
             nn_data[
-                :, self.continuous_features_.size :
+                :, self.continuous_features_.size:
             ] = self._X_categorical_minority_encoded
 
         all_neighbors = nn_data[nn_num[rows]]

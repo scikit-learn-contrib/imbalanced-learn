@@ -197,6 +197,13 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             diffs = X_class[nns[rows, cols]] - X_class[rows]
             steps = random_state.uniform(size=(n_samples, 1))
 
+            self._sample_indices = np.concatenate(
+                (np.stack((np.arange(len(y)),
+                           np.zeros(len(y)))).T,
+                 np.stack((rows, cols)).T),
+                axis=0
+            )
+
             if sparse.issparse(X):
                 sparse_func = type(X).__name__
                 steps = getattr(sparse, sparse_func)(steps)
@@ -221,3 +228,21 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         return {
             "X_types": ["2darray"],
         }
+
+    def get_sample_indices(self):
+        """Returns a tuple of indexes of the samples used to generate the new point.
+
+            Usable with ADASYN.
+
+        Returns
+        -------
+        _sample_indices : ndarray of shape (mother_sample_index, random_neighbour_index)
+                If the sample belongs to original dataset:
+                    mother_sample : index of the original sample
+                    random_neighbour_index : index of the neighbour sample
+        """
+        try:
+            self._sample_indices
+        except AttributeError:
+            return None
+        return self._sample_indices
