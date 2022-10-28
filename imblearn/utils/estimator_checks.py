@@ -60,7 +60,7 @@ sklearn_version = parse_version(sklearn.__version__)
 
 
 @pytest.fixture
-def sample_dataset_generator():
+def sample_dataset_generator()):
     X, y = make_classification(
         n_samples=1000,
         n_classes=3,
@@ -268,16 +268,10 @@ def check_samplers_fit_resample(name, sampler_orig, sample_dataset_generator):
         )
 
 
-def check_samplers_sampling_strategy_fit_resample(name, sampler_orig):
+def check_samplers_sampling_strategy_fit_resample(name, sampler_orig, sample_dataset_generator):
     sampler = clone(sampler_orig)
     # in this test we will force all samplers to not change the class 1
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0,
-    )
+    X, y = sample_dataset_generator()
     expected_stat = Counter(y)[1]
     if isinstance(sampler, BaseOverSampler):
         sampling_strategy = {2: 498, 0: 498}
