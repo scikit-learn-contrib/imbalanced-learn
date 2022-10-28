@@ -58,8 +58,6 @@ from imblearn.utils._param_validation import generate_invalid_param_val, make_co
 
 sklearn_version = parse_version(sklearn.__version__)
 
-
-@pytest.fixture
 def sample_dataset_generator():
     X, y = make_classification(
         n_samples=1000,
@@ -69,7 +67,9 @@ def sample_dataset_generator():
         random_state=0,
     )
     return X, y
-
+@pytest.fixture(name="sample_dataset_generator")
+def sample_dataset_generator_fixture():
+    return sample_dataset_generator()
 
 def _set_checking_parameters(estimator):
     params = estimator.get_params()
@@ -291,8 +291,7 @@ def check_samplers_sampling_strategy_fit_resample(
         X_res, y_res = sampler.fit_resample(X, y)
         assert Counter(y_res)[1] == expected_stat
 
-
-def check_samplers_sparse(name, sampler_orig, sample_dataset_generator):
+def check_samplers_sparse(name, sampler_orig):
     sampler = clone(sampler_orig)
     # check that sparse matrices can be passed through the sampler leading to
     # the same results than dense
