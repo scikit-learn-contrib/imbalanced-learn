@@ -380,15 +380,9 @@ def check_samplers_preserve_dtype(name, sampler_orig, sample_dataset_generator):
     assert y.dtype == y_res.dtype, "y dtype is not preserved"
 
 
-def check_samplers_sample_indices(name, sampler_orig):
+def check_samplers_sample_indices(name, sampler_orig, sample_dataset_generator):
     sampler = clone(sampler_orig)
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0,
-    )
+    X, y = sample_dataset_generator()
     sampler.fit_resample(X, y)
     sample_indices = sampler._get_tags().get("sample_indices", None)
     if sample_indices:
