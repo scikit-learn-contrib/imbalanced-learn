@@ -231,7 +231,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         }
 
     def get_sample_indices(self):
-        """Returns a tuple of indexes of the samples used to generate the new point.
+        """Return a tuple of indexes of the samples used to generate the new point.
 
             Usable with ADASYN.
 
