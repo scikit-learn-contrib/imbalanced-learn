@@ -290,17 +290,11 @@ def check_samplers_sampling_strategy_fit_resample(name, sampler_orig, sample_dat
         assert Counter(y_res)[1] == expected_stat
 
 
-def check_samplers_sparse(name, sampler_orig):
+def check_samplers_sparse(name, sampler_orig, sample_dataset_generator):
     sampler = clone(sampler_orig)
     # check that sparse matrices can be passed through the sampler leading to
     # the same results than dense
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0,
-    )
+    X, y = sample_dataset_generator()
     X_sparse = sparse.csr_matrix(X)
     X_res_sparse, y_res_sparse = sampler.fit_resample(X_sparse, y)
     sampler = clone(sampler)
