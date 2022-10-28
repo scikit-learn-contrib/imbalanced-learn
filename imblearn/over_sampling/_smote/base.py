@@ -372,7 +372,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         return X_resampled, y_resampled
 
     def get_sample_indices(self):
-        """Returns a tuple of indexes of the samples used to generate the new point.
+        """Function that returns a tuple of indexes of the samples used to generate the new point.
 
             Usable with SMOTE.
 
