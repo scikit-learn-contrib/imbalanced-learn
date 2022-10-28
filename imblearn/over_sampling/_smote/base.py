@@ -380,16 +380,11 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         try:
             self._sample_indices
         except AttributeError:
-            self._sample_indices = np.stack(
-                (np.arange(len(y)),
-                 np.zeros(len(y)))
-            ).T
+            self._sample_indices = np.stack((np.arange(len(y)), np.zeros(len(y)))).T
 
         self._sample_indices = np.concatenate(
-            (np.stack((np.arange(len(y)),
-                       np.zeros(len(y)))).T,
-             self._sample_indices),
-            axis=0
+            (np.stack((np.arange(len(y)), np.zeros(len(y)))).T, self._sample_indices),
+            axis=0,
         )
 
         return X_resampled, y_resampled
@@ -613,7 +608,7 @@ class SMOTENC(SMOTE):
         X_resampled, y_resampled = super()._fit_resample(X_encoded, y)
 
         # reverse the encoding of the categorical features
-        X_res_cat = X_resampled[:, self.continuous_features_.size:]
+        X_res_cat = X_resampled[:, self.continuous_features_.size :]
         X_res_cat.data = np.ones_like(X_res_cat.data)
         X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
 
@@ -668,7 +663,7 @@ class SMOTENC(SMOTE):
         # create non-null entry based on the encoded of OHE
         if math.isclose(self.median_std_, 0):
             nn_data[
-                :, self.continuous_features_.size:
+                :, self.continuous_features_.size :
             ] = self._X_categorical_minority_encoded
 
         all_neighbors = nn_data[nn_num[rows]]

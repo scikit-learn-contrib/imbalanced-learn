@@ -181,7 +181,7 @@ def test_sample_indices():
             [0, 2],
             [0, 1],
             [0, 1],
-            [7, 2]
+            [7, 2],
         ]
     )
     assert_array_equal(indices, indices_gt)

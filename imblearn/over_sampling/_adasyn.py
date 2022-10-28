@@ -198,10 +198,11 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
             steps = random_state.uniform(size=(n_samples, 1))
 
             self._sample_indices = np.concatenate(
-                (np.stack((np.arange(len(y)),
-                           np.zeros(len(y)))).T,
-                 np.stack((rows, cols)).T),
-                axis=0
+                (
+                    np.stack((np.arange(len(y)),np.zeros(len(y)))).T,
+                    np.stack((rows, cols)).T
+                ),
+                axis=0,
             )
 
             if sparse.issparse(X):

@@ -154,7 +154,7 @@ def test_ada_sample_indices():
             [0, 4],
             [2, 0],
             [4, 3],
-            [6, 3]
+            [6, 3],
         ]
     )
     assert_array_equal(indices, indices_gt)
