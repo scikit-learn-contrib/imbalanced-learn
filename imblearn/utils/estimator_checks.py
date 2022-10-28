@@ -349,16 +349,10 @@ def check_samplers_list(name, sampler_orig, sample_dataset_generator):
     assert_allclose(y_res, y_res_list)
 
 
-def check_samplers_multiclass_ova(name, sampler_orig):
+def check_samplers_multiclass_ova(name, sampler_orig, sample_dataset_generator):
     sampler = clone(sampler_orig)
     # Check that multiclass target lead to the same results than OVA encoding
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0,
-    )
+    X, y = sample_dataset_generator()
     y_ova = label_binarize(y, classes=np.unique(y))
     X_res, y_res = sampler.fit_resample(X, y)
     X_res_ova, y_res_ova = sampler.fit_resample(X, y_ova)
