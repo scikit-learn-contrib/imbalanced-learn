@@ -304,17 +304,11 @@ def check_samplers_sparse(name, sampler_orig, sample_dataset_generator):
     assert_allclose(y_res_sparse, y_res)
 
 
-def check_samplers_pandas(name, sampler_orig):
+def check_samplers_pandas(name, sampler_orig, sample_dataset_generator):
     pd = pytest.importorskip("pandas")
     sampler = clone(sampler_orig)
     # Check that the samplers handle pandas dataframe and pandas series
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0,
-    )
+    X, y = sample_dataset_generator()
     X_df = pd.DataFrame(X, columns=[str(i) for i in range(X.shape[1])])
     y_df = pd.DataFrame(y)
     y_s = pd.Series(y, name="class")
