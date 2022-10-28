@@ -303,7 +303,7 @@ def check_samplers_sparse(name, sampler_orig):
     assert_allclose(y_res_sparse, y_res)
 
 
-def check_samplers_pandas(name, sampler_orig, sample_dataset_generator):
+def check_samplers_pandas(name, sampler_orig):
     pd = pytest.importorskip("pandas")
     sampler = clone(sampler_orig)
     # Check that the samplers handle pandas dataframe and pandas series
@@ -331,7 +331,7 @@ def check_samplers_pandas(name, sampler_orig, sample_dataset_generator):
     assert_allclose(y_res_s.values, y_res)
 
 
-def check_samplers_list(name, sampler_orig, sample_dataset_generator):
+def check_samplers_list(name, sampler_orig):
     sampler = clone(sampler_orig)
     # Check that the can samplers handle simple lists
     X, y = sample_dataset_generator()
