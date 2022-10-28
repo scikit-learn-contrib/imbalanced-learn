@@ -199,7 +199,7 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
 
             self._sample_indices = np.concatenate(
                 (
-                    np.stack((np.arange(len(y)),np.zeros(len(y)))).T,
+                    np.stack((np.arange(len(y)), np.zeros(len(y)))).T,
                     np.stack((rows, cols)).T,
                 ),
                 axis=0,
