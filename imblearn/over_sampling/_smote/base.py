@@ -206,24 +206,6 @@ class BaseSMOTE(BaseOverSampler):
         else:
             raise NotImplementedError
 
-    def get_sample_indices(self):
-        """Returns a tuple of indexes of the samples used to generate the new point.
-
-            Usable with SMOTE.
-
-        Returns
-        -------
-        _sample_indices : ndarray of shape (mother_sample_index, random_neighbour_index)
-            If the sample belongs to original dataset:
-                mother_sample : index of the original sample
-                random_neighbour_index : index of the neighbour sample
-        """
-        try:
-            self._sample_indices
-        except AttributeError:
-            return None
-        return self._sample_indices
-
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
@@ -388,6 +370,24 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
         )
 
         return X_resampled, y_resampled
+
+    def get_sample_indices(self):
+        """Returns a tuple of indexes of the samples used to generate the new point.
+
+            Usable with SMOTE.
+
+        Returns
+        -------
+        _sample_indices : ndarray of shape (mother_sample_index, random_neighbour_index)
+            If the sample belongs to original dataset:
+                mother_sample : index of the original sample
+                random_neighbour_index : index of the neighbour sample
+        """
+        try:
+            self._sample_indices
+        except AttributeError:
+            return None
+        return self._sample_indices
 
 
 @Substitution(
