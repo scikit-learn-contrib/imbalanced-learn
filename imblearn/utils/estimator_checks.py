@@ -58,6 +58,7 @@ from imblearn.utils._param_validation import generate_invalid_param_val, make_co
 
 sklearn_version = parse_version(sklearn.__version__)
 
+
 def sample_dataset_generator():
     X, y = make_classification(
         n_samples=1000,
@@ -67,9 +68,12 @@ def sample_dataset_generator():
         random_state=0,
     )
     return X, y
+
+
 @pytest.fixture(name="sample_dataset_generator")
 def sample_dataset_generator_fixture():
     return sample_dataset_generator()
+
 
 def _set_checking_parameters(estimator):
     params = estimator.get_params()
@@ -289,6 +293,7 @@ def check_samplers_sampling_strategy_fit_resample(name, sampler_orig):
         X_res, y_res = sampler.fit_resample(X, y)
         assert Counter(y_res)[1] == expected_stat
 
+
 def check_samplers_sparse(name, sampler_orig):
     sampler = clone(sampler_orig)
     # check that sparse matrices can be passed through the sampler leading to
@@ -348,7 +353,7 @@ def check_samplers_list(name, sampler_orig):
     assert_allclose(y_res, y_res_list)
 
 
-def check_samplers_multiclass_ova(name, sampler_orig, sample_dataset_generator):
+def check_samplers_multiclass_ova(name, sampler_orig):
     sampler = clone(sampler_orig)
     # Check that multiclass target lead to the same results than OVA encoding
     X, y = sample_dataset_generator()
@@ -360,7 +365,7 @@ def check_samplers_multiclass_ova(name, sampler_orig, sample_dataset_generator):
     assert_allclose(y_res, y_res_ova.argmax(axis=1))
 
 
-def check_samplers_2d_target(name, sampler_orig, sample_dataset_generator):
+def check_samplers_2d_target(name, sampler_orig):
     sampler = clone(sampler_orig)
     X, y = sample_dataset_generator()
 
@@ -368,7 +373,7 @@ def check_samplers_2d_target(name, sampler_orig, sample_dataset_generator):
     sampler.fit_resample(X, y)
 
 
-def check_samplers_preserve_dtype(name, sampler_orig, sample_dataset_generator):
+def check_samplers_preserve_dtype(name, sampler_orig):
     sampler = clone(sampler_orig)
     X, y = sample_dataset_generator()
     # Cast X and y to not default dtype
@@ -379,7 +384,7 @@ def check_samplers_preserve_dtype(name, sampler_orig, sample_dataset_generator):
     assert y.dtype == y_res.dtype, "y dtype is not preserved"
 
 
-def check_samplers_sample_indices(name, sampler_orig, sample_dataset_generator):
+def check_samplers_sample_indices(name, sampler_orig):
     sampler = clone(sampler_orig)
     X, y = sample_dataset_generator()
     sampler.fit_resample(X, y)
