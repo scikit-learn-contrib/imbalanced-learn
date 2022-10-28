@@ -332,16 +332,10 @@ def check_samplers_pandas(name, sampler_orig, sample_dataset_generator):
     assert_allclose(y_res_s.values, y_res)
 
 
-def check_samplers_list(name, sampler_orig):
+def check_samplers_list(name, sampler_orig, sample_dataset_generator):
     sampler = clone(sampler_orig)
     # Check that the can samplers handle simple lists
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0,
-    )
+    X, y = sample_dataset_generator()
     X_list = X.tolist()
     y_list = y.tolist()
 
