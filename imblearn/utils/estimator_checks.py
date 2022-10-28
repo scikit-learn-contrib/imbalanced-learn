@@ -59,6 +59,18 @@ from imblearn.utils._param_validation import generate_invalid_param_val, make_co
 sklearn_version = parse_version(sklearn.__version__)
 
 
+@pytest.fixture
+def sample_dataset_generator():
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
+    return X, y
+
+
 def _set_checking_parameters(estimator):
     params = estimator.get_params()
     name = estimator.__class__.__name__
@@ -227,15 +239,9 @@ def check_samplers_fit(name, sampler_orig):
     ), "No fitted attribute sampling_strategy_"
 
 
-def check_samplers_fit_resample(name, sampler_orig):
+def check_samplers_fit_resample(name, sampler_orig, sample_dataset_generator):
     sampler = clone(sampler_orig)
-    X, y = make_classification(
-        n_samples=1000,
-        n_classes=3,
-        n_informative=4,
-        weights=[0.2, 0.3, 0.5],
-        random_state=0,
-    )
+    X, y = sample_dataset_generator
     target_stats = Counter(y)
     X_res, y_res = sampler.fit_resample(X, y)
     if isinstance(sampler, BaseOverSampler):
