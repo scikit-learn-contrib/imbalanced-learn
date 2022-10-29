@@ -182,7 +182,7 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         nnhood_idx = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
         nnhood_label = y[nnhood_idx]
         if self.kind_sel == "mode":
-            nnhood_label_majority, _ = mode(nnhood_label, axis=1)
+            nnhood_label_majority, _ = mode(nnhood_label, axis=1, keepdims=True)
             nnhood_bool = np.ravel(nnhood_label_majority) == y_class
         elif self.kind_sel == "all":
             nnhood_label_majority = nnhood_label == class_minority
