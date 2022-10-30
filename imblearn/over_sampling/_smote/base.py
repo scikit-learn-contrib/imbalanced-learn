@@ -815,12 +815,17 @@ class SMOTEN(SMOTE):
         # for each drawn samples, select its k-neighbors and generate a sample
         # where for each feature individually, each category generated is the
         # most common category
-        X_new = np.squeeze(
-            stats.mode(
-                X_class[nn_indices[samples_indices]], axis=1, keepdims=True
-            ).mode,
-            axis=1,
-        )
+        try:
+            X_new = np.squeeze(
+                stats.mode(
+                    X_class[nn_indices[samples_indices]], axis=1, keepdims=True,
+                ).mode,
+                axis=1,
+            )
+        except TypeError:
+            X_new = np.squeeze(
+                stats.mode(X_class[nn_indices[samples_indices]], axis=1).mode, axis=1
+            )
         y_new = np.full(n_samples, fill_value=klass, dtype=y_dtype)
         return X_new, y_new
 
