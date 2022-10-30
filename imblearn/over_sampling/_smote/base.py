@@ -818,7 +818,9 @@ class SMOTEN(SMOTE):
         try:
             X_new = np.squeeze(
                 stats.mode(
-                    X_class[nn_indices[samples_indices]], axis=1, keepdims=True,
+                    X_class[nn_indices[samples_indices]],
+                    axis=1,
+                    keepdims=True,
                 ).mode,
                 axis=1,
             )
