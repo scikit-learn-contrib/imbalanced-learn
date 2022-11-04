@@ -130,8 +130,24 @@ cross-validation::
   ...     f"{cv_results['test_score'].std():.3f}"
   ... )
   Balanced accuracy mean +/- std. dev.: 0.724 +/- 0.042
+  
+The cross-validation performance looks good, but evaluating the classifiers 
+on the left-out data shows a different picture:: 
 
-We see that the statistical performance are worse than in the previous case.
+  >>> scores = []
+  >>> for fold_id, cv_model in enumerate(cv_results["estimator"]):
+  ...     scores.append(
+  ...         balanced_accuracy_score(
+  ...             y_left_out, cv_model.predict(X_left_out)
+  ...        )
+  ...     )
+  >>> print(
+  ...     f"Balanced accuracy mean +/- std. dev.: "
+  ...     f"{np.mean(scores):.3f} +/- {np.std(scores):.3f}"
+  ... )
+  Balanced accuracy mean +/- std. dev.: 0.698 +/- 0.014
+
+We see that the performance is now worse than the cross-validated performance. 
 Indeed, the data leakage gave us too optimistic results due to the reason
 stated earlier in this section.
 
