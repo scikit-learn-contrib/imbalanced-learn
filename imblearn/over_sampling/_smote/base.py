@@ -363,6 +363,7 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
             self._sample_indices
         except AttributeError:
             self._sample_indices = np.stack((np.arange(len(y)), np.zeros(len(y)))).T
+            return X_resampled, y_resampled
 
         self._sample_indices = np.concatenate(
             (np.stack((np.arange(len(y)), np.zeros(len(y)))).T, self._sample_indices),

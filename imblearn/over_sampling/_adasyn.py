@@ -156,6 +156,8 @@ ADASYN # doctest: +NORMALIZE_WHITESPACE
         X_resampled = [X.copy()]
         y_resampled = [y.copy()]
 
+        self._sample_indices = np.stack((np.arange(len(y)), np.zeros(len(y)))).T
+
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
                 continue

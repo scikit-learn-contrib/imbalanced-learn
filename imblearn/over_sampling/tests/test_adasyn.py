@@ -40,6 +40,24 @@ X = np.array(
 Y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
 R_TOL = 1e-4
 
+XX = np.array(
+    [
+        [0.11622591, -0.0317206],
+        [0.77481731, 0.60935141],
+        [1.25192108, -0.22367336],
+        [0.53366841, -0.30312976],
+        [1.52091956, -0.49283504],
+        [-0.28162401, -2.10400981],
+        [0.83680821, 1.72827342],
+        [0.3084254, 0.33299982],
+        [0.70472253, -0.73309052],
+        [0.28893132, -0.38761769],
+        [1.15514042, 0.0129463],
+        [0.88407872, 0.35454207],
+    ]
+)
+YY = np.array([0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0])
+
 
 def test_ada_init():
     sampling_strategy = "auto"
@@ -155,6 +173,29 @@ def test_ada_sample_indices():
             [2, 0],
             [4, 3],
             [6, 3],
+        ]
+    )
+    assert_array_equal(indices, indices_gt)
+
+def test_ada_sample_indices_balanced_dataset():
+    nn = NearestNeighbors(n_neighbors=1)
+    ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
+    ada.fit_resample(XX, YY)
+    indices = ada.get_sample_indices()
+    indices_gt = np.array(
+        [
+            [0, 0],
+            [1, 0],
+            [2, 0],
+            [3, 0],
+            [4, 0],
+            [5, 0],
+            [6, 0],
+            [7, 0],
+            [8, 0],
+            [9, 0],
+            [10, 0],
+            [11, 0],
         ]
     )
     assert_array_equal(indices, indices_gt)
