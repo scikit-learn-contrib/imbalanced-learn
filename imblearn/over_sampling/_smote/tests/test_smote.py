@@ -204,6 +204,7 @@ def test_sample_indices():
     )
     assert_array_equal(indices, indices_gt)
 
+
 def test_sample_indices_balanced_dataset():
     smote = SMOTE(random_state=RND_SEED)
     smote.fit_resample(XX, YY)
@@ -225,6 +226,7 @@ def test_sample_indices_balanced_dataset():
         ]
     )
     assert_array_equal(indices, indices_gt)
+
 
 def test_sample_indices_is_none():
     smote = SMOTE(random_state=RND_SEED)

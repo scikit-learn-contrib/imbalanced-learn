@@ -177,6 +177,7 @@ def test_ada_sample_indices():
     )
     assert_array_equal(indices, indices_gt)
 
+
 def test_ada_sample_indices_balanced_dataset():
     nn = NearestNeighbors(n_neighbors=1)
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
