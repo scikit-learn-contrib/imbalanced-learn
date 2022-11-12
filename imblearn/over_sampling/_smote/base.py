@@ -787,7 +787,8 @@ class SMOTEN(SMOTE):
         # most common category
         X_new = np.squeeze(
             stats.mode(
-                X_class[nn_indices[samples_indices]], axis=1, keepdims=True
+                X_class[nn_indices[samples_indices]],
+                axis=1,
             ).mode,
             axis=1,
         )
