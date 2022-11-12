@@ -146,7 +146,7 @@ jobs:
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.8'
         BLAS: 'openblas'
-        NUMPY_VERSION: '1.19.5'  # we cannot get an older version of the dependencies resolution
+        NUMPY_VERSION: '1.21.0'  # we cannot get an older version of the dependencies resolution
         SCIPY_VERSION: 'min'
         SKLEARN_VERSION: 'min'
         MATPLOTLIB_VERSION: 'none'
