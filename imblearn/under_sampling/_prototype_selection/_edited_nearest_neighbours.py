@@ -9,9 +9,9 @@ method."""
 from collections import Counter
 
 import numpy as np
-from scipy.stats import mode
 
 from sklearn.utils import _safe_indexing
+from sklearn.utils.fixes import _mode
 
 from ..base import BaseCleaningSampler
 from ...utils import check_neighbors_object
@@ -155,7 +155,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 nnhood_idx = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
                 nnhood_label = y[nnhood_idx]
                 if self.kind_sel == "mode":
-                    nnhood_label, _ = mode(nnhood_label, axis=1)
+                    nnhood_label, _ = _mode(nnhood_label, axis=1)
                     nnhood_bool = np.ravel(nnhood_label) == y_class
                 elif self.kind_sel == "all":
                     nnhood_label = nnhood_label == target_class

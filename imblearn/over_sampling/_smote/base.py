@@ -12,7 +12,6 @@ from collections import Counter
 
 import numpy as np
 from scipy import sparse
-from scipy import stats
 
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.utils import check_random_state
@@ -20,6 +19,7 @@ from sklearn.utils import _safe_indexing
 from sklearn.utils import check_array
 from sklearn.utils.sparsefuncs_fast import csr_mean_variance_axis0
 from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
+from sklearn.utils.fixes import _mode
 
 from ..base import BaseOverSampler
 from ...metrics.pairwise import ValueDifferenceMetric
@@ -786,7 +786,7 @@ class SMOTEN(SMOTE):
         # where for each feature individually, each category generated is the
         # most common category
         X_new = np.squeeze(
-            stats.mode(X_class[nn_indices[samples_indices]], axis=1).mode, axis=1
+            _mode(X_class[nn_indices[samples_indices]], axis=1).mode, axis=1
         )
         y_new = np.full(n_samples, fill_value=klass, dtype=y_dtype)
         return X_new, y_new
