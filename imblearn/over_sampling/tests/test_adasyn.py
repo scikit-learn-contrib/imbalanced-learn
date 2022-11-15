@@ -58,6 +58,19 @@ XX = np.array(
 )
 YY = np.array([0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0])
 
+XXX = np.array(
+    [
+        [0.915, 0.892],
+        [0.926, 0.959],
+        [0.917, 0.983],
+        [0.945, 0.967],
+        [-0.844, -0.925],
+        [-0.987, -0.946],
+        [-0.962, -0.948],
+    ]
+)
+YYY = np.array([1, 1, 1, 1, 0, 0, 0])
+
 
 def test_ada_init():
     sampling_strategy = "auto"
@@ -142,6 +155,25 @@ def test_ada_fit_resample_nn_obj():
     assert_array_equal(y_resampled, y_gt)
 
 
+@pytest.mark.parametrize(
+    "adasyn_params, err_msg",
+    [
+        (
+            {"sampling_strategy": {0: 9, 1: 12}},
+            "No samples will be generated.",
+        ),
+        (
+            {"n_neighbors": "rnd"},
+            "n_neighbors must be an interger or an object compatible with the "
+            "KNeighborsMixin API of scikit-learn",
+        ),
+    ],
+)
+def test_adasyn_error(adasyn_params, err_msg):
+    adasyn = ADASYN(**adasyn_params)
+    with pytest.raises(ValueError, match=err_msg):
+        adasyn.fit_resample(X, Y)
+
 def test_ada_sample_indices():
     nn = NearestNeighbors(n_neighbors=6)
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
@@ -208,22 +240,20 @@ def test_ada_sample_indices_is_none():
     indices = ada.get_sample_indices()
     assert_array_equal(indices, None)
 
+def test_ada_ValueError():
+    nn = NearestNeighbors(n_neighbors=2)
+    ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
+    with pytest.raises(RuntimeError) as record:
+        ada.fit_resample(XXX, YYY)
+    assert record.value.args[0] == "Not any neigbours belong to the majority" \
+                                   " class. This case will induce a NaN case" \
+                                   " with a division by zero. ADASYN is not" \
+                                   " suited for this specific dataset." \
+                                   " Use SMOTE instead."
 
-@pytest.mark.parametrize(
-    "adasyn_params, err_msg",
-    [
-        (
-            {"sampling_strategy": {0: 9, 1: 12}},
-            "No samples will be generated.",
-        ),
-        (
-            {"n_neighbors": "rnd"},
-            "n_neighbors must be an interger or an object compatible with the "
-            "KNeighborsMixin API of scikit-learn",
-        ),
-    ],
-)
-def test_adasyn_error(adasyn_params, err_msg):
-    adasyn = ADASYN(**adasyn_params)
-    with pytest.raises(ValueError, match=err_msg):
-        adasyn.fit_resample(X, Y)
+def test_ada_test_more_tags():
+    nn = NearestNeighbors(n_neighbors=2)
+    ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
+    response = ada._more_tags()
+    assert response == {'X_types': ['2darray']}
+

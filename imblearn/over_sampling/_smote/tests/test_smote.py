@@ -4,6 +4,7 @@
 # License: MIT
 
 import numpy as np
+import pytest
 
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_array_equal
@@ -232,3 +233,13 @@ def test_sample_indices_is_none():
     smote = SMOTE(random_state=RND_SEED)
     indices = smote.get_sample_indices()
     assert_array_equal(indices, None)
+
+
+def test_smote_FutureWarning():
+    smote = SMOTE(random_state=RND_SEED, n_jobs=1)
+    with pytest.warns(FutureWarning) as record:
+        smote.fit_resample(XX, YY)
+    assert len(record) == 1
+    assert record[0].message.args[0] == "The parameter `n_jobs` has been deprecated in 0.10" \
+                                      " and will be removed in 0.12. You can pass an nearest" \
+                                      " neighbors estimator where `n_jobs` is already set instead."
