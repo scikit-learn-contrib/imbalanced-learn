@@ -246,4 +246,3 @@ def test_smote_FutureWarning():
         " and will be removed in 0.12. You can pass an nearest"
         " neighbors estimator where `n_jobs` is already set instead."
     )
-

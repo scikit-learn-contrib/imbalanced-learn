@@ -59,3 +59,24 @@ def test_borderline_smote(kind, data):
 
     assert_allclose(X_res_1, X_res_2)
     assert_array_equal(y_res_1, y_res_2)
+
+
+@pytest.mark.parametrize("kind", ["borderline-1", "borderline-2"])
+def test_borderline_smote_FutureWarning(kind, data):
+    bsmote = BorderlineSMOTE(kind=kind, random_state=42, n_jobs=1)
+    bsmote_nn = BorderlineSMOTE(
+        kind=kind,
+        random_state=42,
+        k_neighbors=NearestNeighbors(n_neighbors=6),
+        m_neighbors=NearestNeighbors(n_neighbors=11),
+    )
+    with pytest.warns(FutureWarning) as record:
+        bsmote.fit_resample(*data)
+        bsmote_nn.fit_resample(*data)
+    assert len(record) == 1
+    assert (
+        record[0].message.args[0]
+        == "The parameter `n_jobs` has been deprecated in 0.10"
+        " and will be removed in 0.12. You can pass an nearest"
+        " neighbors estimator where `n_jobs` is already set instead."
+    )

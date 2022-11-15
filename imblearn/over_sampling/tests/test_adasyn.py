@@ -260,4 +260,4 @@ def test_ada_test_more_tags():
     nn = NearestNeighbors(n_neighbors=2)
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
     response = ada._more_tags()
-    assert response == {'X_types': ['2darray']}
+    assert response == {"X_types": ["2darray"]}
