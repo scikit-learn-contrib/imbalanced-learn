@@ -100,4 +100,3 @@ def test_smoten_balanced_data(data_balanced):
     X_res, y_res = sampler.fit_resample(X, y)
     assert X_res.shape == (60, 3)
     assert y_res.shape == (60,)
-
