@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-import warnings
 
 from imblearn.over_sampling import SMOTEN
 
