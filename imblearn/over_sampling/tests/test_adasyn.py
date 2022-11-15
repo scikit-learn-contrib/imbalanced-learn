@@ -174,6 +174,7 @@ def test_adasyn_error(adasyn_params, err_msg):
     with pytest.raises(ValueError, match=err_msg):
         adasyn.fit_resample(X, Y)
 
+
 def test_ada_sample_indices():
     nn = NearestNeighbors(n_neighbors=6)
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
@@ -240,20 +241,23 @@ def test_ada_sample_indices_is_none():
     indices = ada.get_sample_indices()
     assert_array_equal(indices, None)
 
+
 def test_ada_ValueError():
     nn = NearestNeighbors(n_neighbors=2)
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
     with pytest.raises(RuntimeError) as record:
         ada.fit_resample(XXX, YYY)
-    assert record.value.args[0] == "Not any neigbours belong to the majority" \
-                                   " class. This case will induce a NaN case" \
-                                   " with a division by zero. ADASYN is not" \
-                                   " suited for this specific dataset." \
-                                   " Use SMOTE instead."
+    assert (
+        record.value.args[0] == "Not any neigbours belong to the majority"
+        " class. This case will induce a NaN case"
+        " with a division by zero. ADASYN is not"
+        " suited for this specific dataset."
+        " Use SMOTE instead."
+    )
+
 
 def test_ada_test_more_tags():
     nn = NearestNeighbors(n_neighbors=2)
     ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
     response = ada._more_tags()
     assert response == {'X_types': ['2darray']}
-

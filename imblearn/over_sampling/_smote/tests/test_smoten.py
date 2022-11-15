@@ -62,15 +62,21 @@ def test_smoten_FutureWarning(data):
     with pytest.warns(FutureWarning) as record:
         sampler.fit_resample(X, y)
     assert len(record) == 2
-    assert record[0].message.args[0] == "The parameter `n_jobs` has been deprecated in 0.10" \
-                                      " and will be removed in 0.12. You can pass an nearest" \
-                                      " neighbors estimator where `n_jobs` is already set instead."
-    assert record[1].message.args[0] == "Unlike other reduction functions (e.g. `skew`, `kurtosis`)," \
-                                       " the default behavior of `mode` typically preserves the axis it" \
-                                       " acts along. In SciPy 1.11.0, this behavior will change: the default" \
-                                       " value of `keepdims` will become False, the `axis` over which the " \
-                                       "statistic is taken will be eliminated, and the value None will no longer" \
-                                       " be accepted. Set `keepdims` to True or False to avoid this warning."
+    assert (
+        record[0].message.args[0]
+        == "The parameter `n_jobs` has been deprecated in 0.10"
+        " and will be removed in 0.12. You can pass an nearest"
+        " neighbors estimator where `n_jobs` is already set instead."
+    )
+    assert (
+        record[1].message.args[0]
+        == "Unlike other reduction functions (e.g. `skew`, `kurtosis`),"
+        " the default behavior of `mode` typically preserves the axis it"
+        " acts along. In SciPy 1.11.0, this behavior will change: the default"
+        " value of `keepdims` will become False, the `axis` over which the "
+        "statistic is taken will be eliminated, and the value None will no longer"
+        " be accepted. Set `keepdims` to True or False to avoid this warning."
+    )
 
 
 @pytest.fixture
