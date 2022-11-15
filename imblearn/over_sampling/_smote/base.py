@@ -504,7 +504,7 @@ class SMOTENC(SMOTE):
             ):
                 raise ValueError(
                     f"Some of the categorical indices are out of range. Indices"
-                    f" should be between 0 and {self.n_features_}"
+                    f" should be between 0 and {self.n_features_ - 1}"
                 )
             self.categorical_features_ = categorical_features
         self.continuous_features_ = np.setdiff1d(
