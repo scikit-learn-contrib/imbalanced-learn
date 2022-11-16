@@ -191,7 +191,7 @@ which categorical data are treated differently::
   [(0, 20), (1, 30)]
 
 In this data set, the first and last features are considered as categorical
-features. One need to provide this information to :class:`SMOTENC` via the
+features. One needs to provide this information to :class:`SMOTENC` via the
 parameters ``categorical_features`` either by passing the indices of these
 features or a boolean mask marking these features::
 
