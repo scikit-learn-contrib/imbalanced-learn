@@ -11,6 +11,7 @@ from ._smote import KMeansSMOTE
 from ._smote import SVMSMOTE
 from ._smote import SMOTENC
 from ._smote import SMOTEN
+from ._mlsmote import MLSMOTE
 
 __all__ = [
     "ADASYN",
@@ -21,4 +22,5 @@ __all__ = [
     "SVMSMOTE",
     "SMOTENC",
     "SMOTEN",
+    "MLSMOTE",
 ]
