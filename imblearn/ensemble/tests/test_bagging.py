@@ -8,6 +8,7 @@ from collections import Counter
 import numpy as np
 import pytest
 
+import sklearn
 from sklearn.datasets import load_iris, make_hastie_10_2, make_classification
 from sklearn.model_selection import (
     GridSearchCV,
@@ -21,6 +22,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.feature_selection import SelectKBest
+from sklearn.utils.fixes import parse_version
 from sklearn.utils._testing import assert_array_equal
 from sklearn.utils._testing import assert_array_almost_equal
 from sklearn.utils._testing import assert_allclose
@@ -32,6 +34,7 @@ from imblearn.over_sampling import RandomOverSampler, SMOTE
 from imblearn.pipeline import make_pipeline
 from imblearn.under_sampling import ClusterCentroids, RandomUnderSampler
 
+sklearn_version = parse_version(sklearn.__version__)
 iris = load_iris()
 
 
@@ -619,9 +622,23 @@ def test_balanced_bagging_classifier_n_features():
         estimator.n_features_
 
 
+@pytest.mark.skipif(
+    sklearn_version < parse_version("1.2"), reason="requires scikit-learn>=1.2"
+)
 def test_balanced_bagging_classifier_base_estimator():
     """Check that we raise a FutureWarning when accessing `base_estimator_`."""
     X, y = load_iris(return_X_y=True)
     estimator = BalancedBaggingClassifier().fit(X, y)
     with pytest.warns(FutureWarning, match="`base_estimator_` was deprecated"):
         estimator.base_estimator_
+
+
+def test_balanced_bagging_classifier_set_both_estimator_and_base_estimator():
+    """Check that we raise a ValueError when setting both `estimator` and
+    `base_estimator`."""
+    X, y = load_iris(return_X_y=True)
+    err_msg = "Both `estimator` and `base_estimator` were set. Only set `estimator`."
+    with pytest.raises(ValueError, match=err_msg):
+        BalancedBaggingClassifier(
+            estimator=KNeighborsClassifier(), base_estimator=KNeighborsClassifier()
+        ).fit(X, y)

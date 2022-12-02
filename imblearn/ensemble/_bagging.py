@@ -270,9 +270,7 @@ BalancedBaggingClassifier # doctest:
         base_estimator="deprecated",
     ):
 
-        # TODO: remove in 0.12
-        # We will be aligned with the signature of BaggingClassifier from
-        # scikit-learn 1.4
+        # TODO: remove when supporting scikit-learn>=1.2
         bagging_classifier_signature = inspect.signature(super().__init__)
         estimator_params = {"base_estimator": base_estimator}
         if "estimator" in bagging_classifier_signature.parameters:
@@ -350,21 +348,14 @@ BalancedBaggingClassifier # doctest:
         if self.sampler_._sampling_type != "bypass":
             self.sampler_.set_params(sampling_strategy=self._sampling_strategy)
 
+        self._estimator = Pipeline(
+            [("sampler", self.sampler_), ("classifier", base_estimator)]
+        )
         try:
-            self.base_estimator_ = Pipeline(
-                [
-                    ("sampler", self.sampler_),
-                    ("classifier", base_estimator),
-                ]
-            )
-            self._estimator = self.base_estimator_
+            # scikit-learn < 1.2
+            self.base_estimator_ = self._estimator
         except AttributeError:
-            self._estimator = Pipeline(
-                [
-                    ("sampler", self.sampler_),
-                    ("classifier", base_estimator),
-                ]
-            )
+            pass
 
     # TODO: remove when supporting scikit-learn>=1.4
     @property
