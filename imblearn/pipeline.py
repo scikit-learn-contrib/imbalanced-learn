@@ -90,7 +90,7 @@ class Pipeline(pipeline.Pipeline):
     >>> from sklearn.neighbors import KNeighborsClassifier as KNN
     >>> from sklearn.metrics import classification_report
     >>> from imblearn.over_sampling import SMOTE
-    >>> from imblearn.pipeline import Pipeline # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.pipeline import Pipeline # doctest:
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -101,7 +101,7 @@ class Pipeline(pipeline.Pipeline):
     >>> knn = KNN()
     >>> pipeline = Pipeline([('smt', smt), ('pca', pca), ('knn', knn)])
     >>> X_train, X_test, y_train, y_test = tts(X, y, random_state=42)
-    >>> pipeline.fit(X_train, y_train) # doctest: +ELLIPSIS
+    >>> pipeline.fit(X_train, y_train) # doctest:
     Pipeline(...)
     >>> y_hat = pipeline.predict(X_test)
     >>> print(classification_report(y_test, y_hat))
@@ -437,7 +437,7 @@ def make_pipeline(*steps, memory=None, verbose=False):
     >>> from sklearn.naive_bayes import GaussianNB
     >>> from sklearn.preprocessing import StandardScaler
     >>> make_pipeline(StandardScaler(), GaussianNB(priors=None))
-    ... # doctest: +NORMALIZE_WHITESPACE
+    ... # doctest:
     Pipeline(steps=[('standardscaler', StandardScaler()),
                     ('gaussiannb', GaussianNB())])
     """

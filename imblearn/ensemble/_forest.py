@@ -12,7 +12,7 @@ from numpy import float32 as DTYPE
 from numpy import float64 as DOUBLE
 from scipy.sparse import issparse
 
-from joblib import Parallel, delayed
+from joblib import Parallel
 
 from sklearn.base import clone, is_classifier
 from sklearn.ensemble import RandomForestClassifier
@@ -24,6 +24,7 @@ from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import check_random_state
 from sklearn.utils import _safe_indexing
+from sklearn.utils.fixes import delayed
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _check_sample_weight
 
@@ -314,9 +315,9 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     ...                            n_informative=4, weights=[0.2, 0.3, 0.5],
     ...                            random_state=0)
     >>> clf = BalancedRandomForestClassifier(max_depth=2, random_state=0)
-    >>> clf.fit(X, y)  # doctest: +ELLIPSIS
+    >>> clf.fit(X, y)  # doctest:
     BalancedRandomForestClassifier(...)
-    >>> print(clf.feature_importances_)  # doctest: +ELLIPSIS
+    >>> print(clf.feature_importances_)  # doctest:
     [...]
     >>> print(clf.predict([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ...                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]))
