@@ -7,7 +7,6 @@
 from collections import Counter
 
 import numpy as np
-from scipy.stats import mode
 
 from sklearn.utils import _safe_indexing
 
@@ -17,6 +16,8 @@ from ...utils import check_neighbors_object
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
 from ...utils._validation import _deprecate_positional_args
+from ...utils.fixes import _mode
+
 
 SEL_KIND = ("all", "mode")
 
@@ -182,7 +183,7 @@ NeighbourhoodCleaningRule # doctest:
         nnhood_idx = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
         nnhood_label = y[nnhood_idx]
         if self.kind_sel == "mode":
-            nnhood_label_majority, _ = mode(nnhood_label, axis=1)
+            nnhood_label_majority, _ = _mode(nnhood_label, axis=1)
             nnhood_bool = np.ravel(nnhood_label_majority) == y_class
         elif self.kind_sel == "all":
             nnhood_label_majority = nnhood_label == class_minority
