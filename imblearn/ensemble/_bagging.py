@@ -269,7 +269,6 @@ BalancedBaggingClassifier # doctest:
         sampler=None,
         base_estimator="deprecated",
     ):
-
         # TODO: remove when supporting scikit-learn>=1.2
         bagging_classifier_signature = inspect.signature(super().__init__)
         estimator_params = {"base_estimator": base_estimator}
