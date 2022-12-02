@@ -4,7 +4,9 @@
 #          Christos Aridas
 # License: MIT
 
+import inspect
 import numbers
+import warnings
 
 import numpy as np
 
@@ -229,7 +231,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
     @_deprecate_positional_args
     def __init__(
         self,
-        base_estimator=None,
+        estimator=None,
         n_estimators=10,
         *,
         max_samples=1.0,
@@ -244,10 +246,21 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         random_state=None,
         verbose=0,
         sampler=None,
+        base_estimator="deprecated",
     ):
 
+        # TODO: remove in 0.12
+        # We will be aligned with the signature of BaggingClassifier from
+        # scikit-learn 1.4
+        bagging_classifier_signature = inspect.signature(super().__init__)
+        estimator_params = {"base_estimator": base_estimator}
+        if "estimator" in bagging_classifier_signature.parameters:
+            estimator_params["estimator"] = estimator
+        else:
+            self.estimator = estimator
+
         super().__init__(
-            base_estimator,
+            **estimator_params,
             n_estimators=n_estimators,
             max_samples=max_samples,
             max_features=max_features,
@@ -294,7 +307,21 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
                 f"n_estimators must be greater than zero, " f"got {self.n_estimators}."
             )
 
-        if self.base_estimator is not None:
+        if self.estimator is not None and (
+            self.base_estimator not in [None, "deprecated"]
+        ):
+            raise ValueError(
+                "Both `estimator` and `base_estimator` were set. Only set `estimator`."
+            )
+
+        if self.estimator is not None:
+            base_estimator = clone(self.estimator)
+        elif self.base_estimator not in [None, "deprecated"]:
+            warnings.warn(
+                "`base_estimator` was renamed to `estimator` in version 0.10 and "
+                "will be removed in 0.12.",
+                FutureWarning,
+            )
             base_estimator = clone(self.base_estimator)
         else:
             base_estimator = clone(default)
@@ -302,12 +329,27 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         if self.sampler_._sampling_type != "bypass":
             self.sampler_.set_params(sampling_strategy=self._sampling_strategy)
 
-        self.base_estimator_ = Pipeline(
-            [
-                ("sampler", self.sampler_),
-                ("classifier", base_estimator),
-            ]
-        )
+        try:
+            self.base_estimator_ = Pipeline(
+                [
+                    ("sampler", self.sampler_),
+                    ("classifier", base_estimator),
+                ]
+            )
+            self._estimator = self.base_estimator_
+        except AttributeError:
+            self._estimator = Pipeline(
+                [
+                    ("sampler", self.sampler_),
+                    ("classifier", base_estimator),
+                ]
+            )
+
+    # TODO: remove in 0.12
+    @property
+    def estimator_(self):
+        """Estimator used to grow the ensemble."""
+        return self._estimator
 
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training set (X, y).
