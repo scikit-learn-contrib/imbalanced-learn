@@ -67,7 +67,7 @@ elif [[ "$DISTRIB" == "conda-pip-latest" ]]; then
     make_conda "python=$PYTHON_VERSION"
     python -m pip install -U pip
 
-    python -m pip install scikit-learn pandas matplotlib
+    python -m pip --pre install scikit-learn pandas matplotlib
 
 elif [[ "$DISTRIB" == "conda-pip-latest-tensorflow" ]]; then
     make_conda "python=$PYTHON_VERSION"
