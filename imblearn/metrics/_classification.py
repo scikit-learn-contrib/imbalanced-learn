@@ -856,9 +856,8 @@ def classification_report_imbalanced(
     >>> import numpy as np
     >>> from imblearn.metrics import classification_report_imbalanced
     >>> y_true = [0, 1, 2, 2, 2]
-    >>> y_pred = [0, 0, 2, 2, 1] # doctest :
-    >>> target_names = ['class 0', 'class 1', \
-    'class 2'] # doctest :
+    >>> y_pred = [0, 0, 2, 2, 1]
+    >>> target_names = ['class 0', 'class 1', 'class 2']
     >>> print(classification_report_imbalanced(y_true, y_pred, \
     target_names=target_names))
                        pre       rec       spe        f1       geo       iba\
