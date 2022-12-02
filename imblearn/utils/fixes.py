@@ -1,20 +1,14 @@
-"""Compatibility fixes for older version of python, numpy and scipy
-If you add content to this file, please give the version of the package
-at which the fix is no longer needed.
+"""Compatibility fixes for older version of python, numpy, scipy, and
+scikit-learn.
 
-Backdated from scikit-learn.
+If you add content to this file, please give the version of the package at
+which the fix is no longer needed.
 """
-# Authors: Emmanuelle Gouillart <emmanuelle.gouillart@normalesup.org>
-#          Gael Varoquaux <gael.varoquaux@normalesup.org>
-#          Fabian Pedregosa <fpedregosa@acm.org>
-#          Lars Buitinck
-#
-# License: BSD 3 clause
 
-from sklearn.externals._packaging.version import parse as parse_version
 import scipy
 import scipy.stats
 
+from sklearn.utils.fixes import parse_version
 
 sp_version = parse_version(scipy.__version__)
 
