@@ -52,4 +52,4 @@ class BaseOverSampler(BaseSampler):
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
-        """.strip()
+        """.strip()  # noqa: E501
