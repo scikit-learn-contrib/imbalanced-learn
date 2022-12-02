@@ -19,7 +19,6 @@ from sklearn.utils import _safe_indexing
 from sklearn.utils import check_array
 from sklearn.utils.sparsefuncs_fast import csr_mean_variance_axis0
 from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
-from sklearn.utils.fixes import _mode
 
 from ..base import BaseOverSampler
 from ...metrics.pairwise import ValueDifferenceMetric
@@ -29,6 +28,7 @@ from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
 from ...utils._docstring import _random_state_docstring
 from ...utils._validation import _deprecate_positional_args
+from ...utils.fixes import _mode
 
 
 class BaseSMOTE(BaseOverSampler):
