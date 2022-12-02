@@ -231,9 +231,21 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     Attributes
     ----------
+    estimator_ : :class:`~sklearn.tree.DecisionTreeClassifier` instance
+        The child estimator template used to create the collection of fitted
+        sub-estimators.
+
+        .. versionadded:: 0.10
+
     base_estimator_ : :class:`~sklearn.tree.DecisionTreeClassifier` instance
         The child estimator template used to create the collection of fitted
         sub-estimators.
+
+        .. deprecated:: 1.2
+           `base_estimator_` is deprecated in `scikit-learn` 1.2 and will be
+           removed in 1.4. Use `estimator_` instead. When the minimum version
+           of `scikit-learn` supported by `imbalanced-learn` will reach 1.4,
+           this attribute will be removed.
 
     estimators_ : list of :class:`~sklearn.tree.DecisionTreeClassifier`
         The collection of fitted sub-estimators.
@@ -256,12 +268,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         number of classes for each output (multi-output problem).
 
     n_features_ : int
-        The number of features when ``fit`` is performed.
+        The number of features when `fit` is performed.
 
         .. deprecated:: 1.0
            `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
-           in version 1.2. Depending of the version of `scikit-learn` installed,
-           you will get be warned or not.
+           in version 1.2. When the minimum version of `scikit-learn` supported
+           by `imbalanced-learn` will reach 1.2, this attribute will be removed.
 
     n_features_in_ : int
         Number of features in the input dataset.
@@ -386,10 +398,21 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                 f"n_estimators must be greater than zero, " f"got {self.n_estimators}."
             )
 
-        if self.base_estimator is not None:
-            self.base_estimator_ = clone(self.base_estimator)
+        if hasattr(self, "estimator"):
+            base_estimator = self.estimator
         else:
-            self.base_estimator_ = clone(default)
+            base_estimator = self.base_estimator
+
+        if base_estimator is not None:
+            self._estimator = clone(base_estimator)
+        else:
+            self._estimator = clone(default)
+
+        try:
+            # scikit-learn < 1.2
+            self.base_estimator_ = self._estimator
+        except AttributeError:
+            pass
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self._sampling_strategy,
@@ -401,7 +424,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         Warning: This method should be used to properly instantiate new
         sub-estimators.
         """
-        estimator = clone(self.base_estimator_)
+        estimator = clone(self._estimator)
         estimator.set_params(**{p: getattr(self, p) for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
@@ -692,10 +715,23 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         return oob_pred
 
+    # TODO: remove when supporting scikit-learn>=1.4
+    @property
+    def estimator_(self):
+        """Estimator used to grow the ensemble."""
+        return self._estimator
+
+    # TODO: remove when supporting scikit-learn>=1.2
     @property
     def n_features_(self):
-        """Number of features when fitting the estimator."""
-        return getattr(self.n_features_in_, "n_features_", self._n_features)
+        """Number of features when ``fit`` is performed."""
+        warn(
+            "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
+            "not be accessible when the minimum supported version of scikit-learn "
+            "is 1.2.",
+            FutureWarning,
+        )
+        return self.n_features_in_
 
     def _more_tags(self):
         return {
