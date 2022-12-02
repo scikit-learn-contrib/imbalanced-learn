@@ -1,3 +1,6 @@
+import inspect
+import numbers
+import warnings
 from copy import deepcopy
 
 import numpy as np
@@ -5,7 +8,9 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble._base import _set_random_states
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing
+from sklearn.utils.validation import has_fit_parameter
 
 from ..under_sampling.base import BaseUnderSampler
 from ..under_sampling import RandomUnderSampler
@@ -31,11 +36,13 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
     Parameters
     ----------
-    base_estimator : estimator object, default=None
+    estimator : estimator object, default=None
         The base estimator from which the boosted ensemble is built.
         Support for sample weighting is required, as well as proper
         ``classes_`` and ``n_classes_`` attributes. If ``None``, then
         the base estimator is ``DecisionTreeClassifier(max_depth=1)``.
+
+        .. versionadded:: 0.12
 
     n_estimators : int, default=50
         The maximum number of estimators at which boosting is terminated.
@@ -60,10 +67,31 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
     {random_state}
 
+    base_estimator : estimator object, default=None
+        The base estimator from which the boosted ensemble is built.
+        Support for sample weighting is required, as well as proper
+        ``classes_`` and ``n_classes_`` attributes. If ``None``, then
+        the base estimator is ``DecisionTreeClassifier(max_depth=1)``.
+
+        .. deprecated:: 0.10
+           `base_estimator` is deprecated in version 0.10 and will be removed
+           in 0.12. Use `estimator` instead.
+
     Attributes
     ----------
+    estimator_ : estimator
+        The base estimator from which the ensemble is grown.
+
+        .. versionadded:: 0.10
+
     base_estimator_ : estimator
         The base estimator from which the ensemble is grown.
+
+        .. deprecated:: 1.2
+           `base_estimator_` is deprecated in `scikit-learn` 1.2 and will be
+           removed in 1.4. Use `estimator_` instead. When the minimum version
+           of `scikit-learn` supported by `imbalanced-learn` will reach 1.4,
+           this attribute will be removed.
 
     estimators_ : list of classifiers
         The collection of fitted sub-estimators.
@@ -125,16 +153,16 @@ class RUSBoostClassifier(AdaBoostClassifier):
     ...                            n_informative=4, weights=[0.2, 0.3, 0.5],
     ...                            random_state=0)
     >>> clf = RUSBoostClassifier(random_state=0)
-    >>> clf.fit(X, y)  # doctest: +ELLIPSIS
+    >>> clf.fit(X, y)  # doctest:
     RUSBoostClassifier(...)
-    >>> clf.predict(X)  # doctest: +ELLIPSIS
+    >>> clf.predict(X)  # doctest:
     array([...])
     """
 
     @_deprecate_positional_args
     def __init__(
         self,
-        base_estimator=None,
+        estimator=None,
         *,
         n_estimators=50,
         learning_rate=1.0,
@@ -142,9 +170,18 @@ class RUSBoostClassifier(AdaBoostClassifier):
         sampling_strategy="auto",
         replacement=False,
         random_state=None,
+        base_estimator="deprecated",
     ):
+        # TODO: remove when supporting scikit-learn>=1.2
+        bagging_classifier_signature = inspect.signature(super().__init__)
+        estimator_params = {"base_estimator": base_estimator}
+        if "estimator" in bagging_classifier_signature.parameters:
+            estimator_params["estimator"] = estimator
+        else:
+            self.estimator = estimator
+
         super().__init__(
-            base_estimator=base_estimator,
+            **estimator_params,
             n_estimators=n_estimators,
             learning_rate=learning_rate,
             algorithm=algorithm,
@@ -181,9 +218,65 @@ class RUSBoostClassifier(AdaBoostClassifier):
         return self
 
     def _validate_estimator(self):
-        """Check the estimator and the n_estimator attribute, set the
-        `base_estimator_` attribute."""
-        super()._validate_estimator()
+        """Check the estimator and the n_estimator attribute.
+
+        Sets the `estimator_` attributes.
+        """
+        if not isinstance(self.n_estimators, numbers.Integral):
+            raise ValueError(
+                "n_estimators must be an integer, got {0}.".format(
+                    type(self.n_estimators)
+                )
+            )
+
+        if self.n_estimators <= 0:
+            raise ValueError(
+                "n_estimators must be greater than zero, got {0}.".format(
+                    self.n_estimators
+                )
+            )
+
+        if self.estimator is not None and (
+            self.base_estimator not in [None, "deprecated"]
+        ):
+            raise ValueError(
+                "Both `estimator` and `base_estimator` were set. Only set `estimator`."
+            )
+
+        default = DecisionTreeClassifier(max_depth=1)
+        if self.estimator is not None:
+            base_estimator = clone(self.estimator)
+        elif self.base_estimator not in [None, "deprecated"]:
+            warnings.warn(
+                "`base_estimator` was renamed to `estimator` in version 0.10 and "
+                "will be removed in 0.12.",
+                FutureWarning,
+            )
+            base_estimator = clone(self.base_estimator)
+        else:
+            base_estimator = clone(default)
+
+        self._estimator = base_estimator
+        try:
+            # scikit-learn < 1.2
+            self.base_estimator_ = self._estimator
+        except AttributeError:
+            pass
+
+        #  SAMME-R requires predict_proba-enabled estimators
+        if self.algorithm == "SAMME.R":
+            if not hasattr(self._estimator, "predict_proba"):
+                raise TypeError(
+                    "AdaBoostClassifier with algorithm='SAMME.R' requires "
+                    "that the weak learner supports the calculation of class "
+                    "probabilities with a predict_proba method.\n"
+                    "Please change the base estimator or set "
+                    "algorithm='SAMME' instead."
+                )
+        if not has_fit_parameter(self._estimator, "sample_weight"):
+            raise ValueError(
+                f"{self._estimator.__class__.__name__} doesn't support sample_weight."
+            )
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self.sampling_strategy,
@@ -195,7 +288,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
         Warning: This method should be used to properly instantiate new
         sub-estimators.
         """
-        estimator = clone(self.base_estimator_)
+        estimator = clone(self._estimator)
         estimator.set_params(**{p: getattr(self, p) for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
@@ -323,3 +416,9 @@ class RUSBoostClassifier(AdaBoostClassifier):
             sample_weight *= np.exp(estimator_weight * incorrect * (sample_weight > 0))
 
         return sample_weight, estimator_weight, estimator_error
+
+    # TODO: remove when supporting scikit-learn>=1.4
+    @property
+    def estimator_(self):
+        """Estimator used to grow the ensemble."""
+        return self._estimator

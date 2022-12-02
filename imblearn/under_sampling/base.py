@@ -52,7 +52,7 @@ class BaseUnderSampler(BaseSampler):
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
-        """.rstrip()
+        """.rstrip()  # noqa: E501
 
 
 class BaseCleaningSampler(BaseSampler):

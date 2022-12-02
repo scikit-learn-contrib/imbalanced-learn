@@ -40,7 +40,7 @@ a classifier::
 
   >>> from sklearn.svm import LinearSVC
   >>> clf = LinearSVC()
-  >>> clf.fit(X_resampled, y_resampled) # doctest : +ELLIPSIS
+  >>> clf.fit(X_resampled, y_resampled)
   LinearSVC(...)
 
 In the figure below, we compare the decision functions of a classifier trained

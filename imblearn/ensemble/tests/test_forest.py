@@ -2,13 +2,17 @@ import pytest
 
 import numpy as np
 
-from sklearn.datasets import make_classification
+import sklearn
+from sklearn.datasets import make_classification, load_iris
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
+from sklearn.utils.fixes import parse_version
 from sklearn.utils._testing import assert_allclose
 from sklearn.utils._testing import assert_array_equal
 
 from imblearn.ensemble import BalancedRandomForestClassifier
+
+sklearn_version = parse_version(sklearn.__version__)
 
 
 @pytest.fixture
@@ -188,3 +192,22 @@ def test_balanced_random_forest_oob_binomial(ratio):
     erf = BalancedRandomForestClassifier(oob_score=True, random_state=42)
     erf.fit(X, y)
     assert np.abs(erf.oob_score_ - 0.5) < 0.1
+
+
+def test_balanced_bagging_classifier_n_features():
+    """Check that we raise a FutureWarning when accessing `n_features_`."""
+    X, y = load_iris(return_X_y=True)
+    estimator = BalancedRandomForestClassifier().fit(X, y)
+    with pytest.warns(FutureWarning, match="`n_features_` was deprecated"):
+        estimator.n_features_
+
+
+@pytest.mark.skipif(
+    sklearn_version < parse_version("1.2"), reason="requires scikit-learn>=1.2"
+)
+def test_balanced_bagging_classifier_base_estimator():
+    """Check that we raise a FutureWarning when accessing `base_estimator_`."""
+    X, y = load_iris(return_X_y=True)
+    estimator = BalancedRandomForestClassifier().fit(X, y)
+    with pytest.warns(FutureWarning, match="`base_estimator_` was deprecated"):
+        estimator.base_estimator_
