@@ -43,9 +43,11 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     Parameters
     ----------
-    base_estimator : estimator object, default=None
+    estimator : estimator object, default=None
         The base estimator to fit on random subsets of the dataset.
         If None, then the base estimator is a decision tree.
+
+        .. versionadded:: 0.10
 
     n_estimators : int, default=10
         The number of base estimators in the ensemble.
@@ -102,18 +104,37 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
         .. versionadded:: 0.8
 
+    base_estimator : estimator object, default=None
+        The base estimator to fit on random subsets of the dataset.
+        If None, then the base estimator is a decision tree.
+
+        .. deprecated:: 0.10
+           `base_estimator` was renamed to `estimator` in version 0.10 and
+           will be removed in 0.12.
+
     Attributes
     ----------
+    estimator_ : estimator
+        The base estimator from which the ensemble is grown.
+
+        .. versionadded:: 0.10
+
     base_estimator_ : estimator
         The base estimator from which the ensemble is grown.
+
+        .. deprecated:: 1.2
+           `base_estimator_` is deprecated in `scikit-learn` 1.2 and will be
+           removed in 1.4. Use `estimator_` instead. When the minimum version
+           of `scikit-learn` supported by `imbalanced-learn` will reach 1.4,
+           this attribute will be removed.
 
     n_features_ : int
         The number of features when `fit` is performed.
 
         .. deprecated:: 1.0
            `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
-           in version 1.2. Depending of the version of `scikit-learn` installed,
-           you will get be warned or not.
+           in version 1.2. When the minimum version of `scikit-learn` supported
+           by `imbalanced-learn` will reach 1.2, this attribute will be removed.
 
     estimators_ : list of estimators
         The collection of fitted base estimators.
@@ -345,11 +366,23 @@ BalancedBaggingClassifier # doctest:
                 ]
             )
 
-    # TODO: remove in 0.12
+    # TODO: remove when supporting scikit-learn>=1.4
     @property
     def estimator_(self):
         """Estimator used to grow the ensemble."""
         return self._estimator
+
+    # TODO: remove when supporting scikit-learn>=1.2
+    @property
+    def n_features_(self):
+        """Number of features when ``fit`` is performed."""
+        warnings.warn(
+            "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
+            "not be accessible when the minimum supported version of scikit-learn "
+            "is 1.2.",
+            FutureWarning,
+        )
+        return self.n_features_in_
 
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training set (X, y).

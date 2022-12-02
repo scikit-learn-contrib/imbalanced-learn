@@ -609,3 +609,19 @@ def test_balanced_bagging_classifier_with_function_sampler(replace):
     for estimator in rbb.estimators_:
         class_counts = estimator[-1].class_counts_
         assert (class_counts[0] / class_counts[1]) > 0.8
+
+
+def test_balanced_bagging_classifier_n_features():
+    """Check that we raise a FutureWarning when accessing `n_features_`."""
+    X, y = load_iris(return_X_y=True)
+    estimator = BalancedBaggingClassifier().fit(X, y)
+    with pytest.warns(FutureWarning, match="`n_features_` was deprecated"):
+        estimator.n_features_
+
+
+def test_balanced_bagging_classifier_base_estimator():
+    """Check that we raise a FutureWarning when accessing `base_estimator_`."""
+    X, y = load_iris(return_X_y=True)
+    estimator = BalancedBaggingClassifier().fit(X, y)
+    with pytest.warns(FutureWarning, match="`base_estimator_` was deprecated"):
+        estimator.base_estimator_
