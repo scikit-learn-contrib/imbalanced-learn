@@ -236,8 +236,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.model_selection import train_test_split
     >>> from sklearn.metrics import confusion_matrix
-    >>> from imblearn.ensemble import \
-BalancedBaggingClassifier
+    >>> from imblearn.ensemble import BalancedBaggingClassifier
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)

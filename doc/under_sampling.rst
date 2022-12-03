@@ -121,9 +121,9 @@ It would also work with pandas dataframe::
   >>> from sklearn.datasets import fetch_openml
   >>> df_adult, y_adult = fetch_openml(
   ...     'adult', version=2, as_frame=True, return_X_y=True)
-  >>> df_adult.head() # doctest: +SKIP
+  >>> df_adult.head()  # doctest: +SKIP
   >>> df_resampled, y_resampled = rus.fit_resample(df_adult, y_adult)
-  >>> df_resampled.head() # doctest: +SKIP
+  >>> df_resampled.head()  # doctest: +SKIP
 
 :class:`NearMiss` adds some heuristic rules to select samples
 :cite:`mani2003knn`. :class:`NearMiss` implements 3 different types of
