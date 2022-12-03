@@ -81,6 +81,18 @@ class Pipeline(pipeline.Pipeline):
     -----
     See :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py`
 
+    .. warning::
+       A surprising behaviour of the `imbalanced-learn` pipeline is that it
+       breaks the `scikit-learn` contract where one expects
+       `estimmator.fit_transform(X, y)` to be equivalent to
+       `estimator.fit(X, y).transform(X)`.
+
+       The semantic of `fit_resample` is to be applied only during the fit
+       stage. Therefore, resampling will happen when calling `fit_transform`
+       while it will only happen on the `fit` stage when calling `fit` and
+       `transform` separately. Practically, `fit_transform` will lead to a
+       resampled dataset while `fit` and `transform` will not.
+
     Examples
     --------
     >>> from collections import Counter
