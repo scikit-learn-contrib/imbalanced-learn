@@ -74,7 +74,6 @@ print(f"The positive label considered as the minority class is {pos_label}")
 
 from sklearn.neighbors import KNeighborsClassifier
 
-# %%
 from imblearn import FunctionSampler
 from imblearn.over_sampling import ADASYN, SMOTE, RandomOverSampler
 from imblearn.pipeline import make_pipeline
@@ -145,6 +144,7 @@ fig.suptitle("Comparison of over-sampling methods \nwith a 3NN classifier")
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1])
 sns.despine(offset=10, ax=ax)
+plt.legend(loc="lower right", fontsize=16)
 plt.tight_layout()
 plt.show()
 

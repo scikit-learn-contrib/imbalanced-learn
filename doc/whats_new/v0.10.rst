@@ -6,6 +6,12 @@ Version 0.10.0 (ongoing)
 Changelog
 ---------
 
+Compatibility
+.............
+
+- Maintenance release for be compatible with scikit-learn >= 1.0.2.
+  :pr:`946`, :pr:`947`, :pr:`949` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 
@@ -18,6 +24,14 @@ Deprecation
   :class:`~imblearn.over_sampling.SVMSMOTE`. Instead, pass a nearest neighbors
   estimator where `n_jobs` is set.
   :pr:`887` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- The parameter `base_estimator` is deprecated and will be removed in version
+  0.12. It is impacted the following classes:
+  :class:`~imblearn.ensemble.BalancedBaggingClassifier`,
+  :class:`~imblearn.ensemble.EasyEnsembleClassifier`,
+  :class:`~imblearn.ensemble.RUSBoostClassifier`.
+  :pr:`946` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 
 Enhancements
 ............

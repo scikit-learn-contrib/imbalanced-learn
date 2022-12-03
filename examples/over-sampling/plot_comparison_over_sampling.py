@@ -262,6 +262,8 @@ fig.tight_layout()
 # density.
 
 # %%
+from sklearn.cluster import MiniBatchKMeans
+
 from imblearn.over_sampling import SVMSMOTE, BorderlineSMOTE, KMeansSMOTE
 
 X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
@@ -272,7 +274,9 @@ samplers = [
     SMOTE(random_state=0),
     BorderlineSMOTE(random_state=0, kind="borderline-1"),
     BorderlineSMOTE(random_state=0, kind="borderline-2"),
-    KMeansSMOTE(random_state=0),
+    KMeansSMOTE(
+        kmeans_estimator=MiniBatchKMeans(n_init=1, random_state=0), random_state=0
+    ),
     SVMSMOTE(random_state=0),
 ]
 

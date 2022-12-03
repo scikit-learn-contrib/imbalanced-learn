@@ -296,7 +296,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         .. versionadded:: 0.9
 
-    feature_names_in_ : ndarray of shape (n_features_in_,)
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
         Names of features seen during `fit`. Defined only when `X` has feature
         names that are all strings.
 

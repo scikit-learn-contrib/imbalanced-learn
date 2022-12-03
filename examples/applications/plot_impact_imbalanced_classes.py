@@ -345,7 +345,7 @@ from imblearn.ensemble import BalancedBaggingClassifier
 bag_clf = make_pipeline(
     preprocessor_tree,
     BalancedBaggingClassifier(
-        base_estimator=HistGradientBoostingClassifier(random_state=42),
+        estimator=HistGradientBoostingClassifier(random_state=42),
         n_estimators=10,
         random_state=42,
         n_jobs=2,
