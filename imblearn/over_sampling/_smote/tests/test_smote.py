@@ -229,4 +229,3 @@ def test_sample_indices_is_none():
     smote = SMOTE(random_state=RND_SEED)
     indices = smote.get_sample_indices()
     assert_array_equal(indices, None)
-
