@@ -105,8 +105,8 @@ jobs:
 # Check compilation with Ubuntu bionic 18.04 LTS and scipy from conda-forge
 - template: build_tools/azure/posix.yml
   parameters:
-    name: Ubuntu_Bionic
-    vmImage: ubuntu-18.04
+    name: Ubuntu_Jammy_Jellyfish
+    vmImage: ubuntu-22.04
     dependsOn: [git_commit, linting]
     condition: |
       and(
@@ -236,7 +236,7 @@ jobs:
 - template: build_tools/azure/posix.yml
   parameters:
     name: macOS
-    vmImage: macOS-10.15
+    vmImage: macOS-11
     dependsOn: [linting, git_commit]
     condition: |
       and(
