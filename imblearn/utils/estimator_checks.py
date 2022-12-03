@@ -12,6 +12,7 @@ from functools import partial
 
 import numpy as np
 import pytest
+import sklearn
 from scipy import sparse
 from sklearn.base import clone
 from sklearn.cluster import KMeans
@@ -28,11 +29,14 @@ from sklearn.utils._testing import (
     assert_raises_regex,
 )
 from sklearn.utils.estimator_checks import _get_check_estimator_ids, _maybe_mark_xfail
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 
 from imblearn.datasets import make_imbalance
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
+
+sklearn_version = parse_version(sklearn.__version__)
 
 
 def _set_checking_parameters(estimator):
@@ -41,9 +45,13 @@ def _set_checking_parameters(estimator):
     if "n_estimators" in params:
         estimator.set_params(n_estimators=min(5, estimator.n_estimators))
     if name == "ClusterCentroids":
+        if sklearn_version < parse_version("1.1"):
+            algorithm = "full"
+        else:
+            algorithm = "lloyd"
         estimator.set_params(
             voting="soft",
-            estimator=KMeans(random_state=0, algorithm="lloyd", n_init=1),
+            estimator=KMeans(random_state=0, algorithm=algorithm, n_init=1),
         )
     if name == "KMeansSMOTE":
         estimator.set_params(kmeans_estimator=12)

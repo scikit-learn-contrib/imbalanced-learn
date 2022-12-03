@@ -67,9 +67,15 @@ def test_balanced_bagging_classifier(estimator, params):
     )
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
-    BalancedBaggingClassifier(estimator=estimator, random_state=0, **params).fit(
+    bag = BalancedBaggingClassifier(estimator=estimator, random_state=0, **params).fit(
         X_train, y_train
-    ).predict(X_test)
+    )
+    bag.predict(X_test)
+    bag.predict_proba(X_test)
+    bag.predict_log_proba(X_test)
+    bag.score(X_test, y_test)
+    if hasattr(estimator, "decision_function"):
+        bag.decision_function(X_test)
 
 
 def test_bootstrap_samples():

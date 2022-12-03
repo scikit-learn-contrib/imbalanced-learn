@@ -91,18 +91,18 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
 
     Examples
     --------
-    >>> from collections import Counter # doctest: +SKIP
-    >>> from sklearn.datasets import fetch_mldata # doctest: +SKIP
+    >>> from collections import Counter  # doctest: +SKIP
+    >>> from sklearn.datasets import fetch_mldata  # doctest: +SKIP
     >>> from imblearn.under_sampling import \
-CondensedNearestNeighbour # doctest: +SKIP
-    >>> pima = fetch_mldata('diabetes_scale') # doctest: +SKIP
-    >>> X, y = pima['data'], pima['target'] # doctest: +SKIP
-    >>> print('Original dataset shape %s' % Counter(y)) # doctest: +SKIP
-    Original dataset shape Counter({{1: 500, -1: 268}}) # doctest: +SKIP
-    >>> cnn = CondensedNearestNeighbour(random_state=42) # doctest: +SKIP
-    >>> X_res, y_res = cnn.fit_resample(X, y) #doctest: +SKIP
-    >>> print('Resampled dataset shape %s' % Counter(y_res)) # doctest: +SKIP
-    Resampled dataset shape Counter({{-1: 268, 1: 227}}) # doctest: +SKIP
+CondensedNearestNeighbour  # doctest: +SKIP
+    >>> pima = fetch_mldata('diabetes_scale')  # doctest: +SKIP
+    >>> X, y = pima['data'], pima['target']  # doctest: +SKIP
+    >>> print('Original dataset shape %s' % Counter(y))  # doctest: +SKIP
+    Original dataset shape Counter({{1: 500, -1: 268}})  # doctest: +SKIP
+    >>> cnn = CondensedNearestNeighbour(random_state=42)  # doctest: +SKIP
+    >>> X_res, y_res = cnn.fit_resample(X, y)  #doctest: +SKIP
+    >>> print('Resampled dataset shape %s' % Counter(y_res))  # doctest: +SKIP
+    Resampled dataset shape Counter({{-1: 268, 1: 227}})  # doctest: +SKIP
     """
 
     @_deprecate_positional_args
