@@ -8,7 +8,6 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.over_sampling import SMOTE
-import pytest
 
 RND_SEED = 0
 X = np.array(
@@ -231,15 +230,3 @@ def test_sample_indices_is_none():
     indices = smote.get_sample_indices()
     assert_array_equal(indices, None)
 
-
-def test_smote_FutureWarning():
-    smote = SMOTE(random_state=RND_SEED, n_jobs=1)
-    with pytest.warns(FutureWarning) as record:
-        smote.fit_resample(XX, YY)
-    assert len(record) == 1
-    assert (
-        record[0].message.args[0]
-        == "The parameter `n_jobs` has been deprecated in 0.10"
-        " and will be removed in 0.12. You can pass an nearest"
-        " neighbors estimator where `n_jobs` is already set instead."
-    )
