@@ -16,7 +16,6 @@ from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _deprecate_positional_args
 
 
 @Substitution(
@@ -164,7 +163,6 @@ class RUSBoostClassifier(AdaBoostClassifier):
     array([...])
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         estimator=None,

@@ -72,7 +72,6 @@ def test_balanced_bagging_classifier(estimator, params):
     )
     bag.predict(X_test)
     bag.predict_proba(X_test)
-    bag.predict_log_proba(X_test)
     bag.score(X_test, y_test)
     if hasattr(estimator, "decision_function"):
         bag.decision_function(X_test)

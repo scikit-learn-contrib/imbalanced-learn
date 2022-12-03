@@ -14,7 +14,6 @@ from sklearn.utils.sparsefuncs import mean_variance_axis
 
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _deprecate_positional_args
 from .base import BaseOverSampler
 
 
@@ -130,7 +129,6 @@ class RandomOverSampler(BaseOverSampler):
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         *,

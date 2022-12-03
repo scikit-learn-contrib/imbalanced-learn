@@ -9,7 +9,6 @@ from sklearn.utils import _safe_indexing, check_random_state
 
 from ...utils import Substitution, check_target_type
 from ...utils._docstring import _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
 from ..base import BaseUnderSampler
 
 
@@ -77,7 +76,6 @@ class RandomUnderSampler(BaseUnderSampler):
     Resampled dataset shape Counter({{0: 100, 1: 100}})
     """
 
-    @_deprecate_positional_args
     def __init__(
         self, *, sampling_strategy="auto", random_state=None, replacement=False
     ):

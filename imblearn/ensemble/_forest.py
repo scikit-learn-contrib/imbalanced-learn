@@ -33,7 +33,7 @@ from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._validation import _deprecate_positional_args, check_sampling_strategy
+from ..utils._validation import check_sampling_strategy
 
 MAX_INT = np.iinfo(np.int32).max
 sklearn_version = parse_version(sklearn.__version__)
@@ -352,7 +352,6 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     [1]
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         n_estimators=100,

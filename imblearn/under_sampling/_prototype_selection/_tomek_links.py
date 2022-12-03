@@ -11,7 +11,6 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
-from ...utils._validation import _deprecate_positional_args
 from ..base import BaseCleaningSampler
 
 
@@ -83,7 +82,6 @@ class TomekLinks(BaseCleaningSampler):
     Resampled dataset shape Counter({{1: 897, 0: 100}})
     """
 
-    @_deprecate_positional_args
     def __init__(self, *, sampling_strategy="auto", n_jobs=None):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_jobs = n_jobs

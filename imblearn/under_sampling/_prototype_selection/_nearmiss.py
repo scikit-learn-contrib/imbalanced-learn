@@ -12,7 +12,6 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
-from ...utils._validation import _deprecate_positional_args
 from ..base import BaseUnderSampler
 
 
@@ -105,7 +104,6 @@ class NearMiss(BaseUnderSampler):
     Resampled dataset shape Counter({{0: 100, 1: 100}})
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         *,
