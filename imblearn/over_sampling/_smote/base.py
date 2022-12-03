@@ -405,6 +405,36 @@ class SMOTENC(SMOTE):
            algorithm. From now on, you can pass an estimator where `n_jobs` is
            already set instead.
 
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    nn_k_ : estimator object
+        Validated k-nearest neighbours created from the `k_neighbors` parameter.
+
+    ohe_ : :class:`~sklearn.preprocessing.OneHotEncoder`
+        The one-hot encoder used to encode the categorical features.
+
+    categorical_features_ : ndarray of shape (n_cat_features,), dtype=np.int64
+        Indices of the categorical features.
+
+    continuous_features_ : ndarray of shape (n_cont_features,), dtype=np.int64
+        Indices of the continuous features.
+
+    median_std_ : float
+        Median of the standard deviation of the continuous features.
+
+    n_features_ : int
+        Number of features observed at `fit`.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
     See Also
     --------
     SMOTE : Over-sample using SMOTE.
