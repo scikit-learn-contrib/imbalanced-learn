@@ -34,7 +34,7 @@ if [[ "$COVERAGE" == "true" ]]; then
     TEST_CMD="$TEST_CMD --cov-config='$COVERAGE_PROCESS_START' --cov imblearn --cov-report="
 fi
 
-if [[ -n "$CHECK_WARNINGS" == "true" ]]; then
+if [[ "$CHECK_WARNINGS" == "true" ]]; then
     # numpy's 1.19.0's tostring() deprecation is ignored until scipy and joblib removes its usage
     TEST_CMD="$TEST_CMD -Werror::DeprecationWarning -Werror::FutureWarning -Wignore:tostring:DeprecationWarning"
 
