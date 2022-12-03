@@ -3,15 +3,12 @@
 #          Christos Aridas
 # License: MIT
 
-import numpy as np
 import pytest
-
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
+import numpy as np
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.over_sampling import SMOTE
-
 
 RND_SEED = 0
 X = np.array(
