@@ -45,7 +45,7 @@ def _set_checking_parameters(estimator):
     if name == "ClusterCentroids":
         estimator.set_params(
             voting="soft",
-            estimator=KMeans(random_state=0, algorithm="full", n_init=1),
+            estimator=KMeans(random_state=0, algorithm="lloyd", n_init=1),
         )
     if name == "KMeansSMOTE":
         estimator.set_params(kmeans_estimator=12)
