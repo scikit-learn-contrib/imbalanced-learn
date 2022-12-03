@@ -30,6 +30,7 @@ from sklearn.utils.deprecation import _is_deprecated
 
 import imblearn
 from imblearn.base import is_sampler
+from imblearn.utils.estimator_checks import _set_checking_parameters
 from imblearn.utils.testing import all_estimators
 
 
@@ -190,6 +191,7 @@ def test_fit_docstring_attributes(name, Estimator):
         est = _construct_compose_pipeline_instance(Estimator)
     else:
         est = _construct_instance(Estimator)
+    _set_checking_parameters(est)
 
     X, y = make_classification(
         n_samples=20,
