@@ -46,9 +46,10 @@ pd.Series(y).value_counts(normalize=True)
 # :class:`~imblearn.ensemble.BalancedBaggingClassifier` by passing different
 # sampler.
 
+from sklearn.ensemble import BaggingClassifier
+
 # %%
 from sklearn.model_selection import cross_validate
-from sklearn.ensemble import BaggingClassifier
 
 ebb = BaggingClassifier()
 cv_results = cross_validate(ebb, X, y, scoring="balanced_accuracy")
@@ -119,7 +120,9 @@ print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std(
 
 # %%
 from collections import Counter
+
 import numpy as np
+
 from imblearn import FunctionSampler
 
 

@@ -1,12 +1,9 @@
-import pytest
 import numpy as np
-
+import pytest
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
-
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.over_sampling import SVMSMOTE
 

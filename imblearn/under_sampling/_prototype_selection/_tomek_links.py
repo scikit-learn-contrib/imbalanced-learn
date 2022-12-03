@@ -9,10 +9,10 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import _safe_indexing
 
-from ..base import BaseCleaningSampler
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
 from ...utils._validation import _deprecate_positional_args
+from ..base import BaseCleaningSampler
 
 
 @Substitution(

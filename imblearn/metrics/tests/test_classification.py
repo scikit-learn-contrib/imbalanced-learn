@@ -7,29 +7,35 @@
 from functools import partial
 
 import numpy as np
-
 import pytest
-
-from sklearn import datasets
-from sklearn import svm
-
+from sklearn import datasets, svm
+from sklearn.metrics import (
+    accuracy_score,
+    average_precision_score,
+    brier_score_loss,
+    cohen_kappa_score,
+    jaccard_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 from sklearn.preprocessing import label_binarize
+from sklearn.utils._testing import (
+    assert_allclose,
+    assert_array_equal,
+    assert_no_warnings,
+)
 from sklearn.utils.validation import check_random_state
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
-from sklearn.utils._testing import assert_no_warnings
-from sklearn.metrics import accuracy_score, average_precision_score
-from sklearn.metrics import brier_score_loss, cohen_kappa_score
-from sklearn.metrics import jaccard_score, precision_score
-from sklearn.metrics import recall_score, roc_auc_score
 
-from imblearn.metrics import sensitivity_specificity_support
-from imblearn.metrics import sensitivity_score
-from imblearn.metrics import specificity_score
-from imblearn.metrics import geometric_mean_score
-from imblearn.metrics import make_index_balanced_accuracy
-from imblearn.metrics import classification_report_imbalanced
-from imblearn.metrics import macro_averaged_mean_absolute_error
+from imblearn.metrics import (
+    classification_report_imbalanced,
+    geometric_mean_score,
+    macro_averaged_mean_absolute_error,
+    make_index_balanced_accuracy,
+    sensitivity_score,
+    sensitivity_specificity_support,
+    specificity_score,
+)
 
 RND_SEED = 42
 R_TOL = 1e-2

@@ -1,16 +1,16 @@
 from collections import Counter
 
-import pytest
 import numpy as np
+import pytest
 
 from imblearn.over_sampling import (
     ADASYN,
-    BorderlineSMOTE,
-    KMeansSMOTE,
     SMOTE,
     SMOTEN,
     SMOTENC,
     SVMSMOTE,
+    BorderlineSMOTE,
+    KMeansSMOTE,
 )
 from imblearn.utils.testing import _CustomNearestNeighbors
 

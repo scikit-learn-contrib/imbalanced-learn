@@ -72,11 +72,12 @@ print(f"The positive label considered as the minority class is {pos_label}")
 #
 # We will create different pipelines and evaluate them.
 
+from sklearn.neighbors import KNeighborsClassifier
+
 # %%
 from imblearn import FunctionSampler
-from imblearn.over_sampling import ADASYN, RandomOverSampler, SMOTE
+from imblearn.over_sampling import ADASYN, SMOTE, RandomOverSampler
 from imblearn.pipeline import make_pipeline
-from sklearn.neighbors import KNeighborsClassifier
 
 classifier = KNeighborsClassifier(n_neighbors=3)
 
@@ -98,7 +99,7 @@ cv = StratifiedKFold(n_splits=3)
 # cross-validation.
 
 # %%
-from sklearn.metrics import RocCurveDisplay, roc_curve, auc
+from sklearn.metrics import RocCurveDisplay, auc, roc_curve
 
 disp = []
 for model in pipeline:

@@ -6,14 +6,11 @@
 
 from collections import Counter
 
-import pytest
-
 import numpy as np
+import pytest
 from scipy import sparse
-
 from sklearn.datasets import make_classification
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.over_sampling import SMOTENC
 

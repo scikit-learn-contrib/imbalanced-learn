@@ -4,21 +4,20 @@
 # License: MIT
 
 import pytest
-
 from sklearn.base import clone
 from sklearn.exceptions import ConvergenceWarning
+from sklearn.utils._testing import SkipTest, ignore_warnings, set_random_state
+from sklearn.utils.estimator_checks import _construct_instance
 from sklearn.utils.estimator_checks import (
     parametrize_with_checks as parametrize_with_checks_sklearn,
 )
-from sklearn.utils.estimator_checks import _construct_instance
-from sklearn.utils._testing import ignore_warnings
-from sklearn.utils._testing import set_random_state
-from sklearn.utils._testing import SkipTest
 
-from imblearn.utils.estimator_checks import parametrize_with_checks
-from imblearn.utils.estimator_checks import _set_checking_parameters
-from imblearn.utils.testing import all_estimators
 from imblearn.under_sampling import NearMiss
+from imblearn.utils.estimator_checks import (
+    _set_checking_parameters,
+    parametrize_with_checks,
+)
+from imblearn.utils.testing import all_estimators
 
 
 @pytest.mark.parametrize("name, Estimator", all_estimators())

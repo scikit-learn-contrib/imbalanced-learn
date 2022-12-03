@@ -9,15 +9,13 @@ from numbers import Real
 
 import numpy as np
 from scipy import sparse
-from sklearn.utils import check_array, check_random_state
-from sklearn.utils import _safe_indexing
+from sklearn.utils import _safe_indexing, check_array, check_random_state
 from sklearn.utils.sparsefuncs import mean_variance_axis
 
-from .base import BaseOverSampler
-from ..utils import check_target_type
-from ..utils import Substitution
+from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
 from ..utils._validation import _deprecate_positional_args
+from .base import BaseOverSampler
 
 
 @Substitution(

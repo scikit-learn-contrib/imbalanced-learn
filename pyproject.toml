@@ -1,3 +1,6 @@
 [tool.black]
 target-version = ['py38']
 include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"

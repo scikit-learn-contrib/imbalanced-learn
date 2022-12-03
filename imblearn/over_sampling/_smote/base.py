@@ -12,23 +12,19 @@ from collections import Counter
 
 import numpy as np
 from scipy import sparse
-
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-from sklearn.utils import check_random_state
-from sklearn.utils import _safe_indexing
-from sklearn.utils import check_array
-from sklearn.utils.sparsefuncs_fast import csr_mean_variance_axis0
-from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
+from sklearn.utils import _safe_indexing, check_array, check_random_state
+from sklearn.utils.sparsefuncs_fast import (
+    csc_mean_variance_axis0,
+    csr_mean_variance_axis0,
+)
 
-from ..base import BaseOverSampler
 from ...metrics.pairwise import ValueDifferenceMetric
-from ...utils import check_neighbors_object
-from ...utils import check_target_type
-from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._docstring import _random_state_docstring
+from ...utils import Substitution, check_neighbors_object, check_target_type
+from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ...utils._validation import _deprecate_positional_args
 from ...utils.fixes import _mode
+from ..base import BaseOverSampler
 
 
 class BaseSMOTE(BaseOverSampler):

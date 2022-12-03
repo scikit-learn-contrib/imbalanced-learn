@@ -20,17 +20,11 @@ from inspect import signature
 
 import numpy as np
 import scipy as sp
-
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import precision_recall_fscore_support
-from sklearn.metrics._classification import _check_targets
-from sklearn.metrics._classification import _prf_divide
+from sklearn.metrics import mean_absolute_error, precision_recall_fscore_support
+from sklearn.metrics._classification import _check_targets, _prf_divide
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.multiclass import unique_labels
-from sklearn.utils.validation import (
-    check_consistent_length,
-    column_or_1d,
-)
+from sklearn.utils.validation import check_consistent_length, column_or_1d
 
 from ..utils._validation import _deprecate_positional_args
 

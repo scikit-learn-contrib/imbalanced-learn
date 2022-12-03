@@ -50,11 +50,13 @@ X_train, X_test, y_train, y_test = train_test_split(
 # We will create a pipeline made of a :class:`~imblearn.over_sampling.SMOTE`
 # over-sampler followed by a :class:`~sklearn.svm.LinearSVC` classifier.
 
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import LinearSVC
+
+from imblearn.over_sampling import SMOTE
+
 # %%
 from imblearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from imblearn.over_sampling import SMOTE
-from sklearn.svm import LinearSVC
 
 model = make_pipeline(
     StandardScaler(),

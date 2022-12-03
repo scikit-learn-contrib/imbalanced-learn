@@ -3,14 +3,12 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
-
 import numpy as np
-
+import pytest
 from sklearn.neighbors._base import KNeighborsMixin
 
 from imblearn.base import SamplerMixin
-from imblearn.utils.testing import all_estimators, _CustomNearestNeighbors
+from imblearn.utils.testing import _CustomNearestNeighbors, all_estimators
 
 
 def test_all_estimators():

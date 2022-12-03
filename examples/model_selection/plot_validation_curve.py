@@ -48,10 +48,11 @@ X, y = make_classification(
 # search which `k_neighbors` parameter is the most adequate with the dataset
 # that we generated.
 
+from sklearn.tree import DecisionTreeClassifier
+
 # %%
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import make_pipeline
-from sklearn.tree import DecisionTreeClassifier
 
 model = make_pipeline(
     SMOTE(random_state=RANDOM_STATE), DecisionTreeClassifier(random_state=RANDOM_STATE)

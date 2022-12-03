@@ -4,26 +4,25 @@
 # License: MIT
 
 import numbers
-from warnings import warn
 from copy import deepcopy
+from warnings import warn
 
 import numpy as np
+from joblib import Parallel
 from numpy import float32 as DTYPE
 from numpy import float64 as DOUBLE
 from scipy.sparse import issparse
-
-from joblib import Parallel
-
 from sklearn.base import clone, is_classifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
-from sklearn.ensemble._forest import _get_n_samples_bootstrap
-from sklearn.ensemble._forest import _parallel_build_trees
-from sklearn.ensemble._forest import _generate_unsampled_indices
+from sklearn.ensemble._forest import (
+    _generate_unsampled_indices,
+    _get_n_samples_bootstrap,
+    _parallel_build_trees,
+)
 from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils import check_random_state
-from sklearn.utils import _safe_indexing
+from sklearn.utils import _safe_indexing, check_random_state
 from sklearn.utils.fixes import delayed
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _check_sample_weight
@@ -32,10 +31,8 @@ from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution
-from ..utils._docstring import _n_jobs_docstring
-from ..utils._docstring import _random_state_docstring
-from ..utils._validation import check_sampling_strategy
-from ..utils._validation import _deprecate_positional_args
+from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ..utils._validation import _deprecate_positional_args, check_sampling_strategy
 
 MAX_INT = np.iinfo(np.int32).max
 

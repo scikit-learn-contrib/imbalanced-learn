@@ -10,19 +10,14 @@ import warnings
 
 import numpy as np
 from scipy import sparse
-
 from sklearn.base import clone
 from sklearn.svm import SVC
-from sklearn.utils import check_random_state
-from sklearn.utils import _safe_indexing
+from sklearn.utils import _safe_indexing, check_random_state
 
-from ..base import BaseOverSampler
-from ...utils import check_neighbors_object
-from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._docstring import _random_state_docstring
+from ...utils import Substitution, check_neighbors_object
+from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ...utils._validation import _deprecate_positional_args
-
+from ..base import BaseOverSampler
 from .base import BaseSMOTE
 
 

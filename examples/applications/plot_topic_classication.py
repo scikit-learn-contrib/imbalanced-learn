@@ -87,9 +87,10 @@ print(classification_report_imbalanced(y_test, y_pred))
 # :class:`~imblearn.pipeline.make_pipeline` function implemented in
 # imbalanced-learn to properly handle the samplers.
 
+from imblearn.pipeline import make_pipeline as make_pipeline_imb
+
 # %%
 from imblearn.under_sampling import RandomUnderSampler
-from imblearn.pipeline import make_pipeline as make_pipeline_imb
 
 model = make_pipeline_imb(TfidfVectorizer(), RandomUnderSampler(), MultinomialNB())
 

@@ -5,12 +5,7 @@ perform over-sampling.
 
 from ._adasyn import ADASYN
 from ._random_over_sampler import RandomOverSampler
-from ._smote import SMOTE
-from ._smote import BorderlineSMOTE
-from ._smote import KMeansSMOTE
-from ._smote import SVMSMOTE
-from ._smote import SMOTENC
-from ._smote import SMOTEN
+from ._smote import SMOTE, SMOTEN, SMOTENC, SVMSMOTE, BorderlineSMOTE, KMeansSMOTE
 
 __all__ = [
     "ADASYN",

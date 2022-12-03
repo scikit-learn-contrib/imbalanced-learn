@@ -6,6 +6,7 @@
 # rather than the one from site-packages.
 
 import os
+
 import pytest
 
 

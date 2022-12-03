@@ -3,23 +3,20 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
-
+import pytest
 import sklearn
 from sklearn.datasets import load_iris, make_hastie_10_2
 from sklearn.ensemble import AdaBoostClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
 from sklearn.feature_selection import SelectKBest
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 from sklearn.utils.fixes import parse_version
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
 
-from imblearn.ensemble import EasyEnsembleClassifier
 from imblearn.datasets import make_imbalance
-from imblearn.under_sampling import RandomUnderSampler
+from imblearn.ensemble import EasyEnsembleClassifier
 from imblearn.pipeline import make_pipeline
+from imblearn.under_sampling import RandomUnderSampler
 
 sklearn_version = parse_version(sklearn.__version__)
 iris = load_iris()

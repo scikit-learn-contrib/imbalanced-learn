@@ -3,22 +3,21 @@
 #          Christos Aridas
 # License: MIT
 
-from collections import Counter
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 
-import pytest
 import numpy as np
-
-from sklearn.neighbors._base import KNeighborsMixin
+import pytest
 from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors._base import KNeighborsMixin
 from sklearn.utils._testing import assert_array_equal
 
-from imblearn.utils import check_neighbors_object
-from imblearn.utils import check_sampling_strategy
-from imblearn.utils import check_target_type
+from imblearn.utils import (
+    check_neighbors_object,
+    check_sampling_strategy,
+    check_target_type,
+)
+from imblearn.utils._validation import ArraysTransformer, _deprecate_positional_args
 from imblearn.utils.testing import _CustomNearestNeighbors
-from imblearn.utils._validation import ArraysTransformer
-from imblearn.utils._validation import _deprecate_positional_args
 
 multiclass_target = np.array([1] * 50 + [2] * 100 + [3] * 25)
 binary_target = np.array([1] * 25 + [0] * 100)

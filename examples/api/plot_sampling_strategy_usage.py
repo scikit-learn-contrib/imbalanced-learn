@@ -26,6 +26,7 @@ sns.set_context("poster")
 
 # %%
 from sklearn.datasets import load_iris
+
 from imblearn.datasets import make_imbalance
 
 iris = load_iris(as_frame=True)

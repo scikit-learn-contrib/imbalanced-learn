@@ -14,9 +14,9 @@ learning problem.
 
 
 from sklearn import datasets
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
-from sklearn.model_selection import train_test_split
 
 from imblearn import over_sampling as os
 from imblearn import pipeline as pl

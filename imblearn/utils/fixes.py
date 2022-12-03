@@ -7,7 +7,6 @@ which the fix is no longer needed.
 
 import scipy
 import scipy.stats
-
 from sklearn.utils.fixes import parse_version
 
 sp_version = parse_version(scipy.__version__)

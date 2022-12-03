@@ -9,20 +9,16 @@ threshold."""
 from collections import Counter
 
 import numpy as np
-
 from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
-from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import cross_val_predict
-from sklearn.utils import check_random_state
-from sklearn.utils import _safe_indexing
+from sklearn.model_selection import StratifiedKFold, cross_val_predict
+from sklearn.utils import _safe_indexing, check_random_state
 
-from ..base import BaseUnderSampler
 from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._docstring import _random_state_docstring
+from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ...utils._validation import _deprecate_positional_args
+from ..base import BaseUnderSampler
 
 
 @Substitution(

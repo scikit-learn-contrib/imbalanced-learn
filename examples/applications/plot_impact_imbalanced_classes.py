@@ -60,9 +60,10 @@ y_res.value_counts()
 # As a baseline, we could use a classifier which will always predict the
 # majority class independently of the features provided.
 
+from sklearn.dummy import DummyClassifier
+
 # %%
 from sklearn.model_selection import cross_validate
-from sklearn.dummy import DummyClassifier
 
 dummy_clf = DummyClassifier(strategy="most_frequent")
 scoring = ["accuracy", "balanced_accuracy"]
@@ -121,9 +122,8 @@ df_scores
 
 # %%
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 num_pipe = make_pipeline(
     StandardScaler(), SimpleImputer(strategy="mean", add_indicator=True)
@@ -139,8 +139,8 @@ cat_pipe = make_pipeline(
 # numerical pipeline
 
 # %%
-from sklearn.compose import make_column_transformer
 from sklearn.compose import make_column_selector as selector
+from sklearn.compose import make_column_transformer
 
 preprocessor_linear = make_column_transformer(
     (num_pipe, selector(dtype_include="number")),
@@ -176,9 +176,10 @@ df_scores
 # classifier, we will not need to scale the numerical data, and we will only
 # need to ordinal encode the categorical data.
 
+from sklearn.ensemble import RandomForestClassifier
+
 # %%
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.ensemble import RandomForestClassifier
 
 num_pipe = SimpleImputer(strategy="mean", add_indicator=True)
 cat_pipe = make_pipeline(
@@ -336,8 +337,9 @@ df_scores
 # applying a single random under-sampling. We will use a gradient-boosting
 # classifier within a :class:`~imblearn.ensemble.BalancedBaggingClassifier`.
 
-from sklearn.experimental import enable_hist_gradient_boosting  # noqa
 from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.experimental import enable_hist_gradient_boosting  # noqa
+
 from imblearn.ensemble import BalancedBaggingClassifier
 
 bag_clf = make_pipeline(

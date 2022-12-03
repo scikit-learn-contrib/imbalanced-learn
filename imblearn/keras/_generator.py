@@ -51,15 +51,14 @@ def import_keras():
 ParentClass, HAS_KERAS = import_keras()
 
 from scipy.sparse import issparse  # noqa
-
 from sklearn.base import clone  # noqa
 from sklearn.utils import _safe_indexing  # noqa
 from sklearn.utils import check_random_state  # noqa
 
+from ..tensorflow import balanced_batch_generator as tf_bbg  # noqa
 from ..under_sampling import RandomUnderSampler  # noqa
 from ..utils import Substitution  # noqa
 from ..utils._docstring import _random_state_docstring  # noqa
-from ..tensorflow import balanced_batch_generator as tf_bbg  # noqa
 from ..utils._validation import _deprecate_positional_args  # noqa
 
 

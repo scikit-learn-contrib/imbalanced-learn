@@ -3,11 +3,10 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
-
-from sklearn.utils._testing import assert_array_equal
+import pytest
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import CondensedNearestNeighbour
 

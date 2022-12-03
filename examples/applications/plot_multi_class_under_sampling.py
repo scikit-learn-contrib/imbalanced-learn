@@ -20,9 +20,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 from imblearn.datasets import make_imbalance
-from imblearn.under_sampling import NearMiss
-from imblearn.pipeline import make_pipeline
 from imblearn.metrics import classification_report_imbalanced
+from imblearn.pipeline import make_pipeline
+from imblearn.under_sampling import NearMiss
 
 print(__doc__)
 

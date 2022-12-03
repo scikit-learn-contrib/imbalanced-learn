@@ -7,10 +7,11 @@ from collections import Counter
 
 import numpy as np
 import pytest
-
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
-from sklearn.utils._testing import _convert_container
+from sklearn.utils._testing import (
+    _convert_container,
+    assert_allclose,
+    assert_array_equal,
+)
 
 from imblearn.over_sampling import RandomOverSampler
 

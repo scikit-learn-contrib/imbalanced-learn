@@ -3,24 +3,19 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
-import pytest
-
 import numpy as np
+import pytest
 from scipy import sparse
-
-from sklearn.datasets import load_iris
-from sklearn.datasets import make_regression
+from sklearn.datasets import load_iris, make_regression
 from sklearn.linear_model import LinearRegression
 from sklearn.utils import _safe_indexing
+from sklearn.utils._testing import assert_allclose_dense_sparse, assert_array_equal
 from sklearn.utils.multiclass import type_of_target
-from sklearn.utils._testing import assert_array_equal
-from sklearn.utils._testing import assert_allclose_dense_sparse
 
+from imblearn import FunctionSampler
 from imblearn.datasets import make_imbalance
 from imblearn.pipeline import make_pipeline
 from imblearn.under_sampling import RandomUnderSampler
-
-from imblearn import FunctionSampler
 
 iris = load_iris()
 X, y = make_imbalance(

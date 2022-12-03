@@ -4,7 +4,6 @@ import warnings
 from copy import deepcopy
 
 import numpy as np
-
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble._base import _set_random_states
@@ -12,9 +11,9 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing
 from sklearn.utils.validation import has_fit_parameter
 
-from ..under_sampling.base import BaseUnderSampler
-from ..under_sampling import RandomUnderSampler
 from ..pipeline import make_pipeline
+from ..under_sampling import RandomUnderSampler
+from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
 from ..utils._validation import _deprecate_positional_args

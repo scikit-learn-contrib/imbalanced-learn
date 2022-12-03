@@ -1,16 +1,11 @@
-import pytest
 import numpy as np
-
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
-
-from sklearn.cluster import KMeans
-from sklearn.cluster import MiniBatchKMeans
+import pytest
+from sklearn.cluster import KMeans, MiniBatchKMeans
 from sklearn.datasets import make_classification
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 
-from imblearn.over_sampling import KMeansSMOTE
-from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling import SMOTE, KMeansSMOTE
 
 
 @pytest.fixture

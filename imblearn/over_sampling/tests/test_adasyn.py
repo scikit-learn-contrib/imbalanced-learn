@@ -3,12 +3,10 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
-
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
+import pytest
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.over_sampling import ADASYN
 

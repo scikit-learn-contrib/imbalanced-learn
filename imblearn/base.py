@@ -7,14 +7,12 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
-
 from sklearn.base import BaseEstimator
 from sklearn.preprocessing import label_binarize
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
-from .utils._validation import ArraysTransformer
-from .utils._validation import _deprecate_positional_args
+from .utils._validation import ArraysTransformer, _deprecate_positional_args
 
 
 class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
