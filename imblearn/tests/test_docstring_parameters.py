@@ -17,7 +17,14 @@ from sklearn.utils._testing import check_docstring_parameters
 from sklearn.utils._testing import _get_func_name
 from sklearn.utils._testing import ignore_warnings
 from sklearn.utils.estimator_checks import _enforce_estimator_tags_y
-from sklearn.utils.estimator_checks import _enforce_estimator_tags_x
+
+try:
+    from sklearn.utils.estimator_checks import _enforce_estimator_tags_x
+except ImportError:
+    # scikit-learn >= 1.2
+    from sklearn.utils.estimator_checks import (
+        _enforce_estimator_tags_y as _enforce_estimator_tags_x,
+    )
 from sklearn.utils.estimator_checks import _construct_instance
 from sklearn.utils.deprecation import _is_deprecated
 
