@@ -8,14 +8,12 @@ import warnings
 from collections import Counter
 
 import numpy as np
-
 from sklearn.utils import _safe_indexing
 
-from ..base import BaseUnderSampler
-from ...utils import check_neighbors_object
-from ...utils import Substitution
+from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
 from ...utils._validation import _deprecate_positional_args
+from ..base import BaseUnderSampler
 
 
 @Substitution(

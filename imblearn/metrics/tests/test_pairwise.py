@@ -5,7 +5,6 @@
 
 import numpy as np
 import pytest
-
 from sklearn.exceptions import NotFittedError
 from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
 from sklearn.utils._testing import _convert_container

@@ -43,18 +43,16 @@ References
 # Author: Guillaume Lemaitre
 # License: BSD 3 clause
 
-from collections import OrderedDict
 import tarfile
+from collections import OrderedDict
 from io import BytesIO
 from os import makedirs
-from os.path import join, isfile
+from os.path import isfile, join
 from urllib.request import urlopen
 
 import numpy as np
-
 from sklearn.datasets import get_data_home
-from sklearn.utils import Bunch
-from sklearn.utils import check_random_state
+from sklearn.utils import Bunch, check_random_state
 
 from ..utils._validation import _deprecate_positional_args
 

@@ -4,17 +4,17 @@
 # License: MIT
 
 import pytest
-
 from sklearn.datasets import make_blobs
 from sklearn.metrics import make_scorer
+from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.svm import LinearSVC
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
 
-from imblearn.metrics import sensitivity_score
-from imblearn.metrics import specificity_score
-from imblearn.metrics import geometric_mean_score
-from imblearn.metrics import make_index_balanced_accuracy
+from imblearn.metrics import (
+    geometric_mean_score,
+    make_index_balanced_accuracy,
+    sensitivity_score,
+    specificity_score,
+)
 
 R_TOL = 1e-2
 

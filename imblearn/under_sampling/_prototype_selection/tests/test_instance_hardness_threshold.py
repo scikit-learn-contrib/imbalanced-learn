@@ -3,12 +3,9 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
-
-
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.ensemble import RandomForestClassifier
+import pytest
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB as NB
 from sklearn.utils._testing import assert_array_equal
 

@@ -5,9 +5,10 @@ import re
 from pathlib import Path
 
 import pytest
+from sklearn.utils.fixes import parse_version
+
 import imblearn
 from imblearn._min_dependencies import dependent_packages
-from sklearn.utils.fixes import parse_version
 
 
 @pytest.mark.skipif(

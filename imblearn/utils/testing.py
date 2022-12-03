@@ -11,7 +11,6 @@ from operator import itemgetter
 from pathlib import Path
 
 from scipy import sparse
-
 from sklearn.base import BaseEstimator
 from sklearn.neighbors import KDTree
 from sklearn.utils._testing import ignore_warnings

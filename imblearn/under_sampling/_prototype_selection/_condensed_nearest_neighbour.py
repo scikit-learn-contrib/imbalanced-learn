@@ -8,18 +8,15 @@ method."""
 from collections import Counter
 
 import numpy as np
-
 from scipy.sparse import issparse
-
 from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils import check_random_state, _safe_indexing
+from sklearn.utils import _safe_indexing, check_random_state
 
-from ..base import BaseCleaningSampler
 from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._docstring import _random_state_docstring
+from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ...utils._validation import _deprecate_positional_args
+from ..base import BaseCleaningSampler
 
 
 @Substitution(

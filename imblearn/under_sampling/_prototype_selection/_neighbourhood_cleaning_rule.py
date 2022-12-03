@@ -7,17 +7,14 @@
 from collections import Counter
 
 import numpy as np
-
 from sklearn.utils import _safe_indexing
 
-from ..base import BaseCleaningSampler
-from ._edited_nearest_neighbours import EditedNearestNeighbours
-from ...utils import check_neighbors_object
-from ...utils import Substitution
+from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
 from ...utils._validation import _deprecate_positional_args
 from ...utils.fixes import _mode
-
+from ..base import BaseCleaningSampler
+from ._edited_nearest_neighbours import EditedNearestNeighbours
 
 SEL_KIND = ("all", "mode")
 

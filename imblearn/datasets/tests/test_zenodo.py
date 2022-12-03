@@ -7,9 +7,9 @@ Skipped if datasets is not already downloaded to data_home.
 # License: MIT
 
 import pytest
+from sklearn.utils._testing import SkipTest
 
 from imblearn.datasets import fetch_datasets
-from sklearn.utils._testing import SkipTest
 
 DATASET_SHAPE = {
     "ecoli": (336, 7),

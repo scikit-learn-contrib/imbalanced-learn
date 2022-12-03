@@ -102,11 +102,13 @@ def plot_decision_function(X, y, clf, ax):
 # :class:`~imblearn.combine.SMOTEENN` cleans more noisy data than
 # :class:`~imblearn.combine.SMOTETomek`.
 
+from sklearn.svm import LinearSVC
+
+from imblearn.combine import SMOTEENN, SMOTETomek
+
 # %%
 from imblearn.over_sampling import SMOTE
-from imblearn.combine import SMOTEENN, SMOTETomek
 from imblearn.pipeline import make_pipeline
-from sklearn.svm import LinearSVC
 
 samplers = [SMOTE(random_state=0), SMOTEENN(random_state=0), SMOTETomek(random_state=0)]
 

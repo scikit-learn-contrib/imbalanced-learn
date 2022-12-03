@@ -7,29 +7,27 @@
 import sys
 import traceback
 import warnings
-
 from collections import Counter
 from functools import partial
 
-import pytest
-
 import numpy as np
+import pytest
 from scipy import sparse
-
 from sklearn.base import clone
-from sklearn.datasets import (
+from sklearn.cluster import KMeans
+from sklearn.datasets import (  # noqa
     load_iris,
     make_classification,
     make_multilabel_classification,
-)  # noqa
-from sklearn.cluster import KMeans
+)
 from sklearn.exceptions import SkipTestWarning
 from sklearn.preprocessing import label_binarize
-from sklearn.utils.estimator_checks import _maybe_mark_xfail
-from sklearn.utils.estimator_checks import _get_check_estimator_ids
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
-from sklearn.utils._testing import assert_raises_regex
+from sklearn.utils._testing import (
+    assert_allclose,
+    assert_array_equal,
+    assert_raises_regex,
+)
+from sklearn.utils.estimator_checks import _get_check_estimator_ids, _maybe_mark_xfail
 from sklearn.utils.multiclass import type_of_target
 
 from imblearn.datasets import make_imbalance

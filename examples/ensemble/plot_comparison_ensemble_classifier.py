@@ -27,9 +27,10 @@ print(__doc__)
 # (number of majority sample for a minority sample). The data are then split
 # into training and testing.
 
+from sklearn.model_selection import train_test_split
+
 # %%
 from imblearn.datasets import fetch_datasets
-from sklearn.model_selection import train_test_split
 
 satimage = fetch_datasets()["satimage"]
 X, y = satimage.data, satimage.target
@@ -55,6 +56,7 @@ y_pred_tree = tree.predict(X_test)
 
 # %%
 from sklearn.metrics import balanced_accuracy_score
+
 from imblearn.metrics import geometric_mean_score
 
 print("Decision tree classifier performance:")
@@ -83,6 +85,7 @@ _ = disp.ax_.set_title("Decision tree")
 
 # %%
 from sklearn.ensemble import BaggingClassifier
+
 from imblearn.ensemble import BalancedBaggingClassifier
 
 bagging = BaggingClassifier(n_estimators=50, random_state=0)
@@ -132,6 +135,7 @@ fig.tight_layout()
 
 # %%
 from sklearn.ensemble import RandomForestClassifier
+
 from imblearn.ensemble import BalancedRandomForestClassifier
 
 rf = RandomForestClassifier(n_estimators=50, random_state=0)
@@ -180,6 +184,7 @@ fig.tight_layout()
 
 # %%
 from sklearn.ensemble import AdaBoostClassifier
+
 from imblearn.ensemble import EasyEnsembleClassifier, RUSBoostClassifier
 
 base_estimator = AdaBoostClassifier(n_estimators=10)

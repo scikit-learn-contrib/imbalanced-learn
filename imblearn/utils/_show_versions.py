@@ -8,8 +8,8 @@ which was adapted from :func:`pandas.show_versions`
 # Author: Alexander L. Hayes <hayesall@iu.edu>
 # License: MIT
 
-import sys
 import importlib
+import sys
 
 
 def _get_deps_info():

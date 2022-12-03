@@ -134,9 +134,10 @@ fig.tight_layout()
 # class. The class :class:`~imblearn.over_sampling.RandomOverSampler`
 # implements such of a strategy.
 
+from imblearn.over_sampling import RandomOverSampler
+
 # %%
 from imblearn.pipeline import make_pipeline
-from imblearn.over_sampling import RandomOverSampler
 
 X, y = create_dataset(n_samples=100, weights=(0.05, 0.25, 0.7))
 
@@ -185,7 +186,7 @@ fig.tight_layout()
 
 # %%
 from imblearn import FunctionSampler  # to use a idendity sampler
-from imblearn.over_sampling import SMOTE, ADASYN
+from imblearn.over_sampling import ADASYN, SMOTE
 
 X, y = create_dataset(n_samples=150, weights=(0.1, 0.2, 0.7))
 
@@ -261,7 +262,7 @@ fig.tight_layout()
 # density.
 
 # %%
-from imblearn.over_sampling import BorderlineSMOTE, KMeansSMOTE, SVMSMOTE
+from imblearn.over_sampling import SVMSMOTE, BorderlineSMOTE, KMeansSMOTE
 
 X, y = create_dataset(n_samples=5000, weights=(0.01, 0.05, 0.94), class_sep=0.8)
 
@@ -292,6 +293,7 @@ fig.tight_layout()
 
 # %%
 from collections import Counter
+
 from imblearn.over_sampling import SMOTENC
 
 rng = np.random.RandomState(42)

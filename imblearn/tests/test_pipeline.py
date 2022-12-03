@@ -13,31 +13,28 @@ from tempfile import mkdtemp
 
 import numpy as np
 import pytest
-from pytest import raises
-
 from joblib import Memory
-
-from sklearn.utils._testing import assert_array_equal
-from sklearn.utils._testing import assert_array_almost_equal
-from sklearn.utils._testing import assert_allclose
-
-from sklearn.base import clone, BaseEstimator
-from sklearn.svm import SVC
-from sklearn.neighbors import LocalOutlierFactor
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import LinearRegression
+from pytest import raises
+from sklearn.base import BaseEstimator, clone
 from sklearn.cluster import KMeans
-from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.datasets import load_iris, make_classification
-from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.neighbors import LocalOutlierFactor
 from sklearn.pipeline import FeatureUnion
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+from sklearn.utils._testing import (
+    assert_allclose,
+    assert_array_almost_equal,
+    assert_array_equal,
+)
 
 from imblearn.datasets import make_imbalance
 from imblearn.pipeline import Pipeline, make_pipeline
-from imblearn.under_sampling import RandomUnderSampler
 from imblearn.under_sampling import EditedNearestNeighbours as ENN
-
+from imblearn.under_sampling import RandomUnderSampler
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",

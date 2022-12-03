@@ -9,18 +9,15 @@ import numbers
 import warnings
 
 import numpy as np
-
 from sklearn.base import clone
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 
+from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import Substitution, check_target_type, check_sampling_strategy
-from ..utils._docstring import _n_jobs_docstring
-from ..utils._docstring import _random_state_docstring
+from ..utils import Substitution, check_sampling_strategy, check_target_type
+from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._validation import _deprecate_positional_args
-from ..pipeline import Pipeline
 
 MAX_INT = np.iinfo(np.int32).max
 

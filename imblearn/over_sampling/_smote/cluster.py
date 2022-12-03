@@ -9,18 +9,15 @@ import math
 
 import numpy as np
 from scipy import sparse
-
 from sklearn.base import clone
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.metrics import pairwise_distances
 from sklearn.utils import _safe_indexing
 
-from ..base import BaseOverSampler
 from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._docstring import _random_state_docstring
+from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ...utils._validation import _deprecate_positional_args
-
+from ..base import BaseOverSampler
 from .base import BaseSMOTE
 
 

@@ -1,7 +1,7 @@
-import inspect
 import importlib
-import re
+import inspect
 import pkgutil
+import re
 from inspect import signature
 from typing import Optional
 
@@ -260,8 +260,8 @@ def test_docstring(Estimator, method, request):
 
 
 if __name__ == "__main__":
-    import sys
     import argparse
+    import sys
 
     parser = argparse.ArgumentParser(description="Validate docstring with numpydoc.")
     parser.add_argument("import_path", help="Import path to validate")

@@ -1,14 +1,10 @@
-import pytest
-
 import numpy as np
-
+import pytest
 import sklearn
-from sklearn.datasets import make_classification, load_iris
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris, make_classification
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 from sklearn.utils.fixes import parse_version
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
 
 from imblearn.ensemble import BalancedRandomForestClassifier
 

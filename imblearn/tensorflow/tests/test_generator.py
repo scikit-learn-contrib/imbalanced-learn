@@ -1,16 +1,14 @@
 from distutils.version import LooseVersion
 
-import pytest
 import numpy as np
+import pytest
 from scipy import sparse
-
 from sklearn.datasets import load_iris
 
 from imblearn.datasets import make_imbalance
-from imblearn.under_sampling import NearMiss
 from imblearn.over_sampling import RandomOverSampler
-
 from imblearn.tensorflow import balanced_batch_generator
+from imblearn.under_sampling import NearMiss
 
 tf = pytest.importorskip("tensorflow")
 

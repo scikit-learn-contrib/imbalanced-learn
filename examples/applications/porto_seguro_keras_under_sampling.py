@@ -25,8 +25,9 @@ print(__doc__)
 ###############################################################################
 
 from collections import Counter
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 
 ###############################################################################
 # First, you should download the Porto Seguro data set from Kaggle. See the
@@ -49,11 +50,9 @@ print(f"The data set is imbalanced: {Counter(y_train['target'])}")
 ###############################################################################
 
 from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import FunctionTransformer
 from sklearn.impute import SimpleImputer
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
 
 
 def convert_float64(X):
@@ -95,16 +94,12 @@ import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+from tensorflow.keras.layers import Activation, BatchNormalization, Dense, Dropout
+
 ###############################################################################
 # Create a neural-network
 ###############################################################################
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import (
-    Activation,
-    Dense,
-    Dropout,
-    BatchNormalization,
-)
 
 
 def make_model(n_features):
@@ -235,8 +230,8 @@ df_time = pd.DataFrame(
 )
 df_time = df_time.unstack().reset_index()
 
-import seaborn as sns
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 plt.figure()
 sns.boxplot(y="level_0", x=0, data=df_time)

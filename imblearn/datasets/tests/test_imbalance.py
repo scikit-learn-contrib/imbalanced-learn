@@ -5,9 +5,8 @@
 
 from collections import Counter
 
-import pytest
 import numpy as np
-
+import pytest
 from sklearn.datasets import load_iris
 
 from imblearn.datasets import make_imbalance

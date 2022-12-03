@@ -6,11 +6,10 @@
 import warnings
 from collections import OrderedDict
 from functools import wraps
-from inspect import signature, Parameter
+from inspect import Parameter, signature
 from numbers import Integral, Real
 
 import numpy as np
-
 from sklearn.base import clone
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import column_or_1d

@@ -49,18 +49,19 @@ if __IMBLEARN_SETUP__:
     # We are not importing the rest of scikit-learn during the build
     # process, as it may not be compiled yet
 else:
-    from . import combine
-    from . import ensemble
-    from . import exceptions
-    from . import metrics
-    from . import over_sampling
-    from . import tensorflow
-    from . import under_sampling
-    from . import utils
-    from . import pipeline
-
-    from .base import FunctionSampler
+    from . import (
+        combine,
+        ensemble,
+        exceptions,
+        metrics,
+        over_sampling,
+        pipeline,
+        tensorflow,
+        under_sampling,
+        utils,
+    )
     from ._version import __version__
+    from .base import FunctionSampler
     from .utils._show_versions import show_versions  # noqa: F401
 
     # FIXME: When we get Python 3.7 as minimal version, we will need to switch to

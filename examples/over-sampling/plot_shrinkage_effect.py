@@ -22,6 +22,7 @@ sns.set_context("poster")
 # First, we will generate a toy classification dataset with only few samples.
 # The ratio between the classes will be imbalanced.
 from collections import Counter
+
 from sklearn.datasets import make_classification
 
 X, y = make_classification(

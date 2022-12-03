@@ -1,13 +1,12 @@
 """Test the module cluster centroids."""
 from collections import Counter
 
-import pytest
 import numpy as np
+import pytest
 from scipy import sparse
-
-from sklearn.linear_model import LogisticRegression
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
 
 from imblearn.under_sampling import ClusterCentroids
 from imblearn.utils.testing import _CustomClusterer

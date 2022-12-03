@@ -6,8 +6,7 @@
 import pytest
 
 from imblearn.utils import Substitution
-from imblearn.utils._docstring import _random_state_docstring
-from imblearn.utils._docstring import _n_jobs_docstring
+from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
 
 func_docstring = """A function.
 

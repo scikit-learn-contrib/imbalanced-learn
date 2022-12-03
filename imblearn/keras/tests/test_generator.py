@@ -1,22 +1,19 @@
-import pytest
-
 import numpy as np
+import pytest
 from scipy import sparse
-
 from sklearn.datasets import load_iris
 
 keras = pytest.importorskip("keras")
-from keras.models import Sequential  # noqa: E402
 from keras.layers import Dense  # noqa: E402
+from keras.models import Sequential  # noqa: E402
 from keras.utils.np_utils import to_categorical  # noqa: E402
 
 from imblearn.datasets import make_imbalance  # noqa: E402
-from imblearn.under_sampling import ClusterCentroids  # noqa: E402
-from imblearn.under_sampling import NearMiss  # noqa: E402
-from imblearn.over_sampling import RandomOverSampler  # noqa: E402
-
 from imblearn.keras import BalancedBatchGenerator  # noqa: E402
 from imblearn.keras import balanced_batch_generator  # noqa: E402
+from imblearn.over_sampling import RandomOverSampler  # noqa: E402
+from imblearn.under_sampling import ClusterCentroids  # noqa: E402
+from imblearn.under_sampling import NearMiss  # noqa: E402
 
 
 @pytest.fixture

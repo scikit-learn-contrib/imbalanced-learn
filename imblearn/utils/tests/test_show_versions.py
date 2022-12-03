@@ -2,8 +2,7 @@
 # Author: Alexander L. Hayes <hayesall@iu.edu>
 # License: MIT
 
-from imblearn.utils._show_versions import _get_deps_info
-from imblearn.utils._show_versions import show_versions
+from imblearn.utils._show_versions import _get_deps_info, show_versions
 
 
 def test_get_deps_info():
