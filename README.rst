@@ -154,7 +154,7 @@ One way of addressing this issue is by re-sampling the dataset as to offset this
 imbalance with the hope of arriving at a more robust and fair decision boundary
 than you would otherwise.
 
-Re-sampling techniques are divided in two categories:
+Re-sampling techniques are divided in following four categories:
     1. Under-sampling the majority class(es).
     2. Over-sampling the minority class.
     3. Combining over- and under-sampling.
