@@ -15,7 +15,6 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
 from ..base import BaseUnderSampler
 
 VOTING_KIND = ("auto", "hard", "soft")
@@ -108,7 +107,6 @@ class ClusterCentroids(BaseUnderSampler):
     Resampled dataset shape Counter({{...}})
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         *,

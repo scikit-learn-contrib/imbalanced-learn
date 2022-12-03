@@ -13,7 +13,6 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
-from ...utils._validation import _deprecate_positional_args
 from ...utils.fixes import _mode
 from ..base import BaseCleaningSampler
 
@@ -113,7 +112,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         *,
@@ -281,7 +279,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         *,
@@ -480,7 +477,6 @@ class AllKNN(BaseCleaningSampler):
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         *,

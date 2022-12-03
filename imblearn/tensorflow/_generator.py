@@ -7,11 +7,9 @@ from sklearn.utils import _safe_indexing, check_random_state
 from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _deprecate_positional_args
 
 
 @Substitution(random_state=_random_state_docstring)
-@_deprecate_positional_args
 def balanced_batch_generator(
     X,
     y,

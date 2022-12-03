@@ -15,7 +15,6 @@ from sklearn.utils import _safe_indexing, check_random_state
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
 from ..base import BaseCleaningSampler
 
 
@@ -105,7 +104,6 @@ CondensedNearestNeighbour  # doctest: +SKIP
     Resampled dataset shape Counter({{-1: 268, 1: 227}})  # doctest: +SKIP
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         *,

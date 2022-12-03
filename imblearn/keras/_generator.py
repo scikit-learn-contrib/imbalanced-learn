@@ -59,7 +59,6 @@ from ..tensorflow import balanced_batch_generator as tf_bbg  # noqa
 from ..under_sampling import RandomUnderSampler  # noqa
 from ..utils import Substitution  # noqa
 from ..utils._docstring import _random_state_docstring  # noqa
-from ..utils._validation import _deprecate_positional_args  # noqa
 
 
 class BalancedBatchGenerator(*ParentClass):  # type: ignore
@@ -142,7 +141,6 @@ class BalancedBatchGenerator(*ParentClass):  # type: ignore
     # flag for keras sequence duck-typing
     use_sequence_api = True
 
-    @_deprecate_positional_args
     def __init__(
         self,
         X,
@@ -205,7 +203,6 @@ class BalancedBatchGenerator(*ParentClass):  # type: ignore
 
 
 @Substitution(random_state=_random_state_docstring)
-@_deprecate_positional_args
 def balanced_batch_generator(
     X,
     y,

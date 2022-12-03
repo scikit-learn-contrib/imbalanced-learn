@@ -22,7 +22,6 @@ from sklearn.utils.sparsefuncs_fast import (
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
 from ...utils.fixes import _mode
 from ..base import BaseOverSampler
 
@@ -301,7 +300,6 @@ class SMOTE(BaseSMOTE):
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         *,
@@ -491,7 +489,6 @@ class SMOTENC(SMOTE):
 
     _required_parameters = ["categorical_features"]
 
-    @_deprecate_positional_args
     def __init__(
         self,
         categorical_features,

@@ -16,7 +16,6 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
 from ..base import BaseOverSampler
 from .base import BaseSMOTE
 
@@ -139,7 +138,6 @@ class KMeansSMOTE(BaseSMOTE):
     More 0 samples: True
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         *,

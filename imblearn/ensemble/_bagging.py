@@ -24,7 +24,6 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._available_if import available_if
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._validation import _deprecate_positional_args
 from ._common import _estimator_has
 
 
@@ -253,7 +252,6 @@ class BalancedBaggingClassifier(BaggingClassifier):
      [  2 225]]
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         estimator=None,

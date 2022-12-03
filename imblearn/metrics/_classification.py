@@ -26,10 +26,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_consistent_length, column_or_1d
 
-from ..utils._validation import _deprecate_positional_args
 
-
-@_deprecate_positional_args
 def sensitivity_specificity_support(
     y_true,
     y_pred,
@@ -277,7 +274,6 @@ def sensitivity_specificity_support(
     return sensitivity, specificity, true_sum
 
 
-@_deprecate_positional_args
 def sensitivity_score(
     y_true,
     y_pred,
@@ -378,7 +374,6 @@ def sensitivity_score(
     return s
 
 
-@_deprecate_positional_args
 def specificity_score(
     y_true,
     y_pred,
@@ -479,7 +474,6 @@ def specificity_score(
     return s
 
 
-@_deprecate_positional_args
 def geometric_mean_score(
     y_true,
     y_pred,
@@ -664,7 +658,6 @@ def geometric_mean_score(
         return gmean
 
 
-@_deprecate_positional_args
 def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
     """Balance any scoring function using the index balanced accuracy.
 
@@ -770,7 +763,6 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
     return decorate
 
 
-@_deprecate_positional_args
 def classification_report_imbalanced(
     y_true,
     y_pred,
