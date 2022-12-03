@@ -6,6 +6,13 @@ Version 0.10.0 (ongoing)
 Changelog
 ---------
 
+Bug fixes
+.........
+
+- Make sure that :class:`~imblearn.utils._docstring.Substitution` is
+  working with `python -OO` that replace `__doc__` by `None`.
+  :pr:`953` bu :user:`Guillaume Lemaitre <glemaitre>`.
+
 Compatibility
 .............
 

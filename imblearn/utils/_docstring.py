@@ -19,7 +19,8 @@ class Substitution:
         self.params = args or kwargs
 
     def __call__(self, obj):
-        obj.__doc__ = obj.__doc__.format(**self.params)
+        if obj.__doc__:
+            obj.__doc__ = obj.__doc__.format(**self.params)
         return obj
 
 
