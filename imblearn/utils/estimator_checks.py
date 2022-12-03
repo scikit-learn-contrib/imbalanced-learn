@@ -48,7 +48,7 @@ def _set_checking_parameters(estimator):
         if sklearn_version < parse_version("1.1"):
             algorithm = "full"
         else:
-            algorithm = "llyod"
+            algorithm = "lloyd"
         estimator.set_params(
             voting="soft",
             estimator=KMeans(random_state=0, algorithm=algorithm, n_init=1),
