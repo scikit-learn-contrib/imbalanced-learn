@@ -152,9 +152,9 @@ class RUSBoostClassifier(AdaBoostClassifier):
     ...                            n_informative=4, weights=[0.2, 0.3, 0.5],
     ...                            random_state=0)
     >>> clf = RUSBoostClassifier(random_state=0)
-    >>> clf.fit(X, y)  # doctest:
+    >>> clf.fit(X, y)
     RUSBoostClassifier(...)
-    >>> clf.predict(X)  # doctest:
+    >>> clf.predict(X)
     array([...])
     """
 

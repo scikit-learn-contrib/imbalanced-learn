@@ -38,7 +38,7 @@ data set, this classifier will favor the majority classes::
   >>> bc.fit(X_train, y_train) #doctest:
   BaggingClassifier(...)
   >>> y_pred = bc.predict(X_test)
-  >>> balanced_accuracy_score(y_test, y_pred)  # doctest:
+  >>> balanced_accuracy_score(y_test, y_pred)
   0.77...
 
 In :class:`BalancedBaggingClassifier`, each bootstrap sample will be further
@@ -54,10 +54,10 @@ sampling is controlled by the parameter `sampler` or the two parameters
   ...                                 sampling_strategy='auto',
   ...                                 replacement=False,
   ...                                 random_state=0)
-  >>> bbc.fit(X_train, y_train) # doctest:
+  >>> bbc.fit(X_train, y_train)
   BalancedBaggingClassifier(...)
   >>> y_pred = bbc.predict(X_test)
-  >>> balanced_accuracy_score(y_test, y_pred)  # doctest:
+  >>> balanced_accuracy_score(y_test, y_pred)
   0.8...
 
 Changing the `sampler` will give rise to different known implementation
@@ -78,10 +78,10 @@ each tree of the forest will be provided a balanced bootstrap sample
 
   >>> from imblearn.ensemble import BalancedRandomForestClassifier
   >>> brf = BalancedRandomForestClassifier(n_estimators=100, random_state=0)
-  >>> brf.fit(X_train, y_train) # doctest:
+  >>> brf.fit(X_train, y_train)
   BalancedRandomForestClassifier(...)
   >>> y_pred = brf.predict(X_test)
-  >>> balanced_accuracy_score(y_test, y_pred)  # doctest:
+  >>> balanced_accuracy_score(y_test, y_pred)
   0.8...
 
 .. _boosting:
@@ -97,10 +97,10 @@ a boosting iteration :cite:`seiffert2009rusboost`::
   >>> from imblearn.ensemble import RUSBoostClassifier
   >>> rusboost = RUSBoostClassifier(n_estimators=200, algorithm='SAMME.R',
   ...                               random_state=0)
-  >>> rusboost.fit(X_train, y_train)  # doctest:
+  >>> rusboost.fit(X_train, y_train)
   RUSBoostClassifier(...)
   >>> y_pred = rusboost.predict(X_test)
-  >>> balanced_accuracy_score(y_test, y_pred)  # doctest:
+  >>> balanced_accuracy_score(y_test, y_pred)
   0...
 
 A specific method which uses :class:`~sklearn.ensemble.AdaBoostClassifier` as
@@ -111,10 +111,10 @@ the :class:`BalancedBaggingClassifier` API, one can construct the ensemble as::
 
   >>> from imblearn.ensemble import EasyEnsembleClassifier
   >>> eec = EasyEnsembleClassifier(random_state=0)
-  >>> eec.fit(X_train, y_train) # doctest:
+  >>> eec.fit(X_train, y_train)
   EasyEnsembleClassifier(...)
   >>> y_pred = eec.predict(X_test)
-  >>> balanced_accuracy_score(y_test, y_pred)  # doctest:
+  >>> balanced_accuracy_score(y_test, y_pred)
   0.6...
 
 .. topic:: Examples

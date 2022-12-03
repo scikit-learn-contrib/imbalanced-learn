@@ -9,15 +9,22 @@ import numbers
 import warnings
 
 import numpy as np
+from joblib import Parallel
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
+from sklearn.ensemble._bagging import _parallel_decision_function
+from sklearn.ensemble._base import _partition_estimators
+from sklearn.utils.fixes import delayed
+from sklearn.utils.validation import check_is_fitted
 
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
+from ..utils._available_if import available_if
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._validation import _deprecate_positional_args
+from ._common import _estimator_has
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -31,7 +38,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
     """Bag of balanced boosted learners also known as EasyEnsemble.
 
     This algorithm is known as EasyEnsemble [1]_. The classifier is an
-    ensemble of AdaBoost learners trained on different balanced boostrap
+    ensemble of AdaBoost learners trained on different balanced bootstrap
     samples. The balancing is achieved by random under-sampling.
 
     Read more in the :ref:`User Guide <boosting>`.
@@ -155,7 +162,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
     >>> from sklearn.model_selection import train_test_split
     >>> from sklearn.metrics import confusion_matrix
     >>> from imblearn.ensemble import \
-EasyEnsembleClassifier # doctest:
+EasyEnsembleClassifier
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -164,7 +171,7 @@ EasyEnsembleClassifier # doctest:
     >>> X_train, X_test, y_train, y_test = train_test_split(X, y,
     ...                                                     random_state=0)
     >>> eec = EasyEnsembleClassifier(random_state=42)
-    >>> eec.fit(X_train, y_train) # doctest:
+    >>> eec.fit(X_train, y_train)
     EasyEnsembleClassifier(...)
     >>> y_pred = eec.predict(X_test)
     >>> print(confusion_matrix(y_test, y_pred))
@@ -314,3 +321,50 @@ EasyEnsembleClassifier # doctest:
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return super()._fit(X, y, self.max_samples, sample_weight=None)
+
+    # TODO: remove when minimum supported version of scikit-learn is 1.1
+    @available_if(_estimator_has("decision_function"))
+    def decision_function(self, X):
+        """Average of the decision functions of the base classifiers.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
+
+        Returns
+        -------
+        score : ndarray of shape (n_samples, k)
+            The decision function of the input samples. The columns correspond
+            to the classes in sorted order, as they appear in the attribute
+            ``classes_``. Regression and binary classification are special
+            cases with ``k == 1``, otherwise ``k==n_classes``.
+        """
+        check_is_fitted(self)
+
+        # Check data
+        X = self._validate_data(
+            X,
+            accept_sparse=["csr", "csc"],
+            dtype=None,
+            force_all_finite=False,
+            reset=False,
+        )
+
+        # Parallel loop
+        n_jobs, _, starts = _partition_estimators(self.n_estimators, self.n_jobs)
+
+        all_decisions = Parallel(n_jobs=n_jobs, verbose=self.verbose)(
+            delayed(_parallel_decision_function)(
+                self.estimators_[starts[i] : starts[i + 1]],
+                self.estimators_features_[starts[i] : starts[i + 1]],
+                X,
+            )
+            for i in range(n_jobs)
+        )
+
+        # Reduce
+        decisions = sum(all_decisions) / self.n_estimators
+
+        return decisions

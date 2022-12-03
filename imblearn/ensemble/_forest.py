@@ -8,6 +8,7 @@ from copy import deepcopy
 from warnings import warn
 
 import numpy as np
+import sklearn
 from joblib import Parallel
 from numpy import float32 as DTYPE
 from numpy import float64 as DOUBLE
@@ -22,7 +23,7 @@ from sklearn.ensemble._forest import (
 )
 from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils import _safe_indexing, check_random_state, parse_version
 from sklearn.utils.fixes import delayed
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _check_sample_weight
@@ -35,6 +36,7 @@ from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._validation import _deprecate_positional_args, check_sampling_strategy
 
 MAX_INT = np.iinfo(np.int32).max
+sklearn_version = parse_version(sklearn.__version__)
 
 
 def _local_parallel_build_trees(
@@ -49,6 +51,7 @@ def _local_parallel_build_trees(
     verbose=0,
     class_weight=None,
     n_samples_bootstrap=None,
+    forest=None,
 ):
     # resample before to fit the tree
     X_resampled, y_resampled = sampler.fit_resample(X, y)
@@ -56,18 +59,34 @@ def _local_parallel_build_trees(
         sample_weight = _safe_indexing(sample_weight, sampler.sample_indices_)
     if _get_n_samples_bootstrap is not None:
         n_samples_bootstrap = min(n_samples_bootstrap, X_resampled.shape[0])
-    tree = _parallel_build_trees(
-        tree,
-        bootstrap,
-        X_resampled,
-        y_resampled,
-        sample_weight,
-        tree_idx,
-        n_trees,
-        verbose=verbose,
-        class_weight=class_weight,
-        n_samples_bootstrap=n_samples_bootstrap,
-    )
+
+    if sklearn_version >= parse_version("1.1"):
+        tree = _parallel_build_trees(
+            tree,
+            bootstrap,
+            X_resampled,
+            y_resampled,
+            sample_weight,
+            tree_idx,
+            n_trees,
+            verbose=verbose,
+            class_weight=class_weight,
+            n_samples_bootstrap=n_samples_bootstrap,
+        )
+    else:
+        # TODO: remove when the minimum version of scikit-learn supported is 1.1
+        tree = _parallel_build_trees(
+            tree,
+            forest,
+            X_resampled,
+            y_resampled,
+            sample_weight,
+            tree_idx,
+            n_trees,
+            verbose=verbose,
+            class_weight=class_weight,
+            n_samples_bootstrap=n_samples_bootstrap,
+        )
     return sampler, tree
 
 
@@ -324,9 +343,9 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     ...                            n_informative=4, weights=[0.2, 0.3, 0.5],
     ...                            random_state=0)
     >>> clf = BalancedRandomForestClassifier(max_depth=2, random_state=0)
-    >>> clf.fit(X, y)  # doctest:
+    >>> clf.fit(X, y)
     BalancedRandomForestClassifier(...)
-    >>> print(clf.feature_importances_)  # doctest:
+    >>> print(clf.feature_importances_)
     [...]
     >>> print(clf.predict([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ...                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]))
@@ -582,6 +601,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                     verbose=self.verbose,
                     class_weight=self.class_weight,
                     n_samples_bootstrap=n_samples_bootstrap,
+                    forest=self,
                 )
                 for i, (s, t) in enumerate(zip(samplers, trees))
             )

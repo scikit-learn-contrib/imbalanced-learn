@@ -76,9 +76,9 @@ It would also work with pandas dataframe::
   >>> from sklearn.datasets import fetch_openml
   >>> df_adult, y_adult = fetch_openml(
   ...     'adult', version=2, as_frame=True, return_X_y=True)
-  >>> df_adult.head()  # doctest: +SKIP
+  >>> df_adult.head() # doctest: +SKIP
   >>> df_resampled, y_resampled = ros.fit_resample(df_adult, y_adult)
-  >>> df_resampled.head()  # doctest: +SKIP
+  >>> df_resampled.head() # doctest: +SKIP
 
 If repeating samples is an issue, the parameter `shrinkage` allows to create a
 smoothed bootstrap. However, the original data needs to be numerical. The
