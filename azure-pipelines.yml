@@ -185,7 +185,7 @@ jobs:
         TENSORFLOW_VERSION: 'min'
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'false'  # it is going to fail because of scikit-learn inheritance
-        CHECK_WARNINGS: 'true'
+        CHECK_WARNINGS: 'false'  # in case the older version raise some FutureWarnings
       pylatest_pip_keras:
         DISTRIB: 'conda-pip-latest-keras'
         CONDA_CHANNEL: 'conda-forge'
@@ -209,7 +209,7 @@ jobs:
         KERAS_VERSION: 'min'
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'false'  # it is going to fail because of scikit-learn inheritance
-        CHECK_WARNINGS: 'true'
+        CHECK_WARNINGS: 'false'  # in case the older version raise some FutureWarnings
 
 # Currently runs on Python 3.8 while only Python 3.7 available
 # - template: build_tools/azure/posix-docker.yml
