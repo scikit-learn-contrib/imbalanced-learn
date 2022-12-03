@@ -3,8 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
+import pytest
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._testing import assert_allclose, assert_array_equal
 
