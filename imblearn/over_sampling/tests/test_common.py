@@ -2,6 +2,7 @@ from collections import Counter
 
 import numpy as np
 import pytest
+from sklearn.cluster import MiniBatchKMeans
 
 from imblearn.over_sampling import (
     ADASYN,
@@ -67,7 +68,13 @@ def test_smote_m_neighbors(numerical_data, smote):
     [
         (ADASYN(random_state=0), "n_neighbors"),
         (BorderlineSMOTE(random_state=0), "k_neighbors"),
-        (KMeansSMOTE(random_state=1), "k_neighbors"),
+        (
+            KMeansSMOTE(
+                kmeans_estimator=MiniBatchKMeans(n_init=1, random_state=0),
+                random_state=1,
+            ),
+            "k_neighbors",
+        ),
         (SMOTE(random_state=0), "k_neighbors"),
         (SVMSMOTE(random_state=0), "k_neighbors"),
     ],

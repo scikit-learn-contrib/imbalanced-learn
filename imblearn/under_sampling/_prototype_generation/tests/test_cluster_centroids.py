@@ -33,12 +33,14 @@ R_TOL = 1e-4
 @pytest.mark.parametrize(
     "X, expected_voting", [(X, "soft"), (sparse.csr_matrix(X), "hard")]
 )
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_fit_resample_check_voting(X, expected_voting):
     cc = ClusterCentroids(random_state=RND_SEED)
     cc.fit_resample(X, Y)
     assert cc.voting_ == expected_voting
 
 
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_fit_resample_auto():
     sampling_strategy = "auto"
     cc = ClusterCentroids(sampling_strategy=sampling_strategy, random_state=RND_SEED)
@@ -47,6 +49,7 @@ def test_fit_resample_auto():
     assert y_resampled.shape == (6,)
 
 
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_fit_resample_half():
     sampling_strategy = {0: 3, 1: 6}
     cc = ClusterCentroids(sampling_strategy=sampling_strategy, random_state=RND_SEED)
@@ -55,6 +58,7 @@ def test_fit_resample_half():
     assert y_resampled.shape == (9,)
 
 
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_multiclass_fit_resample():
     y = Y.copy()
     y[5] = 2
@@ -69,7 +73,7 @@ def test_multiclass_fit_resample():
 
 def test_fit_resample_object():
     sampling_strategy = "auto"
-    cluster = KMeans(random_state=RND_SEED)
+    cluster = KMeans(random_state=RND_SEED, n_init=1)
     cc = ClusterCentroids(
         sampling_strategy=sampling_strategy,
         random_state=RND_SEED,
@@ -84,7 +88,7 @@ def test_fit_resample_object():
 def test_fit_hard_voting():
     sampling_strategy = "auto"
     voting = "hard"
-    cluster = KMeans(random_state=RND_SEED)
+    cluster = KMeans(random_state=RND_SEED, n_init=1)
     cc = ClusterCentroids(
         sampling_strategy=sampling_strategy,
         random_state=RND_SEED,
@@ -111,6 +115,7 @@ def test_fit_resample_error(cluster_centroids_params, err_msg):
         cc.fit_resample(X, Y)
 
 
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_cluster_centroids_hard_target_class():
     # check that the samples selecting by the hard voting corresponds to the
     # targeted class

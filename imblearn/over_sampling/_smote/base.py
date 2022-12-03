@@ -548,7 +548,13 @@ class SMOTENC(SMOTE):
             dtype_ohe = X_continuous.dtype
         else:
             dtype_ohe = np.float64
-        self.ohe_ = OneHotEncoder(sparse=True, handle_unknown="ignore", dtype=dtype_ohe)
+
+        self.ohe_ = OneHotEncoder(handle_unknown="ignore", dtype=dtype_ohe)
+        if hasattr(self.ohe_, "sparse_output"):
+            # scikit-learn >= 1.2
+            self.ohe_.set_params(sparse_output=True)
+        else:
+            self.ohe_.set_params(sparse=True)
 
         # the input of the OneHotEncoder needs to be dense
         X_ohe = self.ohe_.fit_transform(

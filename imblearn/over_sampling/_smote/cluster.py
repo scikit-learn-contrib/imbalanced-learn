@@ -125,7 +125,9 @@ class KMeansSMOTE(BaseSMOTE):
     >>> y = np.append(y, 0)
     >>> # Make this a binary classification problem
     >>> y = y == 1
-    >>> sm = KMeansSMOTE(random_state=42)
+    >>> sm = KMeansSMOTE(
+    ...     kmeans_estimator=MiniBatchKMeans(n_init=1, random_state=0), random_state=42
+    ... )
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> # Find the number of new samples in the middle blob
     >>> n_res_in_middle = ((X_res[:, 0] > -5) & (X_res[:, 0] < 5)).sum()

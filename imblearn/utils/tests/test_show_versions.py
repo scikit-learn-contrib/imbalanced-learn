@@ -9,8 +9,8 @@ def test_get_deps_info():
     _deps_info = _get_deps_info()
     assert "pip" in _deps_info
     assert "setuptools" in _deps_info
-    assert "imblearn" in _deps_info
-    assert "sklearn" in _deps_info
+    assert "imbalanced-learn" in _deps_info
+    assert "scikit-learn" in _deps_info
     assert "numpy" in _deps_info
     assert "scipy" in _deps_info
     assert "Cython" in _deps_info
@@ -26,8 +26,8 @@ def test_show_versions_default(capsys):
     assert "machine" in out
     assert "pip" in out
     assert "setuptools" in out
-    assert "imblearn" in out
-    assert "sklearn" in out
+    assert "imbalanced-learn" in out
+    assert "scikit-learn" in out
     assert "numpy" in out
     assert "scipy" in out
     assert "Cython" in out
@@ -48,8 +48,8 @@ def test_show_versions_github(capsys):
     assert "**Python Dependencies**" in out
     assert "* pip" in out
     assert "* setuptools" in out
-    assert "* imblearn" in out
-    assert "* sklearn" in out
+    assert "* imbalanced-learn" in out
+    assert "* scikit-learn" in out
     assert "* numpy" in out
     assert "* scipy" in out
     assert "* Cython" in out

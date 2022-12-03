@@ -38,6 +38,7 @@ def data():
     return X, y
 
 
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_kmeans_smote(data):
     X, y = data
     kmeans_smote = KMeansSMOTE(
@@ -59,13 +60,14 @@ def test_kmeans_smote(data):
     assert "batch_size" in kmeans_smote.kmeans_estimator_.get_params()
 
 
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 @pytest.mark.parametrize("k_neighbors", [2, NearestNeighbors(n_neighbors=3)])
 @pytest.mark.parametrize(
     "kmeans_estimator",
     [
         3,
-        KMeans(n_clusters=3, random_state=42),
-        MiniBatchKMeans(n_clusters=3, random_state=42),
+        KMeans(n_clusters=3, n_init=1, random_state=42),
+        MiniBatchKMeans(n_clusters=3, n_init=1, random_state=42),
     ],
 )
 def test_sample_kmeans_custom(data, k_neighbors, kmeans_estimator):
@@ -83,6 +85,7 @@ def test_sample_kmeans_custom(data, k_neighbors, kmeans_estimator):
     assert kmeans_smote.kmeans_estimator_.n_clusters == 3
 
 
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_sample_kmeans_not_enough_clusters(data):
     X, y = data
     smote = KMeansSMOTE(cluster_balance_threshold=10, random_state=42)
@@ -97,6 +100,7 @@ def test_sample_kmeans_density_estimation(density_exponent, cluster_balance_thre
         n_samples=10_000, n_classes=2, weights=[0.3, 0.7], random_state=42
     )
     smote = KMeansSMOTE(
+        kmeans_estimator=MiniBatchKMeans(n_init=1, random_state=42),
         random_state=0,
         density_exponent=density_exponent,
         cluster_balance_threshold=cluster_balance_threshold,
