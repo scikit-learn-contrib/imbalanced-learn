@@ -31,7 +31,7 @@ def make_plot_despine(ax):
     ax.set_yticks(np.arange(0, 3.6, 0.5))
     ax.set_xlabel(r"$X_1$")
     ax.set_ylabel(r"$X_2$")
-    ax.legend(loc="upper left")
+    ax.legend(loc="upper left", fontsize=16)
 
 
 # %% [markdown]

@@ -67,21 +67,21 @@ print(
 
 # %%
 import seaborn as sns
-from sklearn.metrics import plot_confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
 
 sns.set_context("poster")
 
-disp = plot_confusion_matrix(tree, X_test, y_test, colorbar=False)
+disp = ConfusionMatrixDisplay.from_estimator(tree, X_test, y_test, colorbar=False)
 _ = disp.ax_.set_title("Decision tree")
 
 # %% [markdown]
 # Classification using bagging classifier with and without sampling
 # -----------------------------------------------------------------
 #
-# Instead of using a single tree, we will check if an ensemble of decsion tree
+# Instead of using a single tree, we will check if an ensemble of decision tree
 # can actually alleviate the issue induced by the class imbalancing. First, we
 # will use a bagging classifier and its counter part which internally uses a
-# random under-sampling to balanced each boostrap sample.
+# random under-sampling to balanced each bootstrap sample.
 
 # %%
 from sklearn.ensemble import BaggingClassifier
@@ -117,10 +117,14 @@ print(
 import matplotlib.pyplot as plt
 
 fig, axs = plt.subplots(ncols=2, figsize=(10, 5))
-plot_confusion_matrix(bagging, X_test, y_test, ax=axs[0], colorbar=False)
+ConfusionMatrixDisplay.from_estimator(
+    bagging, X_test, y_test, ax=axs[0], colorbar=False
+)
 axs[0].set_title("Bagging")
 
-plot_confusion_matrix(balanced_bagging, X_test, y_test, ax=axs[1], colorbar=False)
+ConfusionMatrixDisplay.from_estimator(
+    balanced_bagging, X_test, y_test, ax=axs[1], colorbar=False
+)
 axs[1].set_title("Balanced Bagging")
 
 fig.tight_layout()
@@ -150,7 +154,7 @@ y_pred_brf = brf.predict(X_test)
 # %% [markdown]
 # Similarly to the previous experiment, the balanced classifier outperform the
 # classifier which learn from imbalanced bootstrap samples. In addition, random
-# forest outsperforms the bagging classifier.
+# forest outperforms the bagging classifier.
 
 # %%
 print("Random Forest classifier performance:")
@@ -166,10 +170,10 @@ print(
 
 # %%
 fig, axs = plt.subplots(ncols=2, figsize=(10, 5))
-plot_confusion_matrix(rf, X_test, y_test, ax=axs[0], colorbar=False)
+ConfusionMatrixDisplay.from_estimator(rf, X_test, y_test, ax=axs[0], colorbar=False)
 axs[0].set_title("Random forest")
 
-plot_confusion_matrix(brf, X_test, y_test, ax=axs[1], colorbar=False)
+ConfusionMatrixDisplay.from_estimator(brf, X_test, y_test, ax=axs[1], colorbar=False)
 axs[1].set_title("Balanced random forest")
 
 fig.tight_layout()
@@ -187,12 +191,12 @@ from sklearn.ensemble import AdaBoostClassifier
 
 from imblearn.ensemble import EasyEnsembleClassifier, RUSBoostClassifier
 
-base_estimator = AdaBoostClassifier(n_estimators=10)
-eec = EasyEnsembleClassifier(n_estimators=10, base_estimator=base_estimator)
+estimator = AdaBoostClassifier(n_estimators=10)
+eec = EasyEnsembleClassifier(n_estimators=10, estimator=estimator)
 eec.fit(X_train, y_train)
 y_pred_eec = eec.predict(X_test)
 
-rusboost = RUSBoostClassifier(n_estimators=10, base_estimator=base_estimator)
+rusboost = RUSBoostClassifier(n_estimators=10, estimator=estimator)
 rusboost.fit(X_train, y_train)
 y_pred_rusboost = rusboost.predict(X_test)
 
@@ -211,9 +215,11 @@ print(
 # %%
 fig, axs = plt.subplots(ncols=2, figsize=(10, 5))
 
-plot_confusion_matrix(eec, X_test, y_test, ax=axs[0], colorbar=False)
+ConfusionMatrixDisplay.from_estimator(eec, X_test, y_test, ax=axs[0], colorbar=False)
 axs[0].set_title("Easy Ensemble")
-plot_confusion_matrix(rusboost, X_test, y_test, ax=axs[1], colorbar=False)
+ConfusionMatrixDisplay.from_estimator(
+    rusboost, X_test, y_test, ax=axs[1], colorbar=False
+)
 axs[1].set_title("RUSBoost classifier")
 
 fig.tight_layout()

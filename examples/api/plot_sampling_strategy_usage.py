@@ -53,8 +53,8 @@ fig.tight_layout()
 # --------------------------------
 #
 # `sampling_strategy` can be given a `float`. For **under-sampling
-# methods**, it corresponds to the ratio :math:`\\alpha_{us}` defined by
-# :math:`N_{rM} = \\alpha_{us} \\times N_{m}` where :math:`N_{rM}` and
+# methods**, it corresponds to the ratio :math:`\alpha_{us}` defined by
+# :math:`N_{rM} = \alpha_{us} \times N_{m}` where :math:`N_{rM}` and
 # :math:`N_{m}` are the number of samples in the majority class after
 # resampling and the number of samples in the minority class, respectively.
 
@@ -77,7 +77,7 @@ _ = ax.set_title("Under-sampling")
 
 # %% [markdown]
 # For **over-sampling methods**, it correspond to the ratio
-# :math:`\\alpha_{os}` defined by :math:`N_{rm} = \\alpha_{os} \\times N_{M}`
+# :math:`\alpha_{os}` defined by :math:`N_{rm} = \alpha_{os} \times N_{M}`
 # where :math:`N_{rm}` and :math:`N_{M}` are the number of samples in the
 # minority class after resampling and the number of samples in the majority
 # class, respectively.
