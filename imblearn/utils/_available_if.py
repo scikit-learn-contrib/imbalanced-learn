@@ -1,6 +1,7 @@
 """This is a copy of sklearn/utils/_available_if.py. It can be removed when
 we support scikit-learn >= 1.1.
 """
+# mypy: ignore-errors
 
 from functools import update_wrapper, wraps
 from types import MethodType
