@@ -4,6 +4,7 @@
 # License: MIT
 
 import numpy as np
+import pytest
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils._testing import assert_array_equal
 
@@ -67,9 +68,9 @@ def test_cnn_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
-def test_cnn_fit_resample_with_object():
-    knn = KNeighborsClassifier(n_neighbors=1)
-    cnn = CondensedNearestNeighbour(random_state=RND_SEED, n_neighbors=knn)
+@pytest.mark.parametrize("n_neighbors", [1, KNeighborsClassifier(n_neighbors=1)])
+def test_cnn_fit_resample_with_object(n_neighbors):
+    cnn = CondensedNearestNeighbour(random_state=RND_SEED, n_neighbors=n_neighbors)
     X_resampled, y_resampled = cnn.fit_resample(X, Y)
 
     X_gt = np.array(

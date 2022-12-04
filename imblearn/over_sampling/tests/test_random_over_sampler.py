@@ -44,7 +44,9 @@ def test_ros_init():
     assert ros.random_state == RND_SEED
 
 
-@pytest.mark.parametrize("params", [{"shrinkage": None}, {"shrinkage": 0}])
+@pytest.mark.parametrize(
+    "params", [{"shrinkage": None}, {"shrinkage": 0}, {"shrinkage": {0: 0}}]
+)
 @pytest.mark.parametrize("X_type", ["array", "dataframe"])
 def test_ros_fit_resample(X_type, data, params):
     X, Y = data

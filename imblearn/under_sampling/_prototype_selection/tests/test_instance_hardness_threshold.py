@@ -85,3 +85,11 @@ def test_iht_reproducibility():
         idx_sampled.append(iht.sample_indices_.copy())
     for idx_1, idx_2 in zip(idx_sampled, idx_sampled[1:]):
         assert_array_equal(idx_1, idx_2)
+
+
+def test_iht_fit_resample_default_estimator():
+    iht = InstanceHardnessThreshold(estimator=None, random_state=RND_SEED)
+    X_resampled, y_resampled = iht.fit_resample(X, Y)
+    assert isinstance(iht.estimator_, RandomForestClassifier)
+    assert X_resampled.shape == (12, 2)
+    assert y_resampled.shape == (12,)

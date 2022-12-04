@@ -512,7 +512,7 @@ def check_param_validation(name, estimator_orig):
 
         if constraints == "no_validation":
             # This parameter is not validated
-            continue
+            continue  # pragma: no cover
 
         match = rf"The '{param_name}' parameter of {name} must be .* Got .* instead."
         err_msg = (
@@ -536,7 +536,7 @@ def check_param_validation(name, estimator_orig):
                     for X_type in _safe_tags(estimator, key="X_types")
                 ):
                     # The estimator is a label transformer and take only `y`
-                    getattr(estimator, method)(y)
+                    getattr(estimator, method)(y)  # pragma: no cover
                 else:
                     getattr(estimator, method)(X, y)
 
@@ -564,6 +564,6 @@ def check_param_validation(name, estimator_orig):
                         for X_type in _safe_tags(estimator, key="X_types")
                     ):
                         # The estimator is a label transformer and take only `y`
-                        getattr(estimator, method)(y)
+                        getattr(estimator, method)(y)  # pragma: no cover
                     else:
                         getattr(estimator, method)(X, y)
