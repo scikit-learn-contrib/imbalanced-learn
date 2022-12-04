@@ -901,6 +901,7 @@ if sklearn_version < parse_version("1.2"):
 
 else:
     from sklearn.utils._param_validation import generate_invalid_param_val  # noqa
+    from sklearn.utils._param_validation import validate_parameter_constraints  # noqa
     from sklearn.utils._param_validation import (
         HasMethods,
         Hidden,
