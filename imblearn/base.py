@@ -125,11 +125,12 @@ class _ParamsValidationMixin:
         the docstring of `validate_parameter_constraints` for a description of the
         accepted constraints.
         """
-        validate_parameter_constraints(
-            self._parameter_constraints,
-            self.get_params(deep=False),
-            caller_name=self.__class__.__name__,
-        )
+        if hasattr(self, "_parameter_constraints"):
+            validate_parameter_constraints(
+                self._parameter_constraints,
+                self.get_params(deep=False),
+                caller_name=self.__class__.__name__,
+            )
 
 
 class BaseSampler(SamplerMixin, _ParamsValidationMixin):
