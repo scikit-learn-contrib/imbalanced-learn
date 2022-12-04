@@ -426,17 +426,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier, _ParamsValidationMi
 
     def _validate_estimator(self, default=DecisionTreeClassifier()):
         """Check the estimator and the n_estimator attribute, set the
-        `base_estimator_` attribute."""
-        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError(
-                f"n_estimators must be an integer, " f"got {type(self.n_estimators)}."
-            )
-
-        if self.n_estimators <= 0:
-            raise ValueError(
-                f"n_estimators must be greater than zero, " f"got {self.n_estimators}."
-            )
-
+        `estimator_` attribute."""
         if hasattr(self, "estimator"):
             base_estimator = self.estimator
         else:

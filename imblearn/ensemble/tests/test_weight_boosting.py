@@ -28,15 +28,6 @@ def imbalanced_dataset():
     )
 
 
-@pytest.mark.parametrize(
-    "boosting_params", [{"n_estimators": "whatever"}, {"n_estimators": -100}]
-)
-def test_rusboost_error(imbalanced_dataset, boosting_params):
-    rusboost = RUSBoostClassifier(**boosting_params)
-    with pytest.raises((ValueError, TypeError)):
-        rusboost.fit(*imbalanced_dataset)
-
-
 @pytest.mark.parametrize("algorithm", ["SAMME", "SAMME.R"])
 def test_rusboost(imbalanced_dataset, algorithm):
     X, y = imbalanced_dataset

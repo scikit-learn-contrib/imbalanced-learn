@@ -263,17 +263,7 @@ class EasyEnsembleClassifier(BaggingClassifier, _ParamsValidationMixin):
 
     def _validate_estimator(self, default=AdaBoostClassifier()):
         """Check the estimator and the n_estimator attribute, set the
-        `base_estimator_` attribute."""
-        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError(
-                f"n_estimators must be an integer, " f"got {type(self.n_estimators)}."
-            )
-
-        if self.n_estimators <= 0:
-            raise ValueError(
-                f"n_estimators must be greater than zero, " f"got {self.n_estimators}."
-            )
-
+        `estimator_` attribute."""
         if self.estimator is not None and (
             self.base_estimator not in [None, "deprecated"]
         ):
