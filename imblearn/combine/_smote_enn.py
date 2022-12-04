@@ -4,6 +4,8 @@
 #          Christos Aridas
 # License: MIT
 
+import numbers
+
 from sklearn.base import clone
 from sklearn.utils import check_X_y
 
@@ -102,6 +104,13 @@ class SMOTEENN(BaseSampler):
 
     _sampling_type = "over-sampling"
 
+    _parameter_constraints: dict = {
+        **BaseOverSampler._parameter_constraints,
+        "smote": [SMOTE, None],
+        "enn": [EditedNearestNeighbours, None],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -121,14 +130,7 @@ class SMOTEENN(BaseSampler):
     def _validate_estimator(self):
         "Private function to validate SMOTE and ENN objects"
         if self.smote is not None:
-            if isinstance(self.smote, SMOTE):
-                self.smote_ = clone(self.smote)
-            else:
-                raise ValueError(
-                    f"smote needs to be a SMOTE object."
-                    f"Got {type(self.smote)} instead."
-                )
-        # Otherwise create a default SMOTE
+            self.smote_ = clone(self.smote)
         else:
             self.smote_ = SMOTE(
                 sampling_strategy=self.sampling_strategy,
@@ -137,14 +139,7 @@ class SMOTEENN(BaseSampler):
             )
 
         if self.enn is not None:
-            if isinstance(self.enn, EditedNearestNeighbours):
-                self.enn_ = clone(self.enn)
-            else:
-                raise ValueError(
-                    f"enn needs to be an EditedNearestNeighbours."
-                    f" Got {type(self.enn)} instead."
-                )
-        # Otherwise create a default EditedNearestNeighbours
+            self.enn_ = clone(self.enn)
         else:
             self.enn_ = EditedNearestNeighbours(
                 sampling_strategy="all", n_jobs=self.n_jobs

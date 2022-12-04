@@ -6,6 +6,7 @@
 #          Dzianis Dudnik
 # License: MIT
 
+import numbers
 import warnings
 
 import numpy as np
@@ -16,6 +17,7 @@ from sklearn.utils import _safe_indexing, check_random_state
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ..base import BaseOverSampler
 from .base import BaseSMOTE
 
@@ -143,6 +145,15 @@ class BorderlineSMOTE(BaseSMOTE):
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
+
+    _parameter_constraints: dict = {
+        **BaseSMOTE._parameter_constraints,
+        "m_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "kind": [StrOptions({"borderline-1", "borderline-2"})],
+    }
 
     def __init__(
         self,
@@ -395,6 +406,16 @@ class SVMSMOTE(BaseSMOTE):
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
+
+    _parameter_constraints: dict = {
+        **BaseSMOTE._parameter_constraints,
+        "m_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "svm_estimator": [HasMethods(["fit", "predict"]), None],
+        "out_step": [Interval(numbers.Real, 0, 1, closed="both")],
+    }
 
     def __init__(
         self,

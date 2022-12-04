@@ -129,6 +129,11 @@ class RandomOverSampler(BaseOverSampler):
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
+    _parameter_constraints: dict = {
+        **BaseOverSampler._parameter_constraints,
+        "shrinkage": ["boolean"],
+    }
+
     def __init__(
         self,
         *,

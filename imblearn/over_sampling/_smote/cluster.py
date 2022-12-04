@@ -6,6 +6,7 @@
 # License: MIT
 
 import math
+import numbers
 
 import numpy as np
 from scipy import sparse
@@ -16,6 +17,7 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ..base import BaseOverSampler
 from .base import BaseSMOTE
 
@@ -138,6 +140,16 @@ class KMeansSMOTE(BaseSMOTE):
     More 0 samples: True
     """
 
+    _parameter_constraints: dict = {
+        **BaseSMOTE._parameter_constraints,
+        "kmeans_estimator": [
+            HasMethods(["fit", "predict"]),
+            Interval(numbers.Integral, 1, None, closed="left"),
+        ],
+        "cluster_balance_threshold": [StrOptions({"auto"}), numbers.Real],
+        "density_exponent": [StrOptions({"auto"}), numbers.Real],
+    }
+
     def __init__(
         self,
         *,
@@ -170,15 +182,6 @@ class KMeansSMOTE(BaseSMOTE):
             )
         else:
             self.kmeans_estimator_ = clone(self.kmeans_estimator)
-
-        # validate the parameters
-        for param_name in ("cluster_balance_threshold", "density_exponent"):
-            param = getattr(self, param_name)
-            if isinstance(param, str) and param != "auto":
-                raise ValueError(
-                    f"'{param_name}' should be 'auto' when a string is passed."
-                    f" Got {repr(param)} instead."
-                )
 
         self.cluster_balance_threshold_ = (
             self.cluster_balance_threshold

@@ -13,7 +13,7 @@ from sklearn.utils import _safe_indexing, check_random_state
 
 from ..utils import Substitution, check_neighbors_object
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._param_validation import HasMethods, Interval, StrOptions
+from ..utils._param_validation import HasMethods, Interval
 from .base import BaseOverSampler
 
 
@@ -117,17 +117,11 @@ class ADASYN(BaseOverSampler):
     """
 
     _parameter_constraints: dict = {
-        "sampling_strategy": [
-            Interval(numbers.Real, 0, 1, closed="right"),
-            StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
-            dict,
-            callable,
-        ],
+        **BaseOverSampler._parameter_constraints,
         "n_neighbors": [
             Interval(numbers.Integral, 1, None, closed="left"),
             HasMethods(["kneighbors", "kneighbors_graph"]),
         ],
-        "random_state": ["random_state"],
         "n_jobs": [numbers.Integral, None],
     }
 
