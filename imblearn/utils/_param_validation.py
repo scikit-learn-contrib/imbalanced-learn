@@ -1,3 +1,7 @@
+"""This is a copy of sklearn/utils/_param_validation.py. It can be removed when
+we support scikit-learn >= 1.1.
+"""
+# mypy: ignore-errors
 import functools
 import math
 import operator
