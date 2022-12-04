@@ -7,6 +7,7 @@ from collections import Counter, OrderedDict
 
 import numpy as np
 import pytest
+from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
 from sklearn.neighbors._base import KNeighborsMixin
 from sklearn.utils._testing import assert_array_equal
@@ -16,7 +17,11 @@ from imblearn.utils import (
     check_sampling_strategy,
     check_target_type,
 )
-from imblearn.utils._validation import ArraysTransformer, _deprecate_positional_args
+from imblearn.utils._validation import (
+    ArraysTransformer,
+    _deprecate_positional_args,
+    _is_neighbors_object,
+)
 from imblearn.utils.testing import _CustomNearestNeighbors
 
 multiclass_target = np.array([1] * 50 + [2] * 100 + [3] * 25)
@@ -376,3 +381,10 @@ def test_deprecate_positional_args_warns_for_function():
 
     with pytest.warns(FutureWarning, match=r"Pass b=2 as keyword args"):
         f3(1, 2)
+
+
+@pytest.mark.parametrize(
+    "estimator, is_neighbor_estimator", [(NearestNeighbors(), True), (KMeans(), False)]
+)
+def test_is_neighbors_object(estimator, is_neighbor_estimator):
+    assert _is_neighbors_object(estimator) == is_neighbor_estimator
