@@ -179,12 +179,6 @@ class BorderlineSMOTE(BaseSMOTE):
         self.nn_m_ = check_neighbors_object(
             "m_neighbors", self.m_neighbors, additional_neighbor=1
         )
-        if self.kind not in ("borderline-1", "borderline-2"):
-            raise ValueError(
-                f'The possible "kind" of algorithm are '
-                f'"borderline-1" and "borderline-2".'
-                f"Got {self.kind} instead."
-            )
 
     def _fit_resample(self, X, y):
         # FIXME: to be removed in 0.12

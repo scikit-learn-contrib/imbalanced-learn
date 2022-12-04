@@ -38,13 +38,6 @@ def test_check_neighbors_object():
     estimator = _CustomNearestNeighbors()
     estimator_cloned = check_neighbors_object(name, estimator)
     assert isinstance(estimator_cloned, _CustomNearestNeighbors)
-    n_neighbors = "rnd"
-    err_msg = (
-        "n_neighbors must be an interger or an object compatible with the "
-        "KNeighborsMixin API of scikit-learn"
-    )
-    with pytest.raises(ValueError, match=err_msg):
-        check_neighbors_object(name, n_neighbors)
 
 
 @pytest.mark.parametrize(

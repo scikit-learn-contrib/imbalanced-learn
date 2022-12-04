@@ -122,7 +122,7 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
             HasMethods(["kneighbors", "kneighbors_graph"]),
         ],
         "kind_sel": [StrOptions({"all", "mode"})],
-        "threshold_cleaning": [Interval(numbers.Real, 0, 1, closed="both")],
+        "threshold_cleaning": [Interval(numbers.Real, 0, 1, closed="neither")],
         "n_jobs": [numbers.Integral, None],
     }
 
@@ -147,15 +147,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
             "n_neighbors", self.n_neighbors, additional_neighbor=1
         )
         self.nn_.set_params(**{"n_jobs": self.n_jobs})
-
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
-        if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
-            raise ValueError(
-                f"'threshold_cleaning' is a value between 0 and 1."
-                f" Got {self.threshold_cleaning} instead."
-            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
@@ -192,11 +183,9 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         if self.kind_sel == "mode":
             nnhood_label_majority, _ = _mode(nnhood_label, axis=1)
             nnhood_bool = np.ravel(nnhood_label_majority) == y_class
-        elif self.kind_sel == "all":
+        else:  # self.kind_sel == "all":
             nnhood_label_majority = nnhood_label == class_minority
             nnhood_bool = np.all(nnhood_label, axis=1)
-        else:
-            raise NotImplementedError
         # compute a2 group
         index_a2 = np.ravel(nnhood_idx[~nnhood_bool])
         index_a2 = np.unique(

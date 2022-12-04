@@ -182,10 +182,8 @@ class NearMiss(BaseUnderSampler):
         # Sort the list of distance and get the index
         if sel_strategy == "nearest":
             sort_way = False
-        elif sel_strategy == "farthest":
+        else:  # sel_strategy == "farthest":
             sort_way = True
-        else:
-            raise NotImplementedError
 
         sorted_idx = sorted(
             range(len(dist_avg_vec)),
@@ -217,11 +215,6 @@ class NearMiss(BaseUnderSampler):
                 "n_neighbors_ver3", self.n_neighbors_ver3
             )
             self.nn_ver3_.set_params(**{"n_jobs": self.n_jobs})
-
-        if self.version not in (1, 2, 3):
-            raise ValueError(
-                f"Parameter `version` must be 1, 2 or 3, got {self.version}"
-            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()

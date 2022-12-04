@@ -145,10 +145,6 @@ class InstanceHardnessThreshold(BaseUnderSampler):
                 random_state=self.random_state,
                 n_jobs=self.n_jobs,
             )
-        else:
-            raise ValueError(
-                f"Invalid parameter `estimator`. Got {type(self.estimator)}."
-            )
 
     def _fit_resample(self, X, y):
         random_state = check_random_state(self.random_state)

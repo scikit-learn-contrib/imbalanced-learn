@@ -144,9 +144,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
         )
         self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
     def _fit_resample(self, X, y):
         self._validate_estimator()
 
@@ -319,12 +316,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-        if self.max_iter < 2:
-            raise ValueError(
-                f"max_iter must be greater than 1."
-                f" Got {type(self.max_iter)} instead."
-            )
-
         self.nn_ = check_neighbors_object(
             "n_neighbors", self.n_neighbors, additional_neighbor=1
         )
@@ -528,9 +519,6 @@ class AllKNN(BaseCleaningSampler):
 
     def _validate_estimator(self):
         """Create objects required by AllKNN"""
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
         self.nn_ = check_neighbors_object(
             "n_neighbors", self.n_neighbors, additional_neighbor=1
         )
