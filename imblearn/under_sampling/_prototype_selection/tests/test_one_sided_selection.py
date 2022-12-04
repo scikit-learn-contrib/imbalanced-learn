@@ -4,7 +4,6 @@
 # License: MIT
 
 import numpy as np
-import pytest
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils._testing import assert_array_equal
 
@@ -95,10 +94,3 @@ def test_oss_with_object():
     X_resampled, y_resampled = oss.fit_resample(X, Y)
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_oss_with_wrong_object():
-    knn = "rnd"
-    oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=knn)
-    with pytest.raises(ValueError, match="has to be a int"):
-        oss.fit_resample(X, Y)

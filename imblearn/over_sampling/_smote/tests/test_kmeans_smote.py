@@ -106,17 +106,3 @@ def test_sample_kmeans_density_estimation(density_exponent, cluster_balance_thre
         cluster_balance_threshold=cluster_balance_threshold,
     )
     smote.fit_resample(X, y)
-
-
-@pytest.mark.parametrize(
-    "density_exponent, cluster_balance_threshold",
-    [("xxx", "auto"), ("auto", "xxx")],
-)
-def test_kmeans_smote_param_error(data, density_exponent, cluster_balance_threshold):
-    X, y = data
-    kmeans_smote = KMeansSMOTE(
-        density_exponent=density_exponent,
-        cluster_balance_threshold=cluster_balance_threshold,
-    )
-    with pytest.raises(ValueError, match="should be 'auto' when a string"):
-        kmeans_smote.fit_resample(X, y)

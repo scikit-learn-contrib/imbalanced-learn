@@ -105,7 +105,7 @@ class BaseCleaningSampler(BaseSampler):
         "sampling_strategy": [
             Interval(numbers.Real, 0, 1, closed="right"),
             StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
-            dict,
+            list,
             callable,
         ],
     }

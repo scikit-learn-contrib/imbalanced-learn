@@ -4,7 +4,6 @@
 # License: MIT
 
 import numpy as np
-import pytest
 from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.combine import SMOTEENN
@@ -156,16 +155,3 @@ def test_parallelisation():
     assert smt.n_jobs == 8
     assert smt.smote_.n_jobs == 8
     assert smt.enn_.n_jobs == 8
-
-
-@pytest.mark.parametrize(
-    "smote_params, err_msg",
-    [
-        ({"smote": "rnd"}, "smote needs to be a SMOTE"),
-        ({"enn": "rnd"}, "enn needs to be an "),
-    ],
-)
-def test_error_wrong_object(smote_params, err_msg):
-    smt = SMOTEENN(**smote_params)
-    with pytest.raises(ValueError, match=err_msg):
-        smt.fit_resample(X, Y)

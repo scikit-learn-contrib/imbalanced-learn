@@ -36,12 +36,6 @@ def data():
     return X, y
 
 
-def test_borderline_smote_wrong_kind(data):
-    bsmote = BorderlineSMOTE(kind="rand")
-    with pytest.raises(ValueError, match='The possible "kind" of algorithm'):
-        bsmote.fit_resample(*data)
-
-
 @pytest.mark.parametrize("kind", ["borderline-1", "borderline-2"])
 def test_borderline_smote(kind, data):
     bsmote = BorderlineSMOTE(kind=kind, random_state=42)

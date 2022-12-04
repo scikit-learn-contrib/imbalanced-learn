@@ -145,6 +145,7 @@ class KMeansSMOTE(BaseSMOTE):
         "kmeans_estimator": [
             HasMethods(["fit", "predict"]),
             Interval(numbers.Integral, 1, None, closed="left"),
+            None,
         ],
         "cluster_balance_threshold": [StrOptions({"auto"}), numbers.Real],
         "density_exponent": [StrOptions({"auto"}), numbers.Real],

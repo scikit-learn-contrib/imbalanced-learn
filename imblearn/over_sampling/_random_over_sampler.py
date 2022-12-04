@@ -131,7 +131,7 @@ class RandomOverSampler(BaseOverSampler):
 
     _parameter_constraints: dict = {
         **BaseOverSampler._parameter_constraints,
-        "shrinkage": ["boolean"],
+        "shrinkage": ["boolean", dict, None],
     }
 
     def __init__(

@@ -4,7 +4,6 @@
 # License: MIT
 
 import numpy as np
-import pytest
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB as NB
 from sklearn.utils._testing import assert_array_equal
@@ -72,15 +71,6 @@ def test_iht_fit_resample_class_obj():
     X_resampled, y_resampled = iht.fit_resample(X, Y)
     assert X_resampled.shape == (12, 2)
     assert y_resampled.shape == (12,)
-
-
-def test_iht_fit_resample_wrong_class_obj():
-    from sklearn.cluster import KMeans
-
-    est = KMeans()
-    iht = InstanceHardnessThreshold(estimator=est, random_state=RND_SEED)
-    with pytest.raises(ValueError, match="Invalid parameter `estimator`"):
-        iht.fit_resample(X, Y)
 
 
 def test_iht_reproducibility():

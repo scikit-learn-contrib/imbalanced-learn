@@ -63,6 +63,8 @@ class NoAcceptingSparseSampler(BaseBadSampler):
 class NotPreservingDtypeSampler(BaseSampler):
     _sampling_type = "bypass"
 
+    _parameter_constraints: dict = {"sampling_strategy": "no_validation"}
+
     def _fit_resample(self, X, y):
         return X.astype(np.float64), y.astype(np.int64)
 
