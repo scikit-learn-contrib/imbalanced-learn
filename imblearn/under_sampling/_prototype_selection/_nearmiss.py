@@ -4,6 +4,7 @@
 #          Christos Aridas
 # License: MIT
 
+import numbers
 import warnings
 from collections import Counter
 
@@ -12,6 +13,7 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
+from ...utils._param_validation import HasMethods, Interval
 from ..base import BaseUnderSampler
 
 
@@ -103,6 +105,20 @@ class NearMiss(BaseUnderSampler):
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{0: 100, 1: 100}})
     """
+
+    _parameter_constraints: dict = {
+        **BaseUnderSampler._parameter_constraints,
+        "version": [Interval(numbers.Integral, 1, 3, closed="both")],
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "n_neighbors_ver3": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "n_jobs": [numbers.Integral, None],
+    }
 
     def __init__(
         self,

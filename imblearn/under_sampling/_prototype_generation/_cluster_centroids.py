@@ -15,6 +15,7 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
+from ...utils._param_validation import HasMethods, StrOptions
 from ..base import BaseUnderSampler
 
 VOTING_KIND = ("auto", "hard", "soft")
@@ -106,6 +107,13 @@ class ClusterCentroids(BaseUnderSampler):
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{...}})
     """
+
+    _parameter_constraints: dict = {
+        **BaseUnderSampler._parameter_constraints,
+        "estimator": [HasMethods(["fit", "predict"]), None],
+        "voting": [StrOptions({"auto", "hard", "soft"})],
+        "random_state": ["random_state"],
+    }
 
     def __init__(
         self,

@@ -5,6 +5,8 @@
 #          Christos Aridas
 # License: MIT
 
+import numbers
+
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import _safe_indexing
@@ -81,6 +83,11 @@ class TomekLinks(BaseCleaningSampler):
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 897, 0: 100}})
     """
+
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_jobs": [numbers.Integral, None],
+    }
 
     def __init__(self, *, sampling_strategy="auto", n_jobs=None):
         super().__init__(sampling_strategy=sampling_strategy)

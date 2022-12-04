@@ -5,6 +5,7 @@ method."""
 #          Christos Aridas
 # License: MIT
 
+import numbers
 from collections import Counter
 
 import numpy as np
@@ -15,6 +16,7 @@ from sklearn.utils import _safe_indexing, check_random_state
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods, Interval
 from ..base import BaseCleaningSampler
 
 
@@ -103,6 +105,18 @@ CondensedNearestNeighbour  # doctest: +SKIP
     >>> print('Resampled dataset shape %s' % Counter(y_res))  # doctest: +SKIP
     Resampled dataset shape Counter({{-1: 268, 1: 227}})  # doctest: +SKIP
     """
+
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+            None,
+        ],
+        "n_seeds_S": [Interval(numbers.Integral, 1, None, closed="left")],
+        "n_jobs": [numbers.Integral, None],
+        "random_state": ["random_state"],
+    }
 
     def __init__(
         self,

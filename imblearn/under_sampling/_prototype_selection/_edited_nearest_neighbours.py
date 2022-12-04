@@ -6,6 +6,7 @@ method."""
 #          Christos Aridas
 # License: MIT
 
+import numbers
 from collections import Counter
 
 import numpy as np
@@ -13,6 +14,7 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
+from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ...utils.fixes import _mode
 from ..base import BaseCleaningSampler
 
@@ -111,6 +113,16 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
+
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "n_jobs": [numbers.Integral, None],
+    }
 
     def __init__(
         self,
@@ -278,6 +290,17 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
+
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "max_iter": [Interval(numbers.Integral, 1, None, closed="left")],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "n_jobs": [numbers.Integral, None],
+    }
 
     def __init__(
         self,
@@ -476,6 +499,17 @@ class AllKNN(BaseCleaningSampler):
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
+
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "allow_minority": ["boolean"],
+        "n_jobs": [numbers.Integral, None],
+    }
 
     def __init__(
         self,

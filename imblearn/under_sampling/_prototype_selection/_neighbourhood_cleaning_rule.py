@@ -4,6 +4,7 @@
 #          Christos Aridas
 # License: MIT
 
+import numbers
 from collections import Counter
 
 import numpy as np
@@ -11,6 +12,7 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
+from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ...utils.fixes import _mode
 from ..base import BaseCleaningSampler
 from ._edited_nearest_neighbours import EditedNearestNeighbours
@@ -112,6 +114,17 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     >>> print('Resampled dataset shape %s' % Counter(y_res))
     Resampled dataset shape Counter({{1: 877, 0: 100}})
     """
+
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "threshold_cleaning": [Interval(numbers.Real, 0, 1, closed="both")],
+        "n_jobs": [numbers.Integral, None],
+    }
 
     def __init__(
         self,

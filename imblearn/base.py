@@ -306,6 +306,13 @@ class FunctionSampler(BaseSampler):
 
     _sampling_type = "bypass"
 
+    _parameter_constraints: dict = {
+        "func": [callable, None],
+        "accept_sparse": ["boolean"],
+        "kw_args": [dict, None],
+        "validate": ["boolean"],
+    }
+
     def __init__(self, *, func=None, accept_sparse=True, kw_args=None, validate=True):
         super().__init__()
         self.func = func
@@ -332,6 +339,7 @@ class FunctionSampler(BaseSampler):
         self : object
             Return the instance itself.
         """
+        self._validate_params()
         # we need to overwrite SamplerMixin.fit to bypass the validation
         if self.validate:
             check_classification_targets(y)
@@ -363,6 +371,7 @@ class FunctionSampler(BaseSampler):
         y_resampled : array-like of shape (n_samples_new,)
             The corresponding label of `X_resampled`.
         """
+        self._validate_params()
         arrays_transformer = ArraysTransformer(X, y)
 
         if self.validate:
