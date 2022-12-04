@@ -1,5 +1,5 @@
 """This is a copy of sklearn/utils/_param_validation.py. It can be removed when
-we support scikit-learn >= 1.1.
+we support scikit-learn >= 1.2.
 """
 # mypy: ignore-errors
 import functools
@@ -901,6 +901,7 @@ if sklearn_version < parse_version("1.2"):
 
 else:
     from sklearn.utils._param_validation import generate_invalid_param_val  # noqa
+    from sklearn.utils._param_validation import generate_valid_param  # noqa
     from sklearn.utils._param_validation import validate_parameter_constraints  # noqa
     from sklearn.utils._param_validation import (
         HasMethods,
@@ -908,6 +909,18 @@ else:
         Interval,
         Options,
         StrOptions,
+        _ArrayLikes,
+        _Booleans,
+        _Callables,
+        _CVObjects,
+        _InstancesOf,
+        _IterablesNotString,
+        _MissingValues,
+        _NoneConstraint,
+        _PandasNAConstraint,
+        _RandomStates,
+        _SparseMatrices,
+        _VerboseHelper,
         make_constraint,
         validate_params,
     )
