@@ -1,3 +1,4 @@
+import copy
 import inspect
 import numbers
 import warnings
@@ -11,18 +12,21 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing
 from sklearn.utils.validation import has_fit_parameter
 
+from ..base import _ParamsValidationMixin
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
+from ..utils._param_validation import Interval, StrOptions
+from ._common import _adaboost_classifier_parameter_constraints
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring,
 )
-class RUSBoostClassifier(AdaBoostClassifier):
+class RUSBoostClassifier(AdaBoostClassifier, _ParamsValidationMixin):
     """Random under-sampling integrated in the learning of AdaBoost.
 
     During learning, the problem of class balancing is alleviated by random
@@ -163,6 +167,29 @@ class RUSBoostClassifier(AdaBoostClassifier):
     array([...])
     """
 
+    # make a deepcopy to not modify the original dictionary
+    if hasattr(AdaBoostClassifier, "_parameter_constraints"):
+        # scikit-learn >= 1.2
+        _parameter_constraints = copy.deepcopy(
+            AdaBoostClassifier._parameter_constraints
+        )
+    else:
+        _parameter_constraints = copy.deepcopy(
+            _adaboost_classifier_parameter_constraints
+        )
+
+    _parameter_constraints.update(
+        {
+            "sampling_strategy": [
+                Interval(numbers.Real, 0, 1, closed="right"),
+                StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+                dict,
+                callable,
+            ],
+            "replacement": ["boolean"],
+        }
+    )
+
     def __init__(
         self,
         estimator=None,
@@ -214,6 +241,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
         self : object
             Returns self.
         """
+        self._validate_params()
         check_target_type(y)
         self.samplers_ = []
         self.pipelines_ = []

@@ -505,7 +505,7 @@ def check_param_validation(name, estimator_orig):
     # this object does not have a valid type for sure for all params
     param_with_bad_type = type("BadType", (), {})()
 
-    fit_methods = ["fit", "partial_fit", "fit_transform", "fit_predict"]
+    fit_methods = ["fit", "partial_fit", "fit_transform", "fit_predict", "fit_resample"]
 
     for param_name in estimator_params:
         constraints = estimator_orig._parameter_constraints[param_name]

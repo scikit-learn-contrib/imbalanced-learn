@@ -4,6 +4,7 @@
 #          Christos Aridas
 # License: MIT
 
+import copy
 import inspect
 import numbers
 import warnings
@@ -254,22 +255,15 @@ class BalancedBaggingClassifier(BaggingClassifier, _ParamsValidationMixin):
      [  2 225]]
     """
 
+    # make a deepcopy to not modify the original dictionary
     if hasattr(BaggingClassifier, "_parameter_constraints"):
         # scikit-learn >= 1.2
-        _parameter_constraints: dict = {
-            **BaggingClassifier._parameter_constraints,
-            "sampling_strategy": [
-                Interval(numbers.Real, 0, 1, closed="right"),
-                StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
-                dict,
-                callable,
-            ],
-            "replacement": ["boolean"],
-            "sampler": [HasMethods(["fit_resample"]), None],
-        }
+        _parameter_constraints = copy.deepcopy(BaggingClassifier._parameter_constraints)
     else:
-        _parameter_constraints: dict = {
-            **_bagging_parameter_constraints,
+        _parameter_constraints = copy.deepcopy(_bagging_parameter_constraints)
+
+    _parameter_constraints.update(
+        {
             "sampling_strategy": [
                 Interval(numbers.Real, 0, 1, closed="right"),
                 StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
@@ -279,6 +273,7 @@ class BalancedBaggingClassifier(BaggingClassifier, _ParamsValidationMixin):
             "replacement": ["boolean"],
             "sampler": [HasMethods(["fit_resample"]), None],
         }
+    )
 
     def __init__(
         self,
