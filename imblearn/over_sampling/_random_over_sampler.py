@@ -14,6 +14,7 @@ from sklearn.utils.sparsefuncs import mean_variance_axis
 
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
+from ..utils._param_validation import Interval
 from .base import BaseOverSampler
 
 
@@ -131,7 +132,7 @@ class RandomOverSampler(BaseOverSampler):
 
     _parameter_constraints: dict = {
         **BaseOverSampler._parameter_constraints,
-        "shrinkage": ["boolean", dict, None],
+        "shrinkage": [Interval(Real, 0, None, closed="left"), dict, None],
     }
 
     def __init__(
