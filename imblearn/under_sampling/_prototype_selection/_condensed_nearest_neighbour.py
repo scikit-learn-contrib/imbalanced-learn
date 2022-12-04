@@ -5,6 +5,7 @@ method."""
 #          Christos Aridas
 # License: MIT
 
+import numbers
 from collections import Counter
 
 import numpy as np
@@ -15,6 +16,7 @@ from sklearn.utils import _safe_indexing, check_random_state
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods, Interval
 from ..base import BaseCleaningSampler
 
 
@@ -104,6 +106,18 @@ CondensedNearestNeighbour  # doctest: +SKIP
     Resampled dataset shape Counter({{-1: 268, 1: 227}})  # doctest: +SKIP
     """
 
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+            None,
+        ],
+        "n_seeds_S": [Interval(numbers.Integral, 1, None, closed="left")],
+        "n_jobs": [numbers.Integral, None],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self,
         *,
@@ -123,18 +137,12 @@ CondensedNearestNeighbour  # doctest: +SKIP
         """Private function to create the NN estimator"""
         if self.n_neighbors is None:
             self.estimator_ = KNeighborsClassifier(n_neighbors=1, n_jobs=self.n_jobs)
-        elif isinstance(self.n_neighbors, int):
+        elif isinstance(self.n_neighbors, numbers.Integral):
             self.estimator_ = KNeighborsClassifier(
                 n_neighbors=self.n_neighbors, n_jobs=self.n_jobs
             )
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
             self.estimator_ = clone(self.n_neighbors)
-        else:
-            raise ValueError(
-                f"`n_neighbors` has to be a int or an object"
-                f" inhereited from KNeighborsClassifier."
-                f" Got {type(self.n_neighbors)} instead."
-            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()

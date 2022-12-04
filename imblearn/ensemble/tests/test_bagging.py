@@ -252,37 +252,6 @@ def test_single_estimator():
     assert_array_equal(clf1.predict(X_test), clf2.predict(X_test))
 
 
-@pytest.mark.parametrize(
-    "params",
-    [
-        {"n_estimators": 1.5},
-        {"n_estimators": -1},
-        {"max_samples": -1},
-        {"max_samples": 0.0},
-        {"max_samples": 2.0},
-        {"max_samples": 1000},
-        {"max_samples": "foobar"},
-        {"max_features": -1},
-        {"max_features": 0.0},
-        {"max_features": 2.0},
-        {"max_features": 5},
-        {"max_features": "foobar"},
-    ],
-)
-def test_balanced_bagging_classifier_error(params):
-    # Test that it gives proper exception on deficient input.
-    X, y = make_imbalance(
-        iris.data, iris.target, sampling_strategy={0: 20, 1: 25, 2: 50}
-    )
-    base = DecisionTreeClassifier()
-    clf = BalancedBaggingClassifier(estimator=base, **params)
-    with pytest.raises(ValueError):
-        clf.fit(X, y)
-
-    # Test support of decision_function
-    assert not (hasattr(BalancedBaggingClassifier(base).fit(X, y), "decision_function"))
-
-
 def test_gridsearch():
     # Check that bagging ensembles can be grid-searched.
     # Transform iris into a binary classification task

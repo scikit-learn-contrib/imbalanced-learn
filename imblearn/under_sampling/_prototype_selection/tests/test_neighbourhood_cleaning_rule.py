@@ -4,7 +4,6 @@
 # License: MIT
 
 import numpy as np
-import pytest
 from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import NeighbourhoodCleaningRule
@@ -29,23 +28,6 @@ X = np.array(
     ]
 )
 Y = np.array([1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
-
-
-@pytest.mark.parametrize(
-    "ncr_params, err_msg",
-    [
-        ({"threshold_cleaning": -10}, "value between 0 and 1"),
-        ({"threshold_cleaning": 10}, "value between 0 and 1"),
-        (
-            {"n_neighbors": "rnd"},
-            "n_neighbors must be an interger or an object compatible",
-        ),
-    ],
-)
-def test_ncr_error(ncr_params, err_msg):
-    ncr = NeighbourhoodCleaningRule(**ncr_params)
-    with pytest.raises(ValueError, match=err_msg):
-        ncr.fit_resample(X, Y)
 
 
 def test_ncr_fit_resample():

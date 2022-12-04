@@ -4,7 +4,6 @@
 # License: MIT
 
 import numpy as np
-import pytest
 from sklearn.datasets import make_classification
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._testing import assert_array_equal
@@ -119,17 +118,6 @@ def test_enn_fit_resample_with_nn_object():
     y_gt = np.array([0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
-
-
-def test_enn_not_good_object():
-    nn = "rnd"
-    enn = EditedNearestNeighbours(n_neighbors=nn, kind_sel="mode")
-    err_msg = (
-        "n_neighbors must be an interger or an object compatible with the "
-        "KNeighborsMixin API of scikit-learn"
-    )
-    with pytest.raises(ValueError, match=err_msg):
-        enn.fit_resample(X, Y)
 
 
 def test_enn_check_kind_selection():

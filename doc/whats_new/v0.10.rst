@@ -19,6 +19,9 @@ Compatibility
 - Maintenance release for be compatible with scikit-learn >= 1.0.2.
   :pr:`946`, :pr:`947`, :pr:`949` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add support for automatic parameters validation as in scikit-learn >= 1.2.
+  :pr:`955` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 

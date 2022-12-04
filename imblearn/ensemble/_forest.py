@@ -28,12 +28,15 @@ from sklearn.utils.fixes import delayed
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _check_sample_weight
 
+from ..base import _ParamsValidationMixin
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ..utils._param_validation import Interval, StrOptions
 from ..utils._validation import check_sampling_strategy
+from ._common import _random_forest_classifier_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
 sklearn_version = parse_version(sklearn.__version__)
@@ -95,7 +98,7 @@ def _local_parallel_build_trees(
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class BalancedRandomForestClassifier(RandomForestClassifier):
+class BalancedRandomForestClassifier(RandomForestClassifier, _ParamsValidationMixin):
     """A balanced random forest classifier.
 
     A balanced random forest randomly under-samples each boostrap sample to
@@ -352,6 +355,27 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     [1]
     """
 
+    # make a deepcopy to not modify the original dictionary
+    if hasattr(RandomForestClassifier, "_parameter_constraints"):
+        # scikit-learn >= 1.2
+        _parameter_constraints = deepcopy(RandomForestClassifier._parameter_constraints)
+    else:
+        _parameter_constraints = deepcopy(
+            _random_forest_classifier_parameter_constraints
+        )
+
+    _parameter_constraints.update(
+        {
+            "sampling_strategy": [
+                Interval(numbers.Real, 0, 1, closed="right"),
+                StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+                dict,
+                callable,
+            ],
+            "replacement": ["boolean"],
+        }
+    )
+
     def __init__(
         self,
         n_estimators=100,
@@ -402,17 +426,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     def _validate_estimator(self, default=DecisionTreeClassifier()):
         """Check the estimator and the n_estimator attribute, set the
-        `base_estimator_` attribute."""
-        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError(
-                f"n_estimators must be an integer, " f"got {type(self.n_estimators)}."
-            )
-
-        if self.n_estimators <= 0:
-            raise ValueError(
-                f"n_estimators must be greater than zero, " f"got {self.n_estimators}."
-            )
-
+        `estimator_` attribute."""
         if hasattr(self, "estimator"):
             base_estimator = self.estimator
         else:
@@ -475,7 +489,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         self : object
             The fitted instance.
         """
-
+        self._validate_params()
         # Validate or convert input data
         if issparse(y):
             raise ValueError("sparse multilabel-indicator for y is not supported.")

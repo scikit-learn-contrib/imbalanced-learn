@@ -12,6 +12,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
+from .utils._param_validation import validate_parameter_constraints
 from .utils._validation import ArraysTransformer
 
 
@@ -113,7 +114,26 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         pass
 
 
-class BaseSampler(SamplerMixin):
+class _ParamsValidationMixin:
+    """Mixin class to validate parameters."""
+
+    def _validate_params(self):
+        """Validate types and values of constructor parameters.
+
+        The expected type and values must be defined in the `_parameter_constraints`
+        class attribute, which is a dictionary `param_name: list of constraints`. See
+        the docstring of `validate_parameter_constraints` for a description of the
+        accepted constraints.
+        """
+        if hasattr(self, "_parameter_constraints"):
+            validate_parameter_constraints(
+                self._parameter_constraints,
+                self.get_params(deep=False),
+                caller_name=self.__class__.__name__,
+            )
+
+
+class BaseSampler(SamplerMixin, _ParamsValidationMixin):
     """Base class for sampling algorithms.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -129,6 +149,52 @@ class BaseSampler(SamplerMixin):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = self._validate_data(X, y, reset=True, accept_sparse=accept_sparse)
         return X, y, binarize_y
+
+    def fit(self, X, y):
+        """Check inputs and statistics of the sampler.
+
+        You should use ``fit_resample`` in all cases.
+
+        Parameters
+        ----------
+        X : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples, n_features)
+            Data array.
+
+        y : array-like of shape (n_samples,)
+            Target array.
+
+        Returns
+        -------
+        self : object
+            Return the instance itself.
+        """
+        self._validate_params()
+        return super().fit(X, y)
+
+    def fit_resample(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : array-like of shape (n_samples,)
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : array-like of shape (n_samples_new,)
+            The corresponding label of `X_resampled`.
+        """
+        self._validate_params()
+        return super().fit_resample(X, y)
 
     def _more_tags(self):
         return {"X_types": ["2darray", "sparse", "dataframe"]}
@@ -241,6 +307,13 @@ class FunctionSampler(BaseSampler):
 
     _sampling_type = "bypass"
 
+    _parameter_constraints: dict = {
+        "func": [callable, None],
+        "accept_sparse": ["boolean"],
+        "kw_args": [dict, None],
+        "validate": ["boolean"],
+    }
+
     def __init__(self, *, func=None, accept_sparse=True, kw_args=None, validate=True):
         super().__init__()
         self.func = func
@@ -267,6 +340,7 @@ class FunctionSampler(BaseSampler):
         self : object
             Return the instance itself.
         """
+        self._validate_params()
         # we need to overwrite SamplerMixin.fit to bypass the validation
         if self.validate:
             check_classification_targets(y)
@@ -298,6 +372,7 @@ class FunctionSampler(BaseSampler):
         y_resampled : array-like of shape (n_samples_new,)
             The corresponding label of `X_resampled`.
         """
+        self._validate_params()
         arrays_transformer = ArraysTransformer(X, y)
 
         if self.validate:

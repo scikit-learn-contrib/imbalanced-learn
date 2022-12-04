@@ -103,18 +103,6 @@ def test_fit_hard_voting():
         assert np.any(np.all(x == X, axis=1))
 
 
-@pytest.mark.parametrize(
-    "cluster_centroids_params, err_msg",
-    [
-        ({"voting": "unknown"}, "needs to be one of"),
-    ],
-)
-def test_fit_resample_error(cluster_centroids_params, err_msg):
-    cc = ClusterCentroids(**cluster_centroids_params)
-    with pytest.raises(ValueError, match=err_msg):
-        cc.fit_resample(X, Y)
-
-
 @pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_cluster_centroids_hard_target_class():
     # check that the samples selecting by the hard voting corresponds to the
@@ -150,19 +138,26 @@ def test_cluster_centroids_hard_target_class():
     assert sum(sample_from_minority_in_majority) == 0
 
 
-def test_cluster_centroids_error_estimator():
-    """Check that an error is raised when estimator does not have a cluster API."""
+def test_cluster_centroids_custom_clusterer():
+    clusterer = _CustomClusterer()
+    cc = ClusterCentroids(estimator=clusterer, random_state=RND_SEED)
+    cc.fit_resample(X, Y)
+    assert isinstance(cc.estimator_.cluster_centers_, np.ndarray)
 
-    err_msg = (
-        "`estimator` should be a clustering estimator exposing a parameter "
-        "`n_clusters` and a fitted parameter `cluster_centers_`."
-    )
-    with pytest.raises(ValueError, match=err_msg):
-        ClusterCentroids(estimator=LogisticRegression()).fit_resample(X, Y)
-
+    clusterer = _CustomClusterer(expose_cluster_centers=False)
+    cc = ClusterCentroids(estimator=clusterer, random_state=RND_SEED)
     err_msg = (
         "`estimator` should be a clustering estimator exposing a fitted parameter "
         "`cluster_centers_`."
     )
     with pytest.raises(RuntimeError, match=err_msg):
-        ClusterCentroids(estimator=_CustomClusterer()).fit_resample(X, Y)
+        cc.fit_resample(X, Y)
+
+    clusterer = LogisticRegression()
+    cc = ClusterCentroids(estimator=clusterer, random_state=RND_SEED)
+    err_msg = (
+        "`estimator` should be a clustering estimator exposing a parameter "
+        "`n_clusters` and a fitted parameter `cluster_centers_`."
+    )
+    with pytest.raises(ValueError, match=err_msg):
+        cc.fit_resample(X, Y)

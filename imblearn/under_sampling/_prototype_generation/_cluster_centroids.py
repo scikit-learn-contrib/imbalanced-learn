@@ -15,6 +15,7 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
+from ...utils._param_validation import HasMethods, StrOptions
 from ..base import BaseUnderSampler
 
 VOTING_KIND = ("auto", "hard", "soft")
@@ -107,6 +108,13 @@ class ClusterCentroids(BaseUnderSampler):
     Resampled dataset shape Counter({{...}})
     """
 
+    _parameter_constraints: dict = {
+        **BaseUnderSampler._parameter_constraints,
+        "estimator": [HasMethods(["fit", "predict"]), None],
+        "voting": [StrOptions({"auto", "hard", "soft"})],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self,
         *,
@@ -151,18 +159,9 @@ class ClusterCentroids(BaseUnderSampler):
         self._validate_estimator()
 
         if self.voting == "auto":
-            if sparse.issparse(X):
-                self.voting_ = "hard"
-            else:
-                self.voting_ = "soft"
+            self.voting_ = "hard" if sparse.issparse(X) else "soft"
         else:
-            if self.voting in VOTING_KIND:
-                self.voting_ = self.voting
-            else:
-                raise ValueError(
-                    f"'voting' needs to be one of {VOTING_KIND}. "
-                    f"Got {self.voting} instead."
-                )
+            self.voting_ = self.voting
 
         X_resampled, y_resampled = [], []
         for target_class in np.unique(y):

@@ -23,18 +23,25 @@ from sklearn.datasets import (  # noqa
 )
 from sklearn.exceptions import SkipTestWarning
 from sklearn.preprocessing import label_binarize
+from sklearn.utils._tags import _safe_tags
 from sklearn.utils._testing import (
     assert_allclose,
     assert_array_equal,
     assert_raises_regex,
+    raises,
 )
-from sklearn.utils.estimator_checks import _get_check_estimator_ids, _maybe_mark_xfail
+from sklearn.utils.estimator_checks import (
+    _enforce_estimator_tags_y,
+    _get_check_estimator_ids,
+    _maybe_mark_xfail,
+)
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 
 from imblearn.datasets import make_imbalance
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
+from imblearn.utils._param_validation import generate_invalid_param_val, make_constraint
 
 sklearn_version = parse_version(sklearn.__version__)
 
@@ -471,3 +478,92 @@ def check_classifiers_with_encoded_labels(name, classifier_orig):
     assert set(classifier.classes_) == set(y.cat.categories.tolist())
     y_pred = classifier.predict(df)
     assert set(y_pred) == set(y.cat.categories.tolist())
+
+
+def check_param_validation(name, estimator_orig):
+    # Check that an informative error is raised when the value of a constructor
+    # parameter does not have an appropriate type or value.
+    rng = np.random.RandomState(0)
+    X = rng.uniform(size=(20, 5))
+    y = rng.randint(0, 2, size=20)
+    y = _enforce_estimator_tags_y(estimator_orig, y)
+
+    estimator_params = estimator_orig.get_params(deep=False).keys()
+
+    # check that there is a constraint for each parameter
+    if estimator_params:
+        validation_params = estimator_orig._parameter_constraints.keys()
+        unexpected_params = set(validation_params) - set(estimator_params)
+        missing_params = set(estimator_params) - set(validation_params)
+        err_msg = (
+            f"Mismatch between _parameter_constraints and the parameters of {name}."
+            f"\nConsider the unexpected parameters {unexpected_params} and expected but"
+            f" missing parameters {missing_params}"
+        )
+        assert validation_params == estimator_params, err_msg
+
+    # this object does not have a valid type for sure for all params
+    param_with_bad_type = type("BadType", (), {})()
+
+    fit_methods = ["fit", "partial_fit", "fit_transform", "fit_predict", "fit_resample"]
+
+    for param_name in estimator_params:
+        constraints = estimator_orig._parameter_constraints[param_name]
+
+        if constraints == "no_validation":
+            # This parameter is not validated
+            continue  # pragma: no cover
+
+        match = rf"The '{param_name}' parameter of {name} must be .* Got .* instead."
+        err_msg = (
+            f"{name} does not raise an informative error message when the "
+            f"parameter {param_name} does not have a valid type or value."
+        )
+
+        estimator = clone(estimator_orig)
+
+        # First, check that the error is raised if param doesn't match any valid type.
+        estimator.set_params(**{param_name: param_with_bad_type})
+
+        for method in fit_methods:
+            if not hasattr(estimator, method):
+                # the method is not accessible with the current set of parameters
+                continue
+
+            with raises(ValueError, match=match, err_msg=err_msg):
+                if any(
+                    isinstance(X_type, str) and X_type.endswith("labels")
+                    for X_type in _safe_tags(estimator, key="X_types")
+                ):
+                    # The estimator is a label transformer and take only `y`
+                    getattr(estimator, method)(y)  # pragma: no cover
+                else:
+                    getattr(estimator, method)(X, y)
+
+        # Then, for constraints that are more than a type constraint, check that the
+        # error is raised if param does match a valid type but does not match any valid
+        # value for this type.
+        constraints = [make_constraint(constraint) for constraint in constraints]
+
+        for constraint in constraints:
+            try:
+                bad_value = generate_invalid_param_val(constraint, constraints)
+            except NotImplementedError:
+                continue
+
+            estimator.set_params(**{param_name: bad_value})
+
+            for method in fit_methods:
+                if not hasattr(estimator, method):
+                    # the method is not accessible with the current set of parameters
+                    continue
+
+                with raises(ValueError, match=match, err_msg=err_msg):
+                    if any(
+                        X_type.endswith("labels")
+                        for X_type in _safe_tags(estimator, key="X_types")
+                    ):
+                        # The estimator is a label transformer and take only `y`
+                        getattr(estimator, method)(y)  # pragma: no cover
+                    else:
+                        getattr(estimator, method)(X, y)

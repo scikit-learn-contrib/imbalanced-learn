@@ -27,23 +27,6 @@ def imbalanced_dataset():
     )
 
 
-@pytest.mark.parametrize(
-    "forest_params, err_msg",
-    [
-        ({"n_estimators": "whatever"}, "n_estimators must be an integer"),
-        ({"n_estimators": -100}, "n_estimators must be greater than zero"),
-        (
-            {"bootstrap": False, "oob_score": True},
-            "Out of bag estimation only",
-        ),
-    ],
-)
-def test_balanced_random_forest_error(imbalanced_dataset, forest_params, err_msg):
-    brf = BalancedRandomForestClassifier(**forest_params)
-    with pytest.raises(ValueError, match=err_msg):
-        brf.fit(*imbalanced_dataset)
-
-
 def test_balanced_random_forest_error_warning_warm_start(imbalanced_dataset):
     brf = BalancedRandomForestClassifier(n_estimators=5)
     brf.fit(*imbalanced_dataset)

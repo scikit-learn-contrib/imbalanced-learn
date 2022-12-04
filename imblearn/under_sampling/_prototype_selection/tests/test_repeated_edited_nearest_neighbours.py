@@ -328,13 +328,6 @@ def test_renn_fit_resample_mode():
     assert 0 < renn.n_iter_ <= renn.max_iter
 
 
-def test_renn_not_good_object():
-    nn = "rnd"
-    renn = RepeatedEditedNearestNeighbours(n_neighbors=nn, kind_sel="mode")
-    with pytest.raises(ValueError):
-        renn.fit_resample(X, Y)
-
-
 @pytest.mark.parametrize(
     "max_iter, n_iter",
     [(2, 2), (5, 3)],

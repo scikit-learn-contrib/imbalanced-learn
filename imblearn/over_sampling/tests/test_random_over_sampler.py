@@ -44,7 +44,9 @@ def test_ros_init():
     assert ros.random_state == RND_SEED
 
 
-@pytest.mark.parametrize("params", [{"shrinkage": None}, {"shrinkage": 0}])
+@pytest.mark.parametrize(
+    "params", [{"shrinkage": None}, {"shrinkage": 0}, {"shrinkage": {0: 0}}]
+)
 @pytest.mark.parametrize("X_type", ["array", "dataframe"])
 def test_ros_fit_resample(X_type, data, params):
     X, Y = data
@@ -244,14 +246,7 @@ def test_random_over_sampler_shrinkage_behaviour(data):
     "shrinkage, err_msg",
     [
         ({}, "`shrinkage` should contain a shrinkage factor for each class"),
-        (-1, "The shrinkage factor needs to be >= 0"),
         ({0: -1}, "The shrinkage factor needs to be >= 0"),
-        (
-            [
-                1,
-            ],
-            "`shrinkage` should either be a positive floating number or",
-        ),
     ],
 )
 def test_random_over_sampler_shrinkage_error(data, shrinkage, err_msg):

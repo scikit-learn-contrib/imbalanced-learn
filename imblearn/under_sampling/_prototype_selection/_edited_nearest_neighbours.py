@@ -6,6 +6,7 @@ method."""
 #          Christos Aridas
 # License: MIT
 
+import numbers
 from collections import Counter
 
 import numpy as np
@@ -13,6 +14,7 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
+from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ...utils.fixes import _mode
 from ..base import BaseCleaningSampler
 
@@ -112,6 +114,16 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -131,9 +143,6 @@ class EditedNearestNeighbours(BaseCleaningSampler):
             "n_neighbors", self.n_neighbors, additional_neighbor=1
         )
         self.nn_.set_params(**{"n_jobs": self.n_jobs})
-
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
@@ -279,6 +288,17 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "max_iter": [Interval(numbers.Integral, 1, None, closed="left")],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -296,12 +316,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-        if self.max_iter < 2:
-            raise ValueError(
-                f"max_iter must be greater than 1."
-                f" Got {type(self.max_iter)} instead."
-            )
-
         self.nn_ = check_neighbors_object(
             "n_neighbors", self.n_neighbors, additional_neighbor=1
         )
@@ -477,6 +491,17 @@ class AllKNN(BaseCleaningSampler):
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "allow_minority": ["boolean"],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -494,9 +519,6 @@ class AllKNN(BaseCleaningSampler):
 
     def _validate_estimator(self):
         """Create objects required by AllKNN"""
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
         self.nn_ = check_neighbors_object(
             "n_neighbors", self.n_neighbors, additional_neighbor=1
         )

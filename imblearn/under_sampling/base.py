@@ -4,7 +4,10 @@ Base class for the under-sampling method.
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
+import numbers
+
 from ..base import BaseSampler
+from ..utils._param_validation import Interval, StrOptions
 
 
 class BaseUnderSampler(BaseSampler):
@@ -54,6 +57,15 @@ class BaseUnderSampler(BaseSampler):
           desired number of samples for each class.
         """.rstrip()  # noqa: E501
 
+    _parameter_constraints: dict = {
+        "sampling_strategy": [
+            Interval(numbers.Real, 0, 1, closed="right"),
+            StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+            dict,
+            callable,
+        ],
+    }
+
 
 class BaseCleaningSampler(BaseSampler):
     """Base class for under-sampling algorithms.
@@ -88,3 +100,12 @@ class BaseCleaningSampler(BaseSampler):
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
         """.rstrip()
+
+    _parameter_constraints: dict = {
+        "sampling_strategy": [
+            Interval(numbers.Real, 0, 1, closed="right"),
+            StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+            list,
+            callable,
+        ],
+    }

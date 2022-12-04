@@ -6,6 +6,7 @@ threshold."""
 #          Christos Aridas
 # License: MIT
 
+import numbers
 from collections import Counter
 
 import numpy as np
@@ -17,6 +18,7 @@ from sklearn.utils import _safe_indexing, check_random_state
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods
 from ..base import BaseUnderSampler
 
 
@@ -100,6 +102,17 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     Resampled dataset shape Counter({{1: 5..., 0: 100}})
     """
 
+    _parameter_constraints: dict = {
+        **BaseUnderSampler._parameter_constraints,
+        "estimator": [
+            HasMethods(["fit", "predict_proba"]),
+            None,
+        ],
+        "cv": ["cv_object"],
+        "n_jobs": [numbers.Integral, None],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self,
         *,
@@ -131,10 +144,6 @@ class InstanceHardnessThreshold(BaseUnderSampler):
                 n_estimators=100,
                 random_state=self.random_state,
                 n_jobs=self.n_jobs,
-            )
-        else:
-            raise ValueError(
-                f"Invalid parameter `estimator`. Got {type(self.estimator)}."
             )
 
     def _fit_resample(self, X, y):

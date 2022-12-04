@@ -4,6 +4,7 @@
 #          Christos Aridas
 # License: MIT
 
+import numbers
 import warnings
 from collections import Counter
 
@@ -12,6 +13,7 @@ from sklearn.utils import _safe_indexing
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
+from ...utils._param_validation import HasMethods, Interval
 from ..base import BaseUnderSampler
 
 
@@ -104,6 +106,20 @@ class NearMiss(BaseUnderSampler):
     Resampled dataset shape Counter({{0: 100, 1: 100}})
     """
 
+    _parameter_constraints: dict = {
+        **BaseUnderSampler._parameter_constraints,
+        "version": [Interval(numbers.Integral, 1, 3, closed="both")],
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "n_neighbors_ver3": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -166,10 +182,8 @@ class NearMiss(BaseUnderSampler):
         # Sort the list of distance and get the index
         if sel_strategy == "nearest":
             sort_way = False
-        elif sel_strategy == "farthest":
+        else:  # sel_strategy == "farthest":
             sort_way = True
-        else:
-            raise NotImplementedError
 
         sorted_idx = sorted(
             range(len(dist_avg_vec)),
@@ -201,11 +215,6 @@ class NearMiss(BaseUnderSampler):
                 "n_neighbors_ver3", self.n_neighbors_ver3
             )
             self.nn_ver3_.set_params(**{"n_jobs": self.n_jobs})
-
-        if self.version not in (1, 2, 3):
-            raise ValueError(
-                f"Parameter `version` must be 1, 2 or 3, got {self.version}"
-            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()

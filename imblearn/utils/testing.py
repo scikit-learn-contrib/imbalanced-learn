@@ -10,6 +10,7 @@ from importlib import import_module
 from operator import itemgetter
 from pathlib import Path
 
+import numpy as np
 from scipy import sparse
 from sklearn.base import BaseEstimator
 from sklearn.neighbors import KDTree
@@ -143,8 +144,14 @@ class _CustomNearestNeighbors(BaseEstimator):
 class _CustomClusterer(BaseEstimator):
     """Class that mimics a cluster that does not expose `cluster_centers_`."""
 
-    def __init__(self, n_clusters=1):
+    def __init__(self, n_clusters=1, expose_cluster_centers=True):
         self.n_clusters = n_clusters
+        self.expose_cluster_centers = expose_cluster_centers
 
     def fit(self, X, y=None):
+        if self.expose_cluster_centers:
+            self.cluster_centers_ = np.random.randn(self.n_clusters, X.shape[1])
         return self
+
+    def predict(self, X):
+        return np.zeros(len(X), dtype=int)

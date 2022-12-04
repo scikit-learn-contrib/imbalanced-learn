@@ -14,6 +14,7 @@ from sklearn.utils.sparsefuncs import mean_variance_axis
 
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
+from ..utils._param_validation import Interval
 from .base import BaseOverSampler
 
 
@@ -129,6 +130,11 @@ class RandomOverSampler(BaseOverSampler):
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
+    _parameter_constraints: dict = {
+        **BaseOverSampler._parameter_constraints,
+        "shrinkage": [Interval(Real, 0, None, closed="left"), dict, None],
+    }
+
     def __init__(
         self,
         *,
@@ -161,12 +167,6 @@ class RandomOverSampler(BaseOverSampler):
             }
         elif self.shrinkage is None or isinstance(self.shrinkage, Mapping):
             self.shrinkage_ = self.shrinkage
-        else:
-            raise ValueError(
-                f"`shrinkage` should either be a positive floating number or "
-                f"a dictionary mapping a class to a positive floating number. "
-                f"Got {repr(self.shrinkage)} instead."
-            )
 
         if self.shrinkage_ is not None:
             missing_shrinkage_keys = (

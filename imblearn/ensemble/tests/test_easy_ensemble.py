@@ -184,19 +184,6 @@ def test_warm_start_equivalence():
     assert_allclose(y1, y2)
 
 
-@pytest.mark.parametrize("n_estimators", [1.0, -10])
-def test_easy_ensemble_classifier_error(n_estimators):
-    X, y = make_imbalance(
-        iris.data,
-        iris.target,
-        sampling_strategy={0: 20, 1: 25, 2: 50},
-        random_state=0,
-    )
-    with pytest.raises(ValueError):
-        eec = EasyEnsembleClassifier(n_estimators=n_estimators)
-        eec.fit(X, y)
-
-
 def test_easy_ensemble_classifier_single_estimator():
     X, y = make_imbalance(
         iris.data,

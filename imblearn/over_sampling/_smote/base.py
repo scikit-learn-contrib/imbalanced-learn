@@ -7,6 +7,7 @@
 # License: MIT
 
 import math
+import numbers
 import warnings
 from collections import Counter
 
@@ -22,12 +23,22 @@ from sklearn.utils.sparsefuncs_fast import (
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods, Interval
 from ...utils.fixes import _mode
 from ..base import BaseOverSampler
 
 
 class BaseSMOTE(BaseOverSampler):
     """Base class for the different SMOTE algorithms."""
+
+    _parameter_constraints: dict = {
+        **BaseOverSampler._parameter_constraints,
+        "k_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "n_jobs": [numbers.Integral, None],
+    }
 
     def __init__(
         self,
@@ -193,11 +204,9 @@ class BaseSMOTE(BaseOverSampler):
                 n_maj >= (nn_estimator.n_neighbors - 1) / 2,
                 n_maj < nn_estimator.n_neighbors - 1,
             )
-        elif kind == "noise":
+        else:  # kind == "noise":
             # Samples are noise for m = m'
             return n_maj == nn_estimator.n_neighbors - 1
-        else:
-            raise NotImplementedError
 
 
 @Substitution(
@@ -371,7 +380,7 @@ class SMOTENC(SMOTE):
 
     Parameters
     ----------
-    categorical_features : ndarray of shape (n_cat_features,) or (n_features,)
+    categorical_features : array-like of shape (n_cat_features,) or (n_features,)
         Specified which features are categorical. Can either be:
 
         - array of indices specifying the categorical features;
@@ -489,6 +498,11 @@ class SMOTENC(SMOTE):
 
     _required_parameters = ["categorical_features"]
 
+    _parameter_constraints: dict = {
+        **SMOTE._parameter_constraints,
+        "categorical_features": ["array-like"],
+    }
+
     def __init__(
         self,
         categorical_features,
@@ -502,6 +516,7 @@ class SMOTENC(SMOTE):
             sampling_strategy=sampling_strategy,
             random_state=random_state,
             k_neighbors=k_neighbors,
+            n_jobs=n_jobs,
         )
         self.categorical_features = categorical_features
 

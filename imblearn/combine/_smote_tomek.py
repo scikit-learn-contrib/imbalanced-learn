@@ -5,6 +5,8 @@ links."""
 #          Christos Aridas
 # License: MIT
 
+import numbers
+
 from sklearn.base import clone
 from sklearn.utils import check_X_y
 
@@ -100,6 +102,13 @@ class SMOTETomek(BaseSampler):
 
     _sampling_type = "over-sampling"
 
+    _parameter_constraints: dict = {
+        **BaseOverSampler._parameter_constraints,
+        "smote": [SMOTE, None],
+        "tomek": [TomekLinks, None],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -120,14 +129,7 @@ class SMOTETomek(BaseSampler):
         "Private function to validate SMOTE and ENN objects"
 
         if self.smote is not None:
-            if isinstance(self.smote, SMOTE):
-                self.smote_ = clone(self.smote)
-            else:
-                raise ValueError(
-                    f"smote needs to be a SMOTE object."
-                    f"Got {type(self.smote)} instead."
-                )
-        # Otherwise create a default SMOTE
+            self.smote_ = clone(self.smote)
         else:
             self.smote_ = SMOTE(
                 sampling_strategy=self.sampling_strategy,
@@ -136,14 +138,7 @@ class SMOTETomek(BaseSampler):
             )
 
         if self.tomek is not None:
-            if isinstance(self.tomek, TomekLinks):
-                self.tomek_ = clone(self.tomek)
-            else:
-                raise ValueError(
-                    f"tomek needs to be a TomekLinks object."
-                    f"Got {type(self.tomek)} instead."
-                )
-        # Otherwise create a default TomekLinks
+            self.tomek_ = clone(self.tomek)
         else:
             self.tomek_ = TomekLinks(sampling_strategy="all", n_jobs=self.n_jobs)
 

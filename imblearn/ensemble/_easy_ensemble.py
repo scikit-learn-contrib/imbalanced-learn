@@ -4,6 +4,7 @@
 #          Christos Aridas
 # License: MIT
 
+import copy
 import inspect
 import numbers
 import warnings
@@ -17,13 +18,15 @@ from sklearn.ensemble._base import _partition_estimators
 from sklearn.utils.fixes import delayed
 from sklearn.utils.validation import check_is_fitted
 
+from ..base import _ParamsValidationMixin
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._available_if import available_if
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ._common import _estimator_has
+from ..utils._param_validation import Interval, StrOptions
+from ._common import _bagging_parameter_constraints, _estimator_has
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -33,7 +36,7 @@ MAX_INT = np.iinfo(np.int32).max
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class EasyEnsembleClassifier(BaggingClassifier):
+class EasyEnsembleClassifier(BaggingClassifier, _ParamsValidationMixin):
     """Bag of balanced boosted learners also known as EasyEnsemble.
 
     This algorithm is known as EasyEnsemble [1]_. The classifier is an
@@ -177,6 +180,35 @@ class EasyEnsembleClassifier(BaggingClassifier):
      [  2 225]]
     """
 
+    # make a deepcopy to not modify the original dictionary
+    if hasattr(BaggingClassifier, "_parameter_constraints"):
+        # scikit-learn >= 1.2
+        _parameter_constraints = copy.deepcopy(BaggingClassifier._parameter_constraints)
+    else:
+        _parameter_constraints = copy.deepcopy(_bagging_parameter_constraints)
+
+    excluded_params = {
+        "bootstrap",
+        "bootstrap_features",
+        "max_features",
+        "oob_score",
+        "max_samples",
+    }
+    for param in excluded_params:
+        _parameter_constraints.pop(param, None)
+
+    _parameter_constraints.update(
+        {
+            "sampling_strategy": [
+                Interval(numbers.Real, 0, 1, closed="right"),
+                StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+                dict,
+                callable,
+            ],
+            "replacement": ["boolean"],
+        }
+    )
+
     def __init__(
         self,
         n_estimators=10,
@@ -231,17 +263,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
 
     def _validate_estimator(self, default=AdaBoostClassifier()):
         """Check the estimator and the n_estimator attribute, set the
-        `base_estimator_` attribute."""
-        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError(
-                f"n_estimators must be an integer, " f"got {type(self.n_estimators)}."
-            )
-
-        if self.n_estimators <= 0:
-            raise ValueError(
-                f"n_estimators must be greater than zero, " f"got {self.n_estimators}."
-            )
-
+        `estimator_` attribute."""
         if self.estimator is not None and (
             self.base_estimator not in [None, "deprecated"]
         ):
@@ -310,6 +332,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
         self : object
             Fitted estimator.
         """
+        self._validate_params()
         # overwrite the base class method by disallowing `sample_weight`
         return super().fit(X, y)
 

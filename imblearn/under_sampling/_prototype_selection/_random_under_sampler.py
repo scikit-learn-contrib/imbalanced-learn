@@ -76,6 +76,12 @@ class RandomUnderSampler(BaseUnderSampler):
     Resampled dataset shape Counter({{0: 100, 1: 100}})
     """
 
+    _parameter_constraints: dict = {
+        **BaseUnderSampler._parameter_constraints,
+        "replacement": ["boolean"],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self, *, sampling_strategy="auto", random_state=None, replacement=False
     ):
