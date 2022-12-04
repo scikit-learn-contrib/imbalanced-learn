@@ -12,6 +12,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
+from .utils._param_validation import validate_parameter_constraints
 from .utils._validation import ArraysTransformer
 
 
@@ -154,6 +155,24 @@ def is_sampler(estimator):
     if estimator._estimator_type == "sampler":
         return True
     return False
+
+
+class _ParamsValidationMixin:
+    """Mixin class to validate parameters."""
+
+    def _validate_params(self):
+        """Validate types and values of constructor parameters.
+
+        The expected type and values must be defined in the `_parameter_constraints`
+        class attribute, which is a dictionary `param_name: list of constraints`. See
+        the docstring of `validate_parameter_constraints` for a description of the
+        accepted constraints.
+        """
+        validate_parameter_constraints(
+            self._parameter_constraints,
+            self.get_params(deep=False),
+            caller_name=self.__class__.__name__,
+        )
 
 
 class FunctionSampler(BaseSampler):

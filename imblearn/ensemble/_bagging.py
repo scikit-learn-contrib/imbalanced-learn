@@ -18,13 +18,15 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils.fixes import delayed
 from sklearn.utils.validation import check_is_fitted
 
+from ..base import _ParamsValidationMixin
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._available_if import available_if
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ._common import _estimator_has
+from ..utils._param_validation import HasMethods, Interval, StrOptions
+from ._common import _bagging_parameter_constraints, _estimator_has
 
 
 @Substitution(
@@ -32,7 +34,7 @@ from ._common import _estimator_has
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class BalancedBaggingClassifier(BaggingClassifier):
+class BalancedBaggingClassifier(BaggingClassifier, _ParamsValidationMixin):
     """A Bagging classifier with additional balancing.
 
     This implementation of Bagging is similar to the scikit-learn
@@ -252,6 +254,32 @@ class BalancedBaggingClassifier(BaggingClassifier):
      [  2 225]]
     """
 
+    if hasattr(BaggingClassifier, "_parameter_constraints"):
+        # scikit-learn >= 1.2
+        _parameter_constraints: dict = {
+            **BaggingClassifier._parameter_constraints,
+            "sampling_strategy": [
+                Interval(numbers.Real, 0, 1, closed="right"),
+                StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+                dict,
+                callable,
+            ],
+            "replacement": ["boolean"],
+            "sampler": [HasMethods(["fit_resample"]), None],
+        }
+    else:
+        _parameter_constraints: dict = {
+            **_bagging_parameter_constraints,
+            "sampling_strategy": [
+                Interval(numbers.Real, 0, 1, closed="right"),
+                StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+                dict,
+                callable,
+            ],
+            "replacement": ["boolean"],
+            "sampler": [HasMethods(["fit_resample"]), None],
+        }
+
     def __init__(
         self,
         estimator=None,
@@ -395,6 +423,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
             Fitted estimator.
         """
         # overwrite the base class method by disallowing `sample_weight`
+        self._validate_params()
         return super().fit(X, y)
 
     def _fit(self, X, y, max_samples=None, max_depth=None, sample_weight=None):

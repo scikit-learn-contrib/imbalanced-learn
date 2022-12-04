@@ -7,7 +7,7 @@ import pytest
 from sklearn.base import clone
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils._testing import SkipTest, ignore_warnings, set_random_state
-from sklearn.utils.estimator_checks import _construct_instance
+from sklearn.utils.estimator_checks import _construct_instance, _get_check_estimator_ids
 from sklearn.utils.estimator_checks import (
     parametrize_with_checks as parametrize_with_checks_sklearn,
 )
@@ -15,6 +15,7 @@ from sklearn.utils.estimator_checks import (
 from imblearn.under_sampling import NearMiss
 from imblearn.utils.estimator_checks import (
     _set_checking_parameters,
+    check_param_validation,
     parametrize_with_checks,
 )
 from imblearn.utils.testing import all_estimators
@@ -62,3 +63,13 @@ def test_estimators_imblearn(estimator, check, request):
     ):
         _set_checking_parameters(estimator)
         check(estimator)
+
+
+@pytest.mark.parametrize(
+    "estimator", _tested_estimators(), ids=_get_check_estimator_ids
+)
+def test_check_param_validation(estimator):
+    name = estimator.__class__.__name__
+    print(name)
+    _set_checking_parameters(estimator)
+    check_param_validation(name, estimator)
