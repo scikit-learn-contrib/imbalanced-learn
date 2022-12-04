@@ -4,7 +4,6 @@
 # License: MIT
 
 import numpy as np
-import pytest
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._testing import assert_allclose, assert_array_equal
 
@@ -120,23 +119,3 @@ def test_ada_fit_resample_nn_obj():
     )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
-
-
-@pytest.mark.parametrize(
-    "adasyn_params, err_msg",
-    [
-        (
-            {"sampling_strategy": {0: 9, 1: 12}},
-            "No samples will be generated.",
-        ),
-        (
-            {"n_neighbors": "rnd"},
-            "n_neighbors must be an interger or an object compatible with the "
-            "KNeighborsMixin API of scikit-learn",
-        ),
-    ],
-)
-def test_adasyn_error(adasyn_params, err_msg):
-    adasyn = ADASYN(**adasyn_params)
-    with pytest.raises(ValueError, match=err_msg):
-        adasyn.fit_resample(X, Y)

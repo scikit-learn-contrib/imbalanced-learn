@@ -114,7 +114,25 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         pass
 
 
-class BaseSampler(SamplerMixin):
+class _ParamsValidationMixin:
+    """Mixin class to validate parameters."""
+
+    def _validate_params(self):
+        """Validate types and values of constructor parameters.
+
+        The expected type and values must be defined in the `_parameter_constraints`
+        class attribute, which is a dictionary `param_name: list of constraints`. See
+        the docstring of `validate_parameter_constraints` for a description of the
+        accepted constraints.
+        """
+        validate_parameter_constraints(
+            self._parameter_constraints,
+            self.get_params(deep=False),
+            caller_name=self.__class__.__name__,
+        )
+
+
+class BaseSampler(SamplerMixin, _ParamsValidationMixin):
     """Base class for sampling algorithms.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -130,6 +148,52 @@ class BaseSampler(SamplerMixin):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X, y = self._validate_data(X, y, reset=True, accept_sparse=accept_sparse)
         return X, y, binarize_y
+
+    def fit(self, X, y):
+        """Check inputs and statistics of the sampler.
+
+        You should use ``fit_resample`` in all cases.
+
+        Parameters
+        ----------
+        X : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples, n_features)
+            Data array.
+
+        y : array-like of shape (n_samples,)
+            Target array.
+
+        Returns
+        -------
+        self : object
+            Return the instance itself.
+        """
+        self._validate_params()
+        return super().fit(X, y)
+
+    def fit_resample(self, X, y):
+        """Resample the dataset.
+
+        Parameters
+        ----------
+        X : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples, n_features)
+            Matrix containing the data which have to be sampled.
+
+        y : array-like of shape (n_samples,)
+            Corresponding label for each sample in X.
+
+        Returns
+        -------
+        X_resampled : {array-like, dataframe, sparse matrix} of shape \
+                (n_samples_new, n_features)
+            The array containing the resampled data.
+
+        y_resampled : array-like of shape (n_samples_new,)
+            The corresponding label of `X_resampled`.
+        """
+        self._validate_params()
+        return super().fit_resample(X, y)
 
     def _more_tags(self):
         return {"X_types": ["2darray", "sparse", "dataframe"]}
@@ -155,24 +219,6 @@ def is_sampler(estimator):
     if estimator._estimator_type == "sampler":
         return True
     return False
-
-
-class _ParamsValidationMixin:
-    """Mixin class to validate parameters."""
-
-    def _validate_params(self):
-        """Validate types and values of constructor parameters.
-
-        The expected type and values must be defined in the `_parameter_constraints`
-        class attribute, which is a dictionary `param_name: list of constraints`. See
-        the docstring of `validate_parameter_constraints` for a description of the
-        accepted constraints.
-        """
-        validate_parameter_constraints(
-            self._parameter_constraints,
-            self.get_params(deep=False),
-            caller_name=self.__class__.__name__,
-        )
 
 
 class FunctionSampler(BaseSampler):
