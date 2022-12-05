@@ -8,6 +8,12 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 from sklearn.base import BaseEstimator
+
+try:
+    # scikit-learn >= 1.2
+    from sklearn.base import OneToOneFeatureMixin
+except ImportError:
+    from sklearn.base import _OneToOneFeatureMixin as OneToOneFeatureMixin
 from sklearn.preprocessing import label_binarize
 from sklearn.utils.multiclass import check_classification_targets
 
@@ -133,7 +139,7 @@ class _ParamsValidationMixin:
             )
 
 
-class BaseSampler(SamplerMixin, _ParamsValidationMixin):
+class BaseSampler(SamplerMixin, OneToOneFeatureMixin, _ParamsValidationMixin):
     """Base class for sampling algorithms.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -259,6 +265,12 @@ class FunctionSampler(BaseSampler):
         Number of features in the input dataset.
 
         .. versionadded:: 0.9
+
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
 
     See Also
     --------

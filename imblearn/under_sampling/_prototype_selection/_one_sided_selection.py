@@ -68,6 +68,12 @@ class OneSidedSelection(BaseCleaningSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     EditedNearestNeighbours : Undersample by editing noisy samples.

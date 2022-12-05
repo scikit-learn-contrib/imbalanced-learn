@@ -264,6 +264,12 @@ class SMOTE(BaseSMOTE):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
@@ -441,6 +447,12 @@ class SMOTENC(SMOTE):
         Number of features in the input dataset.
 
         .. versionadded:: 0.9
+
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
 
     See Also
     --------
@@ -758,6 +770,12 @@ class SMOTEN(SMOTE):
         Number of features in the input dataset.
 
         .. versionadded:: 0.9
+
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
 
     See Also
     --------

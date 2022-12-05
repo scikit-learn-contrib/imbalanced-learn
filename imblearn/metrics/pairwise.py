@@ -71,6 +71,17 @@ class ValueDifferenceMetric(BaseEstimator, _ParamsValidationMixin):
         List of length `n_features` containing the conditional probabilities
         for each category given a class.
 
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.10
+
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     sklearn.neighbors.DistanceMetric : Interface for fast metric computation.

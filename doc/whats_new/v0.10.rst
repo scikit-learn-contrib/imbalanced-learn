@@ -22,6 +22,10 @@ Compatibility
 - Add support for automatic parameters validation as in scikit-learn >= 1.2.
   :pr:`955` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Add support for `feature_names_in_` as well as `get_feature_names_out` for
+  all samplers.
+  :pr:`959` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecation
 ...........
 
