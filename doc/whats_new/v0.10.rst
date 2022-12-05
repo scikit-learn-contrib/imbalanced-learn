@@ -24,7 +24,7 @@ Compatibility
 
 - Add support for `feature_names_in_` as well as `get_feature_names_out` for
   all samplers.
-  :pr:`xxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`959` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Deprecation
 ...........
