@@ -13,6 +13,7 @@ from tempfile import mkdtemp
 
 import numpy as np
 import pytest
+import sklearn
 from joblib import Memory
 from pytest import raises
 from sklearn.base import BaseEstimator, clone
@@ -30,12 +31,15 @@ from sklearn.utils._testing import (
     assert_array_almost_equal,
     assert_array_equal,
 )
+from sklearn.utils.fixes import parse_version
 
 from imblearn.datasets import make_imbalance
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import EditedNearestNeighbours as ENN
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.utils.estimator_checks import check_param_validation
+
+sklearn_version = parse_version(sklearn.__version__)
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
@@ -1333,3 +1337,27 @@ def test_pipeline_param_validation():
         [("sampler", RandomUnderSampler()), ("classifier", LogisticRegression())]
     )
     check_param_validation("Pipeline", model)
+
+
+@pytest.mark.skipif(
+    sklearn_version < parse_version("1.2"), reason="requires scikit-learn >= 1.2"
+)
+def test_pipeline_with_set_output():
+    pd = pytest.importorskip("pandas")
+    X, y = load_iris(return_X_y=True, as_frame=True)
+    pipeline = make_pipeline(
+        StandardScaler(), RandomUnderSampler(), LogisticRegression()
+    ).set_output(transform="default")
+    pipeline.fit(X, y)
+
+    X_res, y_res = pipeline[:-1].fit_resample(X, y)
+    assert isinstance(X_res, np.ndarray)
+    # transformer will not change `y` and sampler will always preserve the type of `y`
+    assert isinstance(y_res, type(y))
+
+    pipeline.set_output(transform="pandas")
+    X_res, y_res = pipeline[:-1].fit_resample(X, y)
+
+    assert isinstance(X_res, pd.DataFrame)
+    # transformer will not change `y` and sampler will always preserve the type of `y`
+    assert isinstance(y_res, type(y))
