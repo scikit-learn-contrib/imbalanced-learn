@@ -91,6 +91,9 @@ def sensitivity_specificity_support(
 
     pos_label : str, int or None, default=1
         The class to report if ``average='binary'`` and the data is binary.
+        If ``pos_label is None`` and in binary classification, this function
+        returns the average sensitivity and specificity if ``average``
+        is one of ``'weighted'``.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
@@ -340,6 +343,8 @@ def sensitivity_score(
 
     pos_label : str, int or None, default=1
         The class to report if ``average='binary'`` and the data is binary.
+        If ``pos_label is None`` and in binary classification, this function
+        returns the average sensitivity if ``average`` is one of ``'weighted'``.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
@@ -453,6 +458,8 @@ def specificity_score(
 
     pos_label : str, int or None, default=1
         The class to report if ``average='binary'`` and the data is binary.
+        If ``pos_label is None`` and in binary classification, this function
+        returns the average specificity if ``average`` is one of ``'weighted'``.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
@@ -581,6 +588,9 @@ def geometric_mean_score(
 
     pos_label : str, int or None, default=1
         The class to report if ``average='binary'`` and the data is binary.
+        If ``pos_label is None`` and in binary classification, this function
+        returns the average geometric mean if ``average`` is one of
+        ``'weighted'``.
         If the data are multiclass, this will be ignored;
         setting ``labels=[pos_label]`` and ``average != 'binary'`` will report
         scores for that label only.
