@@ -3,6 +3,7 @@
 #          Christos Aridas
 # License: MIT
 
+import warnings
 from collections import OrderedDict
 
 import numpy as np
@@ -19,6 +20,7 @@ from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import NearMiss, RandomUnderSampler
 from imblearn.utils.estimator_checks import (
     _set_checking_parameters,
+    check_dataframe_column_names_consistency,
     check_param_validation,
     parametrize_with_checks,
 )
@@ -92,3 +94,17 @@ def test_strategy_as_ordered_dict(Sampler):
     X_res, y_res = sampler.fit_resample(X, y)
     assert X_res.shape[0] == sum(strategy.values())
     assert y_res.shape[0] == sum(strategy.values())
+
+
+@pytest.mark.parametrize(
+    "estimator", _tested_estimators(), ids=_get_check_estimator_ids
+)
+def test_pandas_column_name_consistency(estimator):
+    _set_checking_parameters(estimator)
+    with ignore_warnings(category=(FutureWarning)):
+        with warnings.catch_warnings(record=True) as record:
+            check_dataframe_column_names_consistency(
+                estimator.__class__.__name__, estimator
+            )
+        for warning in record:
+            assert "was fitted without feature names" not in str(warning.message)
