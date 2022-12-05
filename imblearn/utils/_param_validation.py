@@ -476,7 +476,9 @@ if True:
         """Constraint representing a DataFrame"""
 
         def is_satisfied_by(self, val):
-            return hasattr(val, "__dataframe__")
+            # Let's first try the dataframe protocol and then duck-typing for the older
+            # pandas versions.
+            return hasattr(val, "__dataframe__") or hasattr(val, "iloc")
 
         def __str__(self):
             return "a DataFrame"
