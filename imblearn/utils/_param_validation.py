@@ -20,10 +20,9 @@ from ..utils.fixes import _is_arraylike_not_scalar
 
 sklearn_version = parse_version(sklearn.__version__)
 
-# if sklearn_version < parse_version("1.2"):
-if True:
+if sklearn_version < parse_version("1.2"):
     # TODO: remove `if True` when we have clear support for:
-    # - dataframe
+    # - ignoring `*args` and `**kwargs` in the signature
 
     def validate_parameter_constraints(parameter_constraints, params, caller_name):
         """Validate types and values of given parameters.
@@ -38,7 +37,6 @@ if True:
             Constraints can be:
             - an Interval object, representing a continuous or discrete range of numbers
             - the string "array-like"
-            - the string "dataframe"
             - the string "sparse matrix"
             - the string "random_state"
             - callable
@@ -119,8 +117,6 @@ if True:
             return _ArrayLikes()
         if isinstance(constraint, str) and constraint == "sparse matrix":
             return _SparseMatrices()
-        if isinstance(constraint, str) and constraint == "dataframe":
-            return _DataFrames()
         if isinstance(constraint, str) and constraint == "random_state":
             return _RandomStates()
         if constraint is callable:
@@ -471,17 +467,6 @@ if True:
 
         def __str__(self):
             return "a sparse matrix"
-
-    class _DataFrames(_Constraint):
-        """Constraint representing a DataFrame"""
-
-        def is_satisfied_by(self, val):
-            # Let's first try the dataframe protocol and then duck-typing for the older
-            # pandas versions.
-            return hasattr(val, "__dataframe__") or hasattr(val, "iloc")
-
-        def __str__(self):
-            return "a DataFrame"
 
     class _Callables(_Constraint):
         """Constraint representing callables."""
@@ -861,11 +846,6 @@ if True:
 
         if isinstance(constraint, _SparseMatrices):
             return csr_matrix([[0, 1], [1, 0]])
-
-        if isinstance(constraint, _DataFrames):
-            import pandas as pd
-
-            return pd.DataFrame({"a": [1, 2, 3]})
 
         if isinstance(constraint, _RandomStates):
             return np.random.RandomState(42)

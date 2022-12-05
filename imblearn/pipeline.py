@@ -12,16 +12,19 @@ composite estimator, as a chain of transforms, samples and estimators.
 #         Christos Aridas
 #         Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: BSD
+import joblib
 from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.utils import _print_elapsed_time
 from sklearn.utils.metaestimators import available_if
-from sklearn.utils.validation import check_memory
+
+from .base import _ParamsValidationMixin
+from .utils._param_validation import HasMethods, validate_params
 
 __all__ = ["Pipeline", "make_pipeline"]
 
 
-class Pipeline(pipeline.Pipeline):
+class Pipeline(pipeline.Pipeline, _ParamsValidationMixin):
     """Pipeline of transforms and resamples with a final estimator.
 
     Sequentially apply a list of transforms, sampling, and a final estimator.
@@ -128,6 +131,12 @@ class Pipeline(pipeline.Pipeline):
     <BLANKLINE>
     """
 
+    _parameter_constraints: dict = {
+        "steps": "no_validation",  # validated in `_validate_steps`
+        "memory": [None, str, HasMethods(["cache"])],
+        "verbose": ["boolean"],
+    }
+
     # BaseEstimator interface
 
     def _validate_steps(self):
@@ -201,7 +210,10 @@ class Pipeline(pipeline.Pipeline):
         self.steps = list(self.steps)
         self._validate_steps()
         # Setup the memory
-        memory = check_memory(self.memory)
+        if self.memory is None or isinstance(self.memory, str):
+            memory = joblib.Memory(location=self.memory, verbose=0)
+        else:
+            memory = self.memory
 
         fit_transform_one_cached = memory.cache(pipeline._fit_transform_one)
         fit_resample_one_cached = memory.cache(_fit_resample_one)
@@ -276,6 +288,7 @@ class Pipeline(pipeline.Pipeline):
         self : Pipeline
             This estimator.
         """
+        self._validate_params()
         fit_params_steps = self._check_fit_params(**fit_params)
         Xt, yt = self._fit(X, y, **fit_params_steps)
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
@@ -311,6 +324,7 @@ class Pipeline(pipeline.Pipeline):
         Xt : array-like of shape (n_samples, n_transformed_features)
             Transformed samples.
         """
+        self._validate_params()
         fit_params_steps = self._check_fit_params(**fit_params)
         Xt, yt = self._fit(X, y, **fit_params_steps)
 
@@ -354,6 +368,7 @@ class Pipeline(pipeline.Pipeline):
         yt : array-like of shape (n_samples, n_transformed_features)
             Transformed target.
         """
+        self._validate_params()
         fit_params_steps = self._check_fit_params(**fit_params)
         Xt, yt = self._fit(X, y, **fit_params_steps)
         last_step = self._final_estimator
@@ -392,6 +407,7 @@ class Pipeline(pipeline.Pipeline):
         y_pred : ndarray of shape (n_samples,)
             The predicted target.
         """
+        self._validate_params()
         fit_params_steps = self._check_fit_params(**fit_params)
         Xt, yt = self._fit(X, y, **fit_params_steps)
 
@@ -408,6 +424,7 @@ def _fit_resample_one(sampler, X, y, message_clsname="", message=None, **fit_par
         return X_res, y_res, sampler
 
 
+@validate_params({"memory": [None, str, HasMethods(["cache"])], "verbose": ["boolean"]})
 def make_pipeline(*steps, memory=None, verbose=False):
     """Construct a Pipeline from the given estimators.
 

@@ -54,6 +54,8 @@ import numpy as np
 from sklearn.datasets import get_data_home
 from sklearn.utils import Bunch, check_random_state
 
+from ..utils._param_validation import validate_params
+
 URL = "https://zenodo.org/record/61452/files/benchmark-imbalanced-learn.tar.gz"
 PRE_FILENAME = "x"
 POST_FILENAME = "data.npz"
@@ -95,6 +97,16 @@ for v, k in enumerate(MAP_NAME_ID_KEYS):
     MAP_ID_NAME[v + 1] = k
 
 
+@validate_params(
+    {
+        "data_home": [None, str],
+        "filter_data": [None, tuple],
+        "download_if_missing": ["boolean"],
+        "random_state": ["random_state"],
+        "shuffle": ["boolean"],
+        "verbose": ["boolean"],
+    }
+)
 def fetch_datasets(
     *,
     data_home=None,

@@ -35,6 +35,7 @@ from imblearn.datasets import make_imbalance
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import EditedNearestNeighbours as ENN
 from imblearn.under_sampling import RandomUnderSampler
+from imblearn.utils.estimator_checks import check_param_validation
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
@@ -640,22 +641,6 @@ def test_classes_property():
         getattr(clf, "classes_")
     clf.fit(X, y)
     assert_array_equal(clf.classes_, np.unique(y))
-
-
-def test_pipeline_wrong_memory():
-    # Test that an error is raised when memory is not a string or a Memory
-    # instance
-    iris = load_iris()
-    X = iris.data
-    y = iris.target
-    # Define memory as an integer
-    memory = 1
-    cached_pipe = Pipeline(
-        [("transf", DummyTransf()), ("svc", SVC(gamma="scale"))], memory=memory
-    )
-    error_regex = "string or have the same interface as"
-    with raises(ValueError, match=error_regex):
-        cached_pipe.fit(X, y)
 
 
 def test_pipeline_memory_transformer():
@@ -1341,3 +1326,10 @@ def test_pipeline_score_samples_pca_lof_multiclass():
     # Check the values
     lof.fit(pca.fit_transform(X))
     assert_allclose(pipe.score_samples(X), lof.score_samples(pca.transform(X)))
+
+
+def test_pipeline_param_validation():
+    model = Pipeline(
+        [("sampler", RandomUnderSampler()), ("classifier", LogisticRegression())]
+    )
+    check_param_validation("Pipeline", model)

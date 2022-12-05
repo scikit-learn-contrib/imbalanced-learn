@@ -21,7 +21,6 @@ from imblearn.utils._param_validation import (
     _Booleans,
     _Callables,
     _CVObjects,
-    _DataFrames,
     _InstancesOf,
     _IterablesNotString,
     _MissingValues,
@@ -35,15 +34,6 @@ from imblearn.utils._param_validation import (
     make_constraint,
     validate_params,
 )
-
-
-def has_pandas():
-    try:
-        import pandas as pd
-
-        return True, pd.DataFrame({"a": [1, 2, 3]})
-    except ImportError:
-        return False, None
 
 
 # Some helpers for the tests
@@ -327,12 +317,6 @@ def test_generate_invalid_param_val_2_intervals(integer_interval, real_interval)
     "constraints",
     [
         [_ArrayLikes()],
-        pytest.param(
-            [_DataFrames()],
-            marks=pytest.mark.skipif(
-                not has_pandas()[0], reason="Pandas not installed"
-            ),
-        ),
         [_InstancesOf(list)],
         [_Callables()],
         [_NoneConstraint()],
@@ -358,12 +342,6 @@ def test_generate_invalid_param_val_all_valid(constraints):
     "constraint",
     [
         _ArrayLikes(),
-        pytest.param(
-            _DataFrames(),
-            marks=pytest.mark.skipif(
-                not has_pandas()[0], reason="Pandas not installed"
-            ),
-        ),
         _Callables(),
         _InstancesOf(list),
         _NoneConstraint(),
@@ -403,13 +381,6 @@ def test_generate_valid_param(constraint):
         (None, None),
         ("array-like", [[1, 2], [3, 4]]),
         ("array-like", np.array([[1, 2], [3, 4]])),
-        pytest.param(
-            "dataframe",
-            has_pandas()[1],
-            marks=pytest.mark.skipif(
-                not has_pandas()[0], reason="Pandas not installed"
-            ),
-        ),
         ("sparse matrix", csr_matrix([[1, 2], [3, 4]])),
         ("random_state", 0),
         ("random_state", np.random.RandomState(0)),
@@ -443,13 +414,6 @@ def test_is_satisfied_by(constraint_declaration, value):
         (Options(Real, {0.42, 1.23}), Options),
         ("array-like", _ArrayLikes),
         ("sparse matrix", _SparseMatrices),
-        pytest.param(
-            "dataframe",
-            _DataFrames,
-            marks=pytest.mark.skipif(
-                not has_pandas()[0], reason="Pandas not installed"
-            ),
-        ),
         ("random_state", _RandomStates),
         (None, _NoneConstraint),
         (callable, _Callables),

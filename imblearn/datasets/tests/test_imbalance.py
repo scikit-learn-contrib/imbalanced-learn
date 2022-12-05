@@ -22,7 +22,6 @@ def iris():
     [
         ({0: -100, 1: 50, 2: 50}, "in a class cannot be negative"),
         ({0: 10, 1: 70}, "should be less or equal to the original"),
-        ("random-string", "has to be a dictionary or a function"),
     ],
 )
 def test_make_imbalance_error(iris, sampling_strategy, err_msg):
