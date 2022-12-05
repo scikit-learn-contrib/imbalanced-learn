@@ -15,7 +15,7 @@ from ..utils._param_validation import validate_params
 
 @validate_params(
     {
-        "X": ["array-like", "dataframe"],
+        "X": ["array-like"],
         "y": ["array-like"],
         "sampling_strategy": [Mapping, callable, None],
         "random_state": ["random_state"],
@@ -97,15 +97,9 @@ def make_imbalance(
     """
     target_stats = Counter(y)
     # restrict ratio to be a dict or a callable
-    if isinstance(sampling_strategy, dict) or callable(sampling_strategy):
+    if isinstance(sampling_strategy, Mapping) or callable(sampling_strategy):
         sampling_strategy_ = check_sampling_strategy(
             sampling_strategy, y, "under-sampling", **kwargs
-        )
-    else:
-        raise ValueError(
-            f"'sampling_strategy' has to be a dictionary or a "
-            f"function returning a dictionary. Got {type(sampling_strategy)} "
-            f"instead."
         )
 
     if verbose:
