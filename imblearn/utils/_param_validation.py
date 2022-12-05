@@ -20,8 +20,7 @@ from ..utils.fixes import _is_arraylike_not_scalar
 
 sklearn_version = parse_version(sklearn.__version__)
 
-# if sklearn_version < parse_version("1.2"):
-if True:
+if sklearn_version < parse_version("1.2"):
     # TODO: remove `if True` when we have clear support for:
     # - ignoring `*args` and `**kwargs` in the signature
 
