@@ -5,6 +5,7 @@ Base class for the under-sampling method.
 # License: MIT
 
 import numbers
+from collections.abc import Mapping
 
 from ..base import BaseSampler
 from ..utils._param_validation import Interval, StrOptions
@@ -61,7 +62,7 @@ class BaseUnderSampler(BaseSampler):
         "sampling_strategy": [
             Interval(numbers.Real, 0, 1, closed="right"),
             StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
-            dict,
+            Mapping,
             callable,
         ],
     }

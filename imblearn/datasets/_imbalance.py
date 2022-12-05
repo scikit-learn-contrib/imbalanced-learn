@@ -6,11 +6,22 @@
 # License: MIT
 
 from collections import Counter
+from collections.abc import Mapping
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import check_sampling_strategy
+from ..utils._param_validation import validate_params
 
 
+@validate_params(
+    {
+        "X": ["array-like", "dataframe"],
+        "y": ["array-like"],
+        "sampling_strategy": [Mapping, callable, None],
+        "random_state": ["random_state"],
+        "verbose": ["boolean"],
+    }
+)
 def make_imbalance(
     X, y, *, sampling_strategy=None, random_state=None, verbose=False, **kwargs
 ):
