@@ -13,7 +13,7 @@ try:
     # scikit-learn >= 1.2
     from sklearn.base import OneToOneFeatureMixin
 except ImportError:
-    from sklearn.base import _OneToOneFeatureMixin  # noqa
+    from sklearn.base import _OneToOneFeatureMixin as OneToOneFeatureMixin
 from sklearn.preprocessing import label_binarize
 from sklearn.utils.multiclass import check_classification_targets
 
