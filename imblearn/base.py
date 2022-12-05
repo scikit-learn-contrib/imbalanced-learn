@@ -7,7 +7,13 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
-from sklearn.base import BaseEstimator, OneToOneFeatureMixin
+from sklearn.base import BaseEstimator
+
+try:
+    # scikit-learn >= 1.2
+    from sklearn.base import OneToOneFeatureMixin
+except ImportError:
+    from sklearn.base import _OneToOneFeatureMixin  # noqa
 from sklearn.preprocessing import label_binarize
 from sklearn.utils.multiclass import check_classification_targets
 
