@@ -13,14 +13,16 @@ from imblearn.utils._param_validation import (
 )
 
 PARAM_VALIDATION_FUNCTION_LIST = [
+    "imblearn.datasets.fetch_datasets",
     "imblearn.datasets.make_imbalance",
+    "imblearn.metrics.classification_report_imbalanced",
+    "imblearn.metrics.geometric_mean_score",
+    "imblearn.metrics.macro_averaged_mean_absolute_error",
+    "imblearn.metrics.make_index_balanced_accuracy",
     "imblearn.metrics.sensitivity_specificity_support",
     "imblearn.metrics.sensitivity_score",
     "imblearn.metrics.specificity_score",
-    "imblearn.metrics.geometric_mean_score",
-    "imblearn.metrics.make_index_balanced_accuracy",
-    "imblearn.metrics.classification_report_imbalanced",
-    "imblearn.metrics.macro_averaged_mean_absolute_error",
+    "imblearn.pipeline.make_pipeline",
 ]
 
 

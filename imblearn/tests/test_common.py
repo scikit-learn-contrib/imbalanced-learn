@@ -70,6 +70,5 @@ def test_estimators_imblearn(estimator, check, request):
 )
 def test_check_param_validation(estimator):
     name = estimator.__class__.__name__
-    print(name)
     _set_checking_parameters(estimator)
     check_param_validation(name, estimator)
