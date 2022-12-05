@@ -643,22 +643,6 @@ def test_classes_property():
     assert_array_equal(clf.classes_, np.unique(y))
 
 
-def test_pipeline_wrong_memory():
-    # Test that an error is raised when memory is not a string or a Memory
-    # instance
-    iris = load_iris()
-    X = iris.data
-    y = iris.target
-    # Define memory as an integer
-    memory = 1
-    cached_pipe = Pipeline(
-        [("transf", DummyTransf()), ("svc", SVC(gamma="scale"))], memory=memory
-    )
-    error_regex = "string or have the same interface as"
-    with raises(ValueError, match=error_regex):
-        cached_pipe.fit(X, y)
-
-
 def test_pipeline_memory_transformer():
     iris = load_iris()
     X = iris.data
