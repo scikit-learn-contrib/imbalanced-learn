@@ -405,7 +405,7 @@ def test_generate_valid_param(constraint):
         ("array-like", np.array([[1, 2], [3, 4]])),
         pytest.param(
             "dataframe",
-            has_pandas[1],
+            has_pandas()[1],
             marks=pytest.mark.skipif(
                 not has_pandas()[0], reason="Pandas not installed"
             ),
