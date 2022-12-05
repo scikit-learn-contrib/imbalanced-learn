@@ -26,7 +26,7 @@ def make_imbalance(
     X : {array-like, dataframe} of shape (n_samples, n_features)
         Matrix containing the data to be imbalanced.
 
-    y : ndarray of shape (n_samples,)
+    y : array-like of shape (n_samples,)
         Corresponding label for each sample in X.
 
     sampling_strategy : dict or callable,
