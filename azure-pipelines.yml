@@ -162,6 +162,14 @@ jobs:
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
+      # Test the intermediate version of scikit-learn
+      pylatest_pip_openblas_sklearn_intermediate:
+        DISTRIB: 'conda-pip-latest'
+        PYTHON_VERSION: '3.10'
+        TEST_DOCS: 'true'
+        TEST_DOCSTRINGS: 'true'
+        CHECK_WARNINGS: 'false'
+        SKLEARN_VERSION: '1.1.3'
       pylatest_pip_tensorflow:
         DISTRIB: 'conda-pip-latest-tensorflow'
         CONDA_CHANNEL: 'conda-forge'

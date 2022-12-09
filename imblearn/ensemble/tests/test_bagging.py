@@ -582,7 +582,7 @@ def test_balanced_bagging_classifier_with_function_sampler(replace):
 
     for estimator in rbb.estimators_:
         class_counts = estimator[-1].class_counts_
-        assert (class_counts[0] / class_counts[1]) > 0.8
+        assert (class_counts[0] / class_counts[1]) > 0.78
 
 
 def test_balanced_bagging_classifier_n_features():
