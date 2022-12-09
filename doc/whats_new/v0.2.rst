@@ -3,6 +3,8 @@
 Version 0.2
 ===========
 
+**January 1, 2017**
+
 Changelog
 ---------
 

@@ -3,6 +3,8 @@
 Version 0.6.2
 ==============
 
+**February 16, 2020**
+
 This is a bug-fix release to resolve some issues regarding the handling the
 input and the output format of the arrays.
 
@@ -19,6 +21,8 @@ Changelog
 
 Version 0.6.1
 ==============
+
+**December 7, 2019**
 
 This is a bug-fix release to primarily resolve some packaging issues in version
 0.6.0. It also includes minor documentation improvements and some bug fixes.
@@ -38,6 +42,8 @@ Bug fixes
 
 Version 0.6.0
 =============
+
+**December 5, 2019**
 
 Changelog
 ---------

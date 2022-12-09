@@ -3,6 +3,8 @@
 Version 0.1
 ===========
 
+**December 26, 2016**
+
 Changelog
 ---------
 
@@ -42,4 +44,3 @@ New methods
 * Ensemble sampling
     1. EasyEnsemble
     2. BalanceCascade
-

@@ -3,6 +3,8 @@
 Version 0.3
 ===========
 
+**February 22, 2018**
+
 Changelog
 ---------
 

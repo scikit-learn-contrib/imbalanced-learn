@@ -3,6 +3,8 @@
 Version 0.4.2
 =============
 
+**October 21, 2018**
+
 Changelog
 ---------
 
@@ -29,7 +31,7 @@ Bug fixes
 Version 0.4
 ===========
 
-**October, 2018**
+**October 12, 2018**
 
 .. warning::
 

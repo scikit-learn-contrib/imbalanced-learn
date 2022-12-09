@@ -1,7 +1,9 @@
 .. _changes_0_10:
 
-Version 0.10.0 (ongoing)
-========================
+Version 0.10.0
+==============
+
+**December 9, 2022**
 
 Changelog
 ---------
