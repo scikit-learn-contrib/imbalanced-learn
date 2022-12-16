@@ -91,7 +91,7 @@ ax = y_res.value_counts().plot.pie(autopct=autopct)
 _ = ax.set_title("Over-sampling")
 
 # %% [markdown]
-# `sampling_strategy` has a `str`
+# `sampling_strategy` as a `str`
 # -------------------------------
 #
 # `sampling_strategy` can be given as a string which specify the class
@@ -129,7 +129,7 @@ ax = y_res.value_counts().plot.pie(autopct=autopct)
 _ = ax.set_title("Cleaning")
 
 # %% [markdown]
-# `sampling_strategy as a `dict`
+# `sampling_strategy` as a `dict`
 # ------------------------------
 #
 # When `sampling_strategy` is a `dict`, the keys correspond to the targeted
