@@ -61,7 +61,7 @@ class BaseOverSampler(BaseSampler):
     _parameter_constraints: dict = {
         "sampling_strategy": [
             Interval(numbers.Real, 0, 1, closed="right"),
-            StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+            StrOptions({"auto", "minority", "not minority", "not majority", "all"}),
             Mapping,
             callable,
         ],
