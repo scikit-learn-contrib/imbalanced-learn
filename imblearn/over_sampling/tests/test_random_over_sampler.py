@@ -7,6 +7,7 @@ from collections import Counter
 
 import numpy as np
 import pytest
+from sklearn.datasets import make_classification
 from sklearn.utils._testing import (
     _convert_container,
     assert_allclose,
@@ -255,3 +256,20 @@ def test_random_over_sampler_shrinkage_error(data, shrinkage, err_msg):
     ros = RandomOverSampler(shrinkage=shrinkage)
     with pytest.raises(ValueError, match=err_msg):
         ros.fit_resample(X, y)
+
+
+@pytest.mark.parametrize(
+    "sampling_strategy", ["auto", "minority", "not minority", "not majority", "all"]
+)
+def test_random_over_sampler_strings(sampling_strategy):
+    """Check that we support all supposed strings as `sampling_strategy` in
+    a sampler inheriting from `BaseOverSampler`."""
+
+    X, y = make_classification(
+        n_samples=100,
+        n_clusters_per_class=1,
+        n_classes=3,
+        weights=[0.1, 0.3, 0.6],
+        random_state=0,
+    )
+    RandomOverSampler(sampling_strategy=sampling_strategy).fit_resample(X, y)
