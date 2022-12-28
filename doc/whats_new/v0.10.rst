@@ -1,5 +1,20 @@
 .. _changes_0_10:
 
+Version 0.10.1
+==============
+
+**December 28, 2022**
+
+Changelog
+---------
+
+Bug fixes
+.........
+
+- Fix a regression in over-sampler where the string `minority` was rejected as
+  an unvalid sampling strategy.
+  :pr:`964` by :user:`Prakhyath Bhandary <Prakhyath07>`.
+
 Version 0.10.0
 ==============
 
