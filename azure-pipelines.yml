@@ -189,6 +189,8 @@ jobs:
         DISTRIB: 'conda-minimum-tensorflow'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.8'
+        NUMPY_VERSION: '1.19.5'  # This version is the minimum requrired by tensorflow
+        SCIPY_VERSION: 'min'
         SKLEARN_VERSION: 'min'
         TENSORFLOW_VERSION: 'min'
         TEST_DOCS: 'true'
@@ -213,6 +215,8 @@ jobs:
         DISTRIB: 'conda-minimum-keras'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.8'
+        NUMPY_VERSION: '1.19.5'  # This version is the minimum requrired by tensorflow
+        SCIPY_VERSION: 'min'
         SKLEARN_VERSION: 'min'
         KERAS_VERSION: 'min'
         TEST_DOCS: 'true'
