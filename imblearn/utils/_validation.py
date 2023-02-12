@@ -6,11 +6,10 @@
 import warnings
 from collections import OrderedDict
 from functools import wraps
-from inspect import signature, Parameter
+from inspect import Parameter, signature
 from numbers import Integral, Real
 
 import numpy as np
-
 from sklearn.base import clone
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import column_or_1d
@@ -110,14 +109,8 @@ def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
     """
     if isinstance(nn_object, Integral):
         return NearestNeighbors(n_neighbors=nn_object + additional_neighbor)
-    elif _is_neighbors_object(nn_object):
-        return clone(nn_object)
-    else:
-        raise ValueError(
-            f"{nn_name} must be an interger or an object compatible with the "
-            "KNeighborsMixin API of scikit-learn (i.e. implementing `kneighbors` "
-            "method)."
-        )
+    # _is_neighbors_object(nn_object)
+    return clone(nn_object)
 
 
 def _count_class_sample(y):

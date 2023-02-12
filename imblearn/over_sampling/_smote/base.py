@@ -7,32 +7,38 @@
 # License: MIT
 
 import math
+import numbers
 import warnings
 from collections import Counter
 
 import numpy as np
 from scipy import sparse
-from scipy import stats
-
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-from sklearn.utils import check_random_state
-from sklearn.utils import _safe_indexing
-from sklearn.utils import check_array
-from sklearn.utils.sparsefuncs_fast import csr_mean_variance_axis0
-from sklearn.utils.sparsefuncs_fast import csc_mean_variance_axis0
+from sklearn.utils import _safe_indexing, check_array, check_random_state
+from sklearn.utils.sparsefuncs_fast import (
+    csc_mean_variance_axis0,
+    csr_mean_variance_axis0,
+)
 
-from ..base import BaseOverSampler
 from ...metrics.pairwise import ValueDifferenceMetric
-from ...utils import check_neighbors_object
-from ...utils import check_target_type
-from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._docstring import _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
+from ...utils import Substitution, check_neighbors_object, check_target_type
+from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods, Interval
+from ...utils.fixes import _mode
+from ..base import BaseOverSampler
 
 
 class BaseSMOTE(BaseOverSampler):
     """Base class for the different SMOTE algorithms."""
+
+    _parameter_constraints: dict = {
+        **BaseOverSampler._parameter_constraints,
+        "k_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "n_jobs": [numbers.Integral, None],
+    }
 
     def __init__(
         self,
@@ -200,11 +206,9 @@ class BaseSMOTE(BaseOverSampler):
                 n_maj >= (nn_estimator.n_neighbors - 1) / 2,
                 n_maj < nn_estimator.n_neighbors - 1,
             )
-        elif kind == "noise":
+        else:  # kind == "noise":
             # Samples are noise for m = m'
             return n_maj == nn_estimator.n_neighbors - 1
-        else:
-            raise NotImplementedError
 
 
 @Substitution(
@@ -262,6 +266,12 @@ class SMOTE(BaseSMOTE):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     SMOTENC : Over-sample using SMOTE for continuous and categorical features.
@@ -295,8 +305,7 @@ class SMOTE(BaseSMOTE):
     --------
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.over_sampling import \
-SMOTE # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.over_sampling import SMOTE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -308,7 +317,6 @@ SMOTE # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
-    @_deprecate_positional_args
     def __init__(
         self,
         *,
@@ -409,7 +417,7 @@ class SMOTENC(SMOTE):
 
     Parameters
     ----------
-    categorical_features : ndarray of shape (n_cat_features,) or (n_features,)
+    categorical_features : array-like of shape (n_cat_features,) or (n_features,)
         Specified which features are categorical. Can either be:
 
         - array of indices specifying the categorical features;
@@ -440,6 +448,42 @@ class SMOTENC(SMOTE):
            It was previously used to set `n_jobs` of nearest neighbors
            algorithm. From now on, you can pass an estimator where `n_jobs` is
            already set instead.
+
+    Attributes
+    ----------
+    sampling_strategy_ : dict
+        Dictionary containing the information to sample the dataset. The keys
+        corresponds to the class labels from which to sample and the values
+        are the number of samples to sample.
+
+    nn_k_ : estimator object
+        Validated k-nearest neighbours created from the `k_neighbors` parameter.
+
+    ohe_ : :class:`~sklearn.preprocessing.OneHotEncoder`
+        The one-hot encoder used to encode the categorical features.
+
+    categorical_features_ : ndarray of shape (n_cat_features,), dtype=np.int64
+        Indices of the categorical features.
+
+    continuous_features_ : ndarray of shape (n_cont_features,), dtype=np.int64
+        Indices of the continuous features.
+
+    median_std_ : float
+        Median of the standard deviation of the continuous features.
+
+    n_features_ : int
+        Number of features observed at `fit`.
+
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.9
+
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
 
     See Also
     --------
@@ -497,7 +541,11 @@ class SMOTENC(SMOTE):
 
     _required_parameters = ["categorical_features"]
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **SMOTE._parameter_constraints,
+        "categorical_features": ["array-like"],
+    }
+
     def __init__(
         self,
         categorical_features,
@@ -511,6 +559,7 @@ class SMOTENC(SMOTE):
             sampling_strategy=sampling_strategy,
             random_state=random_state,
             k_neighbors=k_neighbors,
+            n_jobs=n_jobs,
         )
         self.categorical_features = categorical_features
 
@@ -535,7 +584,7 @@ class SMOTENC(SMOTE):
             ):
                 raise ValueError(
                     f"Some of the categorical indices are out of range. Indices"
-                    f" should be between 0 and {self.n_features_}"
+                    f" should be between 0 and {self.n_features_ - 1}"
                 )
             self.categorical_features_ = categorical_features
         self.continuous_features_ = np.setdiff1d(
@@ -583,7 +632,13 @@ class SMOTENC(SMOTE):
             dtype_ohe = X_continuous.dtype
         else:
             dtype_ohe = np.float64
-        self.ohe_ = OneHotEncoder(sparse=True, handle_unknown="ignore", dtype=dtype_ohe)
+
+        self.ohe_ = OneHotEncoder(handle_unknown="ignore", dtype=dtype_ohe)
+        if hasattr(self.ohe_, "sparse_output"):
+            # scikit-learn >= 1.2
+            self.ohe_.set_params(sparse_output=True)
+        else:
+            self.ohe_.set_params(sparse=True)
 
         # the input of the OneHotEncoder needs to be dense
         X_ohe = self.ohe_.fit_transform(
@@ -747,6 +802,12 @@ class SMOTEN(SMOTE):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     SMOTE : Over-sample using SMOTE.
@@ -817,7 +878,7 @@ class SMOTEN(SMOTE):
         # where for each feature individually, each category generated is the
         # most common category
         X_new = np.squeeze(
-            stats.mode(X_class[nn_indices[samples_indices]], axis=1).mode, axis=1
+            _mode(X_class[nn_indices[samples_indices]], axis=1).mode, axis=1
         )
         y_new = np.full(n_samples, fill_value=klass, dtype=y_dtype)
         return X_new, y_new

@@ -3,11 +3,8 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
-
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.combine import SMOTETomek
 from imblearn.over_sampling import SMOTE
@@ -168,16 +165,3 @@ def test_parallelisation():
     assert smt.n_jobs == 8
     assert smt.smote_.n_jobs == 8
     assert smt.tomek_.n_jobs == 8
-
-
-@pytest.mark.parametrize(
-    "smote_params, err_msg",
-    [
-        ({"smote": "rnd"}, "smote needs to be a SMOTE"),
-        ({"tomek": "rnd"}, "tomek needs to be a TomekLinks"),
-    ],
-)
-def test_error_wrong_object(smote_params, err_msg):
-    smt = SMOTETomek(**smote_params)
-    with pytest.raises(ValueError, match=err_msg):
-        smt.fit_resample(X, Y)

@@ -43,20 +43,18 @@ References
 # Author: Guillaume Lemaitre
 # License: BSD 3 clause
 
-from collections import OrderedDict
 import tarfile
+from collections import OrderedDict
 from io import BytesIO
 from os import makedirs
-from os.path import join, isfile
+from os.path import isfile, join
 from urllib.request import urlopen
 
 import numpy as np
-
 from sklearn.datasets import get_data_home
-from sklearn.utils import Bunch
-from sklearn.utils import check_random_state
+from sklearn.utils import Bunch, check_random_state
 
-from ..utils._validation import _deprecate_positional_args
+from ..utils._param_validation import validate_params
 
 URL = "https://zenodo.org/record/61452/files/benchmark-imbalanced-learn.tar.gz"
 PRE_FILENAME = "x"
@@ -99,7 +97,16 @@ for v, k in enumerate(MAP_NAME_ID_KEYS):
     MAP_ID_NAME[v + 1] = k
 
 
-@_deprecate_positional_args
+@validate_params(
+    {
+        "data_home": [None, str],
+        "filter_data": [None, tuple],
+        "download_if_missing": ["boolean"],
+        "random_state": ["random_state"],
+        "shuffle": ["boolean"],
+        "verbose": ["boolean"],
+    }
+)
 def fetch_datasets(
     *,
     data_home=None,

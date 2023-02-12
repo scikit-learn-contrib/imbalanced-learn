@@ -7,10 +7,12 @@ from collections import Counter
 
 import numpy as np
 import pytest
-
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
-from sklearn.utils._testing import _convert_container
+from sklearn.datasets import make_classification
+from sklearn.utils._testing import (
+    _convert_container,
+    assert_allclose,
+    assert_array_equal,
+)
 
 from imblearn.over_sampling import RandomOverSampler
 
@@ -43,7 +45,9 @@ def test_ros_init():
     assert ros.random_state == RND_SEED
 
 
-@pytest.mark.parametrize("params", [{"shrinkage": None}, {"shrinkage": 0}])
+@pytest.mark.parametrize(
+    "params", [{"shrinkage": None}, {"shrinkage": 0}, {"shrinkage": {0: 0}}]
+)
 @pytest.mark.parametrize("X_type", ["array", "dataframe"])
 def test_ros_fit_resample(X_type, data, params):
     X, Y = data
@@ -243,14 +247,7 @@ def test_random_over_sampler_shrinkage_behaviour(data):
     "shrinkage, err_msg",
     [
         ({}, "`shrinkage` should contain a shrinkage factor for each class"),
-        (-1, "The shrinkage factor needs to be >= 0"),
         ({0: -1}, "The shrinkage factor needs to be >= 0"),
-        (
-            [
-                1,
-            ],
-            "`shrinkage` should either be a positive floating number or",
-        ),
     ],
 )
 def test_random_over_sampler_shrinkage_error(data, shrinkage, err_msg):
@@ -259,3 +256,20 @@ def test_random_over_sampler_shrinkage_error(data, shrinkage, err_msg):
     ros = RandomOverSampler(shrinkage=shrinkage)
     with pytest.raises(ValueError, match=err_msg):
         ros.fit_resample(X, y)
+
+
+@pytest.mark.parametrize(
+    "sampling_strategy", ["auto", "minority", "not minority", "not majority", "all"]
+)
+def test_random_over_sampler_strings(sampling_strategy):
+    """Check that we support all supposed strings as `sampling_strategy` in
+    a sampler inheriting from `BaseOverSampler`."""
+
+    X, y = make_classification(
+        n_samples=100,
+        n_clusters_per_class=1,
+        n_classes=3,
+        weights=[0.1, 0.3, 0.6],
+        random_state=0,
+    )
+    RandomOverSampler(sampling_strategy=sampling_strategy).fit_resample(X, y)

@@ -6,8 +6,7 @@
 import pytest
 
 from imblearn.utils import Substitution
-from imblearn.utils._docstring import _random_state_docstring
-from imblearn.utils._docstring import _n_jobs_docstring
+from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
 
 func_docstring = """A function.
 
@@ -67,3 +66,17 @@ def test_docstring_inject(obj, obj_docstring):
 def test_docstring_template():
     assert "random_state" in _random_state_docstring
     assert "n_jobs" in _n_jobs_docstring
+
+
+def test_docstring_with_python_OO():
+    """Check that we don't raise a warning if the code is executed with -OO.
+
+    Non-regression test for:
+    https://github.com/scikit-learn-contrib/imbalanced-learn/issues/945
+    """
+    instance = cls(param_1="xxx", param_2="yyy")
+    instance.__doc__ = None  # simulate -OO
+
+    instance = Substitution(param_1="xxx", param_2="yyy")(instance)
+
+    assert instance.__doc__ is None

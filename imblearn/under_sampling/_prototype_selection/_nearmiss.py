@@ -4,18 +4,17 @@
 #          Christos Aridas
 # License: MIT
 
+import numbers
 import warnings
 from collections import Counter
 
 import numpy as np
-
 from sklearn.utils import _safe_indexing
 
-from ..base import BaseUnderSampler
-from ...utils import check_neighbors_object
-from ...utils import Substitution
+from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
-from ...utils._validation import _deprecate_positional_args
+from ...utils._param_validation import HasMethods, Interval
+from ..base import BaseUnderSampler
 
 
 @Substitution(
@@ -73,6 +72,12 @@ class NearMiss(BaseUnderSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     RandomUnderSampler : Random undersample the dataset.
@@ -95,8 +100,7 @@ class NearMiss(BaseUnderSampler):
     --------
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import \
-NearMiss # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.under_sampling import NearMiss
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -108,7 +112,20 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 100, 1: 100}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseUnderSampler._parameter_constraints,
+        "version": [Interval(numbers.Integral, 1, 3, closed="both")],
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "n_neighbors_ver3": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -171,10 +188,8 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
         # Sort the list of distance and get the index
         if sel_strategy == "nearest":
             sort_way = False
-        elif sel_strategy == "farthest":
+        else:  # sel_strategy == "farthest":
             sort_way = True
-        else:
-            raise NotImplementedError
 
         sorted_idx = sorted(
             range(len(dist_avg_vec)),
@@ -206,11 +221,6 @@ NearMiss # doctest: +NORMALIZE_WHITESPACE
                 "n_neighbors_ver3", self.n_neighbors_ver3
             )
             self.nn_ver3_.set_params(**{"n_jobs": self.n_jobs})
-
-        if self.version not in (1, 2, 3):
-            raise ValueError(
-                f"Parameter `version` must be 1, 2 or 3, got {self.version}"
-            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()

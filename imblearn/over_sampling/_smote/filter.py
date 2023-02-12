@@ -6,23 +6,19 @@
 #          Dzianis Dudnik
 # License: MIT
 
+import numbers
 import warnings
 
 import numpy as np
 from scipy import sparse
-
 from sklearn.base import clone
 from sklearn.svm import SVC
-from sklearn.utils import check_random_state
-from sklearn.utils import _safe_indexing
+from sklearn.utils import _safe_indexing, check_random_state
 
+from ...utils import Substitution, check_neighbors_object
+from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ..base import BaseOverSampler
-from ...utils import check_neighbors_object
-from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._docstring import _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
-
 from .base import BaseSMOTE
 
 
@@ -104,6 +100,12 @@ class BorderlineSMOTE(BaseSMOTE):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     SMOTE : Over-sample using SMOTE.
@@ -138,8 +140,7 @@ class BorderlineSMOTE(BaseSMOTE):
     --------
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.over_sampling import \
-BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.over_sampling import BorderlineSMOTE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -151,7 +152,15 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseSMOTE._parameter_constraints,
+        "m_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "kind": [StrOptions({"borderline-1", "borderline-2"})],
+    }
+
     def __init__(
         self,
         *,
@@ -176,12 +185,6 @@ BorderlineSMOTE # doctest: +NORMALIZE_WHITESPACE
         self.nn_m_ = check_neighbors_object(
             "m_neighbors", self.m_neighbors, additional_neighbor=1
         )
-        if self.kind not in ("borderline-1", "borderline-2"):
-            raise ValueError(
-                f'The possible "kind" of algorithm are '
-                f'"borderline-1" and "borderline-2".'
-                f"Got {self.kind} instead."
-            )
 
     def _fit_resample(self, X, y):
         # FIXME: to be removed in 0.12
@@ -355,6 +358,12 @@ class SVMSMOTE(BaseSMOTE):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     SMOTE : Over-sample using SMOTE.
@@ -392,8 +401,7 @@ class SVMSMOTE(BaseSMOTE):
     --------
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.over_sampling import \
-SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.over_sampling import SVMSMOTE
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -405,7 +413,16 @@ SVMSMOTE # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseSMOTE._parameter_constraints,
+        "m_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "svm_estimator": [HasMethods(["fit", "predict"]), None],
+        "out_step": [Interval(numbers.Real, 0, 1, closed="both")],
+    }
+
     def __init__(
         self,
         *,

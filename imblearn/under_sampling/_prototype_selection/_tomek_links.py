@@ -5,14 +5,15 @@
 #          Christos Aridas
 # License: MIT
 
+import numbers
+
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import _safe_indexing
 
-from ..base import BaseCleaningSampler
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
-from ...utils._validation import _deprecate_positional_args
+from ..base import BaseCleaningSampler
 
 
 @Substitution(
@@ -47,6 +48,12 @@ class TomekLinks(BaseCleaningSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     EditedNearestNeighbours : Undersample by samples edition.
@@ -71,8 +78,7 @@ class TomekLinks(BaseCleaningSampler):
     --------
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import \
-TomekLinks # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.under_sampling import TomekLinks
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -84,7 +90,11 @@ TomekLinks # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{1: 897, 0: 100}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(self, *, sampling_strategy="auto", n_jobs=None):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_jobs = n_jobs

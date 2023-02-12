@@ -6,13 +6,22 @@
 # License: MIT
 
 from collections import Counter
+from collections.abc import Mapping
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import check_sampling_strategy
-from ..utils._validation import _deprecate_positional_args
+from ..utils._param_validation import validate_params
 
 
-@_deprecate_positional_args
+@validate_params(
+    {
+        "X": ["array-like"],
+        "y": ["array-like"],
+        "sampling_strategy": [Mapping, callable, None],
+        "random_state": ["random_state"],
+        "verbose": ["boolean"],
+    }
+)
 def make_imbalance(
     X, y, *, sampling_strategy=None, random_state=None, verbose=False, **kwargs
 ):
@@ -28,7 +37,7 @@ def make_imbalance(
     X : {array-like, dataframe} of shape (n_samples, n_features)
         Matrix containing the data to be imbalanced.
 
-    y : ndarray of shape (n_samples,)
+    y : array-like of shape (n_samples,)
         Corresponding label for each sample in X.
 
     sampling_strategy : dict or callable,
@@ -88,15 +97,9 @@ def make_imbalance(
     """
     target_stats = Counter(y)
     # restrict ratio to be a dict or a callable
-    if isinstance(sampling_strategy, dict) or callable(sampling_strategy):
+    if isinstance(sampling_strategy, Mapping) or callable(sampling_strategy):
         sampling_strategy_ = check_sampling_strategy(
             sampling_strategy, y, "under-sampling", **kwargs
-        )
-    else:
-        raise ValueError(
-            f"'sampling_strategy' has to be a dictionary or a "
-            f"function returning a dictionary. Got {type(sampling_strategy)} "
-            f"instead."
         )
 
     if verbose:

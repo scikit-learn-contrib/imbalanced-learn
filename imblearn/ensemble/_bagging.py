@@ -4,21 +4,30 @@
 #          Christos Aridas
 # License: MIT
 
+import copy
+import inspect
 import numbers
+import warnings
 
 import numpy as np
-
+from joblib import Parallel
 from sklearn.base import clone
 from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble._bagging import _parallel_decision_function
+from sklearn.ensemble._base import _partition_estimators
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.utils.fixes import delayed
+from sklearn.utils.validation import check_is_fitted
 
+from ..base import _ParamsValidationMixin
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import Substitution, check_target_type, check_sampling_strategy
-from ..utils._docstring import _n_jobs_docstring
-from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _deprecate_positional_args
+from ..utils import Substitution, check_sampling_strategy, check_target_type
+from ..utils._available_if import available_if
+from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ..utils._param_validation import HasMethods, Interval, StrOptions
+from ._common import _bagging_parameter_constraints, _estimator_has
 
 
 @Substitution(
@@ -26,7 +35,7 @@ from ..utils._validation import _deprecate_positional_args
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class BalancedBaggingClassifier(BaggingClassifier):
+class BalancedBaggingClassifier(BaggingClassifier, _ParamsValidationMixin):
     """A Bagging classifier with additional balancing.
 
     This implementation of Bagging is similar to the scikit-learn
@@ -41,9 +50,11 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
     Parameters
     ----------
-    base_estimator : estimator object, default=None
+    estimator : estimator object, default=None
         The base estimator to fit on random subsets of the dataset.
         If None, then the base estimator is a decision tree.
+
+        .. versionadded:: 0.10
 
     n_estimators : int, default=10
         The number of base estimators in the ensemble.
@@ -100,18 +111,37 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
         .. versionadded:: 0.8
 
+    base_estimator : estimator object, default=None
+        The base estimator to fit on random subsets of the dataset.
+        If None, then the base estimator is a decision tree.
+
+        .. deprecated:: 0.10
+           `base_estimator` was renamed to `estimator` in version 0.10 and
+           will be removed in 0.12.
+
     Attributes
     ----------
+    estimator_ : estimator
+        The base estimator from which the ensemble is grown.
+
+        .. versionadded:: 0.10
+
     base_estimator_ : estimator
         The base estimator from which the ensemble is grown.
+
+        .. deprecated:: 1.2
+           `base_estimator_` is deprecated in `scikit-learn` 1.2 and will be
+           removed in 1.4. Use `estimator_` instead. When the minimum version
+           of `scikit-learn` supported by `imbalanced-learn` will reach 1.4,
+           this attribute will be removed.
 
     n_features_ : int
         The number of features when `fit` is performed.
 
         .. deprecated:: 1.0
            `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
-           in version 1.2. Depending of the version of `scikit-learn` installed,
-           you will get be warned or not.
+           in version 1.2. When the minimum version of `scikit-learn` supported
+           by `imbalanced-learn` will reach 1.2, this attribute will be removed.
 
     estimators_ : list of estimators
         The collection of fitted base estimators.
@@ -146,7 +176,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
 
         .. versionadded:: 0.9
 
-    feature_names_in_ : ndarray of shape (n_features_in_,)
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
         Names of features seen during `fit`. Defined only when `X` has feature
         names that are all strings.
 
@@ -208,8 +238,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.model_selection import train_test_split
     >>> from sklearn.metrics import confusion_matrix
-    >>> from imblearn.ensemble import \
-BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.ensemble import BalancedBaggingClassifier
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -218,7 +247,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
     >>> X_train, X_test, y_train, y_test = train_test_split(X, y,
     ...                                                     random_state=0)
     >>> bbc = BalancedBaggingClassifier(random_state=42)
-    >>> bbc.fit(X_train, y_train) # doctest: +ELLIPSIS
+    >>> bbc.fit(X_train, y_train)
     BalancedBaggingClassifier(...)
     >>> y_pred = bbc.predict(X_test)
     >>> print(confusion_matrix(y_test, y_pred))
@@ -226,10 +255,29 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
      [  2 225]]
     """
 
-    @_deprecate_positional_args
+    # make a deepcopy to not modify the original dictionary
+    if hasattr(BaggingClassifier, "_parameter_constraints"):
+        # scikit-learn >= 1.2
+        _parameter_constraints = copy.deepcopy(BaggingClassifier._parameter_constraints)
+    else:
+        _parameter_constraints = copy.deepcopy(_bagging_parameter_constraints)
+
+    _parameter_constraints.update(
+        {
+            "sampling_strategy": [
+                Interval(numbers.Real, 0, 1, closed="right"),
+                StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+                dict,
+                callable,
+            ],
+            "replacement": ["boolean"],
+            "sampler": [HasMethods(["fit_resample"]), None],
+        }
+    )
+
     def __init__(
         self,
-        base_estimator=None,
+        estimator=None,
         n_estimators=10,
         *,
         max_samples=1.0,
@@ -244,10 +292,18 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         random_state=None,
         verbose=0,
         sampler=None,
+        base_estimator="deprecated",
     ):
+        # TODO: remove when supporting scikit-learn>=1.2
+        bagging_classifier_signature = inspect.signature(super().__init__)
+        estimator_params = {"base_estimator": base_estimator}
+        if "estimator" in bagging_classifier_signature.parameters:
+            estimator_params["estimator"] = estimator
+        else:
+            self.estimator = estimator
 
         super().__init__(
-            base_estimator,
+            **estimator_params,
             n_estimators=n_estimators,
             max_samples=max_samples,
             max_features=max_features,
@@ -283,18 +339,22 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self, default=DecisionTreeClassifier()):
         """Check the estimator and the n_estimator attribute, set the
-        `base_estimator_` attribute."""
-        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
+        `estimator_` attribute."""
+        if self.estimator is not None and (
+            self.base_estimator not in [None, "deprecated"]
+        ):
             raise ValueError(
-                f"n_estimators must be an integer, " f"got {type(self.n_estimators)}."
+                "Both `estimator` and `base_estimator` were set. Only set `estimator`."
             )
 
-        if self.n_estimators <= 0:
-            raise ValueError(
-                f"n_estimators must be greater than zero, " f"got {self.n_estimators}."
+        if self.estimator is not None:
+            base_estimator = clone(self.estimator)
+        elif self.base_estimator not in [None, "deprecated"]:
+            warnings.warn(
+                "`base_estimator` was renamed to `estimator` in version 0.10 and "
+                "will be removed in 0.12.",
+                FutureWarning,
             )
-
-        if self.base_estimator is not None:
             base_estimator = clone(self.base_estimator)
         else:
             base_estimator = clone(default)
@@ -302,12 +362,32 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         if self.sampler_._sampling_type != "bypass":
             self.sampler_.set_params(sampling_strategy=self._sampling_strategy)
 
-        self.base_estimator_ = Pipeline(
-            [
-                ("sampler", self.sampler_),
-                ("classifier", base_estimator),
-            ]
+        self._estimator = Pipeline(
+            [("sampler", self.sampler_), ("classifier", base_estimator)]
         )
+        try:
+            # scikit-learn < 1.2
+            self.base_estimator_ = self._estimator
+        except AttributeError:
+            pass
+
+    # TODO: remove when supporting scikit-learn>=1.4
+    @property
+    def estimator_(self):
+        """Estimator used to grow the ensemble."""
+        return self._estimator
+
+    # TODO: remove when supporting scikit-learn>=1.2
+    @property
+    def n_features_(self):
+        """Number of features when ``fit`` is performed."""
+        warnings.warn(
+            "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
+            "not be accessible when the minimum supported version of scikit-learn "
+            "is 1.2.",
+            FutureWarning,
+        )
+        return self.n_features_in_
 
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training set (X, y).
@@ -328,6 +408,7 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
             Fitted estimator.
         """
         # overwrite the base class method by disallowing `sample_weight`
+        self._validate_params()
         return super().fit(X, y)
 
     def _fit(self, X, y, max_samples=None, max_depth=None, sample_weight=None):
@@ -344,6 +425,53 @@ BalancedBaggingClassifier # doctest: +NORMALIZE_WHITESPACE
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return super()._fit(X, y, self.max_samples, sample_weight=None)
+
+    # TODO: remove when minimum supported version of scikit-learn is 1.1
+    @available_if(_estimator_has("decision_function"))
+    def decision_function(self, X):
+        """Average of the decision functions of the base classifiers.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
+
+        Returns
+        -------
+        score : ndarray of shape (n_samples, k)
+            The decision function of the input samples. The columns correspond
+            to the classes in sorted order, as they appear in the attribute
+            ``classes_``. Regression and binary classification are special
+            cases with ``k == 1``, otherwise ``k==n_classes``.
+        """
+        check_is_fitted(self)
+
+        # Check data
+        X = self._validate_data(
+            X,
+            accept_sparse=["csr", "csc"],
+            dtype=None,
+            force_all_finite=False,
+            reset=False,
+        )
+
+        # Parallel loop
+        n_jobs, _, starts = _partition_estimators(self.n_estimators, self.n_jobs)
+
+        all_decisions = Parallel(n_jobs=n_jobs, verbose=self.verbose)(
+            delayed(_parallel_decision_function)(
+                self.estimators_[starts[i] : starts[i + 1]],
+                self.estimators_features_[starts[i] : starts[i + 1]],
+                X,
+            )
+            for i in range(n_jobs)
+        )
+
+        # Reduce
+        decisions = sum(all_decisions) / self.n_estimators
+
+        return decisions
 
     def _more_tags(self):
         tags = super()._more_tags()

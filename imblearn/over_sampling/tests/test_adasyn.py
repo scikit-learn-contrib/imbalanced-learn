@@ -3,12 +3,9 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
-
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.over_sampling import ADASYN
 
@@ -153,111 +150,3 @@ def test_ada_fit_resample_nn_obj():
     )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
-
-
-@pytest.mark.parametrize(
-    "adasyn_params, err_msg",
-    [
-        (
-            {"sampling_strategy": {0: 9, 1: 12}},
-            "No samples will be generated.",
-        ),
-        (
-            {"n_neighbors": "rnd"},
-            "n_neighbors must be an interger or an object compatible with the "
-            "KNeighborsMixin API of scikit-learn",
-        ),
-    ],
-)
-def test_adasyn_error(adasyn_params, err_msg):
-    adasyn = ADASYN(**adasyn_params)
-    with pytest.raises(ValueError, match=err_msg):
-        adasyn.fit_resample(X, Y)
-
-
-def test_ada_sample_indices():
-    nn = NearestNeighbors(n_neighbors=6)
-    ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
-    ada.fit_resample(X, Y)
-    indices = ada.get_sample_indices()
-    indices_gt = np.array(
-        [
-            [0, 0],
-            [1, 0],
-            [2, 0],
-            [3, 0],
-            [4, 0],
-            [5, 0],
-            [6, 0],
-            [7, 0],
-            [8, 0],
-            [9, 0],
-            [10, 0],
-            [11, 0],
-            [12, 0],
-            [13, 0],
-            [14, 0],
-            [15, 0],
-            [16, 0],
-            [17, 0],
-            [18, 0],
-            [19, 0],
-            [0, 4],
-            [2, 0],
-            [4, 3],
-            [6, 3],
-        ]
-    )
-    assert_array_equal(indices, indices_gt)
-
-
-def test_ada_sample_indices_balanced_dataset():
-    nn = NearestNeighbors(n_neighbors=1)
-    ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
-    ada.fit_resample(XX, YY)
-    indices = ada.get_sample_indices()
-    indices_gt = np.array(
-        [
-            [0, 0],
-            [1, 0],
-            [2, 0],
-            [3, 0],
-            [4, 0],
-            [5, 0],
-            [6, 0],
-            [7, 0],
-            [8, 0],
-            [9, 0],
-            [10, 0],
-            [11, 0],
-        ]
-    )
-    assert_array_equal(indices, indices_gt)
-
-
-def test_ada_sample_indices_is_none():
-    nn = NearestNeighbors(n_neighbors=6)
-    ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
-    indices = ada.get_sample_indices()
-    assert_array_equal(indices, None)
-
-
-def test_ada_ValueError():
-    nn = NearestNeighbors(n_neighbors=2)
-    ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
-    with pytest.raises(RuntimeError) as record:
-        ada.fit_resample(XXX, YYY)
-    assert (
-        record.value.args[0] == "Not any neigbours belong to the majority"
-        " class. This case will induce a NaN case"
-        " with a division by zero. ADASYN is not"
-        " suited for this specific dataset."
-        " Use SMOTE instead."
-    )
-
-
-def test_ada_test_more_tags():
-    nn = NearestNeighbors(n_neighbors=2)
-    ada = ADASYN(random_state=RND_SEED, n_neighbors=nn)
-    response = ada._more_tags()
-    assert response == {"X_types": ["2darray"]}

@@ -103,6 +103,8 @@ clf = LogisticRegression()
 
 # %%
 import matplotlib.pyplot as plt
+from sklearn.cluster import MiniBatchKMeans
+
 from imblearn import FunctionSampler
 from imblearn.pipeline import make_pipeline
 from imblearn.under_sampling import ClusterCentroids
@@ -111,7 +113,9 @@ X, y = create_dataset(n_samples=400, weights=(0.05, 0.15, 0.8), class_sep=0.8)
 
 samplers = {
     FunctionSampler(),  # identity resampler
-    ClusterCentroids(random_state=0),
+    ClusterCentroids(
+        estimator=MiniBatchKMeans(n_init=1, random_state=0), random_state=0
+    ),
 }
 
 fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(15, 15))
@@ -208,9 +212,9 @@ fig.tight_layout()
 
 # %%
 from imblearn.under_sampling import (
+    AllKNN,
     EditedNearestNeighbours,
     RepeatedEditedNearestNeighbours,
-    AllKNN,
 )
 
 X, y = create_dataset(n_samples=500, weights=(0.2, 0.3, 0.5), class_sep=0.8)
@@ -249,8 +253,8 @@ fig.tight_layout()
 # %%
 from imblearn.under_sampling import (
     CondensedNearestNeighbour,
-    OneSidedSelection,
     NeighbourhoodCleaningRule,
+    OneSidedSelection,
 )
 
 X, y = create_dataset(n_samples=500, weights=(0.2, 0.3, 0.5), class_sep=0.8)

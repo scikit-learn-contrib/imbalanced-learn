@@ -48,10 +48,11 @@ X, y = make_classification(
 # search which `k_neighbors` parameter is the most adequate with the dataset
 # that we generated.
 
+from sklearn.tree import DecisionTreeClassifier
+
 # %%
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import make_pipeline
-from sklearn.tree import DecisionTreeClassifier
 
 model = make_pipeline(
     SMOTE(random_state=RANDOM_STATE), DecisionTreeClassifier(random_state=RANDOM_STATE)
@@ -92,7 +93,7 @@ test_scores_std = test_scores.std(axis=1)
 # %%
 import matplotlib.pyplot as plt
 
-fig, ax = plt.subplots(figsize=(7, 5))
+fig, ax = plt.subplots(figsize=(7, 7))
 ax.plot(param_range, test_scores_mean, label="SMOTE")
 ax.fill_between(
     param_range,
@@ -110,13 +111,13 @@ ax.scatter(
 )
 
 fig.suptitle("Validation Curve with SMOTE-CART")
-ax.set_xlabel("k_neighbors")
+ax.set_xlabel("Number of neighbors")
 ax.set_ylabel("Cohen's kappa")
 
 # make nice plotting
 sns.despine(ax=ax, offset=10)
 ax.set_xlim([1, 10])
 ax.set_ylim([0.4, 0.8])
-ax.legend(loc="lower right")
+ax.legend(loc="lower right", fontsize=16)
 plt.tight_layout()
 plt.show()

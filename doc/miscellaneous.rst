@@ -34,7 +34,7 @@ to retain the 10 first elements of the array ``X`` and ``y``::
   >>> np.all(y_res == y[:10])
   True
 
-In addition, the parameter ``validate`` control input checking. For instance,
+In addition, the parameter ``validate`` controls input checking. For instance,
 turning ``validate=False`` allows to pass any type of target ``y`` and do some
 sampling for regression targets::
 
@@ -51,7 +51,7 @@ sampling for regression targets::
            75.46571114,  -67.49177372,  159.72700509, -169.80498923,
           211.95889757,  211.95889757])
 
-We illustrate the use of such sampler to implement an outlier rejection
+We illustrated the use of such sampler to implement an outlier rejection
 estimator which can be easily used within a
 :class:`~imblearn.pipeline.Pipeline`:
 :ref:`sphx_glr_auto_examples_applications_plot_outlier_rejections.py`
@@ -69,10 +69,11 @@ will generate balanced mini-batches.
 TensorFlow generator
 ~~~~~~~~~~~~~~~~~~~~
 
-The :func:`~imblearn.tensorflow.balanced_batch_generator` allow to generate
+The :func:`~imblearn.tensorflow.balanced_batch_generator` allows to generate
 balanced mini-batches using an imbalanced-learn sampler which returns indices.
 
 Let's first generate some data::
+
   >>> n_features, n_classes = 10, 2
   >>> X, y = make_classification(
   ...     n_samples=10_000, n_features=n_features, n_informative=2,
@@ -96,7 +97,7 @@ balanced::
   ...     random_state=42,
   ... )
 
-The ``generator`` and ``steps_per_epoch`` is used during the training of the
+The ``generator`` and ``steps_per_epoch`` are used during the training of a
 Tensorflow model. We will illustrate how to use this generator. First, we can
 define a logistic regression model which will be optimized by a gradient
 descent::

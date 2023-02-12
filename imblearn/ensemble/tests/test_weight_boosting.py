@@ -1,12 +1,15 @@
-import pytest
-
 import numpy as np
-
-from sklearn.datasets import make_classification
+import pytest
+import sklearn
+from sklearn.datasets import load_iris, make_classification
 from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils._testing import assert_array_equal
+from sklearn.utils.fixes import parse_version
 
 from imblearn.ensemble import RUSBoostClassifier
+
+sklearn_version = parse_version(sklearn.__version__)
 
 
 @pytest.fixture
@@ -23,23 +26,6 @@ def imbalanced_dataset():
         class_sep=0.8,
         random_state=0,
     )
-
-
-@pytest.mark.parametrize(
-    "boosting_params, err_type, err_msg",
-    [
-        (
-            {"n_estimators": "whatever"},
-            TypeError,
-            "n_estimators must be an instance of int, not str.",
-        ),
-        ({"n_estimators": -100}, ValueError, "n_estimators == -100, must be >= 1."),
-    ],
-)
-def test_rusboost_error(imbalanced_dataset, boosting_params, err_type, err_msg):
-    rusboost = RUSBoostClassifier(**boosting_params)
-    with pytest.raises(err_type, match=err_msg):
-        rusboost.fit(*imbalanced_dataset)
 
 
 @pytest.mark.parametrize("algorithm", ["SAMME", "SAMME.R"])
@@ -105,3 +91,25 @@ def test_rusboost_sample_weight(imbalanced_dataset, algorithm):
 
     with pytest.raises(AssertionError):
         assert_array_equal(y_pred_no_sample_weight, y_pred_sample_weight)
+
+
+@pytest.mark.skipif(
+    sklearn_version < parse_version("1.2"), reason="requires scikit-learn>=1.2"
+)
+def test_rus_boost_classifier_base_estimator():
+    """Check that we raise a FutureWarning when accessing `base_estimator_`."""
+    X, y = load_iris(return_X_y=True)
+    estimator = RUSBoostClassifier().fit(X, y)
+    with pytest.warns(FutureWarning, match="`base_estimator_` was deprecated"):
+        estimator.base_estimator_
+
+
+def test_rus_boost_classifier_set_both_estimator_and_base_estimator():
+    """Check that we raise a ValueError when setting both `estimator` and
+    `base_estimator`."""
+    X, y = load_iris(return_X_y=True)
+    err_msg = "Both `estimator` and `base_estimator` were set. Only set `estimator`."
+    with pytest.raises(ValueError, match=err_msg):
+        RUSBoostClassifier(
+            estimator=DecisionTreeClassifier(), base_estimator=DecisionTreeClassifier()
+        ).fit(X, y)

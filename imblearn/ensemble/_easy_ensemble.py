@@ -4,21 +4,29 @@
 #          Christos Aridas
 # License: MIT
 
+import copy
+import inspect
 import numbers
+import warnings
 
 import numpy as np
-
+from joblib import Parallel
 from sklearn.base import clone
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
+from sklearn.ensemble._bagging import _parallel_decision_function
+from sklearn.ensemble._base import _partition_estimators
+from sklearn.utils.fixes import delayed
+from sklearn.utils.validation import check_is_fitted
 
+from ..base import _ParamsValidationMixin
+from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
-from ..utils import Substitution, check_target_type, check_sampling_strategy
-from ..utils._docstring import _n_jobs_docstring
-from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _deprecate_positional_args
-from ..pipeline import Pipeline
+from ..utils import Substitution, check_sampling_strategy, check_target_type
+from ..utils._available_if import available_if
+from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ..utils._param_validation import Interval, StrOptions
+from ._common import _bagging_parameter_constraints, _estimator_has
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -28,11 +36,11 @@ MAX_INT = np.iinfo(np.int32).max
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class EasyEnsembleClassifier(BaggingClassifier):
+class EasyEnsembleClassifier(BaggingClassifier, _ParamsValidationMixin):
     """Bag of balanced boosted learners also known as EasyEnsemble.
 
     This algorithm is known as EasyEnsemble [1]_. The classifier is an
-    ensemble of AdaBoost learners trained on different balanced boostrap
+    ensemble of AdaBoost learners trained on different balanced bootstrap
     samples. The balancing is achieved by random under-sampling.
 
     Read more in the :ref:`User Guide <boosting>`.
@@ -44,9 +52,11 @@ class EasyEnsembleClassifier(BaggingClassifier):
     n_estimators : int, default=10
         Number of AdaBoost learners in the ensemble.
 
-    base_estimator : estimator object, default=AdaBoostClassifier()
+    estimator : estimator object, default=AdaBoostClassifier()
         The base AdaBoost classifier used in the inner ensemble. Note that you
         can set the number of inner learner by passing your own instance.
+
+        .. versionadded:: 0.10
 
     warm_start : bool, default=False
         When set to True, reuse the solution of the previous call to fit
@@ -65,10 +75,29 @@ class EasyEnsembleClassifier(BaggingClassifier):
     verbose : int, default=0
         Controls the verbosity of the building process.
 
+    base_estimator : estimator object, default=AdaBoostClassifier()
+        The base AdaBoost classifier used in the inner ensemble. Note that you
+        can set the number of inner learner by passing your own instance.
+
+        .. deprecated:: 0.10
+           `base_estimator` was renamed to `estimator` in version 0.10 and will
+           be removed in 0.12.
+
     Attributes
     ----------
+    estimator_ : estimator
+        The base estimator from which the ensemble is grown.
+
+        .. versionadded:: 0.10
+
     base_estimator_ : estimator
         The base estimator from which the ensemble is grown.
+
+        .. deprecated:: 1.2
+           `base_estimator_` is deprecated in `scikit-learn` 1.2 and will be
+           removed in 1.4. Use `estimator_` instead. When the minimum version
+           of `scikit-learn` supported by `imbalanced-learn` will reach 1.4,
+           this attribute will be removed.
 
     estimators_ : list of estimators
         The collection of fitted base estimators.
@@ -86,19 +115,19 @@ class EasyEnsembleClassifier(BaggingClassifier):
         The number of classes.
 
     n_features_ : int
-        The number of features when ``fit`` is performed.
+        The number of features when `fit` is performed.
 
         .. deprecated:: 1.0
            `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
-           in version 1.2. Depending of the version of `scikit-learn` installed,
-           you will get be warned or not.
+           in version 1.2. When the minimum version of `scikit-learn` supported
+           by `imbalanced-learn` will reach 1.2, this attribute will be removed.
 
     n_features_in_ : int
         Number of features in the input dataset.
 
         .. versionadded:: 0.9
 
-    feature_names_in_ : ndarray of shape (n_features_in_,)
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
         Names of features seen during `fit`. Defined only when `X` has feature
         names that are all strings.
 
@@ -134,8 +163,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.model_selection import train_test_split
     >>> from sklearn.metrics import confusion_matrix
-    >>> from imblearn.ensemble import \
-EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.ensemble import EasyEnsembleClassifier
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -144,7 +172,7 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
     >>> X_train, X_test, y_train, y_test = train_test_split(X, y,
     ...                                                     random_state=0)
     >>> eec = EasyEnsembleClassifier(random_state=42)
-    >>> eec.fit(X_train, y_train) # doctest: +ELLIPSIS
+    >>> eec.fit(X_train, y_train)
     EasyEnsembleClassifier(...)
     >>> y_pred = eec.predict(X_test)
     >>> print(confusion_matrix(y_test, y_pred))
@@ -152,11 +180,39 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
      [  2 225]]
     """
 
-    @_deprecate_positional_args
+    # make a deepcopy to not modify the original dictionary
+    if hasattr(BaggingClassifier, "_parameter_constraints"):
+        # scikit-learn >= 1.2
+        _parameter_constraints = copy.deepcopy(BaggingClassifier._parameter_constraints)
+    else:
+        _parameter_constraints = copy.deepcopy(_bagging_parameter_constraints)
+
+    excluded_params = {
+        "bootstrap",
+        "bootstrap_features",
+        "max_features",
+        "oob_score",
+        "max_samples",
+    }
+    for param in excluded_params:
+        _parameter_constraints.pop(param, None)
+
+    _parameter_constraints.update(
+        {
+            "sampling_strategy": [
+                Interval(numbers.Real, 0, 1, closed="right"),
+                StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+                dict,
+                callable,
+            ],
+            "replacement": ["boolean"],
+        }
+    )
+
     def __init__(
         self,
         n_estimators=10,
-        base_estimator=None,
+        estimator=None,
         *,
         warm_start=False,
         sampling_strategy="auto",
@@ -164,9 +220,18 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         n_jobs=None,
         random_state=None,
         verbose=0,
+        base_estimator="deprecated",
     ):
+        # TODO: remove when supporting scikit-learn>=1.2
+        bagging_classifier_signature = inspect.signature(super().__init__)
+        estimator_params = {"base_estimator": base_estimator}
+        if "estimator" in bagging_classifier_signature.parameters:
+            estimator_params["estimator"] = estimator
+        else:
+            self.estimator = estimator
+
         super().__init__(
-            base_estimator,
+            **estimator_params,
             n_estimators=n_estimators,
             max_samples=1.0,
             max_features=1.0,
@@ -198,34 +263,56 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self, default=AdaBoostClassifier()):
         """Check the estimator and the n_estimator attribute, set the
-        `base_estimator_` attribute."""
-        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
+        `estimator_` attribute."""
+        if self.estimator is not None and (
+            self.base_estimator not in [None, "deprecated"]
+        ):
             raise ValueError(
-                f"n_estimators must be an integer, " f"got {type(self.n_estimators)}."
+                "Both `estimator` and `base_estimator` were set. Only set `estimator`."
             )
 
-        if self.n_estimators <= 0:
-            raise ValueError(
-                f"n_estimators must be greater than zero, " f"got {self.n_estimators}."
+        if self.estimator is not None:
+            base_estimator = clone(self.estimator)
+        elif self.base_estimator not in [None, "deprecated"]:
+            warnings.warn(
+                "`base_estimator` was renamed to `estimator` in version 0.10 and "
+                "will be removed in 0.12.",
+                FutureWarning,
             )
-
-        if self.base_estimator is not None:
             base_estimator = clone(self.base_estimator)
         else:
             base_estimator = clone(default)
 
-        self.base_estimator_ = Pipeline(
-            [
-                (
-                    "sampler",
-                    RandomUnderSampler(
-                        sampling_strategy=self._sampling_strategy,
-                        replacement=self.replacement,
-                    ),
-                ),
-                ("classifier", base_estimator),
-            ]
+        sampler = RandomUnderSampler(
+            sampling_strategy=self._sampling_strategy,
+            replacement=self.replacement,
         )
+        self._estimator = Pipeline(
+            [("sampler", sampler), ("classifier", base_estimator)]
+        )
+        try:
+            self.base_estimator_ = self._estimator
+        except AttributeError:
+            # scikit-learn < 1.2
+            pass
+
+    # TODO: remove when supporting scikit-learn>=1.4
+    @property
+    def estimator_(self):
+        """Estimator used to grow the ensemble."""
+        return self._estimator
+
+    # TODO: remove when supporting scikit-learn>=1.2
+    @property
+    def n_features_(self):
+        """Number of features when ``fit`` is performed."""
+        warnings.warn(
+            "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
+            "not be accessible when the minimum supported version of scikit-learn "
+            "is 1.2.",
+            FutureWarning,
+        )
+        return self.n_features_in_
 
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training set (X, y).
@@ -245,6 +332,7 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         self : object
             Fitted estimator.
         """
+        self._validate_params()
         # overwrite the base class method by disallowing `sample_weight`
         return super().fit(X, y)
 
@@ -253,3 +341,50 @@ EasyEnsembleClassifier # doctest: +NORMALIZE_WHITESPACE
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return super()._fit(X, y, self.max_samples, sample_weight=None)
+
+    # TODO: remove when minimum supported version of scikit-learn is 1.1
+    @available_if(_estimator_has("decision_function"))
+    def decision_function(self, X):
+        """Average of the decision functions of the base classifiers.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
+
+        Returns
+        -------
+        score : ndarray of shape (n_samples, k)
+            The decision function of the input samples. The columns correspond
+            to the classes in sorted order, as they appear in the attribute
+            ``classes_``. Regression and binary classification are special
+            cases with ``k == 1``, otherwise ``k==n_classes``.
+        """
+        check_is_fitted(self)
+
+        # Check data
+        X = self._validate_data(
+            X,
+            accept_sparse=["csr", "csc"],
+            dtype=None,
+            force_all_finite=False,
+            reset=False,
+        )
+
+        # Parallel loop
+        n_jobs, _, starts = _partition_estimators(self.n_estimators, self.n_jobs)
+
+        all_decisions = Parallel(n_jobs=n_jobs, verbose=self.verbose)(
+            delayed(_parallel_decision_function)(
+                self.estimators_[starts[i] : starts[i + 1]],
+                self.estimators_features_[starts[i] : starts[i + 1]],
+                X,
+            )
+            for i in range(n_jobs)
+        )
+
+        # Reduce
+        decisions = sum(all_decisions) / self.n_estimators
+
+        return decisions

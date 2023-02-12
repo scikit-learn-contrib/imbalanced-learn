@@ -13,10 +13,9 @@ the current scikit-learn pipeline.
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
-import numpy as np
 import matplotlib.pyplot as plt
-
-from sklearn.datasets import make_moons, make_blobs
+import numpy as np
+from sklearn.datasets import make_blobs, make_moons
 from sklearn.ensemble import IsolationForest
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report

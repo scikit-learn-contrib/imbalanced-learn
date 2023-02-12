@@ -4,39 +4,42 @@
 # License: MIT
 
 import numbers
-from warnings import warn
 from copy import deepcopy
+from warnings import warn
 
 import numpy as np
+import sklearn
+from joblib import Parallel
 from numpy import float32 as DTYPE
 from numpy import float64 as DOUBLE
 from scipy.sparse import issparse
-
-from joblib import Parallel, delayed
-
 from sklearn.base import clone, is_classifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
-from sklearn.ensemble._forest import _get_n_samples_bootstrap
-from sklearn.ensemble._forest import _parallel_build_trees
-from sklearn.ensemble._forest import _generate_unsampled_indices
+from sklearn.ensemble._forest import (
+    _generate_unsampled_indices,
+    _get_n_samples_bootstrap,
+    _parallel_build_trees,
+)
 from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils import check_random_state
-from sklearn.utils import _safe_indexing
+from sklearn.utils import _safe_indexing, check_random_state, parse_version
+from sklearn.utils.fixes import delayed
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _check_sample_weight
 
+from ..base import _ParamsValidationMixin
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution
-from ..utils._docstring import _n_jobs_docstring
-from ..utils._docstring import _random_state_docstring
+from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ..utils._param_validation import Interval, StrOptions
 from ..utils._validation import check_sampling_strategy
-from ..utils._validation import _deprecate_positional_args
+from ._common import _random_forest_classifier_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
+sklearn_version = parse_version(sklearn.__version__)
 
 
 def _local_parallel_build_trees(
@@ -51,6 +54,7 @@ def _local_parallel_build_trees(
     verbose=0,
     class_weight=None,
     n_samples_bootstrap=None,
+    forest=None,
 ):
     # resample before to fit the tree
     X_resampled, y_resampled = sampler.fit_resample(X, y)
@@ -58,18 +62,34 @@ def _local_parallel_build_trees(
         sample_weight = _safe_indexing(sample_weight, sampler.sample_indices_)
     if _get_n_samples_bootstrap is not None:
         n_samples_bootstrap = min(n_samples_bootstrap, X_resampled.shape[0])
-    tree = _parallel_build_trees(
-        tree,
-        bootstrap,
-        X_resampled,
-        y_resampled,
-        sample_weight,
-        tree_idx,
-        n_trees,
-        verbose=verbose,
-        class_weight=class_weight,
-        n_samples_bootstrap=n_samples_bootstrap,
-    )
+
+    if sklearn_version >= parse_version("1.1"):
+        tree = _parallel_build_trees(
+            tree,
+            bootstrap,
+            X_resampled,
+            y_resampled,
+            sample_weight,
+            tree_idx,
+            n_trees,
+            verbose=verbose,
+            class_weight=class_weight,
+            n_samples_bootstrap=n_samples_bootstrap,
+        )
+    else:
+        # TODO: remove when the minimum version of scikit-learn supported is 1.1
+        tree = _parallel_build_trees(
+            tree,
+            forest,
+            X_resampled,
+            y_resampled,
+            sample_weight,
+            tree_idx,
+            n_trees,
+            verbose=verbose,
+            class_weight=class_weight,
+            n_samples_bootstrap=n_samples_bootstrap,
+        )
     return sampler, tree
 
 
@@ -78,7 +98,7 @@ def _local_parallel_build_trees(
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class BalancedRandomForestClassifier(RandomForestClassifier):
+class BalancedRandomForestClassifier(RandomForestClassifier, _ParamsValidationMixin):
     """A balanced random forest classifier.
 
     A balanced random forest randomly under-samples each boostrap sample to
@@ -230,9 +250,21 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     Attributes
     ----------
+    estimator_ : :class:`~sklearn.tree.DecisionTreeClassifier` instance
+        The child estimator template used to create the collection of fitted
+        sub-estimators.
+
+        .. versionadded:: 0.10
+
     base_estimator_ : :class:`~sklearn.tree.DecisionTreeClassifier` instance
         The child estimator template used to create the collection of fitted
         sub-estimators.
+
+        .. deprecated:: 1.2
+           `base_estimator_` is deprecated in `scikit-learn` 1.2 and will be
+           removed in 1.4. Use `estimator_` instead. When the minimum version
+           of `scikit-learn` supported by `imbalanced-learn` will reach 1.4,
+           this attribute will be removed.
 
     estimators_ : list of :class:`~sklearn.tree.DecisionTreeClassifier`
         The collection of fitted sub-estimators.
@@ -255,19 +287,19 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         number of classes for each output (multi-output problem).
 
     n_features_ : int
-        The number of features when ``fit`` is performed.
+        The number of features when `fit` is performed.
 
         .. deprecated:: 1.0
            `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
-           in version 1.2. Depending of the version of `scikit-learn` installed,
-           you will get be warned or not.
+           in version 1.2. When the minimum version of `scikit-learn` supported
+           by `imbalanced-learn` will reach 1.2, this attribute will be removed.
 
     n_features_in_ : int
         Number of features in the input dataset.
 
         .. versionadded:: 0.9
 
-    feature_names_in_ : ndarray of shape (n_features_in_,)
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
         Names of features seen during `fit`. Defined only when `X` has feature
         names that are all strings.
 
@@ -314,16 +346,36 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
     ...                            n_informative=4, weights=[0.2, 0.3, 0.5],
     ...                            random_state=0)
     >>> clf = BalancedRandomForestClassifier(max_depth=2, random_state=0)
-    >>> clf.fit(X, y)  # doctest: +ELLIPSIS
+    >>> clf.fit(X, y)
     BalancedRandomForestClassifier(...)
-    >>> print(clf.feature_importances_)  # doctest: +ELLIPSIS
+    >>> print(clf.feature_importances_)
     [...]
     >>> print(clf.predict([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ...                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]))
     [1]
     """
 
-    @_deprecate_positional_args
+    # make a deepcopy to not modify the original dictionary
+    if hasattr(RandomForestClassifier, "_parameter_constraints"):
+        # scikit-learn >= 1.2
+        _parameter_constraints = deepcopy(RandomForestClassifier._parameter_constraints)
+    else:
+        _parameter_constraints = deepcopy(
+            _random_forest_classifier_parameter_constraints
+        )
+
+    _parameter_constraints.update(
+        {
+            "sampling_strategy": [
+                Interval(numbers.Real, 0, 1, closed="right"),
+                StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+                dict,
+                callable,
+            ],
+            "replacement": ["boolean"],
+        }
+    )
+
     def __init__(
         self,
         n_estimators=100,
@@ -374,21 +426,22 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
     def _validate_estimator(self, default=DecisionTreeClassifier()):
         """Check the estimator and the n_estimator attribute, set the
-        `base_estimator_` attribute."""
-        if not isinstance(self.n_estimators, (numbers.Integral, np.integer)):
-            raise ValueError(
-                f"n_estimators must be an integer, " f"got {type(self.n_estimators)}."
-            )
-
-        if self.n_estimators <= 0:
-            raise ValueError(
-                f"n_estimators must be greater than zero, " f"got {self.n_estimators}."
-            )
-
-        if self.base_estimator is not None:
-            self.base_estimator_ = clone(self.base_estimator)
+        `estimator_` attribute."""
+        if hasattr(self, "estimator"):
+            base_estimator = self.estimator
         else:
-            self.base_estimator_ = clone(default)
+            base_estimator = self.base_estimator
+
+        if base_estimator is not None:
+            self._estimator = clone(base_estimator)
+        else:
+            self._estimator = clone(default)
+
+        try:
+            # scikit-learn < 1.2
+            self.base_estimator_ = self._estimator
+        except AttributeError:
+            pass
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self._sampling_strategy,
@@ -400,7 +453,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         Warning: This method should be used to properly instantiate new
         sub-estimators.
         """
-        estimator = clone(self.base_estimator_)
+        estimator = clone(self._estimator)
         estimator.set_params(**{p: getattr(self, p) for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
@@ -436,7 +489,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         self : object
             The fitted instance.
         """
-
+        self._validate_params()
         # Validate or convert input data
         if issparse(y):
             raise ValueError("sparse multilabel-indicator for y is not supported.")
@@ -561,6 +614,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                     verbose=self.verbose,
                     class_weight=self.class_weight,
                     n_samples_bootstrap=n_samples_bootstrap,
+                    forest=self,
                 )
                 for i, (s, t) in enumerate(zip(samplers, trees))
             )
@@ -691,10 +745,23 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         return oob_pred
 
+    # TODO: remove when supporting scikit-learn>=1.4
+    @property
+    def estimator_(self):
+        """Estimator used to grow the ensemble."""
+        return self._estimator
+
+    # TODO: remove when supporting scikit-learn>=1.2
     @property
     def n_features_(self):
-        """Number of features when fitting the estimator."""
-        return getattr(self.n_features_in_, "n_features_", self._n_features)
+        """Number of features when ``fit`` is performed."""
+        warn(
+            "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
+            "not be accessible when the minimum supported version of scikit-learn "
+            "is 1.2.",
+            FutureWarning,
+        )
+        return self.n_features_in_
 
     def _more_tags(self):
         return {

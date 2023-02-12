@@ -15,8 +15,8 @@
 import os
 import sys
 from datetime import datetime
-from pathlib import Path
 from io import StringIO
+from pathlib import Path
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -81,11 +81,6 @@ add_function_parentheses = False
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
-
-# -- Options for math equations -----------------------------------------------
-
-extensions.append("sphinx.ext.imgmath")
-imgmath_image_format = "svg"
 
 # -- Options for HTML output ----------------------------------------------
 

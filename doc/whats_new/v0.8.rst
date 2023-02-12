@@ -3,7 +3,7 @@
 Version 0.8.1
 =============
 
-September 29, 2020
+**September 29, 2020**
 
 Changelog
 ---------
@@ -17,7 +17,7 @@ Maintenance
 Version 0.8.0
 =============
 
-February 18, 2021
+**February 18, 2021**
 
 Changelog
 ---------

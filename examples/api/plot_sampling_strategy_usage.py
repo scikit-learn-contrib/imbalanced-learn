@@ -26,6 +26,7 @@ sns.set_context("poster")
 
 # %%
 from sklearn.datasets import load_iris
+
 from imblearn.datasets import make_imbalance
 
 iris = load_iris(as_frame=True)
@@ -52,8 +53,8 @@ fig.tight_layout()
 # --------------------------------
 #
 # `sampling_strategy` can be given a `float`. For **under-sampling
-# methods**, it corresponds to the ratio :math:`\\alpha_{us}` defined by
-# :math:`N_{rM} = \\alpha_{us} \\times N_{m}` where :math:`N_{rM}` and
+# methods**, it corresponds to the ratio :math:`\alpha_{us}` defined by
+# :math:`N_{rM} = \alpha_{us} \times N_{m}` where :math:`N_{rM}` and
 # :math:`N_{m}` are the number of samples in the majority class after
 # resampling and the number of samples in the minority class, respectively.
 
@@ -76,7 +77,7 @@ _ = ax.set_title("Under-sampling")
 
 # %% [markdown]
 # For **over-sampling methods**, it correspond to the ratio
-# :math:`\\alpha_{os}` defined by :math:`N_{rm} = \\alpha_{os} \\times N_{M}`
+# :math:`\alpha_{os}` defined by :math:`N_{rm} = \alpha_{os} \times N_{M}`
 # where :math:`N_{rm}` and :math:`N_{M}` are the number of samples in the
 # minority class after resampling and the number of samples in the majority
 # class, respectively.
@@ -90,7 +91,7 @@ ax = y_res.value_counts().plot.pie(autopct=autopct)
 _ = ax.set_title("Over-sampling")
 
 # %% [markdown]
-# `sampling_strategy` has a `str`
+# `sampling_strategy` as a `str`
 # -------------------------------
 #
 # `sampling_strategy` can be given as a string which specify the class
@@ -128,7 +129,7 @@ ax = y_res.value_counts().plot.pie(autopct=autopct)
 _ = ax.set_title("Cleaning")
 
 # %% [markdown]
-# `sampling_strategy as a `dict`
+# `sampling_strategy` as a `dict`
 # ------------------------------
 #
 # When `sampling_strategy` is a `dict`, the keys correspond to the targeted

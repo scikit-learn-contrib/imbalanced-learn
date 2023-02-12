@@ -5,7 +5,11 @@ Base class for the over-sampling method.
 #          Christos Aridas
 # License: MIT
 
+import numbers
+from collections.abc import Mapping
+
 from ..base import BaseSampler
+from ..utils._param_validation import Interval, StrOptions
 
 
 class BaseOverSampler(BaseSampler):
@@ -52,4 +56,14 @@ class BaseOverSampler(BaseSampler):
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
-        """.strip()
+        """.strip()  # noqa: E501
+
+    _parameter_constraints: dict = {
+        "sampling_strategy": [
+            Interval(numbers.Real, 0, 1, closed="right"),
+            StrOptions({"auto", "minority", "not minority", "not majority", "all"}),
+            Mapping,
+            callable,
+        ],
+        "random_state": ["random_state"],
+    }

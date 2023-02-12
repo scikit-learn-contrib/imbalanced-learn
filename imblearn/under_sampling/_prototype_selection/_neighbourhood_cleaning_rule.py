@@ -4,19 +4,18 @@
 #          Christos Aridas
 # License: MIT
 
+import numbers
 from collections import Counter
 
 import numpy as np
-from scipy.stats import mode
-
 from sklearn.utils import _safe_indexing
 
+from ...utils import Substitution, check_neighbors_object
+from ...utils._docstring import _n_jobs_docstring
+from ...utils._param_validation import HasMethods, Interval, StrOptions
+from ...utils.fixes import _mode
 from ..base import BaseCleaningSampler
 from ._edited_nearest_neighbours import EditedNearestNeighbours
-from ...utils import check_neighbors_object
-from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._validation import _deprecate_positional_args
 
 SEL_KIND = ("all", "mode")
 
@@ -84,6 +83,12 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     EditedNearestNeighbours : Undersample by editing noisy samples.
@@ -104,8 +109,7 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     --------
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import \
-NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -117,7 +121,17 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{1: 877, 0: 100}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "threshold_cleaning": [Interval(numbers.Real, 0, 1, closed="neither")],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -139,15 +153,6 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
             "n_neighbors", self.n_neighbors, additional_neighbor=1
         )
         self.nn_.set_params(**{"n_jobs": self.n_jobs})
-
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
-        if self.threshold_cleaning > 1 or self.threshold_cleaning < 0:
-            raise ValueError(
-                f"'threshold_cleaning' is a value between 0 and 1."
-                f" Got {self.threshold_cleaning} instead."
-            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()
@@ -182,13 +187,11 @@ NeighbourhoodCleaningRule # doctest: +NORMALIZE_WHITESPACE
         nnhood_idx = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
         nnhood_label = y[nnhood_idx]
         if self.kind_sel == "mode":
-            nnhood_label_majority, _ = mode(nnhood_label, axis=1)
+            nnhood_label_majority, _ = _mode(nnhood_label, axis=1)
             nnhood_bool = np.ravel(nnhood_label_majority) == y_class
-        elif self.kind_sel == "all":
+        else:  # self.kind_sel == "all":
             nnhood_label_majority = nnhood_label == class_minority
             nnhood_bool = np.all(nnhood_label, axis=1)
-        else:
-            raise NotImplementedError
         # compute a2 group
         index_a2 = np.ravel(nnhood_idx[~nnhood_bool])
         index_a2 = np.unique(

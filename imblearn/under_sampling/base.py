@@ -4,7 +4,11 @@ Base class for the under-sampling method.
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
+import numbers
+from collections.abc import Mapping
+
 from ..base import BaseSampler
+from ..utils._param_validation import Interval, StrOptions
 
 
 class BaseUnderSampler(BaseSampler):
@@ -52,7 +56,16 @@ class BaseUnderSampler(BaseSampler):
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
-        """.rstrip()
+        """.rstrip()  # noqa: E501
+
+    _parameter_constraints: dict = {
+        "sampling_strategy": [
+            Interval(numbers.Real, 0, 1, closed="right"),
+            StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+            Mapping,
+            callable,
+        ],
+    }
 
 
 class BaseCleaningSampler(BaseSampler):
@@ -88,3 +101,12 @@ class BaseCleaningSampler(BaseSampler):
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
         """.rstrip()
+
+    _parameter_constraints: dict = {
+        "sampling_strategy": [
+            Interval(numbers.Real, 0, 1, closed="right"),
+            StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
+            list,
+            callable,
+        ],
+    }

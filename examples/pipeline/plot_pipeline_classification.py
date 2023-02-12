@@ -43,8 +43,9 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_sta
 # %%
 from sklearn.decomposition import PCA
 from sklearn.neighbors import KNeighborsClassifier
-from imblearn.under_sampling import EditedNearestNeighbours
+
 from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import EditedNearestNeighbours
 
 pca = PCA(n_components=2)
 enn = EditedNearestNeighbours()

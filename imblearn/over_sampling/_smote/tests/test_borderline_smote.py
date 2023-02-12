@@ -1,9 +1,7 @@
-import pytest
 import numpy as np
-
+import pytest
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.over_sampling import BorderlineSMOTE
 
@@ -36,12 +34,6 @@ def data():
     )
     y = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0])
     return X, y
-
-
-def test_borderline_smote_wrong_kind(data):
-    bsmote = BorderlineSMOTE(kind="rand")
-    with pytest.raises(ValueError, match='The possible "kind" of algorithm'):
-        bsmote.fit_resample(*data)
 
 
 @pytest.mark.parametrize("kind", ["borderline-1", "borderline-2"])

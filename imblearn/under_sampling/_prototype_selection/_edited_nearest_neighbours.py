@@ -6,18 +6,17 @@ method."""
 #          Christos Aridas
 # License: MIT
 
+import numbers
 from collections import Counter
 
 import numpy as np
-from scipy.stats import mode
-
 from sklearn.utils import _safe_indexing
 
-from ..base import BaseCleaningSampler
-from ...utils import check_neighbors_object
-from ...utils import Substitution
+from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
-from ...utils._validation import _deprecate_positional_args
+from ...utils._param_validation import HasMethods, Interval, StrOptions
+from ...utils.fixes import _mode
+from ..base import BaseCleaningSampler
 
 SEL_KIND = ("all", "mode")
 
@@ -77,6 +76,12 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     CondensedNearestNeighbour : Undersample by condensing samples.
@@ -103,8 +108,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import \
-EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.under_sampling import EditedNearestNeighbours
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -116,7 +120,16 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -137,9 +150,6 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
         )
         self.nn_.set_params(**{"n_jobs": self.n_jobs})
 
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
     def _fit_resample(self, X, y):
         self._validate_estimator()
 
@@ -155,7 +165,7 @@ EditedNearestNeighbours # doctest: +NORMALIZE_WHITESPACE
                 nnhood_idx = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
                 nnhood_label = y[nnhood_idx]
                 if self.kind_sel == "mode":
-                    nnhood_label, _ = mode(nnhood_label, axis=1)
+                    nnhood_label, _ = _mode(nnhood_label, axis=1)
                     nnhood_bool = np.ravel(nnhood_label) == y_class
                 elif self.kind_sel == "all":
                     nnhood_label = nnhood_label == target_class
@@ -247,6 +257,12 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     CondensedNearestNeighbour : Undersample by condensing samples.
@@ -272,8 +288,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     --------
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import \
-RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
+    >>> from imblearn.under_sampling import RepeatedEditedNearestNeighbours
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -285,7 +300,17 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "max_iter": [Interval(numbers.Integral, 1, None, closed="left")],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -303,12 +328,6 @@ RepeatedEditedNearestNeighbours # doctest : +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
-        if self.max_iter < 2:
-            raise ValueError(
-                f"max_iter must be greater than 1."
-                f" Got {type(self.max_iter)} instead."
-            )
-
         self.nn_ = check_neighbors_object(
             "n_neighbors", self.n_neighbors, additional_neighbor=1
         )
@@ -447,6 +466,12 @@ class AllKNN(BaseCleaningSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     CondensedNearestNeighbour: Under-sampling by condensing samples.
@@ -472,8 +497,7 @@ class AllKNN(BaseCleaningSampler):
     --------
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import \
-AllKNN # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.under_sampling import AllKNN
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -485,7 +509,17 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{1: 887, 0: 100}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+        ],
+        "kind_sel": [StrOptions({"all", "mode"})],
+        "allow_minority": ["boolean"],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -503,9 +537,6 @@ AllKNN # doctest: +NORMALIZE_WHITESPACE
 
     def _validate_estimator(self):
         """Create objects required by AllKNN"""
-        if self.kind_sel not in SEL_KIND:
-            raise NotImplementedError
-
         self.nn_ = check_neighbors_object(
             "n_neighbors", self.n_neighbors, additional_neighbor=1
         )

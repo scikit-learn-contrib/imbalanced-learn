@@ -3,11 +3,9 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
-
-from sklearn.utils._testing import assert_array_equal
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import NearMiss
 
@@ -33,30 +31,6 @@ X = np.array(
 Y = np.array([1, 2, 1, 0, 2, 1, 2, 2, 1, 2, 0, 0, 2, 1, 2])
 
 VERSION_NEARMISS = (1, 2, 3)
-
-
-@pytest.mark.parametrize(
-    "nearmiss_params, err_msg",
-    [
-        ({"version": 1000}, "must be 1, 2 or 3"),
-        (
-            {"version": 1, "n_neighbors": "rnd"},
-            "n_neighbors must be an interger or an object compatible",
-        ),
-        (
-            {
-                "version": 3,
-                "n_neighbors": NearestNeighbors(n_neighbors=3),
-                "n_neighbors_ver3": "rnd",
-            },
-            "n_neighbors_ver3 must be an interger or an object compatible",
-        ),
-    ],
-)
-def test_nearmiss_error(nearmiss_params, err_msg):
-    nm = NearMiss(**nearmiss_params)
-    with pytest.raises(ValueError, match=err_msg):
-        nm.fit_resample(X, Y)
 
 
 def test_nm_fit_resample_auto():

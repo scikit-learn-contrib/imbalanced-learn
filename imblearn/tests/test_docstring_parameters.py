@@ -2,29 +2,38 @@
 #          Raghav RV <rvraghav93@gmail.com>
 # License: BSD 3 clause
 
+import importlib
 import inspect
 import warnings
-import importlib
-from pkgutil import walk_packages
 from inspect import signature
+from pkgutil import walk_packages
 
 import pytest
-
 from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression
 from sklearn.utils import IS_PYPY
-from sklearn.utils._testing import check_docstring_parameters
-from sklearn.utils._testing import _get_func_name
-from sklearn.utils._testing import ignore_warnings
+from sklearn.utils._testing import (
+    _get_func_name,
+    check_docstring_parameters,
+    ignore_warnings,
+)
 from sklearn.utils.estimator_checks import _enforce_estimator_tags_y
-from sklearn.utils.estimator_checks import _enforce_estimator_tags_x
-from sklearn.utils.estimator_checks import _construct_instance
+
+try:
+    from sklearn.utils.estimator_checks import _enforce_estimator_tags_x
+except ImportError:
+    # scikit-learn >= 1.2
+    from sklearn.utils.estimator_checks import (
+        _enforce_estimator_tags_X as _enforce_estimator_tags_x,
+    )
+
 from sklearn.utils.deprecation import _is_deprecated
+from sklearn.utils.estimator_checks import _construct_instance
 
 import imblearn
 from imblearn.base import is_sampler
+from imblearn.utils.estimator_checks import _set_checking_parameters
 from imblearn.utils.testing import all_estimators
-
 
 # walk_packages() ignores DeprecationWarnings, now we need to ignore
 # FutureWarnings
@@ -183,6 +192,7 @@ def test_fit_docstring_attributes(name, Estimator):
         est = _construct_compose_pipeline_instance(Estimator)
     else:
         est = _construct_instance(Estimator)
+    _set_checking_parameters(est)
 
     X, y = make_classification(
         n_samples=20,

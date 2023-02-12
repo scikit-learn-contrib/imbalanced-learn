@@ -22,7 +22,7 @@ install it via `pip`::
 
   pip install -U imbalanced-learn
 
-The package is release also in Anaconda Cloud platform::
+The package is released also on the Anaconda Cloud platform::
 
   conda install -c conda-forge imbalanced-learn
 

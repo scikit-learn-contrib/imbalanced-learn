@@ -1,11 +1,6 @@
-from .base import SMOTE
-from .base import SMOTEN
-from .base import SMOTENC
-
+from .base import SMOTE, SMOTEN, SMOTENC
 from .cluster import KMeansSMOTE
-
-from .filter import BorderlineSMOTE
-from .filter import SVMSMOTE
+from .filter import SVMSMOTE, BorderlineSMOTE
 
 __all__ = [
     "SMOTE",

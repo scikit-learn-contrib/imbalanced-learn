@@ -12,16 +12,19 @@ composite estimator, as a chain of transforms, samples and estimators.
 #         Christos Aridas
 #         Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: BSD
+import joblib
 from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.utils import _print_elapsed_time
 from sklearn.utils.metaestimators import available_if
-from sklearn.utils.validation import check_memory
+
+from .base import _ParamsValidationMixin
+from .utils._param_validation import HasMethods, validate_params
 
 __all__ = ["Pipeline", "make_pipeline"]
 
 
-class Pipeline(pipeline.Pipeline):
+class Pipeline(pipeline.Pipeline, _ParamsValidationMixin):
     """Pipeline of transforms and resamples with a final estimator.
 
     Sequentially apply a list of transforms, sampling, and a final estimator.
@@ -81,6 +84,18 @@ class Pipeline(pipeline.Pipeline):
     -----
     See :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_classification.py`
 
+    .. warning::
+       A surprising behaviour of the `imbalanced-learn` pipeline is that it
+       breaks the `scikit-learn` contract where one expects
+       `estimmator.fit_transform(X, y)` to be equivalent to
+       `estimator.fit(X, y).transform(X)`.
+
+       The semantic of `fit_resample` is to be applied only during the fit
+       stage. Therefore, resampling will happen when calling `fit_transform`
+       while it will only happen on the `fit` stage when calling `fit` and
+       `transform` separately. Practically, `fit_transform` will lead to a
+       resampled dataset while `fit` and `transform` will not.
+
     Examples
     --------
     >>> from collections import Counter
@@ -90,7 +105,7 @@ class Pipeline(pipeline.Pipeline):
     >>> from sklearn.neighbors import KNeighborsClassifier as KNN
     >>> from sklearn.metrics import classification_report
     >>> from imblearn.over_sampling import SMOTE
-    >>> from imblearn.pipeline import Pipeline # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.pipeline import Pipeline
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -101,7 +116,7 @@ class Pipeline(pipeline.Pipeline):
     >>> knn = KNN()
     >>> pipeline = Pipeline([('smt', smt), ('pca', pca), ('knn', knn)])
     >>> X_train, X_test, y_train, y_test = tts(X, y, random_state=42)
-    >>> pipeline.fit(X_train, y_train) # doctest: +ELLIPSIS
+    >>> pipeline.fit(X_train, y_train)
     Pipeline(...)
     >>> y_hat = pipeline.predict(X_test)
     >>> print(classification_report(y_test, y_hat))
@@ -115,6 +130,12 @@ class Pipeline(pipeline.Pipeline):
     weighted avg       0.99      0.98      0.98       250
     <BLANKLINE>
     """
+
+    _parameter_constraints: dict = {
+        "steps": "no_validation",  # validated in `_validate_steps`
+        "memory": [None, str, HasMethods(["cache"])],
+        "verbose": ["boolean"],
+    }
 
     # BaseEstimator interface
 
@@ -189,7 +210,10 @@ class Pipeline(pipeline.Pipeline):
         self.steps = list(self.steps)
         self._validate_steps()
         # Setup the memory
-        memory = check_memory(self.memory)
+        if self.memory is None or isinstance(self.memory, str):
+            memory = joblib.Memory(location=self.memory, verbose=0)
+        else:
+            memory = self.memory
 
         fit_transform_one_cached = memory.cache(pipeline._fit_transform_one)
         fit_resample_one_cached = memory.cache(_fit_resample_one)
@@ -264,6 +288,7 @@ class Pipeline(pipeline.Pipeline):
         self : Pipeline
             This estimator.
         """
+        self._validate_params()
         fit_params_steps = self._check_fit_params(**fit_params)
         Xt, yt = self._fit(X, y, **fit_params_steps)
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
@@ -299,6 +324,7 @@ class Pipeline(pipeline.Pipeline):
         Xt : array-like of shape (n_samples, n_transformed_features)
             Transformed samples.
         """
+        self._validate_params()
         fit_params_steps = self._check_fit_params(**fit_params)
         Xt, yt = self._fit(X, y, **fit_params_steps)
 
@@ -342,6 +368,7 @@ class Pipeline(pipeline.Pipeline):
         yt : array-like of shape (n_samples, n_transformed_features)
             Transformed target.
         """
+        self._validate_params()
         fit_params_steps = self._check_fit_params(**fit_params)
         Xt, yt = self._fit(X, y, **fit_params_steps)
         last_step = self._final_estimator
@@ -380,6 +407,7 @@ class Pipeline(pipeline.Pipeline):
         y_pred : ndarray of shape (n_samples,)
             The predicted target.
         """
+        self._validate_params()
         fit_params_steps = self._check_fit_params(**fit_params)
         Xt, yt = self._fit(X, y, **fit_params_steps)
 
@@ -396,6 +424,7 @@ def _fit_resample_one(sampler, X, y, message_clsname="", message=None, **fit_par
         return X_res, y_res, sampler
 
 
+@validate_params({"memory": [None, str, HasMethods(["cache"])], "verbose": ["boolean"]})
 def make_pipeline(*steps, memory=None, verbose=False):
     """Construct a Pipeline from the given estimators.
 
@@ -437,7 +466,6 @@ def make_pipeline(*steps, memory=None, verbose=False):
     >>> from sklearn.naive_bayes import GaussianNB
     >>> from sklearn.preprocessing import StandardScaler
     >>> make_pipeline(StandardScaler(), GaussianNB(priors=None))
-    ... # doctest: +NORMALIZE_WHITESPACE
     Pipeline(steps=[('standardscaler', StandardScaler()),
                     ('gaussiannb', GaussianNB())])
     """

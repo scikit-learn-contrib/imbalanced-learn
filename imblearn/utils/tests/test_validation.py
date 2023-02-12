@@ -3,22 +3,26 @@
 #          Christos Aridas
 # License: MIT
 
-from collections import Counter
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 
-import pytest
 import numpy as np
-
-from sklearn.neighbors._base import KNeighborsMixin
+import pytest
+from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors._base import KNeighborsMixin
 from sklearn.utils._testing import assert_array_equal
 
-from imblearn.utils import check_neighbors_object
-from imblearn.utils import check_sampling_strategy
-from imblearn.utils import check_target_type
+from imblearn.utils import (
+    check_neighbors_object,
+    check_sampling_strategy,
+    check_target_type,
+)
+from imblearn.utils._validation import (
+    ArraysTransformer,
+    _deprecate_positional_args,
+    _is_neighbors_object,
+)
 from imblearn.utils.testing import _CustomNearestNeighbors
-from imblearn.utils._validation import ArraysTransformer
-from imblearn.utils._validation import _deprecate_positional_args
 
 multiclass_target = np.array([1] * 50 + [2] * 100 + [3] * 25)
 binary_target = np.array([1] * 25 + [0] * 100)
@@ -39,13 +43,6 @@ def test_check_neighbors_object():
     estimator = _CustomNearestNeighbors()
     estimator_cloned = check_neighbors_object(name, estimator)
     assert isinstance(estimator_cloned, _CustomNearestNeighbors)
-    n_neighbors = "rnd"
-    err_msg = (
-        "n_neighbors must be an interger or an object compatible with the "
-        "KNeighborsMixin API of scikit-learn"
-    )
-    with pytest.raises(ValueError, match=err_msg):
-        check_neighbors_object(name, n_neighbors)
 
 
 @pytest.mark.parametrize(
@@ -384,3 +381,10 @@ def test_deprecate_positional_args_warns_for_function():
 
     with pytest.warns(FutureWarning, match=r"Pass b=2 as keyword args"):
         f3(1, 2)
+
+
+@pytest.mark.parametrize(
+    "estimator, is_neighbor_estimator", [(NearestNeighbors(), True), (KMeans(), False)]
+)
+def test_is_neighbors_object(estimator, is_neighbor_estimator):
+    assert _is_neighbors_object(estimator) == is_neighbor_estimator

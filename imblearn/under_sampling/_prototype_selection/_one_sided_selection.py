@@ -4,20 +4,19 @@
 #          Christos Aridas
 # License: MIT
 
+import numbers
 from collections import Counter
 
 import numpy as np
-
 from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils import check_random_state, _safe_indexing
+from sklearn.utils import _safe_indexing, check_random_state
 
+from ...utils import Substitution
+from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods, Interval
 from ..base import BaseCleaningSampler
 from ._tomek_links import TomekLinks
-from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._docstring import _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
 
 
 @Substitution(
@@ -69,6 +68,12 @@ class OneSidedSelection(BaseCleaningSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     EditedNearestNeighbours : Undersample by editing noisy samples.
@@ -91,8 +96,7 @@ class OneSidedSelection(BaseCleaningSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import \
-    OneSidedSelection # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.under_sampling import OneSidedSelection
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -104,7 +108,18 @@ class OneSidedSelection(BaseCleaningSampler):
     Resampled dataset shape Counter({{1: 496, 0: 100}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+            None,
+        ],
+        "n_seeds_S": [Interval(numbers.Integral, 1, None, closed="left")],
+        "n_jobs": [numbers.Integral, None],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self,
         *,
@@ -130,12 +145,6 @@ class OneSidedSelection(BaseCleaningSampler):
             )
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
             self.estimator_ = clone(self.n_neighbors)
-        else:
-            raise ValueError(
-                f"`n_neighbors` has to be a int or an object"
-                f" inherited from KNeighborsClassifier."
-                f" Got {type(self.n_neighbors)} instead."
-            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()

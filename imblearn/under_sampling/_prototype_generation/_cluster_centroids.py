@@ -8,16 +8,15 @@ clustering."""
 
 import numpy as np
 from scipy import sparse
-
 from sklearn.base import clone
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import _safe_indexing
 
-from ..base import BaseUnderSampler
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
+from ...utils._param_validation import HasMethods, StrOptions
+from ..base import BaseUnderSampler
 
 VOTING_KIND = ("auto", "hard", "soft")
 
@@ -79,6 +78,12 @@ class ClusterCentroids(BaseUnderSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     EditedNearestNeighbours : Under-sampling by editing samples.
@@ -94,21 +99,28 @@ class ClusterCentroids(BaseUnderSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import \
-ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
+    >>> from sklearn.cluster import MiniBatchKMeans
+    >>> from imblearn.under_sampling import ClusterCentroids
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
     >>> print('Original dataset shape %s' % Counter(y))
     Original dataset shape Counter({{1: 900, 0: 100}})
-    >>> cc = ClusterCentroids(random_state=42)
+    >>> cc = ClusterCentroids(
+    ...     estimator=MiniBatchKMeans(n_init=1, random_state=0), random_state=42
+    ... )
     >>> X_res, y_res = cc.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
-    ... # doctest: +ELLIPSIS
     Resampled dataset shape Counter({{...}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseUnderSampler._parameter_constraints,
+        "estimator": [HasMethods(["fit", "predict"]), None],
+        "voting": [StrOptions({"auto", "hard", "soft"})],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self,
         *,
@@ -153,18 +165,9 @@ ClusterCentroids # doctest: +NORMALIZE_WHITESPACE
         self._validate_estimator()
 
         if self.voting == "auto":
-            if sparse.issparse(X):
-                self.voting_ = "hard"
-            else:
-                self.voting_ = "soft"
+            self.voting_ = "hard" if sparse.issparse(X) else "soft"
         else:
-            if self.voting in VOTING_KIND:
-                self.voting_ = self.voting
-            else:
-                raise ValueError(
-                    f"'voting' needs to be one of {VOTING_KIND}. "
-                    f"Got {self.voting} instead."
-                )
+            self.voting_ = self.voting
 
         X_resampled, y_resampled = [], []
         for target_class in np.unique(y):

@@ -21,6 +21,7 @@ jobs:
     PYTEST_XDIST_VERSION: 'latest'
     TEST_DIR: '$(Agent.WorkFolder)/tmp_folder'
     CPU_COUNT: '2'
+    CHECK_WARNINGS: 'false'
   strategy:
     matrix:
       ${{ insert }}: ${{ parameters.matrix }}

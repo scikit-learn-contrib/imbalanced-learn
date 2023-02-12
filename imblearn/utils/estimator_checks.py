@@ -4,37 +4,59 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
+import re
 import sys
 import traceback
 import warnings
-
 from collections import Counter
 from functools import partial
 
-import pytest
-
 import numpy as np
+import pytest
+import sklearn
 from scipy import sparse
-
-from sklearn.base import clone
-from sklearn.datasets import (
+from sklearn.base import clone, is_classifier, is_regressor
+from sklearn.cluster import KMeans
+from sklearn.datasets import (  # noqa
     load_iris,
+    make_blobs,
     make_classification,
     make_multilabel_classification,
-)  # noqa
-from sklearn.cluster import KMeans
+)
 from sklearn.exceptions import SkipTestWarning
-from sklearn.preprocessing import label_binarize
-from sklearn.utils.estimator_checks import _maybe_mark_xfail
-from sklearn.utils.estimator_checks import _get_check_estimator_ids
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
-from sklearn.utils._testing import assert_raises_regex
+from sklearn.preprocessing import StandardScaler, label_binarize
+from sklearn.utils._tags import _safe_tags
+from sklearn.utils._testing import (
+    SkipTest,
+    assert_allclose,
+    assert_array_equal,
+    assert_raises_regex,
+    raises,
+    set_random_state,
+)
+from sklearn.utils.estimator_checks import (
+    _enforce_estimator_tags_y,
+    _get_check_estimator_ids,
+    _maybe_mark_xfail,
+)
+
+try:
+    from sklearn.utils.estimator_checks import _enforce_estimator_tags_x
+except ImportError:
+    # scikit-learn >= 1.2
+    from sklearn.utils.estimator_checks import (
+        _enforce_estimator_tags_X as _enforce_estimator_tags_x,
+    )
+
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 
 from imblearn.datasets import make_imbalance
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
+from imblearn.utils._param_validation import generate_invalid_param_val, make_constraint
+
+sklearn_version = parse_version(sklearn.__version__)
 
 
 def _set_checking_parameters(estimator):
@@ -43,9 +65,13 @@ def _set_checking_parameters(estimator):
     if "n_estimators" in params:
         estimator.set_params(n_estimators=min(5, estimator.n_estimators))
     if name == "ClusterCentroids":
+        if sklearn_version < parse_version("1.1"):
+            algorithm = "full"
+        else:
+            algorithm = "lloyd"
         estimator.set_params(
             voting="soft",
-            estimator=KMeans(random_state=0, algorithm="full", n_init=1),
+            estimator=KMeans(random_state=0, algorithm=algorithm, n_init=1),
         )
     if name == "KMeansSMOTE":
         estimator.set_params(kmeans_estimator=12)
@@ -74,6 +100,8 @@ def _yield_sampler_checks(sampler):
     # stipulated
     yield check_samplers_sample_indices
     yield check_samplers_2d_target
+    yield check_sampler_get_feature_names_out
+    yield check_sampler_get_feature_names_out_pandas
 
 
 def _yield_classifier_checks(classifier):
@@ -465,3 +493,341 @@ def check_classifiers_with_encoded_labels(name, classifier_orig):
     assert set(classifier.classes_) == set(y.cat.categories.tolist())
     y_pred = classifier.predict(df)
     assert set(y_pred) == set(y.cat.categories.tolist())
+
+
+def check_param_validation(name, estimator_orig):
+    # Check that an informative error is raised when the value of a constructor
+    # parameter does not have an appropriate type or value.
+    rng = np.random.RandomState(0)
+    X = rng.uniform(size=(20, 5))
+    y = rng.randint(0, 2, size=20)
+    y = _enforce_estimator_tags_y(estimator_orig, y)
+
+    estimator_params = estimator_orig.get_params(deep=False).keys()
+
+    # check that there is a constraint for each parameter
+    if estimator_params:
+        validation_params = estimator_orig._parameter_constraints.keys()
+        unexpected_params = set(validation_params) - set(estimator_params)
+        missing_params = set(estimator_params) - set(validation_params)
+        err_msg = (
+            f"Mismatch between _parameter_constraints and the parameters of {name}."
+            f"\nConsider the unexpected parameters {unexpected_params} and expected but"
+            f" missing parameters {missing_params}"
+        )
+        assert validation_params == estimator_params, err_msg
+
+    # this object does not have a valid type for sure for all params
+    param_with_bad_type = type("BadType", (), {})()
+
+    fit_methods = ["fit", "partial_fit", "fit_transform", "fit_predict", "fit_resample"]
+
+    for param_name in estimator_params:
+        constraints = estimator_orig._parameter_constraints[param_name]
+
+        if constraints == "no_validation":
+            # This parameter is not validated
+            continue  # pragma: no cover
+
+        match = rf"The '{param_name}' parameter of {name} must be .* Got .* instead."
+        err_msg = (
+            f"{name} does not raise an informative error message when the "
+            f"parameter {param_name} does not have a valid type or value."
+        )
+
+        estimator = clone(estimator_orig)
+
+        # First, check that the error is raised if param doesn't match any valid type.
+        estimator.set_params(**{param_name: param_with_bad_type})
+
+        for method in fit_methods:
+            if not hasattr(estimator, method):
+                # the method is not accessible with the current set of parameters
+                continue
+
+            with raises(ValueError, match=match, err_msg=err_msg):
+                if any(
+                    isinstance(X_type, str) and X_type.endswith("labels")
+                    for X_type in _safe_tags(estimator, key="X_types")
+                ):
+                    # The estimator is a label transformer and take only `y`
+                    getattr(estimator, method)(y)  # pragma: no cover
+                else:
+                    getattr(estimator, method)(X, y)
+
+        # Then, for constraints that are more than a type constraint, check that the
+        # error is raised if param does match a valid type but does not match any valid
+        # value for this type.
+        constraints = [make_constraint(constraint) for constraint in constraints]
+
+        for constraint in constraints:
+            try:
+                bad_value = generate_invalid_param_val(constraint, constraints)
+            except NotImplementedError:
+                continue
+
+            estimator.set_params(**{param_name: bad_value})
+
+            for method in fit_methods:
+                if not hasattr(estimator, method):
+                    # the method is not accessible with the current set of parameters
+                    continue
+
+                with raises(ValueError, match=match, err_msg=err_msg):
+                    if any(
+                        X_type.endswith("labels")
+                        for X_type in _safe_tags(estimator, key="X_types")
+                    ):
+                        # The estimator is a label transformer and take only `y`
+                        getattr(estimator, method)(y)  # pragma: no cover
+                    else:
+                        getattr(estimator, method)(X, y)
+
+
+def check_dataframe_column_names_consistency(name, estimator_orig):
+    try:
+        import pandas as pd
+    except ImportError:
+        raise SkipTest(
+            "pandas is not installed: not checking column name consistency for pandas"
+        )
+
+    tags = _safe_tags(estimator_orig)
+    is_supported_X_types = (
+        "2darray" in tags["X_types"] or "categorical" in tags["X_types"]
+    )
+
+    if not is_supported_X_types or tags["no_validation"]:
+        return
+
+    rng = np.random.RandomState(0)
+
+    estimator = clone(estimator_orig)
+    set_random_state(estimator)
+
+    X_orig = rng.normal(size=(150, 8))
+
+    X_orig = _enforce_estimator_tags_x(estimator, X_orig)
+    n_samples, n_features = X_orig.shape
+
+    names = np.array([f"col_{i}" for i in range(n_features)])
+    X = pd.DataFrame(X_orig, columns=names)
+
+    if is_regressor(estimator):
+        y = rng.normal(size=n_samples)
+    else:
+        y = rng.randint(low=0, high=2, size=n_samples)
+    y = _enforce_estimator_tags_y(estimator, y)
+
+    # Check that calling `fit` does not raise any warnings about feature names.
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "error",
+            message="X does not have valid feature names",
+            category=UserWarning,
+            module="imblearn",
+        )
+        estimator.fit(X, y)
+
+    if not hasattr(estimator, "feature_names_in_"):
+        raise ValueError(
+            "Estimator does not have a feature_names_in_ "
+            "attribute after fitting with a dataframe"
+        )
+    assert isinstance(estimator.feature_names_in_, np.ndarray)
+    assert estimator.feature_names_in_.dtype == object
+    assert_array_equal(estimator.feature_names_in_, names)
+
+    # Only check imblearn estimators for feature_names_in_ in docstring
+    module_name = estimator_orig.__module__
+    if (
+        module_name.startswith("imblearn.")
+        and not ("test_" in module_name or module_name.endswith("_testing"))
+        and ("feature_names_in_" not in (estimator_orig.__doc__))
+    ):
+        raise ValueError(
+            f"Estimator {name} does not document its feature_names_in_ attribute"
+        )
+
+    check_methods = []
+    for method in (
+        "predict",
+        "transform",
+        "decision_function",
+        "predict_proba",
+        "score",
+        "score_samples",
+        "predict_log_proba",
+    ):
+        if not hasattr(estimator, method):
+            continue
+
+        callable_method = getattr(estimator, method)
+        if method == "score":
+            callable_method = partial(callable_method, y=y)
+        check_methods.append((method, callable_method))
+
+    for _, method in check_methods:
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "error",
+                message="X does not have valid feature names",
+                category=UserWarning,
+                module="sklearn",
+            )
+            method(X)  # works without UserWarning for valid features
+
+    invalid_names = [
+        (names[::-1], "Feature names must be in the same order as they were in fit."),
+        (
+            [f"another_prefix_{i}" for i in range(n_features)],
+            "Feature names unseen at fit time:\n- another_prefix_0\n-"
+            " another_prefix_1\n",
+        ),
+        (
+            names[:3],
+            f"Feature names seen at fit time, yet now missing:\n- {min(names[3:])}\n",
+        ),
+    ]
+    params = {
+        key: value
+        for key, value in estimator.get_params().items()
+        if "early_stopping" in key
+    }
+    early_stopping_enabled = any(value is True for value in params.values())
+
+    for invalid_name, additional_message in invalid_names:
+        X_bad = pd.DataFrame(X, columns=invalid_name)
+
+        for name, method in check_methods:
+            if sklearn_version >= parse_version("1.2"):
+                expected_msg = re.escape(
+                    "The feature names should match those that were passed during fit."
+                    f"\n{additional_message}"
+                )
+                with raises(
+                    ValueError, match=expected_msg, err_msg=f"{name} did not raise"
+                ):
+                    method(X_bad)
+            else:
+                expected_msg = re.escape(
+                    "The feature names should match those that were passed "
+                    "during fit. Starting version 1.2, an error will be raised.\n"
+                    f"{additional_message}"
+                )
+                with warnings.catch_warnings():
+                    warnings.filterwarnings(
+                        "error",
+                        category=FutureWarning,
+                        module="sklearn",
+                    )
+                    with raises(
+                        FutureWarning,
+                        match=expected_msg,
+                        err_msg=f"{name} did not raise",
+                    ):
+                        method(X_bad)
+
+        # partial_fit checks on second call
+        # Do not call partial fit if early_stopping is on
+        if not hasattr(estimator, "partial_fit") or early_stopping_enabled:
+            continue
+
+        estimator = clone(estimator_orig)
+        if is_classifier(estimator):
+            classes = np.unique(y)
+            estimator.partial_fit(X, y, classes=classes)
+        else:
+            estimator.partial_fit(X, y)
+
+        with raises(ValueError, match=expected_msg):
+            estimator.partial_fit(X_bad, y)
+
+
+def check_sampler_get_feature_names_out(name, sampler_orig):
+    tags = sampler_orig._get_tags()
+    if "2darray" not in tags["X_types"] or tags["no_validation"]:
+        return
+
+    X, y = make_blobs(
+        n_samples=30,
+        centers=[[0, 0, 0], [1, 1, 1]],
+        random_state=0,
+        n_features=2,
+        cluster_std=0.1,
+    )
+    X = StandardScaler().fit_transform(X)
+
+    sampler = clone(sampler_orig)
+    X = _enforce_estimator_tags_x(sampler, X)
+
+    n_features = X.shape[1]
+    set_random_state(sampler)
+
+    y_ = y
+    X_res, y_res = sampler.fit_resample(X, y=y_)
+    input_features = [f"feature{i}" for i in range(n_features)]
+
+    # input_features names is not the same length as n_features_in_
+    with raises(ValueError, match="input_features should have length equal"):
+        sampler.get_feature_names_out(input_features[::2])
+
+    feature_names_out = sampler.get_feature_names_out(input_features)
+    assert feature_names_out is not None
+    assert isinstance(feature_names_out, np.ndarray)
+    assert feature_names_out.dtype == object
+    assert all(isinstance(name, str) for name in feature_names_out)
+
+    n_features_out = X_res.shape[1]
+
+    assert (
+        len(feature_names_out) == n_features_out
+    ), f"Expected {n_features_out} feature names, got {len(feature_names_out)}"
+
+
+def check_sampler_get_feature_names_out_pandas(name, sampler_orig):
+    try:
+        import pandas as pd
+    except ImportError:
+        raise SkipTest(
+            "pandas is not installed: not checking column name consistency for pandas"
+        )
+
+    tags = sampler_orig._get_tags()
+    if "2darray" not in tags["X_types"] or tags["no_validation"]:
+        return
+
+    X, y = make_blobs(
+        n_samples=30,
+        centers=[[0, 0, 0], [1, 1, 1]],
+        random_state=0,
+        n_features=2,
+        cluster_std=0.1,
+    )
+    X = StandardScaler().fit_transform(X)
+
+    sampler = clone(sampler_orig)
+    X = _enforce_estimator_tags_x(sampler, X)
+
+    n_features = X.shape[1]
+    set_random_state(sampler)
+
+    y_ = y
+    feature_names_in = [f"col{i}" for i in range(n_features)]
+    df = pd.DataFrame(X, columns=feature_names_in)
+    X_res, y_res = sampler.fit_resample(df, y=y_)
+
+    # error is raised when `input_features` do not match feature_names_in
+    invalid_feature_names = [f"bad{i}" for i in range(n_features)]
+    with raises(ValueError, match="input_features is not equal to feature_names_in_"):
+        sampler.get_feature_names_out(invalid_feature_names)
+
+    feature_names_out_default = sampler.get_feature_names_out()
+    feature_names_in_explicit_names = sampler.get_feature_names_out(feature_names_in)
+    assert_array_equal(feature_names_out_default, feature_names_in_explicit_names)
+
+    n_features_out = X_res.shape[1]
+
+    assert (
+        len(feature_names_out_default) == n_features_out
+    ), f"Expected {n_features_out} feature names, got {len(feature_names_out_default)}"

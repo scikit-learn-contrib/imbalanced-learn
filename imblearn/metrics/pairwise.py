@@ -3,6 +3,8 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
+import numbers
+
 import numpy as np
 from scipy.spatial import distance_matrix
 from sklearn.base import BaseEstimator
@@ -10,8 +12,11 @@ from sklearn.utils import check_consistent_length
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_is_fitted
 
+from ..base import _ParamsValidationMixin
+from ..utils._param_validation import StrOptions
 
-class ValueDifferenceMetric(BaseEstimator):
+
+class ValueDifferenceMetric(BaseEstimator, _ParamsValidationMixin):
     r"""Class implementing the Value Difference Metric.
 
     This metric computes the distance between samples containing only
@@ -66,6 +71,17 @@ class ValueDifferenceMetric(BaseEstimator):
         List of length `n_features` containing the conditional probabilities
         for each category given a class.
 
+    n_features_in_ : int
+        Number of features in the input dataset.
+
+        .. versionadded:: 0.10
+
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     sklearn.neighbors.DistanceMetric : Interface for fast metric computation.
@@ -102,6 +118,11 @@ class ValueDifferenceMetric(BaseEstimator):
            [0.04,  0.  ,  1.44],
            [1.96,  1.44,  0.  ]])
     """
+    _parameter_constraints: dict = {
+        "n_categories": [StrOptions({"auto"}), "array-like"],
+        "k": [numbers.Integral],
+        "r": [numbers.Integral],
+    }
 
     def __init__(self, *, n_categories="auto", k=1, r=2):
         self.n_categories = n_categories
@@ -125,6 +146,7 @@ class ValueDifferenceMetric(BaseEstimator):
         self : object
             Return the instance itself.
         """
+        self._validate_params()
         check_consistent_length(X, y)
         X, y = self._validate_data(X, y, reset=True, dtype=np.int32)
 
@@ -205,3 +227,8 @@ class ValueDifferenceMetric(BaseEstimator):
                 distance_matrix(proba_feature_X, proba_feature_Y, p=self.k) ** self.r
             )
         return distance
+
+    def _more_tags(self):
+        return {
+            "requires_positive_X": True,  # X should be encoded with OrdinalEncoder
+        }

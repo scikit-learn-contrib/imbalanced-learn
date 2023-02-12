@@ -7,7 +7,7 @@ from collections import Counter
 
 import numpy as np
 import pytest
-
+from sklearn.datasets import make_classification
 from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import RandomUnderSampler
@@ -131,3 +131,20 @@ def test_random_under_sampling_nan_inf():
     assert y_res.shape == (6,)
     assert X_res.shape == (6, 2)
     assert np.any(~np.isfinite(X_res))
+
+
+@pytest.mark.parametrize(
+    "sampling_strategy", ["auto", "majority", "not minority", "not majority", "all"]
+)
+def test_random_under_sampler_strings(sampling_strategy):
+    """Check that we support all supposed strings as `sampling_strategy` in
+    a sampler inheriting from `BaseUnderSampler`."""
+
+    X, y = make_classification(
+        n_samples=100,
+        n_clusters_per_class=1,
+        n_classes=3,
+        weights=[0.1, 0.3, 0.6],
+        random_state=0,
+    )
+    RandomUnderSampler(sampling_strategy=sampling_strategy).fit_resample(X, y)

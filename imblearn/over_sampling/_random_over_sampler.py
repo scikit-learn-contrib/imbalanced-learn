@@ -9,15 +9,13 @@ from numbers import Real
 
 import numpy as np
 from scipy import sparse
-from sklearn.utils import check_array, check_random_state
-from sklearn.utils import _safe_indexing
+from sklearn.utils import _safe_indexing, check_array, check_random_state
 from sklearn.utils.sparsefuncs import mean_variance_axis
 
-from .base import BaseOverSampler
-from ..utils import check_target_type
-from ..utils import Substitution
+from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _deprecate_positional_args
+from ..utils._param_validation import Interval
+from .base import BaseOverSampler
 
 
 @Substitution(
@@ -78,6 +76,12 @@ class RandomOverSampler(BaseOverSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     BorderlineSMOTE : Over-sample using the borderline-SMOTE variant.
@@ -120,8 +124,7 @@ class RandomOverSampler(BaseOverSampler):
     --------
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.over_sampling import \
-RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.over_sampling import RandomOverSampler
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -133,7 +136,11 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseOverSampler._parameter_constraints,
+        "shrinkage": [Interval(Real, 0, None, closed="left"), dict, None],
+    }
+
     def __init__(
         self,
         *,
@@ -166,12 +173,6 @@ RandomOverSampler # doctest: +NORMALIZE_WHITESPACE
             }
         elif self.shrinkage is None or isinstance(self.shrinkage, Mapping):
             self.shrinkage_ = self.shrinkage
-        else:
-            raise ValueError(
-                f"`shrinkage` should either be a positive floating number or "
-                f"a dictionary mapping a class to a positive floating number. "
-                f"Got {repr(self.shrinkage)} instead."
-            )
 
         if self.shrinkage_ is not None:
             missing_shrinkage_keys = (

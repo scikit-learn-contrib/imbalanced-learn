@@ -4,6 +4,8 @@
 #          Christos Aridas
 # License: MIT
 
+import numbers
+
 from sklearn.base import clone
 from sklearn.utils import check_X_y
 
@@ -11,11 +13,8 @@ from ..base import BaseSampler
 from ..over_sampling import SMOTE
 from ..over_sampling.base import BaseOverSampler
 from ..under_sampling import EditedNearestNeighbours
-from ..utils import check_target_type
-from ..utils import Substitution
-from ..utils._docstring import _n_jobs_docstring
-from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _deprecate_positional_args
+from ..utils import Substitution, check_target_type
+from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 
 
 @Substitution(
@@ -68,6 +67,12 @@ class SMOTEENN(BaseSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     SMOTETomek : Over-sample using SMOTE followed by under-sampling removing
@@ -91,7 +96,7 @@ class SMOTEENN(BaseSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.combine import SMOTEENN # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.combine import SMOTEENN
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -105,7 +110,13 @@ class SMOTEENN(BaseSampler):
 
     _sampling_type = "over-sampling"
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseOverSampler._parameter_constraints,
+        "smote": [SMOTE, None],
+        "enn": [EditedNearestNeighbours, None],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -125,14 +136,7 @@ class SMOTEENN(BaseSampler):
     def _validate_estimator(self):
         "Private function to validate SMOTE and ENN objects"
         if self.smote is not None:
-            if isinstance(self.smote, SMOTE):
-                self.smote_ = clone(self.smote)
-            else:
-                raise ValueError(
-                    f"smote needs to be a SMOTE object."
-                    f"Got {type(self.smote)} instead."
-                )
-        # Otherwise create a default SMOTE
+            self.smote_ = clone(self.smote)
         else:
             self.smote_ = SMOTE(
                 sampling_strategy=self.sampling_strategy,
@@ -141,14 +145,7 @@ class SMOTEENN(BaseSampler):
             )
 
         if self.enn is not None:
-            if isinstance(self.enn, EditedNearestNeighbours):
-                self.enn_ = clone(self.enn)
-            else:
-                raise ValueError(
-                    f"enn needs to be an EditedNearestNeighbours."
-                    f" Got {type(self.enn)} instead."
-                )
-        # Otherwise create a default EditedNearestNeighbours
+            self.enn_ = clone(self.enn)
         else:
             self.enn_ = EditedNearestNeighbours(
                 sampling_strategy="all", n_jobs=self.n_jobs

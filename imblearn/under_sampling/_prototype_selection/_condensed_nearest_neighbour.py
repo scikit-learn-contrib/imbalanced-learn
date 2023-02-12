@@ -5,21 +5,19 @@ method."""
 #          Christos Aridas
 # License: MIT
 
+import numbers
 from collections import Counter
 
 import numpy as np
-
 from scipy.sparse import issparse
-
 from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils import check_random_state, _safe_indexing
+from sklearn.utils import _safe_indexing, check_random_state
 
-from ..base import BaseCleaningSampler
 from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._docstring import _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
+from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods, Interval
+from ..base import BaseCleaningSampler
 
 
 @Substitution(
@@ -71,6 +69,12 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     EditedNearestNeighbours : Undersample by editing samples.
@@ -94,21 +98,32 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
 
     Examples
     --------
-    >>> from collections import Counter # doctest: +SKIP
-    >>> from sklearn.datasets import fetch_mldata # doctest: +SKIP
+    >>> from collections import Counter  # doctest: +SKIP
+    >>> from sklearn.datasets import fetch_mldata  # doctest: +SKIP
     >>> from imblearn.under_sampling import \
-CondensedNearestNeighbour # doctest: +SKIP
-    >>> pima = fetch_mldata('diabetes_scale') # doctest: +SKIP
-    >>> X, y = pima['data'], pima['target'] # doctest: +SKIP
-    >>> print('Original dataset shape %s' % Counter(y)) # doctest: +SKIP
-    Original dataset shape Counter({{1: 500, -1: 268}}) # doctest: +SKIP
-    >>> cnn = CondensedNearestNeighbour(random_state=42) # doctest: +SKIP
-    >>> X_res, y_res = cnn.fit_resample(X, y) #doctest: +SKIP
-    >>> print('Resampled dataset shape %s' % Counter(y_res)) # doctest: +SKIP
-    Resampled dataset shape Counter({{-1: 268, 1: 227}}) # doctest: +SKIP
+CondensedNearestNeighbour  # doctest: +SKIP
+    >>> pima = fetch_mldata('diabetes_scale')  # doctest: +SKIP
+    >>> X, y = pima['data'], pima['target']  # doctest: +SKIP
+    >>> print('Original dataset shape %s' % Counter(y))  # doctest: +SKIP
+    Original dataset shape Counter({{1: 500, -1: 268}})  # doctest: +SKIP
+    >>> cnn = CondensedNearestNeighbour(random_state=42)  # doctest: +SKIP
+    >>> X_res, y_res = cnn.fit_resample(X, y)  #doctest: +SKIP
+    >>> print('Resampled dataset shape %s' % Counter(y_res))  # doctest: +SKIP
+    Resampled dataset shape Counter({{-1: 268, 1: 227}})  # doctest: +SKIP
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseCleaningSampler._parameter_constraints,
+        "n_neighbors": [
+            Interval(numbers.Integral, 1, None, closed="left"),
+            HasMethods(["kneighbors", "kneighbors_graph"]),
+            None,
+        ],
+        "n_seeds_S": [Interval(numbers.Integral, 1, None, closed="left")],
+        "n_jobs": [numbers.Integral, None],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self,
         *,
@@ -128,18 +143,12 @@ CondensedNearestNeighbour # doctest: +SKIP
         """Private function to create the NN estimator"""
         if self.n_neighbors is None:
             self.estimator_ = KNeighborsClassifier(n_neighbors=1, n_jobs=self.n_jobs)
-        elif isinstance(self.n_neighbors, int):
+        elif isinstance(self.n_neighbors, numbers.Integral):
             self.estimator_ = KNeighborsClassifier(
                 n_neighbors=self.n_neighbors, n_jobs=self.n_jobs
             )
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
             self.estimator_ = clone(self.n_neighbors)
-        else:
-            raise ValueError(
-                f"`n_neighbors` has to be a int or an object"
-                f" inhereited from KNeighborsClassifier."
-                f" Got {type(self.n_neighbors)} instead."
-            )
 
     def _fit_resample(self, X, y):
         self._validate_estimator()

@@ -3,11 +3,10 @@
 #          Christos Aridas
 # License: MIT
 
-import pytest
 import numpy as np
-
-from sklearn.utils._testing import assert_array_equal
+import pytest
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import RepeatedEditedNearestNeighbours
 
@@ -327,13 +326,6 @@ def test_renn_fit_resample_mode():
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
     assert 0 < renn.n_iter_ <= renn.max_iter
-
-
-def test_renn_not_good_object():
-    nn = "rnd"
-    renn = RepeatedEditedNearestNeighbours(n_neighbors=nn, kind_sel="mode")
-    with pytest.raises(ValueError):
-        renn.fit_resample(X, Y)
 
 
 @pytest.mark.parametrize(

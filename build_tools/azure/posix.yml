@@ -36,6 +36,7 @@ jobs:
     COVERAGE: 'true'
     TEST_DOCS: 'false'
     TEST_DOCSTRINGS: 'false'
+    CHECK_WARNINGS: 'false'
     SHOW_SHORT_SUMMARY: 'false'
   strategy:
     matrix:

@@ -5,15 +5,11 @@
 # License: MIT
 
 import numpy as np
+from sklearn.utils import _safe_indexing, check_random_state
 
-from sklearn.utils import check_random_state
-from sklearn.utils import _safe_indexing
-
-from ..base import BaseUnderSampler
-from ...utils import check_target_type
-from ...utils import Substitution
+from ...utils import Substitution, check_target_type
 from ...utils._docstring import _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
+from ..base import BaseUnderSampler
 
 
 @Substitution(
@@ -54,6 +50,12 @@ class RandomUnderSampler(BaseUnderSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     NearMiss : Undersample using near-miss samples.
@@ -68,8 +70,7 @@ class RandomUnderSampler(BaseUnderSampler):
     --------
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.under_sampling import \
-RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.under_sampling import RandomUnderSampler
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ...  weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -81,7 +82,12 @@ RandomUnderSampler # doctest: +NORMALIZE_WHITESPACE
     Resampled dataset shape Counter({{0: 100, 1: 100}})
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseUnderSampler._parameter_constraints,
+        "replacement": ["boolean"],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self, *, sampling_strategy="auto", random_state=None, replacement=False
     ):

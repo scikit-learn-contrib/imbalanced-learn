@@ -30,6 +30,7 @@ jobs:
     THREADPOOLCTL_VERSION: 'latest'
     COVERAGE: 'false'
     TEST_DOCSTRINGS: 'false'
+    CHECK_WARNINGS: 'false'
     BLAS: 'openblas'
     # Set in azure-pipelines.yml
     DISTRIB: ''

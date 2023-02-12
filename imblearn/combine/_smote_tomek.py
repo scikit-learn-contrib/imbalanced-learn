@@ -5,6 +5,8 @@ links."""
 #          Christos Aridas
 # License: MIT
 
+import numbers
+
 from sklearn.base import clone
 from sklearn.utils import check_X_y
 
@@ -12,11 +14,8 @@ from ..base import BaseSampler
 from ..over_sampling import SMOTE
 from ..over_sampling.base import BaseOverSampler
 from ..under_sampling import TomekLinks
-from ..utils import check_target_type
-from ..utils import Substitution
-from ..utils._docstring import _n_jobs_docstring
-from ..utils._docstring import _random_state_docstring
-from ..utils._validation import _deprecate_positional_args
+from ..utils import Substitution, check_target_type
+from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 
 
 @Substitution(
@@ -67,6 +66,12 @@ class SMOTETomek(BaseSampler):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     SMOTEENN : Over-sample using SMOTE followed by under-sampling using Edited
@@ -89,8 +94,7 @@ class SMOTETomek(BaseSampler):
 
     >>> from collections import Counter
     >>> from sklearn.datasets import make_classification
-    >>> from imblearn.combine import \
-SMOTETomek # doctest: +NORMALIZE_WHITESPACE
+    >>> from imblearn.combine import SMOTETomek
     >>> X, y = make_classification(n_classes=2, class_sep=2,
     ... weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0,
     ... n_features=20, n_clusters_per_class=1, n_samples=1000, random_state=10)
@@ -104,7 +108,13 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
 
     _sampling_type = "over-sampling"
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseOverSampler._parameter_constraints,
+        "smote": [SMOTE, None],
+        "tomek": [TomekLinks, None],
+        "n_jobs": [numbers.Integral, None],
+    }
+
     def __init__(
         self,
         *,
@@ -125,14 +135,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
         "Private function to validate SMOTE and ENN objects"
 
         if self.smote is not None:
-            if isinstance(self.smote, SMOTE):
-                self.smote_ = clone(self.smote)
-            else:
-                raise ValueError(
-                    f"smote needs to be a SMOTE object."
-                    f"Got {type(self.smote)} instead."
-                )
-        # Otherwise create a default SMOTE
+            self.smote_ = clone(self.smote)
         else:
             self.smote_ = SMOTE(
                 sampling_strategy=self.sampling_strategy,
@@ -141,14 +144,7 @@ SMOTETomek # doctest: +NORMALIZE_WHITESPACE
             )
 
         if self.tomek is not None:
-            if isinstance(self.tomek, TomekLinks):
-                self.tomek_ = clone(self.tomek)
-            else:
-                raise ValueError(
-                    f"tomek needs to be a TomekLinks object."
-                    f"Got {type(self.tomek)} instead."
-                )
-        # Otherwise create a default TomekLinks
+            self.tomek_ = clone(self.tomek)
         else:
             self.tomek_ = TomekLinks(sampling_strategy="all", n_jobs=self.n_jobs)
 

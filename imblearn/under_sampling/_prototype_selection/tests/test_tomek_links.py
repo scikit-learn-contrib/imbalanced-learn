@@ -4,6 +4,8 @@
 # License: MIT
 
 import numpy as np
+import pytest
+from sklearn.datasets import make_classification
 from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import TomekLinks
@@ -68,3 +70,20 @@ def test_tl_fit_resample():
     y_gt = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
+
+@pytest.mark.parametrize(
+    "sampling_strategy", ["auto", "majority", "not minority", "not majority", "all"]
+)
+def test_tomek_links_strings(sampling_strategy):
+    """Check that we support all supposed strings as `sampling_strategy` in
+    a sampler inheriting from `BaseCleaningSampler`."""
+
+    X, y = make_classification(
+        n_samples=100,
+        n_clusters_per_class=1,
+        n_classes=3,
+        weights=[0.1, 0.3, 0.6],
+        random_state=0,
+    )
+    TomekLinks(sampling_strategy=sampling_strategy).fit_resample(X, y)

@@ -6,21 +6,19 @@
 # License: MIT
 
 import math
+import numbers
 
 import numpy as np
 from scipy import sparse
-
 from sklearn.base import clone
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.metrics import pairwise_distances
 from sklearn.utils import _safe_indexing
 
-from ..base import BaseOverSampler
 from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ...utils._docstring import _random_state_docstring
-from ...utils._validation import _deprecate_positional_args
-
+from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._param_validation import HasMethods, Interval, StrOptions
+from ..base import BaseOverSampler
 from .base import BaseSMOTE
 
 
@@ -95,6 +93,12 @@ class KMeansSMOTE(BaseSMOTE):
 
         .. versionadded:: 0.9
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during `fit`. Defined only when `X` has feature
+        names that are all strings.
+
+        .. versionadded:: 0.10
+
     See Also
     --------
     SMOTE : Over-sample using SMOTE.
@@ -128,7 +132,9 @@ class KMeansSMOTE(BaseSMOTE):
     >>> y = np.append(y, 0)
     >>> # Make this a binary classification problem
     >>> y = y == 1
-    >>> sm = KMeansSMOTE(random_state=42)
+    >>> sm = KMeansSMOTE(
+    ...     kmeans_estimator=MiniBatchKMeans(n_init=1, random_state=0), random_state=42
+    ... )
     >>> X_res, y_res = sm.fit_resample(X, y)
     >>> # Find the number of new samples in the middle blob
     >>> n_res_in_middle = ((X_res[:, 0] > -5) & (X_res[:, 0] < 5)).sum()
@@ -140,7 +146,17 @@ class KMeansSMOTE(BaseSMOTE):
     More 0 samples: True
     """
 
-    @_deprecate_positional_args
+    _parameter_constraints: dict = {
+        **BaseSMOTE._parameter_constraints,
+        "kmeans_estimator": [
+            HasMethods(["fit", "predict"]),
+            Interval(numbers.Integral, 1, None, closed="left"),
+            None,
+        ],
+        "cluster_balance_threshold": [StrOptions({"auto"}), numbers.Real],
+        "density_exponent": [StrOptions({"auto"}), numbers.Real],
+    }
+
     def __init__(
         self,
         *,
@@ -173,15 +189,6 @@ class KMeansSMOTE(BaseSMOTE):
             )
         else:
             self.kmeans_estimator_ = clone(self.kmeans_estimator)
-
-        # validate the parameters
-        for param_name in ("cluster_balance_threshold", "density_exponent"):
-            param = getattr(self, param_name)
-            if isinstance(param, str) and param != "auto":
-                raise ValueError(
-                    f"'{param_name}' should be 'auto' when a string is passed."
-                    f" Got {repr(param)} instead."
-                )
 
         self.cluster_balance_threshold_ = (
             self.cluster_balance_threshold

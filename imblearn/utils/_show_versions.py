@@ -8,8 +8,7 @@ which was adapted from :func:`pandas.show_versions`
 # Author: Alexander L. Hayes <hayesall@iu.edu>
 # License: MIT
 
-import sys
-import importlib
+from .. import __version__
 
 
 def _get_deps_info():
@@ -20,12 +19,12 @@ def _get_deps_info():
         version information on relevant Python libraries
     """
     deps = [
+        "imbalanced-learn",
         "pip",
         "setuptools",
-        "imblearn",
-        "sklearn",
         "numpy",
         "scipy",
+        "scikit-learn",
         "Cython",
         "pandas",
         "keras",
@@ -33,22 +32,17 @@ def _get_deps_info():
         "joblib",
     ]
 
-    def get_version(module):
-        return module.__version__
+    deps_info = {
+        "imbalanced-learn": __version__,
+    }
 
-    deps_info = {}
+    from importlib.metadata import PackageNotFoundError, version
 
     for modname in deps:
         try:
-            if modname in sys.modules:
-                mod = sys.modules[modname]
-            else:
-                mod = importlib.import_module(modname)
-            ver = get_version(mod)
-            deps_info[modname] = ver
-        except ImportError:
+            deps_info[modname] = version(modname)
+        except PackageNotFoundError:
             deps_info[modname] = None
-
     return deps_info
 
 

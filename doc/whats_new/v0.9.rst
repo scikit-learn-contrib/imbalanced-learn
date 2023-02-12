@@ -3,6 +3,8 @@
 Version 0.9.1
 =============
 
+**May 16, 2022**
+
 Changelog
 ---------
 
@@ -11,6 +13,8 @@ latest release (`1.1.0`) of `scikit-learn`.
 
 Version 0.9.0
 =============
+
+**January 11, 2022**
 
 Changelog
 ---------

@@ -1,16 +1,11 @@
-import pytest
 import numpy as np
-
-from sklearn.utils._testing import assert_allclose
-from sklearn.utils._testing import assert_array_equal
-
-from sklearn.cluster import KMeans
-from sklearn.cluster import MiniBatchKMeans
+import pytest
+from sklearn.cluster import KMeans, MiniBatchKMeans
 from sklearn.datasets import make_classification
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 
-from imblearn.over_sampling import KMeansSMOTE
-from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling import SMOTE, KMeansSMOTE
 
 
 @pytest.fixture
@@ -43,6 +38,7 @@ def data():
     return X, y
 
 
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_kmeans_smote(data):
     X, y = data
     kmeans_smote = KMeansSMOTE(
@@ -64,13 +60,14 @@ def test_kmeans_smote(data):
     assert "batch_size" in kmeans_smote.kmeans_estimator_.get_params()
 
 
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 @pytest.mark.parametrize("k_neighbors", [2, NearestNeighbors(n_neighbors=3)])
 @pytest.mark.parametrize(
     "kmeans_estimator",
     [
         3,
-        KMeans(n_clusters=3, random_state=42),
-        MiniBatchKMeans(n_clusters=3, random_state=42),
+        KMeans(n_clusters=3, n_init=1, random_state=42),
+        MiniBatchKMeans(n_clusters=3, n_init=1, random_state=42),
     ],
 )
 def test_sample_kmeans_custom(data, k_neighbors, kmeans_estimator):
@@ -88,6 +85,7 @@ def test_sample_kmeans_custom(data, k_neighbors, kmeans_estimator):
     assert kmeans_smote.kmeans_estimator_.n_clusters == 3
 
 
+@pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_sample_kmeans_not_enough_clusters(data):
     X, y = data
     smote = KMeansSMOTE(cluster_balance_threshold=10, random_state=42)
@@ -102,22 +100,9 @@ def test_sample_kmeans_density_estimation(density_exponent, cluster_balance_thre
         n_samples=10_000, n_classes=2, weights=[0.3, 0.7], random_state=42
     )
     smote = KMeansSMOTE(
+        kmeans_estimator=MiniBatchKMeans(n_init=1, random_state=42),
         random_state=0,
         density_exponent=density_exponent,
         cluster_balance_threshold=cluster_balance_threshold,
     )
     smote.fit_resample(X, y)
-
-
-@pytest.mark.parametrize(
-    "density_exponent, cluster_balance_threshold",
-    [("xxx", "auto"), ("auto", "xxx")],
-)
-def test_kmeans_smote_param_error(data, density_exponent, cluster_balance_threshold):
-    X, y = data
-    kmeans_smote = KMeansSMOTE(
-        density_exponent=density_exponent,
-        cluster_balance_threshold=cluster_balance_threshold,
-    )
-    with pytest.raises(ValueError, match="should be 'auto' when a string"):
-        kmeans_smote.fit_resample(X, y)

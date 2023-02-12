@@ -13,31 +13,33 @@ from tempfile import mkdtemp
 
 import numpy as np
 import pytest
-from pytest import raises
-
+import sklearn
 from joblib import Memory
-
-from sklearn.utils._testing import assert_array_equal
-from sklearn.utils._testing import assert_array_almost_equal
-from sklearn.utils._testing import assert_allclose
-
-from sklearn.base import clone, BaseEstimator
-from sklearn.svm import SVC
-from sklearn.neighbors import LocalOutlierFactor
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import LinearRegression
+from pytest import raises
+from sklearn.base import BaseEstimator, clone
 from sklearn.cluster import KMeans
-from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.datasets import load_iris, make_classification
-from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.neighbors import LocalOutlierFactor
 from sklearn.pipeline import FeatureUnion
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+from sklearn.utils._testing import (
+    assert_allclose,
+    assert_array_almost_equal,
+    assert_array_equal,
+)
+from sklearn.utils.fixes import parse_version
 
 from imblearn.datasets import make_imbalance
 from imblearn.pipeline import Pipeline, make_pipeline
-from imblearn.under_sampling import RandomUnderSampler
 from imblearn.under_sampling import EditedNearestNeighbours as ENN
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.utils.estimator_checks import check_param_validation
 
+sklearn_version = parse_version(sklearn.__version__)
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
@@ -385,11 +387,11 @@ def test_fit_predict_on_pipeline():
     # transform and clustering steps separately
     iris = load_iris()
     scaler = StandardScaler()
-    km = KMeans(random_state=0)
+    km = KMeans(random_state=0, n_init=10)
     # As pipeline doesn't clone estimators on construction,
     # it must have its own estimators
     scaler_for_pipeline = StandardScaler()
-    km_for_pipeline = KMeans(random_state=0)
+    km_for_pipeline = KMeans(random_state=0, n_init=10)
 
     # first compute the transform and clustering step separately
     scaled = scaler.fit_transform(iris.data)
@@ -643,22 +645,6 @@ def test_classes_property():
         getattr(clf, "classes_")
     clf.fit(X, y)
     assert_array_equal(clf.classes_, np.unique(y))
-
-
-def test_pipeline_wrong_memory():
-    # Test that an error is raised when memory is not a string or a Memory
-    # instance
-    iris = load_iris()
-    X = iris.data
-    y = iris.target
-    # Define memory as an integer
-    memory = 1
-    cached_pipe = Pipeline(
-        [("transf", DummyTransf()), ("svc", SVC(gamma="scale"))], memory=memory
-    )
-    error_regex = "string or have the same interface as"
-    with raises(ValueError, match=error_regex):
-        cached_pipe.fit(X, y)
 
 
 def test_pipeline_memory_transformer():
@@ -1344,3 +1330,34 @@ def test_pipeline_score_samples_pca_lof_multiclass():
     # Check the values
     lof.fit(pca.fit_transform(X))
     assert_allclose(pipe.score_samples(X), lof.score_samples(pca.transform(X)))
+
+
+def test_pipeline_param_validation():
+    model = Pipeline(
+        [("sampler", RandomUnderSampler()), ("classifier", LogisticRegression())]
+    )
+    check_param_validation("Pipeline", model)
+
+
+@pytest.mark.skipif(
+    sklearn_version < parse_version("1.2"), reason="requires scikit-learn >= 1.2"
+)
+def test_pipeline_with_set_output():
+    pd = pytest.importorskip("pandas")
+    X, y = load_iris(return_X_y=True, as_frame=True)
+    pipeline = make_pipeline(
+        StandardScaler(), RandomUnderSampler(), LogisticRegression()
+    ).set_output(transform="default")
+    pipeline.fit(X, y)
+
+    X_res, y_res = pipeline[:-1].fit_resample(X, y)
+    assert isinstance(X_res, np.ndarray)
+    # transformer will not change `y` and sampler will always preserve the type of `y`
+    assert isinstance(y_res, type(y))
+
+    pipeline.set_output(transform="pandas")
+    X_res, y_res = pipeline[:-1].fit_resample(X, y)
+
+    assert isinstance(X_res, pd.DataFrame)
+    # transformer will not change `y` and sampler will always preserve the type of `y`
+    assert isinstance(y_res, type(y))
