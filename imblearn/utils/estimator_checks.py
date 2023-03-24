@@ -75,6 +75,19 @@ def sample_dataset_generator_fixture():
     return sample_dataset_generator()
 
 
+def test_dataset_generator():
+    X_generated, y_generated = sample_dataset_generator()
+    X, y = make_classification(
+        n_samples=1000,
+        n_classes=3,
+        n_informative=4,
+        weights=[0.2, 0.3, 0.5],
+        random_state=0,
+    )
+    assert X_generated.all() == X.all()
+    assert y_generated.all() == y.all()
+
+
 def _set_checking_parameters(estimator):
     params = estimator.get_params()
     name = estimator.__class__.__name__
