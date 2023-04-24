@@ -28,7 +28,7 @@
 .. _Black: :target: https://github.com/psf/black
 
 .. |PythonMinVersion| replace:: 3.8
-.. |NumPyMinVersion| replace:: 1.17.3
+.. |NumPyMinVersion| replace:: 1.23.5
 .. |SciPyMinVersion| replace:: 1.5.0
 .. |ScikitLearnMinVersion| replace:: 1.2.1
 .. |MatplotlibMinVersion| replace:: 3.1.2

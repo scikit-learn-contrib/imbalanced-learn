@@ -1,7 +1,7 @@
 """All minimum dependencies for imbalanced-learn."""
 import argparse
 
-NUMPY_MIN_VERSION = "1.17.3"
+NUMPY_MIN_VERSION = "1.23.5"
 SCIPY_MIN_VERSION = "1.5.0"
 PANDAS_MIN_VERSION = "1.0.5"
 SKLEARN_MIN_VERSION = "1.2.1"
