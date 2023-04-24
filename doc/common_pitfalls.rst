@@ -54,6 +54,7 @@ increase the effect of the wrongdoings::
 Let's first check the balancing ratio on this dataset::
 
   >>> y.value_counts(normalize=True)
+  class
   <=50K    0.98801
   >50K     0.01199
   Name: proportion, dtype: float64
