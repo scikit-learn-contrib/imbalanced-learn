@@ -56,7 +56,7 @@ Let's first check the balancing ratio on this dataset::
   >>> y.value_counts(normalize=True)
   <=50K    0.98801
   >50K     0.01199
-  Name: class, dtype: float64
+  Name: proportion, dtype: float64
 
 To later highlight some of the issue, we will keep aside a left-out set that we
 will not use for the evaluation of the model::
