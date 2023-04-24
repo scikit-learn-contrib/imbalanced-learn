@@ -29,7 +29,7 @@
 
 .. |PythonMinVersion| replace:: 3.8
 .. |NumPyMinVersion| replace:: 1.23.5
-.. |SciPyMinVersion| replace:: 1.5.1
+.. |SciPyMinVersion| replace:: 1.5.2
 .. |ScikitLearnMinVersion| replace:: 1.2.2
 .. |MatplotlibMinVersion| replace:: 3.1.2
 .. |PandasMinVersion| replace:: 1.0.5
