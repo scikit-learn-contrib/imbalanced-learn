@@ -10,12 +10,11 @@ import numbers
 import warnings
 
 import numpy as np
-from joblib import Parallel
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
-from sklearn.utils.fixes import delayed
+from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import check_is_fitted
 
 from ..base import _ParamsValidationMixin
