@@ -2,14 +2,14 @@
 import argparse
 
 NUMPY_MIN_VERSION = "1.17.3"
-SCIPY_MIN_VERSION = "1.3.2"
+SCIPY_MIN_VERSION = "1.5.0"
 PANDAS_MIN_VERSION = "1.0.5"
 SKLEARN_MIN_VERSION = "1.2.1"
 TENSORFLOW_MIN_VERSION = "2.4.3"
 KERAS_MIN_VERSION = "2.4.3"
 JOBLIB_MIN_VERSION = "1.1.1"
 THREADPOOLCTL_MIN_VERSION = "2.0.0"
-PYTEST_MIN_VERSION = "5.0.1"
+PYTEST_MIN_VERSION = "5.3.1"
 
 # 'build' and 'install' is included to have structured metadata for CI.
 # It will NOT be included in setup's extras_require
