@@ -157,7 +157,7 @@ from sklearn.metrics import roc_auc_score
 def fit_predict_imbalanced_model(X_train, y_train, X_test, y_test):
     model = make_model(X_train.shape[1])
     model.fit(X_train, y_train, epochs=2, verbose=1, batch_size=1000)
-    y_pred = model.predict_proba(X_test, batch_size=1000)
+    y_pred = model.predict(X_test, batch_size=1000)
     return roc_auc_score(y_test, y_pred)
 
 
