@@ -10,13 +10,19 @@ import numbers
 import warnings
 
 import numpy as np
-from joblib import Parallel
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
-from sklearn.utils.fixes import delayed
+from sklearn.utils._tags import _safe_tags
 from sklearn.utils.validation import check_is_fitted
+
+try:
+    # scikit-learn >= 1.2
+    from sklearn.utils.parallel import Parallel, delayed
+except (ImportError, ModuleNotFoundError):
+    from sklearn.utils.fixes import delayed
+    from joblib import Parallel
 
 from ..base import _ParamsValidationMixin
 from ..pipeline import Pipeline
@@ -388,3 +394,10 @@ class EasyEnsembleClassifier(BaggingClassifier, _ParamsValidationMixin):
         decisions = sum(all_decisions) / self.n_estimators
 
         return decisions
+
+    def _more_tags(self):
+        if self.estimator is None:
+            estimator = AdaBoostClassifier()
+        else:
+            estimator = self.estimator
+        return {"allow_nan": _safe_tags(estimator, "allow_nan")}

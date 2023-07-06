@@ -424,7 +424,10 @@ def _fit_resample_one(sampler, X, y, message_clsname="", message=None, **fit_par
         return X_res, y_res, sampler
 
 
-@validate_params({"memory": [None, str, HasMethods(["cache"])], "verbose": ["boolean"]})
+@validate_params(
+    {"memory": [None, str, HasMethods(["cache"])], "verbose": ["boolean"]},
+    prefer_skip_nested_validation=True,
+)
 def make_pipeline(*steps, memory=None, verbose=False):
     """Construct a Pipeline from the given estimators.
 

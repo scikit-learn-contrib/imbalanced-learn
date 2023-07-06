@@ -128,7 +128,7 @@ def test_smotenc_check_target_type():
     X, _, categorical_features = data_heterogneous_unordered()
     y = np.linspace(0, 1, 30)
     smote = SMOTENC(categorical_features=categorical_features, random_state=0)
-    with pytest.raises(ValueError, match="Unknown label type: 'continuous'"):
+    with pytest.raises(ValueError, match="Unknown label type"):
         smote.fit_resample(X, y)
     rng = np.random.RandomState(42)
     y = rng.randint(2, size=(20, 3))

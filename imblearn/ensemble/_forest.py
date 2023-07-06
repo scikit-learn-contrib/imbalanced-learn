@@ -9,7 +9,6 @@ from warnings import warn
 
 import numpy as np
 import sklearn
-from joblib import Parallel
 from numpy import float32 as DTYPE
 from numpy import float64 as DOUBLE
 from scipy.sparse import issparse
@@ -24,9 +23,15 @@ from sklearn.ensemble._forest import (
 from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing, check_random_state, parse_version
-from sklearn.utils.fixes import delayed
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _check_sample_weight
+
+try:
+    # scikit-learn >= 1.2
+    from sklearn.utils.parallel import Parallel, delayed
+except (ImportError, ModuleNotFoundError):
+    from sklearn.utils.fixes import delayed
+    from joblib import Parallel
 
 from ..base import _ParamsValidationMixin
 from ..pipeline import make_pipeline
