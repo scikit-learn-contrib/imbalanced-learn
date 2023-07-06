@@ -94,7 +94,7 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforg
     -O miniconda.sh
 chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
 export PATH="$MINICONDA_PATH/bin:$PATH"
-conda update --yes --quiet conda
+mamba update --yes --quiet conda
 
 # imports get_dep
 source build_tools/shared.sh
