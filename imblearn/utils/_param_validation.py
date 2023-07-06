@@ -917,7 +917,6 @@ else:
         _CVObjects,
         _InstancesOf,
         _IterablesNotString,
-        _MissingValues,
         _NoneConstraint,
         _PandasNAConstraint,
         _RandomStates,
@@ -926,3 +925,8 @@ else:
         make_constraint,
         validate_params,
     )
+
+    if sklearn_version < parse_version("1.3"):
+        from sklearn.utils._param_validation import _MissingValues
+    else:
+        from sklearn.utils._param_validation import MissingValues as _MissingValues
