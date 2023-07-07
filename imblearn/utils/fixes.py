@@ -88,7 +88,7 @@ if sklearn_version < parse_version("1.3"):
         return decorator
 
 else:
-    pass  # type: ignore[no-redef]
+    from sklearn.base import _fit_context  # type: ignore[no-redef] # noqa
 
 # TODO: remove when scikit-learn minimum version is 1.3
 if sklearn_version < parse_version("1.3"):
