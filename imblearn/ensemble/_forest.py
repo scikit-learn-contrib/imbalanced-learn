@@ -30,8 +30,8 @@ try:
     # scikit-learn >= 1.2
     from sklearn.utils.parallel import Parallel, delayed
 except (ImportError, ModuleNotFoundError):
-    from sklearn.utils.fixes import delayed
     from joblib import Parallel
+    from sklearn.utils.fixes import delayed
 
 from ..base import _ParamsValidationMixin
 from ..pipeline import make_pipeline
