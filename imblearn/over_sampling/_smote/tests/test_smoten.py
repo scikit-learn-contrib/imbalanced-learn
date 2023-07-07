@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from sklearn.preprocessing import OrdinalEncoder
 
 from imblearn.over_sampling import SMOTEN
 
@@ -27,6 +28,7 @@ def test_smoten(data):
 
     assert X_res.shape == (80, 3)
     assert y_res.shape == (80,)
+    assert isinstance(sampler.categorical_encoder_, OrdinalEncoder)
 
 
 def test_smoten_resampling():
@@ -52,3 +54,22 @@ def test_smoten_resampling():
     X_generated, y_generated = X_res[X.shape[0] :], y_res[X.shape[0] :]
     np.testing.assert_array_equal(X_generated, "blue")
     np.testing.assert_array_equal(y_generated, "not apple")
+
+
+def test_smoten_categorical_encoder(data):
+    """Check that `categorical_encoder` is used when provided."""
+
+    X, y = data
+    sampler = SMOTEN(random_state=0)
+    sampler.fit_resample(X, y)
+
+    assert isinstance(sampler.categorical_encoder_, OrdinalEncoder)
+    assert sampler.categorical_encoder_.dtype == np.int32
+
+    encoder = OrdinalEncoder(dtype=np.int64)
+    sampler.set_params(categorical_encoder=encoder).fit_resample(X, y)
+
+    assert isinstance(sampler.categorical_encoder_, OrdinalEncoder)
+    assert sampler.categorical_encoder is encoder
+    assert sampler.categorical_encoder_ is not encoder
+    assert sampler.categorical_encoder_.dtype == np.int64
