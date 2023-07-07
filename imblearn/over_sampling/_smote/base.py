@@ -764,6 +764,10 @@ class SMOTEN(SMOTE):
 
     Parameters
     ----------
+    categorical_encoder : estimator, default=None
+        Ordinal encoder used to encode the categorical features. If `None`, a
+        :class:`~sklearn.preprocessing.OrdinalEncoder` is used with default parameters.
+
     {sampling_strategy}
 
     {random_state}
@@ -791,6 +795,9 @@ class SMOTEN(SMOTE):
 
     Attributes
     ----------
+    categorical_encoder_ : estimator
+        The encoder used to encode the categorical features.
+
     sampling_strategy_ : dict
         Dictionary containing the information to sample the dataset. The keys
         corresponds to the class labels from which to sample and the values
@@ -853,6 +860,31 @@ class SMOTEN(SMOTE):
     Class counts after resampling Counter({{0: 40, 1: 40}})
     """
 
+    _parameter_constraints: dict = {
+        **SMOTE._parameter_constraints,
+        "categorical_encoder": [
+            HasMethods(["fit_transform", "inverse_transform"]),
+            None,
+        ],
+    }
+
+    def __init__(
+        self,
+        categorical_encoder=None,
+        *,
+        sampling_strategy="auto",
+        random_state=None,
+        k_neighbors=5,
+        n_jobs=None,
+    ):
+        super().__init__(
+            sampling_strategy=sampling_strategy,
+            random_state=random_state,
+            k_neighbors=k_neighbors,
+            n_jobs=n_jobs,
+        )
+        self.categorical_encoder = categorical_encoder
+
     def _check_X_y(self, X, y):
         """Check should accept strings and not sparse matrices."""
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
@@ -900,11 +932,14 @@ class SMOTEN(SMOTE):
         X_resampled = [X.copy()]
         y_resampled = [y.copy()]
 
-        encoder = OrdinalEncoder(dtype=np.int32)
-        X_encoded = encoder.fit_transform(X)
+        if self.categorical_encoder is None:
+            self.categorical_encoder_ = OrdinalEncoder(dtype=np.int32)
+        else:
+            self.categorical_encoder_ = clone(self.categorical_encoder)
+        X_encoded = self.categorical_encoder_.fit_transform(X)
 
         vdm = ValueDifferenceMetric(
-            n_categories=[len(cat) for cat in encoder.categories_]
+            n_categories=[len(cat) for cat in self.categorical_encoder_.categories_]
         ).fit(X_encoded, y)
 
         for class_sample, n_samples in self.sampling_strategy_.items():
@@ -922,7 +957,7 @@ class SMOTEN(SMOTE):
                 X_class, class_sample, y.dtype, nn_indices, n_samples
             )
 
-            X_new = encoder.inverse_transform(X_new)
+            X_new = self.categorical_encoder_.inverse_transform(X_new)
             X_resampled.append(X_new)
             y_resampled.append(y_new)
 

@@ -33,3 +33,9 @@ Enhancements
   allowing to specify a :class:`~sklearn.preprocessing.OneHotEncoder` with custom
   parameters.
   :pr:`1000` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- :class:`~imblearn.over_sampling.SMOTEN` now accepts a parameter `categorical_encoder`
+  allowing to specify a :class:`~sklearn.preprocessing.OrdinalEncoder` with custom
+  parameters. A new fitted parameter `categorical_encoder_` is exposed to access the
+  fitted encoder.
+  :pr:`1001` by :user:`Guillaume Lemaitre <glemaitre>`.
