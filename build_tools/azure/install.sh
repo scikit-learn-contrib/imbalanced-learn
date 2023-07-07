@@ -18,7 +18,7 @@ make_conda() {
 }
 
 # imports get_dep
-source build_tools/shared.sh
+source build_tools/shared.shpython= pip 'blas[build=mkl]' numpy scipy scikit-learn joblib pandas Pillow matplotlib
 
 if [[ "$DISTRIB" == "conda" || "$DISTRIB" == *"mamba"* ]]; then
 
