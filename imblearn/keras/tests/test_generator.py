@@ -20,6 +20,8 @@ from imblearn.under_sampling import (
     NearMiss,  # noqa: E402
 )
 
+3
+
 
 @pytest.fixture
 def data():
