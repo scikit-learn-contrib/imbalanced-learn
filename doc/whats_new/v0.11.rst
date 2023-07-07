@@ -5,3 +5,9 @@ Version 0.11.0 (Under development)
 
 Changelog
 ---------
+
+Compatibility
+.............
+
+- Maintenance release for be compatible with scikit-learn >= 1.3.0.
+  :pr:`999` by :user:`Guillaume Lemaitre <glemaitre>`.
