@@ -160,4 +160,5 @@ def test_random_under_sampling_datetime():
     X_res, y_res = rus.fit_resample(X, y)
 
     pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
+    pd.testing.assert_index_equal(X_res.index, y_res.index)
     assert_array_equal(y_res.to_numpy(), np.array([0, 1]))
