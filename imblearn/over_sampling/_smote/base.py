@@ -479,7 +479,8 @@ class SMOTENC(SMOTE):
 
     See
     :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
-    and :ref:`sphx_glr_auto_examples_over-sampling_plot_illustration_generation_sample.py`.  # noqa
+    and
+    :ref:`sphx_glr_auto_examples_over-sampling_plot_illustration_generation_sample.py`.
 
     References
     ----------

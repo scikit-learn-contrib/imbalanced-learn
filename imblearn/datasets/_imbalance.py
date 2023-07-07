@@ -20,7 +20,8 @@ from ..utils._param_validation import validate_params
         "sampling_strategy": [Mapping, callable, None],
         "random_state": ["random_state"],
         "verbose": ["boolean"],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def make_imbalance(
     X, y, *, sampling_strategy=None, random_state=None, verbose=False, **kwargs

@@ -53,10 +53,9 @@ increase the effect of the wrongdoings::
 
 Let's first check the balancing ratio on this dataset::
 
-  >>> y.value_counts(normalize=True)
-  <=50K    0.98801
-  >50K     0.01199
-  Name: class, dtype: float64
+  >>> from collections import Counter
+  >>> {key: value / len(y) for key, value in Counter(y).items()}
+  {'<=50K': 0.988..., '>50K': 0.011...}
 
 To later highlight some of the issue, we will keep aside a left-out set that we
 will not use for the evaluation of the model::
@@ -72,7 +71,6 @@ classifier, without any preprocessing to alleviate the bias toward the majority
 class. We evaluate the generalization performance of the classifier via
 cross-validation::
 
-  >>> from sklearn.experimental import enable_hist_gradient_boosting
   >>> from sklearn.ensemble import HistGradientBoostingClassifier
   >>> from sklearn.model_selection import cross_validate
   >>> model = HistGradientBoostingClassifier(random_state=0)
@@ -130,9 +128,9 @@ cross-validation::
   ...     f"{cv_results['test_score'].std():.3f}"
   ... )
   Balanced accuracy mean +/- std. dev.: 0.724 +/- 0.042
-  
-The cross-validation performance looks good, but evaluating the classifiers 
-on the left-out data shows a different picture:: 
+
+The cross-validation performance looks good, but evaluating the classifiers
+on the left-out data shows a different picture::
 
   >>> scores = []
   >>> for fold_id, cv_model in enumerate(cv_results["estimator"]):
@@ -147,7 +145,7 @@ on the left-out data shows a different picture::
   ... )
   Balanced accuracy mean +/- std. dev.: 0.698 +/- 0.014
 
-We see that the performance is now worse than the cross-validated performance. 
+We see that the performance is now worse than the cross-validated performance.
 Indeed, the data leakage gave us too optimistic results due to the reason
 stated earlier in this section.
 

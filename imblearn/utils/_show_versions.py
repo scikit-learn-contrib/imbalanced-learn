@@ -72,7 +72,6 @@ def show_versions(github=False):
     )
 
     if github:
-
         _sys_markup = ""
         _deps_markup = ""
 
@@ -84,7 +83,6 @@ def show_versions(github=False):
         print(_github_markup.format(_sys_markup, _deps_markup))
 
     else:
-
         print("\nSystem:")
         for k, stat in _sys_info.items():
             print(f"{k:>11}: {stat}")

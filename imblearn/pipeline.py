@@ -24,7 +24,7 @@ from .utils._param_validation import HasMethods, validate_params
 __all__ = ["Pipeline", "make_pipeline"]
 
 
-class Pipeline(pipeline.Pipeline, _ParamsValidationMixin):
+class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
     """Pipeline of transforms and resamples with a final estimator.
 
     Sequentially apply a list of transforms, sampling, and a final estimator.
@@ -218,7 +218,7 @@ class Pipeline(pipeline.Pipeline, _ParamsValidationMixin):
         fit_transform_one_cached = memory.cache(pipeline._fit_transform_one)
         fit_resample_one_cached = memory.cache(_fit_resample_one)
 
-        for (step_idx, name, transformer) in self._iter(
+        for step_idx, name, transformer in self._iter(
             with_final=False, filter_passthrough=False, filter_resample=False
         ):
             if transformer is None or transformer == "passthrough":
@@ -424,7 +424,10 @@ def _fit_resample_one(sampler, X, y, message_clsname="", message=None, **fit_par
         return X_res, y_res, sampler
 
 
-@validate_params({"memory": [None, str, HasMethods(["cache"])], "verbose": ["boolean"]})
+@validate_params(
+    {"memory": [None, str, HasMethods(["cache"])], "verbose": ["boolean"]},
+    prefer_skip_nested_validation=True,
+)
 def make_pipeline(*steps, memory=None, verbose=False):
     """Construct a Pipeline from the given estimators.
 

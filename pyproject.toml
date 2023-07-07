@@ -4,3 +4,22 @@ include = '\.pyi?$'
 
 [tool.isort]
 profile = "black"
+
+[tool.ruff]
+# all rules can be found here: https://beta.ruff.rs/docs/rules/
+select = ["E", "F", "W", "I"]
+
+# max line length for black
+line-length = 88
+target-version = "py38"
+
+ignore=[
+    # space before : (needed for how black formats slicing)
+    "E203",
+    # do not assign a lambda expression, use a def
+    "E731",
+    # do not use variables named 'l', 'O', or 'I'
+    "E741",
+    # Import not on the top of the file
+    "E402",
+]

@@ -3,7 +3,7 @@ version: 2
 jobs:
   doc:
     docker:
-      - image: circleci/python:3.7.7-buster
+      - image: cimg/python:3.8.12
     environment:
       - USERNAME: "glemaitre"
       - ORGANIZATION: "imbalanced-learn"

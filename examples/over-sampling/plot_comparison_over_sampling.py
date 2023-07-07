@@ -275,7 +275,8 @@ samplers = [
     BorderlineSMOTE(random_state=0, kind="borderline-1"),
     BorderlineSMOTE(random_state=0, kind="borderline-2"),
     KMeansSMOTE(
-        kmeans_estimator=MiniBatchKMeans(n_init=1, random_state=0), random_state=0
+        kmeans_estimator=MiniBatchKMeans(n_clusters=10, n_init=1, random_state=0),
+        random_state=0,
     ),
     SVMSMOTE(random_state=0),
 ]

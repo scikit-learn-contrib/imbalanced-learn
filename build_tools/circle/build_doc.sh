@@ -89,12 +89,13 @@ if [[ `type -t deactivate` ]]; then
     deactivate
 fi
 
-# Install dependencies with miniconda
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh \
-    -O miniconda.sh
-chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
-export PATH="$MINICONDA_PATH/bin:$PATH"
-conda update --yes --quiet conda
+MAMBAFORGE_PATH=$HOME/mambaforge
+# Install dependencies with mamba
+wget -q https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh \
+    -O mambaforge.sh
+chmod +x mambaforge.sh && ./mambaforge.sh -b -p $MAMBAFORGE_PATH
+export PATH="$MAMBAFORGE_PATH/bin:$PATH"
+mamba update --yes --quiet conda
 
 # imports get_dep
 source build_tools/shared.sh

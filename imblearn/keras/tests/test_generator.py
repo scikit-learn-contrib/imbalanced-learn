@@ -3,18 +3,24 @@ import pytest
 from scipy import sparse
 from sklearn.cluster import KMeans
 from sklearn.datasets import load_iris
+from sklearn.preprocessing import LabelBinarizer
 
 keras = pytest.importorskip("keras")
 from keras.layers import Dense  # noqa: E402
 from keras.models import Sequential  # noqa: E402
-from keras.utils.np_utils import to_categorical  # noqa: E402
 
 from imblearn.datasets import make_imbalance  # noqa: E402
-from imblearn.keras import BalancedBatchGenerator  # noqa: E402
-from imblearn.keras import balanced_batch_generator  # noqa: E402
+from imblearn.keras import (
+    BalancedBatchGenerator,  # noqa: E402
+    balanced_batch_generator,  # noqa: E402
+)
 from imblearn.over_sampling import RandomOverSampler  # noqa: E402
-from imblearn.under_sampling import ClusterCentroids  # noqa: E402
-from imblearn.under_sampling import NearMiss  # noqa: E402
+from imblearn.under_sampling import (
+    ClusterCentroids,  # noqa: E402
+    NearMiss,  # noqa: E402
+)
+
+3
 
 
 @pytest.fixture
@@ -23,7 +29,7 @@ def data():
     X, y = make_imbalance(
         iris.data, iris.target, sampling_strategy={0: 30, 1: 50, 2: 40}
     )
-    y = to_categorical(y, 3)
+    y = LabelBinarizer().fit_transform(y)
     return X, y
 
 

@@ -230,8 +230,12 @@ class KMeansSMOTE(BaseSMOTE):
 
             # identify cluster which are answering the requirements
             for cluster_idx in range(self.kmeans_estimator_.n_clusters):
-
                 cluster_mask = np.flatnonzero(X_clusters == cluster_idx)
+
+                if cluster_mask.size == 0:
+                    # empty cluster
+                    continue
+
                 X_cluster = _safe_indexing(X, cluster_mask)
                 y_cluster = _safe_indexing(y, cluster_mask)
 
