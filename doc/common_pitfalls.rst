@@ -53,11 +53,9 @@ increase the effect of the wrongdoings::
 
 Let's first check the balancing ratio on this dataset::
 
-  >>> y.value_counts(normalize=True)
-  ...
-  <=50K    0.98801
-  >50K     0.01199
-  ...
+  >>> from collections import Counter
+  >>> {key: value / len(y) for key, value in Counter(y).items()}
+  {'<=50K': 0.988..., '>50K': 0.011...}
 
 To later highlight some of the issue, we will keep aside a left-out set that we
 will not use for the evaluation of the model::
