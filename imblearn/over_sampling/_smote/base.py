@@ -13,6 +13,7 @@ from collections import Counter
 
 import numpy as np
 from scipy import sparse
+from sklearn.base import clone
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.utils import _safe_indexing, check_array, check_random_state
 from sklearn.utils.sparsefuncs_fast import (
@@ -393,6 +394,11 @@ class SMOTENC(SMOTE):
         - mask array of shape (n_features, ) and ``bool`` dtype for which
           ``True`` indicates the categorical features.
 
+    categorical_encoder : estimator, default=None
+        One-hot encoder used to encode the categorical features. If `None`, a
+        :class:`~sklearn.preprocessing.OneHotEncoder` is used with default parameters
+        apart from `handle_unknown` which is set to 'ignore'.
+
     {sampling_strategy}
 
     {random_state}
@@ -430,6 +436,13 @@ class SMOTENC(SMOTE):
 
     ohe_ : :class:`~sklearn.preprocessing.OneHotEncoder`
         The one-hot encoder used to encode the categorical features.
+
+        .. deprecated:: 0.11
+           `ohe_` is deprecated in 0.11 and will be removed in 0.13. Use
+           `categorical_encoder_` instead.
+
+    categorical_encoder_ : estimator
+        The encoder used to encode the categorical features.
 
     categorical_features_ : ndarray of shape (n_cat_features,), dtype=np.int64
         Indices of the categorical features.
@@ -514,12 +527,17 @@ class SMOTENC(SMOTE):
     _parameter_constraints: dict = {
         **SMOTE._parameter_constraints,
         "categorical_features": ["array-like"],
+        "categorical_encoder": [
+            HasMethods(["fit_transform", "inverse_transform"]),
+            None,
+        ],
     }
 
     def __init__(
         self,
         categorical_features,
         *,
+        categorical_encoder=None,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
@@ -532,6 +550,7 @@ class SMOTENC(SMOTE):
             n_jobs=n_jobs,
         )
         self.categorical_features = categorical_features
+        self.categorical_encoder = categorical_encoder
 
     def _check_X_y(self, X, y):
         """Overwrite the checking to let pass some string for categorical
@@ -603,17 +622,19 @@ class SMOTENC(SMOTE):
         else:
             dtype_ohe = np.float64
 
-        self.ohe_ = OneHotEncoder(handle_unknown="ignore", dtype=dtype_ohe)
-        if hasattr(self.ohe_, "sparse_output"):
-            # scikit-learn >= 1.2
-            self.ohe_.set_params(sparse_output=True)
+        if self.categorical_encoder is None:
+            self.categorical_encoder_ = OneHotEncoder(
+                handle_unknown="ignore", dtype=dtype_ohe
+            )
         else:
-            self.ohe_.set_params(sparse=True)
+            self.categorical_encoder_ = clone(self.categorical_encoder)
 
         # the input of the OneHotEncoder needs to be dense
-        X_ohe = self.ohe_.fit_transform(
+        X_ohe = self.categorical_encoder_.fit_transform(
             X_categorical.toarray() if sparse.issparse(X_categorical) else X_categorical
         )
+        if not sparse.issparse(X_ohe):
+            X_ohe = sparse.csr_matrix(X_ohe, dtype=dtype_ohe)
 
         # we can replace the 1 entries of the categorical features with the
         # median of the standard deviation. It will ensure that whenever
@@ -636,7 +657,7 @@ class SMOTENC(SMOTE):
         # reverse the encoding of the categorical features
         X_res_cat = X_resampled[:, self.continuous_features_.size :]
         X_res_cat.data = np.ones_like(X_res_cat.data)
-        X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
+        X_res_cat_dec = self.categorical_encoder_.inverse_transform(X_res_cat)
 
         if sparse.issparse(X):
             X_resampled = sparse.hstack(
@@ -695,7 +716,7 @@ class SMOTENC(SMOTE):
         all_neighbors = nn_data[nn_num[rows]]
 
         categories_size = [self.continuous_features_.size] + [
-            cat.size for cat in self.ohe_.categories_
+            cat.size for cat in self.categorical_encoder_.categories_
         ]
 
         for start_idx, end_idx in zip(
@@ -713,6 +734,16 @@ class SMOTENC(SMOTE):
             X_new[xs, ys] = 1
 
         return X_new
+
+    @property
+    def ohe_(self):
+        """One-hot encoder used to encode the categorical features."""
+        warnings.warn(
+            "'ohe_' attribute has been deprecated in 0.11 and will be removed "
+            "in 0.13. Use 'categorical_encoder_' instead.",
+            FutureWarning,
+        )
+        return self.categorical_encoder_
 
 
 @Substitution(
