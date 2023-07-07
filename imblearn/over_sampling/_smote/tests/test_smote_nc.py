@@ -320,6 +320,7 @@ def test_smotenc_bool_categorical():
     pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
     assert len(X_res) == len(y_res)
 
-    X_res, y_res = smote.fit_resample(X.astype({"b": "category"}), y)
+    X = X.astype({"b": "category"})
+    X_res, y_res = smote.fit_resample(X, y)
     pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
     assert len(X_res) == len(y_res)
