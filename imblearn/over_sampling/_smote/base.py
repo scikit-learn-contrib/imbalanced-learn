@@ -527,6 +527,10 @@ class SMOTENC(SMOTE):
     _parameter_constraints: dict = {
         **SMOTE._parameter_constraints,
         "categorical_features": ["array-like"],
+        "categorical_encoder": [
+            HasMethods(["fit_transform", "inverse_transform"]),
+            None,
+        ],
     }
 
     def __init__(
