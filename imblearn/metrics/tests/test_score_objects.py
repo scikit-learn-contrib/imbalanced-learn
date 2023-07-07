@@ -5,9 +5,9 @@
 
 import pytest
 from sklearn.datasets import make_blobs
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.svm import LinearSVC
 
 from imblearn.metrics import (
     geometric_mean_score,
@@ -41,7 +41,7 @@ def test_scorer_common_average(data, score, expected_score, average):
 
     scorer = make_scorer(score, pos_label=None, average=average)
     grid = GridSearchCV(
-        LinearSVC(random_state=0),
+        LogisticRegression(),
         param_grid={"C": [1, 10]},
         scoring=scorer,
         cv=3,
@@ -70,7 +70,7 @@ def test_scorer_default_average(data, score, average, expected_score):
 
     scorer = make_scorer(score, pos_label=1, average=average)
     grid = GridSearchCV(
-        LinearSVC(random_state=0),
+        LogisticRegression(),
         param_grid={"C": [1, 10]},
         scoring=scorer,
         cv=3,
