@@ -737,6 +737,7 @@ class SMOTENC(SMOTE):
 
     @property
     def ohe_(self):
+        """One-hot encoder used to encode the categorical features."""
         warnings.warn(
             "'ohe_' attribute has been deprecated in 0.11 and will be removed "
             "in 0.13. Use 'categorical_encoder_' instead.",
