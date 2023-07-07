@@ -33,6 +33,7 @@ dependent_packages = {
     "mypy": ("1.3.0", "tests"),
     "sphinx": ("6.0.0", "docs"),
     "sphinx-gallery": ("0.13.0", "docs"),
+    "sphinx-copybutton": ("0.5.2", "docs"),
     "numpydoc": ("1.5.0", "docs"),
     "sphinxcontrib-bibtex": ("2.4.1", "docs"),
     "pydata-sphinx-theme": ("0.13.3", "docs"),

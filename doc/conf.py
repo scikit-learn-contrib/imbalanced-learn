@@ -42,7 +42,12 @@ extensions = [
     "numpydoc",
     "sphinx_issues",
     "sphinx_gallery.gen_gallery",
+    "sphinx_copybutton",
 ]
+
+# Specify how to identify the prompt when copying code snippets
+copybutton_prompt_text = r">>> |\.\.\. "
+copybutton_prompt_is_regexp = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -329,5 +334,4 @@ def generate_min_dependency_substitutions(app):
 def setup(app):
     app.connect("builder-inited", generate_min_dependency_table)
     app.connect("builder-inited", generate_min_dependency_substitutions)
-    app.add_js_file("js/copybutton.js")
     app.add_css_file("basic.css")
