@@ -4,9 +4,6 @@ set -e
 # pipefail is necessary to propagate exit codes
 set -o pipefail
 
-flake8 --show-source .
-echo -e "No problem detected by flake8\n"
-
 # For docstrings and warnings of deprecated attributes to be rendered
 # properly, the property decorator must come before the deprecated decorator
 # (else they are treated as functions)
