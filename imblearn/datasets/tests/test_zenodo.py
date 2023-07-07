@@ -56,7 +56,6 @@ def test_fetch():
     datasets2 = fetch(shuffle=True, random_state=37)
 
     for k in DATASET_SHAPE.keys():
-
         X1, X2 = datasets1[k].data, datasets2[k].data
         assert DATASET_SHAPE[k] == X1.shape
         assert X1.shape == X2.shape

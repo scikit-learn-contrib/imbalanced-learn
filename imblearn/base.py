@@ -398,7 +398,6 @@ class FunctionSampler(BaseSampler):
         output = self._fit_resample(X, y)
 
         if self.validate:
-
             y_ = (
                 label_binarize(output[1], classes=np.unique(y))
                 if binarize_y

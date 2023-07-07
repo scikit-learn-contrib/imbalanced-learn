@@ -218,7 +218,7 @@ class Pipeline(pipeline.Pipeline, _ParamsValidationMixin):
         fit_transform_one_cached = memory.cache(pipeline._fit_transform_one)
         fit_resample_one_cached = memory.cache(_fit_resample_one)
 
-        for (step_idx, name, transformer) in self._iter(
+        for step_idx, name, transformer in self._iter(
             with_final=False, filter_passthrough=False, filter_resample=False
         ):
             if transformer is None or transformer == "passthrough":
