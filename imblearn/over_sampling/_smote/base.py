@@ -14,6 +14,7 @@ from collections import Counter
 import numpy as np
 from scipy import sparse
 from sklearn.base import clone
+from sklearn.exceptions import DataConversionWarning
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.utils import _safe_indexing, check_array, check_random_state
 from sklearn.utils.sparsefuncs_fast import (
@@ -893,7 +894,7 @@ class SMOTEN(SMOTE):
             y,
             reset=True,
             dtype=None,
-            accept_sparse=False,
+            accept_sparse=["csr", "csc"],
         )
         return X, y, binarize_y
 
@@ -926,6 +927,17 @@ class SMOTEN(SMOTE):
                 "`n_jobs` is already set instead.",
                 FutureWarning,
             )
+
+        if sparse.issparse(X):
+            X_sparse_format = X.format
+            X = X.toarray()
+            warnings.warn(
+                "Passing a sparse matrix to SMOTEN is not really efficient since it is"
+                " converted to a dense array internally.",
+                DataConversionWarning,
+            )
+        else:
+            X_sparse_format = None
 
         self._validate_estimator()
 
@@ -964,7 +976,12 @@ class SMOTEN(SMOTE):
         X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
 
-        return X_resampled, y_resampled
+        if X_sparse_format == "csr":
+            return sparse.csr_matrix(X_resampled), y_resampled
+        elif X_sparse_format == "csc":
+            return sparse.csc_matrix(X_resampled), y_resampled
+        else:
+            return X_resampled, y_resampled
 
     def _more_tags(self):
         return {"X_types": ["2darray", "dataframe", "string"]}

@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
-from sklearn.preprocessing import OrdinalEncoder
+from sklearn.exceptions import DataConversionWarning
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.utils._testing import _convert_container
 
 from imblearn.over_sampling import SMOTEN
 
@@ -54,6 +56,24 @@ def test_smoten_resampling():
     X_generated, y_generated = X_res[X.shape[0] :], y_res[X.shape[0] :]
     np.testing.assert_array_equal(X_generated, "blue")
     np.testing.assert_array_equal(y_generated, "not apple")
+
+
+@pytest.mark.parametrize("sparse_format", ["sparse_csr", "sparse_csc"])
+def test_smoten_sparse_input(data, sparse_format):
+    """Check that we handle sparse input in SMOTEN even if it is not efficient.
+
+    Non-regression test for:
+    https://github.com/scikit-learn-contrib/imbalanced-learn/issues/971
+    """
+    X, y = data
+    X = OneHotEncoder().fit_transform(X)
+    X = _convert_container(X, sparse_format)
+
+    with pytest.warns(DataConversionWarning, match="is not really efficient"):
+        X_res, y_res = SMOTEN(random_state=0).fit_resample(X, y)
+
+    assert X_res.format == X.format
+    assert X_res.shape[0] == len(y_res)
 
 
 def test_smoten_categorical_encoder(data):

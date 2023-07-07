@@ -13,6 +13,10 @@ Bug fixes
   `bool` and `pd.category` by delegating the conversion to scikit-learn encoder.
   :pr:`1002` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Handle sparse matrices in :class:`~imblearn.over_sampling.SMOTEN` and raise a warning
+  since it requires a conversion to dense matrices.
+  :pr:`1003` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Compatibility
 .............
 
