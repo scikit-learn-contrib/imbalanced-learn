@@ -283,12 +283,12 @@ jobs:
         CPU_COUNT: '3'
         TEST_DOCS: 'true'
       # TODO: re-enable when we find out why MKL on defaults segfaults
-      # pylatest_conda_mkl_no_openmp:
-      #   DISTRIB: 'conda'
-      #   BLAS: 'mkl'
-      #   SKLEARN_SKIP_OPENMP_TEST: 'true'
-      #   CPU_COUNT: '3'
-      #   TEST_DOCS: 'true'
+      pylatest_conda_mkl_no_openmp:
+        DISTRIB: 'conda'
+        BLAS: 'mkl'
+        SKLEARN_SKIP_OPENMP_TEST: 'true'
+        CPU_COUNT: '3'
+        TEST_DOCS: 'true'
       conda_defaults_openblas:
         DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
