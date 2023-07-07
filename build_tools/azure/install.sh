@@ -42,7 +42,7 @@ if [[ "$DISTRIB" == "conda" || "$DISTRIB" == *"mamba"* ]]; then
 	make_conda $TO_INSTALL
 
     if [[ "$CONDA_CHANNEL" == "" && "$DISTRIB" == "conda" ]]; then
-        conda install scikit-learn==1.3 -c conda-forge --yes
+        conda install scikit-learn==1.3 --override-channels -c conda-forge --yes
     fi
 
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
