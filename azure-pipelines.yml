@@ -285,6 +285,7 @@ jobs:
       pylatest_conda_mkl_no_openmp:
         DISTRIB: 'conda'
         BLAS: 'mkl'
+        JOBLIB_VERSION: '1.3.0'
         SKLEARN_SKIP_OPENMP_TEST: 'true'
         CPU_COUNT: '3'
         TEST_DOCS: 'true'
