@@ -154,14 +154,9 @@ class RandomOverSampler(BaseOverSampler):
 
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X,
-            y,
-            reset=True,
-            accept_sparse=["csr", "csc"],
-            dtype=None,
-            force_all_finite=False,
-        )
+        if not (hasattr(X, "__array__") or sparse.issparse(X)):
+            X = check_array(X, dtype=object)
+        self._check_n_features(X, reset=True)
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):

@@ -5,7 +5,8 @@
 # License: MIT
 
 import numpy as np
-from sklearn.utils import _safe_indexing, check_random_state
+from scipy import sparse
+from sklearn.utils import _safe_indexing, check_array, check_random_state
 
 from ...utils import Substitution, check_target_type
 from ...utils._docstring import _random_state_docstring
@@ -97,14 +98,9 @@ class RandomUnderSampler(BaseUnderSampler):
 
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X,
-            y,
-            reset=True,
-            accept_sparse=["csr", "csc"],
-            dtype=None,
-            force_all_finite=False,
-        )
+        if not (hasattr(X, "__array__") or sparse.issparse(X)):
+            X = check_array(X, dtype=object)
+        self._check_n_features(X, reset=True)
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):
