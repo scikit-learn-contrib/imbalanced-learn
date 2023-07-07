@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from sklearn.exceptions import DataConversionWarning
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.utils._testing import _convert_container
 
 from imblearn.over_sampling import SMOTEN
@@ -30,6 +30,7 @@ def test_smoten(data):
 
     assert X_res.shape == (80, 3)
     assert y_res.shape == (80,)
+    assert isinstance(sampler.categorical_encoder_, OrdinalEncoder)
 
 
 def test_smoten_resampling():
@@ -73,3 +74,22 @@ def test_smoten_sparse_input(data, sparse_format):
 
     assert X_res.format == X.format
     assert X_res.shape[0] == len(y_res)
+
+
+def test_smoten_categorical_encoder(data):
+    """Check that `categorical_encoder` is used when provided."""
+
+    X, y = data
+    sampler = SMOTEN(random_state=0)
+    sampler.fit_resample(X, y)
+
+    assert isinstance(sampler.categorical_encoder_, OrdinalEncoder)
+    assert sampler.categorical_encoder_.dtype == np.int32
+
+    encoder = OrdinalEncoder(dtype=np.int64)
+    sampler.set_params(categorical_encoder=encoder).fit_resample(X, y)
+
+    assert isinstance(sampler.categorical_encoder_, OrdinalEncoder)
+    assert sampler.categorical_encoder is encoder
+    assert sampler.categorical_encoder_ is not encoder
+    assert sampler.categorical_encoder_.dtype == np.int64
