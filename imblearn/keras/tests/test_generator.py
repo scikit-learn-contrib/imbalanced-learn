@@ -29,7 +29,7 @@ def data():
     X, y = make_imbalance(
         iris.data, iris.target, sampling_strategy={0: 30, 1: 50, 2: 40}
     )
-    y = LabelBinarizer().fit_transform(y, 3)
+    y = LabelBinarizer().fit_transform(y)
     return X, y
 
 
