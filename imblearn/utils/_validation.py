@@ -10,10 +10,12 @@ from inspect import Parameter, signature
 from numbers import Integral, Real
 
 import numpy as np
+from scipy import sparse
 from sklearn.base import clone
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import column_or_1d
+from sklearn.utils import check_array, column_or_1d
 from sklearn.utils.multiclass import type_of_target
+from sklearn.utils.validation import _num_features, _num_samples
 
 SAMPLING_KIND = (
     "over-sampling",
@@ -607,3 +609,29 @@ def _deprecate_positional_args(f):
         return f(**kwargs)
 
     return inner_f
+
+
+def _check_X(X):
+    """Check the shape of X and convert it if it is a list of list."""
+    n_samples = _num_samples(X)
+    if n_samples < 1:
+        raise ValueError(
+            f"Found array with {n_samples} sample(s) while a minimum of 1 is "
+            "required."
+        )
+    try:
+        n_features = _num_features(X)
+        if n_features < 1:
+            raise ValueError(
+                f"Found array with {n_features} feature(s) "
+                f"(shape=({n_samples}, {n_features})) while a minimum of 1 is required."
+            )
+    except TypeError as exc:
+        n_features = 0
+        raise ValueError(
+            f"Found array with {n_features} feature(s) "
+            f"(shape=({n_samples}, {n_features})) while a minimum of 1 is required."
+        ) from exc
+    if not (hasattr(X, "__array__") or sparse.issparse(X)):
+        X = check_array(X, dtype=object)
+    return X
