@@ -339,5 +339,6 @@ else:
     from sklearn._config import (  # type: ignore[no-redef]
         _get_threadlocal_config,
         _global_config,
+        config_context,  # noqa
         get_config,
     )
