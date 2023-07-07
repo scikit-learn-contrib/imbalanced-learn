@@ -10,12 +10,13 @@ from inspect import Parameter, signature
 from numbers import Integral, Real
 
 import numpy as np
-from scipy import sparse
 from sklearn.base import clone
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_array, column_or_1d
 from sklearn.utils.multiclass import type_of_target
-from sklearn.utils.validation import _num_features, _num_samples
+from sklearn.utils.validation import _num_samples
+
+from .fixes import _is_pandas_df
 
 SAMPLING_KIND = (
     "over-sampling",
@@ -37,6 +38,12 @@ class ArraysTransformer:
     def transform(self, X, y):
         X = self._transfrom_one(X, self.x_props)
         y = self._transfrom_one(y, self.y_props)
+        if self.x_props["type"].lower() == "dataframe" and self.y_props[
+            "type"
+        ].lower() in {"series", "dataframe"}:
+            # We lost the y.index during resampling. We can safely use X.index to align
+            # them.
+            y.index = X.index
         return X, y
 
     def _gets_props(self, array):
@@ -619,19 +626,8 @@ def _check_X(X):
             f"Found array with {n_samples} sample(s) while a minimum of 1 is "
             "required."
         )
-    try:
-        n_features = _num_features(X)
-        if n_features < 1:
-            raise ValueError(
-                f"Found array with {n_features} feature(s) "
-                f"(shape=({n_samples}, {n_features})) while a minimum of 1 is required."
-            )
-    except TypeError as exc:
-        n_features = 0
-        raise ValueError(
-            f"Found array with {n_features} feature(s) "
-            f"(shape=({n_samples}, {n_features})) while a minimum of 1 is required."
-        ) from exc
-    if not (hasattr(X, "__array__") or sparse.issparse(X)):
-        X = check_array(X, dtype=object)
-    return X
+    if _is_pandas_df(X):
+        return X
+    return check_array(
+        X, dtype=None, accept_sparse=["csr", "csc"], force_all_finite=False
+    )
