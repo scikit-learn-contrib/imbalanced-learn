@@ -29,13 +29,13 @@ dependent_packages = {
     "pytest": (PYTEST_MIN_VERSION, "tests"),
     "pytest-cov": ("2.9.0", "tests"),
     "flake8": ("3.8.2", "tests"),
-    "black": ("22.3.0", "tests"),
-    "mypy": ("0.770", "tests"),
-    "sphinx": ("4.2.0", "docs"),
-    "sphinx-gallery": ("0.7.0", "docs"),
-    "numpydoc": ("1.0.0", "docs"),
+    "black": ("23.3.0", "tests"),
+    "mypy": ("1.3.0", "tests"),
+    "sphinx": ("6.0.0", "docs"),
+    "sphinx-gallery": ("0.13.0", "docs"),
+    "numpydoc": ("1.5.0", "docs"),
     "sphinxcontrib-bibtex": ("2.4.1", "docs"),
-    "pydata-sphinx-theme": ("0.7.2", "docs"),
+    "pydata-sphinx-theme": ("0.13.3", "docs"),
 }
 
 
