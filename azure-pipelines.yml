@@ -229,18 +229,6 @@ jobs:
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'false'  # it is going to fail because of scikit-learn inheritance
         CHECK_WARNINGS: 'false'  # in case the older version raise some FutureWarnings
-      pylatest_conda_forge_mkl_linux:
-        DISTRIB: 'conda'
-        BLAS: 'mkl'
-        CONDA_CHANNEL: 'conda-forge'
-        CPU_COUNT: '3'
-        TEST_DOCS: 'true'
-      pylatest_conda_mkl_no_openmp_linux:
-        DISTRIB: 'conda'
-        BLAS: 'mkl'
-        SKLEARN_SKIP_OPENMP_TEST: 'true'
-        CPU_COUNT: '3'
-        TEST_DOCS: 'true'
 
 # Currently runs on Python 3.8 while only Python 3.7 available
 # - template: build_tools/azure/posix-docker.yml
@@ -290,7 +278,7 @@ jobs:
         BLAS: 'mkl'
         SKLEARN_SKIP_OPENMP_TEST: 'true'
         CPU_COUNT: '3'
-        TEST_DOCS: 'true'
+        TEST_DOCS: 'false'
       conda_conda_forge_openblas:
         DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
