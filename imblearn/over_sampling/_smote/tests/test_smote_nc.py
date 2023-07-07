@@ -290,3 +290,37 @@ def test_smotenc_param_validation():
     name = smote.__class__.__name__
     _set_checking_parameters(smote)
     check_param_validation(name, smote)
+
+
+def test_smotenc_bool_categorical():
+    """Check that we don't try to early convert the full input data to numeric when
+    handling a pandas dataframe.
+
+    Non-regression test for:
+    https://github.com/scikit-learn-contrib/imbalanced-learn/issues/974
+    """
+    pd = pytest.importorskip("pandas")
+
+    X = pd.DataFrame(
+        {
+            "c": pd.Categorical([x for x in "abbacaba" * 3]),
+            "f": [0.3, 0.5, 0.1, 0.2] * 6,
+            "b": [False, False, True] * 8,
+        }
+    )
+    y = pd.DataFrame({"out": [1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0] * 2})
+    smote = SMOTENC(categorical_features=[0])
+
+    X_res, y_res = smote.fit_resample(X, y)
+    pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
+    assert len(X_res) == len(y_res)
+
+    smote.set_params(categorical_features=[0, 2])
+    X_res, y_res = smote.fit_resample(X, y)
+    pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
+    assert len(X_res) == len(y_res)
+
+    X = X.astype({"b": "category"})
+    X_res, y_res = smote.fit_resample(X, y)
+    pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
+    assert len(X_res) == len(y_res)

@@ -20,6 +20,7 @@ from sklearn.utils.sparsefuncs_fast import (
     csc_mean_variance_axis0,
     csr_mean_variance_axis0,
 )
+from sklearn.utils.validation import _num_features
 
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
@@ -557,9 +558,9 @@ class SMOTENC(SMOTE):
         features.
         """
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X, y, reset=True, dtype=None, accept_sparse=["csr", "csc"]
-        )
+        if not (hasattr(X, "__array__") or sparse.issparse(X)):
+            X = check_array(X, dtype=object)
+        self._check_n_features(X, reset=True)
         return X, y, binarize_y
 
     def _validate_estimator(self):
@@ -596,14 +597,14 @@ class SMOTENC(SMOTE):
                 FutureWarning,
             )
 
-        self.n_features_ = X.shape[1]
+        self.n_features_ = _num_features(X)
         self._validate_estimator()
 
         # compute the median of the standard deviation of the minority class
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
 
-        X_continuous = X[:, self.continuous_features_]
+        X_continuous = _safe_indexing(X, self.continuous_features_, axis=1)
         X_continuous = check_array(X_continuous, accept_sparse=["csr", "csc"])
         X_minority = _safe_indexing(X_continuous, np.flatnonzero(y == class_minority))
 
@@ -616,7 +617,7 @@ class SMOTENC(SMOTE):
             var = X_minority.var(axis=0)
         self.median_std_ = np.median(np.sqrt(var))
 
-        X_categorical = X[:, self.categorical_features_]
+        X_categorical = _safe_indexing(X, self.categorical_features_, axis=1)
         if X_continuous.dtype.name != "object":
             dtype_ohe = X_continuous.dtype
         else:
