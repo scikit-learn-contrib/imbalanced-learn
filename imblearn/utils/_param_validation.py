@@ -190,7 +190,10 @@ if sklearn_version < parse_version("1.3"):
 
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                global_skip_validation = get_config()["skip_parameter_validation"]
+                # This line is changed to be compatible with scikit-learn <=1.2
+                global_skip_validation = get_config().get(
+                    "skip_parameter_validation", False
+                )
                 if global_skip_validation:
                     return func(*args, **kwargs)
 
