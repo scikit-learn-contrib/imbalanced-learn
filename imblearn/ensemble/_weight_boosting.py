@@ -5,11 +5,12 @@ import warnings
 from copy import deepcopy
 
 import numpy as np
+import sklearn
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils import _safe_indexing
+from sklearn.utils import _safe_indexing, parse_version
 from sklearn.utils.validation import has_fit_parameter
 
 from ..base import _ParamsValidationMixin
@@ -19,14 +20,17 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
 from ..utils._param_validation import Interval, StrOptions
+from ..utils.fixes import _fit_context
 from ._common import _adaboost_classifier_parameter_constraints
+
+sklearn_version = parse_version(sklearn.__version__)
 
 
 @Substitution(
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring,
 )
-class RUSBoostClassifier(AdaBoostClassifier, _ParamsValidationMixin):
+class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
     """Random under-sampling integrated in the learning of AdaBoost.
 
     During learning, the problem of class balancing is alleviated by random
@@ -168,8 +172,7 @@ class RUSBoostClassifier(AdaBoostClassifier, _ParamsValidationMixin):
     """
 
     # make a deepcopy to not modify the original dictionary
-    if hasattr(AdaBoostClassifier, "_parameter_constraints"):
-        # scikit-learn >= 1.2
+    if sklearn_version >= parse_version("1.3"):
         _parameter_constraints = copy.deepcopy(
             AdaBoostClassifier._parameter_constraints
         )
@@ -220,6 +223,7 @@ class RUSBoostClassifier(AdaBoostClassifier, _ParamsValidationMixin):
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
 
+    @_fit_context(prefer_skip_nested_validation=False)
     def fit(self, X, y, sample_weight=None):
         """Build a boosted classifier from the training set (X, y).
 

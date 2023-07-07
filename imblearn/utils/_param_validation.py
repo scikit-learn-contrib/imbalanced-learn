@@ -15,9 +15,9 @@ from numbers import Integral, Real
 import numpy as np
 import sklearn
 from scipy.sparse import csr_matrix, issparse
-from sklearn import config_context, get_config
 from sklearn.utils.fixes import parse_version
 
+from .._config import config_context, get_config
 from ..utils.fixes import _is_arraylike_not_scalar
 
 sklearn_version = parse_version(sklearn.__version__)
@@ -190,10 +190,7 @@ if sklearn_version < parse_version("1.3"):
 
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                # This line is changed to be compatible with scikit-learn <=1.2
-                global_skip_validation = get_config().get(
-                    "skip_parameter_validation", False
-                )
+                global_skip_validation = get_config()["skip_parameter_validation"]
                 if global_skip_validation:
                     return func(*args, **kwargs)
 

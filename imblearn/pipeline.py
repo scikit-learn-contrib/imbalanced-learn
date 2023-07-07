@@ -24,7 +24,7 @@ from .utils._param_validation import HasMethods, validate_params
 __all__ = ["Pipeline", "make_pipeline"]
 
 
-class Pipeline(pipeline.Pipeline, _ParamsValidationMixin):
+class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
     """Pipeline of transforms and resamples with a final estimator.
 
     Sequentially apply a list of transforms, sampling, and a final estimator.

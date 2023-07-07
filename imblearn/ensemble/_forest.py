@@ -41,6 +41,7 @@ from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Interval, StrOptions
 from ..utils._validation import check_sampling_strategy
+from ..utils.fixes import _fit_context
 from ._common import _random_forest_classifier_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
@@ -103,10 +104,10 @@ def _local_parallel_build_trees(
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class BalancedRandomForestClassifier(RandomForestClassifier, _ParamsValidationMixin):
+class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassifier):
     """A balanced random forest classifier.
 
-    A balanced random forest randomly under-samples each boostrap sample to
+    A balanced random forest randomly under-samples each bootstrap sample to
     balance it.
 
     Read more in the :ref:`User Guide <forest>`.
@@ -361,8 +362,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier, _ParamsValidationMi
     """
 
     # make a deepcopy to not modify the original dictionary
-    if hasattr(RandomForestClassifier, "_parameter_constraints"):
-        # scikit-learn >= 1.2
+    if sklearn_version >= parse_version("1.3"):
         _parameter_constraints = deepcopy(RandomForestClassifier._parameter_constraints)
     else:
         _parameter_constraints = deepcopy(
@@ -468,6 +468,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier, _ParamsValidationMi
 
         return estimator, sampler
 
+    @_fit_context(prefer_skip_nested_validation=True)
     def fit(self, X, y, sample_weight=None):
         """Build a forest of trees from the training set (X, y).
 

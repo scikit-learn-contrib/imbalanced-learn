@@ -6,11 +6,12 @@ from numbers import Integral, Real
 import numpy as np
 import pytest
 from scipy.sparse import csr_matrix
-from sklearn._config import config_context, get_config
-from sklearn.base import BaseEstimator, _fit_context
+from sklearn.base import BaseEstimator
 from sklearn.model_selection import LeaveOneOut
 from sklearn.utils import deprecated
 
+from imblearn._config import config_context, get_config
+from imblearn.base import _ParamsValidationMixin
 from imblearn.utils._param_validation import (
     HasMethods,
     Hidden,
@@ -36,6 +37,7 @@ from imblearn.utils._param_validation import (
     make_constraint,
     validate_params,
 )
+from imblearn.utils.fixes import _fit_context
 
 
 # Some helpers for the tests
@@ -60,7 +62,7 @@ class _Class:
         """A deprecated validated method"""
 
 
-class _Estimator(BaseEstimator):
+class _Estimator(_ParamsValidationMixin, BaseEstimator):
     """An estimator to test the validation of estimator parameters."""
 
     _parameter_constraints: dict = {"a": [Real]}
