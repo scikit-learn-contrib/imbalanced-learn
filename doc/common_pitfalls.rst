@@ -54,10 +54,10 @@ increase the effect of the wrongdoings::
 Let's first check the balancing ratio on this dataset::
 
   >>> y.value_counts(normalize=True)
-  class
+  ...
   <=50K    0.98801
   >50K     0.01199
-  Name: proportion, dtype: float64
+  ...
 
 To later highlight some of the issue, we will keep aside a left-out set that we
 will not use for the evaluation of the model::
