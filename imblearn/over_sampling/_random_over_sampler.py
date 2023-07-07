@@ -254,4 +254,7 @@ class RandomOverSampler(BaseOverSampler):
             "X_types": ["2darray", "string", "sparse", "dataframe"],
             "sample_indices": True,
             "allow_nan": True,
+            "_xfail_checks": {
+                "check_complex_data": "Robust to this type of data.",
+            },
         }
