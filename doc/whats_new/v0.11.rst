@@ -9,5 +9,20 @@ Changelog
 Compatibility
 .............
 
-- Maintenance release for be compatible with scikit-learn >= 1.3.0.
+- Maintenance release for being compatible with scikit-learn >= 1.3.0.
   :pr:`999` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Enhancements
+............
+
+- :class:`~imblearn.over_sampling.SMOTENC` now accepts a parameter `categorical_encoder`
+  allowing to specify a :class:`~sklearn.preprocessing.OneHotEncoder` with custom
+  parameters.
+  :pr:`1000` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Deprecation
+...........
+
+- The fitted attribute `ohe_` in :class:`~imblearn.over_sampling.SMOTENC` is deprecated
+  and will be removed in version 0.13. Use `categorical_encoder_` instead.
+  :pr:`1000` by :user:`Guillaume Lemaitre <glemaitre>`.
