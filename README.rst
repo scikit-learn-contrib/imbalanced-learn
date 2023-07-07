@@ -12,7 +12,7 @@
 .. |Codecov| image:: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn/branch/master/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn
 
-.. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield&circle-token=:circle-token
+.. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield
 .. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn/tree/master
 
 .. |PythonVersion| image:: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
