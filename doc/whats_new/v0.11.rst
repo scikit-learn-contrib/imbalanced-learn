@@ -6,6 +6,13 @@ Version 0.11.0 (Under development)
 Changelog
 ---------
 
+Bug fixes
+.........
+
+- Handle sparse matrices in :class:`~imblearn.over_sampling.SMOTEN` and raise a warning
+  since it requires a conversion to dense matrices.
+  :pr:`1003` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Compatibility
 .............
 
