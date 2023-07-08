@@ -189,7 +189,6 @@ CondensedNearestNeighbour  # doctest: +SKIP
                 good_classif_label = idx_maj_sample.copy()
                 # Check each sample in S if we keep it or drop it
                 for idx_sam, (x_sam, y_sam) in enumerate(zip(S_x, S_y)):
-
                     # Do not select sample which are already well classified
                     if idx_sam in good_classif_label:
                         continue

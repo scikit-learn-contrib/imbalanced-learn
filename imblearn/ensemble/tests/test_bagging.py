@@ -572,11 +572,12 @@ def test_balanced_bagging_classifier_with_function_sampler(replace):
 
     # Roughly Balanced Bagging
     rbb = BalancedBaggingClassifier(
-        estimator=CountDecisionTreeClassifier(),
+        estimator=CountDecisionTreeClassifier(random_state=0),
         n_estimators=2,
         sampler=FunctionSampler(
             func=roughly_balanced_bagging, kw_args={"replace": replace}
         ),
+        random_state=0,
     )
     rbb.fit(X, y)
 

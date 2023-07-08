@@ -12,7 +12,7 @@
 .. |Codecov| image:: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn/branch/master/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn
 
-.. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield&circle-token=:circle-token
+.. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn.svg?style=shield
 .. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/imbalanced-learn/tree/master
 
 .. |PythonVersion| image:: https://img.shields.io/pypi/pyversions/imbalanced-learn.svg
@@ -29,7 +29,7 @@
 
 .. |PythonMinVersion| replace:: 3.8
 .. |NumPyMinVersion| replace:: 1.17.3
-.. |SciPyMinVersion| replace:: 1.3.2
+.. |SciPyMinVersion| replace:: 1.5.0
 .. |ScikitLearnMinVersion| replace:: 1.0.2
 .. |MatplotlibMinVersion| replace:: 3.1.2
 .. |PandasMinVersion| replace:: 1.0.5

@@ -348,7 +348,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         class_minority = min(target_stats, key=target_stats.get)
 
         for n_iter in range(self.max_iter):
-
             prev_len = y_.shape[0]
             X_enn, y_enn = self.enn_.fit_resample(X_, y_)
 
@@ -375,7 +374,10 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
             # Case 3
             b_remove_maj_class = len(stats_enn) < len(target_stats)
 
-            X_, y_, = (
+            (
+                X_,
+                y_,
+            ) = (
                 X_enn,
                 y_enn,
             )
@@ -383,7 +385,10 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
             if b_conv or b_min_bec_maj or b_remove_maj_class:
                 if b_conv:
-                    X_, y_, = (
+                    (
+                        X_,
+                        y_,
+                    ) = (
                         X_enn,
                         y_enn,
                     )
@@ -584,7 +589,10 @@ class AllKNN(BaseCleaningSampler):
             # Case 2
             b_remove_maj_class = len(stats_enn) < len(target_stats)
 
-            X_, y_, = (
+            (
+                X_,
+                y_,
+            ) = (
                 X_enn,
                 y_enn,
             )

@@ -12,8 +12,11 @@ from numbers import Integral, Real
 import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import column_or_1d
+from sklearn.utils import check_array, column_or_1d
 from sklearn.utils.multiclass import type_of_target
+from sklearn.utils.validation import _num_samples
+
+from .fixes import _is_pandas_df
 
 SAMPLING_KIND = (
     "over-sampling",
@@ -35,6 +38,12 @@ class ArraysTransformer:
     def transform(self, X, y):
         X = self._transfrom_one(X, self.x_props)
         y = self._transfrom_one(y, self.y_props)
+        if self.x_props["type"].lower() == "dataframe" and self.y_props[
+            "type"
+        ].lower() in {"series", "dataframe"}:
+            # We lost the y.index during resampling. We can safely use X.index to align
+            # them.
+            y.index = X.index
         return X, y
 
     def _gets_props(self, array):
@@ -298,8 +307,8 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
         )
     sampling_strategy_ = {}
     if sampling_type == "over-sampling":
-        n_samples_majority = max(target_stats.values())
-        class_majority = max(target_stats, key=target_stats.get)
+        max(target_stats.values())
+        max(target_stats, key=target_stats.get)
         for class_sample, n_samples in sampling_strategy.items():
             if n_samples < target_stats[class_sample]:
                 raise ValueError(
@@ -308,13 +317,6 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
                     f" or equal to the original number of samples."
                     f" Originally, there is {target_stats[class_sample]} "
                     f"samples and {n_samples} samples are asked."
-                )
-            if n_samples > n_samples_majority:
-                warnings.warn(
-                    f"After over-sampling, the number of samples ({n_samples})"
-                    f" in class {class_sample} will be larger than the number of"
-                    f" samples in the majority class (class #{class_majority} ->"
-                    f" {n_samples_majority})"
                 )
             sampling_strategy_[class_sample] = n_samples - target_stats[class_sample]
     elif sampling_type == "under-sampling":
@@ -607,3 +609,18 @@ def _deprecate_positional_args(f):
         return f(**kwargs)
 
     return inner_f
+
+
+def _check_X(X):
+    """Check X and do not check it if a dataframe."""
+    n_samples = _num_samples(X)
+    if n_samples < 1:
+        raise ValueError(
+            f"Found array with {n_samples} sample(s) while a minimum of 1 is "
+            "required."
+        )
+    if _is_pandas_df(X):
+        return X
+    return check_array(
+        X, dtype=None, accept_sparse=["csr", "csc"], force_all_finite=False
+    )

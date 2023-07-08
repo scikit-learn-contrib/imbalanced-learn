@@ -11,7 +11,7 @@ jobs:
 - job: git_commit
   displayName: Get Git Commit
   pool:
-    vmImage: ubuntu-20.04
+    vmImage: ubuntu-22.04
   steps:
     - bash: |
         set -ex
@@ -38,21 +38,21 @@ jobs:
     )
   displayName: Linting
   pool:
-    vmImage: ubuntu-20.04
+    vmImage: ubuntu-22.04
   steps:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.9'
     - bash: |
         # Include pytest compatibility with mypy
-        pip install pytest flake8 mypy==0.782 black==22.3 isort
+        pip install flake8 pytest mypy==1.3.0 black==23.3 ruff==0.0.272
       displayName: Install linters
     - bash: |
         black --check --diff .
       displayName: Run black
     - bash: |
-        isort --check --diff .
-      displayName: Run isort
+        ruff check --show-source .
+      displayName: Run ruff
     - bash: |
         ./build_tools/azure/linting.sh
       displayName: Run linting
@@ -63,7 +63,7 @@ jobs:
 - template: build_tools/azure/posix.yml
   parameters:
     name: Linux_Nightly
-    vmImage: ubuntu-20.04
+    vmImage: ubuntu-22.04
     dependsOn: [git_commit, linting]
     condition: |
       and(
@@ -86,7 +86,7 @@ jobs:
 - template: build_tools/azure/posix.yml
   parameters:
     name: Linux_Runs
-    vmImage: ubuntu-20.04
+    vmImage: ubuntu-22.04
     dependsOn: [git_commit]
     condition: |
       and(
@@ -125,7 +125,7 @@ jobs:
 - template: build_tools/azure/posix.yml
   parameters:
     name: Linux
-    vmImage: ubuntu-20.04
+    vmImage: ubuntu-22.04
     dependsOn: [linting, git_commit]
     condition: |
       and(
@@ -144,7 +144,7 @@ jobs:
         THREADPOOLCTL_VERSION: 'min'
         COVERAGE: 'false'
       # Linux + Python 3.8 build with OpenBLAS and without SITE_JOBLIB
-      py38_conda_defaults_openblas:
+      py38_conda_conda_forge_openblas:
         DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
         PYTHON_VERSION: '3.8'
@@ -170,6 +170,13 @@ jobs:
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'false'
         SKLEARN_VERSION: '1.1.3'
+      pylatest_pip_openblas_sklearn_intermediate_bis:
+        DISTRIB: 'conda-pip-latest'
+        PYTHON_VERSION: '3.10'
+        TEST_DOCS: 'true'
+        TEST_DOCSTRINGS: 'true'
+        CHECK_WARNINGS: 'false'
+        SKLEARN_VERSION: '1.2.2'
       pylatest_pip_tensorflow:
         DISTRIB: 'conda-pip-latest-tensorflow'
         CONDA_CHANNEL: 'conda-forge'
@@ -263,12 +270,21 @@ jobs:
         CONDA_CHANNEL: 'conda-forge'
         CPU_COUNT: '3'
         TEST_DOCS: 'true'
-      pylatest_conda_mkl_no_openmp:
+      # TODO: re-enable when we find out why MKL on defaults segfaults
+      # It seems that scikit-learn from defaults channel is built with LLVM/CLANG OMP
+      # while we use MKL OMP. This could be the cause of the segfaults.
+      # pylatest_conda_mkl_no_openmp:
+      #   DISTRIB: 'conda'
+      #   BLAS: 'mkl'
+      #   SKLEARN_SKIP_OPENMP_TEST: 'true'
+      #   CPU_COUNT: '3'
+      #   TEST_DOCS: 'true'
+      conda_conda_forge_openblas:
         DISTRIB: 'conda'
-        BLAS: 'mkl'
-        SKLEARN_SKIP_OPENMP_TEST: 'true'
-        CPU_COUNT: '3'
+        CONDA_CHANNEL: 'conda-forge'
+        BLAS: 'openblas'
         TEST_DOCS: 'true'
+        CPU_COUNT: '3'
 
 - template: build_tools/azure/windows.yml
   parameters:

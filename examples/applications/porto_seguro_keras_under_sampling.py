@@ -149,15 +149,23 @@ def timeit(f):
 ###############################################################################
 # The first model will be trained using the ``fit`` method and with imbalanced
 # mini-batches.
-
+import tensorflow
 from sklearn.metrics import roc_auc_score
+from sklearn.utils import parse_version
+
+tf_version = parse_version(tensorflow.__version__)
 
 
 @timeit
 def fit_predict_imbalanced_model(X_train, y_train, X_test, y_test):
     model = make_model(X_train.shape[1])
     model.fit(X_train, y_train, epochs=2, verbose=1, batch_size=1000)
-    y_pred = model.predict_proba(X_test, batch_size=1000)
+    if tf_version < parse_version("2.6"):
+        # predict_proba was removed in tensorflow 2.6
+        predict_method = "predict_proba"
+    else:
+        predict_method = "predict"
+    y_pred = getattr(model, predict_method)(X_test, batch_size=1000)
     return roc_auc_score(y_test, y_pred)
 
 

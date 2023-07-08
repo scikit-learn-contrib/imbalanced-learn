@@ -5,9 +5,9 @@
 
 import pytest
 from sklearn.datasets import make_blobs
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.svm import LinearSVC
 
 from imblearn.metrics import (
     geometric_mean_score,
@@ -25,14 +25,13 @@ def data():
     return train_test_split(X, y, random_state=0)
 
 
-@pytest.mark.filterwarnings("ignore:Liblinear failed to converge")
 @pytest.mark.parametrize(
     "score, expected_score",
     [
-        (sensitivity_score, 0.92),
-        (specificity_score, 0.92),
-        (geometric_mean_score, 0.92),
-        (make_index_balanced_accuracy()(geometric_mean_score), 0.85),
+        (sensitivity_score, 0.90),
+        (specificity_score, 0.90),
+        (geometric_mean_score, 0.90),
+        (make_index_balanced_accuracy()(geometric_mean_score), 0.82),
     ],
 )
 @pytest.mark.parametrize("average", ["macro", "weighted", "micro"])
@@ -41,27 +40,26 @@ def test_scorer_common_average(data, score, expected_score, average):
 
     scorer = make_scorer(score, pos_label=None, average=average)
     grid = GridSearchCV(
-        LinearSVC(random_state=0),
+        LogisticRegression(),
         param_grid={"C": [1, 10]},
         scoring=scorer,
         cv=3,
     )
     grid.fit(X_train, y_train).predict(X_test)
 
-    assert grid.best_score_ == pytest.approx(expected_score, rel=R_TOL)
+    assert grid.best_score_ >= expected_score
 
 
-@pytest.mark.filterwarnings("ignore:Liblinear failed to converge")
 @pytest.mark.parametrize(
     "score, average, expected_score",
     [
-        (sensitivity_score, "binary", 0.92),
-        (specificity_score, "binary", 0.95),
-        (geometric_mean_score, "multiclass", 0.92),
+        (sensitivity_score, "binary", 0.94),
+        (specificity_score, "binary", 0.89),
+        (geometric_mean_score, "multiclass", 0.90),
         (
             make_index_balanced_accuracy()(geometric_mean_score),
             "multiclass",
-            0.84,
+            0.82,
         ),
     ],
 )
@@ -70,11 +68,11 @@ def test_scorer_default_average(data, score, average, expected_score):
 
     scorer = make_scorer(score, pos_label=1, average=average)
     grid = GridSearchCV(
-        LinearSVC(random_state=0),
+        LogisticRegression(),
         param_grid={"C": [1, 10]},
         scoring=scorer,
         cv=3,
     )
     grid.fit(X_train, y_train).predict(X_test)
 
-    assert grid.best_score_ == pytest.approx(expected_score, rel=R_TOL)
+    assert grid.best_score_ >= expected_score

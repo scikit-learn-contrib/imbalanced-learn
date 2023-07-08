@@ -4,6 +4,7 @@
 # License: MIT
 
 from collections import Counter
+from datetime import datetime
 
 import numpy as np
 import pytest
@@ -273,3 +274,16 @@ def test_random_over_sampler_strings(sampling_strategy):
         random_state=0,
     )
     RandomOverSampler(sampling_strategy=sampling_strategy).fit_resample(X, y)
+
+
+def test_random_over_sampling_datetime():
+    """Check that we don't convert input data and only sample from it."""
+    pd = pytest.importorskip("pandas")
+    X = pd.DataFrame({"label": [0, 0, 0, 1], "td": [datetime.now()] * 4})
+    y = X["label"]
+    ros = RandomOverSampler(random_state=0)
+    X_res, y_res = ros.fit_resample(X, y)
+
+    pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
+    pd.testing.assert_index_equal(X_res.index, y_res.index)
+    assert_array_equal(y_res.to_numpy(), np.array([0, 0, 0, 1, 1, 1]))

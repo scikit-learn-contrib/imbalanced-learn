@@ -2,7 +2,13 @@ from numbers import Integral, Real
 
 from sklearn.tree._criterion import Criterion
 
-from ..utils._param_validation import HasMethods, Hidden, Interval, StrOptions
+from ..utils._param_validation import (
+    HasMethods,
+    Hidden,
+    Interval,
+    RealNotInt,
+    StrOptions,
+)
 
 
 def _estimator_has(attr):
@@ -27,11 +33,11 @@ _bagging_parameter_constraints = {
     "n_estimators": [Interval(Integral, 1, None, closed="left")],
     "max_samples": [
         Interval(Integral, 1, None, closed="left"),
-        Interval(Real, 0, 1, closed="right"),
+        Interval(RealNotInt, 0, 1, closed="right"),
     ],
     "max_features": [
         Interval(Integral, 1, None, closed="left"),
-        Interval(Real, 0, 1, closed="right"),
+        Interval(RealNotInt, 0, 1, closed="right"),
     ],
     "bootstrap": ["boolean"],
     "bootstrap_features": ["boolean"],
@@ -73,17 +79,17 @@ _random_forest_classifier_parameter_constraints = {
     "max_depth": [Interval(Integral, 1, None, closed="left"), None],
     "min_samples_split": [
         Interval(Integral, 2, None, closed="left"),
-        Interval(Real, 0.0, 1.0, closed="right"),
+        Interval(RealNotInt, 0.0, 1.0, closed="right"),
     ],
     "min_samples_leaf": [
         Interval(Integral, 1, None, closed="left"),
-        Interval(Real, 0.0, 1.0, closed="neither"),
+        Interval(RealNotInt, 0.0, 1.0, closed="neither"),
     ],
     "min_weight_fraction_leaf": [Interval(Real, 0.0, 0.5, closed="both")],
     "max_features": [
         Interval(Integral, 1, None, closed="left"),
-        Interval(Real, 0.0, 1.0, closed="right"),
-        StrOptions({"auto", "sqrt", "log2"}, deprecated={"auto"}),
+        Interval(RealNotInt, 0.0, 1.0, closed="right"),
+        StrOptions({"sqrt", "log2"}),
         None,
     ],
     "max_leaf_nodes": [Interval(Integral, 2, None, closed="left"), None],

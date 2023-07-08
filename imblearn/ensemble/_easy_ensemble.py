@@ -10,13 +10,21 @@ import numbers
 import warnings
 
 import numpy as np
-from joblib import Parallel
+import sklearn
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
-from sklearn.utils.fixes import delayed
+from sklearn.utils import parse_version
+from sklearn.utils._tags import _safe_tags
 from sklearn.utils.validation import check_is_fitted
+
+try:
+    # scikit-learn >= 1.2
+    from sklearn.utils.parallel import Parallel, delayed
+except (ImportError, ModuleNotFoundError):
+    from joblib import Parallel
+    from sklearn.utils.fixes import delayed
 
 from ..base import _ParamsValidationMixin
 from ..pipeline import Pipeline
@@ -26,9 +34,11 @@ from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._available_if import available_if
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Interval, StrOptions
+from ..utils.fixes import _fit_context
 from ._common import _bagging_parameter_constraints, _estimator_has
 
 MAX_INT = np.iinfo(np.int32).max
+sklearn_version = parse_version(sklearn.__version__)
 
 
 @Substitution(
@@ -36,7 +46,7 @@ MAX_INT = np.iinfo(np.int32).max
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class EasyEnsembleClassifier(BaggingClassifier, _ParamsValidationMixin):
+class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
     """Bag of balanced boosted learners also known as EasyEnsemble.
 
     This algorithm is known as EasyEnsemble [1]_. The classifier is an
@@ -181,8 +191,7 @@ class EasyEnsembleClassifier(BaggingClassifier, _ParamsValidationMixin):
     """
 
     # make a deepcopy to not modify the original dictionary
-    if hasattr(BaggingClassifier, "_parameter_constraints"):
-        # scikit-learn >= 1.2
+    if sklearn_version >= parse_version("1.3"):
         _parameter_constraints = copy.deepcopy(BaggingClassifier._parameter_constraints)
     else:
         _parameter_constraints = copy.deepcopy(_bagging_parameter_constraints)
@@ -314,6 +323,7 @@ class EasyEnsembleClassifier(BaggingClassifier, _ParamsValidationMixin):
         )
         return self.n_features_in_
 
+    @_fit_context(prefer_skip_nested_validation=False)
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training set (X, y).
 
@@ -388,3 +398,10 @@ class EasyEnsembleClassifier(BaggingClassifier, _ParamsValidationMixin):
         decisions = sum(all_decisions) / self.n_estimators
 
         return decisions
+
+    def _more_tags(self):
+        if self.estimator is None:
+            estimator = AdaBoostClassifier()
+        else:
+            estimator = self.estimator
+        return {"allow_nan": _safe_tags(estimator, "allow_nan")}
