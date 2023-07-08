@@ -16,7 +16,12 @@ from scipy import sparse
 from sklearn.base import clone
 from sklearn.exceptions import DataConversionWarning
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-from sklearn.utils import _safe_indexing, check_array, check_random_state
+from sklearn.utils import (
+    _get_column_indices,
+    _safe_indexing,
+    check_array,
+    check_random_state,
+)
 from sklearn.utils.sparsefuncs_fast import (
     csc_mean_variance_axis0,
     csr_mean_variance_axis0,
@@ -390,10 +395,14 @@ class SMOTENC(SMOTE):
 
     Parameters
     ----------
-    categorical_features : array-like of shape (n_cat_features,) or (n_features,)
+    categorical_features : array-like of shape (n_cat_features,) or (n_features,), \
+            dtype={{bool, int, str}}
         Specified which features are categorical. Can either be:
 
-        - array of indices specifying the categorical features;
+        - array of `int` corresponding to the indices specifying the categorical
+          features;
+        - array of `str` corresponding to the feature names. `X` should be a pandas
+          :class:`pandas.DataFrame` in this case.
         - mask array of shape (n_features, ) and ``bool`` dtype for which
           ``True`` indicates the categorical features.
 
@@ -565,24 +574,16 @@ class SMOTENC(SMOTE):
         self._check_feature_names(X, reset=True)
         return X, y, binarize_y
 
-    def _validate_estimator(self):
-        super()._validate_estimator()
-        categorical_features = np.asarray(self.categorical_features)
-        if categorical_features.dtype.name == "bool":
-            self.categorical_features_ = np.flatnonzero(categorical_features)
-        else:
-            if any(
-                [cat not in np.arange(self.n_features_) for cat in categorical_features]
-            ):
-                raise ValueError(
-                    f"Some of the categorical indices are out of range. Indices"
-                    f" should be between 0 and {self.n_features_ - 1}"
-                )
-            self.categorical_features_ = categorical_features
+    def _validate_column_types(self, X):
+        self.categorical_features_ = np.array(
+            _get_column_indices(X, self.categorical_features)
+        )
         self.continuous_features_ = np.setdiff1d(
             np.arange(self.n_features_), self.categorical_features_
         )
 
+    def _validate_estimator(self):
+        super()._validate_estimator()
         if self.categorical_features_.size == self.n_features_in_:
             raise ValueError(
                 "SMOTE-NC is not designed to work only with categorical "
@@ -600,6 +601,7 @@ class SMOTENC(SMOTE):
             )
 
         self.n_features_ = _num_features(X)
+        self._validate_column_types(X)
         self._validate_estimator()
 
         # compute the median of the standard deviation of the minority class
