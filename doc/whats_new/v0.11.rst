@@ -30,6 +30,11 @@ Deprecation
   and will be removed in version 0.13. Use `categorical_encoder_` instead.
   :pr:`1000` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- The default of the parameters `sampling_strategy` and `replacement` will change in
+  :class:`~imblearn.ensemble.BalancedRandomForestClassifier` to follow the
+  implementation of the original paper. This changes will take effect in version 0.13.
+  :pr:`1006` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Enhancements
 ............
 

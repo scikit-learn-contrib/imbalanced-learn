@@ -28,7 +28,9 @@ def imbalanced_dataset():
 
 
 def test_balanced_random_forest_error_warning_warm_start(imbalanced_dataset):
-    brf = BalancedRandomForestClassifier(n_estimators=5)
+    brf = BalancedRandomForestClassifier(
+        n_estimators=5, sampling_strategy="all", replacement=True
+    )
     brf.fit(*imbalanced_dataset)
 
     with pytest.raises(ValueError, match="must be larger or equal to"):
@@ -44,7 +46,12 @@ def test_balanced_random_forest_error_warning_warm_start(imbalanced_dataset):
 
 def test_balanced_random_forest(imbalanced_dataset):
     n_estimators = 10
-    brf = BalancedRandomForestClassifier(n_estimators=n_estimators, random_state=0)
+    brf = BalancedRandomForestClassifier(
+        n_estimators=n_estimators,
+        random_state=0,
+        sampling_strategy="all",
+        replacement=True,
+    )
     brf.fit(*imbalanced_dataset)
 
     assert len(brf.samplers_) == n_estimators
@@ -56,7 +63,12 @@ def test_balanced_random_forest(imbalanced_dataset):
 def test_balanced_random_forest_attributes(imbalanced_dataset):
     X, y = imbalanced_dataset
     n_estimators = 10
-    brf = BalancedRandomForestClassifier(n_estimators=n_estimators, random_state=0)
+    brf = BalancedRandomForestClassifier(
+        n_estimators=n_estimators,
+        random_state=0,
+        sampling_strategy="all",
+        replacement=True,
+    )
     brf.fit(X, y)
 
     for idx in range(n_estimators):
@@ -80,7 +92,9 @@ def test_balanced_random_forest_sample_weight(imbalanced_dataset):
     rng = np.random.RandomState(42)
     X, y = imbalanced_dataset
     sample_weight = rng.rand(y.shape[0])
-    brf = BalancedRandomForestClassifier(n_estimators=5, random_state=0)
+    brf = BalancedRandomForestClassifier(
+        n_estimators=5, random_state=0, sampling_strategy="all", replacement=True
+    )
     brf.fit(X, y, sample_weight)
 
 
@@ -95,6 +109,8 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
         random_state=0,
         n_estimators=1000,
         min_samples_leaf=2,
+        sampling_strategy="all",
+        replacement=True,
     )
 
     est.fit(X_train, y_train)
@@ -104,14 +120,19 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
 
     # Check warning if not enough estimators
     est = BalancedRandomForestClassifier(
-        oob_score=True, random_state=0, n_estimators=1, bootstrap=True
+        oob_score=True,
+        random_state=0,
+        n_estimators=1,
+        bootstrap=True,
+        sampling_strategy="all",
+        replacement=True,
     )
     with pytest.warns(UserWarning) and np.errstate(divide="ignore", invalid="ignore"):
         est.fit(X, y)
 
 
 def test_balanced_random_forest_grid_search(imbalanced_dataset):
-    brf = BalancedRandomForestClassifier()
+    brf = BalancedRandomForestClassifier(sampling_strategy="all", replacement=True)
     grid = GridSearchCV(brf, {"n_estimators": (1, 2), "max_depth": (1, 2)}, cv=3)
     grid.fit(*imbalanced_dataset)
 
@@ -127,6 +148,8 @@ def test_little_tree_with_small_max_samples():
         n_estimators=1,
         random_state=rng,
         max_samples=None,
+        sampling_strategy="all",
+        replacement=True,
     )
 
     # Second fit with max samples restricted to just 2
@@ -134,6 +157,8 @@ def test_little_tree_with_small_max_samples():
         n_estimators=1,
         random_state=rng,
         max_samples=2,
+        sampling_strategy="all",
+        replacement=True,
     )
 
     est1.fit(X, y)
@@ -147,11 +172,13 @@ def test_little_tree_with_small_max_samples():
 
 
 def test_balanced_random_forest_pruning(imbalanced_dataset):
-    brf = BalancedRandomForestClassifier()
+    brf = BalancedRandomForestClassifier(sampling_strategy="all", replacement=True)
     brf.fit(*imbalanced_dataset)
     n_nodes_no_pruning = brf.estimators_[0].tree_.node_count
 
-    brf_pruned = BalancedRandomForestClassifier(ccp_alpha=0.015)
+    brf_pruned = BalancedRandomForestClassifier(
+        ccp_alpha=0.015, sampling_strategy="all", replacement=True
+    )
     brf_pruned.fit(*imbalanced_dataset)
     n_nodes_pruning = brf_pruned.estimators_[0].tree_.node_count
 
@@ -168,7 +195,12 @@ def test_balanced_random_forest_oob_binomial(ratio):
     X = np.arange(n_samples).reshape(-1, 1)
     y = rng.binomial(1, ratio, size=n_samples)
 
-    erf = BalancedRandomForestClassifier(oob_score=True, random_state=42)
+    erf = BalancedRandomForestClassifier(
+        oob_score=True,
+        random_state=42,
+        sampling_strategy="not minority",
+        replacement=False,
+    )
     erf.fit(X, y)
     assert np.abs(erf.oob_score_ - 0.5) < 0.1
 
@@ -176,7 +208,9 @@ def test_balanced_random_forest_oob_binomial(ratio):
 def test_balanced_bagging_classifier_n_features():
     """Check that we raise a FutureWarning when accessing `n_features_`."""
     X, y = load_iris(return_X_y=True)
-    estimator = BalancedRandomForestClassifier().fit(X, y)
+    estimator = BalancedRandomForestClassifier(
+        sampling_strategy="all", replacement=True
+    ).fit(X, y)
     with pytest.warns(FutureWarning, match="`n_features_` was deprecated"):
         estimator.n_features_
 
@@ -184,9 +218,24 @@ def test_balanced_bagging_classifier_n_features():
 @pytest.mark.skipif(
     sklearn_version < parse_version("1.2"), reason="requires scikit-learn>=1.2"
 )
-def test_balanced_bagging_classifier_base_estimator():
+def test_balanced_random_forest_classifier_base_estimator():
     """Check that we raise a FutureWarning when accessing `base_estimator_`."""
     X, y = load_iris(return_X_y=True)
-    estimator = BalancedRandomForestClassifier().fit(X, y)
+    estimator = BalancedRandomForestClassifier(
+        sampling_strategy="all", replacement=True
+    ).fit(X, y)
     with pytest.warns(FutureWarning, match="`base_estimator_` was deprecated"):
         estimator.base_estimator_
+
+
+# TODO: remove in 0.13
+def test_balanced_random_forest_change_behaviour(imbalanced_dataset):
+    """Check that we raise a change of behaviour for the parameters `sampling_strategy`
+    and `replacement`.
+    """
+    estimator = BalancedRandomForestClassifier(sampling_strategy="all")
+    with pytest.warns(FutureWarning, match="The default of `replacement`"):
+        estimator.fit(*imbalanced_dataset)
+    estimator = BalancedRandomForestClassifier(replacement=True)
+    with pytest.warns(FutureWarning, match="The default of `sampling_strategy`"):
+        estimator.fit(*imbalanced_dataset)
