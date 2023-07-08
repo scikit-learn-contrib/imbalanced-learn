@@ -43,3 +43,8 @@ Enhancements
   parameters. A new fitted parameter `categorical_encoder_` is exposed to access the
   fitted encoder.
   :pr:`1001` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- :class:`~imblearn.under_sampling.RandomUnderSampler` and
+  :class:`~imblearn.over_sampling.RandomOverSampler` (when `shrinkage is not
+  None`) now accept any data types and will not attempt any data conversion.
+  :pr:`1004` by :user:`Guillaume Lemaitre <glemaitre>`.

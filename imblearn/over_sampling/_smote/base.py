@@ -27,6 +27,7 @@ from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ...utils._param_validation import HasMethods, Interval
+from ...utils._validation import _check_X
 from ...utils.fixes import _mode
 from ..base import BaseOverSampler
 
@@ -559,9 +560,9 @@ class SMOTENC(SMOTE):
         features.
         """
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        if not (hasattr(X, "__array__") or sparse.issparse(X)):
-            X = check_array(X, dtype=object)
+        X = _check_X(X)
         self._check_n_features(X, reset=True)
+        self._check_feature_names(X, reset=True)
         return X, y, binarize_y
 
     def _validate_estimator(self):

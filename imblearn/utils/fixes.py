@@ -5,6 +5,7 @@ If you add content to this file, please give the version of the package at
 which the fix is no longer needed.
 """
 import functools
+import sys
 
 import numpy as np
 import scipy
@@ -132,3 +133,18 @@ if sklearn_version < parse_version("1.3"):
 
 else:
     from sklearn.utils.validation import _is_fitted  # type: ignore[no-redef]
+
+try:
+    from sklearn.utils.validation import _is_pandas_df
+except ImportError:
+
+    def _is_pandas_df(X):
+        """Return True if the X is a pandas dataframe."""
+        if hasattr(X, "columns") and hasattr(X, "iloc"):
+            # Likely a pandas DataFrame, we explicitly check the type to confirm.
+            try:
+                pd = sys.modules["pandas"]
+            except KeyError:
+                return False
+            return isinstance(X, pd.DataFrame)
+        return False
