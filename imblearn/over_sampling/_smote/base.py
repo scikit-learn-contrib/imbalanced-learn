@@ -395,7 +395,6 @@ class SMOTENC(SMOTE):
 
     Parameters
     ----------
-<<<<<<< HEAD
     categorical_features : "infer" or array-like of shape (n_cat_features,) or \
             (n_features,), dtype={{bool, int, str}}
         Specified which features are categorical. Can either be:
@@ -403,12 +402,6 @@ class SMOTENC(SMOTE):
         - "auto" (default) to automatically detect categorical features. Only
           supported when `X` is a :class:`pandas.DataFrame` and it corresponds
           to columns that have a :class:`pandas.CategoricalDtype`;
-=======
-    categorical_features : array-like of shape (n_cat_features,) or (n_features,), \
-            dtype={{bool, int, str}}
-        Specified which features are categorical. Can either be:
-
->>>>>>> origin/master
         - array of `int` corresponding to the indices specifying the categorical
           features;
         - array of `str` corresponding to the feature names. `X` should be a pandas
