@@ -56,4 +56,4 @@ Enhancements
 
 - :class:`~imblearn.over_sampling.SMOTENC` now support passing array-like of `str`
   when passing the `categorical_features` parameter.
-  :pr:`1007` by :user`Guillaume Lemaitre <glemaitre>`.
+  :pr:`1008` by :user`Guillaume Lemaitre <glemaitre>`.
