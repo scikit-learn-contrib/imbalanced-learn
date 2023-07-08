@@ -307,8 +307,8 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
         )
     sampling_strategy_ = {}
     if sampling_type == "over-sampling":
-        n_samples_majority = max(target_stats.values())
-        class_majority = max(target_stats, key=target_stats.get)
+        max(target_stats.values())
+        max(target_stats, key=target_stats.get)
         for class_sample, n_samples in sampling_strategy.items():
             if n_samples < target_stats[class_sample]:
                 raise ValueError(
@@ -317,13 +317,6 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
                     f" or equal to the original number of samples."
                     f" Originally, there is {target_stats[class_sample]} "
                     f"samples and {n_samples} samples are asked."
-                )
-            if n_samples > n_samples_majority:
-                warnings.warn(
-                    f"After over-sampling, the number of samples ({n_samples})"
-                    f" in class {class_sample} will be larger than the number of"
-                    f" samples in the majority class (class #{class_majority} ->"
-                    f" {n_samples_majority})"
                 )
             sampling_strategy_[class_sample] = n_samples - target_stats[class_sample]
     elif sampling_type == "under-sampling":

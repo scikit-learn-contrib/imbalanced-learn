@@ -256,14 +256,6 @@ def test_check_sampling_strategy(
     assert sampling_strategy_ == expected_sampling_strategy
 
 
-def test_sampling_strategy_dict_over_sampling():
-    y = np.array([1] * 50 + [2] * 100 + [3] * 25)
-    sampling_strategy = {1: 70, 2: 140, 3: 70}
-    expected_msg = "After over-sampling, the number of samples "
-    with pytest.warns(UserWarning, match=expected_msg):
-        check_sampling_strategy(sampling_strategy, y, "over-sampling")
-
-
 def test_sampling_strategy_callable_args():
     y = np.array([1] * 50 + [2] * 100 + [3] * 25)
     multiplier = {1: 1.5, 2: 1, 3: 3}
