@@ -13,18 +13,27 @@ from collections import Counter
 
 import numpy as np
 from scipy import sparse
+from sklearn.base import clone
+from sklearn.exceptions import DataConversionWarning
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-from sklearn.utils import _safe_indexing, check_array, check_random_state
+from sklearn.utils import (
+    _get_column_indices,
+    _safe_indexing,
+    check_array,
+    check_random_state,
+)
 from sklearn.utils.sparsefuncs_fast import (
     csc_mean_variance_axis0,
     csr_mean_variance_axis0,
 )
+from sklearn.utils.validation import _num_features
 
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._param_validation import HasMethods, Interval
-from ...utils.fixes import _mode
+from ...utils._param_validation import HasMethods, Interval, StrOptions
+from ...utils._validation import _check_X
+from ...utils.fixes import _is_pandas_df, _mode
 from ..base import BaseOverSampler
 
 
@@ -386,12 +395,24 @@ class SMOTENC(SMOTE):
 
     Parameters
     ----------
-    categorical_features : array-like of shape (n_cat_features,) or (n_features,)
+    categorical_features : "infer" or array-like of shape (n_cat_features,) or \
+            (n_features,), dtype={{bool, int, str}}
         Specified which features are categorical. Can either be:
 
-        - array of indices specifying the categorical features;
+        - "auto" (default) to automatically detect categorical features. Only
+          supported when `X` is a :class:`pandas.DataFrame` and it corresponds
+          to columns that have a :class:`pandas.CategoricalDtype`;
+        - array of `int` corresponding to the indices specifying the categorical
+          features;
+        - array of `str` corresponding to the feature names. `X` should be a pandas
+          :class:`pandas.DataFrame` in this case.
         - mask array of shape (n_features, ) and ``bool`` dtype for which
           ``True`` indicates the categorical features.
+
+    categorical_encoder : estimator, default=None
+        One-hot encoder used to encode the categorical features. If `None`, a
+        :class:`~sklearn.preprocessing.OneHotEncoder` is used with default parameters
+        apart from `handle_unknown` which is set to 'ignore'.
 
     {sampling_strategy}
 
@@ -430,6 +451,13 @@ class SMOTENC(SMOTE):
 
     ohe_ : :class:`~sklearn.preprocessing.OneHotEncoder`
         The one-hot encoder used to encode the categorical features.
+
+        .. deprecated:: 0.11
+           `ohe_` is deprecated in 0.11 and will be removed in 0.13. Use
+           `categorical_encoder_` instead.
+
+    categorical_encoder_ : estimator
+        The encoder used to encode the categorical features.
 
     categorical_features_ : ndarray of shape (n_cat_features,), dtype=np.int64
         Indices of the categorical features.
@@ -479,7 +507,8 @@ class SMOTENC(SMOTE):
 
     See
     :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
-    and :ref:`sphx_glr_auto_examples_over-sampling_plot_illustration_generation_sample.py`.  # noqa
+    and
+    :ref:`sphx_glr_auto_examples_over-sampling_plot_illustration_generation_sample.py`.
 
     References
     ----------
@@ -512,13 +541,18 @@ class SMOTENC(SMOTE):
 
     _parameter_constraints: dict = {
         **SMOTE._parameter_constraints,
-        "categorical_features": ["array-like"],
+        "categorical_features": ["array-like", StrOptions({"auto"})],
+        "categorical_encoder": [
+            HasMethods(["fit_transform", "inverse_transform"]),
+            None,
+        ],
     }
 
     def __init__(
         self,
         categorical_features,
         *,
+        categorical_encoder=None,
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
@@ -531,39 +565,52 @@ class SMOTENC(SMOTE):
             n_jobs=n_jobs,
         )
         self.categorical_features = categorical_features
+        self.categorical_encoder = categorical_encoder
 
     def _check_X_y(self, X, y):
         """Overwrite the checking to let pass some string for categorical
         features.
         """
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X, y, reset=True, dtype=None, accept_sparse=["csr", "csc"]
-        )
+        X = _check_X(X)
+        self._check_n_features(X, reset=True)
+        self._check_feature_names(X, reset=True)
         return X, y, binarize_y
+
+    def _validate_column_types(self, X):
+        """Compute the indices of the categorical and continuous features."""
+        if self.categorical_features == "auto":
+            if not _is_pandas_df(X):
+                raise ValueError(
+                    "When `categorical_features='auto'`, the input data "
+                    f"should be a pandas.DataFrame. Got {type(X)} instead."
+                )
+            import pandas as pd  # safely import pandas now
+
+            are_columns_categorical = np.array(
+                [isinstance(col_dtype, pd.CategoricalDtype) for col_dtype in X.dtypes]
+            )
+            self.categorical_features_ = np.flatnonzero(are_columns_categorical)
+            self.continuous_features_ = np.flatnonzero(~are_columns_categorical)
+        else:
+            self.categorical_features_ = np.array(
+                _get_column_indices(X, self.categorical_features)
+            )
+            self.continuous_features_ = np.setdiff1d(
+                np.arange(self.n_features_), self.categorical_features_
+            )
 
     def _validate_estimator(self):
         super()._validate_estimator()
-        categorical_features = np.asarray(self.categorical_features)
-        if categorical_features.dtype.name == "bool":
-            self.categorical_features_ = np.flatnonzero(categorical_features)
-        else:
-            if any(
-                [cat not in np.arange(self.n_features_) for cat in categorical_features]
-            ):
-                raise ValueError(
-                    f"Some of the categorical indices are out of range. Indices"
-                    f" should be between 0 and {self.n_features_ - 1}"
-                )
-            self.categorical_features_ = categorical_features
-        self.continuous_features_ = np.setdiff1d(
-            np.arange(self.n_features_), self.categorical_features_
-        )
-
         if self.categorical_features_.size == self.n_features_in_:
             raise ValueError(
                 "SMOTE-NC is not designed to work only with categorical "
                 "features. It requires some numerical features."
+            )
+        elif self.categorical_features_.size == 0:
+            raise ValueError(
+                "SMOTE-NC is not designed to work only with numerical "
+                "features. It requires some categorical features."
             )
 
     def _fit_resample(self, X, y):
@@ -576,14 +623,15 @@ class SMOTENC(SMOTE):
                 FutureWarning,
             )
 
-        self.n_features_ = X.shape[1]
+        self.n_features_ = _num_features(X)
+        self._validate_column_types(X)
         self._validate_estimator()
 
         # compute the median of the standard deviation of the minority class
         target_stats = Counter(y)
         class_minority = min(target_stats, key=target_stats.get)
 
-        X_continuous = X[:, self.continuous_features_]
+        X_continuous = _safe_indexing(X, self.continuous_features_, axis=1)
         X_continuous = check_array(X_continuous, accept_sparse=["csr", "csc"])
         X_minority = _safe_indexing(X_continuous, np.flatnonzero(y == class_minority))
 
@@ -596,23 +644,25 @@ class SMOTENC(SMOTE):
             var = X_minority.var(axis=0)
         self.median_std_ = np.median(np.sqrt(var))
 
-        X_categorical = X[:, self.categorical_features_]
+        X_categorical = _safe_indexing(X, self.categorical_features_, axis=1)
         if X_continuous.dtype.name != "object":
             dtype_ohe = X_continuous.dtype
         else:
             dtype_ohe = np.float64
 
-        self.ohe_ = OneHotEncoder(handle_unknown="ignore", dtype=dtype_ohe)
-        if hasattr(self.ohe_, "sparse_output"):
-            # scikit-learn >= 1.2
-            self.ohe_.set_params(sparse_output=True)
+        if self.categorical_encoder is None:
+            self.categorical_encoder_ = OneHotEncoder(
+                handle_unknown="ignore", dtype=dtype_ohe
+            )
         else:
-            self.ohe_.set_params(sparse=True)
+            self.categorical_encoder_ = clone(self.categorical_encoder)
 
         # the input of the OneHotEncoder needs to be dense
-        X_ohe = self.ohe_.fit_transform(
+        X_ohe = self.categorical_encoder_.fit_transform(
             X_categorical.toarray() if sparse.issparse(X_categorical) else X_categorical
         )
+        if not sparse.issparse(X_ohe):
+            X_ohe = sparse.csr_matrix(X_ohe, dtype=dtype_ohe)
 
         # we can replace the 1 entries of the categorical features with the
         # median of the standard deviation. It will ensure that whenever
@@ -635,7 +685,7 @@ class SMOTENC(SMOTE):
         # reverse the encoding of the categorical features
         X_res_cat = X_resampled[:, self.continuous_features_.size :]
         X_res_cat.data = np.ones_like(X_res_cat.data)
-        X_res_cat_dec = self.ohe_.inverse_transform(X_res_cat)
+        X_res_cat_dec = self.categorical_encoder_.inverse_transform(X_res_cat)
 
         if sparse.issparse(X):
             X_resampled = sparse.hstack(
@@ -694,7 +744,7 @@ class SMOTENC(SMOTE):
         all_neighbors = nn_data[nn_num[rows]]
 
         categories_size = [self.continuous_features_.size] + [
-            cat.size for cat in self.ohe_.categories_
+            cat.size for cat in self.categorical_encoder_.categories_
         ]
 
         for start_idx, end_idx in zip(
@@ -712,6 +762,16 @@ class SMOTENC(SMOTE):
             X_new[xs, ys] = 1
 
         return X_new
+
+    @property
+    def ohe_(self):
+        """One-hot encoder used to encode the categorical features."""
+        warnings.warn(
+            "'ohe_' attribute has been deprecated in 0.11 and will be removed "
+            "in 0.13. Use 'categorical_encoder_' instead.",
+            FutureWarning,
+        )
+        return self.categorical_encoder_
 
 
 @Substitution(
@@ -731,6 +791,10 @@ class SMOTEN(SMOTE):
 
     Parameters
     ----------
+    categorical_encoder : estimator, default=None
+        Ordinal encoder used to encode the categorical features. If `None`, a
+        :class:`~sklearn.preprocessing.OrdinalEncoder` is used with default parameters.
+
     {sampling_strategy}
 
     {random_state}
@@ -758,6 +822,9 @@ class SMOTEN(SMOTE):
 
     Attributes
     ----------
+    categorical_encoder_ : estimator
+        The encoder used to encode the categorical features.
+
     sampling_strategy_ : dict
         Dictionary containing the information to sample the dataset. The keys
         corresponds to the class labels from which to sample and the values
@@ -820,6 +887,31 @@ class SMOTEN(SMOTE):
     Class counts after resampling Counter({{0: 40, 1: 40}})
     """
 
+    _parameter_constraints: dict = {
+        **SMOTE._parameter_constraints,
+        "categorical_encoder": [
+            HasMethods(["fit_transform", "inverse_transform"]),
+            None,
+        ],
+    }
+
+    def __init__(
+        self,
+        categorical_encoder=None,
+        *,
+        sampling_strategy="auto",
+        random_state=None,
+        k_neighbors=5,
+        n_jobs=None,
+    ):
+        super().__init__(
+            sampling_strategy=sampling_strategy,
+            random_state=random_state,
+            k_neighbors=k_neighbors,
+            n_jobs=n_jobs,
+        )
+        self.categorical_encoder = categorical_encoder
+
     def _check_X_y(self, X, y):
         """Check should accept strings and not sparse matrices."""
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
@@ -828,7 +920,7 @@ class SMOTEN(SMOTE):
             y,
             reset=True,
             dtype=None,
-            accept_sparse=False,
+            accept_sparse=["csr", "csc"],
         )
         return X, y, binarize_y
 
@@ -862,16 +954,30 @@ class SMOTEN(SMOTE):
                 FutureWarning,
             )
 
+        if sparse.issparse(X):
+            X_sparse_format = X.format
+            X = X.toarray()
+            warnings.warn(
+                "Passing a sparse matrix to SMOTEN is not really efficient since it is"
+                " converted to a dense array internally.",
+                DataConversionWarning,
+            )
+        else:
+            X_sparse_format = None
+
         self._validate_estimator()
 
         X_resampled = [X.copy()]
         y_resampled = [y.copy()]
 
-        encoder = OrdinalEncoder(dtype=np.int32)
-        X_encoded = encoder.fit_transform(X)
+        if self.categorical_encoder is None:
+            self.categorical_encoder_ = OrdinalEncoder(dtype=np.int32)
+        else:
+            self.categorical_encoder_ = clone(self.categorical_encoder)
+        X_encoded = self.categorical_encoder_.fit_transform(X)
 
         vdm = ValueDifferenceMetric(
-            n_categories=[len(cat) for cat in encoder.categories_]
+            n_categories=[len(cat) for cat in self.categorical_encoder_.categories_]
         ).fit(X_encoded, y)
 
         for class_sample, n_samples in self.sampling_strategy_.items():
@@ -889,14 +995,19 @@ class SMOTEN(SMOTE):
                 X_class, class_sample, y.dtype, nn_indices, n_samples
             )
 
-            X_new = encoder.inverse_transform(X_new)
+            X_new = self.categorical_encoder_.inverse_transform(X_new)
             X_resampled.append(X_new)
             y_resampled.append(y_new)
 
         X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
 
-        return X_resampled, y_resampled
+        if X_sparse_format == "csr":
+            return sparse.csr_matrix(X_resampled), y_resampled
+        elif X_sparse_format == "csc":
+            return sparse.csc_matrix(X_resampled), y_resampled
+        else:
+            return X_resampled, y_resampled
 
     def _more_tags(self):
         return {"X_types": ["2darray", "dataframe", "string"]}

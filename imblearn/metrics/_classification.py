@@ -42,7 +42,8 @@ from ..utils._param_validation import Interval, StrOptions, validate_params
         ],
         "warn_for": ["array-like"],
         "sample_weight": ["array-like", None],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def sensitivity_specificity_support(
     y_true,
@@ -305,7 +306,8 @@ def sensitivity_specificity_support(
             StrOptions({"binary", "micro", "macro", "weighted", "samples"}),
         ],
         "sample_weight": ["array-like", None],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def sensitivity_score(
     y_true,
@@ -420,7 +422,8 @@ def sensitivity_score(
             StrOptions({"binary", "micro", "macro", "weighted", "samples"}),
         ],
         "sample_weight": ["array-like", None],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def specificity_score(
     y_true,
@@ -538,7 +541,8 @@ def specificity_score(
         ],
         "sample_weight": ["array-like", None],
         "correction": [Interval(numbers.Real, 0, None, closed="left")],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def geometric_mean_score(
     y_true,
@@ -729,7 +733,10 @@ def geometric_mean_score(
         return gmean
 
 
-@validate_params({"alpha": [numbers.Real], "squared": ["boolean"]})
+@validate_params(
+    {"alpha": [numbers.Real], "squared": ["boolean"]},
+    prefer_skip_nested_validation=True,
+)
 def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
     """Balance any scoring function using the index balanced accuracy.
 
@@ -849,7 +856,8 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
             StrOptions({"warn"}),
             Interval(numbers.Integral, 0, 1, closed="both"),
         ],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def classification_report_imbalanced(
     y_true,
@@ -1030,7 +1038,7 @@ def classification_report_imbalanced(
         report_dict_label[headers[-1]] = support[i]
         report += fmt % tuple(values)
 
-        report_dict[label] = report_dict_label
+        report_dict[target_names[i]] = report_dict_label
 
     report += "\n"
 
@@ -1063,7 +1071,8 @@ def classification_report_imbalanced(
         "y_true": ["array-like"],
         "y_pred": ["array-like"],
         "sample_weight": ["array-like", None],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
     """Compute Macro-Averaged MAE for imbalanced ordinal classification.

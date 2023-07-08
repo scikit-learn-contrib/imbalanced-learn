@@ -48,10 +48,11 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # %% [markdown]
 # We will create a pipeline made of a :class:`~imblearn.over_sampling.SMOTE`
-# over-sampler followed by a :class:`~sklearn.svm.LinearSVC` classifier.
+# over-sampler followed by a :class:`~sklearn.linear_model.LogisticRegression`
+# classifier.
 
+from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
-from sklearn.svm import LinearSVC
 
 from imblearn.over_sampling import SMOTE
 
@@ -61,7 +62,7 @@ from imblearn.pipeline import make_pipeline
 model = make_pipeline(
     StandardScaler(),
     SMOTE(random_state=RANDOM_STATE),
-    LinearSVC(max_iter=10_000, random_state=RANDOM_STATE),
+    LogisticRegression(max_iter=10_000, random_state=RANDOM_STATE),
 )
 
 # %% [markdown]

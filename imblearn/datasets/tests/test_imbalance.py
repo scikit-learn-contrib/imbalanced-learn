@@ -67,11 +67,14 @@ def test_make_imbalance_dict(iris, sampling_strategy, expected_counts):
     ],
 )
 def test_make_imbalanced_iris(as_frame, sampling_strategy, expected_counts):
-    pytest.importorskip("pandas")
-    iris = load_iris(as_frame=True)
+    pd = pytest.importorskip("pandas")
+    iris = load_iris(as_frame=as_frame)
     X, y = iris.data, iris.target
     y = iris.target_names[iris.target]
+    if as_frame:
+        y = pd.Series(iris.target_names[iris.target], name="target")
     X_res, y_res = make_imbalance(X, y, sampling_strategy=sampling_strategy)
     if as_frame:
         assert hasattr(X_res, "loc")
+        pd.testing.assert_index_equal(X_res.index, y_res.index)
     assert Counter(y_res) == expected_counts

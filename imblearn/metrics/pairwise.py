@@ -16,7 +16,7 @@ from ..base import _ParamsValidationMixin
 from ..utils._param_validation import StrOptions
 
 
-class ValueDifferenceMetric(BaseEstimator, _ParamsValidationMixin):
+class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
     r"""Class implementing the Value Difference Metric.
 
     This metric computes the distance between samples containing only

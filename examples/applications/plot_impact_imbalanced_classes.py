@@ -319,7 +319,9 @@ from imblearn.ensemble import BalancedRandomForestClassifier
 
 rf_clf = make_pipeline(
     preprocessor_tree,
-    BalancedRandomForestClassifier(random_state=42, n_jobs=2),
+    BalancedRandomForestClassifier(
+        sampling_strategy="all", replacement=True, random_state=42, n_jobs=2
+    ),
 )
 
 # %%
@@ -338,7 +340,6 @@ df_scores
 # classifier within a :class:`~imblearn.ensemble.BalancedBaggingClassifier`.
 
 from sklearn.ensemble import HistGradientBoostingClassifier
-from sklearn.experimental import enable_hist_gradient_boosting  # noqa
 
 from imblearn.ensemble import BalancedBaggingClassifier
 

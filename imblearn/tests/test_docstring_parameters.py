@@ -154,7 +154,6 @@ def test_tabs():
     for importer, modname, ispkg in walk_packages(
         imblearn.__path__, prefix="imblearn."
     ):
-
         if IS_PYPY:
             continue
 

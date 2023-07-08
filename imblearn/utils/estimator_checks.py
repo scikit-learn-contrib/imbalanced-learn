@@ -104,6 +104,10 @@ def _set_checking_parameters(estimator):
         )
     if name == "KMeansSMOTE":
         estimator.set_params(kmeans_estimator=12)
+    if name == "BalancedRandomForestClassifier":
+        # TODO: remove in 0.13
+        # future default in 0.13
+        estimator.set_params(replacement=True, sampling_strategy="all")
 
 
 def _yield_sampler_checks(sampler):
@@ -203,7 +207,7 @@ def check_target_type(name, estimator_orig):
     # should raise warning if the target is continuous (we cannot raise error)
     X = np.random.random((20, 2))
     y = np.linspace(0, 1, 20)
-    msg = "Unknown label type: 'continuous'"
+    msg = "Unknown label type:"
     assert_raises_regex(
         ValueError,
         msg,
@@ -537,7 +541,7 @@ def check_param_validation(name, estimator_orig):
 
         for constraint in constraints:
             try:
-                bad_value = generate_invalid_param_val(constraint, constraints)
+                bad_value = generate_invalid_param_val(constraint)
             except NotImplementedError:
                 continue
 

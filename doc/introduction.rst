@@ -66,7 +66,7 @@ The learning phase and the subsequent prediction of machine learning algorithms
 can be affected by the problem of imbalanced data set. The balancing issue
 corresponds to the difference of the number of samples in the different
 classes. We illustrate the effect of training a linear SVM classifier with
-different level of class balancing.
+different levels of class balancing.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_001.png
    :target: ./auto_examples/over-sampling/plot_comparison_over_sampling.html

@@ -59,10 +59,9 @@ fig.tight_layout()
 # resampling and the number of samples in the minority class, respectively.
 
 # %%
-import numpy as np
 
 # select only 2 classes since the ratio make sense in this case
-binary_mask = np.bitwise_or(y == 0, y == 2)
+binary_mask = y.isin([0, 1])
 binary_y = y[binary_mask]
 binary_X = X[binary_mask]
 

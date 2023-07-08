@@ -8,11 +8,20 @@ from collections import Counter
 
 import numpy as np
 import pytest
+import sklearn
 from scipy import sparse
 from sklearn.datasets import make_classification
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.utils._testing import assert_allclose, assert_array_equal
+from sklearn.utils.fixes import parse_version
 
 from imblearn.over_sampling import SMOTENC
+from imblearn.utils.estimator_checks import (
+    _set_checking_parameters,
+    check_param_validation,
+)
+
+sklearn_version = parse_version(sklearn.__version__)
 
 
 def data_heterogneous_ordered():
@@ -54,7 +63,7 @@ def data_heterogneous_masked():
     X[:, 3] = rng.randint(3, size=30)
     y = np.array([0] * 10 + [1] * 20)
     # return the categories
-    return X, y, [True, False, True]
+    return X, y, [True, False, False, True]
 
 
 def data_heterogneous_unordered_multiclass():
@@ -89,7 +98,7 @@ def test_smotenc_error():
     X, y, _ = data_heterogneous_unordered()
     categorical_features = [0, 10]
     smote = SMOTENC(random_state=0, categorical_features=categorical_features)
-    with pytest.raises(ValueError, match="indices are out of range"):
+    with pytest.raises(ValueError, match="all features must be in"):
         smote.fit_resample(X, y)
 
 
@@ -128,7 +137,7 @@ def test_smotenc_check_target_type():
     X, _, categorical_features = data_heterogneous_unordered()
     y = np.linspace(0, 1, 30)
     smote = SMOTENC(categorical_features=categorical_features, random_state=0)
-    with pytest.raises(ValueError, match="Unknown label type: 'continuous'"):
+    with pytest.raises(ValueError, match="Unknown label type"):
         smote.fit_resample(X, y)
     rng = np.random.RandomState(42)
     y = rng.randint(2, size=(20, 3))
@@ -182,8 +191,7 @@ def test_smotenc_pandas():
     smote = SMOTENC(categorical_features=categorical_features, random_state=0)
     X_res_pd, y_res_pd = smote.fit_resample(X_pd, y)
     X_res, y_res = smote.fit_resample(X, y)
-    # FIXME: we should use to_numpy with pandas >= 0.25
-    assert_array_equal(X_res_pd.values, X_res)
+    assert_array_equal(X_res_pd.to_numpy(), X_res)
     assert_allclose(y_res_pd, y_res)
 
 
@@ -240,3 +248,153 @@ def test_smote_nc_with_null_median_std():
     # check that the categorical feature is not random but correspond to the
     # categories seen in the minority class samples
     assert X_res[-1, -1] == "C"
+
+
+def test_smotenc_categorical_encoder():
+    """Check that we can pass our own categorical encoder."""
+
+    # TODO: only use `sparse_output` when sklearn >= 1.2
+    param = "sparse" if sklearn_version < parse_version("1.2") else "sparse_output"
+
+    X, y, categorical_features = data_heterogneous_unordered()
+    smote = SMOTENC(categorical_features=categorical_features, random_state=0)
+    smote.fit_resample(X, y)
+
+    assert getattr(smote.categorical_encoder_, param) is True
+
+    encoder = OneHotEncoder()
+    encoder.set_params(**{param: False})
+    smote.set_params(categorical_encoder=encoder).fit_resample(X, y)
+    assert smote.categorical_encoder is encoder
+    assert smote.categorical_encoder_ is not encoder
+    assert getattr(smote.categorical_encoder_, param) is False
+
+
+# TODO(0.13): remove this test
+def test_smotenc_deprecation_ohe_():
+    """Check that we raise a deprecation warning when using `ohe_`."""
+    X, y, categorical_features = data_heterogneous_unordered()
+    smote = SMOTENC(categorical_features=categorical_features, random_state=0)
+    smote.fit_resample(X, y)
+
+    with pytest.warns(FutureWarning, match="'ohe_' attribute has been deprecated"):
+        smote.ohe_
+
+
+def test_smotenc_param_validation():
+    """Check that we validate the parameters correctly since this estimator requires
+    a specific parameter.
+    """
+    categorical_features = [0]
+    smote = SMOTENC(categorical_features=categorical_features, random_state=0)
+    name = smote.__class__.__name__
+    _set_checking_parameters(smote)
+    check_param_validation(name, smote)
+
+
+def test_smotenc_bool_categorical():
+    """Check that we don't try to early convert the full input data to numeric when
+    handling a pandas dataframe.
+
+    Non-regression test for:
+    https://github.com/scikit-learn-contrib/imbalanced-learn/issues/974
+    """
+    pd = pytest.importorskip("pandas")
+
+    X = pd.DataFrame(
+        {
+            "c": pd.Categorical([x for x in "abbacaba" * 3]),
+            "f": [0.3, 0.5, 0.1, 0.2] * 6,
+            "b": [False, False, True] * 8,
+        }
+    )
+    y = pd.DataFrame({"out": [1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0] * 2})
+    smote = SMOTENC(categorical_features=[0])
+
+    X_res, y_res = smote.fit_resample(X, y)
+    pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
+    assert len(X_res) == len(y_res)
+
+    smote.set_params(categorical_features=[0, 2])
+    X_res, y_res = smote.fit_resample(X, y)
+    pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
+    assert len(X_res) == len(y_res)
+
+    X = X.astype({"b": "category"})
+    X_res, y_res = smote.fit_resample(X, y)
+    pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
+    assert len(X_res) == len(y_res)
+
+
+def test_smotenc_categorical_features_str():
+    """Check that we support array-like of strings for `categorical_features` using
+    pandas dataframe.
+    """
+    pd = pytest.importorskip("pandas")
+
+    X = pd.DataFrame(
+        {
+            "A": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "B": ["a", "b"] * 5,
+            "C": ["a", "b", "c"] * 3 + ["a"],
+        }
+    )
+    X = pd.concat([X] * 10, ignore_index=True)
+    y = np.array([0] * 70 + [1] * 30)
+    smote = SMOTENC(categorical_features=["B", "C"], random_state=0)
+    X_res, y_res = smote.fit_resample(X, y)
+    assert X_res["B"].isin(["a", "b"]).all()
+    assert X_res["C"].isin(["a", "b", "c"]).all()
+    counter = Counter(y_res)
+    assert counter[0] == counter[1] == 70
+    assert_array_equal(smote.categorical_features_, [1, 2])
+    assert_array_equal(smote.continuous_features_, [0])
+
+
+def test_smotenc_categorical_features_auto():
+    """Check that we can automatically detect categorical features based on pandas
+    dataframe.
+    """
+    pd = pytest.importorskip("pandas")
+
+    X = pd.DataFrame(
+        {
+            "A": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "B": ["a", "b"] * 5,
+            "C": ["a", "b", "c"] * 3 + ["a"],
+        }
+    )
+    X = pd.concat([X] * 10, ignore_index=True)
+    X["B"] = X["B"].astype("category")
+    X["C"] = X["C"].astype("category")
+    y = np.array([0] * 70 + [1] * 30)
+    smote = SMOTENC(categorical_features="auto", random_state=0)
+    X_res, y_res = smote.fit_resample(X, y)
+    assert X_res["B"].isin(["a", "b"]).all()
+    assert X_res["C"].isin(["a", "b", "c"]).all()
+    counter = Counter(y_res)
+    assert counter[0] == counter[1] == 70
+    assert_array_equal(smote.categorical_features_, [1, 2])
+    assert_array_equal(smote.continuous_features_, [0])
+
+
+def test_smote_nc_categorical_features_auto_error():
+    """Check that we raise a proper error when we cannot use the `'auto'` mode."""
+    pd = pytest.importorskip("pandas")
+
+    X = pd.DataFrame(
+        {
+            "A": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "B": ["a", "b"] * 5,
+            "C": ["a", "b", "c"] * 3 + ["a"],
+        }
+    )
+    y = np.array([0] * 70 + [1] * 30)
+    smote = SMOTENC(categorical_features="auto", random_state=0)
+
+    with pytest.raises(ValueError, match="the input data should be a pandas.DataFrame"):
+        smote.fit_resample(X.to_numpy(), y)
+
+    err_msg = "SMOTE-NC is not designed to work only with numerical features"
+    with pytest.raises(ValueError, match=err_msg):
+        smote.fit_resample(X, y)

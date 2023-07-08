@@ -38,10 +38,10 @@ randomly sampling with replacement the current available samples. The
 The augmented data set should be used instead of the original data set to train
 a classifier::
 
-  >>> from sklearn.svm import LinearSVC
-  >>> clf = LinearSVC()
+  >>> from sklearn.linear_model import LogisticRegression
+  >>> clf = LogisticRegression()
   >>> clf.fit(X_resampled, y_resampled)
-  LinearSVC(...)
+  LogisticRegression(...)
 
 In the figure below, we compare the decision functions of a classifier trained
 using the over-sampled data set and the original data set.
@@ -108,11 +108,11 @@ the same manner::
   >>> X_resampled, y_resampled = SMOTE().fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4674), (1, 4674), (2, 4674)]
-  >>> clf_smote = LinearSVC().fit(X_resampled, y_resampled)
+  >>> clf_smote = LogisticRegression().fit(X_resampled, y_resampled)
   >>> X_resampled, y_resampled = ADASYN().fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 4673), (1, 4662), (2, 4674)]
-  >>> clf_adasyn = LinearSVC().fit(X_resampled, y_resampled)
+  >>> clf_adasyn = LogisticRegression().fit(X_resampled, y_resampled)
 
 The figure below illustrates the major difference of the different
 over-sampling methods.
@@ -192,8 +192,10 @@ which categorical data are treated differently::
 
 In this data set, the first and last features are considered as categorical
 features. One needs to provide this information to :class:`SMOTENC` via the
-parameters ``categorical_features`` either by passing the indices of these
-features or a boolean mask marking these features::
+parameters ``categorical_features`` either by passing the indices, the feature
+names when `X` is a pandas DataFrame, a boolean mask marking these features,
+or relying on `dtype` inference if the columns are using the
+:class:`pandas.CategoricalDtype`::
 
   >>> from imblearn.over_sampling import SMOTENC
   >>> smote_nc = SMOTENC(categorical_features=[0, 2], random_state=0)
