@@ -228,7 +228,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
 
-        .. versionchaned:: 0.11
+        .. versionchanged:: 0.11
            The default of `sampling_strategy` will change from `"auto"` to
            `"all"` in version 0.13. This forces to use a bootstrap of the
            minority class as proposed in [1]_.
