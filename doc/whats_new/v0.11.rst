@@ -9,6 +9,10 @@ Changelog
 Bug fixes
 .........
 
+- Fix a bug in :func:`~imblearn.metrics.classification_report_imbalanced` where the
+  parameter `target_names` was not taken into account when `output_dict=True`.
+  :pr:`989` by :user:`AYY7 <AYY7>`.
+
 - :class:`~imblearn.over_sampling.SMOTENC` now handles mix types of data type such as
   `bool` and `pd.category` by delegating the conversion to scikit-learn encoder.
   :pr:`1002` by :user:`Guillaume Lemaitre <glemaitre>`.
