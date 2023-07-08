@@ -193,7 +193,9 @@ which categorical data are treated differently::
 In this data set, the first and last features are considered as categorical
 features. One needs to provide this information to :class:`SMOTENC` via the
 parameters ``categorical_features`` either by passing the indices, the feature
-names when `X` is a pandas DataFrame, or a boolean mask marking these features::
+names when `X` is a pandas DataFrame, a boolean mask marking these features,
+or relying on `dtype` inference if the columns are using the
+:class:`pandas.CategoricalDtype`::
 
   >>> from imblearn.over_sampling import SMOTENC
   >>> smote_nc = SMOTENC(categorical_features=[0, 2], random_state=0)
