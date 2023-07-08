@@ -338,7 +338,6 @@ df_scores
 # classifier within a :class:`~imblearn.ensemble.BalancedBaggingClassifier`.
 
 from sklearn.ensemble import HistGradientBoostingClassifier
-from sklearn.experimental import enable_hist_gradient_boosting  # noqa
 
 from imblearn.ensemble import BalancedBaggingClassifier
 

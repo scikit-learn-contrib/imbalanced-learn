@@ -7,6 +7,7 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
+import sklearn
 from sklearn.base import BaseEstimator
 
 try:
@@ -14,15 +15,38 @@ try:
     from sklearn.base import OneToOneFeatureMixin
 except ImportError:
     from sklearn.base import _OneToOneFeatureMixin as OneToOneFeatureMixin
+
 from sklearn.preprocessing import label_binarize
+from sklearn.utils import parse_version
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
 from .utils._param_validation import validate_parameter_constraints
 from .utils._validation import ArraysTransformer
 
+sklearn_version = parse_version(sklearn.__version__)
 
-class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
+
+class _ParamsValidationMixin:
+    """Mixin class to validate parameters."""
+
+    def _validate_params(self):
+        """Validate types and values of constructor parameters.
+
+        The expected type and values must be defined in the `_parameter_constraints`
+        class attribute, which is a dictionary `param_name: list of constraints`. See
+        the docstring of `validate_parameter_constraints` for a description of the
+        accepted constraints.
+        """
+        if hasattr(self, "_parameter_constraints"):
+            validate_parameter_constraints(
+                self._parameter_constraints,
+                self.get_params(deep=False),
+                caller_name=self.__class__.__name__,
+            )
+
+
+class SamplerMixin(_ParamsValidationMixin, BaseEstimator, metaclass=ABCMeta):
     """Mixin class for samplers with abstract method.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -120,26 +144,7 @@ class SamplerMixin(BaseEstimator, metaclass=ABCMeta):
         pass
 
 
-class _ParamsValidationMixin:
-    """Mixin class to validate parameters."""
-
-    def _validate_params(self):
-        """Validate types and values of constructor parameters.
-
-        The expected type and values must be defined in the `_parameter_constraints`
-        class attribute, which is a dictionary `param_name: list of constraints`. See
-        the docstring of `validate_parameter_constraints` for a description of the
-        accepted constraints.
-        """
-        if hasattr(self, "_parameter_constraints"):
-            validate_parameter_constraints(
-                self._parameter_constraints,
-                self.get_params(deep=False),
-                caller_name=self.__class__.__name__,
-            )
-
-
-class BaseSampler(SamplerMixin, OneToOneFeatureMixin, _ParamsValidationMixin):
+class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
     """Base class for sampling algorithms.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -398,7 +403,6 @@ class FunctionSampler(BaseSampler):
         output = self._fit_resample(X, y)
 
         if self.validate:
-
             y_ = (
                 label_binarize(output[1], classes=np.unique(y))
                 if binarize_y

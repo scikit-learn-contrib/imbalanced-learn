@@ -102,7 +102,7 @@ def plot_decision_function(X, y, clf, ax):
 # :class:`~imblearn.combine.SMOTEENN` cleans more noisy data than
 # :class:`~imblearn.combine.SMOTETomek`.
 
-from sklearn.svm import LinearSVC
+from sklearn.linear_model import LogisticRegression
 
 from imblearn.combine import SMOTEENN, SMOTETomek
 
@@ -114,7 +114,7 @@ samplers = [SMOTE(random_state=0), SMOTEENN(random_state=0), SMOTETomek(random_s
 
 fig, axs = plt.subplots(3, 2, figsize=(15, 25))
 for ax, sampler in zip(axs, samplers):
-    clf = make_pipeline(sampler, LinearSVC()).fit(X, y)
+    clf = make_pipeline(sampler, LogisticRegression()).fit(X, y)
     plot_decision_function(X, y, clf, ax[0])
     plot_resampling(X, y, sampler, ax[1])
 fig.tight_layout()

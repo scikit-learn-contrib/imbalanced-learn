@@ -105,7 +105,8 @@ for v, k in enumerate(MAP_NAME_ID_KEYS):
         "random_state": ["random_state"],
         "shuffle": ["boolean"],
         "verbose": ["boolean"],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def fetch_datasets(
     *,

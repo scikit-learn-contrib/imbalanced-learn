@@ -10,14 +10,21 @@ import numbers
 import warnings
 
 import numpy as np
-from joblib import Parallel
+import sklearn
 from sklearn.base import clone
 from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils.fixes import delayed
+from sklearn.utils import parse_version
 from sklearn.utils.validation import check_is_fitted
+
+try:
+    # scikit-learn >= 1.2
+    from sklearn.utils.parallel import Parallel, delayed
+except (ImportError, ModuleNotFoundError):
+    from joblib import Parallel
+    from sklearn.utils.fixes import delayed
 
 from ..base import _ParamsValidationMixin
 from ..pipeline import Pipeline
@@ -27,7 +34,10 @@ from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._available_if import available_if
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import HasMethods, Interval, StrOptions
+from ..utils.fixes import _fit_context
 from ._common import _bagging_parameter_constraints, _estimator_has
+
+sklearn_version = parse_version(sklearn.__version__)
 
 
 @Substitution(
@@ -35,7 +45,7 @@ from ._common import _bagging_parameter_constraints, _estimator_has
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class BalancedBaggingClassifier(BaggingClassifier, _ParamsValidationMixin):
+class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
     """A Bagging classifier with additional balancing.
 
     This implementation of Bagging is similar to the scikit-learn
@@ -256,8 +266,7 @@ class BalancedBaggingClassifier(BaggingClassifier, _ParamsValidationMixin):
     """
 
     # make a deepcopy to not modify the original dictionary
-    if hasattr(BaggingClassifier, "_parameter_constraints"):
-        # scikit-learn >= 1.2
+    if sklearn_version >= parse_version("1.3"):
         _parameter_constraints = copy.deepcopy(BaggingClassifier._parameter_constraints)
     else:
         _parameter_constraints = copy.deepcopy(_bagging_parameter_constraints)
@@ -389,6 +398,7 @@ class BalancedBaggingClassifier(BaggingClassifier, _ParamsValidationMixin):
         )
         return self.n_features_in_
 
+    @_fit_context(prefer_skip_nested_validation=False)
     def fit(self, X, y):
         """Build a Bagging ensemble of estimators from the training set (X, y).
 

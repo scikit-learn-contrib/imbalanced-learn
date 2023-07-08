@@ -15,6 +15,7 @@ from sklearn.utils.sparsefuncs import mean_variance_axis
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
 from ..utils._param_validation import Interval
+from ..utils._validation import _check_X
 from .base import BaseOverSampler
 
 
@@ -154,14 +155,9 @@ class RandomOverSampler(BaseOverSampler):
 
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X,
-            y,
-            reset=True,
-            accept_sparse=["csr", "csc"],
-            dtype=None,
-            force_all_finite=False,
-        )
+        X = _check_X(X)
+        self._check_n_features(X, reset=True)
+        self._check_feature_names(X, reset=True)
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):
@@ -258,4 +254,7 @@ class RandomOverSampler(BaseOverSampler):
             "X_types": ["2darray", "string", "sparse", "dataframe"],
             "sample_indices": True,
             "allow_nan": True,
+            "_xfail_checks": {
+                "check_complex_data": "Robust to this type of data.",
+            },
         }

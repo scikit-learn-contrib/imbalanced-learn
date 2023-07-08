@@ -43,9 +43,7 @@ print(f"Training target statistics: {Counter(y_train)}")
 print(f"Testing target statistics: {Counter(y_test)}")
 
 # Create a pipeline
-pipeline = make_pipeline(
-    NearMiss(version=2), StandardScaler(), LogisticRegression(random_state=RANDOM_STATE)
-)
+pipeline = make_pipeline(NearMiss(version=2), StandardScaler(), LogisticRegression())
 pipeline.fit(X_train, y_train)
 
 # Classify and report the results
