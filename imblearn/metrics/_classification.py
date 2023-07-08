@@ -1038,7 +1038,7 @@ def classification_report_imbalanced(
         report_dict_label[headers[-1]] = support[i]
         report += fmt % tuple(values)
 
-        report_dict[label] = report_dict_label
+        report_dict[target_names[i]] = report_dict_label
 
     report += "\n"
 
