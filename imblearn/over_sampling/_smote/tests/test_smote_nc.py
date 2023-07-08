@@ -63,7 +63,7 @@ def data_heterogneous_masked():
     X[:, 3] = rng.randint(3, size=30)
     y = np.array([0] * 10 + [1] * 20)
     # return the categories
-    return X, y, [True, False, True]
+    return X, y, [True, False, False, True]
 
 
 def data_heterogneous_unordered_multiclass():
@@ -98,7 +98,7 @@ def test_smotenc_error():
     X, y, _ = data_heterogneous_unordered()
     categorical_features = [0, 10]
     smote = SMOTENC(random_state=0, categorical_features=categorical_features)
-    with pytest.raises(ValueError, match="indices are out of range"):
+    with pytest.raises(ValueError, match="all features must be in"):
         smote.fit_resample(X, y)
 
 
@@ -324,3 +324,28 @@ def test_smotenc_bool_categorical():
     X_res, y_res = smote.fit_resample(X, y)
     pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
     assert len(X_res) == len(y_res)
+
+
+def test_smotenc_categorical_features_str():
+    """Check that we support array-like of strings for `categorical_features` using
+    pandas dataframe.
+    """
+    pd = pytest.importorskip("pandas")
+
+    X = pd.DataFrame(
+        {
+            "A": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "B": ["a", "b"] * 5,
+            "C": ["a", "b", "c"] * 3 + ["a"],
+        }
+    )
+    X = pd.concat([X] * 10, ignore_index=True)
+    y = np.array([0] * 70 + [1] * 30)
+    smote = SMOTENC(categorical_features=["B", "C"], random_state=0)
+    X_res, y_res = smote.fit_resample(X, y)
+    assert X_res["B"].isin(["a", "b"]).all()
+    assert X_res["C"].isin(["a", "b", "c"]).all()
+    counter = Counter(y_res)
+    assert counter[0] == counter[1] == 70
+    assert_array_equal(smote.categorical_features_, [1, 2])
+    assert_array_equal(smote.continuous_features_, [0])
