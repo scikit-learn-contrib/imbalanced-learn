@@ -31,9 +31,9 @@ from sklearn.utils.validation import _num_features
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._param_validation import HasMethods, Interval
+from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ...utils._validation import _check_X
-from ...utils.fixes import _mode
+from ...utils.fixes import _is_pandas_df, _mode
 from ..base import BaseOverSampler
 
 
@@ -395,10 +395,13 @@ class SMOTENC(SMOTE):
 
     Parameters
     ----------
-    categorical_features : array-like of shape (n_cat_features,) or (n_features,), \
-            dtype={{bool, int, str}}
+    categorical_features : "infer" or array-like of shape (n_cat_features,) or \
+            (n_features,), dtype={{bool, int, str}}
         Specified which features are categorical. Can either be:
 
+        - "auto" (default) to automatically detect categorical features. Only
+          supported when `X` is a :class:`pandas.DataFrame` and it corresponds
+          to columns that have a :class:`pandas.CategoricalDtype`;
         - array of `int` corresponding to the indices specifying the categorical
           features;
         - array of `str` corresponding to the feature names. `X` should be a pandas
@@ -538,7 +541,7 @@ class SMOTENC(SMOTE):
 
     _parameter_constraints: dict = {
         **SMOTE._parameter_constraints,
-        "categorical_features": ["array-like"],
+        "categorical_features": ["array-like", StrOptions({"auto"})],
         "categorical_encoder": [
             HasMethods(["fit_transform", "inverse_transform"]),
             None,
@@ -575,12 +578,27 @@ class SMOTENC(SMOTE):
         return X, y, binarize_y
 
     def _validate_column_types(self, X):
-        self.categorical_features_ = np.array(
-            _get_column_indices(X, self.categorical_features)
-        )
-        self.continuous_features_ = np.setdiff1d(
-            np.arange(self.n_features_), self.categorical_features_
-        )
+        """Compute the indices of the categorical and continuous features."""
+        if self.categorical_features == "auto":
+            if not _is_pandas_df(X):
+                raise ValueError(
+                    "When `categorical_features='auto'`, the input data "
+                    f"should be a pandas.DataFrame. Got {type(X)} instead."
+                )
+            import pandas as pd  # safely import pandas now
+
+            are_columns_categorical = np.array(
+                [isinstance(col_dtype, pd.CategoricalDtype) for col_dtype in X.dtypes]
+            )
+            self.categorical_features_ = np.flatnonzero(are_columns_categorical)
+            self.continuous_features_ = np.flatnonzero(~are_columns_categorical)
+        else:
+            self.categorical_features_ = np.array(
+                _get_column_indices(X, self.categorical_features)
+            )
+            self.continuous_features_ = np.setdiff1d(
+                np.arange(self.n_features_), self.categorical_features_
+            )
 
     def _validate_estimator(self):
         super()._validate_estimator()
@@ -588,6 +606,11 @@ class SMOTENC(SMOTE):
             raise ValueError(
                 "SMOTE-NC is not designed to work only with categorical "
                 "features. It requires some numerical features."
+            )
+        elif self.categorical_features_.size == 0:
+            raise ValueError(
+                "SMOTE-NC is not designed to work only with numerical "
+                "features. It requires some categorical features."
             )
 
     def _fit_resample(self, X, y):
