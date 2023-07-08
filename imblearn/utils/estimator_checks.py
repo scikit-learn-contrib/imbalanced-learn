@@ -75,6 +75,10 @@ def _set_checking_parameters(estimator):
         )
     if name == "KMeansSMOTE":
         estimator.set_params(kmeans_estimator=12)
+    if name == "BalancedRandomForestClassifier":
+        # TODO: remove in 0.13
+        # future default in 0.13
+        estimator.set_params(replacement=True, sampling_strategy="all")
 
 
 def _yield_sampler_checks(sampler):

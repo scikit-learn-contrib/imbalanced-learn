@@ -36,10 +36,9 @@ except (ImportError, ModuleNotFoundError):
 from ..base import _ParamsValidationMixin
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
-from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._param_validation import Interval, StrOptions
+from ..utils._param_validation import Hidden, Interval, StrOptions
 from ..utils._validation import check_sampling_strategy
 from ..utils.fixes import _fit_context
 from ._common import _random_forest_classifier_parameter_constraints
@@ -100,7 +99,6 @@ def _local_parallel_build_trees(
 
 
 @Substitution(
-    sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
@@ -193,10 +191,55 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         Whether to use out-of-bag samples to estimate
         the generalization accuracy.
 
-    {sampling_strategy}
+    sampling_strategy : float, str, dict, callable, default="auto"
+        Sampling information to sample the data set.
+
+        - When ``float``, it corresponds to the desired ratio of the number of
+          samples in the minority class over the number of samples in the
+          majority class after resampling. Therefore, the ratio is expressed as
+          :math:`\\alpha_{{us}} = N_{{m}} / N_{{rM}}` where :math:`N_{{m}}` is the
+          number of samples in the minority class and
+          :math:`N_{{rM}}` is the number of samples in the majority class
+          after resampling.
+
+          .. warning::
+             ``float`` is only available for **binary** classification. An
+             error is raised for multi-class classification.
+
+        - When ``str``, specify the class targeted by the resampling. The
+          number of samples in the different classes will be equalized.
+          Possible choices are:
+
+            ``'majority'``: resample only the majority class;
+
+            ``'not minority'``: resample all classes but the minority class;
+
+            ``'not majority'``: resample all classes but the majority class;
+
+            ``'all'``: resample all classes;
+
+            ``'auto'``: equivalent to ``'not minority'``.
+
+        - When ``dict``, the keys correspond to the targeted classes. The
+          values correspond to the desired number of samples for each targeted
+          class.
+
+        - When callable, function taking ``y`` and returns a ``dict``. The keys
+          correspond to the targeted classes. The values correspond to the
+          desired number of samples for each class.
+
+        .. versionchaned:: 0.11
+           The default of `sampling_strategy` will change from `"auto"` to
+           `"all"` in version 0.13. This forces to use a bootstrap of the
+           minority class as proposed in [1]_.
 
     replacement : bool, default=False
         Whether or not to sample randomly with replacement or not.
+
+        .. versionchanged:: 0.11
+           The default of `replacement` will change from `False` to `True` in
+           version 0.13. This forces to use a bootstrap of the
+           minority class and draw with replacement as proposed in [1]_.
 
     {n_jobs}
 
@@ -351,7 +394,8 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
     >>> X, y = make_classification(n_samples=1000, n_classes=3,
     ...                            n_informative=4, weights=[0.2, 0.3, 0.5],
     ...                            random_state=0)
-    >>> clf = BalancedRandomForestClassifier(max_depth=2, random_state=0)
+    >>> clf = BalancedRandomForestClassifier(
+    ...     sampling_strategy="all", replacement=True, max_depth=2, random_state=0)
     >>> clf.fit(X, y)
     BalancedRandomForestClassifier(...)
     >>> print(clf.feature_importances_)
@@ -376,8 +420,9 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
                 StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
                 dict,
                 callable,
+                Hidden(StrOptions({"warn"})),
             ],
-            "replacement": ["boolean"],
+            "replacement": ["boolean", Hidden(StrOptions({"warn"}))],
         }
     )
 
@@ -395,8 +440,8 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         min_impurity_decrease=0.0,
         bootstrap=True,
         oob_score=False,
-        sampling_strategy="auto",
-        replacement=False,
+        sampling_strategy="warn",
+        replacement="warn",
         n_jobs=None,
         random_state=None,
         verbose=0,
@@ -450,7 +495,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self._sampling_strategy,
-            replacement=self.replacement,
+            replacement=self._replacement,
         )
 
     def _make_sampler_estimator(self, random_state=None):
@@ -496,6 +541,31 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
             The fitted instance.
         """
         self._validate_params()
+        # TODO: remove in 0.13
+        if self.sampling_strategy == "warn":
+            warn(
+                "The default of `sampling_strategy` will change from `'auto'` to "
+                "`'all'` in version 0.13. This change will follow the implementation "
+                "proposed in the original paper. Set to `'all'` to silence this "
+                "warning and adopt the future behaviour.",
+                FutureWarning,
+            )
+            self._sampling_strategy = "auto"
+        else:
+            self._sampling_strategy = self.sampling_strategy
+
+        if self.replacement == "warn":
+            warn(
+                "The default of `replacement` will change from `False` to "
+                "`True` in version 0.13. This change will follow the implementation "
+                "proposed in the original paper. Set to `True` to silence this "
+                "warning and adopt the future behaviour.",
+                FutureWarning,
+            )
+            self._replacement = False
+        else:
+            self._replacement = self.replacement
+
         # Validate or convert input data
         if issparse(y):
             raise ValueError("sparse multilabel-indicator for y is not supported.")
@@ -533,7 +603,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         if getattr(y, "dtype", None) != DOUBLE or not y.flags.contiguous:
             y_encoded = np.ascontiguousarray(y_encoded, dtype=DOUBLE)
 
-        if isinstance(self.sampling_strategy, dict):
+        if isinstance(self._sampling_strategy, dict):
             self._sampling_strategy = {
                 np.where(self.classes_[0] == key)[0][0]: value
                 for key, value in check_sampling_strategy(
@@ -543,7 +613,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
                 ).items()
             }
         else:
-            self._sampling_strategy = self.sampling_strategy
+            self._sampling_strategy = self._sampling_strategy
 
         if expanded_class_weight is not None:
             if sample_weight is not None:
