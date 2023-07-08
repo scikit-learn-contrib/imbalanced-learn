@@ -619,7 +619,7 @@ def _deprecate_positional_args(f):
 
 
 def _check_X(X):
-    """Check the shape of X and convert it if it is a list of list."""
+    """Check X and do not check it if a dataframe."""
     n_samples = _num_samples(X)
     if n_samples < 1:
         raise ValueError(
