@@ -17,6 +17,10 @@ Bug fixes
   since it requires a conversion to dense matrices.
   :pr:`1003` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Remove spurious warning raised when minority class get over-sampled more than the
+  number of sample in the majority class.
+  :pr:`1007` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Compatibility
 .............
 
