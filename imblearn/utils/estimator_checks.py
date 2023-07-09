@@ -94,7 +94,7 @@ def _set_checking_parameters(estimator):
     if name == "BalancedRandomForestClassifier":
         # TODO: remove in 0.13
         # future default in 0.13
-        estimator.set_params(replacement=True, sampling_strategy="all")
+        estimator.set_params(replacement=True, sampling_strategy="all", bootstrap=False)
 
 
 def _yield_sampler_checks(sampler):

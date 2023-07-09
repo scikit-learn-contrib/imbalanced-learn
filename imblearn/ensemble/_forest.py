@@ -105,8 +105,10 @@ def _local_parallel_build_trees(
 class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassifier):
     """A balanced random forest classifier.
 
-    A balanced random forest randomly under-samples each bootstrap sample to
-    balance it.
+    A balanced random forest differs from a classical random forest by the
+    fact that it will draw a bootstrap sample from the minority class and
+    sample with replacement the same number of samples from the majority
+    class.
 
     Read more in the :ref:`User Guide <forest>`.
 
@@ -186,6 +188,12 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
     bootstrap : bool, default=True
         Whether bootstrap samples are used when building trees.
+
+        .. versionchanged:: 0.13
+           The default of `bootstrap` will change from `True` to `False` in
+           version 0.13. Bootstrapping is already taken care by the internal
+           sampler using `replacement=True`. This implementation follows the
+           algorithm proposed in [1]_.
 
     oob_score : bool, default=False
         Whether to use out-of-bag samples to estimate
@@ -395,7 +403,8 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
     ...                            n_informative=4, weights=[0.2, 0.3, 0.5],
     ...                            random_state=0)
     >>> clf = BalancedRandomForestClassifier(
-    ...     sampling_strategy="all", replacement=True, max_depth=2, random_state=0)
+    ...     sampling_strategy="all", replacement=True, max_depth=2, random_state=0,
+    ...     bootstrap=False)
     >>> clf.fit(X, y)
     BalancedRandomForestClassifier(...)
     >>> print(clf.feature_importances_)
@@ -415,6 +424,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
     _parameter_constraints.update(
         {
+            "bootstrap": ["boolean", Hidden(StrOptions({"warn"}))],
             "sampling_strategy": [
                 Interval(numbers.Real, 0, 1, closed="right"),
                 StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
@@ -438,7 +448,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         max_features="sqrt",
         max_leaf_nodes=None,
         min_impurity_decrease=0.0,
-        bootstrap=True,
+        bootstrap="warn",
         oob_score=False,
         sampling_strategy="warn",
         replacement="warn",
@@ -566,6 +576,18 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         else:
             self._replacement = self.replacement
 
+        if self.bootstrap == "warn":
+            warn(
+                "The default of `bootstrap` will change from `True` to "
+                "`False` in version 0.13. This change will follow the implementation "
+                "proposed in the original paper. Set to `False` to silence this "
+                "warning and adopt the future behaviour.",
+                FutureWarning,
+            )
+            self._bootstrap = True
+        else:
+            self._bootstrap = self.bootstrap
+
         # Validate or convert input data
         if issparse(y):
             raise ValueError("sparse multilabel-indicator for y is not supported.")
@@ -629,7 +651,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         # Check parameters
         self._validate_estimator()
 
-        if not self.bootstrap and self.oob_score:
+        if not self._bootstrap and self.oob_score:
             raise ValueError("Out of bag estimation only available if bootstrap=True")
 
         random_state = check_random_state(self.random_state)
@@ -681,7 +703,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
                 delayed(_local_parallel_build_trees)(
                     s,
                     t,
-                    self.bootstrap,
+                    self._bootstrap,
                     X,
                     y_encoded,
                     sample_weight,

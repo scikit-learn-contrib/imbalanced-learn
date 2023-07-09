@@ -29,7 +29,7 @@ def imbalanced_dataset():
 
 def test_balanced_random_forest_error_warning_warm_start(imbalanced_dataset):
     brf = BalancedRandomForestClassifier(
-        n_estimators=5, sampling_strategy="all", replacement=True
+        n_estimators=5, sampling_strategy="all", replacement=True, bootstrap=False
     )
     brf.fit(*imbalanced_dataset)
 
@@ -51,6 +51,7 @@ def test_balanced_random_forest(imbalanced_dataset):
         random_state=0,
         sampling_strategy="all",
         replacement=True,
+        bootstrap=False,
     )
     brf.fit(*imbalanced_dataset)
 
@@ -68,6 +69,7 @@ def test_balanced_random_forest_attributes(imbalanced_dataset):
         random_state=0,
         sampling_strategy="all",
         replacement=True,
+        bootstrap=False,
     )
     brf.fit(X, y)
 
@@ -93,7 +95,11 @@ def test_balanced_random_forest_sample_weight(imbalanced_dataset):
     X, y = imbalanced_dataset
     sample_weight = rng.rand(y.shape[0])
     brf = BalancedRandomForestClassifier(
-        n_estimators=5, random_state=0, sampling_strategy="all", replacement=True
+        n_estimators=5,
+        random_state=0,
+        sampling_strategy="all",
+        replacement=True,
+        bootstrap=False,
     )
     brf.fit(X, y, sample_weight)
 
@@ -111,6 +117,7 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
         min_samples_leaf=2,
         sampling_strategy="all",
         replacement=True,
+        bootstrap=True,
     )
 
     est.fit(X_train, y_train)
@@ -132,7 +139,9 @@ def test_balanced_random_forest_oob(imbalanced_dataset):
 
 
 def test_balanced_random_forest_grid_search(imbalanced_dataset):
-    brf = BalancedRandomForestClassifier(sampling_strategy="all", replacement=True)
+    brf = BalancedRandomForestClassifier(
+        sampling_strategy="all", replacement=True, bootstrap=False
+    )
     grid = GridSearchCV(brf, {"n_estimators": (1, 2), "max_depth": (1, 2)}, cv=3)
     grid.fit(*imbalanced_dataset)
 
@@ -150,6 +159,7 @@ def test_little_tree_with_small_max_samples():
         max_samples=None,
         sampling_strategy="all",
         replacement=True,
+        bootstrap=True,
     )
 
     # Second fit with max samples restricted to just 2
@@ -159,6 +169,7 @@ def test_little_tree_with_small_max_samples():
         max_samples=2,
         sampling_strategy="all",
         replacement=True,
+        bootstrap=True,
     )
 
     est1.fit(X, y)
@@ -172,12 +183,14 @@ def test_little_tree_with_small_max_samples():
 
 
 def test_balanced_random_forest_pruning(imbalanced_dataset):
-    brf = BalancedRandomForestClassifier(sampling_strategy="all", replacement=True)
+    brf = BalancedRandomForestClassifier(
+        sampling_strategy="all", replacement=True, bootstrap=False
+    )
     brf.fit(*imbalanced_dataset)
     n_nodes_no_pruning = brf.estimators_[0].tree_.node_count
 
     brf_pruned = BalancedRandomForestClassifier(
-        ccp_alpha=0.015, sampling_strategy="all", replacement=True
+        ccp_alpha=0.015, sampling_strategy="all", replacement=True, bootstrap=False
     )
     brf_pruned.fit(*imbalanced_dataset)
     n_nodes_pruning = brf_pruned.estimators_[0].tree_.node_count
@@ -200,6 +213,7 @@ def test_balanced_random_forest_oob_binomial(ratio):
         random_state=42,
         sampling_strategy="not minority",
         replacement=False,
+        bootstrap=True,
     )
     erf.fit(X, y)
     assert np.abs(erf.oob_score_ - 0.5) < 0.1
@@ -209,7 +223,7 @@ def test_balanced_bagging_classifier_n_features():
     """Check that we raise a FutureWarning when accessing `n_features_`."""
     X, y = load_iris(return_X_y=True)
     estimator = BalancedRandomForestClassifier(
-        sampling_strategy="all", replacement=True
+        sampling_strategy="all", replacement=True, bootstrap=False
     ).fit(X, y)
     with pytest.warns(FutureWarning, match="`n_features_` was deprecated"):
         estimator.n_features_
@@ -222,7 +236,7 @@ def test_balanced_random_forest_classifier_base_estimator():
     """Check that we raise a FutureWarning when accessing `base_estimator_`."""
     X, y = load_iris(return_X_y=True)
     estimator = BalancedRandomForestClassifier(
-        sampling_strategy="all", replacement=True
+        sampling_strategy="all", replacement=True, bootstrap=False
     ).fit(X, y)
     with pytest.warns(FutureWarning, match="`base_estimator_` was deprecated"):
         estimator.base_estimator_
@@ -233,9 +247,14 @@ def test_balanced_random_forest_change_behaviour(imbalanced_dataset):
     """Check that we raise a change of behaviour for the parameters `sampling_strategy`
     and `replacement`.
     """
-    estimator = BalancedRandomForestClassifier(sampling_strategy="all")
+    estimator = BalancedRandomForestClassifier(sampling_strategy="all", bootstrap=False)
     with pytest.warns(FutureWarning, match="The default of `replacement`"):
         estimator.fit(*imbalanced_dataset)
-    estimator = BalancedRandomForestClassifier(replacement=True)
+    estimator = BalancedRandomForestClassifier(replacement=True, bootstrap=False)
     with pytest.warns(FutureWarning, match="The default of `sampling_strategy`"):
+        estimator.fit(*imbalanced_dataset)
+    estimator = BalancedRandomForestClassifier(
+        sampling_strategy="all", replacement=True
+    )
+    with pytest.warns(FutureWarning, match="The default of `bootstrap`"):
         estimator.fit(*imbalanced_dataset)

@@ -144,7 +144,11 @@ from imblearn.ensemble import BalancedRandomForestClassifier
 
 rf = RandomForestClassifier(n_estimators=50, random_state=0)
 brf = BalancedRandomForestClassifier(
-    n_estimators=50, sampling_strategy="all", replacement=True, random_state=0
+    n_estimators=50,
+    sampling_strategy="all",
+    replacement=True,
+    bootstrap=False,
+    random_state=0,
 )
 
 rf.fit(X_train, y_train)

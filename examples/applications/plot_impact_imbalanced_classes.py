@@ -320,7 +320,11 @@ from imblearn.ensemble import BalancedRandomForestClassifier
 rf_clf = make_pipeline(
     preprocessor_tree,
     BalancedRandomForestClassifier(
-        sampling_strategy="all", replacement=True, random_state=42, n_jobs=2
+        sampling_strategy="all",
+        replacement=True,
+        bootstrap=False,
+        random_state=42,
+        n_jobs=2,
     ),
 )
 
