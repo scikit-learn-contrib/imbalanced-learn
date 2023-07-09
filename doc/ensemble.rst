@@ -78,7 +78,8 @@ each tree of the forest will be provided a balanced bootstrap sample
 
   >>> from imblearn.ensemble import BalancedRandomForestClassifier
   >>> brf = BalancedRandomForestClassifier(
-  ...     n_estimators=100, random_state=0, sampling_strategy="all", replacement=True
+  ...     n_estimators=100, random_state=0, sampling_strategy="all", replacement=True,
+  ...     bootstrap=False,
   ... )
   >>> brf.fit(X_train, y_train)
   BalancedRandomForestClassifier(...)

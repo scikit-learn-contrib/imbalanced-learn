@@ -205,7 +205,7 @@ def test_fit_docstring_attributes(name, Estimator):
     X = _enforce_estimator_tags_x(est, X)
 
     if "oob_score" in est.get_params():
-        est.set_params(oob_score=True)
+        est.set_params(bootstrap=True, oob_score=True)
 
     if is_sampler(est):
         est.fit_resample(X, y)
