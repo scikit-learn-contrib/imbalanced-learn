@@ -99,6 +99,7 @@ def test_cnn_fit_resample_with_object(n_neighbors):
 
 
 def test_condensed_nearest_neighbour_multiclass():
+    """Check the validity of the fitted attributes `estimators_`."""
     X, y = make_classification(
         n_samples=1_000,
         n_classes=4,
@@ -116,3 +117,13 @@ def test_condensed_nearest_neighbour_multiclass():
         assert est.classes_[1] in {1, 2, 3}  # other classes
         other_classes.append(est.classes_[1])
     assert len(set(other_classes)) == len(other_classes)
+
+
+# TODO: remove in 0.14
+def test_condensed_nearest_neighbors_deprecation():
+    """Check that we raise a FutureWarning when accessing the parameter `estimator_`."""
+    cnn = CondensedNearestNeighbour(random_state=RND_SEED)
+    cnn.fit_resample(X, Y)
+    warn_msg = "`estimator_` attribute has been deprecated"
+    with pytest.warns(FutureWarning, match=warn_msg):
+        cnn.estimator_

@@ -3,6 +3,14 @@
 Version 0.12.0 (Under development)
 ==================================
 
-
 Changelog
 ---------
+
+Deprecations
+............
+
+- Deprecate `estimator_` argument in favor of `estimators_` for the classes
+  :class:`~imblearn.under_sampling.CondensedNearestNeighbour` and
+  :class:`~imblearn.under_sampling.OneSidedSelection`. `estimator_` will be removed
+  in 0.14.
+  :pr:`xxx` by :user:`Guillaume Lemaitre <glemaitre>`.

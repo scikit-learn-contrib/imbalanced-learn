@@ -5,6 +5,7 @@
 # License: MIT
 
 import numbers
+import warnings
 from collections import Counter
 
 import numpy as np
@@ -58,11 +59,15 @@ class OneSidedSelection(BaseCleaningSampler):
     estimator_ : estimator object
         Validated K-nearest neighbors estimator created from parameter `n_neighbors`.
 
-        .. deprecated:: 0.11
-           Should be remove
+        .. deprecated:: 0.12
+           `estimator_` is deprecated in 0.12 and will be removed in 0.14. Use
+           `estimators_` instead that contains the list of all K-nearest
+           neighbors estimator used for each pair of class.
 
     estimators_ : list of estimator objects of shape (n_resampled_classes - 1,)
         Contains the K-nearest neighbor estimator used for per of classes.
+
+        .. versionadded:: 0.12
 
     sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
@@ -144,16 +149,18 @@ class OneSidedSelection(BaseCleaningSampler):
     def _validate_estimator(self):
         """Private function to create the NN estimator"""
         if self.n_neighbors is None:
-            self.estimator_ = KNeighborsClassifier(n_neighbors=1, n_jobs=self.n_jobs)
+            estimator = KNeighborsClassifier(n_neighbors=1, n_jobs=self.n_jobs)
         elif isinstance(self.n_neighbors, int):
-            self.estimator_ = KNeighborsClassifier(
+            estimator = KNeighborsClassifier(
                 n_neighbors=self.n_neighbors, n_jobs=self.n_jobs
             )
         elif isinstance(self.n_neighbors, KNeighborsClassifier):
-            self.estimator_ = clone(self.n_neighbors)
+            estimator = clone(self.n_neighbors)
+
+        return estimator
 
     def _fit_resample(self, X, y):
-        self._validate_estimator()
+        estimator = self._validate_estimator()
 
         random_state = check_random_state(self.random_state)
         target_stats = Counter(y)
@@ -184,7 +191,7 @@ class OneSidedSelection(BaseCleaningSampler):
                 idx_maj_extracted = np.delete(idx_maj, sel_idx_maj, axis=0)
                 S_x = _safe_indexing(X, idx_maj_extracted)
                 S_y = _safe_indexing(y, idx_maj_extracted)
-                self.estimators_.append(clone(self.estimator_).fit(C_x, C_y))
+                self.estimators_.append(clone(estimator).fit(C_x, C_y))
                 pred_S_y = self.estimators_[-1].predict(S_x)
 
                 S_misclassified_indices = np.flatnonzero(pred_S_y != S_y)
@@ -205,6 +212,16 @@ class OneSidedSelection(BaseCleaningSampler):
         self.sample_indices_ = _safe_indexing(idx_under, tl.sample_indices_)
 
         return X_cleaned, y_cleaned
+
+    @property
+    def estimator_(self):
+        """Last fitted k-NN estimator."""
+        warnings.warn(
+            "`estimator_` attribute has been deprecated in 0.12 and will be "
+            "removed in 0.14. Use `estimators_` instead.",
+            FutureWarning,
+        )
+        return self.estimators_[-1]
 
     def _more_tags(self):
         return {"sample_indices": True}
