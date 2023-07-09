@@ -58,6 +58,12 @@ class OneSidedSelection(BaseCleaningSampler):
     estimator_ : estimator object
         Validated K-nearest neighbors estimator created from parameter `n_neighbors`.
 
+        .. deprecated:: 0.11
+           Should be remove
+
+    estimators_ : list of estimator objects of shape (n_resampled_classes - 1,)
+        Contains the K-nearest neighbor estimator used for per of classes.
+
     sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
@@ -155,6 +161,7 @@ class OneSidedSelection(BaseCleaningSampler):
 
         idx_under = np.empty((0,), dtype=int)
 
+        self.estimators_ = []
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 # select a sample from the current class
@@ -177,8 +184,8 @@ class OneSidedSelection(BaseCleaningSampler):
                 idx_maj_extracted = np.delete(idx_maj, sel_idx_maj, axis=0)
                 S_x = _safe_indexing(X, idx_maj_extracted)
                 S_y = _safe_indexing(y, idx_maj_extracted)
-                self.estimator_.fit(C_x, C_y)
-                pred_S_y = self.estimator_.predict(S_x)
+                self.estimators_.append(clone(self.estimator_).fit(C_x, C_y))
+                pred_S_y = self.estimators_[-1].predict(S_x)
 
                 S_misclassified_indices = np.flatnonzero(pred_S_y != S_y)
                 idx_tmp = idx_maj_extracted[S_misclassified_indices]

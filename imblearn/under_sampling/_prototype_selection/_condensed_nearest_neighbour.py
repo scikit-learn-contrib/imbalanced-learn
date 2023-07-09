@@ -59,6 +59,11 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
     estimator_ : estimator object
         The validated K-nearest neighbor estimator created from `n_neighbors` parameter.
 
+        .. deprecated:: 0.11
+
+    estimators_ : list of estimator objects of shape (n_resampled_classes - 1,)
+        Contains the K-nearest neighbor estimator used for per of classes.
+
     sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 
@@ -87,8 +92,8 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
     -----
     The method is based on [1]_.
 
-    Supports multi-class resampling. A one-vs.-rest scheme is used when
-    sampling a class as proposed in [1]_.
+    Supports multi-class resampling: a strategy one (minority) vs. each other
+    classes is applied.
 
     References
     ----------
@@ -158,6 +163,7 @@ CondensedNearestNeighbour  # doctest: +SKIP
         class_minority = min(target_stats, key=target_stats.get)
         idx_under = np.empty((0,), dtype=int)
 
+        self.estimators_ = []
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 # Randomly get one sample from the majority class
@@ -184,7 +190,7 @@ CondensedNearestNeighbour  # doctest: +SKIP
                 S_y = _safe_indexing(y, S_indices)
 
                 # fit knn on C
-                self.estimator_.fit(C_x, C_y)
+                self.estimators_.append(clone(self.estimator_).fit(C_x, C_y))
 
                 good_classif_label = idx_maj_sample.copy()
                 # Check each sample in S if we keep it or drop it
@@ -196,7 +202,7 @@ CondensedNearestNeighbour  # doctest: +SKIP
                     # Classify on S
                     if not issparse(x_sam):
                         x_sam = x_sam.reshape(1, -1)
-                    pred_y = self.estimator_.predict(x_sam)
+                    pred_y = self.estimators_[-1].predict(x_sam)
 
                     # If the prediction do not agree with the true label
                     # append it in C_x
@@ -210,12 +216,12 @@ CondensedNearestNeighbour  # doctest: +SKIP
                         C_y = _safe_indexing(y, C_indices)
 
                         # fit a knn on C
-                        self.estimator_.fit(C_x, C_y)
+                        self.estimators_[-1].fit(C_x, C_y)
 
                         # This experimental to speed up the search
                         # Classify all the element in S and avoid to test the
                         # well classified elements
-                        pred_S_y = self.estimator_.predict(S_x)
+                        pred_S_y = self.estimators_[-1].predict(S_x)
                         good_classif_label = np.unique(
                             np.append(idx_maj_sample, np.flatnonzero(pred_S_y == S_y))
                         )
