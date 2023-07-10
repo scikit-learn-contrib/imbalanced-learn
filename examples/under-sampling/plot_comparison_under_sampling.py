@@ -264,7 +264,7 @@ fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(15, 25))
 samplers = [
     CondensedNearestNeighbour(random_state=0),
     OneSidedSelection(random_state=0),
-    NeighbourhoodCleaningRule(),
+    NeighbourhoodCleaningRule(n_neighbors=11),
 ]
 
 for ax, sampler in zip(axs, samplers):

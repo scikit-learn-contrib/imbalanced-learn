@@ -6,6 +6,18 @@ Version 0.12.0 (Under development)
 Changelog
 ---------
 
+Bug fixes
+.........
+
+- Fix a bug in :class:`~imblearn.under_sampling.NeighbourhoodCleaningRule` where the
+  `kind_sel="all"` was not working as explained in the literature.
+  :pr:`1012` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix a bug in :class:`~imblearn.under_sampling.NeighbourhoodCleaningRule` where the
+  `threshold_cleaning` ratio was multiplied on the total number of samples instead of
+  the number of samples in the minority class.
+  :pr:`1012` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecations
 ............
 
@@ -13,4 +25,8 @@ Deprecations
   :class:`~imblearn.under_sampling.CondensedNearestNeighbour` and
   :class:`~imblearn.under_sampling.OneSidedSelection`. `estimator_` will be removed
   in 0.14.
-  :pr:`xxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`1011` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Deprecate `kind_sel` in :class:`~imblearn.under_sampling.NeighbourhoodCleaningRule.
+  It will be removed in 0.14. The parameter does not have any effect.
+  :pr:`1012` by :user:`Guillaume Lemaitre <glemaitre>`.
