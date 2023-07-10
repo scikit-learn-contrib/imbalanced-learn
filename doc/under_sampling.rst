@@ -304,9 +304,7 @@ All KNN
 :class:`AllKNN` is a variation of the
 :class:`RepeatedEditedNearestNeighbours` where the number of neighbours evaluated at
 each round of ENN increases. It starts by editing based on 1 closest neighbour, and it
-incrases the neighbourhood by 1 at each iteration.
-
-:cite:`tomek1976experiment`::
+increases the neighbourhood by 1 at each iteration :cite:`tomek1976experiment`::
 
   >>> from imblearn.under_sampling import AllKNN
   >>> allknn = AllKNN()
@@ -320,7 +318,6 @@ majority class becomes the minority class.
 
 In the example below, we see that ENN, RENN and AllKNN have similar impact when
 cleaning "noisy" samples at the boundaries between classes.
-
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_004.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
