@@ -92,7 +92,7 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         Validated K-nearest Neighbours object created from the `n_neighbors` parameter.
 
     classes_to_clean_ : list
-        The classes that statisfy the condition for further under-sampling in the
+        The classes that statisfy the condition for further under-sampling during the
         second cleaning phase.
 
     sample_indices_ : ndarray of shape (n_new_samples,)
