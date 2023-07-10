@@ -104,7 +104,7 @@ def test_borderline_smote_in_danger():
             in_danger_indices_borderline_1[key1], in_danger_indices_borderline_2[key2]
         )
     assert len(in_danger_indices_borderline_1) == len(in_danger_indices_borderline_2)
-    counter = Counter(y_res_1)
+    counter = Counter(y_res_1.tolist())
     assert counter[0] == counter[1] == counter[2]
-    counter = Counter(y_res_2)
+    counter = Counter(y_res_2.tolist())
     assert counter[0] == counter[1] == counter[2]
