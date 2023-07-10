@@ -237,14 +237,23 @@ figure illustrates this behaviour.
 
 .. _edited_nearest_neighbors:
 
-Edited data set using nearest neighbours
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Editing data set using nearest neighbours
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:class:`EditedNearestNeighbours` applies a nearest-neighbors algorithm and
-"edit" the dataset by removing samples which do not agree "enough" with their
-neighboorhood :cite:`wilson1972asymptotic`. For each sample in the class to be
-under-sampled, the nearest-neighbours are computed and if the selection
-criterion is not fulfilled, the sample is removed::
+Edited nearest neighbours
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The edited nearest neighbours methodology uses KNN to identify the neighbours of the
+targeted class samples, and then removes observations if all or most of their
+neighbours are from a different class :cite:`wilson1972asymptotic`.
+
+:class:`EditedNearestNeighbours` carries out the following steps:
+
+1. Train a KNN using the entire dataset (typically a 3-KNN).
+2. Finds each observations 3 closest neighbours (only for the targeted classes).
+3. Removes observations if any or most of its neighbours belong to a different class.
+
+Below the implementation::
 
   >>> sorted(Counter(y).items())
   [(0, 64), (1, 262), (2, 4674)]
@@ -254,12 +263,12 @@ criterion is not fulfilled, the sample is removed::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 213), (2, 4568)]
 
-Two selection criteria are currently available: (i) the majority (i.e.,
-``kind_sel='mode'``) or (ii) all (i.e., ``kind_sel='all'``) the
-nearest-neighbors have to belong to the same class than the sample inspected to
-keep it in the dataset. Thus, it implies that `kind_sel='all'` will be less
-conservative than `kind_sel='mode'`, and more samples will be excluded in
-the former strategy than the latest::
+
+To paraphrase step 3, :class:`EditedNearestNeighbours` will retain observations from
+the majority class when **most**, or **all** of its neighbours are from the same class.
+To control this behaviour we set ``kind_sel='mode'`` or ``kind_sel='all'``,
+respectively. Hence, `kind_sel='all'` is less conservative than `kind_sel='mode'`,
+resulting in a removal of more samples::
 
   >>> enn = EditedNearestNeighbours(kind_sel="all")
   >>> X_resampled, y_resampled = enn.fit_resample(X, y)
@@ -270,9 +279,11 @@ the former strategy than the latest::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 234), (2, 4666)]
 
-The parameter ``n_neighbors`` allows to give a classifier subclassed from
-``KNeighborsMixin`` from scikit-learn to find the nearest neighbors and make
-the decision to keep a given sample or not.
+The parameter ``n_neighbors`` accepts integers. The integer refers to the number of
+neighbours to examine for each sample. It can also take a classifier subclassed from
+``KNeighborsMixin`` from scikit-learn. When passing a classifier, note that, if you
+pass a 3-KNN classifier, only 2 neighbours will be examined for the cleaning, as the
+third sample is the one being examined for exclusion.
 
 :class:`RepeatedEditedNearestNeighbours` extends
 :class:`EditedNearestNeighbours` by repeating the algorithm multiple times
