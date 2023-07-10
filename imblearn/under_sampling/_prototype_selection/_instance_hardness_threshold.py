@@ -83,8 +83,9 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     -----
     The method is based on [1]_.
 
-    Supports multi-class resampling. We will go through each individual class to select
-    the samples with the highest probability to be correctly classified.
+    Supports multi-class resampling: from each class to be under-sampled, it
+    retains the observations with the highest probability of being correctly
+    classified.
 
     References
     ----------
