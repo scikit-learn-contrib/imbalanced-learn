@@ -130,6 +130,8 @@ def test_smotenc(data):
             assert set(X[:, cat_idx]) == set(X_resampled[:, cat_idx])
             assert X[:, cat_idx].dtype == X_resampled[:, cat_idx].dtype
 
+    assert isinstance(smote.median_std_, dict)
+
 
 # part of the common test which apply to SMOTE-NC even if it is not default
 # constructible
@@ -193,6 +195,7 @@ def test_smotenc_pandas():
     X_res, y_res = smote.fit_resample(X, y)
     assert_array_equal(X_res_pd.to_numpy(), X_res)
     assert_allclose(y_res_pd, y_res)
+    assert set(smote.median_std_.keys()) == {0, 1}
 
 
 def test_smotenc_preserve_dtype():
