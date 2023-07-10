@@ -83,8 +83,8 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     -----
     The method is based on [1]_.
 
-    Supports multi-class resampling. A one-vs.-rest scheme is used when
-    sampling a class as proposed in [1]_.
+    Supports multi-class resampling. We will go through each individual class to select
+    the samples with the highest probability to be correctly classified.
 
     References
     ----------
