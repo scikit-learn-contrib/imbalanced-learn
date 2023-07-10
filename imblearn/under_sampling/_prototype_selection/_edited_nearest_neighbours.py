@@ -204,7 +204,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     will stop when i) the maximum number of iterations is reached, or ii) no
     more observations are being removed, or iii) one of the majority classes
     becomes a minority class or iv) one of the majority classes disappears
-    from the target after undersampling.
+    during undersampling.
 
     Read more in the :ref:`User Guide <edited_nearest_neighbors>`.
 
@@ -224,7 +224,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
         Maximum number of iterations of the edited nearest neighbours.
 
     kind_sel : {{'all', 'mode'}}, default='all'
-        Strategy to use in order to exclude samples.
+        Strategy to use to exclude samples.
 
         - If ``'all'``, all neighbours should be of the same class of the examined
           sample for it not be excluded.
@@ -435,14 +435,15 @@ class AllKNN(BaseCleaningSampler):
     {sampling_strategy}
 
     n_neighbors : int or estimator object, default=3
-        If ``int``, size of the maximum neighbourhood examine for the undersampling.
-        If `n_neighbors=3`, in the first iteration the algrithm will examine 1 closest
-        neigbhour, in the second round 2 and in th efinal round 3. If object, an
+        If ``int``, size of the maximum neighbourhood to examine for the undersampling.
+        If `n_neighbors=3`, in the first iteration the algorithm will examine 1 closest
+        neigbhour, in the second round 2, and in the final round 3. If object, an
         estimator that inherits from :class:`~sklearn.neighbors.base.KNeighborsMixin`
-        that will be used to nd the nearest-neighbors.
+        that will be used to find the nearest-neighbors. Note that if you want to
+        examine the 3 closest neighbours of a sample, you need to pass a 4-KNN.
 
     kind_sel : {{'all', 'mode'}}, default='all'
-        Strategy to use in order to exclude samples.
+        Strategy to use to exclude samples.
 
         - If ``'all'``, all neighbours should be of the same class of the examined
           sample for it not be excluded.
