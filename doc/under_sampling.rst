@@ -13,7 +13,7 @@ undersampling, where samples from the majority classes are removed at random.
 But there are many other algorithms to help us reduce the number of observations in the
 dataset. These algorithms can be grouped based on their undersampling strategy into:
 
-- Prototype generation methods
+- Prototype generation methods.
 - Prototype selection methods.
 
 And within the latter, we find:
@@ -24,7 +24,7 @@ And within the latter, we find:
 We will discuss the different algorithms throughout this document.
 
 Refer to :ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`
-for a comparison of the different methods.
+for a comparison of the different undersampling methodologies.
 
 .. _cluster_centroids:
 
