@@ -495,6 +495,11 @@ class SVMSMOTE(BaseSMOTE):
             support_vector = _safe_indexing(
                 support_vector, np.flatnonzero(np.logical_not(noise_bool))
             )
+            if support_vector.shape[0] == 0:
+                raise ValueError(
+                    "All support vectors are considered as noise. SVM-SMOTE is not "
+                    "adapted to your dataset. Try another SMOTE variant."
+                )
             danger_bool = self._in_danger_noise(
                 self.nn_m_, support_vector, class_sample, y, kind="danger"
             )

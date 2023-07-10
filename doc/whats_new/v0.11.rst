@@ -14,6 +14,10 @@ Bug fixes
   they are plugged into an Euclidean distance computation.
   :pr:`1014` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Raise an informative error message when all support vectors are tagged as noise in
+  :class:`~imblearn.over_sampling.SVMSMOTE`.
+  :pr:`1016` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 - Fix a bug in :class:`~imblearn.over_sampling.SMOTENC` where the median of standard
   deviation of the continuous features was only computed on the minority class. Now,
   we are computing this statistic for each class that is up-sampled.
