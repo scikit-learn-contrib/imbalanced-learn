@@ -6,6 +6,14 @@ Version 0.11.1
 Changelog
 ---------
 
+Bug fixes
+.........
+
+- Fix a bug in :class:`~imblearn.over_sampling.SMOTENC` where the entries of the
+  one-hot encoding should be divided by `sqrt(2)` and not `2`, taking into account that
+  they are plugged into an Euclidean distance computation.
+  :pr:`1014` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 
 Version 0.11.0
 ==============

@@ -671,13 +671,18 @@ class SMOTENC(SMOTE):
 
         # In the edge case where the median of the std is equal to 0, the 1s
         # entries will be also nullified. In this case, we store the original
-        # categorical encoding which will be later used for inversing the OHE
+        # categorical encoding which will be later used for inverting the OHE
         if math.isclose(self.median_std_, 0):
             self._X_categorical_minority_encoded = _safe_indexing(
                 X_ohe.toarray(), np.flatnonzero(y == class_minority)
             )
 
-        X_ohe.data = np.ones_like(X_ohe.data, dtype=X_ohe.dtype) * self.median_std_ / 2
+        # With one-hot encoding, the median will be repeated twice. We need to divide
+        # by sqrt(2) such that we only have one median value contributing to the
+        # Euclidean distance
+        X_ohe.data = (
+            np.ones_like(X_ohe.data, dtype=X_ohe.dtype) * self.median_std_ / np.sqrt(2)
+        )
         X_encoded = sparse.hstack((X_continuous, X_ohe), format="csr")
 
         X_resampled, y_resampled = super()._fit_resample(X_encoded, y)
