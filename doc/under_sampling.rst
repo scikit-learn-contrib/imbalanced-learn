@@ -339,7 +339,8 @@ The :class:`CondensedNearestNeighbour` can be used in the following manner::
 One Sided Selection
 ~~~~~~~~~~~~~~~~~~~
 
-In an attempt to remove noisy observations, :class:`OneSidedSelection`
+In an attempt to remove the noisy observations introduced by
+:class:`CondensedNearestNeighbour`, :class:`OneSidedSelection`
 will first find the observations that are hard to classify, and then will use
 :class:`TomekLinks` to remove noisy samples :cite:`hart1968condensed`.
 :class:`OneSidedSelection` runs as follows:
