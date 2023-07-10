@@ -29,7 +29,8 @@ SEL_KIND = ("all", "mode")
 class NeighbourhoodCleaningRule(BaseCleaningSampler):
     """Undersample based on the neighbourhood cleaning rule.
 
-    This class uses ENN and a k-NN to remove noisy samples from the datasets.
+    This class uses ENN and a k-NN to remove noisy samples from the majority class or
+    classes.
 
     Read more in the :ref:`User Guide <condensed_nearest_neighbors>`.
 
@@ -46,7 +47,8 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         If ``int``, size of the neighbourhood to consider to compute the
         K-nearest neighbors. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
-        find the nearest-neighbors. By default, it will be a 3-NN.
+        find the nearest-neighbors. By default, it explores the 3 closest
+        neighbors.
 
     kind_sel : {{"all", "mode"}}, default='all'
         Strategy to use in order to exclude samples in the ENN sampling.
@@ -65,13 +67,14 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
            `"all"` strategy.
 
     threshold_cleaning : float, default=0.5
-        Threshold used to whether consider a class or not during the cleaning
-        after applying ENN. A class will be considered during cleaning when:
+        Threshold used to determine if further samples will be removed from a certain
+        majority class or not during the cleaning step that follows the ENN. Further
+        samples will be removed during the second step when:
 
         Ci > C x T ,
 
-        where Ci and C is the number of samples in the class and the data set,
-        respectively and theta is the threshold.
+        where Ci is the number of samples in the class, C is the number of samples in
+        the data set, and T is the threshold.
 
     {n_jobs}
 
@@ -79,18 +82,18 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     ----------
     sampling_strategy_ : dict
         Dictionary containing the information to sample the dataset. The keys
-        corresponds to the class labels from which to sample and the values
+        correspond to the class labels from which to sample and the values
         are the number of samples to sample.
 
     edited_nearest_neighbours_ : estimator object
         The edited nearest neighbour object used to make the first resampling.
 
     nn_ : estimator object
-        Validated K-nearest Neighbours object created from `n_neighbors` parameter.
+        Validated K-nearest Neighbours object created from the `n_neighbors` parameter.
 
     classes_to_clean_ : list
-        The classes considered with under-sampling by `nn_` in the second cleaning
-        phase.
+        The classes that statisfy the condition for further under-sampling in the
+        second cleaning phase.
 
     sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
