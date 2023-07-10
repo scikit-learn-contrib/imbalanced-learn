@@ -68,7 +68,7 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
     threshold_cleaning : float, default=0.5
         Threshold used to determine if further samples will be removed from a certain
-        majority class or not during the cleaning step that follows the ENN. Further
+        majority class during the cleaning step that follows the ENN. Additional
         samples will be removed during the second step when:
 
         Ci > C x T ,
