@@ -353,10 +353,10 @@ union of samples to be rejected between the :class:`EditedNearestNeighbours`
 and the output a 3 nearest neighbors classifier. The class can be used as::
 
   >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
-  >>> ncr = NeighbourhoodCleaningRule()
+  >>> ncr = NeighbourhoodCleaningRule(n_neighbors=11)
   >>> X_resampled, y_resampled = ncr.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
-  [(0, 64), (1, 234), (2, 4666)]
+  [(0, 64), (1, 193), (2, 4535)]
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_005.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
