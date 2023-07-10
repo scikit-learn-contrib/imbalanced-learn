@@ -30,7 +30,7 @@ Bug fixes
 
 - Fix a bug in :class:`~imblearn.over_sampling.BorderlineSMOTE` version 2 where samples
   should be generated from the whole dataset and not only from the minority class.
-  :pr:`1022` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`1023` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Version 0.11.0
 ==============
