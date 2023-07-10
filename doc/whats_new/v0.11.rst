@@ -14,6 +14,15 @@ Bug fixes
   they are plugged into an Euclidean distance computation.
   :pr:`1014` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Fix a bug in :class:`~imblearn.over_sampling.SMOTENC` where the median of standard
+  deviation of the continuous features was only computed on the minority class. Now,
+  we are computing this statistic for each class that is up-sampled.
+  :pr:`1015` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix a bug in :class:`~imblearn.over_sampling.SMOTENC` such that the case where
+  the median of standard deviation of the continuous features is null is handled
+  in the multiclass case as well.
+  :pr:`1015` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Version 0.11.0
 ==============

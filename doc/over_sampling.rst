@@ -203,9 +203,9 @@ or relying on `dtype` inference if the columns are using the
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 30), (1, 30)]
   >>> print(X_resampled[-5:])
-  [['A' 0.52... 2]
+  [['A' 0.19... 2]
    ['B' -0.36... 2]
-   ['B' 0.93... 2]
+   ['B' 0.87... 2]
    ['B' 0.37... 2]
    ['B' 0.33... 2]]
 
