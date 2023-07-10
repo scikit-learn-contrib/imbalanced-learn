@@ -91,10 +91,10 @@ def test_borderline_smote_in_danger():
         k_neighbors=5,
         random_state=0,
     )
-    y_res_1 = smote.fit_resample(X, y)
+    _, y_res_1 = smote.fit_resample(X, y)
     in_danger_indices_borderline_1 = smote.in_danger_indices
     smote.set_params(kind="borderline-2")
-    y_res_2 = smote.fit_resample(X, y)
+    _, y_res_2 = smote.fit_resample(X, y)
     in_danger_indices_borderline_2 = smote.in_danger_indices
 
     for key1, key2 in zip(
@@ -104,7 +104,7 @@ def test_borderline_smote_in_danger():
             in_danger_indices_borderline_1[key1], in_danger_indices_borderline_2[key2]
         )
     assert len(in_danger_indices_borderline_1) == len(in_danger_indices_borderline_2)
-    counter = Counter(y_res_1.tolist())
+    counter = Counter(y_res_1)
     assert counter[0] == counter[1] == counter[2]
-    counter = Counter(y_res_2.tolist())
+    counter = Counter(y_res_2)
     assert counter[0] == counter[1] == counter[2]
