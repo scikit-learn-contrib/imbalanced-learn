@@ -164,7 +164,7 @@ class BaseSMOTE(BaseOverSampler):
             samples.
 
         y : ndarray of shape (n_samples_all,), default=None
-            The true target associated with `nn_data`. Used by BorderlineSMOTE-2 to
+            The true target associated with `nn_data`. Used by Borderline SMOTE-2 to
             weight the distances in the sample generation process.
 
         Returns
