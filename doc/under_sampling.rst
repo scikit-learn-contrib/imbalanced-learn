@@ -7,8 +7,9 @@ Under-sampling
 .. currentmodule:: imblearn.under_sampling
 
 One way of handling imbalanced datasets is to reduce the number of observations from
-the majority class or classes. The most well known algorithm in this group is random
-undersampling, where samples from the majority classes are removed at random.
+all classes but the minority class. The minority class is that with the least number
+of observations. The most well known algorithm in this group is random
+undersampling, where samples from the targeted classes are removed at random.
 
 But there are many other algorithms to help us reduce the number of observations in the
 dataset. These algorithms can be grouped based on their undersampling strategy into:
@@ -23,8 +24,8 @@ And within the latter, we find:
 
 We will discuss the different algorithms throughout this document.
 
-Refer to :ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`
-for a comparison of the different undersampling methodologies.
+Check also
+:ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`.
 
 .. _cluster_centroids:
 
