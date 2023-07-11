@@ -313,7 +313,7 @@ increases the neighbourhood by 1 at each iteration :cite:`tomek1976experiment`::
   [(0, 64), (1, 220), (2, 4601)]
 
 :class:`AllKNN` stops cleaning when the maximum number of neighbours to examine, which
-is determined by the user through the parameter ``n_neighbors` is reached, or when the
+is determined by the user through the parameter `n_neighbors` is reached, or when the
 majority class becomes the minority class.
 
 In the example below, we see that ENN, RENN and AllKNN have similar impact when
