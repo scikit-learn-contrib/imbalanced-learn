@@ -384,11 +384,11 @@ classifier better identify the different classes :cite:`smith2014instance`.
 
 :class:`InstanceHardnessThreshold` trains a classifier on the data and then removes the
 samples with lower probabilities :cite:`smith2014instance`. Or in other words, it
-retains the observations with the higher probabilities.
+retains the observations with the higher class probabilities.
 
-In our implementation, :class:`InstanceHardnessThreshold` is a controlled
+In our implementation, :class:`InstanceHardnessThreshold` is (almost) a controlled
 under-sampling method: it will retain a specific number of observations of the target
-class(es), which is specified by the user.
+class(es), which is specified by the user (see caveat below).
 
 The class can be used as::
 
@@ -412,7 +412,7 @@ with cross-validation which can be specified through the parameter ``cv`.
    controlled under-sampling method. However, due to the probability outputs, it
    is not always possible to get the specified number of samples.
 
-The figure below shows examples of instance hardnes undersampling on toy data.
+The figure below shows examples of instance hardness undersampling on a toy dataset.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_006.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
