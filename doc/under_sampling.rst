@@ -358,7 +358,7 @@ The final dataset is :math:`S`, containing all observations from the minority cl
 plus the observations from the majority that were added at random, plus all
 those from the majority that were miss-classified by the 1-Nearest Neighbors algorithms. Note
 that differently from :class:`CondensedNearestNeighbour`, :class:`OneSidedSelection`
-does not train a KNN after each sample is missclassified. It uses the one KNN
+does not train a K-Nearet Neighbors after each sample is misclassified. It uses the one K-Nearest Neighbors
 to classify all samples from the majority in 1 pass. The class can be used as::
 
   >>> from imblearn.under_sampling import OneSidedSelection
