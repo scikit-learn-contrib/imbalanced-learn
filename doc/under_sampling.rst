@@ -200,7 +200,7 @@ Cleaning under-sampling techniques
 Cleaning under-sampling methods "clean" the feature space by removing
 either "noisy" observations or observations that are "too easy to classify", depending on the
 method. The final number of observations in each targeted class varies with the
-cleaning method and can't be specified by the user.
+cleaning method and cannot be specified by the user.
 
 .. _tomek_links:
 
