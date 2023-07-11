@@ -306,20 +306,25 @@ impact by cleaning noisy samples next to the boundaries of the classes.
 
 .. _condensed_nearest_neighbors:
 
-Condensed nearest neighbors and derived algorithms
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Condensed nearest neighbors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 :class:`CondensedNearestNeighbour` uses a 1 nearest neighbor rule to
-iteratively decide if a sample should be removed or not
-:cite:`hart1968condensed`. The algorithm is running as followed:
+iteratively decide if a sample should be removed
+:cite:`hart1968condensed`. The algorithm runs as follows:
 
 1. Get all minority samples in a set :math:`C`.
 2. Add a sample from the targeted class (class to be under-sampled) in
    :math:`C` and all other samples of this class in a set :math:`S`.
-3. Go through the set :math:`S`, sample by sample, and classify each sample
-   using a 1 nearest neighbor rule.
-4. If the sample is misclassified, add it to :math:`C`, otherwise do nothing.
-5. Reiterate on :math:`S` until there is no samples to be added.
+3. Train a 1-Nearest Neigbhour on :math:`C`.
+4. Go through the samples in set :math:`S`, sample by sample, and classify each one
+   using a 1 nearest neighbor rule (trained in 3).
+5. If the sample is misclassified, add it to :math:`C`, and go to step 6.
+6. Repeat steps 3 to 5 until all observations in :math:`S` have been examined.
+
+The final dataset is :math:`S`, containing all observations from the minority class and
+those from the majority that were miss-classified by the successive
+1-Nearest Neigbhour algorithms.
 
 The :class:`CondensedNearestNeighbour` can be used in the following manner::
 
@@ -329,14 +334,35 @@ The :class:`CondensedNearestNeighbour` can be used in the following manner::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 24), (2, 115)]
 
-However as illustrated in the figure below, :class:`CondensedNearestNeighbour`
-is sensitive to noise and will add noisy samples.
+:class:`CondensedNearestNeighbour` is sensitive to noise and may add noisy samples
+(see figure later on).
 
-In the contrary, :class:`OneSidedSelection` will use :class:`TomekLinks` to
-remove noisy samples :cite:`hart1968condensed`. In addition, the 1 nearest
-neighbor rule is applied to all samples and the one which are misclassified
-will be added to the set :math:`C`. No iteration on the set :math:`S` will take
-place. The class can be used as::
+One Sided Selection
+~~~~~~~~~~~~~~~~~~~
+
+In an attempt to remove the noisy observations introduced by
+:class:`CondensedNearestNeighbour`, :class:`OneSidedSelection`
+will first find the observations that are hard to classify, and then will use
+:class:`TomekLinks` to remove noisy samples :cite:`hart1968condensed`.
+:class:`OneSidedSelection` runs as follows:
+
+1. Get all minority samples in a set :math:`C`.
+2. Add a sample from the targeted class (class to be under-sampled) in
+   :math:`C` and all other samples of this class in a set :math:`S`.
+3. Train a 1-Nearest Neighbors on :math:`C`.
+4. Using a 1 nearest neighbor rule trained in 3, classify all samples in
+   set :math:`S`.
+5. Add all misclassified samples to :math:`C`.
+6. Remove Tomek Links from :math:`C`.
+
+The final dataset is :math:`S`, containing all observations from the minority class,
+plus the observations from the majority that were added at random, plus all
+those from the majority that were miss-classified by the 1-Nearest Neighbors algorithms.
+
+Note that differently from :class:`CondensedNearestNeighbour`, :class:`OneSidedSelection`
+does not train a K-Nearest Neighbors after each sample is misclassified. It uses the
+1-Nearest Neighbors from step 3 to classify all samples from the majority in 1 pass.
+The class can be used as::
 
   >>> from imblearn.under_sampling import OneSidedSelection
   >>> oss = OneSidedSelection(random_state=0)
@@ -344,8 +370,8 @@ place. The class can be used as::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 174), (2, 4404)]
 
-Our implementation offer to set the number of seeds to put in the set :math:`C`
-originally by setting the parameter ``n_seeds_S``.
+Our implementation offers the possibility to set the number of observations
+to put at random in the set :math:`C` through the parameter ``n_seeds_S``.
 
 :class:`NeighbourhoodCleaningRule` will focus on cleaning the data than
 condensing them :cite:`laurikkala2001improving`. Therefore, it will used the
