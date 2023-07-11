@@ -421,7 +421,7 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 class AllKNN(BaseCleaningSampler):
     """Undersample based on the AllKNN method.
 
-    This method will apply ENN several times varying the number of nearest
+    This method will apply :class:`EditedNearestNeighbours` several times varying the number of nearest
     neighbours at each round. It begins by examining 1 closest neighbour, and
     it incrases the neighbourhood by 1 at each round.
 
