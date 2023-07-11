@@ -224,7 +224,7 @@ underlying idea is that Tomek's links are noisy or hard to classify observations
 would not help the algorithm find a suitable discrimination boundary.
 
 In the following figure, a Tomek's link between an observation of class :math:`+` and
-class :math:`-`is highlighted in green:
+class :math:`-` is highlighted in green:
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_001.png
    :target: ./auto_examples/under-sampling/plot_illustration_tomek_links.html
