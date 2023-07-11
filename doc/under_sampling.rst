@@ -316,14 +316,15 @@ iteratively decide if a sample should be removed
 1. Get all minority samples in a set :math:`C`.
 2. Add a sample from the targeted class (class to be under-sampled) in
    :math:`C` and all other samples of this class in a set :math:`S`.
-3. Train a 1-KNN on `C`.
+3. Train a 1-Nearest Neigbhour on :math:`C`.
 4. Go through the samples in set :math:`S`, sample by sample, and classify each one
    using a 1 nearest neighbor rule (trained in 3).
 5. If the sample is misclassified, add it to :math:`C`, and go to step 6.
-6. Repeat steps 3 to 5 until all observations in `S` have been examined.
+6. Repeat steps 3 to 5 until all observations in :math:`S` have been examined.
 
-The final dataset is `S`, containing all observations from the minority class and
-those from the majority that were miss-classified by the successive 1-KNN algorithms.
+The final dataset is :math:`S`, containing all observations from the minority class and
+those from the majority that were miss-classified by the successive
+1-Nearest Neigbhour algorithms.
 
 The :class:`CondensedNearestNeighbour` can be used in the following manner::
 
@@ -348,7 +349,7 @@ will first find the observations that are hard to classify, and then will use
 1. Get all minority samples in a set :math:`C`.
 2. Add a sample from the targeted class (class to be under-sampled) in
    :math:`C` and all other samples of this class in a set :math:`S`.
-3. Train a 1-Nearest Neighbors on `C`.
+3. Train a 1-Nearest Neighbors on :math:`C`.
 4. Using a 1 nearest neighbor rule trained in 3, classify all samples in
    set :math:`S`.
 5. Add all misclassified samples to :math:`C`.
@@ -356,10 +357,11 @@ will first find the observations that are hard to classify, and then will use
 
 The final dataset is :math:`S`, containing all observations from the minority class,
 plus the observations from the majority that were added at random, plus all
-those from the majority that were miss-classified by the 1-Nearest Neighbors algorithms. Note
-that differently from :class:`CondensedNearestNeighbour`, :class:`OneSidedSelection`
-does not train a K-Nearet Neighbors after each sample is misclassified. It uses the one K-Nearest Neighbors
-to classify all samples from the majority in 1 pass. The class can be used as::
+those from the majority that were miss-classified by the 1-Nearest Neighbors algorithms.
+Note that differently from :class:`CondensedNearestNeighbour`, :class:`OneSidedSelection`
+does not train a K-Nearest Neighbors after each sample is misclassified. It uses the
+1-Nearest Neighbors from step 3 to classify all samples from the majority in 1 pass.
+The class can be used as::
 
   >>> from imblearn.under_sampling import OneSidedSelection
   >>> oss = OneSidedSelection(random_state=0)
