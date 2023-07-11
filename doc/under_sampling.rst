@@ -288,8 +288,8 @@ more data::
    >>> print(sorted(Counter(y_resampled).items()))
    [(0, 64), (1, 208), (2, 4551)]
 
-The user can set up the number of times the edited nearest neighbours method should be repeated through the
-paramter `max_iter`.
+The user can set up the number of times the edited nearest neighbours method should be
+repeated through the parameter `max_iter`.
 
 The repetitions will stop when:
 
@@ -303,8 +303,9 @@ All KNN
 
 :class:`AllKNN` is a variation of the
 :class:`RepeatedEditedNearestNeighbours` where the number of neighbours evaluated at
-each round of ENN increases. It starts by editing based on 1 closest neighbour, and it
-increases the neighbourhood by 1 at each iteration :cite:`tomek1976experiment`::
+each round of :class:`EditedNearestNeighbours` increases. It starts by editing based on
+1-Nearest Neighbour, and it increases the neighbourhood by 1 at each iteration
+:cite:`tomek1976experiment`::
 
   >>> from imblearn.under_sampling import AllKNN
   >>> allknn = AllKNN()
@@ -316,7 +317,8 @@ increases the neighbourhood by 1 at each iteration :cite:`tomek1976experiment`::
 is determined by the user through the parameter `n_neighbors` is reached, or when the
 majority class becomes the minority class.
 
-In the example below, we see that ENN, RENN and AllKNN have similar impact when
+In the example below, we see that :class:`EditedNearestNeighbours`,
+:class:`RepeatedEditedNearestNeighbours` and :class:`AllKNN` have similar impact when
 cleaning "noisy" samples at the boundaries between classes.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_004.png
