@@ -348,7 +348,7 @@ will first find the observations that are hard to classify, and then will use
 1. Get all minority samples in a set :math:`C`.
 2. Add a sample from the targeted class (class to be under-sampled) in
    :math:`C` and all other samples of this class in a set :math:`S`.
-3. Train a 1-KNN on `C`.
+3. Train a 1-Nearest Neighbors on `C`.
 4. Using a 1 nearest neighbor rule trained in 3, classify all samples in
    set :math:`S`.
 5. Add all misclassified samples to :math:`C`.
