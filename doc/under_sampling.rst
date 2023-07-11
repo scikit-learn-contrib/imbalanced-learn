@@ -77,6 +77,12 @@ and are meant for cleaning the feature space.
 Controlled under-sampling techniques
 ------------------------------------
 
+Controlled under-sampling techniques reduce the number of observations from the
+targeted classes to a number specified by the user.
+
+Random under-sampling
+^^^^^^^^^^^^^^^^^^^^^
+
 :class:`RandomUnderSampler` is a fast and easy way to balance the data by
 randomly selecting a subset of data for the targeted classes::
 
@@ -91,9 +97,9 @@ randomly selecting a subset of data for the targeted classes::
    :scale: 60
    :align: center
 
-:class:`RandomUnderSampler` allows to bootstrap the data by setting
-``replacement`` to ``True``. The resampling with multiple classes is performed
-by considering independently each targeted class::
+:class:`RandomUnderSampler` allows bootstrapping the data by setting
+``replacement`` to ``True``. When there are multiple classes, each targeted class is
+under-sampled independently::
 
   >>> import numpy as np
   >>> print(np.vstack([tuple(row) for row in X_resampled]).shape)
@@ -103,8 +109,8 @@ by considering independently each targeted class::
   >>> print(np.vstack(np.unique([tuple(row) for row in X_resampled], axis=0)).shape)
   (181, 2)
 
-In addition, :class:`RandomUnderSampler` allows to sample heterogeneous data
-(e.g. containing some strings)::
+:class:`RandomUnderSampler` handles heterogeneous data types, i.e. numerical,
+categorical, dates, etc.::
 
   >>> X_hetero = np.array([['xxx', 1, 1.0], ['yyy', 2, 2.0], ['zzz', 3, 3.0]],
   ...                     dtype=object)
@@ -116,7 +122,8 @@ In addition, :class:`RandomUnderSampler` allows to sample heterogeneous data
   >>> print(y_resampled)
   [0 1]
 
-It would also work with pandas dataframe::
+:class:`RandomUnderSampler` also supports pandas dataframes as input for
+undersampling::
 
   >>> from sklearn.datasets import fetch_openml
   >>> df_adult, y_adult = fetch_openml(
