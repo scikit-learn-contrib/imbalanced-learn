@@ -351,12 +351,11 @@ Neighbourhood Cleaning Rule
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The :class:`NeighbourhoodCleaningRule` is another "cleaning" algorithm. It removes
-samples from the majority class that are closest to the boundary with the minority
-:cite:`laurikkala2001improving`.
+samples from the majority class that are the closest to the boundary they form with
+the samples of the minority class :cite:`laurikkala2001improving`.
 
 The :class:`NeighbourhoodCleaningRule` expands on the cleaning performed by
-:class:`EditedNearestNeighbours` by eliminating additional majority class samples if
-they are among the 3 closest neighbours of a sample from the minority class.
+:class:`EditedNearestNeighbours` by eliminating additional majority class samples.
 
 The procedure for the :class:`NeighbourhoodCleaningRule` is as follows:
 
@@ -366,9 +365,9 @@ neighbors of a minority sample, where all or most of those neighbors are not min
 
 To carry out step 2 there is one condition: a sample will only be removed if its class
 has a minimum number of observations. The minimum number of observations is regulated
-by the `threshold_cleaning` parameter. In the original article
-:cite:`laurikkala2001improving`, samples would be removed if the class had at
-least half as many observations as those in the minority class.
+by the `threshold_cleaning` parameter. A sample will only be removed from the target
+class if it has at least as many observations as threshold times the number of samples
+in the minority class.
 
 The class can be used as::
 
