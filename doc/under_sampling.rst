@@ -354,7 +354,7 @@ will first find the observations that are hard to classify, and then will use
 5. Add all misclassified samples to :math:`C`.
 6. Remove Tomek Links from :math:`C`.
 
-The final dataset is `S`, containing all observations from the minority class,
+The final dataset is :math:`S`, containing all observations from the minority class,
 plus the observations from the majority that were added at random, plus all
 those from the majority that were miss-classified by the 1-KNN algorithms. Note
 that differently from :class:`CondensedNearestNeighbour`, :class:`OneSidedSelection`
