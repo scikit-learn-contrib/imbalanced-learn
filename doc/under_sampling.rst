@@ -121,7 +121,7 @@ under-sampled independently::
   >>> print(y_resampled)
   [0 1]
 
-:class:`RandomUnderSampler` can also take a pandas dataframe as input for
+:class:`RandomUnderSampler` also supports pandas dataframes as input for
 undersampling::
 
   >>> from sklearn.datasets import fetch_openml
