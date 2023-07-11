@@ -204,38 +204,49 @@ affected by noise due to the first step sample selection.
 Cleaning under-sampling techniques
 ----------------------------------
 
-Cleaning under-sampling techniques do not allow to specify the number of
-samples to have in each class. In fact, each algorithm implement an heuristic
-which will clean the dataset.
+Cleaning under-sampling methods "clean" the feature space by removing
+either "noisy" observations or observations that are "too easy to classify", depending
+on the method. The final number of observations in each targeted class varies with the
+cleaning method and cannot be specified by the user.
 
 .. _tomek_links:
 
 Tomek's links
 ^^^^^^^^^^^^^
 
-:class:`TomekLinks` detects the so-called Tomek's links :cite:`tomek1976two`. A
-Tomek's link between two samples of different class :math:`x` and :math:`y` is
-defined such that for any sample :math:`z`:
+A Tomek's link exists when two samples from different classes are closest neighbors to
+each other.
+
+Mathematically, a Tomek's link between two samples from different classes :math:`x`
+and :math:`y` is defined such that for any sample :math:`z`:
 
 .. math::
 
    d(x, y) < d(x, z) \text{ and } d(x, y) < d(y, z)
 
-where :math:`d(.)` is the distance between the two samples. In some other
-words, a Tomek's link exist if the two samples are the nearest neighbors of
-each other. In the figure below, a Tomek's link is illustrated by highlighting
-the samples of interest in green.
+where :math:`d(.)` is the distance between the two samples.
+
+:class:`TomekLinks` detects and removes Tomek's links :cite:`tomek1976two`. The
+underlying idea is that Tomek's links are noisy or hard to classify observations and
+would not help the algorithm find a suitable discrimination boundary.
+
+In the following figure, a Tomek's link between an observation of class :math:`+` and
+class :math:`-` is highlighted in green:
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_001.png
    :target: ./auto_examples/under-sampling/plot_illustration_tomek_links.html
    :scale: 60
    :align: center
 
-The parameter ``sampling_strategy`` control which sample of the link will be
-removed. For instance, the default (i.e., ``sampling_strategy='auto'``) will
-remove the sample from the majority class. Both samples from the majority and
-minority class can be removed by setting ``sampling_strategy`` to ``'all'``. The
-figure illustrates this behaviour.
+When :class:`TomekLinks` finds a Tomek's link, it can either remove the sample of the
+majority class, or both. The parameter ``sampling_strategy`` controls which samples
+from the link will be removed. By default (i.e., ``sampling_strategy='auto'``), it will
+remove the sample from the majority class. Both samples, that is that from the majority
+and the one from the minority class, can be removed by setting ``sampling_strategy`` to
+``'all'``.
+
+The following figure illustrates this behaviour: on the left, only the sample from the
+majority class is removed, whereas on the right, the entire Tomek's link is removed.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_tomek_links_002.png
    :target: ./auto_examples/under-sampling/plot_illustration_tomek_links.html
