@@ -28,7 +28,7 @@ SEL_KIND = ("all", "mode")
 class EditedNearestNeighbours(BaseCleaningSampler):
     """Undersample based on the edited nearest neighbour method.
 
-    This method will clean the dataset by removing samples close to the
+    This method cleans the dataset by removing samples close to the
     decision boundary. It removes observations from the majority class or
     classes when any or most of its closest neighours are from a different class.
 
