@@ -20,11 +20,29 @@ From PyPi or conda-forge repositories
 imbalanced-learn is currently available on the PyPi's repositories and you can
 install it via `pip`::
 
-  pip install -U imbalanced-learn
+  pip install imbalanced-learn
 
-The package is released also on the Anaconda Cloud platform::
+The package is released also on the conda-forge repositories and you can install
+it with `conda` (or `mamba`)::
 
   conda install -c conda-forge imbalanced-learn
+
+Intel optimizations via scikit-learn-intelex
+--------------------------------------------
+
+Imbalanced-learn relies entirely on scikit-learn algorithms. Intel provides an
+optimized version of scikit-learn for Intel hardwares, called scikit-learn-intelex.
+Installing scikit-learn-intelex and patching scikit-learn will activate the
+Intel optimizations.
+
+You can refer to the following
+`blog post <https://medium.com/intel-analytics-software/why-pay-more-for-machine-learning-893683bd78e4>`_
+for some benchmarks.
+
+Refer to the following documentation for instructions:
+
+- `Installation guide <https://intel.github.io/scikit-learn-intelex/installation.html>`_.
+- `Patching guide <https://intel.github.io/scikit-learn-intelex/what-is-patching.html>`_.
 
 From source available on GitHub
 -------------------------------
