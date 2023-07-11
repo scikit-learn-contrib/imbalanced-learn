@@ -6,7 +6,25 @@ Under-sampling
 
 .. currentmodule:: imblearn.under_sampling
 
-You can refer to
+One way of handling imbalanced datasets is to reduce the number of observations from
+all classes but the minority class. The minority class is that with the least number
+of observations. The most well known algorithm in this group is random
+undersampling, where samples from the targeted classes are removed at random.
+
+But there are many other algorithms to help us reduce the number of observations in the
+dataset. These algorithms can be grouped based on their undersampling strategy into:
+
+- Prototype generation methods.
+- Prototype selection methods.
+
+And within the latter, we find:
+
+- Controlled undersampling
+- Cleaning methods
+
+We will discuss the different algorithms throughout this document.
+
+Check also
 :ref:`sphx_glr_auto_examples_under-sampling_plot_comparison_under_sampling.py`.
 
 .. _cluster_centroids:
@@ -16,7 +34,7 @@ Prototype generation
 
 Given an original data set :math:`S`, prototype generation algorithms will
 generate a new set :math:`S'` where :math:`|S'| < |S|` and :math:`S' \not\subset
-S`. In other words, prototype generation technique will reduce the number of
+S`. In other words, prototype generation techniques will reduce the number of
 samples in the targeted classes but the remaining samples are generated --- and
 not selected --- from the original set.
 
@@ -61,16 +79,22 @@ original one.
 Prototype selection
 ===================
 
-On the contrary to prototype generation algorithms, prototype selection
-algorithms will select samples from the original set :math:`S`. Therefore,
-:math:`S'` is defined such as :math:`|S'| < |S|` and :math:`S' \subset S`.
+Prototype selection algorithms will select samples from the original set :math:`S`,
+generating a dataset :math:`S'`, where :math:`|S'| < |S|` and :math:`S' \subset S`. In
+other words, :math:`S'` is a subset of :math:`S`.
 
-In addition, these algorithms can be divided into two groups: (i) the
-controlled under-sampling techniques and (ii) the cleaning under-sampling
-techniques. The first group of methods allows for an under-sampling strategy in
-which the number of samples in :math:`S'` is specified by the user. By
-contrast, cleaning under-sampling techniques do not allow this specification
-and are meant for cleaning the feature space.
+Prototype selection algorithms can be divided into two groups: (i) controlled
+under-sampling techniques and (ii) cleaning under-sampling techniques.
+
+Controlled under-sampling methods reduce the number of observations in the majority
+class or classes to an arbitrary number of samples specified by the user. Typically,
+they reduce the number of observations to the number of samples observed in the
+minority class.
+
+In contrast, cleaning under-sampling techniques "clean" the feature space by removing
+either "noisy" or "too easy to classify" observations, depending on the method. The
+final number of observations in each class varies with the cleaning method and can't be
+specified by the user.
 
 .. _controlled_under_sampling:
 
