@@ -29,8 +29,7 @@ SEL_KIND = ("all", "mode")
 class NeighbourhoodCleaningRule(BaseCleaningSampler):
     """Undersample based on the neighbourhood cleaning rule.
 
-    This class uses ENN and a k-NN to remove noisy samples from the majority class or
-    classes.
+    This class uses ENN and a k-NN to remove noisy samples from the majority classes(s).
 
     Read more in the :ref:`User Guide <condensed_nearest_neighbors>`.
 
