@@ -125,9 +125,20 @@ It would also work with pandas dataframe::
   >>> df_resampled, y_resampled = rus.fit_resample(df_adult, y_adult)
   >>> df_resampled.head()  # doctest: +SKIP
 
-:class:`NearMiss` adds some heuristic rules to select samples
-:cite:`mani2003knn`. :class:`NearMiss` implements 3 different types of
-heuristic which can be selected with the parameter ``version``::
+NearMiss
+^^^^^^^^
+
+:class:`NearMiss` is another controlled under-sampling technique. It aims to balance
+the class distribution by eliminating samples from the targeted classes. But these
+samples are not removed at random. Instead, :class:`NearMiss` removes instances of the
+target class(es) that increase the "space" or separation between the target class and
+the minority class. In other words, :class:`NearMiss` removes observations from the
+target class that are closer to the boundary they form with the minority class samples.
+
+To find out which samples are closer to the boundary with the minority class,
+:class:`NearMiss` uses the K-Nearest Neighbour algorithm. :class:`NearMiss` implements
+3 different heuristics, which we can be selected with the parameter ``version`` and we
+will explain in the coming paragraphs. We can perform this undersampling as follows::
 
   >>> from imblearn.under_sampling import NearMiss
   >>> nm1 = NearMiss(version=1)
@@ -135,64 +146,74 @@ heuristic which can be selected with the parameter ``version``::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
-As later stated in the next section, :class:`NearMiss` heuristic rules are
-based on nearest neighbors algorithm. Therefore, the parameters ``n_neighbors``
-and ``n_neighbors_ver3`` accept classifier derived from ``KNeighborsMixin``
-from scikit-learn. The former parameter is used to compute the average distance
-to the neighbors while the latter is used for the pre-selection of the samples
-of interest.
 
 Mathematical formulation
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-Let *positive samples* be the samples belonging to the targeted class to be
-under-sampled. *Negative sample* refers to the samples from the minority class
-(i.e., the most under-represented class).
+:class:`NearMiss` uses the K-Nearest Neighbour algorithm to identify the samples of the
+target class(es) that are closer to the minority class, as well as the distance that
+separates them.
 
-NearMiss-1 selects the positive samples for which the average distance
-to the :math:`N` closest samples of the negative class is the smallest.
+Let *positive samples* be the samples belonging to the class to be under-sampled, and
+*negative sample* the samples from the minority class (i.e., the most
+under-represented class).
+
+**NearMiss-1** selects the positive samples whose average distance to the :math:`K`
+closest samples of the negative class is the smallest (:math:`K` is the number of
+neighbours in the K-Nearest Neighbour algorithm). The following image illustrates the
+logic:
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_nearmiss_001.png
    :target: ./auto_examples/under-sampling/plot_illustration_nearmiss.html
    :scale: 60
    :align: center
 
-NearMiss-2 selects the positive samples for which the average distance to the
-:math:`N` farthest samples of the negative class is the smallest.
+**NearMiss-2** selects the positive samples whose average distance to the
+:math:`K` farthest samples of the negative class is the smallest. The following image
+illustrates the logic:
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_nearmiss_002.png
    :target: ./auto_examples/under-sampling/plot_illustration_nearmiss.html
    :scale: 60
    :align: center
 
-NearMiss-3 is a 2-steps algorithm. First, for each negative sample, their
-:math:`M` nearest-neighbors will be kept. Then, the positive samples selected
-are the one for which the average distance to the :math:`N` nearest-neighbors
-is the largest.
+**NearMiss-3** is a 2-steps algorithm:
+
+First, for each negative sample, that is, for each observation of the minority class,
+it selects :math:`M` nearest-neighbors from the postivie class (target class). This
+ensures that all observations from the minority class have at least some neighbours
+from the target class.
+
+Next, it selects positive samples whose average distance to the :math:`K`
+nearest-neighbors of the minority class is the largest.
+
+The following image illustrates the logic:
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_illustration_nearmiss_003.png
    :target: ./auto_examples/under-sampling/plot_illustration_nearmiss.html
    :scale: 60
    :align: center
 
-In the next example, the different :class:`NearMiss` variant are applied on the
-previous toy example. It can be seen that the decision functions obtained in
-each case are different.
-
-When under-sampling a specific class, NearMiss-1 can be altered by the presence
-of noise. In fact, it will implied that samples of the targeted class will be
-selected around these samples as it is the case in the illustration below for
-the yellow class. However, in the normal case, samples next to the boundaries
-will be selected. NearMiss-2 will not have this effect since it does not focus
-on the nearest samples but rather on the farthest samples. We can imagine that
-the presence of noise can also altered the sampling mainly in the presence of
-marginal outliers. NearMiss-3 is probably the version which will be less
-affected by noise due to the first step sample selection.
+In the following example, we apply the different :class:`NearMiss` variants to a toy
+dataset. Hote how the decision functions obtained in each case are different (left
+plots):
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_003.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
    :scale: 60
    :align: center
+
+NearMiss-1 is sensitive to noise. In fact, we could think that those observations from
+the target class that are closer to samples from the minority class are indeed noise.
+NearMiss-1 will select however, those observations, as shown in the first row of the
+previous illustration (check the yellow class).
+
+NearMiss-2 will be less sensitive to noise since it does not select the nearest, but
+rather on the farthest samples of the target class.
+
+NearMiss-3 is probably the least sensitive version to noise due to the first sample
+selection step.
+
 
 Cleaning under-sampling techniques
 ----------------------------------
