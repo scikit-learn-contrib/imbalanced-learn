@@ -197,7 +197,7 @@ affected by noise due to the first step sample selection.
 Cleaning under-sampling techniques
 ----------------------------------
 
-cleaning under-sampling methods "clean" the feature space by removing
+Cleaning under-sampling methods "clean" the feature space by removing
 either "noisy" or observations that are "too easy to classify", depending on the
 method. The final number of observations in each targeted class varies with the
 cleaning method and can't be specified by the user.
