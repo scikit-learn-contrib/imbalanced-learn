@@ -200,9 +200,9 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Undersample based on the repeated edited nearest neighbour method.
 
-    This method repeats the :class:`EditedNearestNeighbours` algorithm several times. The repetitions
-    will stop when i) the maximum number of iterations is reached, or ii) no
-    more observations are being removed, or iii) one of the majority classes
+    This method repeats the :class:`EditedNearestNeighbours` algorithm several times.
+    The repetitions will stop when i) the maximum number of iterations is reached,
+    or ii) no more observations are being removed, or iii) one of the majority classes
     becomes a minority class or iv) one of the majority classes disappears
     during undersampling.
 
@@ -421,9 +421,9 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 class AllKNN(BaseCleaningSampler):
     """Undersample based on the AllKNN method.
 
-    This method will apply :class:`EditedNearestNeighbours` several times varying the number of nearest
-    neighbours at each round. It begins by examining 1 closest neighbour, and
-    it incrases the neighbourhood by 1 at each round.
+    This method will apply :class:`EditedNearestNeighbours` several times varying the
+    number of nearest neighbours at each round. It begins by examining 1 closest
+    neighbour, and it incrases the neighbourhood by 1 at each round.
 
     The algorithm stops when the maximum number of neighbours are examined or
     when the majority class becomes the minority class, whichever comes first.
