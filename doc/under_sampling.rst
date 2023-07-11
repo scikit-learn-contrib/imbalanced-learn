@@ -243,14 +243,14 @@ Editing data using nearest neighbours
 Edited nearest neighbours
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The edited nearest neighbours methodology uses K-nearest neighbor to identify the neighbours of the
-targeted class samples, and then removes observations if any or most of their
-neighbours are from a different class :cite:`wilson1972asymptotic`.
+The edited nearest neighbours methodology uses K-Nearest Neighbours to identify the
+neighbours of the targeted class samples, and then removes observations if any or most
+of their neighbours are from a different class :cite:`wilson1972asymptotic`.
 
 :class:`EditedNearestNeighbours` carries out the following steps:
 
-1. Train a K-nearest neighbors using the entire dataset.
-2. Find each observations' 3 closest neighbours (only for the targeted classes).
+1. Train a K-Nearest neighbours using the entire dataset.
+2. Find each observations' K closest neighbours (only for the targeted classes).
 3. Remove observations if any or most of its neighbours belong to a different class.
 
 Below the code implementation::
@@ -268,7 +268,7 @@ To paraphrase step 3, :class:`EditedNearestNeighbours` will retain observations 
 the majority class when **most**, or **all** of its neighbours are from the same class.
 To control this behaviour we set ``kind_sel='mode'`` or ``kind_sel='all'``,
 respectively. Hence, `kind_sel='all'` is less conservative than `kind_sel='mode'`,
-resulting in a removal of more samples::
+resulting in the removal of more samples::
 
   >>> enn = EditedNearestNeighbours(kind_sel="all")
   >>> X_resampled, y_resampled = enn.fit_resample(X, y)
@@ -283,7 +283,8 @@ The parameter ``n_neighbors`` accepts integers. The integer refers to the number
 neighbours to examine for each sample. It can also take a classifier subclassed from
 ``KNeighborsMixin`` from scikit-learn. When passing a classifier, note that, if you
 pass a 3-KNN classifier, only 2 neighbours will be examined for the cleaning, as the
-third sample is the one being examined for undersampling since it is part of the samples provided at `fit`.
+third sample is the one being examined for undersampling since it is part of the
+samples provided at `fit`.
 
 :class:`RepeatedEditedNearestNeighbours` extends
 :class:`EditedNearestNeighbours` by repeating the algorithm multiple times
