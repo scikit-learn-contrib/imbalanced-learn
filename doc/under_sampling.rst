@@ -283,7 +283,7 @@ The parameter ``n_neighbors`` accepts integers. The integer refers to the number
 neighbours to examine for each sample. It can also take a classifier subclassed from
 ``KNeighborsMixin`` from scikit-learn. When passing a classifier, note that, if you
 pass a 3-KNN classifier, only 2 neighbours will be examined for the cleaning, as the
-third sample is the one being examined for undersampling.
+third sample is the one being examined for undersampling since it is part of the samples provided at `fit`.
 
 :class:`RepeatedEditedNearestNeighbours` extends
 :class:`EditedNearestNeighbours` by repeating the algorithm multiple times
