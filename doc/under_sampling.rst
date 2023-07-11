@@ -136,8 +136,8 @@ the minority class. In other words, :class:`NearMiss` removes observations from 
 target class that are closer to the boundary they form with the minority class samples.
 
 To find out which samples are closer to the boundary with the minority class,
-:class:`NearMiss` uses the K-Nearest Neighbour algorithm. :class:`NearMiss` implements
-3 different heuristics, which we can be selected with the parameter ``version`` and we
+:class:`NearMiss` uses the K-Nearest Neighbours algorithm. :class:`NearMiss` implements
+3 different heuristics, which we can select with the parameter ``version`` and we
 will explain in the coming paragraphs. We can perform this undersampling as follows::
 
   >>> from imblearn.under_sampling import NearMiss
@@ -150,11 +150,11 @@ will explain in the coming paragraphs. We can perform this undersampling as foll
 Mathematical formulation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-:class:`NearMiss` uses the K-Nearest Neighbour algorithm to identify the samples of the
+:class:`NearMiss` uses the K-Nearest Neighbours algorithm to identify the samples of the
 target class(es) that are closer to the minority class, as well as the distance that
 separates them.
 
-Let *positive samples* be the samples belonging to the class to be under-sampled, and
+Let *positive samples* be the samples from the class to be under-sampled, and
 *negative sample* the samples from the minority class (i.e., the most
 under-represented class).
 
@@ -195,7 +195,7 @@ The following image illustrates the logic:
    :align: center
 
 In the following example, we apply the different :class:`NearMiss` variants to a toy
-dataset. Hote how the decision functions obtained in each case are different (left
+dataset. Note how the decision functions obtained in each case are different (left
 plots):
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_003.png
