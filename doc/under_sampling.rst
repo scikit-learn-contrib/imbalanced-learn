@@ -249,7 +249,7 @@ neighbours are from a different class :cite:`wilson1972asymptotic`.
 
 :class:`EditedNearestNeighbours` carries out the following steps:
 
-1. Train a KNN using the entire dataset.
+1. Train a K-nearest neighbors using the entire dataset.
 2. Find each observations' 3 closest neighbours (only for the targeted classes).
 3. Remove observations if any or most of its neighbours belong to a different class.
 
