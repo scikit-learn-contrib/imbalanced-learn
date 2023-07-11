@@ -288,7 +288,7 @@ more data::
    >>> print(sorted(Counter(y_resampled).items()))
    [(0, 64), (1, 208), (2, 4551)]
 
-The user can set up the number of times the ENN method should be repeated through the
+The user can set up the number of times the edited nearest neighbours method should be repeated through the
 paramter `max_iter`.
 
 The repetitions will stop when:
