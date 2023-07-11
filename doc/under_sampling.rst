@@ -467,12 +467,32 @@ and the output a 3 nearest neighbors classifier. The class can be used as::
 
 .. _instance_hardness_threshold:
 
+Additional undersampling techniques
+-----------------------------------
+
 Instance hardness threshold
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:class:`InstanceHardnessThreshold` is a specific algorithm in which a
-classifier is trained on the data and the samples with lower probabilities are
-removed :cite:`smith2014instance`. The class can be used as::
+**Instance Hardness** is a measure of how difficult it is to classify an instance or
+observation correctly. In other words, hard instances are observations that are hard to
+classify correctly.
+
+Fundamentally, instances that are hard to classify correctly are those for which the
+learning algorithm or classifier produces a low probability of predicting the correct
+class label.
+
+If we removed these hard instances from the dataset, the logic goes, we would help the
+classifier better identify the different classes :cite:`smith2014instance`.
+
+:class:`InstanceHardnessThreshold` trains a classifier on the data and then removes the
+samples with lower probabilities :cite:`smith2014instance`. Or in other words, it
+retains the observations with the higher class probabilities.
+
+In our implementation, :class:`InstanceHardnessThreshold` is (almost) a controlled
+under-sampling method: it will retain a specific number of observations of the target
+class(es), which is specified by the user (see caveat below).
+
+The class can be used as::
 
   >>> from sklearn.linear_model import LogisticRegression
   >>> from imblearn.under_sampling import InstanceHardnessThreshold
@@ -483,18 +503,18 @@ removed :cite:`smith2014instance`. The class can be used as::
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
 
-This class has 2 important parameters. ``estimator`` will accept any
-scikit-learn classifier which has a method ``predict_proba``. The classifier
-training is performed using a cross-validation and the parameter ``cv`` can set
-the number of folds to use.
+:class:`InstanceHardnessThreshold` has 2 important parameters. The parameter
+``estimator`` accepts any scikit-learn classifier with a method ``predict_proba``.
+This classifier will be used to identify the hard instances. The training is performed
+with cross-validation which can be specified through the parameter ``cv`.
 
 .. note::
 
    :class:`InstanceHardnessThreshold` could almost be considered as a
    controlled under-sampling method. However, due to the probability outputs, it
-   is not always possible to get a specific number of samples.
+   is not always possible to get the specified number of samples.
 
-The figure below gives another examples on some toy data.
+The figure below shows examples of instance hardness undersampling on a toy dataset.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_006.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html

@@ -51,7 +51,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
     ----------
     sampling_strategy_ : dict
         Dictionary containing the information to sample the dataset. The keys
-        corresponds to the class labels from which to sample and the values
+        correspond to the class labels from which to sample and the values
         are the number of samples to sample.
 
     estimator_ : estimator object
