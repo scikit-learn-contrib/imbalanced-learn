@@ -274,6 +274,9 @@ The parameter ``n_neighbors`` allows to give a classifier subclassed from
 ``KNeighborsMixin`` from scikit-learn to find the nearest neighbors and make
 the decision to keep a given sample or not.
 
+Repeated Edited Nearest Neighbours
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 :class:`RepeatedEditedNearestNeighbours` extends
 :class:`EditedNearestNeighbours` by repeating the algorithm multiple times
 :cite:`tomek1976experiment`. Generally, repeating the algorithm will delete
@@ -285,9 +288,23 @@ more data::
    >>> print(sorted(Counter(y_resampled).items()))
    [(0, 64), (1, 208), (2, 4551)]
 
-:class:`AllKNN` differs from the previous
-:class:`RepeatedEditedNearestNeighbours` since the number of neighbors of the
-internal nearest neighbors algorithm is increased at each iteration
+The user can set up the number of times the edited nearest neighbours method should be
+repeated through the parameter `max_iter`.
+
+The repetitions will stop when:
+
+1. the maximum number of iterations is reached, or
+2. no more observations are removed, or
+3. one of the majority classes becomes a minority class, or
+4. one of the majority classes disappears during the undersampling.
+
+All KNN
+~~~~~~~
+
+:class:`AllKNN` is a variation of the
+:class:`RepeatedEditedNearestNeighbours` where the number of neighbours evaluated at
+each round of :class:`EditedNearestNeighbours` increases. It starts by editing based on
+1-Nearest Neighbour, and it increases the neighbourhood by 1 at each iteration
 :cite:`tomek1976experiment`::
 
   >>> from imblearn.under_sampling import AllKNN
@@ -296,8 +313,13 @@ internal nearest neighbors algorithm is increased at each iteration
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 220), (2, 4601)]
 
-In the example below, it can be seen that the three algorithms have similar
-impact by cleaning noisy samples next to the boundaries of the classes.
+:class:`AllKNN` stops cleaning when the maximum number of neighbours to examine, which
+is determined by the user through the parameter `n_neighbors` is reached, or when the
+majority class becomes the minority class.
+
+In the example below, we see that :class:`EditedNearestNeighbours`,
+:class:`RepeatedEditedNearestNeighbours` and :class:`AllKNN` have similar impact when
+cleaning "noisy" samples at the boundaries between classes.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_004.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
