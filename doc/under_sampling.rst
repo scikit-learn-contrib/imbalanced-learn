@@ -109,8 +109,7 @@ under-sampled independently::
   >>> print(np.vstack(np.unique([tuple(row) for row in X_resampled], axis=0)).shape)
   (181, 2)
 
-:class:`RandomUnderSampler` can undersample numerical and also categorical variables
-(i.e., where the values are strings)::
+:class:`RandomUnderSampler` handles heterogeneous data types, i.e. numerical, categorical, date, etc.::
 
   >>> X_hetero = np.array([['xxx', 1, 1.0], ['yyy', 2, 2.0], ['zzz', 3, 3.0]],
   ...                     dtype=object)
