@@ -68,7 +68,7 @@ class BaseSMOTE(BaseOverSampler):
         )
 
     def _make_samples(
-        self, X, y_dtype, y_type, nn_data, nn_num, n_samples, step_size=1.0
+        self, X, y_dtype, y_type, nn_data, nn_num, n_samples, step_size=1.0, y=None
     ):
         """A support function that returns artificial samples constructed along
         the line connecting nearest neighbours.
@@ -98,6 +98,10 @@ class BaseSMOTE(BaseOverSampler):
         step_size : float, default=1.0
             The step size to create samples.
 
+        y : ndarray of shape (n_samples_all,), default=None
+            The true target associated with `nn_data`. Used by Borderline SMOTE-2 to
+            weight the distances in the sample generation process.
+
         Returns
         -------
         X_new : {ndarray, sparse matrix} of shape (n_samples_new, n_features)
@@ -114,11 +118,13 @@ class BaseSMOTE(BaseOverSampler):
         rows = np.floor_divide(samples_indices, nn_num.shape[1])
         cols = np.mod(samples_indices, nn_num.shape[1])
 
-        X_new = self._generate_samples(X, nn_data, nn_num, rows, cols, steps, y_type)
+        X_new = self._generate_samples(X, nn_data, nn_num, rows, cols, steps, y_type, y)
         y_new = np.full(n_samples, fill_value=y_type, dtype=y_dtype)
         return X_new, y_new
 
-    def _generate_samples(self, X, nn_data, nn_num, rows, cols, steps, y_type=None):
+    def _generate_samples(
+        self, X, nn_data, nn_num, rows, cols, steps, y_type=None, y=None
+    ):
         r"""Generate a synthetic sample.
 
         The rule for the generation is:
@@ -153,8 +159,13 @@ class BaseSMOTE(BaseOverSampler):
         steps : ndarray of shape (n_samples,), dtype=float
             Step sizes for new samples.
 
-        y_type : None
-            Unused parameter. Only for compatibility reason with SMOTE-NC.
+        y_type : str, int or None, default=None
+            Class label of the current target classes for which we want to generate
+            samples.
+
+        y : ndarray of shape (n_samples_all,), default=None
+            The true target associated with `nn_data`. Used by Borderline SMOTE-2 to
+            weight the distances in the sample generation process.
 
         Returns
         -------
@@ -162,6 +173,12 @@ class BaseSMOTE(BaseOverSampler):
             Synthetically generated samples.
         """
         diffs = nn_data[nn_num[rows, cols]] - X[rows]
+        if y is not None:  # only entering for BorderlineSMOTE-2
+            random_state = check_random_state(self.random_state)
+            mask_pair_samples = y[nn_num[rows, cols]] != y_type
+            diffs[mask_pair_samples] *= random_state.uniform(
+                low=0.0, high=0.5, size=(mask_pair_samples.sum(), 1)
+            )
 
         if sparse.issparse(X):
             sparse_func = type(X).__name__
@@ -736,7 +753,7 @@ class SMOTENC(SMOTE):
 
         return X_resampled, y_resampled
 
-    def _generate_samples(self, X, nn_data, nn_num, rows, cols, steps, y_type):
+    def _generate_samples(self, X, nn_data, nn_num, rows, cols, steps, y_type, y=None):
         """Generate a synthetic sample with an additional steps for the
         categorical features.
 
