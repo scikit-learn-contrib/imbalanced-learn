@@ -72,7 +72,7 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
         Ci > C x T ,
 
-        where Ci is the number of samples in the class, C is the number of samples in
+        where Ci is the number of samples in the class to be under-sampled, C is the number of samples in
         the data set, and T is the threshold.
 
     {n_jobs}
