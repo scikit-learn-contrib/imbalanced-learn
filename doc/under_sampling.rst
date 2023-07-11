@@ -77,8 +77,8 @@ and are meant for cleaning the feature space.
 Controlled under-sampling techniques
 ------------------------------------
 
-Controlled under-sampling techniques reduce the number of observations from the majority
-classes (targeted classes) to a number specified by the user.
+Controlled under-sampling techniques reduce the number of observations from the
+targeted classes to a number specified by the user.
 
 Random under-sampling
 ^^^^^^^^^^^^^^^^^^^^^
@@ -109,7 +109,8 @@ under-sampled independently::
   >>> print(np.vstack(np.unique([tuple(row) for row in X_resampled], axis=0)).shape)
   (181, 2)
 
-:class:`RandomUnderSampler` handles heterogeneous data types, i.e. numerical, categorical, date, etc.::
+:class:`RandomUnderSampler` handles heterogeneous data types, i.e. numerical,
+categorical, dates, etc.::
 
   >>> X_hetero = np.array([['xxx', 1, 1.0], ['yyy', 2, 2.0], ['zzz', 3, 3.0]],
   ...                     dtype=object)
