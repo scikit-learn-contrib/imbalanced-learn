@@ -224,8 +224,10 @@ class BorderlineSMOTE(BaseSMOTE):
 
             if self.kind == "borderline-1":
                 X_to_sample_from = X_class  # consider the positive class only
+                y_to_check_neighbors = None
             else:  # self.kind == "borderline-2"
                 X_to_sample_from = X  # consider the whole dataset
+                y_to_check_neighbors = y
 
             self.nn_k_.fit(X_to_sample_from)
             nns = self.nn_k_.kneighbors(X_danger, return_distance=False)[:, 1:]
@@ -236,6 +238,7 @@ class BorderlineSMOTE(BaseSMOTE):
                 X_to_sample_from,
                 nns,
                 n_samples,
+                y=y_to_check_neighbors,
             )
             if sparse.issparse(X_new):
                 X_resampled = sparse.vstack([X_resampled, X_new])
