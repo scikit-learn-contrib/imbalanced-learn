@@ -356,7 +356,7 @@ will first find the observations that are hard to classify, and then will use
 
 The final dataset is :math:`S`, containing all observations from the minority class,
 plus the observations from the majority that were added at random, plus all
-those from the majority that were miss-classified by the 1-KNN algorithms. Note
+those from the majority that were miss-classified by the 1-Nearest Neighbors algorithms. Note
 that differently from :class:`CondensedNearestNeighbour`, :class:`OneSidedSelection`
 does not train a KNN after each sample is missclassified. It uses the one KNN
 to classify all samples from the majority in 1 pass. The class can be used as::
