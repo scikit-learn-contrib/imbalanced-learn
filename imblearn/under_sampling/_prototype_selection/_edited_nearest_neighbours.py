@@ -200,7 +200,7 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     """Undersample based on the repeated edited nearest neighbour method.
 
-    This method repeats the ENN algorithm several times. The repetitions
+    This method repeats the :class:`EditedNearestNeighbours` algorithm several times. The repetitions
     will stop when i) the maximum number of iterations is reached, or ii) no
     more observations are being removed, or iii) one of the majority classes
     becomes a minority class or iv) one of the majority classes disappears
