@@ -243,7 +243,7 @@ Editing data using nearest neighbours
 Edited nearest neighbours
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The edited nearest neighbours methodology uses KNN to identify the neighbours of the
+The edited nearest neighbours methodology uses K-nearest neighbor to identify the neighbours of the
 targeted class samples, and then removes observations if any or most of their
 neighbours are from a different class :cite:`wilson1972asymptotic`.
 
