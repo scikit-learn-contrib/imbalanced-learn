@@ -12,16 +12,26 @@ composite estimator, as a chain of transforms, samples and estimators.
 #         Christos Aridas
 #         Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: BSD
-import joblib
 from sklearn import pipeline
 from sklearn.base import clone
-from sklearn.utils import _print_elapsed_time
+from sklearn.utils import Bunch, _print_elapsed_time
+from sklearn.utils._metadata_requests import METHODS
+from sklearn.utils.metadata_routing import (
+    MetadataRouter,
+    MethodMapping,
+    _routing_enabled,
+    process_routing,
+)
 from sklearn.utils.metaestimators import available_if
+from sklearn.utils.validation import check_memory
 
 from .base import _ParamsValidationMixin
 from .utils._param_validation import HasMethods, validate_params
+from .utils.fixes import _fit_context
 
 __all__ = ["Pipeline", "make_pipeline"]
+
+METHODS.append("fit_resample")
 
 
 class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
@@ -206,14 +216,12 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
 
     # Estimator interface
 
-    def _fit(self, X, y=None, **fit_params_steps):
+    # def _fit(self, X, y=None, **fit_params_steps):
+    def _fit(self, X, y=None, routed_params=None):
         self.steps = list(self.steps)
         self._validate_steps()
         # Setup the memory
-        if self.memory is None or isinstance(self.memory, str):
-            memory = joblib.Memory(location=self.memory, verbose=0)
-        else:
-            memory = self.memory
+        memory = check_memory(self.memory)
 
         fit_transform_one_cached = memory.cache(pipeline._fit_transform_one)
         fit_resample_one_cached = memory.cache(_fit_resample_one)
@@ -225,13 +233,12 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
                 with _print_elapsed_time("Pipeline", self._log_message(step_idx)):
                     continue
 
-            try:
-                # joblib >= 0.12
-                mem = memory.location
-            except AttributeError:
-                mem = memory.cachedir
-            finally:
-                cloned_transformer = clone(transformer) if mem else transformer
+            if hasattr(memory, "location") and memory.location is None:
+                # we do not clone when caching is disabled to
+                # preserve backward compatibility
+                cloned_transformer = transformer
+            else:
+                cloned_transformer = clone(transformer)
 
             # Fit or load from cache the current transformer
             if hasattr(cloned_transformer, "transform") or hasattr(
@@ -244,7 +251,7 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
                     None,
                     message_clsname="Pipeline",
                     message=self._log_message(step_idx),
-                    **fit_params_steps[name],
+                    params=routed_params[name],
                 )
             elif hasattr(cloned_transformer, "fit_resample"):
                 X, y, fitted_transformer = fit_resample_one_cached(
@@ -253,7 +260,7 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
                     y,
                     message_clsname="Pipeline",
                     message=self._log_message(step_idx),
-                    **fit_params_steps[name],
+                    params=routed_params[name],
                 )
             # Replace the transformer of the step with the fitted
             # transformer. This is necessary when loading the transformer
@@ -261,7 +268,11 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
             self.steps[step_idx] = (name, fitted_transformer)
         return X, y
 
-    def fit(self, X, y=None, **fit_params):
+    @_fit_context(
+        # estimators in Pipeline.steps are not validated yet
+        prefer_skip_nested_validation=False
+    )
+    def fit(self, X, y=None, **params):
         """Fit the model.
 
         Fit all the transforms/samplers one after the other and
@@ -278,26 +289,47 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
             Training targets. Must fulfill label requirements for all steps of
             the pipeline.
 
-        **fit_params : dict of str -> object
-            Parameters passed to the ``fit`` method of each step, where
-            each parameter name is prefixed such that parameter ``p`` for step
-            ``s`` has key ``s__p``.
+        **params : dict of str -> object
+            - If `enable_metadata_routing=False` (default):
+
+                Parameters passed to the ``fit`` method of each step, where
+                each parameter name is prefixed such that parameter ``p`` for step
+                ``s`` has key ``s__p``.
+
+            - If `enable_metadata_routing=True`:
+
+                Parameters requested and accepted by steps. Each step must have
+                requested certain metadata for these parameters to be forwarded to
+                them.
+
+            .. versionchanged:: 1.4
+                Parameters are now passed to the ``transform`` method of the
+                intermediate steps as well, if requested, and if
+                `enable_metadata_routing=True` is set via
+                :func:`~sklearn.set_config`.
+
+            See :ref:`Metadata Routing User Guide <metadata_routing>` for more
+            details.
 
         Returns
         -------
         self : Pipeline
             This estimator.
         """
-        self._validate_params()
-        fit_params_steps = self._check_fit_params(**fit_params)
-        Xt, yt = self._fit(X, y, **fit_params_steps)
+        routed_params = self._check_method_params(method="fit", props=params)
+        Xt, yt = self._fit(X, y, routed_params)
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
             if self._final_estimator != "passthrough":
-                fit_params_last_step = fit_params_steps[self.steps[-1][0]]
-                self._final_estimator.fit(Xt, yt, **fit_params_last_step)
+                last_step_params = routed_params[self.steps[-1][0]]
+                self._final_estimator.fit(Xt, yt, **last_step_params["fit"])
         return self
 
-    def fit_transform(self, X, y=None, **fit_params):
+    @available_if(pipeline.Pipeline._can_fit_transform)
+    @_fit_context(
+        # estimators in Pipeline.steps are not validated yet
+        prefer_skip_nested_validation=False
+    )
+    def fit_transform(self, X, y=None, **params):
         """Fit the model and transform with the final estimator.
 
         Fits all the transformers/samplers one after the other and
@@ -314,31 +346,60 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
             Training targets. Must fulfill label requirements for all steps of
             the pipeline.
 
-        **fit_params : dict of string -> object
-            Parameters passed to the ``fit`` method of each step, where
-            each parameter name is prefixed such that parameter ``p`` for step
-            ``s`` has key ``s__p``.
+        **params : dict of str -> object
+            - If `enable_metadata_routing=False` (default):
+
+                Parameters passed to the ``fit`` method of each step, where
+                each parameter name is prefixed such that parameter ``p`` for step
+                ``s`` has key ``s__p``.
+
+            - If `enable_metadata_routing=True`:
+
+                Parameters requested and accepted by steps. Each step must have
+                requested certain metadata for these parameters to be forwarded to
+                them.
+
+            .. versionchanged:: 1.4
+                Parameters are now passed to the ``transform`` method of the
+                intermediate steps as well, if requested, and if
+                `enable_metadata_routing=True`.
+
+            See :ref:`Metadata Routing User Guide <metadata_routing>` for more
+            details.
 
         Returns
         -------
         Xt : array-like of shape (n_samples, n_transformed_features)
             Transformed samples.
         """
-        self._validate_params()
-        fit_params_steps = self._check_fit_params(**fit_params)
-        Xt, yt = self._fit(X, y, **fit_params_steps)
+        routed_params = self._check_method_params(method="fit_transform", props=params)
+        Xt, yt = self._fit(X, y, routed_params)
 
         last_step = self._final_estimator
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
             if last_step == "passthrough":
                 return Xt
-            fit_params_last_step = fit_params_steps[self.steps[-1][0]]
+            last_step_params = routed_params[self.steps[-1][0]]
             if hasattr(last_step, "fit_transform"):
-                return last_step.fit_transform(Xt, yt, **fit_params_last_step)
+                return last_step.fit_transform(
+                    Xt, yt, **last_step_params["fit_transform"]
+                )
             else:
-                return last_step.fit(Xt, yt, **fit_params_last_step).transform(Xt)
+                return last_step.fit(Xt, y, **last_step_params["fit"]).transform(
+                    Xt, **last_step_params["transform"]
+                )
 
-    def fit_resample(self, X, y=None, **fit_params):
+    def _can_fit_resample(self):
+        return self._final_estimator == "passthrough" or hasattr(
+            self._final_estimator, "fit_resample"
+        )
+
+    @available_if(_can_fit_resample)
+    @_fit_context(
+        # estimators in Pipeline.steps are not validated yet
+        prefer_skip_nested_validation=False
+    )
+    def fit_resample(self, X, y=None, **params):
         """Fit the model and sample with the final estimator.
 
         Fits all the transformers/samplers one after the other and
@@ -355,10 +416,26 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
             Training targets. Must fulfill label requirements for all steps of
             the pipeline.
 
-        **fit_params : dict of string -> object
-            Parameters passed to the ``fit`` method of each step, where
-            each parameter name is prefixed such that parameter ``p`` for step
-            ``s`` has key ``s__p``.
+        **params : dict of str -> object
+            - If `enable_metadata_routing=False` (default):
+
+                Parameters passed to the ``fit`` method of each step, where
+                each parameter name is prefixed such that parameter ``p`` for step
+                ``s`` has key ``s__p``.
+
+            - If `enable_metadata_routing=True`:
+
+                Parameters requested and accepted by steps. Each step must have
+                requested certain metadata for these parameters to be forwarded to
+                them.
+
+            .. versionchanged:: 1.4
+                Parameters are now passed to the ``transform`` method of the
+                intermediate steps as well, if requested, and if
+                `enable_metadata_routing=True`.
+
+            See :ref:`Metadata Routing User Guide <metadata_routing>` for more
+            details.
 
         Returns
         -------
@@ -368,19 +445,24 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
         yt : array-like of shape (n_samples, n_transformed_features)
             Transformed target.
         """
-        self._validate_params()
-        fit_params_steps = self._check_fit_params(**fit_params)
-        Xt, yt = self._fit(X, y, **fit_params_steps)
+        routed_params = self._check_method_params(method="fit_resample", props=params)
+        Xt, yt = self._fit(X, y, routed_params)
         last_step = self._final_estimator
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
             if last_step == "passthrough":
                 return Xt
-            fit_params_last_step = fit_params_steps[self.steps[-1][0]]
+            last_step_params = routed_params[self.steps[-1][0]]
             if hasattr(last_step, "fit_resample"):
-                return last_step.fit_resample(Xt, yt, **fit_params_last_step)
+                return last_step.fit_resample(
+                    Xt, yt, **last_step_params["fit_resample"]
+                )
 
     @available_if(pipeline._final_estimator_has("fit_predict"))
-    def fit_predict(self, X, y=None, **fit_params):
+    @_fit_context(
+        # estimators in Pipeline.steps are not validated yet
+        prefer_skip_nested_validation=False
+    )
+    def fit_predict(self, X, y=None, **params):
         """Apply `fit_predict` of last step in pipeline after transforms.
 
         Applies fit_transforms of a pipeline to the data, followed by the
@@ -397,29 +479,169 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
             Training targets. Must fulfill label requirements for all steps
             of the pipeline.
 
-        **fit_params : dict of string -> object
-            Parameters passed to the ``fit`` method of each step, where
-            each parameter name is prefixed such that parameter ``p`` for step
-            ``s`` has key ``s__p``.
+        **params : dict of str -> object
+            - If `enable_metadata_routing=False` (default):
+
+                Parameters to the ``predict`` called at the end of all
+                transformations in the pipeline.
+
+            - If `enable_metadata_routing=True`:
+
+                Parameters requested and accepted by steps. Each step must have
+                requested certain metadata for these parameters to be forwarded to
+                them.
+
+            .. versionadded:: 0.20
+
+            .. versionchanged:: 1.4
+                Parameters are now passed to the ``transform`` method of the
+                intermediate steps as well, if requested, and if
+                `enable_metadata_routing=True`.
+
+            See :ref:`Metadata Routing User Guide <metadata_routing>` for more
+            details.
+
+            Note that while this may be used to return uncertainties from some
+            models with ``return_std`` or ``return_cov``, uncertainties that are
+            generated by the transformations in the pipeline are not propagated
+            to the final estimator.
 
         Returns
         -------
         y_pred : ndarray of shape (n_samples,)
             The predicted target.
         """
-        self._validate_params()
-        fit_params_steps = self._check_fit_params(**fit_params)
-        Xt, yt = self._fit(X, y, **fit_params_steps)
+        routed_params = self._check_method_params(method="fit_predict", props=params)
+        Xt, yt = self._fit(X, y, routed_params)
 
-        fit_params_last_step = fit_params_steps[self.steps[-1][0]]
+        params_last_step = routed_params[self.steps[-1][0]]
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
-            y_pred = self.steps[-1][-1].fit_predict(Xt, yt, **fit_params_last_step)
+            y_pred = self.steps[-1][-1].fit_predict(
+                Xt, yt, **params_last_step.get("fit_predict", {})
+            )
         return y_pred
 
+    def get_metadata_routing(self):
+        """Get metadata routing of this object.
 
-def _fit_resample_one(sampler, X, y, message_clsname="", message=None, **fit_params):
+        Please check :ref:`User Guide <metadata_routing>` on how the routing
+        mechanism works.
+
+        Returns
+        -------
+        routing : MetadataRouter
+            A :class:`~utils.metadata_routing.MetadataRouter` encapsulating
+            routing information.
+        """
+        router = MetadataRouter(owner=self.__class__.__name__)
+
+        # first we add all steps except the last one
+        for _, name, trans in self._iter(with_final=False, filter_passthrough=True):
+            method_mapping = MethodMapping()
+            # fit, fit_predict, and fit_transform call fit_transform if it
+            # exists, or else fit and transform
+            if hasattr(trans, "fit_transform"):
+                (
+                    method_mapping.add(caller="fit", callee="fit_transform")
+                    .add(caller="fit_transform", callee="fit_transform")
+                    .add(caller="fit_predict", callee="fit_transform")
+                    .add(caller="fit_resample", callee="fit_transform")
+                )
+            else:
+                (
+                    method_mapping.add(caller="fit", callee="fit")
+                    .add(caller="fit", callee="transform")
+                    .add(caller="fit_transform", callee="fit")
+                    .add(caller="fit_transform", callee="transform")
+                    .add(caller="fit_predict", callee="fit")
+                    .add(caller="fit_predict", callee="transform")
+                    .add(caller="fit_resample", callee="fit")
+                    .add(caller="fit_resample", callee="transform")
+                )
+
+            (
+                method_mapping.add(caller="predict", callee="transform")
+                .add(caller="predict", callee="transform")
+                .add(caller="predict_proba", callee="transform")
+                .add(caller="decision_function", callee="transform")
+                .add(caller="predict_log_proba", callee="transform")
+                .add(caller="transform", callee="transform")
+                .add(caller="inverse_transform", callee="inverse_transform")
+                .add(caller="score", callee="transform")
+                .add(caller="fit_resample", callee="transform")
+            )
+
+            router.add(method_mapping=method_mapping, **{name: trans})
+
+        final_name, final_est = self.steps[-1]
+        if final_est is None or final_est == "passthrough":
+            return router
+
+        # then we add the last step
+        method_mapping = MethodMapping()
+        if hasattr(final_est, "fit_transform"):
+            (
+                method_mapping.add(caller="fit_transform", callee="fit_transform").add(
+                    caller="fit_resample", callee="fit_transform"
+                )
+            )
+        else:
+            (
+                method_mapping.add(caller="fit", callee="fit")
+                .add(caller="fit", callee="transform")
+                .add(caller="fit_resample", callee="fit")
+                .add(caller="fit_resample", callee="transform")
+            )
+        (
+            method_mapping.add(caller="fit", callee="fit")
+            .add(caller="predict", callee="predict")
+            .add(caller="fit_predict", callee="fit_predict")
+            .add(caller="predict_proba", callee="predict_proba")
+            .add(caller="decision_function", callee="decision_function")
+            .add(caller="predict_log_proba", callee="predict_log_proba")
+            .add(caller="transform", callee="transform")
+            .add(caller="inverse_transform", callee="inverse_transform")
+            .add(caller="score", callee="score")
+            .add(caller="fit_resample", callee="fit_resample")
+        )
+
+        router.add(method_mapping=method_mapping, **{final_name: final_est})
+        return router
+
+    def _check_method_params(self, method, props, **kwargs):
+        if _routing_enabled():
+            routed_params = process_routing(self, method, **props, **kwargs)
+            return routed_params
+        else:
+            fit_params_steps = Bunch(
+                **{
+                    name: Bunch(**{method: {} for method in METHODS})
+                    for name, step in self.steps
+                    if step is not None
+                }
+            )
+            for pname, pval in props.items():
+                if "__" not in pname:
+                    raise ValueError(
+                        "Pipeline.fit does not accept the {} parameter. "
+                        "You can pass parameters to specific steps of your "
+                        "pipeline using the stepname__parameter format, e.g. "
+                        "`Pipeline.fit(X, y, logisticregression__sample_weight"
+                        "=sample_weight)`.".format(pname)
+                    )
+                step, param = pname.split("__", 1)
+                fit_params_steps[step]["fit"][param] = pval
+                # without metadata routing, fit_transform and fit_predict
+                # get all the same params and pass it to the last fit.
+                fit_params_steps[step]["fit_transform"][param] = pval
+                fit_params_steps[step]["fit_predict"][param] = pval
+                fit_params_steps[step]["fit_resample"][param] = pval
+            return fit_params_steps
+
+
+def _fit_resample_one(sampler, X, y, message_clsname="", message=None, params=None):
     with _print_elapsed_time(message_clsname, message):
-        X_res, y_res = sampler.fit_resample(X, y, **fit_params)
+        X_res, y_res = sampler.fit_resample(X, y, **params.get("fit_resample", {}))
 
         return X_res, y_res, sampler
 
