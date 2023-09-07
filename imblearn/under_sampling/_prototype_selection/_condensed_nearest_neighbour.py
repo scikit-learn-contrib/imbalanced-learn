@@ -110,19 +110,18 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
     Examples
     --------
     >>> from collections import Counter  # doctest: +SKIP
-    >>> from sklearn.datasets import make_classification  # doctest: +SKIP
+    >>> from sklearn.datasets import fetch_openml  # doctest: +SKIP
+    >>> from sklearn.preprocessing import scale  # doctest: +SKIP
     >>> from imblearn.under_sampling import \
 CondensedNearestNeighbour  # doctest: +SKIP
-    >>> X, y = make_classification(n_classes=2, class_sep=2, \
-weights=[0.1, 0.9], n_informative=3, n_redundant=1, flip_y=0, \
-n_features=20, n_clusters_per_class=1, n_samples=1000, \
-random_state=10)  # doctest: +SKIP
+    >>> X, y = fetch_openml('diabetes', version=1, return_X_y=True)  # doctest: +SKIP
+    >>> X = scale(X)  # doctest: +SKIP
     >>> print('Original dataset shape %s' % Counter(y))  # doctest: +SKIP
-    Original dataset shape Counter({{1: 900, 0: 100}})  # doctest: +SKIP
+    Original dataset shape Counter({{1: 500, 0: 268}})  # doctest: +SKIP
     >>> cnn = CondensedNearestNeighbour(random_state=42)  # doctest: +SKIP
     >>> X_res, y_res = cnn.fit_resample(X, y)  #doctest: +SKIP
     >>> print('Resampled dataset shape %s' % Counter(y_res))  # doctest: +SKIP
-    Resampled dataset shape Counter({{0: 100, 1: 44}})  # doctest: +SKIP
+    Resampled dataset shape Counter({{0: 268, 1: 181}})  # doctest: +SKIP
     """
 
     _parameter_constraints: dict = {
