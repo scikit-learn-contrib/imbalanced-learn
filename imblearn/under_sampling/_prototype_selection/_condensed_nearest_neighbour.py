@@ -117,11 +117,13 @@ CondensedNearestNeighbour  # doctest: +SKIP
     >>> X, y = fetch_openml('diabetes', version=1, return_X_y=True)  # doctest: +SKIP
     >>> X = scale(X)  # doctest: +SKIP
     >>> print('Original dataset shape %s' % Counter(y))  # doctest: +SKIP
-    Original dataset shape Counter({{1: 500, 0: 268}})  # doctest: +SKIP
+    Original dataset shape Counter({{'tested_negative': 500, \
+        'tested_positive': 268}})  # doctest: +SKIP
     >>> cnn = CondensedNearestNeighbour(random_state=42)  # doctest: +SKIP
     >>> X_res, y_res = cnn.fit_resample(X, y)  #doctest: +SKIP
     >>> print('Resampled dataset shape %s' % Counter(y_res))  # doctest: +SKIP
-    Resampled dataset shape Counter({{0: 268, 1: 181}})  # doctest: +SKIP
+    Resampled dataset shape Counter({{'tested_positive': 268, \
+        'tested_negative': 181}})  # doctest: +SKIP
     """
 
     _parameter_constraints: dict = {
