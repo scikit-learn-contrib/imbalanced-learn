@@ -60,6 +60,7 @@ def _local_parallel_build_trees(
     class_weight=None,
     n_samples_bootstrap=None,
     forest=None,
+    missing_values_in_feature_mask=None,
 ):
     # resample before to fit the tree
     X_resampled, y_resampled = sampler.fit_resample(X, y)
@@ -68,33 +69,34 @@ def _local_parallel_build_trees(
     if _get_n_samples_bootstrap is not None:
         n_samples_bootstrap = min(n_samples_bootstrap, X_resampled.shape[0])
 
-    if sklearn_version >= parse_version("1.1"):
-        tree = _parallel_build_trees(
-            tree,
-            bootstrap,
-            X_resampled,
-            y_resampled,
-            sample_weight,
-            tree_idx,
-            n_trees,
-            verbose=verbose,
-            class_weight=class_weight,
-            n_samples_bootstrap=n_samples_bootstrap,
-        )
+    params_parallel_build_trees = {
+        "tree": tree,
+        "X": X_resampled,
+        "y": y_resampled,
+        "sample_weight": sample_weight,
+        "tree_idx": tree_idx,
+        "n_trees": n_trees,
+        "verbose": verbose,
+        "class_weight": class_weight,
+        "n_samples_bootstrap": n_samples_bootstrap,
+    }
+
+    if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+        # TODO: remove when the minimum supported version of scikit-learn will be 1.4
+        # support for missing values
+        params_parallel_build_trees[
+            "missing_values_in_feature_mask"
+        ] = missing_values_in_feature_mask
+
+    # TODO: remove when the minimum supported version of scikit-learn will be 1.1
+    # change of signature in scikit-learn 1.1
+    if parse_version(sklearn_version.base_version) >= parse_version("1.1"):
+        params_parallel_build_trees["bootstrap"] = bootstrap
     else:
-        # TODO: remove when the minimum version of scikit-learn supported is 1.1
-        tree = _parallel_build_trees(
-            tree,
-            forest,
-            X_resampled,
-            y_resampled,
-            sample_weight,
-            tree_idx,
-            n_trees,
-            verbose=verbose,
-            class_weight=class_weight,
-            n_samples_bootstrap=n_samples_bootstrap,
-        )
+        params_parallel_build_trees["forest"] = forest
+
+    tree = _parallel_build_trees(**params_parallel_build_trees)
+
     return sampler, tree
 
 
@@ -305,6 +307,24 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         .. versionadded:: 0.6
            Added in `scikit-learn` in 0.22
 
+    monotonic_cst : array-like of int of shape (n_features), default=None
+        Indicates the monotonicity constraint to enforce on each feature.
+          - 1: monotonic increase
+          - 0: no constraint
+          - -1: monotonic decrease
+
+        If monotonic_cst is None, no constraints are applied.
+
+        Monotonicity constraints are not supported for:
+          - multiclass classifications (i.e. when `n_classes > 2`),
+          - multioutput classifications (i.e. when `n_outputs_ > 1`),
+          - classifications trained on data with missing values.
+
+        The constraints hold over the probability of the positive class.
+
+        .. versionadded:: 0.12
+           Added in `scikit-learn` 1.4
+
     Attributes
     ----------
     estimator_ : :class:`~sklearn.tree.DecisionTreeClassifier` instance
@@ -459,27 +479,33 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         class_weight=None,
         ccp_alpha=0.0,
         max_samples=None,
+        monotonic_cst=None,
     ):
-        super().__init__(
-            criterion=criterion,
-            max_depth=max_depth,
-            n_estimators=n_estimators,
-            bootstrap=bootstrap,
-            oob_score=oob_score,
-            n_jobs=n_jobs,
-            random_state=random_state,
-            verbose=verbose,
-            warm_start=warm_start,
-            class_weight=class_weight,
-            min_samples_split=min_samples_split,
-            min_samples_leaf=min_samples_leaf,
-            min_weight_fraction_leaf=min_weight_fraction_leaf,
-            max_features=max_features,
-            max_leaf_nodes=max_leaf_nodes,
-            min_impurity_decrease=min_impurity_decrease,
-            ccp_alpha=ccp_alpha,
-            max_samples=max_samples,
-        )
+        params_random_forest = {
+            "criterion": criterion,
+            "max_depth": max_depth,
+            "n_estimators": n_estimators,
+            "bootstrap": bootstrap,
+            "oob_score": oob_score,
+            "n_jobs": n_jobs,
+            "random_state": random_state,
+            "verbose": verbose,
+            "warm_start": warm_start,
+            "class_weight": class_weight,
+            "min_samples_split": min_samples_split,
+            "min_samples_leaf": min_samples_leaf,
+            "min_weight_fraction_leaf": min_weight_fraction_leaf,
+            "max_features": max_features,
+            "max_leaf_nodes": max_leaf_nodes,
+            "min_impurity_decrease": min_impurity_decrease,
+            "ccp_alpha": ccp_alpha,
+            "max_samples": max_samples,
+        }
+        # TODO: remove when the minimum supported version of scikit-learn will be 1.4
+        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+            # support for monotonic constraints
+            params_random_forest["monotonic_cst"] = monotonic_cst
+        super().__init__(**params_random_forest)
 
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
@@ -591,11 +617,41 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         # Validate or convert input data
         if issparse(y):
             raise ValueError("sparse multilabel-indicator for y is not supported.")
+
+        # TODO: remove when the minimum supported version of scipy will be 1.4
+        # Support for missing values
+        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+            force_all_finite = False
+        else:
+            force_all_finite = True
+
         X, y = self._validate_data(
-            X, y, multi_output=True, accept_sparse="csc", dtype=DTYPE
+            X,
+            y,
+            multi_output=True,
+            accept_sparse="csc",
+            dtype=DTYPE,
+            force_all_finite=force_all_finite,
         )
+
+        # TODO: remove when the minimum supported version of scikit-learn will be 1.4
+        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+            # _compute_missing_values_in_feature_mask checks if X has missing values and
+            # will raise an error if the underlying tree base estimator can't handle
+            # missing values. Only the criterion is required to determine if the tree
+            # supports missing values.
+            estimator = type(self.estimator)(criterion=self.criterion)
+            missing_values_in_feature_mask = (
+                estimator._compute_missing_values_in_feature_mask(
+                    X, estimator_name=self.__class__.__name__
+                )
+            )
+        else:
+            missing_values_in_feature_mask = None
+
         if sample_weight is not None:
             sample_weight = _check_sample_weight(sample_weight, X)
+
         self._n_features = X.shape[1]
 
         if issparse(X):
@@ -713,6 +769,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
                     class_weight=self.class_weight,
                     n_samples_bootstrap=n_samples_bootstrap,
                     forest=self,
+                    missing_values_in_feature_mask=missing_values_in_feature_mask,
                 )
                 for i, (s, t) in enumerate(zip(samplers, trees))
             )
