@@ -140,7 +140,7 @@ fig.tight_layout()
 # selected can be specified.
 # :class:`~imblearn.under_sampling.RandomUnderSampler` is the most naive way of
 # performing such selection by randomly selecting a given number of samples by
-# the targetted class.
+# the targeted class.
 
 # %%
 from imblearn.under_sampling import RandomUnderSampler
