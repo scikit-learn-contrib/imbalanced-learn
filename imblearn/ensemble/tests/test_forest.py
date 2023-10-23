@@ -258,3 +258,100 @@ def test_balanced_random_forest_change_behaviour(imbalanced_dataset):
     )
     with pytest.warns(FutureWarning, match="The default of `bootstrap`"):
         estimator.fit(*imbalanced_dataset)
+
+
+@pytest.mark.skipif(
+    parse_version(sklearn_version.base_version) < parse_version("1.4"),
+    reason="scikit-learn should be >= 1.4",
+)
+def test_missing_values_is_resilient():
+    """Check that forest can deal with missing values and has decent performance."""
+
+    rng = np.random.RandomState(0)
+    n_samples, n_features = 1000, 10
+    X, y = make_classification(
+        n_samples=n_samples, n_features=n_features, random_state=rng
+    )
+
+    # Create dataset with missing values
+    X_missing = X.copy()
+    X_missing[rng.choice([False, True], size=X.shape, p=[0.95, 0.05])] = np.nan
+    assert np.isnan(X_missing).any()
+
+    X_missing_train, X_missing_test, y_train, y_test = train_test_split(
+        X_missing, y, random_state=0
+    )
+
+    # Train forest with missing values
+    forest_with_missing = BalancedRandomForestClassifier(
+        sampling_strategy="all",
+        replacement=True,
+        bootstrap=False,
+        random_state=rng,
+        n_estimators=50,
+    )
+    forest_with_missing.fit(X_missing_train, y_train)
+    score_with_missing = forest_with_missing.score(X_missing_test, y_test)
+
+    # Train forest without missing values
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+    forest = BalancedRandomForestClassifier(
+        sampling_strategy="all",
+        replacement=True,
+        bootstrap=False,
+        random_state=rng,
+        n_estimators=50,
+    )
+    forest.fit(X_train, y_train)
+    score_without_missing = forest.score(X_test, y_test)
+
+    # Score is still 80 percent of the forest's score that had no missing values
+    assert score_with_missing >= 0.80 * score_without_missing
+
+
+@pytest.mark.skipif(
+    parse_version(sklearn_version.base_version) < parse_version("1.4"),
+    reason="scikit-learn should be >= 1.4",
+)
+def test_missing_value_is_predictive():
+    """Check that the forest learns when missing values are only present for
+    a predictive feature."""
+    rng = np.random.RandomState(0)
+    n_samples = 300
+
+    X_non_predictive = rng.standard_normal(size=(n_samples, 10))
+    y = rng.randint(0, high=2, size=n_samples)
+
+    # Create a predictive feature using `y` and with some noise
+    X_random_mask = rng.choice([False, True], size=n_samples, p=[0.95, 0.05])
+    y_mask = y.astype(bool)
+    y_mask[X_random_mask] = ~y_mask[X_random_mask]
+
+    predictive_feature = rng.standard_normal(size=n_samples)
+    predictive_feature[y_mask] = np.nan
+    assert np.isnan(predictive_feature).any()
+
+    X_predictive = X_non_predictive.copy()
+    X_predictive[:, 5] = predictive_feature
+
+    (
+        X_predictive_train,
+        X_predictive_test,
+        X_non_predictive_train,
+        X_non_predictive_test,
+        y_train,
+        y_test,
+    ) = train_test_split(X_predictive, X_non_predictive, y, random_state=0)
+    forest_predictive = BalancedRandomForestClassifier(
+        sampling_strategy="all", replacement=True, bootstrap=False, random_state=0
+    ).fit(X_predictive_train, y_train)
+    forest_non_predictive = BalancedRandomForestClassifier(
+        sampling_strategy="all", replacement=True, bootstrap=False, random_state=0
+    ).fit(X_non_predictive_train, y_train)
+
+    predictive_test_score = forest_predictive.score(X_predictive_test, y_test)
+
+    assert predictive_test_score >= 0.75
+    assert predictive_test_score >= forest_non_predictive.score(
+        X_non_predictive_test, y_test
+    )

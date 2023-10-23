@@ -18,6 +18,14 @@ Bug fixes
   the number of samples in the minority class.
   :pr:`1012` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+Compatibility
+.............
+
+- :class:`~imblearn.ensemble.BalancedRandomForestClassifier` now support missing values
+  and monotonic constraints if scikit-learn >= 1.4 is installed.
+- :class:`~imblearn.pipeline.Pipeline` support metadata routing if scikit-learn >= 1.4
+  is installed.
+
 Deprecations
 ............
 
