@@ -1564,13 +1564,16 @@ if parse_version(sklearn_version.base_version) < parse_version("1.4"):
 else:
     from sklearn.exceptions import UnsetMetadataPassedError
     from sklearn.utils._metadata_requests import (  # type: ignore[no-redef]
+        COMPOSITE_METHODS,  # noqa
+        METHODS,  # noqa
+        SIMPLE_METHODS,  # noqa
         UNCHANGED,
         UNUSED,
         WARN,
         MetadataRequest,
         MetadataRouter,
         MethodMapping,
-        _MetadaataRequester,  # noqa
+        _MetadataRequester,  # noqa
         _raise_for_params,  # noqa
         _raise_for_unsupported_routing,  # noqa
         _routing_enabled,
