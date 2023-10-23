@@ -323,7 +323,8 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         The constraints hold over the probability of the positive class.
 
         .. versionadded:: 0.12
-           Added in `scikit-learn` 1.4
+           Only supported when scikit-learn >= 1.4 is installed. Otherwise, a
+           `ValueError` is raised.
 
     Attributes
     ----------
@@ -435,7 +436,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
     """
 
     # make a deepcopy to not modify the original dictionary
-    if sklearn_version >= parse_version("1.3"):
+    if sklearn_version >= parse_version("1.4"):
         _parameter_constraints = deepcopy(RandomForestClassifier._parameter_constraints)
     else:
         _parameter_constraints = deepcopy(
@@ -503,8 +504,17 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         }
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
         if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
-            # support for monotonic constraints
+            # use scikit-learn support for monotonic constraints
             params_random_forest["monotonic_cst"] = monotonic_cst
+        else:
+            if monotonic_cst is not None:
+                raise ValueError(
+                    "Monotonic constraints are not supported for scikit-learn "
+                    "version < 1.4."
+                )
+            # create an attribute for compatibility with other scikit-learn tools such
+            # as HTML representation.
+            self.monotonic_cst = monotonic_cst
         super().__init__(**params_random_forest)
 
         self.sampling_strategy = sampling_strategy
