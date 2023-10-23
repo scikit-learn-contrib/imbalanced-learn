@@ -1570,6 +1570,11 @@ else:
         MetadataRequest,
         MetadataRouter,
         MethodMapping,
+        _MetadaataRequester,  # noqa
+        _raise_for_params,  # noqa
+        _raise_for_unsupported_routing,  # noqa
         _routing_enabled,
+        _RoutingNotSupportedMixin,  # noqa
         get_routing_for_object,
+        process_routing,  # noqa
     )
