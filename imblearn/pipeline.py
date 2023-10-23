@@ -326,7 +326,14 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
                 self._final_estimator.fit(Xt, yt, **last_step_params["fit"])
         return self
 
-    @available_if(pipeline._can_fit_transform)
+    def _can_fit_transform(self):
+        return (
+            self._final_estimator == "passthrough"
+            or hasattr(self._final_estimator, "transform")
+            or hasattr(self._final_estimator, "fit_transform")
+        )
+
+    @available_if(_can_fit_transform)
     @_fit_context(
         # estimators in Pipeline.steps are not validated yet
         prefer_skip_nested_validation=False
