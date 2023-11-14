@@ -142,7 +142,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
         if (
             self.estimator is not None
             and (isinstance(self.estimator, ClassifierMixin) or
-                 isinstance(self.estimator, ClassifierMixin) )
+                 isinstance(self.estimator, Pipeline) )
                  
             and hasattr(self.estimator, "predict_proba")
         ):
