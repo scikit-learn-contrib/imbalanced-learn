@@ -20,6 +20,7 @@ from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ...utils._param_validation import HasMethods
 from ..base import BaseUnderSampler
+from sklearn.pipeline import Pipeline
 
 
 @Substitution(
@@ -140,7 +141,9 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
         if (
             self.estimator is not None
-            and isinstance(self.estimator, ClassifierMixin)
+            and (isinstance(self.estimator, ClassifierMixin) or
+                 isinstance(self.estimator, ClassifierMixin) )
+                 
             and hasattr(self.estimator, "predict_proba")
         ):
             self.estimator_ = clone(self.estimator)
