@@ -10,6 +10,7 @@ from inspect import Parameter, signature
 from numbers import Integral, Real
 
 import numpy as np
+from scipy.sparse import issparse
 from sklearn.base import clone
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_array, column_or_1d
@@ -61,7 +62,10 @@ class ArraysTransformer:
         elif type_ == "dataframe":
             import pandas as pd
 
-            ret = pd.DataFrame(array, columns=props["columns"])
+            if issparse(array):
+                ret = pd.DataFrame.sparse.from_spmatrix(array, columns=props["columns"])
+            else:
+                ret = pd.DataFrame(array, columns=props["columns"])
             ret = ret.astype(props["dtypes"])
         elif type_ == "series":
             import pandas as pd

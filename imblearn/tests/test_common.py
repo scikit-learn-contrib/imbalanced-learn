@@ -7,6 +7,7 @@ import warnings
 from collections import OrderedDict
 
 import numpy as np
+import pandas as pd
 import pytest
 from sklearn.base import clone
 from sklearn.exceptions import ConvergenceWarning
@@ -108,3 +109,15 @@ def test_pandas_column_name_consistency(estimator):
             )
         for warning in record:
             assert "was fitted without feature names" not in str(warning.message)
+
+
+def test_pandas_sparsity_preserved():
+    df = pd.DataFrame(
+        {"a": [0, 1] * 10, "b": [0, 1] * 10}, dtype=pd.SparseDtype(float, 0)
+    )
+    y = pd.Series([0] * 18 + [1] * 2)
+
+    ros = RandomOverSampler(sampling_strategy=1, random_state=42, shrinkage=1)
+    new_df, new_y = ros.fit_resample(df, y)
+    for column_dtype in new_df.dtypes:
+        assert isinstance(column_dtype, pd.SparseDtype)
