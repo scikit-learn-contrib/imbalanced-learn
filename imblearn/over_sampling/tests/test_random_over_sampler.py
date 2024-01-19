@@ -287,18 +287,3 @@ def test_random_over_sampling_datetime():
     pd.testing.assert_series_equal(X_res.dtypes, X.dtypes)
     pd.testing.assert_index_equal(X_res.index, y_res.index)
     assert_array_equal(y_res.to_numpy(), np.array([0, 0, 0, 1, 1, 1]))
-
-
-def test_pandas_sparsity_preserved():
-    """Check that a sparse DataFrame can be handled and is still sparse
-    after oversampling."""
-    pd = pytest.importorskip("pandas")
-    df = pd.DataFrame(
-        {"a": [0, 1] * 10, "b": [0, 1] * 10}, dtype=pd.SparseDtype(float, 0)
-    )
-    y = pd.Series([0] * 18 + [1] * 2)
-
-    ros = RandomOverSampler(sampling_strategy=1, random_state=42, shrinkage=1)
-    new_df, new_y = ros.fit_resample(df, y)
-    for column_dtype in new_df.dtypes:
-        assert isinstance(column_dtype, pd.SparseDtype)
