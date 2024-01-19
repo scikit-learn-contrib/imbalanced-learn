@@ -11,6 +11,7 @@ from sklearn.model_selection import LeaveOneOut
 from sklearn.utils import deprecated
 
 from imblearn._config import config_context, get_config
+from imblearn.base import _ParamsValidationMixin
 from imblearn.utils._param_validation import (
     HasMethods,
     Hidden,
@@ -62,7 +63,7 @@ class _Class:
         """A deprecated validated method"""
 
 
-class _Estimator(BaseEstimator):
+class _Estimator(_ParamsValidationMixin, BaseEstimator):
     """An estimator to test the validation of estimator parameters."""
 
     _parameter_constraints: dict = {"a": [Real]}
