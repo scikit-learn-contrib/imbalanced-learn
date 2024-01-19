@@ -212,7 +212,11 @@ def test_fit_docstring_attributes(name, Estimator):
     else:
         est.fit(X, y)
 
-    skipped_attributes = set([])
+    skipped_attributes = set(
+        [
+            "base_estimator_",  # this attribute exist with old version of sklearn
+        ]
+    )
 
     for attr in attributes:
         if attr.name in skipped_attributes:

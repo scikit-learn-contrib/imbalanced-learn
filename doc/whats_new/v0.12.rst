@@ -23,8 +23,12 @@ Compatibility
 
 - :class:`~imblearn.ensemble.BalancedRandomForestClassifier` now support missing values
   and monotonic constraints if scikit-learn >= 1.4 is installed.
+
 - :class:`~imblearn.pipeline.Pipeline` support metadata routing if scikit-learn >= 1.4
   is installed.
+
+- Compatibility with scikit-learn 1.4.
+  :pr:`1058` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Deprecations
 ............

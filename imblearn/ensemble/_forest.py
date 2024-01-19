@@ -334,16 +334,6 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
         .. versionadded:: 0.10
 
-    base_estimator_ : :class:`~sklearn.tree.DecisionTreeClassifier` instance
-        The child estimator template used to create the collection of fitted
-        sub-estimators.
-
-        .. deprecated:: 1.2
-           `base_estimator_` is deprecated in `scikit-learn` 1.2 and will be
-           removed in 1.4. Use `estimator_` instead. When the minimum version
-           of `scikit-learn` supported by `imbalanced-learn` will reach 1.4,
-           this attribute will be removed.
-
     estimators_ : list of :class:`~sklearn.tree.DecisionTreeClassifier`
         The collection of fitted sub-estimators.
 
@@ -529,15 +519,9 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
             base_estimator = self.base_estimator
 
         if base_estimator is not None:
-            self._estimator = clone(base_estimator)
+            self.estimator_ = clone(base_estimator)
         else:
-            self._estimator = clone(default)
-
-        try:
-            # scikit-learn < 1.2
-            self.base_estimator_ = self._estimator
-        except AttributeError:
-            pass
+            self.estimator_ = clone(default)
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self._sampling_strategy,
@@ -549,7 +533,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         Warning: This method should be used to properly instantiate new
         sub-estimators.
         """
-        estimator = clone(self._estimator)
+        estimator = clone(self.estimator_)
         estimator.set_params(**{p: getattr(self, p) for p in self.estimator_params})
         sampler = clone(self.base_sampler_)
 
@@ -909,12 +893,6 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
             oob_pred[..., k] /= n_oob_pred[..., [k]]
 
         return oob_pred
-
-    # TODO: remove when supporting scikit-learn>=1.4
-    @property
-    def estimator_(self):
-        """Estimator used to grow the ensemble."""
-        return self._estimator
 
     # TODO: remove when supporting scikit-learn>=1.2
     @property
