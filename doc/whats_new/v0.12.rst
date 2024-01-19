@@ -42,3 +42,9 @@ Deprecations
 - Deprecate `kind_sel` in :class:`~imblearn.under_sampling.NeighbourhoodCleaningRule.
   It will be removed in 0.14. The parameter does not have any effect.
   :pr:`1012` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Enhancements
+............
+
+- Allows to output dataframe with sparse format if provided as input.
+  :pr:`1059` by :user:`ts2095 <ts2095>`.
