@@ -8,10 +8,8 @@ from collections import OrderedDict
 
 import numpy as np
 import pytest
-import sklearn
 from sklearn.base import clone
 from sklearn.exceptions import ConvergenceWarning
-from sklearn.utils import parse_version
 from sklearn.utils._testing import SkipTest, ignore_warnings, set_random_state
 from sklearn.utils.estimator_checks import _construct_instance, _get_check_estimator_ids
 from sklearn.utils.estimator_checks import (
@@ -27,8 +25,6 @@ from imblearn.utils.estimator_checks import (
     parametrize_with_checks,
 )
 from imblearn.utils.testing import all_estimators
-
-sklearn_version = parse_version(sklearn.__version__)
 
 
 @pytest.mark.parametrize("name, Estimator", all_estimators())
@@ -79,8 +75,6 @@ def test_estimators_imblearn(estimator, check, request):
     "estimator", _tested_estimators(), ids=_get_check_estimator_ids
 )
 def test_check_param_validation(estimator):
-    # if sklearn_version < parse_version("1.2"):
-    #     pytest.mark.skip(reason="")
     name = estimator.__class__.__name__
     _set_checking_parameters(estimator)
     check_param_validation(name, estimator)

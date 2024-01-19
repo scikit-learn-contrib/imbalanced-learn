@@ -174,7 +174,7 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
     """
 
     # make a deepcopy to not modify the original dictionary
-    if sklearn_version >= parse_version("1.3"):
+    if sklearn_version >= parse_version("1.4"):
         _parameter_constraints = copy.deepcopy(BaggingClassifier._parameter_constraints)
     else:
         _parameter_constraints = copy.deepcopy(_bagging_parameter_constraints)
@@ -351,6 +351,7 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
 
     @property
     def base_estimator_(self):
+        """Attribute for older sklearn version compatibility."""
         error = AttributeError(
             f"{self.__class__.__name__} object has no attribute 'base_estimator_'."
         )

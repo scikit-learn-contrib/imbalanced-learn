@@ -155,7 +155,7 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
     """
 
     # make a deepcopy to not modify the original dictionary
-    if sklearn_version >= parse_version("1.3"):
+    if sklearn_version >= parse_version("1.4"):
         _parameter_constraints = copy.deepcopy(
             AdaBoostClassifier._parameter_constraints
         )
