@@ -28,7 +28,7 @@ Compatibility
   is installed.
 
 - Compatibility with scikit-learn 1.4.
-  :pr:`xxxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`1058` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Deprecations
 ............
