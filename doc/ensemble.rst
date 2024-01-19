@@ -33,8 +33,7 @@ data set, this classifier will favor the majority classes::
   >>> from sklearn.ensemble import BaggingClassifier
   >>> from sklearn.tree import DecisionTreeClassifier
   >>> X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
-  >>> bc = BaggingClassifier(base_estimator=DecisionTreeClassifier(),
-  ...                        random_state=0)
+  >>> bc = BaggingClassifier(DecisionTreeClassifier(), random_state=0)
   >>> bc.fit(X_train, y_train) #doctest:
   BaggingClassifier(...)
   >>> y_pred = bc.predict(X_test)
@@ -50,7 +49,7 @@ sampling is controlled by the parameter `sampler` or the two parameters
 :class:`~imblearn.under_sampling.RandomUnderSampler`::
 
   >>> from imblearn.ensemble import BalancedBaggingClassifier
-  >>> bbc = BalancedBaggingClassifier(base_estimator=DecisionTreeClassifier(),
+  >>> bbc = BalancedBaggingClassifier(DecisionTreeClassifier(),
   ...                                 sampling_strategy='auto',
   ...                                 replacement=False,
   ...                                 random_state=0)

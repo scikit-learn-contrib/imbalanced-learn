@@ -229,19 +229,6 @@ def test_balanced_bagging_classifier_n_features():
         estimator.n_features_
 
 
-@pytest.mark.skipif(
-    sklearn_version < parse_version("1.2"), reason="requires scikit-learn>=1.2"
-)
-def test_balanced_random_forest_classifier_base_estimator():
-    """Check that we raise a FutureWarning when accessing `base_estimator_`."""
-    X, y = load_iris(return_X_y=True)
-    estimator = BalancedRandomForestClassifier(
-        sampling_strategy="all", replacement=True, bootstrap=False
-    ).fit(X, y)
-    with pytest.warns(FutureWarning, match="`base_estimator_` was deprecated"):
-        estimator.base_estimator_
-
-
 # TODO: remove in 0.13
 def test_balanced_random_forest_change_behaviour(imbalanced_dataset):
     """Check that we raise a change of behaviour for the parameters `sampling_strategy`
