@@ -46,5 +46,5 @@ Deprecations
 Enhancements
 ............
 
-- Preserve type from dataframe with sparse input.
+- Allows to output dataframe with sparse format if provided as input.
   :pr:`1059` by :user:`ts2095 <ts2095>`.
