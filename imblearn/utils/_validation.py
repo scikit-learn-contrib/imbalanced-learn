@@ -66,7 +66,24 @@ class ArraysTransformer:
                 ret = pd.DataFrame.sparse.from_spmatrix(array, columns=props["columns"])
             else:
                 ret = pd.DataFrame(array, columns=props["columns"])
-            ret = ret.astype(props["dtypes"])
+
+            try:
+                ret = ret.astype(props["dtypes"])
+            except TypeError:
+                # We special case the following error:
+                # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/1055
+                # There is no easy way to have a generic workaround. Here, we detect
+                # that we have a column with only null values that is datetime64
+                # (resulting from the np.vstack of the resampling).
+                for col in ret.columns:
+                    if (
+                        ret[col].isnull().all()
+                        and ret[col].dtype == "datetime64[ns]"
+                        and props["dtypes"][col] == "timedelta64[ns]"
+                    ):
+                        ret[col] = pd.to_timedelta(["NaT"] * len(ret[col]))
+                # try again
+                ret = ret.astype(props["dtypes"])
         elif type_ == "series":
             import pandas as pd
 

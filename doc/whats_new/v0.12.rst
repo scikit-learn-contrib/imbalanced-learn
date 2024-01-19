@@ -18,6 +18,11 @@ Bug fixes
   the number of samples in the minority class.
   :pr:`1012` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Fix a bug in :class:`~imblearn.under_sampling.RandomUnderSampler` and
+  :class:`~imblearn.over_sampling.RandomOverSampler` where a column containing only
+  NaT was not handled correctly.
+  :pr:`1059` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Compatibility
 .............
 
