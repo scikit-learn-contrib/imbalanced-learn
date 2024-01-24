@@ -449,10 +449,29 @@ The class can be used as::
 Our implementation offers the possibility to set the number of observations
 to put at random in the set :math:`C` through the parameter ``n_seeds_S``.
 
-:class:`NeighbourhoodCleaningRule` will focus on cleaning the data than
-condensing them :cite:`laurikkala2001improving`. Therefore, it will used the
-union of samples to be rejected between the :class:`EditedNearestNeighbours`
-and the output a 3 nearest neighbors classifier. The class can be used as::
+Neighbourhood Cleaning Rule
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The :class:`NeighbourhoodCleaningRule` is another "cleaning" algorithm. It removes
+samples from the majority class that are the closest to the boundary they form with
+the samples of the minority class :cite:`laurikkala2001improving`.
+
+The :class:`NeighbourhoodCleaningRule` expands on the cleaning performed by
+:class:`EditedNearestNeighbours` by eliminating additional majority class samples.
+
+The procedure for the :class:`NeighbourhoodCleaningRule` is as follows:
+
+1. Remove observations from the majority class with edited nearest neighbors (ENN).
+2. Remove additional samples from the majority class if they are one of the k closest
+neighbors of a minority sample, where all or most of those neighbors are not minority.
+
+To carry out step 2 there is one condition: a sample will only be removed if its class
+has a minimum number of observations. The minimum number of observations is regulated
+by the `threshold_cleaning` parameter. A sample will only be removed from the target
+class if it has at least as many observations as threshold times the number of samples
+in the minority class.
+
+The class can be used as::
 
   >>> from imblearn.under_sampling import NeighbourhoodCleaningRule
   >>> ncr = NeighbourhoodCleaningRule(n_neighbors=11)
