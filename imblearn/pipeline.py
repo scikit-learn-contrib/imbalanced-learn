@@ -166,8 +166,9 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
 
             is_transfomer = hasattr(t, "fit") and hasattr(t, "transform")
             is_sampler = hasattr(t, "fit_resample")
+            is_not_transfomer_or_sampler = not (is_transfomer or is_sampler)
 
-            if not (is_transfomer or is_sampler):
+            if is_not_transfomer_or_sampler:
                 raise TypeError(
                     "All intermediate steps of the chain should "
                     "be estimators that implement fit and transform or "
