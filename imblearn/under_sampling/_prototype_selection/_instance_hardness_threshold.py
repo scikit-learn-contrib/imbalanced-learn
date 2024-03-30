@@ -10,7 +10,7 @@ import numbers
 from collections import Counter
 
 import numpy as np
-from sklearn.base import ClassifierMixin, clone
+from sklearn.base import clone, is_classifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
@@ -140,7 +140,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
         if (
             self.estimator is not None
-            and isinstance(self.estimator, ClassifierMixin)
+            and is_classifier(self.estimator)
             and hasattr(self.estimator, "predict_proba")
         ):
             self.estimator_ = clone(self.estimator)
