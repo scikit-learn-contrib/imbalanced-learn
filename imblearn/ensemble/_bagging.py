@@ -16,7 +16,7 @@ from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
 from sklearn.exceptions import NotFittedError
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils import parse_version
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.validation import check_is_fitted
 
 try:

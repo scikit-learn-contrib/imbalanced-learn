@@ -17,7 +17,7 @@ except ImportError:
     from sklearn.base import _OneToOneFeatureMixin as OneToOneFeatureMixin
 
 from sklearn.preprocessing import label_binarize
-from sklearn.utils import parse_version
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
