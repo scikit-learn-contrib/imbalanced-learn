@@ -10,7 +10,7 @@ import numbers
 from collections import Counter
 
 import numpy as np
-from sklearn.base import ClassifierMixin, clone
+from sklearn.base import clone, is_classifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
@@ -20,7 +20,6 @@ from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ...utils._param_validation import HasMethods
 from ..base import BaseUnderSampler
-from sklearn.pipeline import Pipeline
 
 
 @Substitution(
@@ -141,9 +140,7 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
         if (
             self.estimator is not None
-            and (isinstance(self.estimator, ClassifierMixin) or
-                 isinstance(self.estimator, Pipeline) )
-                 
+            and is_classifier(self.estimator)
             and hasattr(self.estimator, "predict_proba")
         ):
             self.estimator_ = clone(self.estimator)

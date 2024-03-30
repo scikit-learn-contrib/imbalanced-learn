@@ -6,6 +6,7 @@
 import numpy as np
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB as NB
+from sklearn.pipeline import make_pipeline
 from sklearn.utils._testing import assert_array_equal
 
 from imblearn.under_sampling import InstanceHardnessThreshold
@@ -91,5 +92,21 @@ def test_iht_fit_resample_default_estimator():
     iht = InstanceHardnessThreshold(estimator=None, random_state=RND_SEED)
     X_resampled, y_resampled = iht.fit_resample(X, Y)
     assert isinstance(iht.estimator_, RandomForestClassifier)
+    assert X_resampled.shape == (12, 2)
+    assert y_resampled.shape == (12,)
+
+
+def test_iht_estimator_pipeline():
+    """Check that we can pass a pipeline containing a classifier.
+
+    Checking if we have a classifier should not be based on inheriting from
+    `ClassifierMixin`.
+
+    Non-regression test for:
+    https://github.com/scikit-learn-contrib/imbalanced-learn/pull/1049
+    """
+    model = make_pipeline(GradientBoostingClassifier(random_state=RND_SEED))
+    iht = InstanceHardnessThreshold(estimator=model, random_state=RND_SEED)
+    X_resampled, y_resampled = iht.fit_resample(X, Y)
     assert X_resampled.shape == (12, 2)
     assert y_resampled.shape == (12,)
