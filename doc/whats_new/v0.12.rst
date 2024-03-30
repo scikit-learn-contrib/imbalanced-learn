@@ -1,5 +1,20 @@
 .. _changes_0_12:
 
+Version 0.12.1
+==============
+
+**In progress**
+
+Changelog
+---------
+
+Bug fixes
+.........
+
+- Fix a bug in :class:`~imblearn.under_sampling.InstanceHardnessThreshold` where
+  `estimator` could not be a :class:`~sklearn.pipeline.Pipeline` object.
+  :pr:`1049` by :user:`Gonenc Mogol <gmogol>`.
+
 Version 0.12.0
 ==============
 
