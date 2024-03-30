@@ -151,7 +151,7 @@ def timeit(f):
 # mini-batches.
 import tensorflow
 from sklearn.metrics import roc_auc_score
-from sklearn.utils import parse_version
+from sklearn.utils.fixes import parse_version
 
 tf_version = parse_version(tensorflow.__version__)
 

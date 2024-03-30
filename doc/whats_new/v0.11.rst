@@ -1,37 +1,5 @@
 .. _changes_0_11:
 
-Version 0.11.1
-==============
-
-Changelog
----------
-
-Bug fixes
-.........
-
-- Fix a bug in :class:`~imblearn.over_sampling.SMOTENC` where the entries of the
-  one-hot encoding should be divided by `sqrt(2)` and not `2`, taking into account that
-  they are plugged into an Euclidean distance computation.
-  :pr:`1014` by :user:`Guillaume Lemaitre <glemaitre>`.
-
-- Raise an informative error message when all support vectors are tagged as noise in
-  :class:`~imblearn.over_sampling.SVMSMOTE`.
-  :pr:`1016` by :user:`Guillaume Lemaitre <glemaitre>`.
-
-- Fix a bug in :class:`~imblearn.over_sampling.SMOTENC` where the median of standard
-  deviation of the continuous features was only computed on the minority class. Now,
-  we are computing this statistic for each class that is up-sampled.
-  :pr:`1015` by :user:`Guillaume Lemaitre <glemaitre>`.
-
-- Fix a bug in :class:`~imblearn.over_sampling.SMOTENC` such that the case where
-  the median of standard deviation of the continuous features is null is handled
-  in the multiclass case as well.
-  :pr:`1015` by :user:`Guillaume Lemaitre <glemaitre>`.
-
-- Fix a bug in :class:`~imblearn.over_sampling.BorderlineSMOTE` version 2 where samples
-  should be generated from the whole dataset and not only from the minority class.
-  :pr:`1023` by :user:`Guillaume Lemaitre <glemaitre>`.
-
 Version 0.11.0
 ==============
 

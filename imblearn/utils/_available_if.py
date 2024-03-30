@@ -7,7 +7,7 @@ from functools import update_wrapper, wraps
 from types import MethodType
 
 import sklearn
-from sklearn.utils import parse_version
+from sklearn.utils.fixes import parse_version
 
 sklearn_version = parse_version(sklearn.__version__)
 

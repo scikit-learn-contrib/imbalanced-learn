@@ -410,7 +410,7 @@ def test_fit_predict_on_pipeline_without_fit_predict():
     scaler = StandardScaler()
     pca = PCA(svd_solver="full")
     pipe = Pipeline([("scaler", scaler), ("pca", pca)])
-    error_regex = "'PCA' object has no attribute 'fit_predict'"
+    error_regex = "has no attribute 'fit_predict'"
     with raises(AttributeError, match=error_regex):
         getattr(pipe, "fit_predict")
 
@@ -1219,7 +1219,7 @@ def test_score_samples_on_pipeline_without_score_samples():
     pipe.fit(X, y)
     with pytest.raises(
         AttributeError,
-        match="'LogisticRegression' object has no attribute 'score_samples'",
+        match="has no attribute 'score_samples'",
     ):
         pipe.score_samples(X)
 

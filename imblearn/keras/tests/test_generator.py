@@ -70,7 +70,7 @@ def test_balanced_batch_generator_class(data, sampler, sample_weight):
         batch_size=10,
         random_state=42,
     )
-    model.fit_generator(generator=training_generator, epochs=10)
+    model.fit(training_generator, epochs=10)
 
 
 @pytest.mark.parametrize("keep_sparse", [True, False])
@@ -122,8 +122,8 @@ def test_balanced_batch_generator_function(data, sampler, sample_weight):
         batch_size=10,
         random_state=42,
     )
-    model.fit_generator(
-        generator=training_generator,
+    model.fit(
+        training_generator,
         steps_per_epoch=steps_per_epoch,
         epochs=10,
     )

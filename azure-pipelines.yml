@@ -115,10 +115,10 @@ jobs:
         ne(variables['Build.Reason'], 'Schedule')
       )
     matrix:
-      py38_conda_forge_openblas_ubuntu_1804:
+      py39_conda_forge_openblas_ubuntu_1804:
         DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
-        PYTHON_VERSION: '3.8'
+        PYTHON_VERSION: '3.9'
         BLAS: 'openblas'
         COVERAGE: 'false'
 
@@ -188,7 +188,7 @@ jobs:
       pylatest_conda_tensorflow:
         DISTRIB: 'conda-latest-tensorflow'
         CONDA_CHANNEL: 'conda-forge'
-        PYTHON_VERSION: '3.8'
+        PYTHON_VERSION: '3.9'
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
@@ -214,7 +214,7 @@ jobs:
       pylatest_conda_keras:
         DISTRIB: 'conda-latest-keras'
         CONDA_CHANNEL: 'conda-forge'
-        PYTHON_VERSION: '3.8'
+        PYTHON_VERSION: '3.9'
         TEST_DOCS: 'true'
         TEST_DOCSTRINGS: 'true'
         CHECK_WARNINGS: 'true'
@@ -301,7 +301,7 @@ jobs:
       py38_conda_forge_mkl:
         DISTRIB: 'conda'
         CONDA_CHANNEL: 'conda-forge'
-        PYTHON_VERSION: '3.8'
+        PYTHON_VERSION: '3.10'
         CHECK_WARNINGS: 'true'
         PYTHON_ARCH: '64'
         PYTEST_VERSION: '*'

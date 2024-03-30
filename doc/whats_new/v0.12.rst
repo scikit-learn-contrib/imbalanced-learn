@@ -1,13 +1,38 @@
 .. _changes_0_12:
 
-Version 0.12.0 (Under development)
-==================================
+Version 0.12.0
+==============
+
+**January 24, 2024**
 
 Changelog
 ---------
 
 Bug fixes
 .........
+
+- Fix a bug in :class:`~imblearn.over_sampling.SMOTENC` where the entries of the
+  one-hot encoding should be divided by `sqrt(2)` and not `2`, taking into account that
+  they are plugged into an Euclidean distance computation.
+  :pr:`1014` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Raise an informative error message when all support vectors are tagged as noise in
+  :class:`~imblearn.over_sampling.SVMSMOTE`.
+  :pr:`1016` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix a bug in :class:`~imblearn.over_sampling.SMOTENC` where the median of standard
+  deviation of the continuous features was only computed on the minority class. Now,
+  we are computing this statistic for each class that is up-sampled.
+  :pr:`1015` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix a bug in :class:`~imblearn.over_sampling.SMOTENC` such that the case where
+  the median of standard deviation of the continuous features is null is handled
+  in the multiclass case as well.
+  :pr:`1015` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix a bug in :class:`~imblearn.over_sampling.BorderlineSMOTE` version 2 where samples
+  should be generated from the whole dataset and not only from the minority class.
+  :pr:`1023` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 - Fix a bug in :class:`~imblearn.under_sampling.NeighbourhoodCleaningRule` where the
   `kind_sel="all"` was not working as explained in the literature.
@@ -18,13 +43,22 @@ Bug fixes
   the number of samples in the minority class.
   :pr:`1012` by :user:`Guillaume Lemaitre <glemaitre>`.
 
+- Fix a bug in :class:`~imblearn.under_sampling.RandomUnderSampler` and
+  :class:`~imblearn.over_sampling.RandomOverSampler` where a column containing only
+  NaT was not handled correctly.
+  :pr:`1059` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Compatibility
 .............
 
 - :class:`~imblearn.ensemble.BalancedRandomForestClassifier` now support missing values
   and monotonic constraints if scikit-learn >= 1.4 is installed.
+
 - :class:`~imblearn.pipeline.Pipeline` support metadata routing if scikit-learn >= 1.4
   is installed.
+
+- Compatibility with scikit-learn 1.4.
+  :pr:`1058` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Deprecations
 ............
@@ -38,3 +72,9 @@ Deprecations
 - Deprecate `kind_sel` in :class:`~imblearn.under_sampling.NeighbourhoodCleaningRule.
   It will be removed in 0.14. The parameter does not have any effect.
   :pr:`1012` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Enhancements
+............
+
+- Allows to output dataframe with sparse format if provided as input.
+  :pr:`1059` by :user:`ts2095 <ts2095>`.
