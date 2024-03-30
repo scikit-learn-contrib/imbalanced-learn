@@ -22,7 +22,8 @@ from sklearn.ensemble._forest import (
 )
 from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils import _safe_indexing, check_random_state, parse_version
+from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _check_sample_weight
 

@@ -8,7 +8,8 @@ from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils import _safe_indexing, parse_version
+from sklearn.utils import _safe_indexing
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.validation import has_fit_parameter
 
 from ..base import _ParamsValidationMixin
