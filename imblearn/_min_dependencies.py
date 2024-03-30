@@ -37,7 +37,6 @@ dependent_packages = {
     "numpydoc": ("1.5.0", "docs"),
     "sphinxcontrib-bibtex": ("2.4.1", "docs"),
     "pydata-sphinx-theme": ("0.13.3", "docs"),
-    "packaging":("14.1", "tests"),
 }
 
 
