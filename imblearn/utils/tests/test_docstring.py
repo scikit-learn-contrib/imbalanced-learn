@@ -67,7 +67,7 @@ class cls:
         self.param_2 = param_2
 
 
-if sys.version_info.minor == "13":
+if sys.version_info >= (3, 13):
     func_docstring = _dedent_docstring(func_docstring)
     cls_docstring = _dedent_docstring(cls_docstring)
 

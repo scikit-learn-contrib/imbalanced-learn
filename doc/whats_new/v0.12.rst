@@ -1,9 +1,23 @@
 .. _changes_0_12:
 
+Version 0.12.2
+==============
+
+**March 31, 2024**
+
+Changelog
+---------
+
+Bug fixes
+.........
+
+- Fix the way we check for a specific Python version in the test suite.
+  :pr:`1075` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Version 0.12.1
 ==============
 
-**In progress**
+**March 31, 2024**
 
 Changelog
 ---------
