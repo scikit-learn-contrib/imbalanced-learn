@@ -12,7 +12,7 @@ Bug fixes
 .........
 
 - Fix the way we check for a specific Python version in the test suite.
-  :pr:`zxxx` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`1075` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Version 0.12.1
 ==============
