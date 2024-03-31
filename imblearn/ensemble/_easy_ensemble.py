@@ -15,7 +15,6 @@ from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
 from sklearn.exceptions import NotFittedError
-from sklearn.utils._tags import _safe_tags
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.validation import check_is_fitted
 
@@ -300,7 +299,7 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         check_target_type(y)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
-        return super()._fit(X, y, self.max_samples, sample_weight=None)
+        return super()._fit(X, y, self.max_samples)
 
     # TODO: remove when minimum supported version of scikit-learn is 1.1
     @available_if(_estimator_has("decision_function"))
@@ -365,9 +364,7 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
                 raise error
         raise error
 
-    def _more_tags(self):
+    def _get_estimator(self):
         if self.estimator is None:
-            estimator = AdaBoostClassifier(algorithm="SAMME")
-        else:
-            estimator = self.estimator
-        return {"allow_nan": _safe_tags(estimator, "allow_nan")}
+            return AdaBoostClassifier(algorithm="SAMME")
+        return self.estimator

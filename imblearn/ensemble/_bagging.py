@@ -386,7 +386,7 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
             self.sampler_ = clone(self.sampler)
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
-        return super()._fit(X, y, self.max_samples, sample_weight=None)
+        return super()._fit(X, y, self.max_samples)
 
     # TODO: remove when minimum supported version of scikit-learn is 1.1
     @available_if(_estimator_has("decision_function"))
