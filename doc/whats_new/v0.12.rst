@@ -19,7 +19,13 @@ Compatibility
 .............
 
 - Do not use `distutils` in tests due to deprecation.
-  :pr:`1065` by :user:`Michael R. Crusoe <mr-c>`
+  :pr:`1065` by :user:`Michael R. Crusoe <mr-c>`.
+
+- Fix the scikit-learn import in tests to be compatible with version 1.4.1.post1.
+  :pr:`1073` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix test to be compatible with Python 3.13.
+  :pr:`1073` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Version 0.12.0
 ==============

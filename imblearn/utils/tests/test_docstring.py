@@ -3,10 +3,22 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
+import sys
+import textwrap
+
 import pytest
 
 from imblearn.utils import Substitution
 from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
+
+
+def _dedent_docstring(docstring):
+    """Compatibility with Python 3.13+.
+
+    xref: https://github.com/python/cpython/issues/81283
+    """
+    return "\n".join([textwrap.dedent(line) for line in docstring.split("\n")])
+
 
 func_docstring = """A function.
 
@@ -53,6 +65,11 @@ class cls:
     def __init__(self, param_1, param_2):
         self.param_1 = param_1
         self.param_2 = param_2
+
+
+if sys.version_info.minor == "13":
+    func_docstring = _dedent_docstring(func_docstring)
+    cls_docstring = _dedent_docstring(cls_docstring)
 
 
 @pytest.mark.parametrize(
