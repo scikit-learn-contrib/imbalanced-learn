@@ -1,9 +1,8 @@
-from distutils.version import LooseVersion
-
 import numpy as np
 import pytest
 from scipy import sparse
 from sklearn.datasets import load_iris
+from sklearn.utils.fixes import parse_version
 
 from imblearn.datasets import make_imbalance
 from imblearn.over_sampling import RandomOverSampler
@@ -147,7 +146,7 @@ def check_balanced_batch_generator_tf_2_X_X_compat_1_X_X(dataset, sampler):
 
 @pytest.mark.parametrize("sampler", [None, NearMiss(), RandomOverSampler()])
 def test_balanced_batch_generator(data, sampler):
-    if LooseVersion(tf.__version__) < "2":
+    if parse_version(tf.__version__) < parse_version("2.0.0"):
         check_balanced_batch_generator_tf_1_X_X(data, sampler)
     else:
         check_balanced_batch_generator_tf_2_X_X_compat_1_X_X(data, sampler)

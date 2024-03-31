@@ -1,5 +1,32 @@
 .. _changes_0_12:
 
+Version 0.12.1
+==============
+
+**In progress**
+
+Changelog
+---------
+
+Bug fixes
+.........
+
+- Fix a bug in :class:`~imblearn.under_sampling.InstanceHardnessThreshold` where
+  `estimator` could not be a :class:`~sklearn.pipeline.Pipeline` object.
+  :pr:`1049` by :user:`Gonenc Mogol <gmogol>`.
+
+Compatibility
+.............
+
+- Do not use `distutils` in tests due to deprecation.
+  :pr:`1065` by :user:`Michael R. Crusoe <mr-c>`.
+
+- Fix the scikit-learn import in tests to be compatible with version 1.4.1.post1.
+  :pr:`1073` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+- Fix test to be compatible with Python 3.13.
+  :pr:`1073` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Version 0.12.0
 ==============
 
