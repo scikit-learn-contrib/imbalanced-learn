@@ -15,6 +15,12 @@ Bug fixes
   `estimator` could not be a :class:`~sklearn.pipeline.Pipeline` object.
   :pr:`1049` by :user:`Gonenc Mogol <gmogol>`.
 
+Compatibility
+.............
+
+- Do not use `distutils` in tests due to deprecation.
+  :pr:`1065` by :user:`Michael R. Crusoe <mr-c>`
+
 Version 0.12.0
 ==============
 
