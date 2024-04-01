@@ -12,9 +12,11 @@ composite estimator, as a chain of transforms, samples and estimators.
 #         Christos Aridas
 #         Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: BSD
+import sklearn
 from sklearn import pipeline
 from sklearn.base import clone
-from sklearn.utils import Bunch, _print_elapsed_time
+from sklearn.utils import Bunch
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.validation import check_memory
 
@@ -33,6 +35,12 @@ from .utils.fixes import _fit_context
 METHODS.append("fit_resample")
 
 __all__ = ["Pipeline", "make_pipeline"]
+
+sklearn_version = parse_version(sklearn.__version__).base_version
+if parse_version(sklearn_version) < parse_version("1.5"):
+    from sklearn.utils import _print_elapsed_time
+else:
+    from sklearn.utils._user_interface import _print_elapsed_time
 
 
 class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):

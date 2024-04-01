@@ -11,16 +11,17 @@ import numbers
 import warnings
 
 import numpy as np
+import sklearn
 from scipy import sparse
 from sklearn.base import clone
 from sklearn.exceptions import DataConversionWarning
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.utils import (
-    _get_column_indices,
     _safe_indexing,
     check_array,
     check_random_state,
 )
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.sparsefuncs_fast import (
     csr_mean_variance_axis0,
 )
@@ -33,6 +34,12 @@ from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ...utils._validation import _check_X
 from ...utils.fixes import _is_pandas_df, _mode
 from ..base import BaseOverSampler
+
+sklearn_version = parse_version(sklearn.__version__).base_version
+if parse_version(sklearn_version) < parse_version("1.5"):
+    from sklearn.utils import _get_column_indices
+else:
+    from sklearn.utils._indexing import _get_column_indices
 
 
 class BaseSMOTE(BaseOverSampler):
