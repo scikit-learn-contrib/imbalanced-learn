@@ -17,6 +17,7 @@ from sklearn.ensemble._base import _partition_estimators
 from sklearn.exceptions import NotFittedError
 from sklearn.utils._tags import _safe_tags
 from sklearn.utils.fixes import parse_version
+from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted
 
 try:
@@ -35,7 +36,11 @@ from ..utils._available_if import available_if
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Interval, StrOptions
 from ..utils.fixes import _fit_context
-from ._common import _bagging_parameter_constraints, _estimator_has
+from ._common import (
+    _bagging_parameter_constraints,
+    _estimate_reweighting,
+    _estimator_has,
+)
 
 MAX_INT = np.iinfo(np.int32).max
 sklearn_version = parse_version(sklearn.__version__)
@@ -84,6 +89,13 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
 
     verbose : int, default=0
         Controls the verbosity of the building process.
+
+    recalibrate : bool, default=False
+        Whether to recalibrate the output of `predict_proba` and `predict_log_proba`
+        using the sampling ratio of the different bootstrap samples. Note that the
+        correction is only working for binary classification.
+
+        .. versionadded:: 0.13
 
     Attributes
     ----------
@@ -198,6 +210,7 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
                 callable,
             ],
             "replacement": ["boolean"],
+            "recalibrate": ["boolean"],
         }
     )
     # TODO: remove when minimum supported version of scikit-learn is 1.4
@@ -215,6 +228,7 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         n_jobs=None,
         random_state=None,
         verbose=0,
+        recalibrate=False,
     ):
         super().__init__(
             n_estimators=n_estimators,
@@ -231,6 +245,7 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         self.estimator = estimator
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
+        self.recalibrate = recalibrate
 
     def _validate_y(self, y):
         y_encoded = super()._validate_y(y)
@@ -294,6 +309,15 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         """
         self._validate_params()
         # overwrite the base class method by disallowing `sample_weight`
+        if self.recalibrate:
+            # compute the type of target only if we need to recalibrate since this is
+            # potentially costly
+            y_type = type_of_target(y)
+            if y_type != "binary":
+                raise ValueError(
+                    "Only possible to recalibrate the probabilities for binary "
+                    f"classification. Got {y_type} instead."
+                )
         return super().fit(X, y)
 
     def _fit(self, X, y, max_samples=None, max_depth=None, sample_weight=None):
@@ -301,6 +325,60 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return super()._fit(X, y, self.max_samples)
+
+    def predict_proba(self, X):
+        """Predict class probabilities for X.
+
+        The predicted class probabilities of an input sample is computed as
+        the mean predicted class probabilities of the base estimators in the
+        ensemble. If base estimators do not implement a ``predict_proba``
+        method, then it resorts to voting and the predicted class probabilities
+        of an input sample represents the proportion of estimators predicting
+        each class.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
+
+        Returns
+        -------
+        p : ndarray of shape (n_samples, n_classes)
+            The class probabilities of the input samples. The order of the
+            classes corresponds to that in the attribute :term:`classes_`.
+        """
+        proba = super().predict_proba(X)
+
+        if self.recalibrate:
+            weight = _estimate_reweighting(self.estimators_)
+            proba[:, 1] /= proba[:, 1] + (1 - proba[:, 1]) / weight
+            proba[:, 0] = 1 - proba[:, 1]
+
+        return proba
+
+    def predict_log_proba(self, X):
+        """Predict class log-probabilities for X.
+
+        The predicted class log-probabilities of an input sample is computed as
+        the log of the mean predicted class probabilities of the base
+        estimators in the ensemble.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
+
+        Returns
+        -------
+        p : ndarray of shape (n_samples, n_classes)
+            The class log-probabilities of the input samples. The order of the
+            classes corresponds to that in the attribute :term:`classes_`.
+        """
+        # To take into account the calibration correction, we use our implementation
+        # of `predict_proba` and then apply the log.
+        return np.log(self.predict_proba(X))
 
     # TODO: remove when minimum supported version of scikit-learn is 1.1
     @available_if(_estimator_has("decision_function"))

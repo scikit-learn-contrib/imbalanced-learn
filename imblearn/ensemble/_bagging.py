@@ -36,44 +36,13 @@ from ..utils._available_if import available_if
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import HasMethods, Interval, StrOptions
 from ..utils.fixes import _fit_context
-from ._common import _bagging_parameter_constraints, _estimator_has
+from ._common import (
+    _bagging_parameter_constraints,
+    _estimate_reweighting,
+    _estimator_has,
+)
 
 sklearn_version = parse_version(sklearn.__version__)
-
-
-def _estimate_reweighting(estimators):
-    """Estimate the reweighting factor to calibrate the probabilities.
-
-    The reweighting factor is the averaged ratio of the probability of the
-    positive class before and after resampling for all samplers.
-
-    Parameters
-    ----------
-    estimators : list of estimators
-        The list of fitted estimators. Each estimator is a
-        :class:`~imblearn.pipeline.Pipeline` where the first stage is a sampler.
-
-    Returns
-    -------
-    weight : float
-        The reweighting factor.
-    """
-    weights = []
-    for estimator in estimators:
-        sampler = estimator[0]
-        # Since the samplers are internally created, we know that we have target encoded
-        # with 0 and 1.
-        p_y_1_original = sampler._original_class_counts[1] / sum(
-            sampler._original_class_counts[k] for k in [0, 1]
-        )
-        resampled_counts = copy.copy(sampler._original_class_counts)
-        resampled_counts.update(sampler.sampling_strategy_)
-        p_y_1_resampled = resampled_counts[1] / sum(resampled_counts[k] for k in [0, 1])
-        weights.append(
-            (p_y_1_original / (1 - p_y_1_original))
-            * ((1 - p_y_1_resampled) / p_y_1_resampled)
-        )
-    return np.mean(weights)
 
 
 @Substitution(
