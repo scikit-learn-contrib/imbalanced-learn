@@ -21,80 +21,82 @@ Imbalanced-learn (imported as :mod:`imblearn`) is an open source, MIT-licensed
 library relying on scikit-learn (imported as :mod:`sklearn`) and provides tools
 when dealing with classification with imbalanced classes.
 
-.. raw:: html
+.. grid:: 1 2 2 2
+    :gutter: 4
+    :padding: 2 2 0 0
+    :class-container: sd-text-center
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 d-flex">
-                <div class="card text-center intro-card shadow">
-                <div class="card-body flex-fill">
-                    <i class="fas fa-download fa-7x"></i>
-                    <h5 class="card-title">Getting started</h5>
-                    <p class="card-text">Check out the getting started guides to install <em>imbalanced-learn</em>.
-                    Some extra information to get started with a new contribution is also provided.</p>
+    .. grid-item-card:: Getting started
+        :img-top: _static/index_getting_started.svg
+        :class-card: intro-card
+        :shadow: md
 
-.. container:: custom-button
+        Check out the getting started guides to install `imbalanced-learn`.
+        Some extra information to get started with a new contribution is also provided.
 
-    :ref:`To the installation guideline<getting_started>`
+        +++
 
-.. raw:: html
+        .. button-ref:: getting_started
+            :ref-type: ref
+            :click-parent:
+            :color: secondary
+            :expand:
 
-                </div>
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 d-flex">
-                <div class="card text-center intro-card shadow">
-                <div class="card-body flex-fill">
-                    <i class="fas fa-book fa-7x"></i>
-                    <h5 class="card-title">User guide</h5>
-                    <p class="card-text">The user guide provides in-depth information on the
-                    key concepts of imbalanced-learn with useful background information and explanation.</p>
+            To the installation guideline
 
-.. container:: custom-button
+    .. grid-item-card::  User guide
+        :img-top: _static/index_user_guide.svg
+        :class-card: intro-card
+        :shadow: md
 
-    :ref:`To the user guide<user_guide>`
+        The user guide provides in-depth information on the key concepts of
+        `imbalanced-learn` with useful background information and explanation.
 
-.. raw:: html
+        +++
 
-                </div>
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 d-flex">
-                <div class="card text-center intro-card shadow">
-                <div class="card-body flex-fill">
-                    <i class="fas fa-code fa-7x"></i>
-                    <h5 class="card-title">API reference</h5>
-                    <p class="card-text">The reference guide contains a detailed description of
-                    the imbalanced-learn API. To known more about methods parameters.</p>
+        .. button-ref:: user_guide
+            :ref-type: ref
+            :click-parent:
+            :color: secondary
+            :expand:
 
-.. container:: custom-button
+            To the user guide
 
-    :ref:`To the reference guide<api>`
+    .. grid-item-card::  API reference
+        :img-top: _static/index_api.svg
+        :class-card: intro-card
+        :shadow: md
 
-.. raw:: html
+        The reference guide contains a detailed description of
+        the `imbalanced-learn` API. To known more about methods parameters.
 
-                </div>
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 d-flex">
-                <div class="card text-center intro-card shadow">
-                <div class="card-body flex-fill">
-                    <i class="fas fa-chart-bar fa-7x"></i>
-                    <h5 class="card-title">Examples</h5>
-                    <p class="card-text">The gallery of examples is a good place to see imbalanced-learn in action.
-                    Select an example and dive in.</p>
+        +++
 
-.. container:: custom-button
+        .. button-ref:: api
+            :ref-type: ref
+            :click-parent:
+            :color: secondary
+            :expand:
 
-    :ref:`To the gallery of examples<general_examples>`
+            To the reference guide
 
-.. raw:: html
+    .. grid-item-card::  Examples
+        :img-top: _static/index_examples.svg
+        :class-card: intro-card
+        :shadow: md
 
-                </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        The gallery of examples is a good place to see `imbalanced-learn` in action.
+        Select an example and dive in.
+
+        +++
+
+        .. button-ref:: general_examples
+            :ref-type: ref
+            :click-parent:
+            :color: secondary
+            :expand:
+
+            To the gallery of examples
 
 
 .. toctree::
