@@ -24,6 +24,7 @@ jobs:
       - NUMPYDOC_VERSION: 'latest'
       - SPHINXCONTRIB_BIBTEX_VERSION: 'latest'
       - PYDATA_SPHINX_THEME_VERSION: 'latest'
+      - SPHINX_DESIGN_VERSION: 'latest'
     steps:
       - add_ssh_keys:
           fingerprints:

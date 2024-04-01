@@ -114,6 +114,7 @@ mamba create -n $CONDA_ENV_NAME --yes --quiet \
     "$(get_dep sphinxcontrib-bibtex $SPHINXCONTRIB_BIBTEX_VERSION)" \
     "$(get_dep sphinx-copybutton $SPHINXCONTRIB_BIBTEX_VERSION)" \
     "$(get_dep pydata-sphinx-theme $PYDATA_SPHINX_THEME_VERSION)" \
+    "$(get_dep sphinx-design $SPHINX_DESIGN_VERSION)" \
     memory_profiler packaging seaborn pytest coverage compilers tensorflow
 
 source activate $CONDA_ENV_NAME
