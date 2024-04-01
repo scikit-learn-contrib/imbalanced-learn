@@ -14,6 +14,9 @@ Bug fixes
 Compatibility
 .............
 
+- Compatibility with scikit-learn 1.5
+  :pr:`1074` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Deprecations
 ............
 
