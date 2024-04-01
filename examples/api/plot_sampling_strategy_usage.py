@@ -129,7 +129,7 @@ _ = ax.set_title("Cleaning")
 
 # %% [markdown]
 # `sampling_strategy` as a `dict`
-# ------------------------------
+# -------------------------------
 #
 # When `sampling_strategy` is a `dict`, the keys correspond to the targeted
 # classes. The values correspond to the desired number of samples for each

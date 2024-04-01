@@ -43,6 +43,7 @@ extensions = [
     "sphinx_issues",
     "sphinx_gallery.gen_gallery",
     "sphinx_copybutton",
+    "sphinx_design",
 ]
 
 # Specify how to identify the prompt when copying code snippets
@@ -106,10 +107,12 @@ html_sidebars = {
 html_theme_options = {
     "external_links": [],
     "github_url": "https://github.com/scikit-learn-contrib/imbalanced-learn",
-    # "twitter_url": "https://twitter.com/pandas_dev",
     "use_edit_page_button": True,
     "show_toc_level": 1,
     # "navbar_align": "right",  # For testing that the navbar items align properly
+    "logo": {
+        "image_dark": "https://imbalanced-learn.org/stable/_static/img/logo_wide_dark.png"
+    },
 }
 
 html_context = {
@@ -323,15 +326,7 @@ def generate_min_dependency_substitutions(app):
 
 # -- Additional temporary hacks -----------------------------------------------
 
-# Temporary work-around for spacing problem between parameter and parameter
-# type in the doc, see https://github.com/numpy/numpydoc/issues/215. The bug
-# has been fixed in sphinx (https://github.com/sphinx-doc/sphinx/pull/5976) but
-# through a change in sphinx basic.css except rtd_theme does not use basic.css.
-# In an ideal world, this would get fixed in this PR:
-# https://github.com/readthedocs/sphinx_rtd_theme/pull/747/files
-
 
 def setup(app):
     app.connect("builder-inited", generate_min_dependency_table)
     app.connect("builder-inited", generate_min_dependency_substitutions)
-    app.add_css_file("basic.css")
