@@ -42,7 +42,10 @@ from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Hidden, Interval, StrOptions
 from ..utils._validation import check_sampling_strategy
 from ..utils.fixes import _fit_context
-from ._common import _random_forest_classifier_parameter_constraints
+from ._common import (
+    _estimate_reweighting,
+    _random_forest_classifier_parameter_constraints,
+)
 
 MAX_INT = np.iinfo(np.int32).max
 sklearn_version = parse_version(sklearn.__version__)
@@ -327,6 +330,13 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
            Only supported when scikit-learn >= 1.4 is installed. Otherwise, a
            `ValueError` is raised.
 
+    recalibrate : bool, default=False
+        Whether to recalibrate the output of `predict_proba` and `predict_log_proba`
+        using the sampling ratio of the different bootstrap samples. Note that the
+        correction is only working for binary classification.
+
+        .. versionadded:: 0.13
+
     Attributes
     ----------
     estimator_ : :class:`~sklearn.tree.DecisionTreeClassifier` instance
@@ -445,6 +455,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
                 Hidden(StrOptions({"warn"})),
             ],
             "replacement": ["boolean", Hidden(StrOptions({"warn"}))],
+            "recalibrate": ["boolean"],
         }
     )
 
@@ -472,6 +483,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         ccp_alpha=0.0,
         max_samples=None,
         monotonic_cst=None,
+        recalibrate=False,
     ):
         params_random_forest = {
             "criterion": criterion,
@@ -510,6 +522,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
+        self.recalibrate = recalibrate
 
     def _validate_estimator(self, default=DecisionTreeClassifier()):
         """Check the estimator and the n_estimator attribute, set the
@@ -572,6 +585,15 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
             The fitted instance.
         """
         self._validate_params()
+        if self.recalibrate:
+            # compute the type of target only if we need to recalibrate since this is
+            # potentially costly
+            y_type = type_of_target(y)
+            if y_type != "binary":
+                raise ValueError(
+                    "Only possible to recalibrate the probabilities for binary "
+                    f"classification. Got {y_type} instead."
+                )
         # TODO: remove in 0.13
         if self.sampling_strategy == "warn":
             warn(
@@ -894,6 +916,37 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
             oob_pred[..., k] /= n_oob_pred[..., [k]]
 
         return oob_pred
+
+    def predict_proba(self, X):
+        """
+        Predict class probabilities for X.
+
+        The predicted class probabilities of an input sample are computed as
+        the mean predicted class probabilities of the trees in the forest.
+        The class probability of a single tree is the fraction of samples of
+        the same class in a leaf.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The input samples. Internally, its dtype will be converted to
+            ``dtype=np.float32``. If a sparse matrix is provided, it will be
+            converted into a sparse ``csr_matrix``.
+
+        Returns
+        -------
+        p : ndarray of shape (n_samples, n_classes), or a list of such arrays
+            The class probabilities of the input samples. The order of the
+            classes corresponds to that in the attribute :term:`classes_`.
+        """
+        proba = super().predict_proba(X)
+
+        if self.recalibrate:
+            weight = _estimate_reweighting(self.samplers_)
+            proba[:, 1] /= proba[:, 1] + (1 - proba[:, 1]) / weight
+            proba[:, 0] = 1 - proba[:, 1]
+
+        return proba
 
     # TODO: remove when supporting scikit-learn>=1.2
     @property

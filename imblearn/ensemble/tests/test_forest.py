@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 import sklearn
 from sklearn.datasets import load_iris, make_classification
+from sklearn.metrics import log_loss
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.utils._testing import assert_allclose, assert_array_equal
 from sklearn.utils.fixes import parse_version
@@ -342,3 +343,57 @@ def test_missing_value_is_predictive():
     assert predictive_test_score >= forest_non_predictive.score(
         X_non_predictive_test, y_test
     )
+
+
+def test_balanced_random_forest_classifier_recalibrate_error():
+    """Check that we raise a ValueError when trying to recalibrate the
+    classifier when the problem is not a binary classification problem.
+    """
+    X, y = load_iris(return_X_y=True)
+    err_msg = "Only possible to recalibrate the probabilities for binary classification"
+    with pytest.raises(ValueError, match=err_msg):
+        BalancedRandomForestClassifier(recalibrate=True).fit(X, y)
+
+
+def test_balanced_random_forest_classifier_recalibrate():
+    """Check the behaviour of the `recalibrate` parameter."""
+    X, y = make_classification(
+        n_samples=10_000,
+        n_classes=2,
+        n_clusters_per_class=2,
+        weights=[0.2, 0.8],
+        class_sep=0.1,
+        random_state=0,
+    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+    bbc_uncalibrated = BalancedRandomForestClassifier(
+        n_estimators=50,
+        random_state=42,
+        n_jobs=-1,
+        sampling_strategy="all",
+        replacement=True,
+        bootstrap=False,
+        recalibrate=False,
+    ).fit(X_train, y_train)
+    bbc_recalibrated = BalancedRandomForestClassifier(
+        n_estimators=50,
+        random_state=42,
+        n_jobs=-1,
+        sampling_strategy="all",
+        replacement=True,
+        bootstrap=False,
+        recalibrate=True,
+    ).fit(X_train, y_train)
+
+    # Since the resampling is breaking the calibration, we expected that a proper
+    # scoring rule error to be much lower on the recalibrate model
+    log_loss_uncalibrated = log_loss(y_test, bbc_uncalibrated.predict_proba(X_test))
+    log_loss_recalibrated = log_loss(y_test, bbc_recalibrated.predict_proba(X_test))
+    assert log_loss_uncalibrated > log_loss_recalibrated
+    log_loss_uncalibrated = log_loss(
+        y_test, np.exp(bbc_uncalibrated.predict_log_proba(X_test))
+    )
+    log_loss_recalibrated = log_loss(
+        y_test, np.exp(bbc_recalibrated.predict_log_proba(X_test))
+    )
+    assert log_loss_uncalibrated > log_loss_recalibrated

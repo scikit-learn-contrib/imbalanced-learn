@@ -30,7 +30,7 @@ def _estimator_has(attr):
     return check
 
 
-def _estimate_reweighting(estimators):
+def _estimate_reweighting(samplers):
     """Estimate the reweighting factor to calibrate the probabilities.
 
     The reweighting factor is the averaged ratio of the probability of the
@@ -38,9 +38,8 @@ def _estimate_reweighting(estimators):
 
     Parameters
     ----------
-    estimators : list of estimators
-        The list of fitted estimators. Each estimator is a
-        :class:`~imblearn.pipeline.Pipeline` where the first stage is a sampler.
+    samplers : list of samplers
+        The list of samplers.
 
     Returns
     -------
@@ -48,8 +47,7 @@ def _estimate_reweighting(estimators):
         The reweighting factor.
     """
     weights = []
-    for estimator in estimators:
-        sampler = estimator[0]
+    for sampler in samplers:
         # Since the samplers are internally created, we know that we have target encoded
         # with 0 and 1.
         p_y_1_original = sampler._original_class_counts[1] / sum(

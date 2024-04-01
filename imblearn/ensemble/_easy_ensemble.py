@@ -351,7 +351,7 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         proba = super().predict_proba(X)
 
         if self.recalibrate:
-            weight = _estimate_reweighting(self.estimators_)
+            weight = _estimate_reweighting([est[0] for est in self.estimators_])
             proba[:, 1] /= proba[:, 1] + (1 - proba[:, 1]) / weight
             proba[:, 0] = 1 - proba[:, 1]
 
