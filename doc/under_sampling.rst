@@ -497,8 +497,7 @@ The class can be used as::
   >>> from sklearn.linear_model import LogisticRegression
   >>> from imblearn.under_sampling import InstanceHardnessThreshold
   >>> iht = InstanceHardnessThreshold(random_state=0,
-  ...                                 estimator=LogisticRegression(
-  ...                                     solver='lbfgs', multi_class='auto'))
+  ...                                 estimator=LogisticRegression())
   >>> X_resampled, y_resampled = iht.fit_resample(X, y)
   >>> print(sorted(Counter(y_resampled).items()))
   [(0, 64), (1, 64), (2, 64)]
