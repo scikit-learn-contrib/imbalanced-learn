@@ -174,7 +174,7 @@ def test_probability():
 
         # Degenerate case, where some classes are missing
         ensemble = BalancedBaggingClassifier(
-            estimator=LogisticRegression(solver="lbfgs", multi_class="auto"),
+            estimator=LogisticRegression(solver="lbfgs"),
             random_state=0,
             max_samples=5,
         )
@@ -435,7 +435,7 @@ def test_estimators_samples():
     # remap the y outside of the BalancedBaggingclassifier
     # _, y = np.unique(y, return_inverse=True)
     bagging = BalancedBaggingClassifier(
-        LogisticRegression(solver="lbfgs", multi_class="auto"),
+        LogisticRegression(),
         max_samples=0.5,
         max_features=0.5,
         random_state=1,
