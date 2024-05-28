@@ -109,12 +109,12 @@ plot_scatter(X_inliers, y_inliers, "Training data without outliers")
 
 pipe = make_pipeline(
     FunctionSampler(func=outlier_rejection),
-    LogisticRegression(solver="lbfgs", multi_class="auto", random_state=rng),
+    LogisticRegression(random_state=rng),
 )
 y_pred = pipe.fit(X_train, y_train).predict(X_test)
 print(classification_report(y_test, y_pred))
 
-clf = LogisticRegression(solver="lbfgs", multi_class="auto", random_state=rng)
+clf = LogisticRegression(random_state=rng)
 y_pred = clf.fit(X_train, y_train).predict(X_test)
 print(classification_report(y_test, y_pred))
 

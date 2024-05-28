@@ -11,7 +11,6 @@ from pkgutil import walk_packages
 import pytest
 from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression
-from sklearn.utils import IS_PYPY
 from sklearn.utils._testing import (
     _get_func_name,
     check_docstring_parameters,
@@ -70,7 +69,6 @@ _METHODS_IGNORE_NONE_Y = [
 # Python 3.7
 @pytest.mark.filterwarnings("ignore::FutureWarning")
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-@pytest.mark.skipif(IS_PYPY, reason="test segfaults on PyPy")
 def test_docstring_parameters():
     # Test module docstring formatting
 
@@ -154,9 +152,6 @@ def test_tabs():
     for importer, modname, ispkg in walk_packages(
         imblearn.__path__, prefix="imblearn."
     ):
-        if IS_PYPY:
-            continue
-
         # because we don't import
         mod = importlib.import_module(modname)
 

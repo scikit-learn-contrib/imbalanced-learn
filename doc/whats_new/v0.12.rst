@@ -12,7 +12,7 @@ Compatibility
 .............
 
 - Compatibility with scikit-learn 1.5
-  :pr:`1074` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`1074` and :pr:`1084` by :user:`Guillaume Lemaitre <glemaitre>`.
 
 Version 0.12.2
 ==============
