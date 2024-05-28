@@ -1,5 +1,19 @@
 .. _changes_0_12:
 
+Version 0.12.3
+==============
+
+**May 28, 2024**
+
+Changelog
+---------
+
+Compatibility
+.............
+
+- Compatibility with scikit-learn 1.5
+  :pr:`1074` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Version 0.12.2
 ==============
 
