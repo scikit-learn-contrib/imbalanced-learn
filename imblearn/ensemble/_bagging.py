@@ -17,6 +17,7 @@ from sklearn.ensemble._base import _partition_estimators
 from sklearn.exceptions import NotFittedError
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils.fixes import parse_version
+from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted
 
 try:
@@ -35,7 +36,11 @@ from ..utils._available_if import available_if
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import HasMethods, Interval, StrOptions
 from ..utils.fixes import _fit_context
-from ._common import _bagging_parameter_constraints, _estimator_has
+from ._common import (
+    _bagging_parameter_constraints,
+    _estimate_reweighting,
+    _estimator_has,
+)
 
 sklearn_version = parse_version(sklearn.__version__)
 
@@ -120,6 +125,13 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         :class:`~imblearn.under_sampling.RandomUnderSampler` is used.
 
         .. versionadded:: 0.8
+
+    recalibrate : bool, default=False
+        Whether to recalibrate the output of `predict_proba` and `predict_log_proba`
+        using the sampling ratio of the different bootstrap samples. Note that the
+        correction is only working for binary classification.
+
+        .. versionadded:: 0.13
 
     Attributes
     ----------
@@ -264,6 +276,7 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
             ],
             "replacement": ["boolean"],
             "sampler": [HasMethods(["fit_resample"]), None],
+            "recalibrate": ["boolean"],
         }
     )
     # TODO: remove when minimum supported version of scikit-learn is 1.4
@@ -287,6 +300,7 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         random_state=None,
         verbose=0,
         sampler=None,
+        recalibrate=False,
     ):
         super().__init__(
             n_estimators=n_estimators,
@@ -304,6 +318,7 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
         self.sampler = sampler
+        self.recalibrate = recalibrate
 
     def _validate_y(self, y):
         y_encoded = super()._validate_y(y)
@@ -371,6 +386,15 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         """
         # overwrite the base class method by disallowing `sample_weight`
         self._validate_params()
+        if self.recalibrate:
+            # compute the type of target only if we need to recalibrate since this is
+            # potentially costly
+            y_type = type_of_target(y)
+            if y_type != "binary":
+                raise ValueError(
+                    "Only possible to recalibrate the probabilities for binary "
+                    f"classification. Got {y_type} instead."
+                )
         return super().fit(X, y)
 
     def _fit(self, X, y, max_samples=None, max_depth=None, sample_weight=None):
@@ -387,6 +411,60 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return super()._fit(X, y, self.max_samples)
+
+    def predict_proba(self, X):
+        """Predict class probabilities for X.
+
+        The predicted class probabilities of an input sample is computed as
+        the mean predicted class probabilities of the base estimators in the
+        ensemble. If base estimators do not implement a ``predict_proba``
+        method, then it resorts to voting and the predicted class probabilities
+        of an input sample represents the proportion of estimators predicting
+        each class.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
+
+        Returns
+        -------
+        p : ndarray of shape (n_samples, n_classes)
+            The class probabilities of the input samples. The order of the
+            classes corresponds to that in the attribute :term:`classes_`.
+        """
+        proba = super().predict_proba(X)
+
+        if self.recalibrate:
+            weight = _estimate_reweighting([est[0] for est in self.estimators_])
+            proba[:, 1] /= proba[:, 1] + (1 - proba[:, 1]) / weight
+            proba[:, 0] = 1 - proba[:, 1]
+
+        return proba
+
+    def predict_log_proba(self, X):
+        """Predict class log-probabilities for X.
+
+        The predicted class log-probabilities of an input sample is computed as
+        the log of the mean predicted class probabilities of the base
+        estimators in the ensemble.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The training input samples. Sparse matrices are accepted only if
+            they are supported by the base estimator.
+
+        Returns
+        -------
+        p : ndarray of shape (n_samples, n_classes)
+            The class log-probabilities of the input samples. The order of the
+            classes corresponds to that in the attribute :term:`classes_`.
+        """
+        # To take into account the calibration correction, we use our implementation
+        # of `predict_proba` and then apply the log.
+        return np.log(self.predict_proba(X))
 
     # TODO: remove when minimum supported version of scikit-learn is 1.1
     @available_if(_estimator_has("decision_function"))

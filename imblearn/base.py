@@ -75,8 +75,8 @@ class SamplerMixin(_ParamsValidationMixin, BaseEstimator, metaclass=ABCMeta):
             Return the instance itself.
         """
         X, y, _ = self._check_X_y(X, y)
-        self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type
+        self.sampling_strategy_, self._original_class_counts = check_sampling_strategy(
+            self.sampling_strategy, y, self._sampling_type, return_original_counts=True
         )
         return self
 
@@ -105,8 +105,8 @@ class SamplerMixin(_ParamsValidationMixin, BaseEstimator, metaclass=ABCMeta):
         arrays_transformer = ArraysTransformer(X, y)
         X, y, binarize_y = self._check_X_y(X, y)
 
-        self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type
+        self.sampling_strategy_, self._original_class_counts = check_sampling_strategy(
+            self.sampling_strategy, y, self._sampling_type, return_original_counts=True
         )
 
         output = self._fit_resample(X, y)
@@ -363,8 +363,8 @@ class FunctionSampler(BaseSampler):
             check_classification_targets(y)
             X, y, _ = self._check_X_y(X, y, accept_sparse=self.accept_sparse)
 
-        self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type
+        self.sampling_strategy_, self._original_class_counts = check_sampling_strategy(
+            self.sampling_strategy, y, self._sampling_type, return_original_counts=True
         )
 
         return self
@@ -396,8 +396,8 @@ class FunctionSampler(BaseSampler):
             check_classification_targets(y)
             X, y, binarize_y = self._check_X_y(X, y, accept_sparse=self.accept_sparse)
 
-        self.sampling_strategy_ = check_sampling_strategy(
-            self.sampling_strategy, y, self._sampling_type
+        self.sampling_strategy_, self._original_class_counts = check_sampling_strategy(
+            self.sampling_strategy, y, self._sampling_type, return_original_counts=True
         )
 
         output = self._fit_resample(X, y)

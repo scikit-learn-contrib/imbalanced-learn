@@ -1,5 +1,7 @@
+import copy
 from numbers import Integral, Real
 
+import numpy as np
 from sklearn.tree._criterion import Criterion
 
 from ..utils._param_validation import (
@@ -26,6 +28,39 @@ def _estimator_has(attr):
             return hasattr(self.base_estimator, attr)
 
     return check
+
+
+def _estimate_reweighting(samplers):
+    """Estimate the reweighting factor to calibrate the probabilities.
+
+    The reweighting factor is the averaged ratio of the probability of the
+    positive class before and after resampling for all samplers.
+
+    Parameters
+    ----------
+    samplers : list of samplers
+        The list of samplers.
+
+    Returns
+    -------
+    weight : float
+        The reweighting factor.
+    """
+    weights = []
+    for sampler in samplers:
+        # Since the samplers are internally created, we know that we have target encoded
+        # with 0 and 1.
+        p_y_1_original = sampler._original_class_counts[1] / sum(
+            sampler._original_class_counts[k] for k in [0, 1]
+        )
+        resampled_counts = copy.copy(sampler._original_class_counts)
+        resampled_counts.update(sampler.sampling_strategy_)
+        p_y_1_resampled = resampled_counts[1] / sum(resampled_counts[k] for k in [0, 1])
+        weights.append(
+            (p_y_1_original / (1 - p_y_1_original))
+            * ((1 - p_y_1_resampled) / p_y_1_resampled)
+        )
+    return np.mean(weights)
 
 
 _bagging_parameter_constraints = {

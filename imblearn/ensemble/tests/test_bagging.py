@@ -1,4 +1,5 @@
 """Test the module ensemble classifiers."""
+
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
@@ -13,6 +14,7 @@ from sklearn.datasets import load_iris, make_classification, make_hastie_10_2
 from sklearn.dummy import DummyClassifier
 from sklearn.feature_selection import SelectKBest
 from sklearn.linear_model import LogisticRegression, Perceptron
+from sklearn.metrics import log_loss
 from sklearn.model_selection import GridSearchCV, ParameterGrid, train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
@@ -592,3 +594,45 @@ def test_balanced_bagging_classifier_n_features():
     estimator = BalancedBaggingClassifier().fit(X, y)
     with pytest.warns(FutureWarning, match="`n_features_` was deprecated"):
         estimator.n_features_
+
+
+def test_balanced_bagging_classifier_recalibrate_error():
+    """Check that we raise a ValueError when trying to recalibrate the
+    classifier when the problem is not a binary classification problem.
+    """
+    X, y = load_iris(return_X_y=True)
+    err_msg = "Only possible to recalibrate the probabilities for binary classification"
+    with pytest.raises(ValueError, match=err_msg):
+        BalancedBaggingClassifier(recalibrate=True).fit(X, y)
+
+
+def test_balanced_bagging_classifier_recalibrate():
+    """Check the behaviour of the `recalibrate` parameter."""
+    X, y = make_classification(
+        n_samples=10_000,
+        n_classes=2,
+        n_clusters_per_class=2,
+        weights=[0.2, 0.8],
+        class_sep=0.1,
+        random_state=0,
+    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+    bbc_uncalibrated = BalancedBaggingClassifier(
+        n_estimators=50, random_state=42, n_jobs=-1, recalibrate=False
+    ).fit(X_train, y_train)
+    bbc_recalibrated = BalancedBaggingClassifier(
+        n_estimators=50, random_state=42, n_jobs=-1, recalibrate=True
+    ).fit(X_train, y_train)
+
+    # Since the resampling is breaking the calibration, we expected that a proper
+    # scoring rule error to be much lower on the recalibrate model
+    log_loss_uncalibrated = log_loss(y_test, bbc_uncalibrated.predict_proba(X_test))
+    log_loss_recalibrated = log_loss(y_test, bbc_recalibrated.predict_proba(X_test))
+    assert log_loss_uncalibrated > log_loss_recalibrated
+    log_loss_uncalibrated = log_loss(
+        y_test, np.exp(bbc_uncalibrated.predict_log_proba(X_test))
+    )
+    log_loss_recalibrated = log_loss(
+        y_test, np.exp(bbc_recalibrated.predict_log_proba(X_test))
+    )
+    assert log_loss_uncalibrated > log_loss_recalibrated
