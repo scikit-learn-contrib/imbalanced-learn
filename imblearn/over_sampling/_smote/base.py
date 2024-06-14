@@ -127,7 +127,7 @@ class BaseSMOTE(BaseOverSampler):
 
         X_new = self._generate_samples(X, nn_data, nn_num, rows, cols, steps, y_type, y)
         y_new = np.full(n_samples, fill_value=y_type, dtype=y_dtype)
-        return X_new, y_new
+        return X_new, y_new, rows, cols
 
     def _generate_samples(
         self, X, nn_data, nn_num, rows, cols, steps, y_type=None, y=None
@@ -379,6 +379,9 @@ class SMOTE(BaseSMOTE):
         X_resampled = [X.copy()]
         y_resampled = [y.copy()]
 
+        self.real_indices = [i for i in range(len(y))]
+        self.which_neighbors = [0]*len(y)
+
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
                 continue
@@ -387,19 +390,39 @@ class SMOTE(BaseSMOTE):
 
             self.nn_k_.fit(X_class)
             nns = self.nn_k_.kneighbors(X_class, return_distance=False)[:, 1:]
-            X_new, y_new = self._make_samples(
+            X_new, y_new, rows, cols = self._make_samples(
                 X_class, y.dtype, class_sample, X_class, nns, n_samples, 1.0
             )
             X_resampled.append(X_new)
             y_resampled.append(y_new)
+            self.real_indices.append(target_class_indices[rows])
+            self.which_neighbors.append(cols)
 
         if sparse.issparse(X):
             X_resampled = sparse.vstack(X_resampled, format=X.format)
         else:
             X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
+        self.real_indices = np.hstack(self.real_indices)
+        self.which_neighbors = np.hstack(self.which_neighbors)
 
         return X_resampled, y_resampled
+        
+    def sample_indices(self, get_which_neighbors=False):
+        """return indices
+        - for real sample, return its own index
+        - for synthetic sample, return the index of its "mother" real sample
+
+        Parameters
+        -----------
+        get_which_neighbors: if ==True returns which nearest neighbor is used
+            For samples that are not generated, returns 0
+        """
+
+        if get_which_neighbors is True:
+            return [(i, j) for i, j in zip(self.real_indices, self.which_neighbors)]
+        else:
+            return self.real_indices
 
 
 @Substitution(
@@ -725,7 +748,7 @@ class SMOTENC(SMOTE):
         # SMOTE resampling ends here
 
         # reverse the encoding of the categorical features
-        X_res_cat = X_resampled[:, self.continuous_features_.size :]
+        X_res_cat = X_resampled[:, self.continuous_features_.size:]
         X_res_cat.data = np.ones_like(X_res_cat.data)
         X_res_cat_dec = self.categorical_encoder_.inverse_transform(X_res_cat)
 
@@ -780,7 +803,7 @@ class SMOTENC(SMOTE):
         # create non-null entry based on the encoded of OHE
         if math.isclose(self.median_std_[y_type], 0):
             nn_data[
-                :, self.continuous_features_.size :
+                :, self.continuous_features_.size:
             ] = self._X_categorical_minority_encoded
 
         all_neighbors = nn_data[nn_num[rows]]
