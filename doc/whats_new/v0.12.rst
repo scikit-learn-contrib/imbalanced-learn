@@ -1,5 +1,19 @@
 .. _changes_0_12:
 
+Version 0.12.4
+==============
+
+**October 4, 2024**
+
+Changelog
+---------
+
+Compatibility
+.............
+
+- Compatibility with NumPy 2.0+
+  :pr:`1097` by :user:`Guillaume Lemaitre <glemaitre>`.
+
 Version 0.12.3
 ==============
 

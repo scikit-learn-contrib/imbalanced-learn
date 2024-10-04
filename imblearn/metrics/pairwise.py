@@ -161,7 +161,7 @@ class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
                     f"elements in n_categories and {self.n_features_in_} in "
                     f"X."
                 )
-            self.n_categories_ = np.array(self.n_categories, copy=False)
+            self.n_categories_ = np.asarray(self.n_categories)
         classes = unique_labels(y)
 
         # list of length n_features of ndarray (n_categories, n_classes)
