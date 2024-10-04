@@ -7,7 +7,14 @@
 
 import os
 
+import numpy as np
 import pytest
+from sklearn.utils.fixes import parse_version
+
+# use legacy numpy print options to avoid failures due to NumPy 2.+ scalar
+# representation
+if parse_version(np.__version__) > parse_version("2.0.0"):
+    np.set_printoptions(legacy="1.25")
 
 
 def pytest_runtest_setup(item):
