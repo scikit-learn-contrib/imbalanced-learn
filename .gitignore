@@ -127,3 +127,6 @@ doc/min_dependency_table.rst
 
 # MacOS
 .DS_Store
+
+# Pixi folder
+.pixi/
