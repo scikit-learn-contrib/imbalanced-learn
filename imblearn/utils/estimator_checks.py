@@ -309,7 +309,7 @@ def check_samplers_sparse(name, sampler_orig):
     sampler = clone(sampler)
     X_res, y_res = sampler.fit_resample(X, y)
     assert sparse.issparse(X_res_sparse)
-    assert_allclose(X_res_sparse.A, X_res, rtol=1e-5)
+    assert_allclose(X_res_sparse.toarray(), X_res, rtol=1e-5)
     assert_allclose(y_res_sparse, y_res)
 
 
