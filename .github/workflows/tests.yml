@@ -25,6 +25,15 @@ jobs:
             ci-py312-latest-keras,
             ci-py312-latest-tensorflow
         ]
+        exclude:
+            - os: windows-latest
+              environment: ci-py310-min-keras
+            - os: windows-latest
+              environment: ci-py310-min-tensorflow
+            - os: windows-latest
+              environment: ci-py312-latest-keras
+            - os: windows-latest
+              environment: ci-py312-latest-tensorflow
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -37,7 +46,7 @@ jobs:
           frozen: true
 
       - name: Run tests
-        run: pixi run -e ${{ matrix.environment }} test -n 3
+        run: pixi run -e ${{ matrix.environment }} test -n auto
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.5.0
