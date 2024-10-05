@@ -1,0 +1,24 @@
+name: Run code format checks
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  run-pre-commit-checks:
+    name: Run pre-commit checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.31.0
+          frozen: true
+
+      - name: Run tests
+        run: pixi run -e linters linters
