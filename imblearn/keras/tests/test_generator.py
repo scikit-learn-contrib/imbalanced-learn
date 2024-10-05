@@ -10,17 +10,12 @@ from keras.layers import Dense  # noqa: E402
 from keras.models import Sequential  # noqa: E402
 
 from imblearn.datasets import make_imbalance  # noqa: E402
-from imblearn.keras import (
-    BalancedBatchGenerator,  # noqa: E402
-    balanced_batch_generator,  # noqa: E402
+from imblearn.keras import (  # noqa: E402
+    BalancedBatchGenerator,
+    balanced_batch_generator,
 )
 from imblearn.over_sampling import RandomOverSampler  # noqa: E402
-from imblearn.under_sampling import (
-    ClusterCentroids,  # noqa: E402
-    NearMiss,  # noqa: E402
-)
-
-3
+from imblearn.under_sampling import ClusterCentroids, NearMiss  # noqa: E402
 
 
 @pytest.fixture
