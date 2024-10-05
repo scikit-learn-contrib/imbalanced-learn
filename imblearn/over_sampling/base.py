@@ -21,7 +21,8 @@ class BaseOverSampler(BaseSampler):
 
     _sampling_type = "over-sampling"
 
-    _sampling_strategy_docstring = """sampling_strategy : float, str, dict or callable, default='auto'
+    _sampling_strategy_docstring = (
+        """sampling_strategy : float, str, dict or callable, default='auto'
         Sampling information to resample the data set.
 
         - When ``float``, it corresponds to the desired ratio of the number of
@@ -56,7 +57,8 @@ class BaseOverSampler(BaseSampler):
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
-        """.strip()  # noqa: E501
+        """.strip()
+    )  # noqa: E501
 
     _parameter_constraints: dict = {
         "sampling_strategy": [

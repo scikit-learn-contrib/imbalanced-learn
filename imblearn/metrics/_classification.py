@@ -799,9 +799,9 @@ def make_index_balanced_accuracy(*, alpha=0.1, squared=True):
             if prohibitied_y_pred.intersection(params_scoring_func):
                 raise AttributeError(
                     f"The function {scoring_func.__name__} has an unsupported"
-                    f" attribute. Metric with`y_pred` are the"
-                    f" only supported metrics is the only"
-                    f" supported."
+                    " attribute. Metric with`y_pred` are the"
+                    " only supported metrics is the only"
+                    " supported."
                 )
 
             args_scoring_func = signature_scoring_func.bind(*args, **kwargs)

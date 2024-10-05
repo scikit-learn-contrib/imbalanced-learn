@@ -199,8 +199,10 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
     def _fit_resample(self, X, y):
         if self.kind_sel != "deprecated":
             warnings.warn(
-                "`kind_sel` is deprecated in 0.12 and will be removed in 0.14. "
-                "It already has not effect and corresponds to the `'all'` option.",
+                (
+                    "`kind_sel` is deprecated in 0.12 and will be removed in 0.14. "
+                    "It already has not effect and corresponds to the `'all'` option."
+                ),
                 FutureWarning,
             )
         self._validate_estimator()

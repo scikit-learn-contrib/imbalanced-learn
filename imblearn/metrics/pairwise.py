@@ -156,10 +156,10 @@ class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
         else:
             if len(self.n_categories) != self.n_features_in_:
                 raise ValueError(
-                    f"The length of n_categories is not consistent with the "
+                    "The length of n_categories is not consistent with the "
                     f"number of feature in X. Got {len(self.n_categories)} "
                     f"elements in n_categories and {self.n_features_in_} in "
-                    f"X."
+                    "X."
                 )
             self.n_categories_ = np.asarray(self.n_categories)
         classes = unique_labels(y)

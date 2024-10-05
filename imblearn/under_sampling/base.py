@@ -20,7 +20,8 @@ class BaseUnderSampler(BaseSampler):
 
     _sampling_type = "under-sampling"
 
-    _sampling_strategy_docstring = """sampling_strategy : float, str, dict, callable, default='auto'
+    _sampling_strategy_docstring = (
+        """sampling_strategy : float, str, dict, callable, default='auto'
         Sampling information to sample the data set.
 
         - When ``float``, it corresponds to the desired ratio of the number of
@@ -56,7 +57,8 @@ class BaseUnderSampler(BaseSampler):
         - When callable, function taking ``y`` and returns a ``dict``. The keys
           correspond to the targeted classes. The values correspond to the
           desired number of samples for each class.
-        """.rstrip()  # noqa: E501
+        """.rstrip()
+    )  # noqa: E501
 
     _parameter_constraints: dict = {
         "sampling_strategy": [

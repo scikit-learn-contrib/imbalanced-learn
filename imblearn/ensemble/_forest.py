@@ -85,9 +85,9 @@ def _local_parallel_build_trees(
     if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
         # support for missing values
-        params_parallel_build_trees[
-            "missing_values_in_feature_mask"
-        ] = missing_values_in_feature_mask
+        params_parallel_build_trees["missing_values_in_feature_mask"] = (
+            missing_values_in_feature_mask
+        )
 
     # TODO: remove when the minimum supported version of scikit-learn will be 1.1
     # change of signature in scikit-learn 1.1
@@ -575,10 +575,12 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         # TODO: remove in 0.13
         if self.sampling_strategy == "warn":
             warn(
-                "The default of `sampling_strategy` will change from `'auto'` to "
-                "`'all'` in version 0.13. This change will follow the implementation "
-                "proposed in the original paper. Set to `'all'` to silence this "
-                "warning and adopt the future behaviour.",
+                (
+                    "The default of `sampling_strategy` will change from `'auto'` to"
+                    " `'all'` in version 0.13. This change will follow the"
+                    " implementation proposed in the original paper. Set to `'all'` to"
+                    " silence this warning and adopt the future behaviour."
+                ),
                 FutureWarning,
             )
             self._sampling_strategy = "auto"
@@ -587,10 +589,12 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
         if self.replacement == "warn":
             warn(
-                "The default of `replacement` will change from `False` to "
-                "`True` in version 0.13. This change will follow the implementation "
-                "proposed in the original paper. Set to `True` to silence this "
-                "warning and adopt the future behaviour.",
+                (
+                    "The default of `replacement` will change from `False` to `True` in"
+                    " version 0.13. This change will follow the implementation proposed"
+                    " in the original paper. Set to `True` to silence this warning and"
+                    " adopt the future behaviour."
+                ),
                 FutureWarning,
             )
             self._replacement = False
@@ -599,10 +603,12 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
         if self.bootstrap == "warn":
             warn(
-                "The default of `bootstrap` will change from `True` to "
-                "`False` in version 0.13. This change will follow the implementation "
-                "proposed in the original paper. Set to `False` to silence this "
-                "warning and adopt the future behaviour.",
+                (
+                    "The default of `bootstrap` will change from `True` to `False` in"
+                    " version 0.13. This change will follow the implementation proposed"
+                    " in the original paper. Set to `False` to silence this warning and"
+                    " adopt the future behaviour."
+                ),
                 FutureWarning,
             )
             self._bootstrap = True
@@ -657,9 +663,11 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         y = np.atleast_1d(y)
         if y.ndim == 2 and y.shape[1] == 1:
             warn(
-                "A column-vector y was passed when a 1d array was"
-                " expected. Please change the shape of y to "
-                "(n_samples,), for example using ravel().",
+                (
+                    "A column-vector y was passed when a 1d array was"
+                    " expected. Please change the shape of y to "
+                    "(n_samples,), for example using ravel()."
+                ),
                 DataConversionWarning,
                 stacklevel=2,
             )
@@ -885,9 +893,11 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         for k in range(n_outputs):
             if (n_oob_pred == 0).any():
                 warn(
-                    "Some inputs do not have OOB scores. This probably means "
-                    "too few trees were used to compute any reliable OOB "
-                    "estimates.",
+                    (
+                        "Some inputs do not have OOB scores. This probably means "
+                        "too few trees were used to compute any reliable OOB "
+                        "estimates."
+                    ),
                     UserWarning,
                 )
                 n_oob_pred[n_oob_pred == 0] = 1
@@ -900,9 +910,11 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
     def n_features_(self):
         """Number of features when ``fit`` is performed."""
         warn(
-            "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
-            "not be accessible when the minimum supported version of scikit-learn "
-            "is 1.2.",
+            (
+                "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
+                "not be accessible when the minimum supported version of scikit-learn "
+                "is 1.2."
+            ),
             FutureWarning,
         )
         return self.n_features_in_

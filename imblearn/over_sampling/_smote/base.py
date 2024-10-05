@@ -368,9 +368,11 @@ class SMOTE(BaseSMOTE):
         # FIXME: to be removed in 0.12
         if self.n_jobs is not None:
             warnings.warn(
-                "The parameter `n_jobs` has been deprecated in 0.10 and will be "
-                "removed in 0.12. You can pass an nearest neighbors estimator where "
-                "`n_jobs` is already set instead.",
+                (
+                    "The parameter `n_jobs` has been deprecated in 0.10 and will be"
+                    " removed in 0.12. You can pass an nearest neighbors estimator"
+                    " where `n_jobs` is already set instead."
+                ),
                 FutureWarning,
             )
 
@@ -643,9 +645,11 @@ class SMOTENC(SMOTE):
         # FIXME: to be removed in 0.12
         if self.n_jobs is not None:
             warnings.warn(
-                "The parameter `n_jobs` has been deprecated in 0.10 and will be "
-                "removed in 0.12. You can pass an nearest neighbors estimator where "
-                "`n_jobs` is already set instead.",
+                (
+                    "The parameter `n_jobs` has been deprecated in 0.10 and will be"
+                    " removed in 0.12. You can pass an nearest neighbors estimator"
+                    " where `n_jobs` is already set instead."
+                ),
                 FutureWarning,
             )
 
@@ -779,9 +783,9 @@ class SMOTENC(SMOTE):
         # In the case that the median std was equal to zeros, we have to
         # create non-null entry based on the encoded of OHE
         if math.isclose(self.median_std_[y_type], 0):
-            nn_data[
-                :, self.continuous_features_.size :
-            ] = self._X_categorical_minority_encoded
+            nn_data[:, self.continuous_features_.size :] = (
+                self._X_categorical_minority_encoded
+            )
 
         all_neighbors = nn_data[nn_num[rows]]
 
@@ -809,8 +813,10 @@ class SMOTENC(SMOTE):
     def ohe_(self):
         """One-hot encoder used to encode the categorical features."""
         warnings.warn(
-            "'ohe_' attribute has been deprecated in 0.11 and will be removed "
-            "in 0.13. Use 'categorical_encoder_' instead.",
+            (
+                "'ohe_' attribute has been deprecated in 0.11 and will be removed "
+                "in 0.13. Use 'categorical_encoder_' instead."
+            ),
             FutureWarning,
         )
         return self.categorical_encoder_
@@ -990,9 +996,11 @@ class SMOTEN(SMOTE):
         # FIXME: to be removed in 0.12
         if self.n_jobs is not None:
             warnings.warn(
-                "The parameter `n_jobs` has been deprecated in 0.10 and will be "
-                "removed in 0.12. You can pass an nearest neighbors estimator where "
-                "`n_jobs` is already set instead.",
+                (
+                    "The parameter `n_jobs` has been deprecated in 0.10 and will be"
+                    " removed in 0.12. You can pass an nearest neighbors estimator"
+                    " where `n_jobs` is already set instead."
+                ),
                 FutureWarning,
             )
 
@@ -1000,8 +1008,10 @@ class SMOTEN(SMOTE):
             X_sparse_format = X.format
             X = X.toarray()
             warnings.warn(
-                "Passing a sparse matrix to SMOTEN is not really efficient since it is"
-                " converted to a dense array internally.",
+                (
+                    "Passing a sparse matrix to SMOTEN is not really efficient since it"
+                    " is converted to a dense array internally."
+                ),
                 DataConversionWarning,
             )
         else:

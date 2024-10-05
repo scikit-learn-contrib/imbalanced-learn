@@ -30,17 +30,21 @@ def deprecate_parameter(sampler, version_deprecation, param_deprecated, new_para
     if new_param is None:
         if getattr(sampler, param_deprecated) is not None:
             warnings.warn(
-                f"'{param_deprecated}' is deprecated from {version_deprecation} and "
-                f" will be removed in {version_removed} for the estimator "
-                f"{sampler.__class__}.",
+                (
+                    f"'{param_deprecated}' is deprecated from {version_deprecation} and"
+                    f"  will be removed in {version_removed} for the estimator"
+                    f" {sampler.__class__}."
+                ),
                 category=FutureWarning,
             )
     else:
         if getattr(sampler, param_deprecated) is not None:
             warnings.warn(
-                f"'{param_deprecated}' is deprecated from {version_deprecation} and "
-                f"will be removed in {version_removed} for the estimator "
-                f"{sampler.__class__}. Use '{new_param}' instead.",
+                (
+                    f"'{param_deprecated}' is deprecated from {version_deprecation} and"
+                    f" will be removed in {version_removed} for the estimator"
+                    f" {sampler.__class__}. Use '{new_param}' instead."
+                ),
                 category=FutureWarning,
             )
             setattr(sampler, new_param, getattr(sampler, param_deprecated))

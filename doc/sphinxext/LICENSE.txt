@@ -94,4 +94,3 @@ Copyright (c) 2002-2008 John D. Hunter; All Rights Reserved.
 7. Nothing in this License Agreement shall be deemed to create any relationship of agency, partnership, or joint venture between JDH and Licensee. This License Agreement does not grant permission to use JDH trademarks or trade name in a trademark sense to endorse or promote products or services of Licensee, or any third party.
 
 8. By copying, installing or otherwise using matplotlib 0.98.3, Licensee agrees to be bound by the terms and conditions of this License Agreement.
-

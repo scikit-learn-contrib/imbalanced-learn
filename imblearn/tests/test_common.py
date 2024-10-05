@@ -30,7 +30,7 @@ from imblearn.utils.testing import all_estimators
 @pytest.mark.parametrize("name, Estimator", all_estimators())
 def test_all_estimator_no_base_class(name, Estimator):
     # test that all_estimators doesn't find abstract classes.
-    msg = f"Base estimators such as {name} should not be included" f" in all_estimators"
+    msg = f"Base estimators such as {name} should not be included in all_estimators"
     assert not name.lower().startswith("base"), msg
 
 

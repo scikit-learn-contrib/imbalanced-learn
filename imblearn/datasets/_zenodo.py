@@ -254,7 +254,7 @@ def fetch_datasets(
                 if it < 1 or it > 27:
                     raise ValueError(
                         f"The dataset with the ID={it} is not an "
-                        f"available dataset. The IDs are "
+                        "available dataset. The IDs are "
                         f"{range(1, 28)}"
                     )
                 else:
@@ -263,7 +263,7 @@ def fetch_datasets(
                     filter_data_.append(MAP_ID_NAME[it])
             else:
                 raise ValueError(
-                    f"The value in the tuple should be str or int."
+                    "The value in the tuple should be str or int."
                     f" Got {type(it)} instead."
                 )
 

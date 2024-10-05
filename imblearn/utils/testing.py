@@ -101,9 +101,8 @@ def all_estimators(
         estimators = filtered_estimators
         if type_filter:
             raise ValueError(
-                "Parameter type_filter must be 'sampler' or "
-                "None, got"
-                " %s." % repr(type_filter)
+                "Parameter type_filter must be 'sampler' or None, got %s."
+                % repr(type_filter)
             )
 
     # drop duplicates, sort for reproducibility

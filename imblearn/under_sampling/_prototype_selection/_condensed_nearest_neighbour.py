@@ -251,8 +251,10 @@ CondensedNearestNeighbour  # doctest: +SKIP
     def estimator_(self):
         """Last fitted k-NN estimator."""
         warnings.warn(
-            "`estimator_` attribute has been deprecated in 0.12 and will be "
-            "removed in 0.14. Use `estimators_` instead.",
+            (
+                "`estimator_` attribute has been deprecated in 0.12 and will be "
+                "removed in 0.14. Use `estimators_` instead."
+            ),
             FutureWarning,
         )
         return self.estimators_[-1]
