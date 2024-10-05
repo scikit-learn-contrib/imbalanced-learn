@@ -130,3 +130,7 @@ doc/min_dependency_table.rst
 
 # Pixi folder
 .pixi/
+
+# Generated files
+doc/min_dependency_substitutions.rst
+doc/sg_execution_times.rst
