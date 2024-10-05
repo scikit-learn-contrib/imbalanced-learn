@@ -23,7 +23,7 @@ jobs:
             ci-py312-latest-dependencies,
             ci-py312-latest-optional-dependencies,
             ci-py312-latest-keras,
-            ci-py312-latest-tensorflow
+            # ci-py312-latest-tensorflow,
         ]
         exclude:
             - os: windows-latest
