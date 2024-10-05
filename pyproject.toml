@@ -172,6 +172,16 @@ pytest-xdist = ">=3.5.0,<4"
 [tool.pixi.pypi-dependencies]
 imbalanced-learn = { path = ".", editable = true }
 
+[tool.pixi.feature.docs.tasks]
+build-docs = { cmd = "make html", cwd = "doc" }
+clean-docs = { cmd = "rm -rf _build/ && rm -rf auto_examples/ && rm -rf reference/generated/", cwd = "doc" }
+
+[tool.pixi.feature.linters.tasks]
+linters = { cmd = "pre-commit install && pre-commit run -v --all-files --show-diff-on-failure" }
+
+[tool.pixi.feature.tests.tasks]
+tests = { cmd = "pytest -vsl --cov=imblearn --cov-report=xml imblearn" }
+
 [tool.pixi.environments]
 linters = ["linters"]
 docs = ["optional", "docs", "tensorflow"]

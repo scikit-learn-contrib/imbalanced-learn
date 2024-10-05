@@ -46,7 +46,7 @@ jobs:
           frozen: true
 
       - name: Run tests
-        run: pixi run -e ${{ matrix.environment }} test -n auto
+        run: pixi run -e ${{ matrix.environment }} tests -n auto
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.5.0
