@@ -72,19 +72,15 @@ then
     exit 0
 fi
 
-make_args=html
-make_args="SPHINXOPTS=-T $make_args"  # show full traceback on exception
-
 # deactivate circleci virtualenv and setup a miniconda env instead
 if [[ `type -t deactivate` ]]; then
     deactivate
 fi
 
-MAMBAFORGE_PATH=$HOME/mambaforge
 # Install pixi
 curl -fsSL https://pixi.sh/install.sh | bash
 export PATH=/home/circleci/.pixi/bin:$PATH
 
 # The pipefail is requested to propagate exit code
-set -o pipefail && pixi run --frozen -e build-docs $make_args 2>&1 | tee ~/log.txt
+set -o pipefail && pixi run --frozen -e build-docs | tee ~/log.txt
 set +o pipefail
