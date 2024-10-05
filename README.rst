@@ -27,16 +27,16 @@
 .. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
 .. _Black: :target: https://github.com/psf/black
 
-.. |PythonMinVersion| replace:: 3.8
-.. |NumPyMinVersion| replace:: 1.17.3
-.. |SciPyMinVersion| replace:: 1.5.0
-.. |ScikitLearnMinVersion| replace:: 1.0.2
-.. |MatplotlibMinVersion| replace:: 3.1.2
-.. |PandasMinVersion| replace:: 1.0.5
-.. |TensorflowMinVersion| replace:: 2.4.3
-.. |KerasMinVersion| replace:: 2.4.3
-.. |SeabornMinVersion| replace:: 0.9.0
-.. |PytestMinVersion| replace:: 5.0.1
+.. |PythonMinVersion| replace:: 3.10
+.. |NumPyMinVersion| replace:: 1.24.3
+.. |SciPyMinVersion| replace:: 1.10.1
+.. |ScikitLearnMinVersion| replace:: 1.2.2
+.. |MatplotlibMinVersion| replace:: 3.7.3
+.. |PandasMinVersion| replace:: 1.5.3
+.. |TensorflowMinVersion| replace:: 2.13.1
+.. |KerasMinVersion| replace:: 3.0.5
+.. |SeabornMinVersion| replace:: 0.12.2
+.. |PytestMinVersion| replace:: 7.2.2
 
 imbalanced-learn
 ================

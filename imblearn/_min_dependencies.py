@@ -5,7 +5,7 @@ NUMPY_MIN_VERSION = "1.24.3"
 SCIPY_MIN_VERSION = "1.10.1"
 PANDAS_MIN_VERSION = "1.5.3"
 SKLEARN_MIN_VERSION = "1.2.2"
-TENSORFLOW_MIN_VERSION = "2.11.1"
+TENSORFLOW_MIN_VERSION = "2.13.1"
 KERAS_MIN_VERSION = "3.0.5"
 JOBLIB_MIN_VERSION = "1.1.1"
 THREADPOOLCTL_MIN_VERSION = "2.0.0"
@@ -26,7 +26,7 @@ dependent_packages = {
     "matplotlib": ("3.7.3", "docs, examples"),
     "seaborn": ("0.12.2", "docs, examples"),
     "memory_profiler": ("0.61.0", "docs"),
-    "numpydoc": ("1.5.0", "docs", "tests"),
+    "numpydoc": ("1.5.0", "docs, tests"),
     "pytest": (PYTEST_MIN_VERSION, "tests"),
     "pytest-cov": ("4.1.0", "tests"),
     "pytest-xdist": ("3.5.0", "tests"),
