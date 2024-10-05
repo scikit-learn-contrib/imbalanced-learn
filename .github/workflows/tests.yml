@@ -31,9 +31,9 @@ jobs:
             - os: windows-latest
               environment: ci-py310-min-tensorflow
             - os: windows-latest
-              environment: ci-py312-latest-keras
+              environment: ci-py311-latest-tensorflow
             - os: windows-latest
-              environment: ci-py312-latest-tensorflow
+              environment: ci-py312-latest-keras
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
