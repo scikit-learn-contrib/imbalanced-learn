@@ -45,6 +45,7 @@ References
 
 import tarfile
 from collections import OrderedDict
+from inspect import signature
 from io import BytesIO
 from os import makedirs
 from os.path import isfile, join
@@ -279,7 +280,10 @@ def fetch_datasets(
                 print("Downloading %s" % URL)
             f = BytesIO(urlopen(URL).read())
             tar = tarfile.open(fileobj=f)
-            tar.extractall(path=zenodo_dir)
+            if "filter" in signature(tar.extractall).parameters:
+                tar.extractall(path=zenodo_dir, filter="data")
+            else:  # Python < 3.12
+                tar.extractall(path=zenodo_dir)
         elif not download_if_missing and not available:
             raise IOError("Data not found and `download_if_missing` is False")
 
