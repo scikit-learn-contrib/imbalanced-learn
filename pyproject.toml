@@ -113,8 +113,13 @@ ruff = "==0.4.8"
 pre-commit = "*"
 
 [tool.pixi.feature.optional.dependencies]
-keras = ">=11.1,<4"
 pandas = ">=1.4.4,<3"
+
+[tool.pixi.feature.keras]
+platforms = ["linux-64", "osx-arm64", "osx-64"]
+
+[tool.pixi.feature.keras.dependencies]
+keras = ">=2.11.1,<4"
 
 [tool.pixi.feature.tensorflow]
 platforms = ["linux-64", "osx-arm64", "osx-64"]
@@ -132,8 +137,11 @@ threadpoolctl = "==2.0.0"
 [tool.pixi.feature.min-optional-dependencies.dependencies]
 pandas = "==1.4.4"
 
+[tool.pixi.feature.min-keras]
+platforms = ["linux-64", "osx-arm64", "osx-64"]
+
 [tool.pixi.feature.min-keras.dependencies]
-keras = "==2.11.1"
+keras = "==3.0.5"
 
 [tool.pixi.feature.min-tensorflow]
 platforms = ["linux-64", "osx-arm64", "osx-64"]
@@ -171,7 +179,7 @@ tests = ["optional", "tests", "tensorflow"]
 dev = ["dev", "optional", "docs", "linters", "tests", "tensorflow"]
 
 ci-py310-min-dependencies = ["py310", "min-dependencies", "tests"]
-ci-py310-min-optional-dependencies = ["py310", "min-optional-dependencies", "tests"]
+ci-py310-min-optional-dependencies = ["py310", "min-dependencies", "min-optional-dependencies", "tests"]
 ci-py310-min-keras = ["py310", "min-keras", "tests"]
 ci-py310-min-tensorflow = ["py310", "min-tensorflow", "tests"]
 
@@ -180,6 +188,8 @@ ci-py311-sklearn-1-4 = ["py311", "sklearn-1-4", "tests"]
 
 ci-py312-latest-dependencies = ["py312", "tests"]
 ci-py312-latest-optional-dependencies = ["py312", "optional", "tests"]
+ci-py312-latest-keras = ["py312", "keras", "tests"]
+ci-py312-latest-tensorflow = ["py312", "tensorflow", "tests"]
 
 [tool.black]
 line-length = 88

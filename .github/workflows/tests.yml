@@ -21,7 +21,9 @@ jobs:
             ci-py311-sklearn-1-3,
             ci-py311-sklearn-1-4,
             ci-py312-latest-dependencies,
-            ci-py312-latest-optional-dependencies
+            ci-py312-latest-optional-dependencies,
+            ci-py312-latest-keras,
+            ci-py312-latest-tensorflow
         ]
     runs-on: ${{ matrix.os }}
     steps:
