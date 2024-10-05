@@ -20,10 +20,10 @@ jobs:
             ci-py310-min-tensorflow,
             ci-py311-sklearn-1-3,
             ci-py311-sklearn-1-4,
+            ci-py311-latest-keras,
             ci-py311-latest-tensorflow,
             ci-py312-latest-dependencies,
             ci-py312-latest-optional-dependencies,
-            ci-py312-latest-keras,
         ]
         exclude:
             - os: windows-latest
@@ -31,9 +31,9 @@ jobs:
             - os: windows-latest
               environment: ci-py310-min-tensorflow
             - os: windows-latest
-              environment: ci-py311-latest-tensorflow
+              environment: ci-py311-latest-keras
             - os: windows-latest
-              environment: ci-py312-latest-keras
+              environment: ci-py311-latest-tensorflow
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

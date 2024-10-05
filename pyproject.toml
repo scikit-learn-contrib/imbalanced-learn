@@ -196,10 +196,10 @@ ci-py310-min-tensorflow = ["py310", "min-tensorflow", "tests"]
 ci-py311-sklearn-1-3 = ["py311", "sklearn-1-3", "tests"]
 ci-py311-sklearn-1-4 = ["py311", "sklearn-1-4", "tests"]
 ci-py311-latest-tensorflow = ["py311", "tensorflow", "tests"]
+ci-py311-latest-keras = ["py311", "keras", "tests"]
 
 ci-py312-latest-dependencies = ["py312", "tests"]
 ci-py312-latest-optional-dependencies = ["py312", "optional", "tests"]
-ci-py312-latest-keras = ["py312", "keras", "tests"]
 
 [tool.black]
 line-length = 88
