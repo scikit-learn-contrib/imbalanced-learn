@@ -25,14 +25,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing, check_random_state
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
+from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import _check_sample_weight
-
-try:
-    # scikit-learn >= 1.2
-    from sklearn.utils.parallel import Parallel, delayed
-except (ImportError, ModuleNotFoundError):
-    from joblib import Parallel
-    from sklearn.utils.fixes import delayed
 
 from ..base import _ParamsValidationMixin
 from ..pipeline import make_pipeline
@@ -80,6 +74,7 @@ def _local_parallel_build_trees(
         "verbose": verbose,
         "class_weight": class_weight,
         "n_samples_bootstrap": n_samples_bootstrap,
+        "bootstrap": bootstrap,
     }
 
     if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
@@ -88,13 +83,6 @@ def _local_parallel_build_trees(
         params_parallel_build_trees["missing_values_in_feature_mask"] = (
             missing_values_in_feature_mask
         )
-
-    # TODO: remove when the minimum supported version of scikit-learn will be 1.1
-    # change of signature in scikit-learn 1.1
-    if parse_version(sklearn_version.base_version) >= parse_version("1.1"):
-        params_parallel_build_trees["bootstrap"] = bootstrap
-    else:
-        params_parallel_build_trees["forest"] = forest
 
     tree = _parallel_build_trees(**params_parallel_build_trees)
 
@@ -355,14 +343,6 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         The number of classes (single output problem), or a list containing the
         number of classes for each output (multi-output problem).
 
-    n_features_ : int
-        The number of features when `fit` is performed.
-
-        .. deprecated:: 1.0
-           `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
-           in version 1.2. When the minimum version of `scikit-learn` supported
-           by `imbalanced-learn` will reach 1.2, this attribute will be removed.
-
     n_features_in_ : int
         Number of features in the input dataset.
 
@@ -514,13 +494,8 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
     def _validate_estimator(self, default=DecisionTreeClassifier()):
         """Check the estimator and the n_estimator attribute, set the
         `estimator_` attribute."""
-        if hasattr(self, "estimator"):
-            base_estimator = self.estimator
-        else:
-            base_estimator = self.base_estimator
-
-        if base_estimator is not None:
-            self.estimator_ = clone(base_estimator)
+        if self.estimator is not None:
+            self.estimator_ = clone(self.estimator)
         else:
             self.estimator_ = clone(default)
 
@@ -905,22 +880,5 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
         return oob_pred
 
-    # TODO: remove when supporting scikit-learn>=1.2
-    @property
-    def n_features_(self):
-        """Number of features when ``fit`` is performed."""
-        warn(
-            (
-                "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
-                "not be accessible when the minimum supported version of scikit-learn "
-                "is 1.2."
-            ),
-            FutureWarning,
-        )
-        return self.n_features_in_
-
     def _more_tags(self):
-        return {
-            "multioutput": False,
-            "multilabel": False,
-        }
+        return {"multioutput": False, "multilabel": False}

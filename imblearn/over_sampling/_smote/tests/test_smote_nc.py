@@ -8,20 +8,16 @@ from collections import Counter
 
 import numpy as np
 import pytest
-import sklearn
 from scipy import sparse
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.utils._testing import assert_allclose, assert_array_equal
-from sklearn.utils.fixes import parse_version
 
 from imblearn.over_sampling import SMOTENC
 from imblearn.utils.estimator_checks import (
     _set_checking_parameters,
     check_param_validation,
 )
-
-sklearn_version = parse_version(sklearn.__version__)
 
 
 def data_heterogneous_ordered():
@@ -272,21 +268,17 @@ def test_smote_nc_with_null_median_std():
 def test_smotenc_categorical_encoder():
     """Check that we can pass our own categorical encoder."""
 
-    # TODO: only use `sparse_output` when sklearn >= 1.2
-    param = "sparse" if sklearn_version < parse_version("1.2") else "sparse_output"
-
     X, y, categorical_features = data_heterogneous_unordered()
     smote = SMOTENC(categorical_features=categorical_features, random_state=0)
     smote.fit_resample(X, y)
 
-    assert getattr(smote.categorical_encoder_, param) is True
+    assert getattr(smote.categorical_encoder_, "sparse_output") is True
 
-    encoder = OneHotEncoder()
-    encoder.set_params(**{param: False})
+    encoder = OneHotEncoder(sparse_output=False)
     smote.set_params(categorical_encoder=encoder).fit_resample(X, y)
     assert smote.categorical_encoder is encoder
     assert smote.categorical_encoder_ is not encoder
-    assert getattr(smote.categorical_encoder_, param) is False
+    assert getattr(smote.categorical_encoder_, "sparse_output") is False
 
 
 # TODO(0.13): remove this test

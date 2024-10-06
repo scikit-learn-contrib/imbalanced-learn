@@ -4,10 +4,10 @@
 
 .. _scikit-learn-contrib: https://github.com/scikit-learn-contrib
 
-|Azure|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_ |Black|_
+|GitHubActions|_ |Codecov|_ |CircleCI|_ |PythonVersion|_ |Pypi|_ |Gitter|_ |Black|_
 
-.. |Azure| image:: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_apis/build/status/scikit-learn-contrib.imbalanced-learn?branchName=master
-.. _Azure: https://dev.azure.com/imbalanced-learn/imbalanced-learn/_build
+.. |GitHubActions| image:: https://github.com/scikit-learn-contrib/imbalanced-learn/actions/workflows/tests.yml/badge.svg
+.. _GitHubActions: https://github.com/scikit-learn-contrib/imbalanced-learn/actions/workflows/tests.yml
 
 .. |Codecov| image:: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn/branch/master/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/scikit-learn-contrib/imbalanced-learn
@@ -66,6 +66,7 @@ Dependencies
 - NumPy (>= |NumPyMinVersion|)
 - SciPy (>= |SciPyMinVersion|)
 - Scikit-learn (>= |ScikitLearnMinVersion|)
+- Pytest (>= |PytestMinVersion|)
 
 Additionally, `imbalanced-learn` requires the following optional dependencies:
 
@@ -127,6 +128,21 @@ The development of this scikit-learn-contrib is in line with the one
 of the scikit-learn community. Therefore, you can refer to their
 `Development Guide
 <http://scikit-learn.org/stable/developers>`_.
+
+Endorsement of the Scientific Python Specification
+--------------------------------------------------
+
+We endorse good practices from the Scientific Python Ecosystem Coordination (SPEC).
+The full list of recommendations is available `here`_.
+
+See below the list of recommendations that we endorse for the imbalanced-learn project.
+
+|SPEC 0 — Minimum Supported Dependencies|
+
+.. |SPEC 0 — Minimum Supported Dependencies| image:: https://img.shields.io/badge/SPEC-0-green?labelColor=%23004811&color=%235CA038
+   :target: https://scientific-python.org/specs/spec-0000/
+
+.. _here: https://scientific-python.org/specs/
 
 About
 -----

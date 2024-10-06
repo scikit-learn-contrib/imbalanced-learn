@@ -5,20 +5,17 @@
 
 import numpy as np
 import pytest
-import sklearn
 from sklearn.datasets import load_iris, make_hastie_10_2
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.feature_selection import SelectKBest
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.utils._testing import assert_allclose, assert_array_equal
-from sklearn.utils.fixes import parse_version
 
 from imblearn.datasets import make_imbalance
 from imblearn.ensemble import EasyEnsembleClassifier
 from imblearn.pipeline import make_pipeline
 from imblearn.under_sampling import RandomUnderSampler
 
-sklearn_version = parse_version(sklearn.__version__)
 iris = load_iris()
 
 # Generate a global dataset to use
@@ -225,11 +222,3 @@ def test_easy_ensemble_classifier_grid_search():
         cv=5,
     )
     grid_search.fit(X, y)
-
-
-def test_easy_ensemble_classifier_n_features():
-    """Check that we raise a FutureWarning when accessing `n_features_`."""
-    X, y = load_iris(return_X_y=True)
-    estimator = EasyEnsembleClassifier().fit(X, y)
-    with pytest.warns(FutureWarning, match="`n_features_` was deprecated"):
-        estimator.n_features_

@@ -1,6 +1,4 @@
-"""This is a copy of sklearn/utils/_param_validation.py. It can be removed when
-we support scikit-learn >= 1.2.
-"""
+"""This is a copy of sklearn/utils/_param_validation.py."""
 # mypy: ignore-errors
 import functools
 import math
@@ -15,9 +13,9 @@ import numpy as np
 import sklearn
 from scipy.sparse import csr_matrix, issparse
 from sklearn.utils.fixes import parse_version
+from sklearn.utils.validation import _is_arraylike_not_scalar
 
 from .._config import config_context, get_config
-from ..utils.fixes import _is_arraylike_not_scalar
 
 sklearn_version = parse_version(sklearn.__version__)
 

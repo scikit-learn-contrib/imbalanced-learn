@@ -14,24 +14,17 @@ from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
-from sklearn.exceptions import NotFittedError
 from sklearn.utils._tags import _safe_tags
 from sklearn.utils.fixes import parse_version
+from sklearn.utils.metaestimators import available_if
+from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import check_is_fitted
-
-try:
-    # scikit-learn >= 1.2
-    from sklearn.utils.parallel import Parallel, delayed
-except (ImportError, ModuleNotFoundError):
-    from joblib import Parallel
-    from sklearn.utils.fixes import delayed
 
 from ..base import _ParamsValidationMixin
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
-from ..utils._available_if import available_if
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Interval, StrOptions
 from ..utils.fixes import _fit_context
@@ -106,14 +99,6 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
 
     n_classes_ : int or list
         The number of classes.
-
-    n_features_ : int
-        The number of features when `fit` is performed.
-
-        .. deprecated:: 1.0
-           `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
-           in version 1.2. When the minimum version of `scikit-learn` supported
-           by `imbalanced-learn` will reach 1.2, this attribute will be removed.
 
     n_features_in_ : int
         Number of features in the input dataset.
@@ -357,14 +342,6 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         error = AttributeError(
             f"{self.__class__.__name__} object has no attribute 'base_estimator_'."
         )
-        if sklearn_version < parse_version("1.2"):
-            # The base class require to have the attribute defined. For scikit-learn
-            # > 1.2, we are going to raise an error.
-            try:
-                check_is_fitted(self)
-                return self.estimator_
-            except NotFittedError:
-                raise error
         raise error
 
     def _get_estimator(self):
