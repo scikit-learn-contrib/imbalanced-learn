@@ -40,7 +40,7 @@ def _linkcode_resolve(domain, info, package, url_fmt, revision):
         return
 
     class_name = info["fullname"].split(".")[0]
-    if isinstance(class_name, str):
+    if type(class_name) != str:  # noqa: E721
         # Python 2 only
         class_name = class_name.encode("utf-8")
     module = __import__(info["module"], fromlist=[class_name])
