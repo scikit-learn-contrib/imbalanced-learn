@@ -1338,9 +1338,6 @@ def test_pipeline_param_validation():
     check_param_validation("Pipeline", model)
 
 
-@pytest.mark.skipif(
-    sklearn_version < parse_version("1.2"), reason="requires scikit-learn >= 1.2"
-)
 def test_pipeline_with_set_output():
     pd = pytest.importorskip("pandas")
     X, y = load_iris(return_X_y=True, as_frame=True)

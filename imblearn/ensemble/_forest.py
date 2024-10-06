@@ -25,14 +25,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing, check_random_state
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
+from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import _check_sample_weight
-
-try:
-    # scikit-learn >= 1.2
-    from sklearn.utils.parallel import Parallel, delayed
-except (ImportError, ModuleNotFoundError):
-    from joblib import Parallel
-    from sklearn.utils.fixes import delayed
 
 from ..base import _ParamsValidationMixin
 from ..pipeline import make_pipeline
@@ -80,6 +74,7 @@ def _local_parallel_build_trees(
         "verbose": verbose,
         "class_weight": class_weight,
         "n_samples_bootstrap": n_samples_bootstrap,
+        "bootstrap": bootstrap,
     }
 
     if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
@@ -88,13 +83,6 @@ def _local_parallel_build_trees(
         params_parallel_build_trees["missing_values_in_feature_mask"] = (
             missing_values_in_feature_mask
         )
-
-    # TODO: remove when the minimum supported version of scikit-learn will be 1.1
-    # change of signature in scikit-learn 1.1
-    if parse_version(sklearn_version.base_version) >= parse_version("1.1"):
-        params_parallel_build_trees["bootstrap"] = bootstrap
-    else:
-        params_parallel_build_trees["forest"] = forest
 
     tree = _parallel_build_trees(**params_parallel_build_trees)
 

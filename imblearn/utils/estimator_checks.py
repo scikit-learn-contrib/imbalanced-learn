@@ -35,19 +35,11 @@ from sklearn.utils._testing import (
     set_random_state,
 )
 from sklearn.utils.estimator_checks import (
+    _enforce_estimator_tags_X,
     _enforce_estimator_tags_y,
     _get_check_estimator_ids,
     _maybe_mark_xfail,
 )
-
-try:
-    from sklearn.utils.estimator_checks import _enforce_estimator_tags_x
-except ImportError:
-    # scikit-learn >= 1.2
-    from sklearn.utils.estimator_checks import (
-        _enforce_estimator_tags_X as _enforce_estimator_tags_x,
-    )
-
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 
@@ -602,7 +594,7 @@ def check_dataframe_column_names_consistency(name, estimator_orig):
 
     X_orig = rng.normal(size=(150, 8))
 
-    X_orig = _enforce_estimator_tags_x(estimator, X_orig)
+    X_orig = _enforce_estimator_tags_X(estimator, X_orig)
     n_samples, n_features = X_orig.shape
 
     names = np.array([f"col_{i}" for i in range(n_features)])
@@ -756,7 +748,7 @@ def check_sampler_get_feature_names_out(name, sampler_orig):
     X = StandardScaler().fit_transform(X)
 
     sampler = clone(sampler_orig)
-    X = _enforce_estimator_tags_x(sampler, X)
+    X = _enforce_estimator_tags_X(sampler, X)
 
     n_features = X.shape[1]
     set_random_state(sampler)
@@ -804,7 +796,7 @@ def check_sampler_get_feature_names_out_pandas(name, sampler_orig):
     X = StandardScaler().fit_transform(X)
 
     sampler = clone(sampler_orig)
-    X = _enforce_estimator_tags_x(sampler, X)
+    X = _enforce_estimator_tags_X(sampler, X)
 
     n_features = X.shape[1]
     set_random_state(sampler)

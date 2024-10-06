@@ -16,18 +16,12 @@ from sklearn.utils._testing import (
     check_docstring_parameters,
     ignore_warnings,
 )
-from sklearn.utils.estimator_checks import _enforce_estimator_tags_y
-
-try:
-    from sklearn.utils.estimator_checks import _enforce_estimator_tags_x
-except ImportError:
-    # scikit-learn >= 1.2
-    from sklearn.utils.estimator_checks import (
-        _enforce_estimator_tags_X as _enforce_estimator_tags_x,
-    )
-
 from sklearn.utils.deprecation import _is_deprecated
-from sklearn.utils.estimator_checks import _construct_instance
+from sklearn.utils.estimator_checks import (
+    _construct_instance,
+    _enforce_estimator_tags_X,
+    _enforce_estimator_tags_y,
+)
 
 import imblearn
 from imblearn.base import is_sampler
@@ -197,7 +191,7 @@ def test_fit_docstring_attributes(name, Estimator):
     )
 
     y = _enforce_estimator_tags_y(est, y)
-    X = _enforce_estimator_tags_x(est, X)
+    X = _enforce_estimator_tags_X(est, X)
 
     if "oob_score" in est.get_params():
         est.set_params(bootstrap=True, oob_score=True)
