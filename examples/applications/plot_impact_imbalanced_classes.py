@@ -76,7 +76,7 @@ print(f"Accuracy score of a dummy classifier: {cv_result['test_accuracy'].mean()
 
 # %%
 print(
-    f"Balanced accuracy score of a dummy classifier: "
+    "Balanced accuracy score of a dummy classifier: "
     f"{cv_result['test_balanced_accuracy'].mean():.3f}"
 )
 

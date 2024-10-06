@@ -72,59 +72,15 @@ then
     exit 0
 fi
 
-make_args=html
-make_args="SPHINXOPTS=-T $make_args"  # show full traceback on exception
-
-# Installing required system packages to support the rendering of math
-# notation in the HTML documentation and to optimize the image files
-sudo -E apt-get -yq update --allow-releaseinfo-change
-sudo -E apt-get -yq remove texlive-binaries --purge
-sudo -E apt-get -yq --no-install-suggests --no-install-recommends \
-install dvipng texlive-latex-base texlive-latex-extra \
-    texlive-latex-recommended texlive-fonts-recommended \
-    latexmk gsfonts zip optipng
-
 # deactivate circleci virtualenv and setup a miniconda env instead
 if [[ `type -t deactivate` ]]; then
     deactivate
 fi
 
-MAMBAFORGE_PATH=$HOME/mambaforge
-# Install dependencies with mamba
-wget -q https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh \
-    -O mambaforge.sh
-chmod +x mambaforge.sh && ./mambaforge.sh -b -p $MAMBAFORGE_PATH
-export PATH="$MAMBAFORGE_PATH/bin:$PATH"
-mamba update --yes --quiet conda
-
-# imports get_dep
-source build_tools/shared.sh
-
-# packaging won't be needed once setuptools starts shipping packaging>=17.0
-mamba create -n $CONDA_ENV_NAME --yes --quiet \
-    python="${PYTHON_VERSION:-*}" \
-    "$(get_dep numpy $NUMPY_VERSION)" \
-    "$(get_dep scipy $SCIPY_VERSION)" \
-    "$(get_dep scikit-learn $SKLEARN_VERSION)" \
-    "$(get_dep matplotlib $MATPLOTLIB_VERSION)" \
-    "$(get_dep sphinx $SPHINX_VERSION)" \
-    "$(get_dep pandas $PANDAS_VERSION)" \
-    "$(get_dep sphinx-gallery $SPHINX_GALLERY_VERSION)" \
-    "$(get_dep numpydoc $NUMPYDOC_VERSION)" \
-    "$(get_dep sphinxcontrib-bibtex $SPHINXCONTRIB_BIBTEX_VERSION)" \
-    "$(get_dep sphinx-copybutton $SPHINXCONTRIB_BIBTEX_VERSION)" \
-    "$(get_dep pydata-sphinx-theme $PYDATA_SPHINX_THEME_VERSION)" \
-    "$(get_dep sphinx-design $SPHINX_DESIGN_VERSION)" \
-    memory_profiler packaging seaborn pytest coverage compilers tensorflow
-
-source activate $CONDA_ENV_NAME
-
-# Build and install imbalanced-learn in dev mode
-ls -l
-pip install -e . --no-build-isolation
+# Install pixi
+curl -fsSL https://pixi.sh/install.sh | bash
+export PATH=/home/circleci/.pixi/bin:$PATH
 
 # The pipefail is requested to propagate exit code
-set -o pipefail && cd doc && make $make_args 2>&1 | tee ~/log.txt
-
-cd -
+set -o pipefail && pixi run --frozen -e docs build-docs | tee ~/log.txt
 set +o pipefail

@@ -20,6 +20,8 @@ datset in machine learning and pattern recognition.
 #
 # Dev branch marker is: 'X.Y.dev' or 'X.Y.devN' where N is an integer.
 # 'X.Y.dev0' is the canonical version of 'X.Y.dev'
-#
 
-__version__ = "0.13.0.dev0"
+from pathlib import Path
+
+with open(Path(__file__).parent / "VERSION.txt") as _fh:
+    __version__ = _fh.read().strip()

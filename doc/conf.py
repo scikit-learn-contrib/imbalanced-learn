@@ -111,7 +111,9 @@ html_theme_options = {
     "show_toc_level": 1,
     # "navbar_align": "right",  # For testing that the navbar items align properly
     "logo": {
-        "image_dark": "https://imbalanced-learn.org/stable/_static/img/logo_wide_dark.png"
+        "image_dark": (
+            "https://imbalanced-learn.org/stable/_static/img/logo_wide_dark.png"
+        )
     },
 }
 
@@ -187,9 +189,11 @@ issues_user_uri = "https://github.com/{user}"
 # The following is used by sphinx.ext.linkcode to provide links to github
 linkcode_resolve = make_linkcode_resolve(
     "imblearn",
-    "https://github.com/scikit-learn-contrib/"
-    "imbalanced-learn/blob/{revision}/"
-    "{package}/{path}#L{lineno}",
+    (
+        "https://github.com/scikit-learn-contrib/"
+        "imbalanced-learn/blob/{revision}/"
+        "{package}/{path}#L{lineno}"
+    ),
 )
 
 # -- Options for LaTeX output ---------------------------------------------

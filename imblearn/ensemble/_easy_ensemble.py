@@ -266,9 +266,11 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
     def n_features_(self):
         """Number of features when ``fit`` is performed."""
         warnings.warn(
-            "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
-            "not be accessible when the minimum supported version of scikit-learn "
-            "is 1.2.",
+            (
+                "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
+                "not be accessible when the minimum supported version of scikit-learn "
+                "is 1.2."
+            ),
             FutureWarning,
         )
         return self.n_features_in_

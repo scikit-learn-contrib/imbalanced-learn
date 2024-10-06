@@ -318,12 +318,12 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
     if len(set_diff_sampling_strategy_target) > 0:
         raise ValueError(
             f"The {set_diff_sampling_strategy_target} target class is/are not "
-            f"present in the data."
+            "present in the data."
         )
     # check that there is no negative number
     if any(n_samples < 0 for n_samples in sampling_strategy.values()):
         raise ValueError(
-            f"The number of samples in a class cannot be negative."
+            "The number of samples in a class cannot be negative."
             f"'sampling_strategy' contains some negative value: {sampling_strategy}"
         )
     sampling_strategy_ = {}
@@ -333,9 +333,9 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
         for class_sample, n_samples in sampling_strategy.items():
             if n_samples < target_stats[class_sample]:
                 raise ValueError(
-                    f"With over-sampling methods, the number"
-                    f" of samples in a class should be greater"
-                    f" or equal to the original number of samples."
+                    "With over-sampling methods, the number"
+                    " of samples in a class should be greater"
+                    " or equal to the original number of samples."
                     f" Originally, there is {target_stats[class_sample]} "
                     f"samples and {n_samples} samples are asked."
                 )
@@ -344,9 +344,9 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
         for class_sample, n_samples in sampling_strategy.items():
             if n_samples > target_stats[class_sample]:
                 raise ValueError(
-                    f"With under-sampling methods, the number of"
-                    f" samples in a class should be less or equal"
-                    f" to the original number of samples."
+                    "With under-sampling methods, the number of"
+                    " samples in a class should be less or equal"
+                    " to the original number of samples."
                     f" Originally, there is {target_stats[class_sample]} "
                     f"samples and {n_samples} samples are asked."
                 )
@@ -380,7 +380,7 @@ def _sampling_strategy_list(sampling_strategy, y, sampling_type):
     if len(set_diff_sampling_strategy_target) > 0:
         raise ValueError(
             f"The {set_diff_sampling_strategy_target} target class is/are not "
-            f"present in the data."
+            "present in the data."
         )
 
     return {
@@ -535,7 +535,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
 
     if np.unique(y).size <= 1:
         raise ValueError(
-            f"The target 'y' needs to have more than 1 class. "
+            "The target 'y' needs to have more than 1 class. "
             f"Got {np.unique(y).size} class instead"
         )
 
@@ -545,9 +545,9 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
     if isinstance(sampling_strategy, str):
         if sampling_strategy not in SAMPLING_TARGET_KIND.keys():
             raise ValueError(
-                f"When 'sampling_strategy' is a string, it needs"
+                "When 'sampling_strategy' is a string, it needs"
                 f" to be one of {SAMPLING_TARGET_KIND}. Got '{sampling_strategy}' "
-                f"instead."
+                "instead."
             )
         return OrderedDict(
             sorted(SAMPLING_TARGET_KIND[sampling_strategy](y, sampling_type).items())
@@ -563,7 +563,7 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
     elif isinstance(sampling_strategy, Real):
         if sampling_strategy <= 0 or sampling_strategy > 1:
             raise ValueError(
-                f"When 'sampling_strategy' is a float, it should be "
+                "When 'sampling_strategy' is a float, it should be "
                 f"in the range (0, 1]. Got {sampling_strategy} instead."
             )
         return OrderedDict(
@@ -621,9 +621,11 @@ def _deprecate_positional_args(f):
                 for name, arg in zip(kwonly_args[:extra_args], args[-extra_args:])
             ]
             warnings.warn(
-                f"Pass {', '.join(args_msg)} as keyword args. From version 0.9 "
-                f"passing these as positional arguments will "
-                f"result in an error",
+                (
+                    f"Pass {', '.join(args_msg)} as keyword args. From version 0.9 "
+                    "passing these as positional arguments will "
+                    "result in an error"
+                ),
                 FutureWarning,
             )
         kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
@@ -637,8 +639,7 @@ def _check_X(X):
     n_samples = _num_samples(X)
     if n_samples < 1:
         raise ValueError(
-            f"Found array with {n_samples} sample(s) while a minimum of 1 is "
-            "required."
+            f"Found array with {n_samples} sample(s) while a minimum of 1 is required."
         )
     if _is_pandas_df(X):
         return X

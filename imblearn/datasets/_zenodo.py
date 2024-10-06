@@ -45,6 +45,7 @@ References
 
 import tarfile
 from collections import OrderedDict
+from inspect import signature
 from io import BytesIO
 from os import makedirs
 from os.path import isfile, join
@@ -254,7 +255,7 @@ def fetch_datasets(
                 if it < 1 or it > 27:
                     raise ValueError(
                         f"The dataset with the ID={it} is not an "
-                        f"available dataset. The IDs are "
+                        "available dataset. The IDs are "
                         f"{range(1, 28)}"
                     )
                 else:
@@ -263,7 +264,7 @@ def fetch_datasets(
                     filter_data_.append(MAP_ID_NAME[it])
             else:
                 raise ValueError(
-                    f"The value in the tuple should be str or int."
+                    "The value in the tuple should be str or int."
                     f" Got {type(it)} instead."
                 )
 
@@ -279,7 +280,10 @@ def fetch_datasets(
                 print("Downloading %s" % URL)
             f = BytesIO(urlopen(URL).read())
             tar = tarfile.open(fileobj=f)
-            tar.extractall(path=zenodo_dir)
+            if "filter" in signature(tar.extractall).parameters:
+                tar.extractall(path=zenodo_dir, filter="data")
+            else:  # Python < 3.12
+                tar.extractall(path=zenodo_dir)
         elif not download_if_missing and not available:
             raise IOError("Data not found and `download_if_missing` is False")
 

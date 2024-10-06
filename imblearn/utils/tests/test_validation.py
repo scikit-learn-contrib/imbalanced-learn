@@ -133,7 +133,7 @@ def test_check_sampling_strategy_error_wrong_string(
 ):
     with pytest.raises(
         ValueError,
-        match=("'{}' cannot be used with {}".format(sampling_strategy, err_msg)),
+        match="'{}' cannot be used with {}".format(sampling_strategy, err_msg),
     ):
         check_sampling_strategy(sampling_strategy, np.array([1, 2, 3]), sampling_type)
 

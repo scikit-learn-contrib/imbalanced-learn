@@ -154,9 +154,11 @@ class ADASYN(BaseOverSampler):
         # FIXME: to be removed in 0.12
         if self.n_jobs is not None:
             warnings.warn(
-                "The parameter `n_jobs` has been deprecated in 0.10 and will be "
-                "removed in 0.12. You can pass an nearest neighbors estimator where "
-                "`n_jobs` is already set instead.",
+                (
+                    "The parameter `n_jobs` has been deprecated in 0.10 and will be"
+                    " removed in 0.12. You can pass an nearest neighbors estimator"
+                    " where `n_jobs` is already set instead."
+                ),
                 FutureWarning,
             )
 

@@ -176,15 +176,15 @@ class RandomOverSampler(BaseOverSampler):
             )
             if missing_shrinkage_keys:
                 raise ValueError(
-                    f"`shrinkage` should contain a shrinkage factor for "
-                    f"each class that will be resampled. The missing "
+                    "`shrinkage` should contain a shrinkage factor for "
+                    "each class that will be resampled. The missing "
                     f"classes are: {repr(missing_shrinkage_keys)}"
                 )
 
             for klass, shrink_factor in self.shrinkage_.items():
                 if shrink_factor < 0:
                     raise ValueError(
-                        f"The shrinkage factor needs to be >= 0. "
+                        "The shrinkage factor needs to be >= 0. "
                         f"Got {shrink_factor} for class {klass}."
                     )
 
