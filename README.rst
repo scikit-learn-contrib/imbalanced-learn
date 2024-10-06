@@ -129,6 +129,21 @@ of the scikit-learn community. Therefore, you can refer to their
 `Development Guide
 <http://scikit-learn.org/stable/developers>`_.
 
+Endorsement of the Scientific Python Specification
+--------------------------------------------------
+
+We endorse good practices from the Scientific Python Ecosystem Coordination (SPEC).
+The full list of recommendations is available `here`_.
+
+See below the list of recommendations that we endorse for the imbalanced-learn project.
+
+|SPEC 0 — Minimum Supported Dependencies|
+
+.. |SPEC 0 — Minimum Supported Dependencies| image:: https://img.shields.io/badge/SPEC-0-green?labelColor=%23004811&color=%235CA038
+   :target: https://scientific-python.org/specs/spec-0000/
+
+.. _here: https://scientific-python.org/specs/
+
 About
 -----
 
