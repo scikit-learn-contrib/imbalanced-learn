@@ -8413,7 +8413,7 @@ packages:
   name: imbalanced-learn
   version: 0.13.0.dev0
   path: .
-  sha256: cbdd2c2075a9c5c4bb2144457429af2c6e28abd050561bbd736f868dc445e812
+  sha256: 909c83860abc2f17e85be5629f2714420d453578bc34b0e531d26e5ca25abeef
   requires_dist:
   - numpy<3,>=1.24.3
   - scipy<2,>=1.10.1

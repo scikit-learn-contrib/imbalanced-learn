@@ -261,6 +261,9 @@ filterwarnings = [
     # Turn deprecation warnings into errors
     "error::FutureWarning",
     "error::DeprecationWarning",
+
+    # raised by `joblib` in old versions
+    "ignore:.*distutils Version classes are deprecated.*:DeprecationWarning",
 ]
 addopts = "--doctest-modules --color=yes -rs"
 doctest_optionflags = "NORMALIZE_WHITESPACE ELLIPSIS"
