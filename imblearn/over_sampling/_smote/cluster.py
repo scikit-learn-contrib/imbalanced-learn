@@ -126,7 +126,7 @@ class KMeansSMOTE(BaseSMOTE):
     >>> from imblearn.over_sampling import KMeansSMOTE
     >>> from sklearn.datasets import make_blobs
     >>> blobs = [100, 800, 100]
-    >>> X, y  = make_blobs(blobs, centers=[(-10, 0), (0,0), (10, 0)])
+    >>> X, y  = make_blobs(blobs, centers=[(-10, 0), (0,0), (10, 0)], random_state=0)
     >>> # Add a single 0 sample in the middle blob
     >>> X = np.concatenate([X, [[0, 0]]])
     >>> y = np.append(y, 0)
