@@ -7,7 +7,6 @@ from collections import Counter
 
 import numpy as np
 import pytest
-import sklearn
 from sklearn.cluster import KMeans
 from sklearn.datasets import load_iris, make_classification, make_hastie_10_2
 from sklearn.dummy import DummyClassifier
@@ -22,7 +21,6 @@ from sklearn.utils._testing import (
     assert_array_almost_equal,
     assert_array_equal,
 )
-from sklearn.utils.fixes import parse_version
 
 from imblearn import FunctionSampler
 from imblearn.datasets import make_imbalance
@@ -31,7 +29,6 @@ from imblearn.over_sampling import SMOTE, RandomOverSampler
 from imblearn.pipeline import make_pipeline
 from imblearn.under_sampling import ClusterCentroids, RandomUnderSampler
 
-sklearn_version = parse_version(sklearn.__version__)
 iris = load_iris()
 
 

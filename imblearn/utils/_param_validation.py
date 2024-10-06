@@ -13,9 +13,9 @@ import numpy as np
 import sklearn
 from scipy.sparse import csr_matrix, issparse
 from sklearn.utils.fixes import parse_version
+from sklearn.utils.validation import _is_arraylike_not_scalar
 
 from .._config import config_context, get_config
-from ..utils.fixes import _is_arraylike_not_scalar
 
 sklearn_version = parse_version(sklearn.__version__)
 

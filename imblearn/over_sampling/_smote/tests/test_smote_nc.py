@@ -8,20 +8,16 @@ from collections import Counter
 
 import numpy as np
 import pytest
-import sklearn
 from scipy import sparse
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.utils._testing import assert_allclose, assert_array_equal
-from sklearn.utils.fixes import parse_version
 
 from imblearn.over_sampling import SMOTENC
 from imblearn.utils.estimator_checks import (
     _set_checking_parameters,
     check_param_validation,
 )
-
-sklearn_version = parse_version(sklearn.__version__)
 
 
 def data_heterogneous_ordered():

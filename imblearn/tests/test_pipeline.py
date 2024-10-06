@@ -13,7 +13,6 @@ from tempfile import mkdtemp
 
 import numpy as np
 import pytest
-import sklearn
 from joblib import Memory
 from pytest import raises
 from sklearn.base import BaseEstimator, clone
@@ -31,15 +30,12 @@ from sklearn.utils._testing import (
     assert_array_almost_equal,
     assert_array_equal,
 )
-from sklearn.utils.fixes import parse_version
 
 from imblearn.datasets import make_imbalance
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import EditedNearestNeighbours as ENN
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.utils.estimator_checks import check_param_validation
-
-sklearn_version = parse_version(sklearn.__version__)
 
 JUNK_FOOD_DOCS = (
     "the pizza pizza beer copyright",
