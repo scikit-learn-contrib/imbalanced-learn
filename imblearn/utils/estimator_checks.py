@@ -12,7 +12,6 @@ from collections import Counter
 from functools import partial
 
 import numpy as np
-import pytest
 import sklearn
 from scipy import sparse
 from sklearn.base import clone, is_classifier, is_regressor
@@ -30,7 +29,6 @@ from sklearn.utils._testing import (
     SkipTest,
     assert_allclose,
     assert_array_equal,
-    assert_raises_regex,
     raises,
     set_random_state,
 )
@@ -60,11 +58,6 @@ def sample_dataset_generator():
         random_state=0,
     )
     return X, y
-
-
-@pytest.fixture(name="sample_dataset_generator")
-def sample_dataset_generator_fixture():
-    return sample_dataset_generator()
 
 
 def _set_checking_parameters(estimator):
@@ -166,6 +159,7 @@ def parametrize_with_checks(estimators):
     ... def test_sklearn_compatible_estimator(estimator, check):
     ...     check(estimator)
     """
+    import pytest
 
     def checks_generator():
         for estimator in estimators:
@@ -185,24 +179,14 @@ def check_target_type(name, estimator_orig):
     X = np.random.random((20, 2))
     y = np.linspace(0, 1, 20)
     msg = "Unknown label type:"
-    assert_raises_regex(
-        ValueError,
-        msg,
-        estimator.fit_resample,
-        X,
-        y,
-    )
+    with raises(ValueError, err_msg=msg):
+        estimator.fit_resample(X, y)
     # if the target is multilabel then we should raise an error
     rng = np.random.RandomState(42)
     y = rng.randint(2, size=(20, 3))
     msg = "Multilabel and multioutput targets are not supported."
-    assert_raises_regex(
-        ValueError,
-        msg,
-        estimator.fit_resample,
-        X,
-        y,
-    )
+    with raises(ValueError, err_msg=msg):
+        estimator.fit_resample(X, y)
 
 
 def check_samplers_one_label(name, sampler_orig):
@@ -303,7 +287,12 @@ def check_samplers_sparse(name, sampler_orig):
 
 
 def check_samplers_pandas_sparse(name, sampler_orig):
-    pd = pytest.importorskip("pandas")
+    try:
+        import pandas as pd
+    except ImportError:
+        raise SkipTest(
+            "pandas is not installed: not checking column name consistency for pandas"
+        )
     sampler = clone(sampler_orig)
     # Check that the samplers handle pandas dataframe and pandas series
     X, y = sample_dataset_generator()
@@ -331,7 +320,12 @@ def check_samplers_pandas_sparse(name, sampler_orig):
 
 
 def check_samplers_pandas(name, sampler_orig):
-    pd = pytest.importorskip("pandas")
+    try:
+        import pandas as pd
+    except ImportError:
+        raise SkipTest(
+            "pandas is not installed: not checking column name consistency for pandas"
+        )
     sampler = clone(sampler_orig)
     # Check that the samplers handle pandas dataframe and pandas series
     X, y = sample_dataset_generator()
@@ -451,14 +445,19 @@ def check_classifier_on_multilabel_or_multioutput_targets(name, estimator_orig):
     estimator = clone(estimator_orig)
     X, y = make_multilabel_classification(n_samples=30)
     msg = "Multilabel and multioutput targets are not supported."
-    with pytest.raises(ValueError, match=msg):
+    with raises(ValueError, match=msg):
         estimator.fit(X, y)
 
 
 def check_classifiers_with_encoded_labels(name, classifier_orig):
     # Non-regression test for #709
     # https://github.com/scikit-learn-contrib/imbalanced-learn/issues/709
-    pd = pytest.importorskip("pandas")
+    try:
+        import pandas as pd
+    except ImportError:
+        raise SkipTest(
+            "pandas is not installed: not checking column name consistency for pandas"
+        )
     classifier = clone(classifier_orig)
     iris = load_iris(as_frame=True)
     df, y = iris.data, iris.target

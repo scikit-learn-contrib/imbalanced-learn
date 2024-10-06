@@ -98,7 +98,7 @@ def test_check_samplers_nan():
 
 
 mapping_estimator_error = {
-    "BaseBadSampler": (AssertionError, "ValueError not raised by fit"),
+    "BaseBadSampler": (AssertionError, None),
     "SamplerSingleClass": (AssertionError, "Sampler can't balance when only"),
     "NotFittedSampler": (AssertionError, "No fitted attribute"),
     "NoAcceptingSparseSampler": (TypeError, "dense data is required"),
