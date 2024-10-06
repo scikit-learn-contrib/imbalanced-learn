@@ -222,11 +222,3 @@ def test_easy_ensemble_classifier_grid_search():
         cv=5,
     )
     grid_search.fit(X, y)
-
-
-def test_easy_ensemble_classifier_n_features():
-    """Check that we raise a FutureWarning when accessing `n_features_`."""
-    X, y = load_iris(return_X_y=True)
-    estimator = EasyEnsembleClassifier().fit(X, y)
-    with pytest.warns(FutureWarning, match="`n_features_` was deprecated"):
-        estimator.n_features_

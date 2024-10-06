@@ -343,14 +343,6 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         The number of classes (single output problem), or a list containing the
         number of classes for each output (multi-output problem).
 
-    n_features_ : int
-        The number of features when `fit` is performed.
-
-        .. deprecated:: 1.0
-           `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
-           in version 1.2. When the minimum version of `scikit-learn` supported
-           by `imbalanced-learn` will reach 1.2, this attribute will be removed.
-
     n_features_in_ : int
         Number of features in the input dataset.
 
@@ -502,13 +494,8 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
     def _validate_estimator(self, default=DecisionTreeClassifier()):
         """Check the estimator and the n_estimator attribute, set the
         `estimator_` attribute."""
-        if hasattr(self, "estimator"):
-            base_estimator = self.estimator
-        else:
-            base_estimator = self.base_estimator
-
-        if base_estimator is not None:
-            self.estimator_ = clone(base_estimator)
+        if self.estimator is not None:
+            self.estimator_ = clone(self.estimator)
         else:
             self.estimator_ = clone(default)
 
@@ -893,22 +880,5 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
         return oob_pred
 
-    # TODO: remove when supporting scikit-learn>=1.2
-    @property
-    def n_features_(self):
-        """Number of features when ``fit`` is performed."""
-        warn(
-            (
-                "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
-                "not be accessible when the minimum supported version of scikit-learn "
-                "is 1.2."
-            ),
-            FutureWarning,
-        )
-        return self.n_features_in_
-
     def _more_tags(self):
-        return {
-            "multioutput": False,
-            "multilabel": False,
-        }
+        return {"multioutput": False, "multilabel": False}

@@ -66,6 +66,7 @@ Dependencies
 - NumPy (>= |NumPyMinVersion|)
 - SciPy (>= |SciPyMinVersion|)
 - Scikit-learn (>= |ScikitLearnMinVersion|)
+- Pytest (>= |PytestMinVersion|)
 
 Additionally, `imbalanced-learn` requires the following optional dependencies:
 

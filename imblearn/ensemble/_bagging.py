@@ -6,7 +6,6 @@
 
 import copy
 import numbers
-import warnings
 
 import numpy as np
 import sklearn
@@ -120,14 +119,6 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         The base estimator from which the ensemble is grown.
 
         .. versionadded:: 0.10
-
-    n_features_ : int
-        The number of features when `fit` is performed.
-
-        .. deprecated:: 1.0
-           `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
-           in version 1.2. When the minimum version of `scikit-learn` supported
-           by `imbalanced-learn` will reach 1.2, this attribute will be removed.
 
     estimators_ : list of estimators
         The collection of fitted base estimators.
@@ -330,20 +321,6 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         self.estimator_ = Pipeline(
             [("sampler", self.sampler_), ("classifier", estimator)]
         )
-
-    # TODO: remove when supporting scikit-learn>=1.2
-    @property
-    def n_features_(self):
-        """Number of features when ``fit`` is performed."""
-        warnings.warn(
-            (
-                "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
-                "not be accessible when the minimum supported version of scikit-learn "
-                "is 1.2."
-            ),
-            FutureWarning,
-        )
-        return self.n_features_in_
 
     @_fit_context(prefer_skip_nested_validation=False)
     def fit(self, X, y):

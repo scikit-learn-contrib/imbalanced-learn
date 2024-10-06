@@ -73,10 +73,7 @@ def _set_checking_parameters(estimator):
     if "n_estimators" in params:
         estimator.set_params(n_estimators=min(5, estimator.n_estimators))
     if name == "ClusterCentroids":
-        if sklearn_version < parse_version("1.1"):
-            algorithm = "full"
-        else:
-            algorithm = "lloyd"
+        algorithm = "lloyd"
         estimator.set_params(
             voting="soft",
             estimator=KMeans(random_state=0, algorithm=algorithm, n_init=1),
@@ -689,33 +686,14 @@ def check_dataframe_column_names_consistency(name, estimator_orig):
         X_bad = pd.DataFrame(X, columns=invalid_name)
 
         for name, method in check_methods:
-            if sklearn_version >= parse_version("1.2"):
-                expected_msg = re.escape(
-                    "The feature names should match those that were passed during fit."
-                    f"\n{additional_message}"
-                )
-                with raises(
-                    ValueError, match=expected_msg, err_msg=f"{name} did not raise"
-                ):
-                    method(X_bad)
-            else:
-                expected_msg = re.escape(
-                    "The feature names should match those that were passed "
-                    "during fit. Starting version 1.2, an error will be raised.\n"
-                    f"{additional_message}"
-                )
-                with warnings.catch_warnings():
-                    warnings.filterwarnings(
-                        "error",
-                        category=FutureWarning,
-                        module="sklearn",
-                    )
-                    with raises(
-                        FutureWarning,
-                        match=expected_msg,
-                        err_msg=f"{name} did not raise",
-                    ):
-                        method(X_bad)
+            expected_msg = re.escape(
+                "The feature names should match those that were passed during fit."
+                f"\n{additional_message}"
+            )
+            with raises(
+                ValueError, match=expected_msg, err_msg=f"{name} did not raise"
+            ):
+                method(X_bad)
 
         # partial_fit checks on second call
         # Do not call partial fit if early_stopping is on

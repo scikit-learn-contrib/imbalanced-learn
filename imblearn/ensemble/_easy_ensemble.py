@@ -100,14 +100,6 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
     n_classes_ : int or list
         The number of classes.
 
-    n_features_ : int
-        The number of features when `fit` is performed.
-
-        .. deprecated:: 1.0
-           `n_features_` is deprecated in `scikit-learn` 1.0 and will be removed
-           in version 1.2. When the minimum version of `scikit-learn` supported
-           by `imbalanced-learn` will reach 1.2, this attribute will be removed.
-
     n_features_in_ : int
         Number of features in the input dataset.
 

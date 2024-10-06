@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 import sklearn
-from sklearn.datasets import load_iris, make_classification
+from sklearn.datasets import make_classification
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.utils._testing import assert_allclose, assert_array_equal
 from sklearn.utils.fixes import parse_version
@@ -217,16 +217,6 @@ def test_balanced_random_forest_oob_binomial(ratio):
     )
     erf.fit(X, y)
     assert np.abs(erf.oob_score_ - 0.5) < 0.1
-
-
-def test_balanced_bagging_classifier_n_features():
-    """Check that we raise a FutureWarning when accessing `n_features_`."""
-    X, y = load_iris(return_X_y=True)
-    estimator = BalancedRandomForestClassifier(
-        sampling_strategy="all", replacement=True, bootstrap=False
-    ).fit(X, y)
-    with pytest.warns(FutureWarning, match="`n_features_` was deprecated"):
-        estimator.n_features_
 
 
 # TODO: remove in 0.13
