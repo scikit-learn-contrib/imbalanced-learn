@@ -6,7 +6,6 @@ import re
 from pathlib import Path
 
 import pytest
-import tomllib
 from packaging.requirements import Requirement
 from packaging.version import parse
 
@@ -14,9 +13,13 @@ import imblearn
 
 
 @pytest.mark.skipif(
-    platform.system() == "Windows", reason="This test is enough on unix system"
+    platform.system() == "Windows" or parse(platform.python_version()) < parse("3.11"),
+    reason="This test is enough on unix system and requires Python >= 3.11",
 )
 def test_min_dependencies_readme():
+    # local import to not import the file with Python < 3.11
+    import tomllib
+
     # Test that the minimum dependencies in the README.rst file are
     # consistent with the minimum dependencies defined at the file:
     # pyproject.toml
