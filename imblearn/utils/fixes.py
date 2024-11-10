@@ -15,7 +15,7 @@ from sklearn.utils.fixes import parse_version
 from .._config import config_context, get_config
 
 sp_version = parse_version(scipy.__version__)
-sklearn_version = parse_version(sklearn.__version__)
+sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
 
 
 # TODO: Remove when SciPy 1.9 is the minimum supported version
@@ -136,3 +136,39 @@ except ImportError:
                 return False
             return isinstance(X, pd.DataFrame)
         return False
+
+
+if sklearn_version < parse_version("1.6"):
+    from sklearn.utils._tags import _safe_tags as get_tags
+else:
+    from sklearn.utils import get_tags
+
+if sklearn_version < parse_version("1.6"):
+    def validate_data(
+        _estimator,
+        /,
+        X="no_validation",
+        y="no_validation",
+        reset=True,
+        validate_separately=False,
+        skip_check_array=False,
+        **check_params,
+    ):
+        return _estimator._validate_data(
+            X, y, reset, validate_separately, skip_check_array, **check_params
+        )
+else:
+    from sklearn.utils.validation import validate_data  # type: ignore[no-redef]
+
+
+if sklearn_version < parse_version("1.6"):
+    def _check_n_features(estimator, X, *, reset):
+        return estimator._check_n_features(X, reset=reset)
+else:
+    from sklearn.utils.validation import _check_n_features  # type: ignore[no-redef]
+
+if sklearn_version < parse_version("1.6"):
+    def _check_feature_names(estimator, X, *, reset):
+        return estimator._check_feature_names(X, reset=reset)
+else:
+    from sklearn.utils.validation import _check_feature_names  # type: ignore[no-redef]

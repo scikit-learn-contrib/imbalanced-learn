@@ -14,6 +14,7 @@ from sklearn.utils.validation import check_is_fitted
 
 from ..base import _ParamsValidationMixin
 from ..utils._param_validation import StrOptions
+from ..utils.fixes import validate_data
 
 
 class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
@@ -148,7 +149,7 @@ class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
         """
         self._validate_params()
         check_consistent_length(X, y)
-        X, y = self._validate_data(X, y, reset=True, dtype=np.int32)
+        X, y = validate_data(self, X=X, y=y, reset=True, dtype=np.int32)
 
         if isinstance(self.n_categories, str) and self.n_categories == "auto":
             # categories are expected to be encoded from 0 to n_categories - 1
@@ -207,11 +208,11 @@ class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
             The VDM pairwise distance.
         """
         check_is_fitted(self)
-        X = self._validate_data(X, reset=False, dtype=np.int32)
+        X = validate_data(self, X=X, reset=False, dtype=np.int32)
         n_samples_X = X.shape[0]
 
         if Y is not None:
-            Y = self._validate_data(Y, reset=False, dtype=np.int32)
+            Y = validate_data(self, Y=Y, reset=False, dtype=np.int32)
             n_samples_Y = Y.shape[0]
         else:
             n_samples_Y = n_samples_X

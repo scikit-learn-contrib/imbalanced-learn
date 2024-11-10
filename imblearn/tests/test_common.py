@@ -1,4 +1,5 @@
 """Common tests"""
+
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
@@ -10,8 +11,7 @@ import numpy as np
 import pytest
 from sklearn.base import clone
 from sklearn.exceptions import ConvergenceWarning
-from sklearn.utils._testing import SkipTest, ignore_warnings, set_random_state
-from sklearn.utils.estimator_checks import _construct_instance, _get_check_estimator_ids
+from sklearn.utils._testing import ignore_warnings
 from sklearn.utils.estimator_checks import (
     parametrize_with_checks as parametrize_with_checks_sklearn,
 )
@@ -25,6 +25,10 @@ from imblearn.utils.estimator_checks import (
     parametrize_with_checks,
 )
 from imblearn.utils.testing import all_estimators
+from imblearn.utils._test_common.instance_generator import (
+    _get_check_estimator_ids,
+    _tested_estimators,
+)
 
 
 @pytest.mark.parametrize("name, Estimator", all_estimators())
@@ -32,22 +36,6 @@ def test_all_estimator_no_base_class(name, Estimator):
     # test that all_estimators doesn't find abstract classes.
     msg = f"Base estimators such as {name} should not be included in all_estimators"
     assert not name.lower().startswith("base"), msg
-
-
-def _tested_estimators():
-    for name, Estimator in all_estimators():
-        try:
-            estimator = _construct_instance(Estimator)
-            set_random_state(estimator)
-        except SkipTest:
-            continue
-
-        if isinstance(estimator, NearMiss):
-            # For NearMiss, let's check the three algorithms
-            for version in (1, 2, 3):
-                yield clone(estimator).set_params(version=version)
-        else:
-            yield estimator
 
 
 @parametrize_with_checks_sklearn(list(_tested_estimators()))

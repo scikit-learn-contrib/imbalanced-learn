@@ -11,9 +11,11 @@ from numbers import Integral, Real
 
 import numpy as np
 from scipy.sparse import issparse
+import sklearn
 from sklearn.base import clone
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_array, column_or_1d
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _num_samples
 
@@ -27,6 +29,8 @@ SAMPLING_KIND = (
     "bypass",
 )
 TARGET_KIND = ("binary", "multiclass", "multilabel-indicator")
+
+sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
 
 
 class ArraysTransformer:
@@ -643,6 +647,11 @@ def _check_X(X):
         )
     if _is_pandas_df(X):
         return X
+    if sklearn_version >= parse_version("1.6"):
+        kwargs = {"ensure_all_finite": False}
+    else:
+        kwargs = {"force_all_finite": False}
+
     return check_array(
-        X, dtype=None, accept_sparse=["csr", "csc"], force_all_finite=False
+        X, dtype=None, accept_sparse=["csr", "csc"], **kwargs
     )

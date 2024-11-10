@@ -15,6 +15,7 @@ from imblearn.utils.estimator_checks import (
     check_samplers_string,
     check_target_type,
 )
+from imblearn.utils.fixes import validate_data
 
 
 class BaseBadSampler(BaseEstimator):
@@ -47,7 +48,7 @@ class NotFittedSampler(BaseBadSampler):
     """Sampler without target checking."""
 
     def fit(self, X, y):
-        X, y = self._validate_data(X, y)
+        X, y = validate_data(self, X=X, y=y)
         return self
 
 
@@ -55,7 +56,7 @@ class NoAcceptingSparseSampler(BaseBadSampler):
     """Sampler which does not accept sparse matrix."""
 
     def fit(self, X, y):
-        X, y = self._validate_data(X, y)
+        X, y = validate_data(self, X=X, y=y)
         self.sampling_strategy_ = "sampling_strategy_"
         return self
 
@@ -72,9 +73,10 @@ class NotPreservingDtypeSampler(BaseSampler):
 class IndicesSampler(BaseOverSampler):
     def _check_X_y(self, X, y):
         y, binarize_y = target_check(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X,
-            y,
+        X, y = validate_data(
+            self,
+            X=X,
+            y=y,
             reset=True,
             dtype=None,
             force_all_finite=False,

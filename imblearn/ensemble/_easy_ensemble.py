@@ -14,7 +14,6 @@ from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
-from sklearn.utils._tags import _safe_tags
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.parallel import Parallel, delayed
@@ -27,11 +26,11 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Interval, StrOptions
-from ..utils.fixes import _fit_context
+from ..utils.fixes import _fit_context, get_tags, validate_data
 from ._common import _bagging_parameter_constraints, _estimator_has
 
 MAX_INT = np.iinfo(np.int32).max
-sklearn_version = parse_version(sklearn.__version__)
+sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
 
 
 @Substitution(
@@ -311,12 +310,17 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         check_is_fitted(self)
 
         # Check data
-        X = self._validate_data(
-            X,
+        if sklearn_version < parse_version("1.6"):
+            kwargs = {"force_all_finite": False}
+        else:
+            kwargs = {"ensure_all_finite": False}
+        X = validate_data(
+            self,
+            X=X,
             accept_sparse=["csr", "csc"],
             dtype=None,
-            force_all_finite=False,
             reset=False,
+            **kwargs,
         )
 
         # Parallel loop
@@ -351,4 +355,6 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
 
     # TODO: remove when minimum supported version of scikit-learn is 1.5
     def _more_tags(self):
-        return {"allow_nan": _safe_tags(self._get_estimator(), "allow_nan")}
+        # This code should not be called for scikit-learn >= 1.6
+        # Therefore, get_tags corresponds to _safe_tags that returns a dict
+        return {"allow_nan": get_tags(self._get_estimator(), "allow_nan")}

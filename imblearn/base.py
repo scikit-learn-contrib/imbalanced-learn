@@ -7,13 +7,24 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
+import sklearn
 from sklearn.base import BaseEstimator, OneToOneFeatureMixin
 from sklearn.preprocessing import label_binarize
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.multiclass import check_classification_targets
+from sklearn.utils.fixes import parse_version
 
 from .utils import check_sampling_strategy, check_target_type
+from .utils.fixes import validate_data
 from .utils._param_validation import validate_parameter_constraints
+from .utils._tags import InputTags
 from .utils._validation import ArraysTransformer
+
+
+def check_version():
+    return parse_version(
+        parse_version(sklearn.__version__).base_version
+    ) >= parse_version("1.6")
 
 
 class _ParamsValidationMixin:
@@ -147,7 +158,7 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
         if accept_sparse is None:
             accept_sparse = ["csr", "csc"]
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(X, y, reset=True, accept_sparse=accept_sparse)
+        X, y = validate_data(self, X=X, y=y, reset=True, accept_sparse=accept_sparse)
         return X, y, binarize_y
 
     def fit(self, X, y):
@@ -196,8 +207,17 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
         self._validate_params()
         return super().fit_resample(X, y)
 
+    @available_if(check_version)
     def _more_tags(self):
         return {"X_types": ["2darray", "sparse", "dataframe"]}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags = InputTags()
+        tags.input_tags.two_d_array = True
+        tags.input_tags.sparse = True
+        tags.input_tags.dataframe = True
+        return tags
 
 
 def _identity(X, y):

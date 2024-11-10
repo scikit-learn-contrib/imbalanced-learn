@@ -35,11 +35,11 @@ from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Hidden, Interval, StrOptions
 from ..utils._validation import check_sampling_strategy
-from ..utils.fixes import _fit_context
+from ..utils.fixes import _fit_context, validate_data
 from ._common import _random_forest_classifier_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
-sklearn_version = parse_version(sklearn.__version__)
+sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
 
 
 def _local_parallel_build_trees(
@@ -597,21 +597,25 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         # TODO: remove when the minimum supported version of scipy will be 1.4
         # Support for missing values
         if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
-            force_all_finite = False
+            if sklearn_version >= parse_version("1.6"):
+                kwargs = {"ensure_all_finite": False}
+            else:
+                kwargs = {"force_all_finite": False}
         else:
-            force_all_finite = True
+            kwargs = {"force_all_finite": False}
 
-        X, y = self._validate_data(
-            X,
-            y,
+        X, y = validate_data(
+            self,
+            X=X,
+            y=y,
             multi_output=True,
             accept_sparse="csc",
             dtype=DTYPE,
-            force_all_finite=force_all_finite,
+            **kwargs,
         )
 
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
-        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+        if sklearn_version >= parse_version("1.4"):
             # _compute_missing_values_in_feature_mask checks if X has missing values and
             # will raise an error if the underlying tree base estimator can't handle
             # missing values. Only the criterion is required to determine if the tree
