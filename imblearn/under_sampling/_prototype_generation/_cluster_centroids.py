@@ -12,10 +12,12 @@ from sklearn.base import clone
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import _safe_indexing
+from sklearn.utils.metaestimators import available_if
 
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
 from ...utils._param_validation import HasMethods, StrOptions
+from ...utils.fixes import check_version_package
 from ..base import BaseUnderSampler
 
 VOTING_KIND = ("auto", "hard", "soft")
@@ -201,5 +203,6 @@ class ClusterCentroids(BaseUnderSampler):
 
         return X_resampled, np.array(y_resampled, dtype=y.dtype)
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"sample_indices": False}

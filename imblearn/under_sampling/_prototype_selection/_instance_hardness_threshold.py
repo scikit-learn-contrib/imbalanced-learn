@@ -15,9 +15,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
 from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils.metaestimators import available_if
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils.fixes import check_version_package
 from ...utils._param_validation import HasMethods
 from ..base import BaseUnderSampler
 
@@ -200,5 +202,6 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
         return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"sample_indices": True}

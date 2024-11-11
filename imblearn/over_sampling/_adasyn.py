@@ -10,8 +10,10 @@ import warnings
 import numpy as np
 from scipy import sparse
 from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils.metaestimators import available_if
 
 from ..utils import Substitution, check_neighbors_object
+from ..utils.fixes import check_version_package
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import HasMethods, Interval
 from .base import BaseOverSampler
@@ -229,6 +231,7 @@ class ADASYN(BaseOverSampler):
 
         return X_resampled, y_resampled
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {
             "X_types": ["2darray"],

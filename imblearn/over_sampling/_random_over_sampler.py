@@ -10,12 +10,13 @@ from numbers import Real
 import numpy as np
 from scipy import sparse
 from sklearn.utils import _safe_indexing, check_array, check_random_state
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.sparsefuncs import mean_variance_axis
 
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
 from ..utils._param_validation import Interval
-from ..utils.fixes import _check_n_features, _check_feature_names
+from ..utils.fixes import _check_n_features, _check_feature_names, check_version_package
 from ..utils._validation import _check_X
 from .base import BaseOverSampler
 
@@ -250,6 +251,7 @@ class RandomOverSampler(BaseOverSampler):
 
         return X_resampled, y_resampled
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {
             "X_types": ["2darray", "string", "sparse", "dataframe"],

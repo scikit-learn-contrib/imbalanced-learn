@@ -24,6 +24,7 @@ from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing, check_random_state
 from sklearn.utils.fixes import parse_version
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import _check_sample_weight
@@ -35,7 +36,7 @@ from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Hidden, Interval, StrOptions
 from ..utils._validation import check_sampling_strategy
-from ..utils.fixes import _fit_context, validate_data
+from ..utils.fixes import _fit_context, check_version_package, validate_data
 from ._common import _random_forest_classifier_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
@@ -884,5 +885,6 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
         return oob_pred
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"multioutput": False, "multilabel": False}

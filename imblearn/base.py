@@ -12,19 +12,11 @@ from sklearn.base import BaseEstimator, OneToOneFeatureMixin
 from sklearn.preprocessing import label_binarize
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.multiclass import check_classification_targets
-from sklearn.utils.fixes import parse_version
 
 from .utils import check_sampling_strategy, check_target_type
-from .utils.fixes import validate_data
+from .utils.fixes import check_version_package, validate_data
 from .utils._param_validation import validate_parameter_constraints
 from .utils._validation import ArraysTransformer
-
-
-def check_version(estimator):
-    return parse_version(
-        parse_version(sklearn.__version__).base_version
-    ) < parse_version("1.6")
-
 
 class _ParamsValidationMixin:
     """Mixin class to validate parameters."""
@@ -206,10 +198,11 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
         self._validate_params()
         return super().fit_resample(X, y)
 
-    @available_if(check_version)
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"X_types": ["2darray", "sparse", "dataframe"]}
 
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
     def __sklearn_tags__(self):
         tags = super().__sklearn_tags__()
 

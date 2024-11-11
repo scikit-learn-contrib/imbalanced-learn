@@ -9,12 +9,13 @@ import numpy as np
 from scipy.spatial import distance_matrix
 from sklearn.base import BaseEstimator
 from sklearn.utils import check_consistent_length
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_array, check_is_fitted
 
 from ..base import _ParamsValidationMixin
 from ..utils._param_validation import StrOptions
-from ..utils.fixes import validate_data
+from ..utils.fixes import check_version_package, validate_data
 
 
 class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
@@ -229,6 +230,7 @@ class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
             )
         return distance
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {
             "requires_positive_X": True,  # X should be encoded with OrdinalEncoder

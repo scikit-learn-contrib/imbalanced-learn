@@ -10,8 +10,10 @@ import numbers
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import _safe_indexing
+from sklearn.utils.metaestimators import available_if
 
 from ...utils import Substitution
+from ...utils.fixes import check_version_package
 from ...utils._docstring import _n_jobs_docstring
 from ..base import BaseCleaningSampler
 
@@ -156,5 +158,6 @@ class TomekLinks(BaseCleaningSampler):
             _safe_indexing(y, self.sample_indices_),
         )
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"sample_indices": True}

@@ -6,9 +6,14 @@
 
 import numpy as np
 from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils.metaestimators import available_if
 
 from ...utils import Substitution, check_target_type
-from ...utils.fixes import _check_n_features, _check_feature_names
+from ...utils.fixes import (
+    _check_n_features,
+    _check_feature_names,
+    check_version_package,
+)
 from ...utils._docstring import _random_state_docstring
 from ...utils._validation import _check_X
 from ..base import BaseUnderSampler
@@ -132,6 +137,7 @@ class RandomUnderSampler(BaseUnderSampler):
 
         return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {
             "X_types": ["2darray", "string", "sparse", "dataframe"],

@@ -26,7 +26,7 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import HasMethods, Interval, StrOptions
-from ..utils.fixes import _fit_context, validate_data
+from ..utils.fixes import _fit_context, check_version_package, validate_data
 from ._common import _bagging_parameter_constraints, _estimator_has
 
 sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
@@ -420,6 +420,7 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         )
         raise error
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         tags = super()._more_tags()
         tags_key = "_xfail_checks"

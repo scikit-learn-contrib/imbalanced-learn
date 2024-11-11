@@ -21,6 +21,7 @@ from sklearn.utils import (
     check_array,
     check_random_state,
 )
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.sparsefuncs_fast import (
     csr_mean_variance_axis0,
@@ -32,7 +33,14 @@ from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ...utils._validation import _check_X
-from ...utils.fixes import _check_n_features, _check_feature_names, _is_pandas_df, _mode, validate_data
+from ...utils.fixes import (
+    _check_n_features,
+    _check_feature_names,
+    _is_pandas_df,
+    _mode,
+    check_version_package,
+    validate_data,
+)
 from ..base import BaseOverSampler
 
 sklearn_version = parse_version(sklearn.__version__).base_version
@@ -1062,5 +1070,6 @@ class SMOTEN(SMOTE):
         else:
             return X_resampled, y_resampled
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"X_types": ["2darray", "dataframe", "string"]}

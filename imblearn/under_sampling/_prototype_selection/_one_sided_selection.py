@@ -12,8 +12,10 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils.metaestimators import available_if
 
 from ...utils import Substitution
+from ...utils.fixes import check_version_package
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ...utils._param_validation import HasMethods, Interval
 from ..base import BaseCleaningSampler
@@ -225,5 +227,6 @@ class OneSidedSelection(BaseCleaningSampler):
         )
         return self.estimators_[-1]
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"sample_indices": True}

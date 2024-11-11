@@ -26,7 +26,7 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Interval, StrOptions
-from ..utils.fixes import _fit_context, get_tags, validate_data
+from ..utils.fixes import _fit_context, check_version_package, get_tags, validate_data
 from ._common import _bagging_parameter_constraints, _estimator_has
 
 MAX_INT = np.iinfo(np.int32).max
@@ -354,6 +354,7 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         return self.estimator
 
     # TODO: remove when minimum supported version of scikit-learn is 1.5
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         # This code should not be called for scikit-learn >= 1.6
         # Therefore, get_tags corresponds to _safe_tags that returns a dict
