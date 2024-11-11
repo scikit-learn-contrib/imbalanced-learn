@@ -144,19 +144,8 @@ else:
     from sklearn.utils import get_tags
 
 if sklearn_version < parse_version("1.6"):
-    def validate_data(
-        _estimator,
-        /,
-        X="no_validation",
-        y="no_validation",
-        reset=True,
-        validate_separately=False,
-        skip_check_array=False,
-        **check_params,
-    ):
-        return _estimator._validate_data(
-            X, y, reset, validate_separately, skip_check_array, **check_params
-        )
+    def validate_data(_estimator, **kwargs):
+        return _estimator._validate_data(**kwargs)
 else:
     from sklearn.utils.validation import validate_data  # type: ignore[no-redef]
 
