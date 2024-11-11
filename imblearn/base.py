@@ -17,7 +17,6 @@ from sklearn.utils.fixes import parse_version
 from .utils import check_sampling_strategy, check_target_type
 from .utils.fixes import validate_data
 from .utils._param_validation import validate_parameter_constraints
-from .utils._tags import InputTags
 from .utils._validation import ArraysTransformer
 
 
@@ -213,6 +212,8 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
 
     def __sklearn_tags__(self):
         tags = super().__sklearn_tags__()
+
+        from .utils._tags import InputTags
         tags.input_tags = InputTags()
         tags.input_tags.two_d_array = True
         tags.input_tags.sparse = True
