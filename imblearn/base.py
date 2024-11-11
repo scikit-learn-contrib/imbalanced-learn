@@ -20,7 +20,7 @@ from .utils._param_validation import validate_parameter_constraints
 from .utils._validation import ArraysTransformer
 
 
-def check_version():
+def check_version(estimator):
     return parse_version(
         parse_version(sklearn.__version__).base_version
     ) >= parse_version("1.6")
