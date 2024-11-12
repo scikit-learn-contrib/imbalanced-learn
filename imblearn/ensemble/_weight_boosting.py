@@ -403,4 +403,8 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
         return sample_weight, estimator_weight, estimator_error
 
     def _boost(self, iboost, X, y, sample_weight, random_state):
-        return self._boost_discrete(iboost, X, y, sample_weight, random_state)
+        if self.algorithm == "SAMME.R":
+            return self._boost_real(iboost, X, y, sample_weight, random_state)
+
+        else:  # elif self.algorithm == "SAMME":
+            return self._boost_discrete(iboost, X, y, sample_weight, random_state)
