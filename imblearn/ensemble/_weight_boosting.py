@@ -402,6 +402,5 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
 
         return sample_weight, estimator_weight, estimator_error
 
-    @available_if(check_version_package("sklearn", ">=", "1.6"))
     def _boost(self, iboost, X, y, sample_weight, random_state):
         return self._boost_discrete(iboost, X, y, sample_weight, random_state)
