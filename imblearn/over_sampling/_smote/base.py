@@ -608,7 +608,7 @@ class SMOTENC(SMOTE):
         features.
         """
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X = _check_X(X)
+        X = _check_X(self, X)
         _check_n_features(self, X, reset=True)
         _check_feature_names(self, X, reset=True)
         return X, y, binarize_y
