@@ -197,7 +197,7 @@ from sklearn.ensemble import AdaBoostClassifier
 
 from imblearn.ensemble import EasyEnsembleClassifier, RUSBoostClassifier
 
-estimator = AdaBoostClassifier(n_estimators=10, algorithm="SAMME")
+estimator = AdaBoostClassifier(n_estimators=10)
 eec = EasyEnsembleClassifier(n_estimators=10, estimator=estimator)
 eec.fit(X_train, y_train)
 y_pred_eec = eec.predict(X_test)

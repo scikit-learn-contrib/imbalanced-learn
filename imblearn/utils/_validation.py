@@ -649,5 +649,9 @@ def _check_X(estimator, X):
         return X
 
     return validate_data(
-        estimator, X, dtype=None, accept_sparse=["csr", "csc"], ensure_all_finite=False
+        estimator,
+        X=X,
+        dtype=None,
+        accept_sparse=["csr", "csc"],
+        ensure_all_finite=False,
     )
