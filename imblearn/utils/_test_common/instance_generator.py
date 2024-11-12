@@ -10,11 +10,16 @@ from inspect import isfunction
 
 from sklearn import clone, config_context
 from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.exceptions import SkipTestWarning
 from sklearn.utils._testing import SkipTest
 
 from imblearn.combine import SMOTEENN, SMOTETomek
-from imblearn.ensemble import BalancedBaggingClassifier, BalancedRandomForestClassifier
+from imblearn.ensemble import (
+    BalancedBaggingClassifier,
+    BalancedRandomForestClassifier,
+    EasyEnsembleClassifier,
+)
 from imblearn.over_sampling import (
     ADASYN,
     BorderlineSMOTE,
@@ -42,6 +47,12 @@ INIT_PARAMS = {
     # estimator
     BalancedBaggingClassifier: dict(random_state=42),
     BalancedRandomForestClassifier: dict(random_state=42),
+    EasyEnsembleClassifier: [
+        # AdaBoostClassifier does not allow nan values
+        dict(random_state=42),
+        # DecisionTreeClassifier allows nan values
+        dict(estimator=DecisionTreeClassifier(random_state=42), random_state=42),
+    ],
     Pipeline: dict(
         steps=[("sampler", RandomUnderSampler()), ("logistic", LogisticRegression())]
     ),

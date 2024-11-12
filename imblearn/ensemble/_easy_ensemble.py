@@ -346,12 +346,19 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
 
     def _get_estimator(self):
         if self.estimator is None:
-            return AdaBoostClassifier(algorithm="SAMME")
+            if parse_version("1.4") <= sklearn_version < parse_version("1.6"):
+                return AdaBoostClassifier(algorithm="SAMME")
+            else:
+                return AdaBoostClassifier()
         return self.estimator
 
     # TODO: remove when minimum supported version of scikit-learn is 1.5
     @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
-        # This code should not be called for scikit-learn >= 1.6
-        # Therefore, get_tags corresponds to _safe_tags that returns a dict
-        return {"allow_nan": get_tags(self._get_estimator(), "allow_nan")}
+        return {"allow_nan": get_tags(self._get_estimator())["allow_nan"]}
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.allow_nan = get_tags(self._get_estimator()).input_tags.allow_nan
+        return tags

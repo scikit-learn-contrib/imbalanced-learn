@@ -5,6 +5,7 @@
 
 import numbers
 from copy import deepcopy
+from dataclasses import is_dataclass
 from warnings import warn
 
 import numpy as np
@@ -36,7 +37,7 @@ from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Hidden, Interval, StrOptions
 from ..utils._validation import check_sampling_strategy
-from ..utils.fixes import _fit_context, check_version_package, validate_data
+from ..utils.fixes import _fit_context, check_version_package, get_tags, validate_data
 from ._common import _random_forest_classifier_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
@@ -78,7 +79,7 @@ def _local_parallel_build_trees(
         "bootstrap": bootstrap,
     }
 
-    if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+    if sklearn_version >= parse_version("1.4"):
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
         # support for missing values
         params_parallel_build_trees["missing_values_in_feature_mask"] = (
@@ -475,7 +476,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
             "max_samples": max_samples,
         }
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
-        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+        if sklearn_version >= parse_version("1.4"):
             # use scikit-learn support for monotonic constraints
             params_random_forest["monotonic_cst"] = monotonic_cst
         else:
@@ -595,12 +596,12 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         if issparse(y):
             raise ValueError("sparse multilabel-indicator for y is not supported.")
 
-        # TODO: remove when the minimum supported version of scipy will be 1.4
-        # Support for missing values
-        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
-            ensure_all_finite = False
+        # TODO (1.6): simplify because we will only have dataclass tags
+        tags = get_tags(self)
+        if is_dataclass(tags):
+            ensure_all_finite = not tags.input_tags.allow_nan
         else:
-            ensure_all_finite = False
+            ensure_all_finite = not tags.get("allow_nan", False)
 
         X, y = validate_data(
             self,
@@ -884,4 +885,13 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
     @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
-        return {"multioutput": False, "multilabel": False}
+        allow_nan = sklearn_version >= parse_version("1.4")
+        return {"multioutput": False, "multilabel": False, "allow_nan": allow_nan}
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.target_tags.multi_output = False
+        tags.classifier_tags.multi_label = False
+        tags.input_tags.allow_nan = sklearn_version >= parse_version("1.4")
+        return tags

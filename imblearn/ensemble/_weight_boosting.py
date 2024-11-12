@@ -10,6 +10,7 @@ from sklearn.ensemble._base import _set_random_states
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing
 from sklearn.utils.fixes import parse_version
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.validation import has_fit_parameter
 
 from ..base import _ParamsValidationMixin
@@ -18,8 +19,8 @@ from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
-from ..utils._param_validation import Interval, StrOptions
-from ..utils.fixes import _fit_context
+from ..utils._param_validation import Hidden, Interval, StrOptions
+from ..utils.fixes import _fit_context, check_version_package
 from ._common import _adaboost_classifier_parameter_constraints
 
 sklearn_version = parse_version(sklearn.__version__)
@@ -58,7 +59,7 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
         ``learning_rate``. There is a trade-off between ``learning_rate`` and
         ``n_estimators``.
 
-    algorithm : {{'SAMME', 'SAMME.R'}}, default='SAMME.R'
+    algorithm : {{'SAMME', 'SAMME.R'}}, default='deprecated'
         If 'SAMME.R' then use the SAMME.R real boosting algorithm.
         ``base_estimator`` must support calculation of class probabilities.
         If 'SAMME' then use the SAMME discrete boosting algorithm.
@@ -66,8 +67,10 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
         achieving a lower test error with fewer boosting iterations.
 
         .. deprecated:: 0.12
-            `"SAMME.R"` is deprecated and will be removed in version 0.14.
-            '"SAMME"' will become the default.
+            `algorithm` is deprecated in 0.12 and will be removed 0.14.
+            Depending on the `scikit-learn` version, the "SAMME.R" algorithm might not
+            be available. Refer to the documentation of
+            :class:`~sklearn.ensemble.AdaBoostClassifier` for more information.
 
     {sampling_strategy}
 
@@ -109,7 +112,7 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
         ensemble.
 
     feature_importances_ : ndarray of shape (n_features,)
-        The feature importances if supported by the ``base_estimator``.
+        The feature importances if supported by the ``estimator``.
 
     n_features_in_ : int
         Number of features in the input dataset.
@@ -167,6 +170,10 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
 
     _parameter_constraints.update(
         {
+            "algorithm": [
+                StrOptions({"SAMME", "SAMME.R"}),
+                Hidden(StrOptions({"deprecated"})),
+            ],
             "sampling_strategy": [
                 Interval(numbers.Real, 0, 1, closed="right"),
                 StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
@@ -186,7 +193,7 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
         *,
         n_estimators=50,
         learning_rate=1.0,
-        algorithm="SAMME.R",
+        algorithm="deprecated",
         sampling_strategy="auto",
         replacement=False,
         random_state=None,
@@ -194,9 +201,9 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
         super().__init__(
             n_estimators=n_estimators,
             learning_rate=learning_rate,
-            algorithm=algorithm,
             random_state=random_state,
         )
+        self.algorithm = algorithm
         self.estimator = estimator
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
@@ -394,3 +401,7 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
             sample_weight *= np.exp(estimator_weight * incorrect * (sample_weight > 0))
 
         return sample_weight, estimator_weight, estimator_error
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def _boost(self, iboost, X, y, sample_weight, random_state):
+        return self._boost_discrete(iboost, X, y, sample_weight, random_state)
