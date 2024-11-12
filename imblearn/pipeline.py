@@ -1059,7 +1059,7 @@ def _fit_resample_one(sampler, X, y, message_clsname="", message=None, params=No
         return X_res, y_res, sampler
 
 
-def _transform_one(transformer, X, y, weight, params):
+def _transform_one(transformer, X, y, weight, params=None):
     """Call transform and apply weight to output.
 
     Parameters

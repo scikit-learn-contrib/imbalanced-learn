@@ -1,4 +1,5 @@
 """Test the module easy ensemble."""
+
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
@@ -211,9 +212,5 @@ def test_easy_ensemble_classifier_grid_search():
         "n_estimators": [1, 2],
         "estimator__n_estimators": [3, 4],
     }
-    grid_search = GridSearchCV(
-        EasyEnsembleClassifier(estimator=AdaBoostClassifier()),
-        parameters,
-        cv=5,
-    )
+    grid_search = GridSearchCV(EasyEnsembleClassifier(), parameters, cv=5)
     grid_search.fit(X, y)
