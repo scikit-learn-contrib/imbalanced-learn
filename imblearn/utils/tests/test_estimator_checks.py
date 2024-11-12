@@ -79,7 +79,7 @@ class IndicesSampler(BaseOverSampler):
             y=y,
             reset=True,
             dtype=None,
-            force_all_finite=False,
+            ensure_all_finite=False,
         )
         return X, y, binarize_y
 

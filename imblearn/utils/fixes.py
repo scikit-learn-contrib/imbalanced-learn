@@ -145,7 +145,9 @@ else:
 
 if sklearn_version < parse_version("1.6"):
     def validate_data(_estimator, **kwargs):
-        return _estimator._validate_data(**kwargs)
+        if "ensure_all_finite" in kwargs:
+            force_all_finite = kwargs.pop("ensure_all_finite")
+        return _estimator._validate_data(**kwargs, force_all_finite=force_all_finite)
 else:
     from sklearn.utils.validation import validate_data  # type: ignore[no-redef]
 
@@ -202,3 +204,10 @@ def check_version_package(package, constraint, version, /):
             return False
 
     return check_version
+
+
+# TODO: Remove when python>=3.10 is the minimum supported version
+def _dataclass_args():
+    if sys.version_info < (3, 10):
+        return {}
+    return {"slots": True}

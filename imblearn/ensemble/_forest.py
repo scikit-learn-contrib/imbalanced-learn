@@ -598,12 +598,9 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         # TODO: remove when the minimum supported version of scipy will be 1.4
         # Support for missing values
         if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
-            if sklearn_version >= parse_version("1.6"):
-                kwargs = {"ensure_all_finite": False}
-            else:
-                kwargs = {"force_all_finite": False}
+            ensure_all_finite = False
         else:
-            kwargs = {"force_all_finite": False}
+            ensure_all_finite = False
 
         X, y = validate_data(
             self,
@@ -612,7 +609,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
             multi_output=True,
             accept_sparse="csc",
             dtype=DTYPE,
-            **kwargs,
+            ensure_all_finite=ensure_all_finite,
         )
 
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4

@@ -382,17 +382,13 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         check_is_fitted(self)
 
         # Check data
-        if sklearn_version < parse_version("1.6"):
-            kwargs = {"force_all_finite": False}
-        else:
-            kwargs = {"ensure_all_finite": False}
         X = validate_data(
             self,
             X=X,
             accept_sparse=["csr", "csc"],
             dtype=None,
             reset=False,
-            **kwargs
+            ensure_all_finite=False,
         )
 
         # Parallel loop

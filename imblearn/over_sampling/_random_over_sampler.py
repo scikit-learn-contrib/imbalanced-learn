@@ -261,3 +261,11 @@ class RandomOverSampler(BaseOverSampler):
                 "check_complex_data": "Robust to this type of data.",
             },
         }
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.allow_nan = True
+        tags.input_tags.string = True
+        tags.sampler_tags.sample_indices = True
+        return tags

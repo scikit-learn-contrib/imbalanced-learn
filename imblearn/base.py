@@ -37,7 +37,7 @@ class _ParamsValidationMixin:
             )
 
 
-class SamplerMixin(_ParamsValidationMixin, BaseEstimator, metaclass=ABCMeta):
+class SamplerMixin(_ParamsValidationMixin, metaclass=ABCMeta):
     """Mixin class for samplers with abstract method.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -135,7 +135,7 @@ class SamplerMixin(_ParamsValidationMixin, BaseEstimator, metaclass=ABCMeta):
         pass
 
 
-class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
+class BaseSampler(SamplerMixin, OneToOneFeatureMixin, BaseEstimator):
     """Base class for sampling algorithms.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -204,9 +204,15 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
 
     @available_if(check_version_package("sklearn", ">=", "1.6"))
     def __sklearn_tags__(self):
-        tags = super().__sklearn_tags__()
-
-        from .utils._tags import InputTags
+        from .utils._tags import Tags, SamplerTags, TargetTags, InputTags
+        tags = Tags(
+            estimator_type="sampler",
+            target_tags=TargetTags(required=True),
+            transformer_tags=None,
+            regressor_tags=None,
+            classifier_tags=None,
+            sampler_tags=SamplerTags(),
+        )
         tags.input_tags = InputTags()
         tags.input_tags.two_d_array = True
         tags.input_tags.sparse = True

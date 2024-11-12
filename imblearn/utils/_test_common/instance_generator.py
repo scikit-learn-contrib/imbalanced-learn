@@ -13,19 +13,56 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.exceptions import SkipTestWarning
 from sklearn.utils._testing import SkipTest
 
-from imblearn.over_sampling import SMOTENC
+from imblearn.combine import SMOTEENN, SMOTETomek
+from imblearn.ensemble import BalancedBaggingClassifier, BalancedRandomForestClassifier
+from imblearn.over_sampling import (
+    ADASYN,
+    BorderlineSMOTE,
+    KMeansSMOTE,
+    RandomOverSampler,
+    SMOTE,
+    SMOTEN,
+    SMOTENC,
+    SVMSMOTE,
+)
 from imblearn.pipeline import Pipeline
-from imblearn.under_sampling import NearMiss, RandomUnderSampler
+from imblearn.under_sampling import (
+    ClusterCentroids,
+    CondensedNearestNeighbour,
+    InstanceHardnessThreshold,
+    NearMiss,
+    OneSidedSelection,
+    RandomUnderSampler,
+)
 from imblearn.utils.testing import all_estimators
 
 # The following dictionary is to indicate constructor arguments suitable for the test
 # suite, which uses very small datasets, and is intended to run rather quickly.
 INIT_PARAMS = {
-    NearMiss: [dict(version=1), dict(version=2), dict(version=3)],
+    # estimator
+    BalancedBaggingClassifier: dict(random_state=42),
+    BalancedRandomForestClassifier: dict(random_state=42),
     Pipeline: dict(
         steps=[("sampler", RandomUnderSampler()), ("logistic", LogisticRegression())]
     ),
-    SMOTENC: dict(categorical_features=[0]),
+    # over-sampling
+    ADASYN: dict(random_state=42),
+    BorderlineSMOTE: dict(random_state=42),
+    KMeansSMOTE: dict(random_state=0),
+    RandomOverSampler: dict(random_state=42),
+    SMOTE: dict(random_state=42),
+    SMOTEN: dict(random_state=42),
+    SVMSMOTE: dict(random_state=42),
+    # under-sampling
+    ClusterCentroids: dict(random_state=42),
+    CondensedNearestNeighbour: dict(random_state=42),
+    InstanceHardnessThreshold: dict(random_state=42),
+    NearMiss: [dict(version=1), dict(version=2), dict(version=3)],
+    OneSidedSelection: dict(random_state=42),
+    RandomUnderSampler: dict(random_state=42),
+    # combination
+    SMOTEENN: dict(random_state=42),
+    SMOTETomek: dict(random_state=42),
 }
 
 # This dictionary stores parameters for specific checks. It also enables running the
@@ -34,7 +71,7 @@ INIT_PARAMS = {
 # TODO(devtools): allow third-party developers to pass test specific params to checks
 PER_ESTIMATOR_CHECK_PARAMS: dict = {}
 
-SKIPPED_ESTIMATORS = []
+SKIPPED_ESTIMATORS = [SMOTENC]
 
 
 def _tested_estimators(type_filter=None):

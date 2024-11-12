@@ -598,7 +598,7 @@ def check_samplers_sample_indices(name, sampler_orig):
     sampler.fit_resample(X, y)
     tags = get_tags(sampler)
     if is_dataclass(tags):
-        sample_indices = getattr(tags, "sample_indices", None)
+        sample_indices = tags.sampler_tags.sample_indices
     else:
         # scikit-learn < 1.6
         sample_indices = tags.get("sample_indices", None)

@@ -829,6 +829,17 @@ class SMOTENC(SMOTE):
         )
         return self.categorical_encoder_
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
+    def _more_tags(self):
+        return {"X_types": ["2darray", "dataframe", "string"]}
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.sparse = False
+        tags.input_tags.string = True
+        return tags
+
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
@@ -1073,3 +1084,10 @@ class SMOTEN(SMOTE):
     @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"X_types": ["2darray", "dataframe", "string"]}
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.sparse = False
+        tags.input_tags.string = True
+        return tags

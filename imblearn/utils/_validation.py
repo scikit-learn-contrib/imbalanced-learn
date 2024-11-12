@@ -647,11 +647,7 @@ def _check_X(X):
         )
     if _is_pandas_df(X):
         return X
-    if sklearn_version >= parse_version("1.6"):
-        kwargs = {"ensure_all_finite": False}
-    else:
-        kwargs = {"force_all_finite": False}
 
     return check_array(
-        X, dtype=None, accept_sparse=["csr", "csc"], **kwargs
+        X, dtype=None, accept_sparse=["csr", "csc"], ensure_all_finite=False
     )

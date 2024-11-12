@@ -315,3 +315,9 @@ class NearMiss(BaseUnderSampler):
             }
         }
     # fmt: on
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags
