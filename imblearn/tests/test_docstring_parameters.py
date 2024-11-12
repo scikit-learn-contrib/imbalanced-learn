@@ -18,7 +18,6 @@ from sklearn.utils._testing import (
 )
 from sklearn.utils.deprecation import _is_deprecated
 from sklearn.utils.estimator_checks import (
-    _construct_instance,
     _enforce_estimator_tags_X,
     _enforce_estimator_tags_y,
 )
@@ -27,6 +26,7 @@ import imblearn
 from imblearn.base import is_sampler
 from imblearn.utils.estimator_checks import _set_checking_parameters
 from imblearn.utils.testing import all_estimators
+from imblearn.utils._test_common.instance_generator import _construct_instances
 
 # walk_packages() ignores DeprecationWarnings, now we need to ignore
 # FutureWarnings
@@ -179,7 +179,7 @@ def test_fit_docstring_attributes(name, Estimator):
     if Estimator.__name__ == "Pipeline":
         est = _construct_compose_pipeline_instance(Estimator)
     else:
-        est = _construct_instance(Estimator)
+        est = next(_construct_instances(Estimator))
     _set_checking_parameters(est)
 
     X, y = make_classification(

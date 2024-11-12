@@ -235,3 +235,9 @@ class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
         return {
             "requires_positive_X": True,  # X should be encoded with OrdinalEncoder
         }
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.positive_only = True  # X should be encoded with OrdinalEncoder
+        return tags
