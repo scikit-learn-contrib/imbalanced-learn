@@ -19,6 +19,7 @@ from imblearn.ensemble import (
     BalancedBaggingClassifier,
     BalancedRandomForestClassifier,
     EasyEnsembleClassifier,
+    RUSBoostClassifier,
 )
 from imblearn.over_sampling import (
     ADASYN,
@@ -83,7 +84,13 @@ INIT_PARAMS = {
 # same check with multiple instances of the same estimator with different parameters.
 # The special key "*" allows to apply the parameters to all checks.
 # TODO(devtools): allow third-party developers to pass test specific params to checks
-PER_ESTIMATOR_CHECK_PARAMS: dict = {}
+PER_ESTIMATOR_CHECK_PARAMS: dict = {
+    Pipeline: {
+        "check_classifiers_with_encoded_labels": dict(
+            sampler__sampling_strategy={"setosa": 20, "virginica": 20}
+        )
+    }
+}
 
 SKIPPED_ESTIMATORS = [SMOTENC]
 
@@ -187,3 +194,31 @@ def _yield_instances_for_check(check, estimator_orig):
         estimator = clone(estimator_orig)
         estimator.set_params(**params)
         yield estimator
+
+
+PER_ESTIMATOR_XFAIL_CHECKS = {
+    BalancedRandomForestClassifier: {
+        "check_sample_weight_equivalence": "FIXME",
+    },
+    NearMiss: {
+        "check_samplers_fit_resample": "FIXME",
+    },
+    Pipeline: {
+        "check_dont_overwrite_parameters": (
+            "Pipeline changes the `steps` parameter, which it shouldn't."
+            "Therefore this test is x-fail until we fix this."
+        ),
+        "check_estimators_overwrite_params": (
+            "Pipeline changes the `steps` parameter, which it shouldn't."
+            "Therefore this test is x-fail until we fix this."
+        ),
+    },
+    RUSBoostClassifier: {
+        "check_sample_weight_equivalence": "FIXME",
+    },
+}
+
+def _get_expected_failed_checks(estimator):
+    """Get the expected failed checks for all estimators in scikit-learn."""
+    failed_checks = PER_ESTIMATOR_XFAIL_CHECKS.get(type(estimator), {})
+    return failed_checks
