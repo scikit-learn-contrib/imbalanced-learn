@@ -49,7 +49,7 @@ JUNK_FOOD_DOCS = (
 R_TOL = 1e-4
 
 
-class NoFit:
+class NoFit(BaseEstimator):
     """Small class to test parameter dispatching."""
 
     def __init__(self, a=None, b=None):
@@ -109,6 +109,9 @@ class Mult(BaseEstimator):
     def score(self, X, y=None):
         return np.sum(X)
 
+    def __sklearn_is_fitted__(self):
+        return True
+
 
 class FitParamT(BaseEstimator):
     """Mock classifier"""
@@ -118,6 +121,7 @@ class FitParamT(BaseEstimator):
 
     def fit(self, X, y, should_succeed=False):
         self.successful = should_succeed
+        self.fitted_ = True
 
     def predict(self, X):
         return self.successful
@@ -145,6 +149,9 @@ class DummyTransf(Transf):
 
 class DummyEstimatorParams(BaseEstimator):
     """Mock classifier that takes params on predict"""
+
+    def __sklearn_is_fitted__(self):
+        return True
 
     def fit(self, X, y):
         return self
