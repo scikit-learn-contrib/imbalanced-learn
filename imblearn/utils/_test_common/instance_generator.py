@@ -54,7 +54,10 @@ INIT_PARAMS = {
         dict(estimator=DecisionTreeClassifier(random_state=42), random_state=42),
     ],
     Pipeline: dict(
-        steps=[("sampler", RandomUnderSampler()), ("logistic", LogisticRegression())]
+        steps=[
+            ("sampler", RandomUnderSampler(random_state=0)),
+            ("logistic", LogisticRegression()),
+        ]
     ),
     # over-sampling
     ADASYN: dict(random_state=42),

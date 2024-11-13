@@ -1,5 +1,6 @@
 import copy
 import numbers
+import warnings
 from copy import deepcopy
 
 import numpy as np
@@ -68,9 +69,6 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
 
         .. deprecated:: 0.12
             `algorithm` is deprecated in 0.12 and will be removed 0.14.
-            Depending on the `scikit-learn` version, the "SAMME.R" algorithm might not
-            be available. Refer to the documentation of
-            :class:`~sklearn.ensemble.AdaBoostClassifier` for more information.
 
     {sampling_strategy}
 
@@ -403,6 +401,12 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
         return sample_weight, estimator_weight, estimator_error
 
     def _boost(self, iboost, X, y, sample_weight, random_state):
+        if self.algorithm != "deprecated":
+            warnings.warn(
+                "`algorithm` parameter is deprecated in 0.12 and will be removed in "
+                "0.14. In the future, the SAMME algorithm will always be used.",
+                FutureWarning,
+            )
         if self.algorithm == "SAMME.R":
             return self._boost_real(iboost, X, y, sample_weight, random_state)
 

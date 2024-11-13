@@ -95,6 +95,10 @@ class Pipeline(_ParamsValidationMixin, pipeline.Pipeline):
     n_features_in_ : int
         Number of features seen during first step `fit` method.
 
+    feature_names_in_ : ndarray of shape (`n_features_in_`,)
+        Names of features seen during :term:`fit`. Only defined if the
+        underlying estimator exposes such an attribute when fit.
+
     See Also
     --------
     make_pipeline : Helper function to make pipeline.

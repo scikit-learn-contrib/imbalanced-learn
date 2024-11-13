@@ -8,6 +8,7 @@ sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
 
 if sklearn_version >= parse_version("1.6"):
     from sklearn.utils._tags import (
+        Tags,
         TargetTags,
         TransformerTags,
         ClassifierTags,
@@ -33,7 +34,7 @@ if sklearn_version >= parse_version("1.6"):
         sample_indices: bool = False
 
     @dataclass(**_dataclass_args())
-    class Tags:
+    class Tags(Tags):
         """Tags for the estimator.
 
         See :ref:`estimator_tags` for more information.
@@ -86,15 +87,4 @@ if sklearn_version >= parse_version("1.6"):
             The input data(X) tags.
         """
 
-        estimator_type: str | None
-        target_tags: TargetTags
-        transformer_tags: TransformerTags | None
-        classifier_tags: ClassifierTags | None
-        regressor_tags: RegressorTags | None
-        sampler_tags: SamplerTags | None
-        array_api_support: bool = False
-        no_validation: bool = False
-        non_deterministic: bool = False
-        requires_fit: bool = True
-        _skip_test: bool = False
-        input_tags: InputTags = field(default_factory=InputTags)
+        sampler_tags: SamplerTags | None = None
