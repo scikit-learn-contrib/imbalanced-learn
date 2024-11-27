@@ -24,7 +24,7 @@ def imbalanced_dataset():
 
 
 @pytest.mark.parametrize("algorithm", ["SAMME", "SAMME.R"])
-@pytest.mark.filterwarnings("ignore:The SAMME.R algorithm (the default) is")
+@pytest.mark.filterwarnings("ignore:`algorithm` parameter is deprecated in 0.12")
 def test_rusboost(imbalanced_dataset, algorithm):
     X, y = imbalanced_dataset
     X_train, X_test, y_train, y_test = train_test_split(
@@ -70,7 +70,7 @@ def test_rusboost(imbalanced_dataset, algorithm):
 
 
 @pytest.mark.parametrize("algorithm", ["SAMME", "SAMME.R"])
-@pytest.mark.filterwarnings("ignore:The SAMME.R algorithm (the default) is")
+@pytest.mark.filterwarnings("ignore:`algorithm` parameter is deprecated in 0.12")
 def test_rusboost_sample_weight(imbalanced_dataset, algorithm):
     X, y = imbalanced_dataset
     sample_weight = np.ones_like(y)
@@ -88,3 +88,13 @@ def test_rusboost_sample_weight(imbalanced_dataset, algorithm):
 
     with pytest.raises(AssertionError):
         assert_array_equal(y_pred_no_sample_weight, y_pred_sample_weight)
+
+
+@pytest.mark.parametrize("algorithm", ["SAMME", "SAMME.R"])
+def test_rusboost_algorithm_future_warning(imbalanced_dataset, algorithm):
+    X, y = imbalanced_dataset
+    rusboost = RUSBoostClassifier(algorithm=algorithm, random_state=0)
+
+    warning_msg = "`algorithm` parameter is deprecated in 0.12"
+    with pytest.warns(FutureWarning, match=warning_msg):
+        rusboost.fit(X, y)

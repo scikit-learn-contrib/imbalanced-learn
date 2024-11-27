@@ -14,7 +14,6 @@ from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
-from sklearn.utils._tags import _safe_tags
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.parallel import Parallel, delayed
@@ -27,11 +26,11 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Interval, StrOptions
-from ..utils.fixes import _fit_context
+from ..utils.fixes import _fit_context, check_version_package, get_tags, validate_data
 from ._common import _bagging_parameter_constraints, _estimator_has
 
 MAX_INT = np.iinfo(np.int32).max
-sklearn_version = parse_version(sklearn.__version__)
+sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
 
 
 @Substitution(
@@ -311,12 +310,13 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         check_is_fitted(self)
 
         # Check data
-        X = self._validate_data(
-            X,
+        X = validate_data(
+            self,
+            X=X,
             accept_sparse=["csr", "csc"],
             dtype=None,
-            force_all_finite=False,
             reset=False,
+            ensure_all_finite=False,
         )
 
         # Parallel loop
@@ -346,9 +346,19 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
 
     def _get_estimator(self):
         if self.estimator is None:
-            return AdaBoostClassifier(algorithm="SAMME")
+            if parse_version("1.4") <= sklearn_version < parse_version("1.6"):
+                return AdaBoostClassifier(algorithm="SAMME")
+            else:
+                return AdaBoostClassifier()
         return self.estimator
 
     # TODO: remove when minimum supported version of scikit-learn is 1.5
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
-        return {"allow_nan": _safe_tags(self._get_estimator(), "allow_nan")}
+        return {"allow_nan": get_tags(self._get_estimator())["allow_nan"]}
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.allow_nan = get_tags(self._get_estimator()).input_tags.allow_nan
+        return tags

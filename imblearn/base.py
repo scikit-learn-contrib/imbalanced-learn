@@ -7,14 +7,16 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
+import sklearn
 from sklearn.base import BaseEstimator, OneToOneFeatureMixin
 from sklearn.preprocessing import label_binarize
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
+from .utils.fixes import check_version_package, validate_data
 from .utils._param_validation import validate_parameter_constraints
 from .utils._validation import ArraysTransformer
-
 
 class _ParamsValidationMixin:
     """Mixin class to validate parameters."""
@@ -35,7 +37,7 @@ class _ParamsValidationMixin:
             )
 
 
-class SamplerMixin(_ParamsValidationMixin, BaseEstimator, metaclass=ABCMeta):
+class SamplerMixin(_ParamsValidationMixin, metaclass=ABCMeta):
     """Mixin class for samplers with abstract method.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -133,7 +135,7 @@ class SamplerMixin(_ParamsValidationMixin, BaseEstimator, metaclass=ABCMeta):
         pass
 
 
-class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
+class BaseSampler(SamplerMixin, OneToOneFeatureMixin, BaseEstimator):
     """Base class for sampling algorithms.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -147,7 +149,7 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
         if accept_sparse is None:
             accept_sparse = ["csr", "csc"]
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(X, y, reset=True, accept_sparse=accept_sparse)
+        X, y = validate_data(self, X=X, y=y, reset=True, accept_sparse=accept_sparse)
         return X, y, binarize_y
 
     def fit(self, X, y):
@@ -196,8 +198,26 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
         self._validate_params()
         return super().fit_resample(X, y)
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"X_types": ["2darray", "sparse", "dataframe"]}
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        from .utils._tags import Tags, SamplerTags, TargetTags, InputTags
+        tags = Tags(
+            estimator_type="sampler",
+            target_tags=TargetTags(required=True),
+            transformer_tags=None,
+            regressor_tags=None,
+            classifier_tags=None,
+            sampler_tags=SamplerTags(),
+        )
+        tags.input_tags = InputTags()
+        tags.input_tags.two_d_array = True
+        tags.input_tags.sparse = True
+        tags.input_tags.dataframe = True
+        return tags
 
 
 def _identity(X, y):

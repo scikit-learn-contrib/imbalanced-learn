@@ -5,6 +5,7 @@
 
 import numbers
 from copy import deepcopy
+from dataclasses import is_dataclass
 from warnings import warn
 
 import numpy as np
@@ -24,6 +25,7 @@ from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing, check_random_state
 from sklearn.utils.fixes import parse_version
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import _check_sample_weight
@@ -35,11 +37,11 @@ from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import Hidden, Interval, StrOptions
 from ..utils._validation import check_sampling_strategy
-from ..utils.fixes import _fit_context
+from ..utils.fixes import _fit_context, check_version_package, get_tags, validate_data
 from ._common import _random_forest_classifier_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
-sklearn_version = parse_version(sklearn.__version__)
+sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
 
 
 def _local_parallel_build_trees(
@@ -77,7 +79,7 @@ def _local_parallel_build_trees(
         "bootstrap": bootstrap,
     }
 
-    if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+    if sklearn_version >= parse_version("1.4"):
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
         # support for missing values
         params_parallel_build_trees["missing_values_in_feature_mask"] = (
@@ -474,7 +476,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
             "max_samples": max_samples,
         }
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
-        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+        if sklearn_version >= parse_version("1.4"):
             # use scikit-learn support for monotonic constraints
             params_random_forest["monotonic_cst"] = monotonic_cst
         else:
@@ -594,24 +596,25 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
         if issparse(y):
             raise ValueError("sparse multilabel-indicator for y is not supported.")
 
-        # TODO: remove when the minimum supported version of scipy will be 1.4
-        # Support for missing values
-        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
-            force_all_finite = False
+        # TODO (1.6): simplify because we will only have dataclass tags
+        tags = get_tags(self)
+        if is_dataclass(tags):
+            ensure_all_finite = not tags.input_tags.allow_nan
         else:
-            force_all_finite = True
+            ensure_all_finite = not tags.get("allow_nan", False)
 
-        X, y = self._validate_data(
-            X,
-            y,
+        X, y = validate_data(
+            self,
+            X=X,
+            y=y,
             multi_output=True,
             accept_sparse="csc",
             dtype=DTYPE,
-            force_all_finite=force_all_finite,
+            ensure_all_finite=ensure_all_finite,
         )
 
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
-        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+        if sklearn_version >= parse_version("1.4"):
             # _compute_missing_values_in_feature_mask checks if X has missing values and
             # will raise an error if the underlying tree base estimator can't handle
             # missing values. Only the criterion is required to determine if the tree
@@ -880,5 +883,15 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
         return oob_pred
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
-        return {"multioutput": False, "multilabel": False}
+        allow_nan = sklearn_version >= parse_version("1.4")
+        return {"multioutput": False, "multilabel": False, "allow_nan": allow_nan}
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.target_tags.multi_output = False
+        tags.classifier_tags.multi_label = False
+        tags.input_tags.allow_nan = sklearn_version >= parse_version("1.4")
+        return tags
