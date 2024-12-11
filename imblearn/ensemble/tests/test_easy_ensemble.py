@@ -1,4 +1,5 @@
 """Test the module easy ensemble."""
+
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
@@ -37,13 +38,10 @@ X = np.array(
 Y = np.array([1, 2, 2, 2, 1, 0, 1, 1, 1, 0])
 
 
-@pytest.mark.parametrize("n_estimators", [10, 20])
+@pytest.mark.parametrize("n_estimators", [5, 10])
 @pytest.mark.parametrize(
     "estimator",
-    [
-        AdaBoostClassifier(algorithm="SAMME", n_estimators=5),
-        AdaBoostClassifier(algorithm="SAMME", n_estimators=10),
-    ],
+    [AdaBoostClassifier(n_estimators=5), AdaBoostClassifier(n_estimators=10)],
 )
 def test_easy_ensemble_classifier(n_estimators, estimator):
     # Check classification for various parameter settings.
@@ -89,7 +87,7 @@ def test_estimator():
     assert isinstance(ensemble.estimator_.steps[-1][1], AdaBoostClassifier)
 
     ensemble = EasyEnsembleClassifier(
-        2, AdaBoostClassifier(algorithm="SAMME"), n_jobs=-1, random_state=0
+        2, AdaBoostClassifier(), n_jobs=-1, random_state=0
     ).fit(X_train, y_train)
 
     assert isinstance(ensemble.estimator_.steps[-1][1], AdaBoostClassifier)
@@ -104,9 +102,7 @@ def test_bagging_with_pipeline():
     )
     estimator = EasyEnsembleClassifier(
         n_estimators=2,
-        estimator=make_pipeline(
-            SelectKBest(k=1), AdaBoostClassifier(algorithm="SAMME")
-        ),
+        estimator=make_pipeline(SelectKBest(k=1), AdaBoostClassifier()),
     )
     estimator.fit(X, y).predict(X)
 
@@ -198,7 +194,7 @@ def test_easy_ensemble_classifier_single_estimator():
     clf1 = EasyEnsembleClassifier(n_estimators=1, random_state=0).fit(X_train, y_train)
     clf2 = make_pipeline(
         RandomUnderSampler(random_state=0),
-        AdaBoostClassifier(algorithm="SAMME", random_state=0),
+        AdaBoostClassifier(random_state=0),
     ).fit(X_train, y_train)
 
     assert_array_equal(clf1.predict(X_test), clf2.predict(X_test))
@@ -216,9 +212,5 @@ def test_easy_ensemble_classifier_grid_search():
         "n_estimators": [1, 2],
         "estimator__n_estimators": [3, 4],
     }
-    grid_search = GridSearchCV(
-        EasyEnsembleClassifier(estimator=AdaBoostClassifier(algorithm="SAMME")),
-        parameters,
-        cv=5,
-    )
+    grid_search = GridSearchCV(EasyEnsembleClassifier(), parameters, cv=5)
     grid_search.fit(X, y)

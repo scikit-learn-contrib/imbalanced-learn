@@ -11,11 +11,12 @@ from collections import Counter
 
 import numpy as np
 from sklearn.utils import _safe_indexing
+from sklearn.utils.metaestimators import available_if
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
 from ...utils._param_validation import HasMethods, Interval, StrOptions
-from ...utils.fixes import _mode
+from ...utils.fixes import _mode, check_version_package
 from ..base import BaseCleaningSampler
 
 SEL_KIND = ("all", "mode")
@@ -189,8 +190,15 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
         return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"sample_indices": True}
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags
 
 
 @Substitution(
@@ -410,8 +418,15 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
         return X_resampled, y_resampled
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"sample_indices": True}
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags
 
 
 @Substitution(
@@ -619,5 +634,12 @@ class AllKNN(BaseCleaningSampler):
 
         return X_resampled, y_resampled
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {"sample_indices": True}
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags

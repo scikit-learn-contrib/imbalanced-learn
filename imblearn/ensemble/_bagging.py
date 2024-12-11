@@ -26,10 +26,10 @@ from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
 from ..utils._param_validation import HasMethods, Interval, StrOptions
-from ..utils.fixes import _fit_context
+from ..utils.fixes import _fit_context, check_version_package, validate_data
 from ._common import _bagging_parameter_constraints, _estimator_has
 
-sklearn_version = parse_version(sklearn.__version__)
+sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
 
 
 @Substitution(
@@ -382,12 +382,13 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         check_is_fitted(self)
 
         # Check data
-        X = self._validate_data(
-            X,
+        X = validate_data(
+            self,
+            X=X,
             accept_sparse=["csr", "csc"],
             dtype=None,
-            force_all_finite=False,
             reset=False,
+            ensure_all_finite=False,
         )
 
         # Parallel loop
@@ -415,6 +416,7 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         )
         raise error
 
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         tags = super()._more_tags()
         tags_key = "_xfail_checks"

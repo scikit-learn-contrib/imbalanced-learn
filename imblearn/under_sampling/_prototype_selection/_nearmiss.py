@@ -10,8 +10,10 @@ from collections import Counter
 
 import numpy as np
 from sklearn.utils import _safe_indexing
+from sklearn.utils.metaestimators import available_if
 
 from ...utils import Substitution, check_neighbors_object
+from ...utils.fixes import check_version_package
 from ...utils._docstring import _n_jobs_docstring
 from ...utils._param_validation import HasMethods, Interval
 from ..base import BaseUnderSampler
@@ -303,6 +305,7 @@ class NearMiss(BaseUnderSampler):
         return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
 
     # fmt: off
+    @available_if(check_version_package("sklearn", "<", "1.6"))
     def _more_tags(self):
         return {
             "sample_indices": True,
@@ -312,3 +315,9 @@ class NearMiss(BaseUnderSampler):
             }
         }
     # fmt: on
+
+    @available_if(check_version_package("sklearn", ">=", "1.6"))
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags

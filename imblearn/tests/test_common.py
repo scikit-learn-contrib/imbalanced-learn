@@ -1,4 +1,5 @@
 """Common tests"""
+
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
@@ -8,10 +9,11 @@ from collections import OrderedDict
 
 import numpy as np
 import pytest
+import sklearn
 from sklearn.base import clone
 from sklearn.exceptions import ConvergenceWarning
-from sklearn.utils._testing import SkipTest, ignore_warnings, set_random_state
-from sklearn.utils.estimator_checks import _construct_instance, _get_check_estimator_ids
+from sklearn.utils.fixes import parse_version
+from sklearn.utils._testing import ignore_warnings
 from sklearn.utils.estimator_checks import (
     parametrize_with_checks as parametrize_with_checks_sklearn,
 )
@@ -25,6 +27,19 @@ from imblearn.utils.estimator_checks import (
     parametrize_with_checks,
 )
 from imblearn.utils.testing import all_estimators
+from imblearn.utils._test_common.instance_generator import (
+    _get_check_estimator_ids,
+    _get_expected_failed_checks,
+    _tested_estimators,
+)
+
+sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
+if sklearn_version >= parse_version("1.6"):
+    kwargs_parametrize_with_checks = {
+        "expected_failed_checks": _get_expected_failed_checks
+    }
+else:
+    kwargs_parametrize_with_checks = {}
 
 
 @pytest.mark.parametrize("name, Estimator", all_estimators())
@@ -34,29 +49,17 @@ def test_all_estimator_no_base_class(name, Estimator):
     assert not name.lower().startswith("base"), msg
 
 
-def _tested_estimators():
-    for name, Estimator in all_estimators():
-        try:
-            estimator = _construct_instance(Estimator)
-            set_random_state(estimator)
-        except SkipTest:
-            continue
-
-        if isinstance(estimator, NearMiss):
-            # For NearMiss, let's check the three algorithms
-            for version in (1, 2, 3):
-                yield clone(estimator).set_params(version=version)
-        else:
-            yield estimator
-
-
-@parametrize_with_checks_sklearn(list(_tested_estimators()))
+@parametrize_with_checks_sklearn(
+    list(_tested_estimators()), **kwargs_parametrize_with_checks
+)
 def test_estimators_compatibility_sklearn(estimator, check, request):
     _set_checking_parameters(estimator)
     check(estimator)
 
 
-@parametrize_with_checks(list(_tested_estimators()))
+@parametrize_with_checks(
+    list(_tested_estimators()), expected_failed_checks=_get_expected_failed_checks
+)
 def test_estimators_imblearn(estimator, check, request):
     # Common tests for estimator instances
     with ignore_warnings(
