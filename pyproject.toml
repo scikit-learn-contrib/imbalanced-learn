@@ -19,6 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
     "Topic :: Software Development :: Libraries",
 ]
@@ -169,6 +170,9 @@ python = "~=3.11.0"
 [tool.pixi.feature.py312.dependencies]
 python = "~=3.12.0"
 
+[tool.pixi.feature.py313.dependencies]
+python = "~=3.13.0"
+
 [tool.pixi.feature.tests.dependencies]
 packaging = ">=23.2,<25"
 pytest = ">=7.2.2,<9"
@@ -204,12 +208,12 @@ ci-py311-sklearn-1-4 = ["py311", "sklearn-1-4", "tests"]
 ci-py311-latest-tensorflow = ["py311", "tensorflow", "tests"]
 ci-py311-latest-keras = ["py311", "keras", "tests"]
 
-ci-py312-latest-dependencies = ["py312", "tests"]
-ci-py312-latest-optional-dependencies = ["py312", "optional", "tests"]
+ci-py313-latest-dependencies = ["py313", "tests"]
+ci-py313-latest-optional-dependencies = ["py313", "optional", "tests"]
 
 [tool.black]
 line-length = 88
-target_version = ['py310', 'py311']
+target_version = ['py310', 'py311', 'py312', 'py313']
 preview = true
 # Exclude irrelevant directories for formatting
 exclude = '''
