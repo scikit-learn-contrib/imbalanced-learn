@@ -90,7 +90,7 @@ channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 
 [tool.pixi.dependencies]
-numpy = ">=1.24.3,<2"
+numpy = ">=1.24.3,<3"
 scipy = ">=1.10.1,<2"
 scikit-learn = ">=1.2.2,<2"
 joblib = ">=1.1.1,<2"
@@ -195,7 +195,8 @@ tests = { cmd = "pytest -vsl --cov=imblearn --cov-report=xml imblearn" }
 [tool.pixi.environments]
 linters = ["linters"]
 docs = ["optional", "docs", "tensorflow"]
-tests = ["optional", "tests", "tensorflow"]
+optional = ["optional"]
+tests = ["tests", "tensorflow"]
 dev = ["dev", "optional", "docs", "linters", "tests", "tensorflow"]
 
 ci-py310-min-dependencies = ["py310", "min-dependencies", "tests"]
