@@ -14,6 +14,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.over_sampling import SMOTENC
+
 # from imblearn.utils.estimator_checks import (
 #     _set_checking_parameters,
 #     check_param_validation,

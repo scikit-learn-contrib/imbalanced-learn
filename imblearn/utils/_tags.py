@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ._sklearn_compat import _dataclass_args, InputTags, Tags
+from ._sklearn_compat import InputTags, Tags, _dataclass_args
 
 
 @dataclass(**_dataclass_args())

@@ -19,7 +19,6 @@ from dataclasses import dataclass, field
 from typing import Callable, Literal
 
 import sklearn
-from sklearn.utils._param_validation import validate_parameter_constraints
 from sklearn.utils.fixes import parse_version
 
 sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)

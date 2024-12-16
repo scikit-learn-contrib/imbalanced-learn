@@ -9,9 +9,9 @@ from functools import partial
 from inspect import isfunction
 
 from sklearn import clone, config_context
+from sklearn.exceptions import SkipTestWarning
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.exceptions import SkipTestWarning
 from sklearn.utils._testing import SkipTest
 
 from imblearn.combine import SMOTEENN, SMOTETomek
@@ -23,13 +23,13 @@ from imblearn.ensemble import (
 )
 from imblearn.over_sampling import (
     ADASYN,
-    BorderlineSMOTE,
-    KMeansSMOTE,
-    RandomOverSampler,
     SMOTE,
     SMOTEN,
     SMOTENC,
     SVMSMOTE,
+    BorderlineSMOTE,
+    KMeansSMOTE,
+    RandomOverSampler,
 )
 from imblearn.pipeline import Pipeline
 from imblearn.under_sampling import (
@@ -217,6 +217,7 @@ PER_ESTIMATOR_XFAIL_CHECKS = {
         "check_sample_weight_equivalence": "FIXME",
     },
 }
+
 
 def _get_expected_failed_checks(estimator):
     """Get the expected failed checks for all estimators in scikit-learn."""

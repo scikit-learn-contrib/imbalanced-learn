@@ -25,6 +25,7 @@ from sklearn.datasets import (  # noqa
 )
 from sklearn.exceptions import SkipTestWarning
 from sklearn.preprocessing import StandardScaler, label_binarize
+from sklearn.utils._param_validation import generate_invalid_param_val, make_constraint
 from sklearn.utils._testing import (
     SkipTest,
     assert_allclose,
@@ -33,20 +34,20 @@ from sklearn.utils._testing import (
     set_random_state,
 )
 from sklearn.utils.estimator_checks import (
-    _enforce_estimator_tags_X, _enforce_estimator_tags_y
+    _enforce_estimator_tags_X,
+    _enforce_estimator_tags_y,
 )
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
-from sklearn.utils._param_validation import generate_invalid_param_val, make_constraint
-
 
 from imblearn.datasets import make_imbalance
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
-from imblearn.utils._test_common.instance_generator import (
-    _get_check_estimator_ids, _yield_instances_for_check
-)
 from imblearn.utils._sklearn_compat import get_tags
+from imblearn.utils._test_common.instance_generator import (
+    _get_check_estimator_ids,
+    _yield_instances_for_check,
+)
 
 sklearn_version = parse_version(sklearn.__version__)
 

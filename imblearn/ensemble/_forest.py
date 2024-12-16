@@ -23,11 +23,11 @@ from sklearn.ensemble._forest import (
 from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils._param_validation import Hidden, Interval, StrOptions
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import _check_sample_weight
-from sklearn.utils._param_validation import Hidden, Interval, StrOptions
 
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler

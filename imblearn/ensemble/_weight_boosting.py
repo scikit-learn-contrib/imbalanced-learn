@@ -10,9 +10,9 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing
+from sklearn.utils._param_validation import Hidden, Interval, StrOptions
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.validation import has_fit_parameter
-from sklearn.utils._param_validation import Hidden, Interval, StrOptions
 
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
@@ -402,8 +402,10 @@ class RUSBoostClassifier(AdaBoostClassifier):
     def _boost(self, iboost, X, y, sample_weight, random_state):
         if self.algorithm != "deprecated":
             warnings.warn(
-                "`algorithm` parameter is deprecated in 0.12 and will be removed in "
-                "0.14. In the future, the SAMME algorithm will always be used.",
+                (
+                    "`algorithm` parameter is deprecated in 0.12 and will be removed in"
+                    " 0.14. In the future, the SAMME algorithm will always be used."
+                ),
                 FutureWarning,
             )
         if self.algorithm == "SAMME.R":

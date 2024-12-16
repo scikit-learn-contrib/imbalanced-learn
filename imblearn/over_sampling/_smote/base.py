@@ -21,12 +21,12 @@ from sklearn.utils import (
     check_array,
     check_random_state,
 )
+from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.sparsefuncs_fast import (
     csr_mean_variance_axis0,
 )
 from sklearn.utils.validation import _num_features
-from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
 
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type

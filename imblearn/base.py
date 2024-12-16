@@ -183,7 +183,7 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin, BaseEstimator):
 
     def __sklearn_tags__(self):
         from .utils._sklearn_compat import TargetTags
-        from .utils._tags import Tags, SamplerTags, InputTags
+        from .utils._tags import InputTags, SamplerTags, Tags
 
         tags = Tags(
             estimator_type="sampler",

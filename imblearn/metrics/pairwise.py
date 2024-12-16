@@ -9,9 +9,9 @@ import numpy as np
 from scipy.spatial import distance_matrix
 from sklearn.base import BaseEstimator
 from sklearn.utils import check_consistent_length
+from sklearn.utils._param_validation import StrOptions
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_is_fitted
-from sklearn.utils._param_validation import StrOptions
 
 from ..utils._sklearn_compat import _fit_context, check_array, validate_data
 
@@ -233,7 +233,6 @@ class ValueDifferenceMetric(BaseEstimator):
         return {
             "requires_positive_X": True,  # X should be encoded with OrdinalEncoder
         }
-
 
     def __sklearn_tags__(self):
         tags = super().__sklearn_tags__()

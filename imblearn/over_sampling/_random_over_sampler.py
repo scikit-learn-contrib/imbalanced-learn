@@ -10,8 +10,8 @@ from numbers import Real
 import numpy as np
 from scipy import sparse
 from sklearn.utils import _safe_indexing, check_array, check_random_state
-from sklearn.utils.sparsefuncs import mean_variance_axis
 from sklearn.utils._param_validation import Interval
+from sklearn.utils.sparsefuncs import mean_variance_axis
 
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring

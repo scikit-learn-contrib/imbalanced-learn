@@ -14,12 +14,12 @@ from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
+from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils._tags import _safe_tags
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import check_is_fitted
-from sklearn.utils._param_validation import Interval, StrOptions
 
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler

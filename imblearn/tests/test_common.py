@@ -10,16 +10,20 @@ from collections import OrderedDict
 import numpy as np
 import pytest
 import sklearn
-from sklearn.base import clone
 from sklearn.exceptions import ConvergenceWarning
-from sklearn.utils.fixes import parse_version
 from sklearn.utils._testing import ignore_warnings
 from sklearn.utils.estimator_checks import (
     parametrize_with_checks as parametrize_with_checks_sklearn,
 )
+from sklearn.utils.fixes import parse_version
 
 from imblearn.over_sampling import RandomOverSampler
-from imblearn.under_sampling import NearMiss, RandomUnderSampler
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.utils._test_common.instance_generator import (
+    _get_check_estimator_ids,
+    _get_expected_failed_checks,
+    _tested_estimators,
+)
 from imblearn.utils.estimator_checks import (
     _set_checking_parameters,
     check_dataframe_column_names_consistency,
@@ -27,11 +31,6 @@ from imblearn.utils.estimator_checks import (
     parametrize_with_checks,
 )
 from imblearn.utils.testing import all_estimators
-from imblearn.utils._test_common.instance_generator import (
-    _get_check_estimator_ids,
-    _get_expected_failed_checks,
-    _tested_estimators,
-)
 
 sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
 if sklearn_version >= parse_version("1.6"):

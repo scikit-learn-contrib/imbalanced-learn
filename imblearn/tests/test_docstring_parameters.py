@@ -24,9 +24,9 @@ from sklearn.utils.estimator_checks import (
 
 import imblearn
 from imblearn.base import is_sampler
+from imblearn.utils._sklearn_compat import _construct_instances
 from imblearn.utils.estimator_checks import _set_checking_parameters
 from imblearn.utils.testing import all_estimators
-from imblearn.utils._sklearn_compat import _construct_instances
 
 # walk_packages() ignores DeprecationWarnings, now we need to ignore
 # FutureWarnings

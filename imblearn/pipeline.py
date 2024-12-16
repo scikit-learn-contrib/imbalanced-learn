@@ -15,30 +15,29 @@ composite estimator, as a chain of transforms, samples and estimators.
 # License: BSD
 import warnings
 from contextlib import contextmanager
-from copy import deepcopy
 
 import sklearn
 from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.exceptions import NotFittedError
 from sklearn.utils import Bunch
-from sklearn.utils.fixes import parse_version
-from sklearn.utils.metaestimators import available_if
-from sklearn.utils.validation import check_memory, check_is_fitted
-
 from sklearn.utils._metadata_requests import (
     METHODS,
     MetadataRouter,
     MethodMapping,
     _raise_for_params,
     _routing_enabled,
+    get_routing_for_object,
     process_routing,
 )
 from sklearn.utils._param_validation import HasMethods
+from sklearn.utils.fixes import parse_version
+from sklearn.utils.metaestimators import available_if
+from sklearn.utils.validation import check_is_fitted, check_memory
+
 from .utils._sklearn_compat import (
     _fit_context,
     _print_elapsed_time,
-    get_tags,
     validate_params,
 )
 
@@ -66,10 +65,12 @@ def _raise_or_warn_if_not_fitted(estimator):
         check_is_fitted(estimator)
     except NotFittedError:
         warnings.warn(
-            "This Pipeline instance is not fitted yet. Call 'fit' with "
-            "appropriate arguments before using other methods such as transform, "
-            "predict, etc. This will raise an error in 1.8 instead of the current "
-            "warning.",
+            (
+                "This Pipeline instance is not fitted yet. Call 'fit' with "
+                "appropriate arguments before using other methods such as transform, "
+                "predict, etc. This will raise an error in 1.8 instead of the current "
+                "warning."
+            ),
             FutureWarning,
         )
 

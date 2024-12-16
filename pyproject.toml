@@ -216,7 +216,7 @@ ci-py313-latest-optional-dependencies = ["py313", "optional", "tests"]
 
 [tool.black]
 line-length = 88
-target_version = ['py310', 'py311', 'py312', 'py313']
+target_version = ['py310', 'py311']
 preview = true
 # Exclude irrelevant directories for formatting
 exclude = '''
