@@ -27,7 +27,7 @@ requires-python = ">=3.10"
 dependencies = [
    "numpy>=1.24.3,<3",
    "scipy>=1.10.1,<2",
-   "scikit-learn>=1.2.2,<2",
+   "scikit-learn>=1.3.2,<2",
    "sklearn-compat>=0.1,<1",
    "joblib>=1.1.1,<2",
    "threadpoolctl>=2.0.0,<4",
@@ -93,7 +93,7 @@ platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 [tool.pixi.dependencies]
 numpy = ">=1.24.3,<3"
 scipy = ">=1.10.1,<2"
-scikit-learn = ">=1.2.2,<2"
+scikit-learn = ">=1.3.2,<2"
 sklearn-compat = ">=0.1,<1"
 joblib = ">=1.1.1,<2"
 threadpoolctl = ">=2.0.0,<4"
@@ -138,7 +138,7 @@ tensorflow = ">=2.13.1,<3"
 [tool.pixi.feature.min-dependencies.dependencies]
 numpy = "==1.24.3"
 scipy = "==1.10.1"
-scikit-learn = "==1.2.2"
+scikit-learn = "==1.3.2"
 joblib = "==1.1.1"
 threadpoolctl = "==2.0.0"
 
@@ -157,11 +157,11 @@ platforms = ["linux-64", "osx-arm64", "osx-64"]
 [tool.pixi.feature.min-tensorflow.dependencies]
 tensorflow = "==2.13.1"
 
-[tool.pixi.feature.sklearn-1-3.dependencies]
-scikit-learn = "~=1.3.0"
-
 [tool.pixi.feature.sklearn-1-4.dependencies]
 scikit-learn = "~=1.4.0"
+
+[tool.pixi.feature.sklearn-1-5.dependencies]
+scikit-learn = "~=1.5.0"
 
 [tool.pixi.feature.py310.dependencies]
 python = "~=3.10.0"
@@ -206,8 +206,8 @@ ci-py310-min-optional-dependencies = ["py310", "min-dependencies", "min-optional
 ci-py310-min-keras = ["py310", "min-keras", "tests"]
 ci-py310-min-tensorflow = ["py310", "min-tensorflow", "tests"]
 
-ci-py311-sklearn-1-3 = ["py311", "sklearn-1-3", "tests"]
 ci-py311-sklearn-1-4 = ["py311", "sklearn-1-4", "tests"]
+ci-py311-sklearn-1-5 = ["py311", "sklearn-1-5", "tests"]
 ci-py311-latest-tensorflow = ["py311", "tensorflow", "tests"]
 ci-py311-latest-keras = ["py311", "keras", "tests"]
 
