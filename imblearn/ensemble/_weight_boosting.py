@@ -1,5 +1,6 @@
 import copy
 import numbers
+import warnings
 from copy import deepcopy
 
 import numpy as np
@@ -11,15 +12,14 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.validation import has_fit_parameter
+from sklearn.utils._param_validation import Hidden, Interval, StrOptions
 
-from ..base import _ParamsValidationMixin
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
-from ..utils._param_validation import Interval, StrOptions
-from ..utils.fixes import _fit_context
+from ..utils._sklearn_compat import _fit_context
 from ._common import _adaboost_classifier_parameter_constraints
 
 sklearn_version = parse_version(sklearn.__version__)
@@ -29,7 +29,7 @@ sklearn_version = parse_version(sklearn.__version__)
     sampling_strategy=BaseUnderSampler._sampling_strategy_docstring,
     random_state=_random_state_docstring,
 )
-class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
+class RUSBoostClassifier(AdaBoostClassifier):
     """Random under-sampling integrated in the learning of AdaBoost.
 
     During learning, the problem of class balancing is alleviated by random
@@ -167,6 +167,10 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
 
     _parameter_constraints.update(
         {
+            "algorithm": [
+                StrOptions({"SAMME", "SAMME.R"}),
+                Hidden(StrOptions({"deprecated"})),
+            ],
             "sampling_strategy": [
                 Interval(numbers.Real, 0, 1, closed="right"),
                 StrOptions({"auto", "majority", "not minority", "not majority", "all"}),
@@ -186,7 +190,7 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
         *,
         n_estimators=50,
         learning_rate=1.0,
-        algorithm="SAMME.R",
+        algorithm="deprecated",
         sampling_strategy="auto",
         replacement=False,
         random_state=None,
@@ -194,9 +198,9 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
         super().__init__(
             n_estimators=n_estimators,
             learning_rate=learning_rate,
-            algorithm=algorithm,
             random_state=random_state,
         )
+        self.algorithm = algorithm
         self.estimator = estimator
         self.sampling_strategy = sampling_strategy
         self.replacement = replacement
@@ -394,3 +398,16 @@ class RUSBoostClassifier(_ParamsValidationMixin, AdaBoostClassifier):
             sample_weight *= np.exp(estimator_weight * incorrect * (sample_weight > 0))
 
         return sample_weight, estimator_weight, estimator_error
+
+    def _boost(self, iboost, X, y, sample_weight, random_state):
+        if self.algorithm != "deprecated":
+            warnings.warn(
+                "`algorithm` parameter is deprecated in 0.12 and will be removed in "
+                "0.14. In the future, the SAMME algorithm will always be used.",
+                FutureWarning,
+            )
+        if self.algorithm == "SAMME.R":
+            return self._boost_real(iboost, X, y, sample_weight, random_state)
+
+        else:  # elif self.algorithm == "SAMME":
+            return self._boost_discrete(iboost, X, y, sample_weight, random_state)

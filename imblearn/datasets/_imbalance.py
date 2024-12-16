@@ -10,7 +10,7 @@ from collections.abc import Mapping
 
 from ..under_sampling import RandomUnderSampler
 from ..utils import check_sampling_strategy
-from ..utils._param_validation import validate_params
+from ..utils._sklearn_compat import validate_params
 
 
 @validate_params(

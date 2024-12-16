@@ -11,10 +11,10 @@ from collections import Counter
 
 import numpy as np
 from sklearn.utils import _safe_indexing
+from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
-from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ...utils.fixes import _mode
 from ..base import BaseCleaningSampler
 
@@ -191,6 +191,11 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
     def _more_tags(self):
         return {"sample_indices": True}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags
 
 
 @Substitution(
@@ -413,6 +418,11 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
     def _more_tags(self):
         return {"sample_indices": True}
 
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags
+
 
 @Substitution(
     sampling_strategy=BaseCleaningSampler._sampling_strategy_docstring,
@@ -621,3 +631,8 @@ class AllKNN(BaseCleaningSampler):
 
     def _more_tags(self):
         return {"sample_indices": True}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags

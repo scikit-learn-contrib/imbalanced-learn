@@ -26,8 +26,7 @@ from sklearn.metrics._classification import _check_targets, _prf_divide
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_consistent_length, column_or_1d
-
-from ..utils._param_validation import Interval, StrOptions, validate_params
+from sklearn.utils._param_validation import Interval, StrOptions, validate_params
 
 
 @validate_params(

@@ -13,11 +13,12 @@ import numpy as np
 from scipy.sparse import issparse
 from sklearn.base import clone
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import check_array, column_or_1d
+from sklearn.utils import column_or_1d
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _num_samples
 
 from .fixes import _is_pandas_df
+from ..utils._sklearn_compat import check_array
 
 SAMPLING_KIND = (
     "over-sampling",
@@ -644,5 +645,5 @@ def _check_X(X):
     if _is_pandas_df(X):
         return X
     return check_array(
-        X, dtype=None, accept_sparse=["csr", "csc"], force_all_finite=False
+        X, dtype=None, accept_sparse=["csr", "csc"], ensure_all_finite=False
     )

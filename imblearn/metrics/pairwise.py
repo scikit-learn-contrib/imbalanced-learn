@@ -11,12 +11,12 @@ from sklearn.base import BaseEstimator
 from sklearn.utils import check_consistent_length
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_is_fitted
+from sklearn.utils._param_validation import StrOptions
 
-from ..base import _ParamsValidationMixin
-from ..utils._param_validation import StrOptions
+from ..utils._sklearn_compat import _fit_context, check_array, validate_data
 
 
-class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
+class ValueDifferenceMetric(BaseEstimator):
     r"""Class implementing the Value Difference Metric.
 
     This metric computes the distance between samples containing only
@@ -129,6 +129,7 @@ class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
         self.k = k
         self.r = r
 
+    @_fit_context(prefer_skip_nested_validation=True)
     def fit(self, X, y):
         """Compute the necessary statistics from the training set.
 
@@ -148,7 +149,7 @@ class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
         """
         self._validate_params()
         check_consistent_length(X, y)
-        X, y = self._validate_data(X, y, reset=True, dtype=np.int32)
+        X, y = validate_data(self, X=X, y=y, reset=True, dtype=np.int32)
 
         if isinstance(self.n_categories, str) and self.n_categories == "auto":
             # categories are expected to be encoded from 0 to n_categories - 1
@@ -207,11 +208,11 @@ class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
             The VDM pairwise distance.
         """
         check_is_fitted(self)
-        X = self._validate_data(X, reset=False, dtype=np.int32)
+        X = check_array(X, dtype=np.int32)
         n_samples_X = X.shape[0]
 
         if Y is not None:
-            Y = self._validate_data(Y, reset=False, dtype=np.int32)
+            Y = check_array(Y, dtype=np.int32)
             n_samples_Y = Y.shape[0]
         else:
             n_samples_Y = n_samples_X
@@ -232,3 +233,9 @@ class ValueDifferenceMetric(_ParamsValidationMixin, BaseEstimator):
         return {
             "requires_positive_X": True,  # X should be encoded with OrdinalEncoder
         }
+
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.positive_only = True
+        return tags

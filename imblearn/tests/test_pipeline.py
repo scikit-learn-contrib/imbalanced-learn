@@ -92,6 +92,9 @@ class Mult(BaseEstimator):
     def __init__(self, mult=1):
         self.mult = mult
 
+    def __sklearn_is_fitted__(self):
+        return True
+
     def fit(self, X, y):
         return self
 
@@ -117,7 +120,9 @@ class FitParamT(BaseEstimator):
         self.successful = False
 
     def fit(self, X, y, should_succeed=False):
+        self.fitted_ = True
         self.successful = should_succeed
+        return self
 
     def predict(self, X):
         return self.successful
@@ -146,6 +151,9 @@ class DummyTransf(Transf):
 class DummyEstimatorParams(BaseEstimator):
     """Mock classifier that takes params on predict"""
 
+    def __sklearn_is_fitted__(self):
+        return True
+
     def fit(self, X, y):
         return self
 
@@ -167,6 +175,9 @@ class DummySampler(NoTrans):
 
 class FitTransformSample(NoTrans):
     """Estimator implementing both transform and sample"""
+
+    def __sklearn_is_fitted__(self):
+        return True
 
     def fit(self, X, y, should_succeed=False):
         pass
@@ -534,6 +545,7 @@ def test_set_pipeline_step_passthrough(passthrough):
         "m2__mult": 2,
         "last__mult": 5,
         "verbose": False,
+        "transform_input": None,
     }
     assert pipeline.get_params(deep=True) == expected_params
 

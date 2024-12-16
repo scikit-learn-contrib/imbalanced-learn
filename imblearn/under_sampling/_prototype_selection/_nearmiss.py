@@ -10,10 +10,10 @@ from collections import Counter
 
 import numpy as np
 from sklearn.utils import _safe_indexing
+from sklearn.utils._param_validation import HasMethods, Interval
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring
-from ...utils._param_validation import HasMethods, Interval
 from ..base import BaseUnderSampler
 
 
@@ -312,3 +312,8 @@ class NearMiss(BaseUnderSampler):
             }
         }
     # fmt: on
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags

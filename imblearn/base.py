@@ -12,30 +12,11 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
-from .utils._param_validation import validate_parameter_constraints
+from .utils._sklearn_compat import _fit_context, validate_data
 from .utils._validation import ArraysTransformer
 
 
-class _ParamsValidationMixin:
-    """Mixin class to validate parameters."""
-
-    def _validate_params(self):
-        """Validate types and values of constructor parameters.
-
-        The expected type and values must be defined in the `_parameter_constraints`
-        class attribute, which is a dictionary `param_name: list of constraints`. See
-        the docstring of `validate_parameter_constraints` for a description of the
-        accepted constraints.
-        """
-        if hasattr(self, "_parameter_constraints"):
-            validate_parameter_constraints(
-                self._parameter_constraints,
-                self.get_params(deep=False),
-                caller_name=self.__class__.__name__,
-            )
-
-
-class SamplerMixin(_ParamsValidationMixin, BaseEstimator, metaclass=ABCMeta):
+class SamplerMixin(metaclass=ABCMeta):
     """Mixin class for samplers with abstract method.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -44,6 +25,7 @@ class SamplerMixin(_ParamsValidationMixin, BaseEstimator, metaclass=ABCMeta):
 
     _estimator_type = "sampler"
 
+    @_fit_context(prefer_skip_nested_validation=True)
     def fit(self, X, y):
         """Check inputs and statistics of the sampler.
 
@@ -133,7 +115,7 @@ class SamplerMixin(_ParamsValidationMixin, BaseEstimator, metaclass=ABCMeta):
         pass
 
 
-class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
+class BaseSampler(SamplerMixin, OneToOneFeatureMixin, BaseEstimator):
     """Base class for sampling algorithms.
 
     Warning: This class should not be used directly. Use the derive classes
@@ -147,7 +129,7 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
         if accept_sparse is None:
             accept_sparse = ["csr", "csc"]
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(X, y, reset=True, accept_sparse=accept_sparse)
+        X, y = validate_data(self, X=X, y=y, reset=True, accept_sparse=accept_sparse)
         return X, y, binarize_y
 
     def fit(self, X, y):
@@ -198,6 +180,24 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin):
 
     def _more_tags(self):
         return {"X_types": ["2darray", "sparse", "dataframe"]}
+
+    def __sklearn_tags__(self):
+        from .utils._sklearn_compat import TargetTags
+        from .utils._tags import Tags, SamplerTags, InputTags
+
+        tags = Tags(
+            estimator_type="sampler",
+            target_tags=TargetTags(required=True),
+            transformer_tags=None,
+            regressor_tags=None,
+            classifier_tags=None,
+            sampler_tags=SamplerTags(),
+        )
+        tags.input_tags = InputTags()
+        tags.input_tags.two_d_array = True
+        tags.input_tags.sparse = True
+        tags.input_tags.dataframe = True
+        return tags
 
 
 def _identity(X, y):

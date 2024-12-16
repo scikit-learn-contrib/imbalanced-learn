@@ -23,9 +23,7 @@ def imbalanced_dataset():
     )
 
 
-@pytest.mark.parametrize("algorithm", ["SAMME", "SAMME.R"])
-@pytest.mark.filterwarnings("ignore:The SAMME.R algorithm (the default) is")
-def test_rusboost(imbalanced_dataset, algorithm):
+def test_rusboost(imbalanced_dataset):
     X, y = imbalanced_dataset
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, stratify=y, random_state=1
@@ -33,9 +31,7 @@ def test_rusboost(imbalanced_dataset, algorithm):
     classes = np.unique(y)
 
     n_estimators = 500
-    rusboost = RUSBoostClassifier(
-        n_estimators=n_estimators, algorithm=algorithm, random_state=0
-    )
+    rusboost = RUSBoostClassifier(n_estimators=n_estimators, random_state=0)
     rusboost.fit(X_train, y_train)
     assert_array_equal(classes, rusboost.classes_)
 
@@ -69,12 +65,10 @@ def test_rusboost(imbalanced_dataset, algorithm):
     assert y_pred.shape == y_test.shape
 
 
-@pytest.mark.parametrize("algorithm", ["SAMME", "SAMME.R"])
-@pytest.mark.filterwarnings("ignore:The SAMME.R algorithm (the default) is")
-def test_rusboost_sample_weight(imbalanced_dataset, algorithm):
+def test_rusboost_sample_weight(imbalanced_dataset):
     X, y = imbalanced_dataset
     sample_weight = np.ones_like(y)
-    rusboost = RUSBoostClassifier(algorithm=algorithm, random_state=0)
+    rusboost = RUSBoostClassifier(random_state=0)
 
     # Predictions should be the same when sample_weight are all ones
     y_pred_sample_weight = rusboost.fit(X, y, sample_weight).predict(X)
