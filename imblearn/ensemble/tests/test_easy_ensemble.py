@@ -104,9 +104,7 @@ def test_bagging_with_pipeline():
     )
     estimator = EasyEnsembleClassifier(
         n_estimators=2,
-        estimator=make_pipeline(
-            SelectKBest(k=1), AdaBoostClassifier()
-        ),
+        estimator=make_pipeline(SelectKBest(k=1), AdaBoostClassifier()),
     )
     estimator.fit(X, y).predict(X)
 
