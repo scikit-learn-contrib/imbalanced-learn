@@ -6,6 +6,7 @@ from sklearn.utils.multiclass import check_classification_targets
 from imblearn.base import BaseSampler
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.utils import check_target_type as target_check
+from imblearn.utils._sklearn_compat import validate_data
 from imblearn.utils.estimator_checks import (
     check_samplers_fit,
     check_samplers_nan,
@@ -47,7 +48,7 @@ class NotFittedSampler(BaseBadSampler):
     """Sampler without target checking."""
 
     def fit(self, X, y):
-        X, y = self._validate_data(X, y)
+        X, y = validate_data(self, X=X, y=y)
         return self
 
 
@@ -55,7 +56,7 @@ class NoAcceptingSparseSampler(BaseBadSampler):
     """Sampler which does not accept sparse matrix."""
 
     def fit(self, X, y):
-        X, y = self._validate_data(X, y)
+        X, y = validate_data(self, X=X, y=y)
         self.sampling_strategy_ = "sampling_strategy_"
         return self
 
@@ -72,12 +73,13 @@ class NotPreservingDtypeSampler(BaseSampler):
 class IndicesSampler(BaseOverSampler):
     def _check_X_y(self, X, y):
         y, binarize_y = target_check(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X,
-            y,
+        X, y = validate_data(
+            self,
+            X=X,
+            y=y,
             reset=True,
             dtype=None,
-            force_all_finite=False,
+            ensure_all_finite=False,
         )
         return X, y, binarize_y
 

@@ -62,6 +62,9 @@ class NearMiss(BaseUnderSampler):
     nn_ : estimator object
         Validated K-nearest Neighbours object created from `n_neighbors` parameter.
 
+    nn_ver3_ : estimator object
+        Validated K-nearest Neighbours object created from `n_neighbors_ver3` parameter.
+
     sample_indices_ : ndarray of shape (n_new_samples,)
         Indices of the samples selected.
 

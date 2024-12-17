@@ -118,6 +118,7 @@ class ValueDifferenceMetric(BaseEstimator):
            [0.04,  0.  ,  1.44],
            [1.96,  1.44,  0.  ]])
     """
+
     _parameter_constraints: dict = {
         "n_categories": [StrOptions({"auto"}), "array-like"],
         "k": [numbers.Integral],
@@ -150,6 +151,7 @@ class ValueDifferenceMetric(BaseEstimator):
         self._validate_params()
         check_consistent_length(X, y)
         X, y = validate_data(self, X=X, y=y, reset=True, dtype=np.int32)
+        X = check_array(X, ensure_non_negative=True)
 
         if isinstance(self.n_categories, str) and self.n_categories == "auto":
             # categories are expected to be encoded from 0 to n_categories - 1
@@ -208,11 +210,11 @@ class ValueDifferenceMetric(BaseEstimator):
             The VDM pairwise distance.
         """
         check_is_fitted(self)
-        X = check_array(X, dtype=np.int32)
+        X = check_array(X, ensure_non_negative=True, dtype=np.int32)
         n_samples_X = X.shape[0]
 
         if Y is not None:
-            Y = check_array(Y, dtype=np.int32)
+            Y = check_array(Y, ensure_non_negative=True, dtype=np.int32)
             n_samples_Y = Y.shape[0]
         else:
             n_samples_Y = n_samples_X

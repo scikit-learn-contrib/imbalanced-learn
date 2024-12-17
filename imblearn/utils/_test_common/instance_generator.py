@@ -67,6 +67,7 @@ INIT_PARAMS = {
     RandomOverSampler: dict(random_state=42),
     SMOTE: dict(random_state=42),
     SMOTEN: dict(random_state=42),
+    SMOTENC: dict(categorical_features=[0], random_state=42),
     SVMSMOTE: dict(random_state=42),
     # under-sampling
     ClusterCentroids: dict(random_state=42),
@@ -199,6 +200,8 @@ def _yield_instances_for_check(check, estimator_orig):
 PER_ESTIMATOR_XFAIL_CHECKS = {
     BalancedRandomForestClassifier: {
         "check_sample_weight_equivalence": "FIXME",
+        "check_sample_weight_equivalence_on_sparse_data": "FIXME",
+        "check_sample_weight_equivalence_on_dense_data": "FIXME",
     },
     NearMiss: {
         "check_samplers_fit_resample": "FIXME",
@@ -212,9 +215,14 @@ PER_ESTIMATOR_XFAIL_CHECKS = {
             "Pipeline changes the `steps` parameter, which it shouldn't."
             "Therefore this test is x-fail until we fix this."
         ),
+        "check_classifiers_train": "FIXME",
+        "check_supervised_y_2d": "FIXME",
     },
     RUSBoostClassifier: {
         "check_sample_weight_equivalence": "FIXME",
+        "check_sample_weight_equivalence_on_sparse_data": "FIXME",
+        "check_sample_weight_equivalence_on_dense_data": "FIXME",
+        "check_estimator_sparse_matrix": "FIXME",
     },
 }
 

@@ -12,7 +12,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
-from .utils._sklearn_compat import _fit_context, validate_data
+from .utils._sklearn_compat import _fit_context, get_tags, validate_data
 from .utils._validation import ArraysTransformer
 
 
@@ -217,7 +217,11 @@ def is_sampler(estimator):
     is_sampler : bool
         True if estimator is a sampler, otherwise False.
     """
-    if estimator._estimator_type == "sampler":
+
+    if hasattr(estimator, "_estimator_type") and estimator._estimator_type == "sampler":
+        return True
+    tags = get_tags(estimator)
+    if hasattr(tags, "sampler_tags") and tags.sampler_tags is not None:
         return True
     return False
 

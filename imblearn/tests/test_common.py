@@ -12,13 +12,13 @@ import pytest
 import sklearn
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.utils._testing import ignore_warnings
-from sklearn.utils.estimator_checks import (
-    parametrize_with_checks as parametrize_with_checks_sklearn,
-)
 from sklearn.utils.fixes import parse_version
 
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
+from imblearn.utils._sklearn_compat import (
+    parametrize_with_checks as parametrize_with_checks_sklearn,
+)
 from imblearn.utils._test_common.instance_generator import (
     _get_check_estimator_ids,
     _get_expected_failed_checks,
