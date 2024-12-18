@@ -249,7 +249,7 @@ if sklearn_version < parse_version("1.4"):
         return isinstance(X, pd.DataFrame)
 
 else:
-    from sklearn.utils._metadata_requests import (
+    from sklearn.utils.metadata_routing import (
         _raise_for_params,  # noqa: F401
         process_routing,  # noqa: F401
     )
