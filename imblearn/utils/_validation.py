@@ -17,8 +17,7 @@ from sklearn.utils import column_or_1d
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _num_samples
 
-from ..utils._sklearn_compat import check_array
-from .fixes import _is_pandas_df
+from ..utils._sklearn_compat import _is_pandas_df, check_array
 
 SAMPLING_KIND = (
     "over-sampling",

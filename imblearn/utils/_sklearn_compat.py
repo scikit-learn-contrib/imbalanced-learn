@@ -240,12 +240,23 @@ if sklearn_version < parse_version("1.4"):
                 f" details. Extra parameters passed are: {set(params)}"
             )
 
+    def _is_pandas_df(X):
+        """Return True if the X is a pandas dataframe."""
+        try:
+            pd = sys.modules["pandas"]
+        except KeyError:
+            return False
+        return isinstance(X, pd.DataFrame)
+
 else:
     from sklearn.utils._metadata_requests import (
         _raise_for_params,  # noqa: F401
         process_routing,  # noqa: F401
     )
-    from sklearn.utils.validation import _is_fitted  # noqa: F401
+    from sklearn.utils.validation import (
+        _is_fitted,  # noqa: F401
+        _is_pandas_df,  # noqa: F401
+    )
 
 
 ########################################################################################

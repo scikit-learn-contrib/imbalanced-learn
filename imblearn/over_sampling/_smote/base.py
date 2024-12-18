@@ -13,6 +13,7 @@ import warnings
 import numpy as np
 import sklearn
 from scipy import sparse
+from scipy.stats import mode
 from sklearn.base import clone
 from sklearn.exceptions import DataConversionWarning
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
@@ -31,9 +32,8 @@ from sklearn.utils.validation import _num_features
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._sklearn_compat import validate_data
+from ...utils._sklearn_compat import _is_pandas_df, validate_data
 from ...utils._validation import _check_X
-from ...utils.fixes import _is_pandas_df, _mode
 from ..base import BaseOverSampler
 
 sklearn_version = parse_version(sklearn.__version__).base_version
@@ -997,7 +997,8 @@ class SMOTEN(SMOTE):
         # where for each feature individually, each category generated is the
         # most common category
         X_new = np.squeeze(
-            _mode(X_class[nn_indices[samples_indices]], axis=1).mode, axis=1
+            mode(X_class[nn_indices[samples_indices]], axis=1, keepdims=True).mode,
+            axis=1,
         )
         y_new = np.full(n_samples, fill_value=klass, dtype=y_dtype)
         return X_new, y_new

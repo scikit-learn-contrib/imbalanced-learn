@@ -10,3 +10,4 @@ ignore_errors = True
 omit =
     */tests/*
     **/setup.py
+    **/_sklearn_compat.py
