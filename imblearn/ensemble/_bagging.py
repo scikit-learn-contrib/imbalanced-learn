@@ -8,28 +8,24 @@ import copy
 import numbers
 
 import numpy as np
-import sklearn
 from sklearn.base import clone
 from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import check_is_fitted
 
-from ..base import _ParamsValidationMixin
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._param_validation import HasMethods, Interval, StrOptions
-from ..utils.fixes import _fit_context
+from ..utils._sklearn_compat import _fit_context, sklearn_version, validate_data
 from ._common import _bagging_parameter_constraints, _estimator_has
-
-sklearn_version = parse_version(sklearn.__version__)
 
 
 @Substitution(
@@ -37,7 +33,7 @@ sklearn_version = parse_version(sklearn.__version__)
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
+class BalancedBaggingClassifier(BaggingClassifier):
     """A Bagging classifier with additional balancing.
 
     This implementation of Bagging is similar to the scikit-learn
@@ -382,11 +378,12 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
         check_is_fitted(self)
 
         # Check data
-        X = self._validate_data(
-            X,
+        X = validate_data(
+            self,
+            X=X,
             accept_sparse=["csr", "csc"],
             dtype=None,
-            force_all_finite=False,
+            ensure_all_finite=False,
             reset=False,
         )
 
@@ -424,4 +421,8 @@ class BalancedBaggingClassifier(_ParamsValidationMixin, BaggingClassifier):
             tags[tags_key][failing_test] = reason
         else:
             tags[tags_key] = {failing_test: reason}
+        return tags
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
         return tags

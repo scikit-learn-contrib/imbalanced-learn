@@ -15,10 +15,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble._base import _set_random_states
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
 from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils._param_validation import HasMethods
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._param_validation import HasMethods
 from ..base import BaseUnderSampler
 
 
@@ -202,3 +202,8 @@ class InstanceHardnessThreshold(BaseUnderSampler):
 
     def _more_tags(self):
         return {"sample_indices": True}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags

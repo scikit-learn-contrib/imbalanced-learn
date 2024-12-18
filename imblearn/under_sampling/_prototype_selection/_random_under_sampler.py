@@ -9,6 +9,7 @@ from sklearn.utils import _safe_indexing, check_random_state
 
 from ...utils import Substitution, check_target_type
 from ...utils._docstring import _random_state_docstring
+from ...utils._sklearn_compat import validate_data
 from ...utils._validation import _check_X
 from ..base import BaseUnderSampler
 
@@ -99,8 +100,7 @@ class RandomUnderSampler(BaseUnderSampler):
     def _check_X_y(self, X, y):
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X = _check_X(X)
-        self._check_n_features(X, reset=True)
-        self._check_feature_names(X, reset=True)
+        X, y = validate_data(self, X=X, y=y, reset=True, skip_check_array=True)
         return X, y, binarize_y
 
     def _fit_resample(self, X, y):
@@ -140,3 +140,10 @@ class RandomUnderSampler(BaseUnderSampler):
                 "check_complex_data": "Robust to this type of data.",
             },
         }
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.allow_nan = True
+        tags.input_tags.string = True
+        tags.sampler_tags.sample_indices = True
+        return tags

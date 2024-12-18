@@ -55,7 +55,7 @@ import numpy as np
 from sklearn.datasets import get_data_home
 from sklearn.utils import Bunch, check_random_state
 
-from ..utils._param_validation import validate_params
+from ..utils._sklearn_compat import validate_params
 
 URL = "https://zenodo.org/record/61452/files/benchmark-imbalanced-learn.tar.gz"
 PRE_FILENAME = "x"

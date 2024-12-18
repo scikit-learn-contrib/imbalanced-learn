@@ -9,29 +9,31 @@ import numbers
 import warnings
 
 import numpy as np
-import sklearn
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
+from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils._tags import _safe_tags
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import check_is_fitted
 
-from ..base import _ParamsValidationMixin
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._param_validation import Interval, StrOptions
-from ..utils.fixes import _fit_context
+from ..utils._sklearn_compat import (
+    _fit_context,
+    get_tags,
+    sklearn_version,
+    validate_data,
+)
 from ._common import _bagging_parameter_constraints, _estimator_has
 
 MAX_INT = np.iinfo(np.int32).max
-sklearn_version = parse_version(sklearn.__version__)
 
 
 @Substitution(
@@ -39,7 +41,7 @@ sklearn_version = parse_version(sklearn.__version__)
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
+class EasyEnsembleClassifier(BaggingClassifier):
     """Bag of balanced boosted learners also known as EasyEnsemble.
 
     This algorithm is known as EasyEnsemble [1]_. The classifier is an
@@ -311,11 +313,14 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
         check_is_fitted(self)
 
         # Check data
-        X = self._validate_data(
-            X,
+        X = validate_data(
+            self,
+            X=X,
             accept_sparse=["csr", "csc"],
             dtype=None,
-            force_all_finite=False,
+            ensure_all_finite=(
+                "allow_nan" if get_tags(self).input_tags.allow_nan else True
+            ),
             reset=False,
         )
 
@@ -346,9 +351,16 @@ class EasyEnsembleClassifier(_ParamsValidationMixin, BaggingClassifier):
 
     def _get_estimator(self):
         if self.estimator is None:
-            return AdaBoostClassifier(algorithm="SAMME")
+            if parse_version("1.4") <= sklearn_version < parse_version("1.6"):
+                return AdaBoostClassifier(algorithm="SAMME")
+            else:
+                return AdaBoostClassifier()
         return self.estimator
 
-    # TODO: remove when minimum supported version of scikit-learn is 1.5
     def _more_tags(self):
         return {"allow_nan": _safe_tags(self._get_estimator(), "allow_nan")}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.allow_nan = get_tags(self._get_estimator()).input_tags.allow_nan
+        return tags

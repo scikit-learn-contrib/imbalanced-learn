@@ -7,8 +7,9 @@ Base class for the under-sampling method.
 import numbers
 from collections.abc import Mapping
 
+from sklearn.utils._param_validation import Interval, StrOptions
+
 from ..base import BaseSampler
-from ..utils._param_validation import Interval, StrOptions
 
 
 class BaseUnderSampler(BaseSampler):

@@ -8,8 +8,9 @@ Base class for the over-sampling method.
 import numbers
 from collections.abc import Mapping
 
+from sklearn.utils._param_validation import Interval, StrOptions
+
 from ..base import BaseSampler
-from ..utils._param_validation import Interval, StrOptions
 
 
 class BaseOverSampler(BaseSampler):

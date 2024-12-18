@@ -12,10 +12,10 @@ from sklearn.base import clone
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import _safe_indexing
+from sklearn.utils._param_validation import HasMethods, StrOptions
 
 from ...utils import Substitution
 from ...utils._docstring import _random_state_docstring
-from ...utils._param_validation import HasMethods, StrOptions
 from ..base import BaseUnderSampler
 
 VOTING_KIND = ("auto", "hard", "soft")
@@ -203,3 +203,8 @@ class ClusterCentroids(BaseUnderSampler):
 
     def _more_tags(self):
         return {"sample_indices": False}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = False
+        return tags

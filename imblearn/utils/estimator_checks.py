@@ -9,10 +9,9 @@ import sys
 import traceback
 import warnings
 from collections import Counter
-from functools import partial
+from functools import partial, wraps
 
 import numpy as np
-import sklearn
 from scipy import sparse
 from sklearn.base import clone, is_classifier, is_regressor
 from sklearn.cluster import KMeans
@@ -24,7 +23,7 @@ from sklearn.datasets import (  # noqa
 )
 from sklearn.exceptions import SkipTestWarning
 from sklearn.preprocessing import StandardScaler, label_binarize
-from sklearn.utils._tags import _safe_tags
+from sklearn.utils._param_validation import generate_invalid_param_val, make_constraint
 from sklearn.utils._testing import (
     SkipTest,
     assert_allclose,
@@ -35,18 +34,17 @@ from sklearn.utils._testing import (
 from sklearn.utils.estimator_checks import (
     _enforce_estimator_tags_X,
     _enforce_estimator_tags_y,
-    _get_check_estimator_ids,
-    _maybe_mark_xfail,
 )
-from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 
 from imblearn.datasets import make_imbalance
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
-from imblearn.utils._param_validation import generate_invalid_param_val, make_constraint
-
-sklearn_version = parse_version(sklearn.__version__)
+from imblearn.utils._sklearn_compat import get_tags
+from imblearn.utils._test_common.instance_generator import (
+    _get_check_estimator_ids,
+    _yield_instances_for_check,
+)
 
 
 def sample_dataset_generator():
@@ -80,20 +78,25 @@ def _set_checking_parameters(estimator):
 
 
 def _yield_sampler_checks(sampler):
-    tags = sampler._get_tags()
+    tags = get_tags(sampler)
+    accept_sparse = tags.input_tags.sparse
+    accept_dataframe = tags.input_tags.dataframe
+    accept_string = tags.input_tags.string
+    allow_nan = tags.input_tags.allow_nan
+
     yield check_target_type
     yield check_samplers_one_label
     yield check_samplers_fit
     yield check_samplers_fit_resample
     yield check_samplers_sampling_strategy_fit_resample
-    if "sparse" in tags["X_types"]:
+    if accept_sparse:
         yield check_samplers_sparse
-    if "dataframe" in tags["X_types"]:
+    if accept_dataframe:
         yield check_samplers_pandas
         yield check_samplers_pandas_sparse
-    if "string" in tags["X_types"]:
+    if accept_string:
         yield check_samplers_string
-    if tags["allow_nan"]:
+    if allow_nan:
         yield check_samplers_nan
     yield check_samplers_list
     yield check_samplers_multiclass_ova
@@ -112,10 +115,12 @@ def _yield_classifier_checks(classifier):
     yield check_classifiers_with_encoded_labels
 
 
-def _yield_all_checks(estimator):
+def _yield_all_checks(estimator, legacy=True):
     name = estimator.__class__.__name__
-    tags = estimator._get_tags()
-    if tags["_skip_test"]:
+    tags = get_tags(estimator)
+
+    skip_test = tags._skip_test
+    if skip_test:
         warnings.warn(
             f"Explicit SKIP via _skip_test tag for estimator {name}.",
             SkipTestWarning,
@@ -130,8 +135,138 @@ def _yield_all_checks(estimator):
             yield check
 
 
-def parametrize_with_checks(estimators):
+def _check_name(check):
+    if hasattr(check, "__wrapped__"):
+        return _check_name(check.__wrapped__)
+    return check.func.__name__ if isinstance(check, partial) else check.__name__
+
+
+def _maybe_mark(estimator, check, expected_failed_checks=None, mark=None, pytest=None):
+    """Mark the test as xfail or skip if needed.
+
+    Parameters
+    ----------
+    estimator : estimator object
+        Estimator instance for which to generate checks.
+    check : partial or callable
+        Check to be marked.
+    expected_failed_checks : dict[str, str], default=None
+        Dictionary of the form {check_name: reason} for checks that are expected to
+        fail.
+    mark : "xfail" or "skip" or None
+        Whether to mark the check as xfail or skip.
+    pytest : pytest module, default=None
+        Pytest module to use to mark the check. This is only needed if ``mark`` is
+        `"xfail"`. Note that one can run `check_estimator` without having `pytest`
+        installed. This is used in combination with `parametrize_with_checks` only.
+    """
+    should_be_marked, reason = _should_be_skipped_or_marked(
+        estimator, check, expected_failed_checks
+    )
+    if not should_be_marked or mark is None:
+        return estimator, check
+
+    estimator_name = estimator.__class__.__name__
+    if mark == "xfail":
+        return pytest.param(estimator, check, marks=pytest.mark.xfail(reason=reason))
+    else:
+
+        @wraps(check)
+        def wrapped(*args, **kwargs):
+            raise SkipTest(
+                f"Skipping {_check_name(check)} for {estimator_name}: {reason}"
+            )
+
+        return estimator, wrapped
+
+
+def _should_be_skipped_or_marked(
+    estimator, check, expected_failed_checks: dict[str, str] | None = None
+) -> tuple[bool, str]:
+    """Check whether a check should be skipped or marked as xfail.
+
+    Parameters
+    ----------
+    estimator : estimator object
+        Estimator instance for which to generate checks.
+    check : partial or callable
+        Check to be marked.
+    expected_failed_checks : dict[str, str], default=None
+        Dictionary of the form {check_name: reason} for checks that are expected to
+        fail.
+
+    Returns
+    -------
+    should_be_marked : bool
+        Whether the check should be marked as xfail or skipped.
+    reason : str
+        Reason for skipping the check.
+    """
+
+    expected_failed_checks = expected_failed_checks or {}
+
+    check_name = _check_name(check)
+    if check_name in expected_failed_checks:
+        return True, expected_failed_checks[check_name]
+
+    return False, "Check is not expected to fail"
+
+
+def estimator_checks_generator(
+    estimator, *, legacy=True, expected_failed_checks=None, mark=None
+):
+    """Iteratively yield all check callables for an estimator.
+
+    .. versionadded:: 1.6
+
+    Parameters
+    ----------
+    estimator : estimator object
+        Estimator instance for which to generate checks.
+    legacy : bool, default=True
+        Whether to include legacy checks. Over time we remove checks from this category
+        and move them into their specific category.
+    expected_failed_checks : dict[str, str], default=None
+        Dictionary of the form {check_name: reason} for checks that are expected to
+        fail.
+    mark : {"xfail", "skip"} or None, default=None
+        Whether to mark the checks that are expected to fail as
+        xfail(`pytest.mark.xfail`) or skip. Marking a test as "skip" is done via
+        wrapping the check in a function that raises a
+        :class:`~sklearn.exceptions.SkipTest` exception.
+
+    Returns
+    -------
+    estimator_checks_generator : generator
+        Generator that yields (estimator, check) tuples.
+    """
+    if mark == "xfail":
+        import pytest
+    else:
+        pytest = None  # type: ignore
+
+    name = type(estimator).__name__
+    for check in _yield_all_checks(estimator, legacy=legacy):
+        check_with_name = partial(check, name)
+        for check_instance in _yield_instances_for_check(check, estimator):
+            yield _maybe_mark(
+                check_instance,
+                check_with_name,
+                expected_failed_checks=expected_failed_checks,
+                mark=mark,
+                pytest=pytest,
+            )
+
+
+def parametrize_with_checks(estimators, *, legacy=True, expected_failed_checks=None):
     """Pytest specific decorator for parametrizing estimator checks.
+
+    Checks are categorised into the following groups:
+
+    - API checks: a set of checks to ensure API compatibility with scikit-learn.
+      Refer to https://scikit-learn.org/dev/developers/develop.html a requirement of
+      scikit-learn estimators.
+    - legacy: a set of checks which gradually will be grouped into other categories.
 
     The `id` of each check is set to be a pprint version of the estimator
     and the name of the check with its keyword arguments.
@@ -144,9 +279,40 @@ def parametrize_with_checks(estimators):
     estimators : list of estimators instances
         Estimators to generated checks for.
 
+        .. versionchanged:: 0.24
+           Passing a class was deprecated in version 0.23, and support for
+           classes was removed in 0.24. Pass an instance instead.
+
+        .. versionadded:: 0.24
+
+
+    legacy : bool, default=True
+        Whether to include legacy checks. Over time we remove checks from this category
+        and move them into their specific category.
+
+        .. versionadded:: 1.6
+
+    expected_failed_checks : callable, default=None
+        A callable that takes an estimator as input and returns a dictionary of the
+        form::
+
+            {
+                "check_name": "my reason",
+            }
+
+        Where `"check_name"` is the name of the check, and `"my reason"` is why
+        the check fails. These tests will be marked as xfail if the check fails.
+
+
+        .. versionadded:: 1.6
+
     Returns
     -------
     decorator : `pytest.mark.parametrize`
+
+    See Also
+    --------
+    check_estimator : Check if estimator adheres to scikit-learn conventions.
 
     Examples
     --------
@@ -158,18 +324,29 @@ def parametrize_with_checks(estimators):
     ...                           DecisionTreeRegressor()])
     ... def test_sklearn_compatible_estimator(estimator, check):
     ...     check(estimator)
+
     """
     import pytest
 
-    def checks_generator():
+    if any(isinstance(est, type) for est in estimators):
+        msg = (
+            "Passing a class was deprecated in version 0.23 "
+            "and isn't supported anymore from 0.24."
+            "Please pass an instance instead."
+        )
+        raise TypeError(msg)
+
+    def _checks_generator(estimators, legacy, expected_failed_checks):
         for estimator in estimators:
-            name = type(estimator).__name__
-            for check in _yield_all_checks(estimator):
-                check = partial(check, name)
-                yield _maybe_mark_xfail(estimator, check, pytest)
+            args = {"estimator": estimator, "legacy": legacy, "mark": "xfail"}
+            if callable(expected_failed_checks):
+                args["expected_failed_checks"] = expected_failed_checks(estimator)
+            yield from estimator_checks_generator(**args)
 
     return pytest.mark.parametrize(
-        "estimator, check", checks_generator(), ids=_get_check_estimator_ids
+        "estimator, check",
+        _checks_generator(estimators, legacy, expected_failed_checks),
+        ids=_get_check_estimator_ids,
     )
 
 
@@ -404,9 +581,9 @@ def check_samplers_sample_indices(name, sampler_orig):
     sampler = clone(sampler_orig)
     X, y = sample_dataset_generator()
     sampler.fit_resample(X, y)
-    sample_indices = sampler._get_tags().get("sample_indices", None)
-    if sample_indices:
-        assert hasattr(sampler, "sample_indices_") is sample_indices
+    tags = get_tags(sampler)
+    if tags.sampler_tags.sample_indices:
+        assert hasattr(sampler, "sample_indices_") is tags.sampler_tags.sample_indices
     else:
         assert not hasattr(sampler, "sample_indices_")
 
@@ -471,7 +648,6 @@ def check_classifiers_with_encoded_labels(name, classifier_orig):
             "virginica": 50,
         },
     )
-    classifier.set_params(sampling_strategy={"setosa": 20, "virginica": 20})
     classifier.fit(df, y)
     assert set(classifier.classes_) == set(y.cat.categories.tolist())
     y_pred = classifier.predict(df)
@@ -529,14 +705,7 @@ def check_param_validation(name, estimator_orig):
                 continue
 
             with raises(ValueError, match=match, err_msg=err_msg):
-                if any(
-                    isinstance(X_type, str) and X_type.endswith("labels")
-                    for X_type in _safe_tags(estimator, key="X_types")
-                ):
-                    # The estimator is a label transformer and take only `y`
-                    getattr(estimator, method)(y)  # pragma: no cover
-                else:
-                    getattr(estimator, method)(X, y)
+                getattr(estimator, method)(X, y)
 
         # Then, for constraints that are more than a type constraint, check that the
         # error is raised if param does match a valid type but does not match any valid
@@ -557,14 +726,7 @@ def check_param_validation(name, estimator_orig):
                     continue
 
                 with raises(ValueError, match=match, err_msg=err_msg):
-                    if any(
-                        X_type.endswith("labels")
-                        for X_type in _safe_tags(estimator, key="X_types")
-                    ):
-                        # The estimator is a label transformer and take only `y`
-                        getattr(estimator, method)(y)  # pragma: no cover
-                    else:
-                        getattr(estimator, method)(X, y)
+                    getattr(estimator, method)(X, y)
 
 
 def check_dataframe_column_names_consistency(name, estimator_orig):
@@ -575,12 +737,11 @@ def check_dataframe_column_names_consistency(name, estimator_orig):
             "pandas is not installed: not checking column name consistency for pandas"
         )
 
-    tags = _safe_tags(estimator_orig)
-    is_supported_X_types = (
-        "2darray" in tags["X_types"] or "categorical" in tags["X_types"]
-    )
+    tags = get_tags(estimator_orig)
+    is_supported_X_types = tags.input_tags.two_d_array or tags.input_tags.categorical
+    no_validation = tags.no_validation
 
-    if not is_supported_X_types or tags["no_validation"]:
+    if not is_supported_X_types or no_validation:
         return
 
     rng = np.random.RandomState(0)
@@ -711,8 +872,12 @@ def check_dataframe_column_names_consistency(name, estimator_orig):
 
 
 def check_sampler_get_feature_names_out(name, sampler_orig):
-    tags = sampler_orig._get_tags()
-    if "2darray" not in tags["X_types"] or tags["no_validation"]:
+    tags = get_tags(sampler_orig)
+
+    two_d_array = tags.input_tags.two_d_array
+    no_validation = tags.no_validation
+
+    if not two_d_array or no_validation:
         return
 
     X, y = make_blobs(
@@ -759,8 +924,11 @@ def check_sampler_get_feature_names_out_pandas(name, sampler_orig):
             "pandas is not installed: not checking column name consistency for pandas"
         )
 
-    tags = sampler_orig._get_tags()
-    if "2darray" not in tags["X_types"] or tags["no_validation"]:
+    tags = get_tags(sampler_orig)
+    two_d_array = tags.input_tags.two_d_array
+    no_validation = tags.no_validation
+
+    if not two_d_array or no_validation:
         return
 
     X, y = make_blobs(

@@ -10,7 +10,6 @@ from pkgutil import walk_packages
 
 import pytest
 from sklearn.datasets import make_classification
-from sklearn.linear_model import LogisticRegression
 from sklearn.utils._testing import (
     _get_func_name,
     check_docstring_parameters,
@@ -18,15 +17,15 @@ from sklearn.utils._testing import (
 )
 from sklearn.utils.deprecation import _is_deprecated
 from sklearn.utils.estimator_checks import (
-    _construct_instance,
     _enforce_estimator_tags_X,
     _enforce_estimator_tags_y,
 )
 
 import imblearn
 from imblearn.base import is_sampler
+from imblearn.under_sampling import NearMiss
+from imblearn.utils._test_common.instance_generator import _tested_estimators
 from imblearn.utils.estimator_checks import _set_checking_parameters
-from imblearn.utils.testing import all_estimators
 
 # walk_packages() ignores DeprecationWarnings, now we need to ignore
 # FutureWarnings
@@ -43,10 +42,10 @@ with warnings.catch_warnings():
     )
 
 # functions to ignore args / docstring of
-_DOCSTRING_IGNORES = [
-    "RUSBoostClassifier",  # TODO remove after releasing scikit-learn 1.0.1
-    "ValueDifferenceMetric",
-]
+_DOCSTRING_IGNORES = ["ValueDifferenceMetric"]
+_IGNORE_ATTRIBUTES = {
+    NearMiss: ["nn_ver3_"],
+}
 
 # Methods where y param should be ignored if y=None by default
 _METHODS_IGNORE_NONE_Y = [
@@ -159,28 +158,19 @@ def test_tabs():
         )
 
 
-def _construct_compose_pipeline_instance(Estimator):
-    # Minimal / degenerate instances: only useful to test the docstrings.
-    if Estimator.__name__ == "Pipeline":
-        return Estimator(steps=[("clf", LogisticRegression())])
-
-
-@pytest.mark.parametrize("name, Estimator", all_estimators())
-def test_fit_docstring_attributes(name, Estimator):
+@pytest.mark.parametrize("estimator", list(_tested_estimators()))
+def test_fit_docstring_attributes(estimator):
     pytest.importorskip("numpydoc")
     from numpydoc import docscrape
 
+    Estimator = estimator.__class__
     if Estimator.__name__ in _DOCSTRING_IGNORES:
         return
 
     doc = docscrape.ClassDoc(Estimator)
     attributes = doc["Attributes"]
 
-    if Estimator.__name__ == "Pipeline":
-        est = _construct_compose_pipeline_instance(Estimator)
-    else:
-        est = _construct_instance(Estimator)
-    _set_checking_parameters(est)
+    _set_checking_parameters(estimator)
 
     X, y = make_classification(
         n_samples=20,
@@ -190,16 +180,16 @@ def test_fit_docstring_attributes(name, Estimator):
         random_state=2,
     )
 
-    y = _enforce_estimator_tags_y(est, y)
-    X = _enforce_estimator_tags_X(est, X)
+    y = _enforce_estimator_tags_y(estimator, y)
+    X = _enforce_estimator_tags_X(estimator, X)
 
-    if "oob_score" in est.get_params():
-        est.set_params(bootstrap=True, oob_score=True)
+    if "oob_score" in estimator.get_params():
+        estimator.set_params(bootstrap=True, oob_score=True)
 
-    if is_sampler(est):
-        est.fit_resample(X, y)
+    if is_sampler(estimator):
+        estimator.fit_resample(X, y)
     else:
-        est.fit(X, y)
+        estimator.fit(X, y)
 
     skipped_attributes = set(
         [
@@ -218,9 +208,11 @@ def test_fit_docstring_attributes(name, Estimator):
             continue
         # ignore deprecation warnings
         with ignore_warnings(category=FutureWarning):
-            assert hasattr(est, attr.name)
+            if attr.name in _IGNORE_ATTRIBUTES.get(Estimator, []):
+                continue
+            assert hasattr(estimator, attr.name)
 
-    fit_attr = _get_all_fitted_attributes(est)
+    fit_attr = _get_all_fitted_attributes(estimator)
     fit_attr_names = [attr.name for attr in attributes]
     undocumented_attrs = set(fit_attr).difference(fit_attr_names)
     undocumented_attrs = set(undocumented_attrs).difference(skipped_attributes)

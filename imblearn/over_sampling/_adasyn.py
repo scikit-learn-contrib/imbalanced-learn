@@ -10,10 +10,10 @@ import warnings
 import numpy as np
 from scipy import sparse
 from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils._param_validation import HasMethods, Interval
 
 from ..utils import Substitution, check_neighbors_object
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._param_validation import HasMethods, Interval
 from .base import BaseOverSampler
 
 
@@ -233,3 +233,7 @@ class ADASYN(BaseOverSampler):
         return {
             "X_types": ["2darray"],
         }
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        return tags

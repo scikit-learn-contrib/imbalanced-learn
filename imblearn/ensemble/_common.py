@@ -1,8 +1,7 @@
 from numbers import Integral, Real
 
 from sklearn.tree._criterion import Criterion
-
-from ..utils._param_validation import (
+from sklearn.utils._param_validation import (
     HasMethods,
     Hidden,
     Interval,

@@ -12,10 +12,10 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils._param_validation import HasMethods, Interval
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._param_validation import HasMethods, Interval
 from ..base import BaseCleaningSampler
 from ._tomek_links import TomekLinks
 
@@ -227,3 +227,8 @@ class OneSidedSelection(BaseCleaningSampler):
 
     def _more_tags(self):
         return {"sample_indices": True}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags

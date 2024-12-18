@@ -14,10 +14,10 @@ from scipy import sparse
 from sklearn.base import clone
 from sklearn.svm import SVC
 from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
 
 from ...utils import Substitution, check_neighbors_object
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._param_validation import HasMethods, Interval, StrOptions
 from ..base import BaseOverSampler
 from .base import BaseSMOTE
 

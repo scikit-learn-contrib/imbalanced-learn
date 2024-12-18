@@ -6,7 +6,7 @@
 import numpy as np
 import pytest
 from sklearn.datasets import load_iris, make_hastie_10_2
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.feature_selection import SelectKBest
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.utils._testing import assert_allclose, assert_array_equal
@@ -41,8 +41,8 @@ Y = np.array([1, 2, 2, 2, 1, 0, 1, 1, 1, 0])
 @pytest.mark.parametrize(
     "estimator",
     [
-        AdaBoostClassifier(algorithm="SAMME", n_estimators=5),
-        AdaBoostClassifier(algorithm="SAMME", n_estimators=10),
+        GradientBoostingClassifier(n_estimators=5),
+        GradientBoostingClassifier(n_estimators=10),
     ],
 )
 def test_easy_ensemble_classifier(n_estimators, estimator):
@@ -89,10 +89,10 @@ def test_estimator():
     assert isinstance(ensemble.estimator_.steps[-1][1], AdaBoostClassifier)
 
     ensemble = EasyEnsembleClassifier(
-        2, AdaBoostClassifier(algorithm="SAMME"), n_jobs=-1, random_state=0
+        2, GradientBoostingClassifier(), n_jobs=-1, random_state=0
     ).fit(X_train, y_train)
 
-    assert isinstance(ensemble.estimator_.steps[-1][1], AdaBoostClassifier)
+    assert isinstance(ensemble.estimator_.steps[-1][1], GradientBoostingClassifier)
 
 
 def test_bagging_with_pipeline():
@@ -104,9 +104,7 @@ def test_bagging_with_pipeline():
     )
     estimator = EasyEnsembleClassifier(
         n_estimators=2,
-        estimator=make_pipeline(
-            SelectKBest(k=1), AdaBoostClassifier(algorithm="SAMME")
-        ),
+        estimator=make_pipeline(SelectKBest(k=1), GradientBoostingClassifier()),
     )
     estimator.fit(X, y).predict(X)
 
@@ -198,7 +196,7 @@ def test_easy_ensemble_classifier_single_estimator():
     clf1 = EasyEnsembleClassifier(n_estimators=1, random_state=0).fit(X_train, y_train)
     clf2 = make_pipeline(
         RandomUnderSampler(random_state=0),
-        AdaBoostClassifier(algorithm="SAMME", random_state=0),
+        GradientBoostingClassifier(random_state=0),
     ).fit(X_train, y_train)
 
     assert_array_equal(clf1.predict(X_test), clf2.predict(X_test))
@@ -217,7 +215,7 @@ def test_easy_ensemble_classifier_grid_search():
         "estimator__n_estimators": [3, 4],
     }
     grid_search = GridSearchCV(
-        EasyEnsembleClassifier(estimator=AdaBoostClassifier(algorithm="SAMME")),
+        EasyEnsembleClassifier(estimator=GradientBoostingClassifier()),
         parameters,
         cv=5,
     )

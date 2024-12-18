@@ -11,8 +11,8 @@ import numbers
 import warnings
 
 import numpy as np
-import sklearn
 from scipy import sparse
+from scipy.stats import mode
 from sklearn.base import clone
 from sklearn.exceptions import DataConversionWarning
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
@@ -21,7 +21,7 @@ from sklearn.utils import (
     check_array,
     check_random_state,
 )
-from sklearn.utils.fixes import parse_version
+from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
 from sklearn.utils.sparsefuncs_fast import (
     csr_mean_variance_axis0,
 )
@@ -30,16 +30,9 @@ from sklearn.utils.validation import _num_features
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._param_validation import HasMethods, Interval, StrOptions
+from ...utils._sklearn_compat import _get_column_indices, _is_pandas_df, validate_data
 from ...utils._validation import _check_X
-from ...utils.fixes import _is_pandas_df, _mode
 from ..base import BaseOverSampler
-
-sklearn_version = parse_version(sklearn.__version__).base_version
-if parse_version(sklearn_version) < parse_version("1.5"):
-    from sklearn.utils import _get_column_indices
-else:
-    from sklearn.utils._indexing import _get_column_indices
 
 
 class BaseSMOTE(BaseOverSampler):
@@ -601,8 +594,7 @@ class SMOTENC(SMOTE):
         """
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
         X = _check_X(X)
-        self._check_n_features(X, reset=True)
-        self._check_feature_names(X, reset=True)
+        validate_data(self, X=X, y=y, reset=True, skip_check_array=True)
         return X, y, binarize_y
 
     def _validate_column_types(self, X):
@@ -821,6 +813,15 @@ class SMOTENC(SMOTE):
         )
         return self.categorical_encoder_
 
+    def _more_tags(self):
+        return {"X_types": ["2darray", "dataframe", "string"]}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.sparse = False
+        tags.input_tags.string = True
+        return tags
+
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
@@ -963,9 +964,10 @@ class SMOTEN(SMOTE):
     def _check_X_y(self, X, y):
         """Check should accept strings and not sparse matrices."""
         y, binarize_y = check_target_type(y, indicate_one_vs_all=True)
-        X, y = self._validate_data(
-            X,
-            y,
+        X, y = validate_data(
+            self,
+            X=X,
+            y=y,
             reset=True,
             dtype=None,
             accept_sparse=["csr", "csc"],
@@ -987,7 +989,8 @@ class SMOTEN(SMOTE):
         # where for each feature individually, each category generated is the
         # most common category
         X_new = np.squeeze(
-            _mode(X_class[nn_indices[samples_indices]], axis=1).mode, axis=1
+            mode(X_class[nn_indices[samples_indices]], axis=1, keepdims=True).mode,
+            axis=1,
         )
         y_new = np.full(n_samples, fill_value=klass, dtype=y_dtype)
         return X_new, y_new
@@ -1063,3 +1066,9 @@ class SMOTEN(SMOTE):
 
     def _more_tags(self):
         return {"X_types": ["2darray", "dataframe", "string"]}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.sparse = False
+        tags.input_tags.string = True
+        return tags

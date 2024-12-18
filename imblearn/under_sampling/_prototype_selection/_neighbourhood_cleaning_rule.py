@@ -12,10 +12,10 @@ import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
 from sklearn.utils import _safe_indexing
+from sklearn.utils._param_validation import HasMethods, Hidden, Interval, StrOptions
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
-from ...utils._param_validation import HasMethods, Hidden, Interval, StrOptions
 from ..base import BaseCleaningSampler
 from ._edited_nearest_neighbours import EditedNearestNeighbours
 
@@ -258,3 +258,8 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
 
     def _more_tags(self):
         return {"sample_indices": True}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.sampler_tags.sample_indices = True
+        return tags

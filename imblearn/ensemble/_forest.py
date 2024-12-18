@@ -8,7 +8,6 @@ from copy import deepcopy
 from warnings import warn
 
 import numpy as np
-import sklearn
 from numpy import float32 as DTYPE
 from numpy import float64 as DOUBLE
 from scipy.sparse import issparse
@@ -23,23 +22,21 @@ from sklearn.ensemble._forest import (
 from sklearn.exceptions import DataConversionWarning
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import _safe_indexing, check_random_state
+from sklearn.utils._param_validation import Hidden, Interval, StrOptions
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import _check_sample_weight
 
-from ..base import _ParamsValidationMixin
 from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._param_validation import Hidden, Interval, StrOptions
+from ..utils._sklearn_compat import _fit_context, sklearn_version, validate_data
 from ..utils._validation import check_sampling_strategy
-from ..utils.fixes import _fit_context
 from ._common import _random_forest_classifier_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
-sklearn_version = parse_version(sklearn.__version__)
 
 
 def _local_parallel_build_trees(
@@ -77,7 +74,7 @@ def _local_parallel_build_trees(
         "bootstrap": bootstrap,
     }
 
-    if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+    if sklearn_version >= parse_version("1.4"):
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
         # support for missing values
         params_parallel_build_trees["missing_values_in_feature_mask"] = (
@@ -93,7 +90,7 @@ def _local_parallel_build_trees(
     n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
-class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassifier):
+class BalancedRandomForestClassifier(RandomForestClassifier):
     """A balanced random forest classifier.
 
     A balanced random forest differs from a classical random forest by the
@@ -474,7 +471,7 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
             "max_samples": max_samples,
         }
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
-        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+        if sklearn_version >= parse_version("1.4"):
             # use scikit-learn support for monotonic constraints
             params_random_forest["monotonic_cst"] = monotonic_cst
         else:
@@ -596,22 +593,23 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
         # TODO: remove when the minimum supported version of scipy will be 1.4
         # Support for missing values
-        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
-            force_all_finite = False
+        if sklearn_version >= parse_version("1.4"):
+            ensure_all_finite = False
         else:
-            force_all_finite = True
+            ensure_all_finite = True
 
-        X, y = self._validate_data(
-            X,
-            y,
+        X, y = validate_data(
+            self,
+            X=X,
+            y=y,
             multi_output=True,
             accept_sparse="csc",
             dtype=DTYPE,
-            force_all_finite=force_all_finite,
+            ensure_all_finite=ensure_all_finite,
         )
 
         # TODO: remove when the minimum supported version of scikit-learn will be 1.4
-        if parse_version(sklearn_version.base_version) >= parse_version("1.4"):
+        if sklearn_version >= parse_version("1.4"):
             # _compute_missing_values_in_feature_mask checks if X has missing values and
             # will raise an error if the underlying tree base estimator can't handle
             # missing values. Only the criterion is required to determine if the tree
@@ -882,3 +880,10 @@ class BalancedRandomForestClassifier(_ParamsValidationMixin, RandomForestClassif
 
     def _more_tags(self):
         return {"multioutput": False, "multilabel": False}
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.target_tags.multi_output = False
+        tags.classifier_tags.multi_label = False
+        tags.input_tags.allow_nan = sklearn_version >= parse_version("1.4")
+        return tags

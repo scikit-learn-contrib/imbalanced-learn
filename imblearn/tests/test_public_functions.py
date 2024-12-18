@@ -5,8 +5,7 @@ from importlib import import_module
 from inspect import signature
 
 import pytest
-
-from imblearn.utils._param_validation import (
+from sklearn.utils._param_validation import (
     generate_invalid_param_val,
     generate_valid_param,
     make_constraint,
