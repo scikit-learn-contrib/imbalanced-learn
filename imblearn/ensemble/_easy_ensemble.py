@@ -315,7 +315,9 @@ class EasyEnsembleClassifier(BaggingClassifier):
             X=X,
             accept_sparse=["csr", "csc"],
             dtype=None,
-            ensure_all_finite=False,
+            ensure_all_finite=(
+                "allow_nan" if get_tags(self).input_tags.allow_nan else True
+            ),
             reset=False,
         )
 
@@ -352,7 +354,6 @@ class EasyEnsembleClassifier(BaggingClassifier):
                 return AdaBoostClassifier()
         return self.estimator
 
-    # TODO: remove when minimum supported version of scikit-learn is 1.5
     def _more_tags(self):
         return {"allow_nan": _safe_tags(self._get_estimator(), "allow_nan")}
 

@@ -15,6 +15,7 @@ composite estimator, as a chain of transforms, samples and estimators.
 # License: BSD
 import warnings
 from contextlib import contextmanager
+from copy import deepcopy
 
 import sklearn
 from sklearn import pipeline
@@ -25,10 +26,8 @@ from sklearn.utils._metadata_requests import (
     METHODS,
     MetadataRouter,
     MethodMapping,
-    _raise_for_params,
     _routing_enabled,
     get_routing_for_object,
-    process_routing,
 )
 from sklearn.utils._param_validation import HasMethods
 from sklearn.utils.fixes import parse_version
@@ -38,9 +37,14 @@ from sklearn.utils.validation import check_is_fitted, check_memory
 from .utils._sklearn_compat import (
     _fit_context,
     _print_elapsed_time,
+    _raise_for_params,
+    get_tags,
+    process_routing,
     validate_params,
 )
 
+if "fit_predict" not in METHODS:
+    METHODS.append("fit_predict")
 METHODS.append("fit_resample")
 
 __all__ = ["Pipeline", "make_pipeline"]
@@ -244,6 +248,12 @@ class Pipeline(pipeline.Pipeline):
         "memory": [None, str, HasMethods(["cache"])],
         "verbose": ["boolean"],
     }
+
+    def __init__(self, steps, *, transform_input=None, memory=None, verbose=False):
+        self.steps = steps
+        self.transform_input = transform_input
+        self.memory = memory
+        self.verbose = verbose
 
     # BaseEstimator interface
 
@@ -1162,35 +1172,29 @@ class Pipeline(pipeline.Pipeline):
             # fit, fit_predict, and fit_transform call fit_transform if it
             # exists, or else fit and transform
             if hasattr(trans, "fit_transform"):
-                (
-                    method_mapping.add(caller="fit", callee="fit_transform")
-                    .add(caller="fit_transform", callee="fit_transform")
-                    .add(caller="fit_predict", callee="fit_transform")
-                    .add(caller="fit_resample", callee="fit_transform")
-                )
+                method_mapping.add(caller="fit", callee="fit_transform")
+                method_mapping.add(caller="fit_transform", callee="fit_transform")
+                method_mapping.add(caller="fit_predict", callee="fit_transform")
+                method_mapping.add(caller="fit_resample", callee="fit_transform")
             else:
-                (
-                    method_mapping.add(caller="fit", callee="fit")
-                    .add(caller="fit", callee="transform")
-                    .add(caller="fit_transform", callee="fit")
-                    .add(caller="fit_transform", callee="transform")
-                    .add(caller="fit_predict", callee="fit")
-                    .add(caller="fit_predict", callee="transform")
-                    .add(caller="fit_resample", callee="fit")
-                    .add(caller="fit_resample", callee="transform")
-                )
+                method_mapping.add(caller="fit", callee="fit")
+                method_mapping.add(caller="fit", callee="transform")
+                method_mapping.add(caller="fit_transform", callee="fit")
+                method_mapping.add(caller="fit_transform", callee="transform")
+                method_mapping.add(caller="fit_predict", callee="fit")
+                method_mapping.add(caller="fit_predict", callee="transform")
+                method_mapping.add(caller="fit_resample", callee="fit")
+                method_mapping.add(caller="fit_resample", callee="transform")
 
-            (
-                method_mapping.add(caller="predict", callee="transform")
-                .add(caller="predict", callee="transform")
-                .add(caller="predict_proba", callee="transform")
-                .add(caller="decision_function", callee="transform")
-                .add(caller="predict_log_proba", callee="transform")
-                .add(caller="transform", callee="transform")
-                .add(caller="inverse_transform", callee="inverse_transform")
-                .add(caller="score", callee="transform")
-                .add(caller="fit_resample", callee="transform")
-            )
+            method_mapping.add(caller="predict", callee="transform")
+            method_mapping.add(caller="predict", callee="transform")
+            method_mapping.add(caller="predict_proba", callee="transform")
+            method_mapping.add(caller="decision_function", callee="transform")
+            method_mapping.add(caller="predict_log_proba", callee="transform")
+            method_mapping.add(caller="transform", callee="transform")
+            method_mapping.add(caller="inverse_transform", callee="inverse_transform")
+            method_mapping.add(caller="score", callee="transform")
+            method_mapping.add(caller="fit_resample", callee="transform")
 
             router.add(method_mapping=method_mapping, **{name: trans})
 
@@ -1201,30 +1205,24 @@ class Pipeline(pipeline.Pipeline):
         # then we add the last step
         method_mapping = MethodMapping()
         if hasattr(final_est, "fit_transform"):
-            (
-                method_mapping.add(caller="fit_transform", callee="fit_transform").add(
-                    caller="fit_resample", callee="fit_transform"
-                )
-            )
+            method_mapping.add(caller="fit_transform", callee="fit_transform")
+            method_mapping.add(caller="fit_resample", callee="fit_transform")
         else:
-            (
-                method_mapping.add(caller="fit", callee="fit")
-                .add(caller="fit", callee="transform")
-                .add(caller="fit_resample", callee="fit")
-                .add(caller="fit_resample", callee="transform")
-            )
-        (
             method_mapping.add(caller="fit", callee="fit")
-            .add(caller="predict", callee="predict")
-            .add(caller="fit_predict", callee="fit_predict")
-            .add(caller="predict_proba", callee="predict_proba")
-            .add(caller="decision_function", callee="decision_function")
-            .add(caller="predict_log_proba", callee="predict_log_proba")
-            .add(caller="transform", callee="transform")
-            .add(caller="inverse_transform", callee="inverse_transform")
-            .add(caller="score", callee="score")
-            .add(caller="fit_resample", callee="fit_resample")
-        )
+            method_mapping.add(caller="fit", callee="transform")
+            method_mapping.add(caller="fit_resample", callee="fit")
+            method_mapping.add(caller="fit_resample", callee="transform")
+
+        method_mapping.add(caller="fit", callee="fit")
+        method_mapping.add(caller="predict", callee="predict")
+        method_mapping.add(caller="fit_predict", callee="fit_predict")
+        method_mapping.add(caller="predict_proba", callee="predict_proba")
+        method_mapping.add(caller="decision_function", callee="decision_function")
+        method_mapping.add(caller="predict_log_proba", callee="predict_log_proba")
+        method_mapping.add(caller="transform", callee="transform")
+        method_mapping.add(caller="inverse_transform", callee="inverse_transform")
+        method_mapping.add(caller="score", callee="score")
+        method_mapping.add(caller="fit_resample", callee="fit_resample")
 
         router.add(method_mapping=method_mapping, **{final_name: final_est})
         return router
@@ -1257,6 +1255,67 @@ class Pipeline(pipeline.Pipeline):
                 fit_params_steps[step]["fit_transform"][param] = pval
                 fit_params_steps[step]["fit_predict"][param] = pval
             return fit_params_steps
+
+    def __sklearn_is_fitted__(self):
+        """Indicate whether pipeline has been fit.
+
+        This is done by checking whether the last non-`passthrough` step of the
+        pipeline is fitted.
+
+        An empty pipeline is considered fitted.
+        """
+
+        # First find the last step that is not 'passthrough'
+        last_step = None
+        for _, estimator in reversed(self.steps):
+            if estimator != "passthrough":
+                last_step = estimator
+                break
+
+        if last_step is None:
+            # All steps are 'passthrough', so the pipeline is considered fitted
+            return True
+
+        try:
+            # check if the last step of the pipeline is fitted
+            # we only check the last step since if the last step is fit, it
+            # means the previous steps should also be fit. This is faster than
+            # checking if every step of the pipeline is fit.
+            check_is_fitted(last_step)
+            return True
+        except NotFittedError:
+            return False
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+
+        if not self.steps:
+            return tags
+
+        try:
+            if self.steps[0][1] is not None and self.steps[0][1] != "passthrough":
+                tags.input_tags.pairwise = get_tags(
+                    self.steps[0][1]
+                ).input_tags.pairwise
+        except (ValueError, AttributeError, TypeError):
+            # This happens when the `steps` is not a list of (name, estimator)
+            # tuples and `fit` is not called yet to validate the steps.
+            pass
+
+        try:
+            if self.steps[-1][1] is not None and self.steps[-1][1] != "passthrough":
+                last_step_tags = get_tags(self.steps[-1][1])
+                tags.estimator_type = last_step_tags.estimator_type
+                tags.target_tags.multi_output = last_step_tags.target_tags.multi_output
+                tags.classifier_tags = deepcopy(last_step_tags.classifier_tags)
+                tags.regressor_tags = deepcopy(last_step_tags.regressor_tags)
+                tags.transformer_tags = deepcopy(last_step_tags.transformer_tags)
+        except (ValueError, AttributeError, TypeError):
+            # This happens when the `steps` is not a list of (name, estimator)
+            # tuples and `fit` is not called yet to validate the steps.
+            pass
+
+        return tags
 
 
 def _fit_resample_one(sampler, X, y, message_clsname="", message=None, params=None):

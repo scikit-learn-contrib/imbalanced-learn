@@ -8,11 +8,13 @@ from contextlib import suppress
 from functools import partial
 from inspect import isfunction
 
+import sklearn
 from sklearn import clone, config_context
 from sklearn.exceptions import SkipTestWarning
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils._testing import SkipTest
+from sklearn.utils.fixes import parse_version
 
 from imblearn.combine import SMOTEENN, SMOTETomek
 from imblearn.ensemble import (
@@ -41,6 +43,8 @@ from imblearn.under_sampling import (
     RandomUnderSampler,
 )
 from imblearn.utils.testing import all_estimators
+
+sklearn_version = parse_version(sklearn.__version__).base_version
 
 # The following dictionary is to indicate constructor arguments suitable for the test
 # suite, which uses very small datasets, and is intended to run rather quickly.
@@ -207,24 +211,33 @@ PER_ESTIMATOR_XFAIL_CHECKS = {
         "check_samplers_fit_resample": "FIXME",
     },
     Pipeline: {
+        "check_classifiers_train": "FIXME",
+        "check_supervised_y_2d": "FIXME",
         "check_dont_overwrite_parameters": (
-            "Pipeline changes the `steps` parameter, which it shouldn't."
+            "Pipeline changes the `steps` parameter, which it shouldn't. "
             "Therefore this test is x-fail until we fix this."
         ),
         "check_estimators_overwrite_params": (
-            "Pipeline changes the `steps` parameter, which it shouldn't."
+            "Pipeline changes the `steps` parameter, which it shouldn't. "
             "Therefore this test is x-fail until we fix this."
         ),
-        "check_classifiers_train": "FIXME",
-        "check_supervised_y_2d": "FIXME",
     },
     RUSBoostClassifier: {
         "check_sample_weight_equivalence": "FIXME",
         "check_sample_weight_equivalence_on_sparse_data": "FIXME",
         "check_sample_weight_equivalence_on_dense_data": "FIXME",
+        "check_estimator_sparse_data": "FIXME",
         "check_estimator_sparse_matrix": "FIXME",
+        "check_estimator_sparse_array": "FIXME",
     },
 }
+
+if sklearn_version < "1.4":
+    for _, Estimator in all_estimators():
+        if Estimator in PER_ESTIMATOR_XFAIL_CHECKS:
+            PER_ESTIMATOR_XFAIL_CHECKS[Estimator]["check_estimators_pickle"] = "FIXME"
+        else:
+            PER_ESTIMATOR_XFAIL_CHECKS[Estimator] = {"check_estimators_pickle": "FIXME"}
 
 
 def _get_expected_failed_checks(estimator):

@@ -15,6 +15,7 @@ import functools
 import inspect
 import platform
 import sys
+import types
 from dataclasses import dataclass, field
 from typing import Callable, Literal
 
@@ -79,6 +80,7 @@ def _to_new_tags(old_tags, estimator=None):
         positive_only=old_tags["requires_positive_X"],
         allow_nan=old_tags["allow_nan"],
         pairwise=old_tags["pairwise"],
+        dataframe="dataframe" in old_tags["X_types"],
     )
     target_tags = TargetTags(
         required=old_tags["requires_y"],
@@ -112,12 +114,21 @@ def _to_new_tags(old_tags, estimator=None):
         )
     else:
         regressor_tags = None
+
+    if estimator_type == "sampler":
+        sampler_tags = SamplerTags(
+            sample_indices=old_tags.get("sample_indices", False),
+        )
+    else:
+        sampler_tags = None
+
     return Tags(
         estimator_type=estimator_type,
         target_tags=target_tags,
         transformer_tags=transformer_tags,
         classifier_tags=classifier_tags,
         regressor_tags=regressor_tags,
+        sampler_tags=sampler_tags,
         input_tags=input_tags,
         # Array-API was introduced in 1.3, we need to default to False if not inside
         # the old-tags.
@@ -205,7 +216,35 @@ if sklearn_version < parse_version("1.4"):
         ]
         return len(fitted_attrs) > 0
 
+    def process_routing(_obj, _method, /, **kwargs):
+        """Validate and route input parameters."""
+        from sklearn.utils._metadata_requests import process_routing
+
+        return process_routing(_obj, _method, other_params=None, **kwargs)
+
+    def _raise_for_params(params, owner, method):
+        """Raise an error if metadata routing is not enabled and params are passed."""
+        from sklearn.utils._metadata_requests import _routing_enabled
+
+        caller = (
+            f"{owner.__class__.__name__}.{method}"
+            if method
+            else owner.__class__.__name__
+        )
+        if not _routing_enabled() and params:
+            raise ValueError(
+                f"Passing extra keyword arguments to {caller} is only supported if"
+                " enable_metadata_routing=True, which you can set using"
+                " `sklearn.set_config`. See the User Guide"
+                " <https://scikit-learn.org/stable/metadata_routing.html> for more"
+                f" details. Extra parameters passed are: {set(params)}"
+            )
+
 else:
+    from sklearn.utils._metadata_requests import (
+        _raise_for_params,  # noqa: F401
+        process_routing,  # noqa: F401
+    )
     from sklearn.utils.validation import _is_fitted  # noqa: F401
 
 
@@ -504,6 +543,7 @@ if sklearn_version < parse_version("1.6"):
         positive_only: bool = False
         allow_nan: bool = False
         pairwise: bool = False
+        dataframe: bool = False
 
     @dataclass(**_dataclass_args())
     class TargetTags:
@@ -611,6 +651,19 @@ if sklearn_version < parse_version("1.6"):
         multi_label: bool = False
 
     @dataclass(**_dataclass_args())
+    class SamplerTags:
+        """Tags for the sampler.
+
+        Parameters
+        ----------
+        sample_indices : bool, default=False
+            Whether the sampler returns the indices of the samples that were
+            selected.
+        """
+
+        sample_indices: bool = False
+
+    @dataclass(**_dataclass_args())
     class Tags:
         """Tags for the estimator.
 
@@ -672,19 +725,22 @@ if sklearn_version < parse_version("1.6"):
         requires_fit: bool = True
         _skip_test: bool = False
         input_tags: InputTags = field(default_factory=InputTags)
+        sampler_tags: SamplerTags | None = None
 
     def _patched_more_tags(estimator, expected_failed_checks):
-        import copy
+        original_class_more_tags = estimator.__class__._more_tags
 
-        from sklearn.utils._tags import _safe_tags
+        def patched_instance_more_tags(self):
+            """Instance-level _more_tags that combines class tags with _xfail_checks"""
+            # Get tags from class-level _more_tags
+            tags = original_class_more_tags(self)
+            # Update with the xfail checks
+            tags.update({"_xfail_checks": expected_failed_checks})
+            return tags
 
-        original_tags = copy.deepcopy(_safe_tags(estimator))
-
-        def patched_more_tags(self):
-            original_tags.update({"_xfail_checks": expected_failed_checks})
-            return original_tags
-
-        estimator.__class__._more_tags = patched_more_tags
+        # Patch both class and instance level
+        estimator.__class__._more_tags = patched_instance_more_tags
+        estimator._more_tags = types.MethodType(patched_instance_more_tags, estimator)
         return estimator
 
     def check_estimator(
@@ -732,6 +788,19 @@ else:
         TargetTags,
         TransformerTags,
     )
+
+    @dataclass(**_dataclass_args())
+    class InputTags(InputTags):
+        dataframe: bool = True
+
+    @dataclass(**_dataclass_args())
+    class SamplerTags:
+        sample_indices: bool = False
+
+    @dataclass(**_dataclass_args())
+    class Tags(Tags):
+        sampler_tags: SamplerTags | None = None
+
     from sklearn.utils._test_common.instance_generator import (
         _construct_instances,  # noqa: F401
     )
