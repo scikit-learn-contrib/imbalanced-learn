@@ -9,11 +9,9 @@ import sys
 import traceback
 import warnings
 from collections import Counter
-from dataclasses import is_dataclass
 from functools import partial, wraps
 
 import numpy as np
-import sklearn
 from scipy import sparse
 from sklearn.base import clone, is_classifier, is_regressor
 from sklearn.cluster import KMeans
@@ -37,7 +35,6 @@ from sklearn.utils.estimator_checks import (
     _enforce_estimator_tags_X,
     _enforce_estimator_tags_y,
 )
-from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 
 from imblearn.datasets import make_imbalance
@@ -48,8 +45,6 @@ from imblearn.utils._test_common.instance_generator import (
     _get_check_estimator_ids,
     _yield_instances_for_check,
 )
-
-sklearn_version = parse_version(sklearn.__version__)
 
 
 def sample_dataset_generator():
@@ -84,18 +79,11 @@ def _set_checking_parameters(estimator):
 
 def _yield_sampler_checks(sampler):
     tags = get_tags(sampler)
-    if is_dataclass(tags):
-        # scikit-learn >= 1.6
-        accept_sparse = tags.input_tags.sparse
-        accept_dataframe = tags.input_tags.dataframe
-        accept_string = tags.input_tags.string
-        allow_nan = tags.input_tags.allow_nan
-    else:
-        # scikit-learn < 1.6
-        accept_sparse = sparse in tags["X_types"]
-        accept_dataframe = "dataframe" in tags["X_types"]
-        accept_string = "string" in tags["X_types"]
-        allow_nan = tags["allow_nan"]
+    accept_sparse = tags.input_tags.sparse
+    accept_dataframe = tags.input_tags.dataframe
+    accept_string = tags.input_tags.string
+    allow_nan = tags.input_tags.allow_nan
+
     yield check_target_type
     yield check_samplers_one_label
     yield check_samplers_fit
@@ -131,12 +119,7 @@ def _yield_all_checks(estimator, legacy=True):
     name = estimator.__class__.__name__
     tags = get_tags(estimator)
 
-    if is_dataclass(tags):
-        # scikit-learn >= 1.6
-        skip_test = tags._skip_test
-    else:
-        # scikit-learn < 1.6
-        skip_test = tags["_skip_test"]
+    skip_test = tags._skip_test
     if skip_test:
         warnings.warn(
             f"Explicit SKIP via _skip_test tag for estimator {name}.",
@@ -599,13 +582,8 @@ def check_samplers_sample_indices(name, sampler_orig):
     X, y = sample_dataset_generator()
     sampler.fit_resample(X, y)
     tags = get_tags(sampler)
-    if is_dataclass(tags):
-        sample_indices = tags.sampler_tags.sample_indices
-    else:
-        # scikit-learn < 1.6
-        sample_indices = tags.get("sample_indices", None)
-    if sample_indices:
-        assert hasattr(sampler, "sample_indices_") is sample_indices
+    if tags.sampler_tags.sample_indices:
+        assert hasattr(sampler, "sample_indices_") is tags.sampler_tags.sample_indices
     else:
         assert not hasattr(sampler, "sample_indices_")
 
@@ -760,19 +738,8 @@ def check_dataframe_column_names_consistency(name, estimator_orig):
         )
 
     tags = get_tags(estimator_orig)
-
-    if is_dataclass(tags):
-        # scikit-learn >= 1.6
-        is_supported_X_types = (
-            tags.input_tags.two_d_array or tags.input_tags.categorical
-        )
-        no_validation = tags.no_validation
-    else:
-        # scikit-learn < 1.6
-        is_supported_X_types = (
-            "2darray" in tags["X_types"] or "categorical" in tags["X_types"]
-        )
-        no_validation = tags["no_validation"]
+    is_supported_X_types = tags.input_tags.two_d_array or tags.input_tags.categorical
+    no_validation = tags.no_validation
 
     if not is_supported_X_types or no_validation:
         return
@@ -907,14 +874,8 @@ def check_dataframe_column_names_consistency(name, estimator_orig):
 def check_sampler_get_feature_names_out(name, sampler_orig):
     tags = get_tags(sampler_orig)
 
-    if is_dataclass(tags):
-        # scikit-learn >= 1.6
-        two_d_array = tags.input_tags.two_d_array
-        no_validation = tags.no_validation
-    else:
-        # scikit-learn < 1.6
-        two_d_array = "2darray" in tags["X_types"]
-        no_validation = tags["no_validation"]
+    two_d_array = tags.input_tags.two_d_array
+    no_validation = tags.no_validation
 
     if not two_d_array or no_validation:
         return
@@ -964,14 +925,9 @@ def check_sampler_get_feature_names_out_pandas(name, sampler_orig):
         )
 
     tags = get_tags(sampler_orig)
-    if is_dataclass(tags):
-        # scikit-learn >= 1.6
-        two_d_array = tags.input_tags.two_d_array
-        no_validation = tags.no_validation
-    else:
-        # scikit-learn < 1.6
-        two_d_array = "2darray" in tags["X_types"]
-        no_validation = tags["no_validation"]
+    two_d_array = tags.input_tags.two_d_array
+    no_validation = tags.no_validation
+
     if not two_d_array or no_validation:
         return
 

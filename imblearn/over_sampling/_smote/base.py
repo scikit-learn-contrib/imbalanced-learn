@@ -11,7 +11,6 @@ import numbers
 import warnings
 
 import numpy as np
-import sklearn
 from scipy import sparse
 from scipy.stats import mode
 from sklearn.base import clone
@@ -23,7 +22,6 @@ from sklearn.utils import (
     check_random_state,
 )
 from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
-from sklearn.utils.fixes import parse_version
 from sklearn.utils.sparsefuncs_fast import (
     csr_mean_variance_axis0,
 )
@@ -32,15 +30,9 @@ from sklearn.utils.validation import _num_features
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ...utils._sklearn_compat import _is_pandas_df, validate_data
+from ...utils._sklearn_compat import _get_column_indices, _is_pandas_df, validate_data
 from ...utils._validation import _check_X
 from ..base import BaseOverSampler
-
-sklearn_version = parse_version(sklearn.__version__).base_version
-if parse_version(sklearn_version) < parse_version("1.5"):
-    from sklearn.utils import _get_column_indices
-else:
-    from sklearn.utils._indexing import _get_column_indices
 
 
 class BaseSMOTE(BaseOverSampler):

@@ -17,7 +17,6 @@ import warnings
 from contextlib import contextmanager
 from copy import deepcopy
 
-import sklearn
 from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.exceptions import NotFittedError
@@ -30,7 +29,6 @@ from sklearn.utils._metadata_requests import (
     get_routing_for_object,
 )
 from sklearn.utils._param_validation import HasMethods
-from sklearn.utils.fixes import parse_version
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.validation import check_is_fitted, check_memory
 
@@ -50,8 +48,6 @@ if "fit_transform" not in METHODS:
 METHODS.append("fit_resample")
 
 __all__ = ["Pipeline", "make_pipeline"]
-
-sklearn_version = parse_version(sklearn.__version__).base_version
 
 
 @contextmanager
