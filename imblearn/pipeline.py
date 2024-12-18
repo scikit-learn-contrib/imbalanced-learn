@@ -45,6 +45,8 @@ from .utils._sklearn_compat import (
 
 if "fit_predict" not in METHODS:
     METHODS.append("fit_predict")
+if "fit_transform" not in METHODS:
+    METHODS.append("fit_transform")
 METHODS.append("fit_resample")
 
 __all__ = ["Pipeline", "make_pipeline"]
