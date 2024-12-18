@@ -1,14 +1,12 @@
 import numpy as np
 import pytest
-import sklearn
 from sklearn.datasets import make_classification
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.utils._testing import assert_allclose, assert_array_equal
 from sklearn.utils.fixes import parse_version
 
 from imblearn.ensemble import BalancedRandomForestClassifier
-
-sklearn_version = parse_version(sklearn.__version__)
+from imblearn.utils._sklearn_compat import sklearn_version
 
 
 @pytest.fixture

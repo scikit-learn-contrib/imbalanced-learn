@@ -8,7 +8,6 @@ from copy import deepcopy
 from warnings import warn
 
 import numpy as np
-import sklearn
 from numpy import float32 as DTYPE
 from numpy import float64 as DOUBLE
 from scipy.sparse import issparse
@@ -33,12 +32,11 @@ from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._sklearn_compat import _fit_context, validate_data
+from ..utils._sklearn_compat import _fit_context, sklearn_version, validate_data
 from ..utils._validation import check_sampling_strategy
 from ._common import _random_forest_classifier_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
-sklearn_version = parse_version(parse_version(sklearn.__version__).base_version)
 
 
 def _local_parallel_build_trees(

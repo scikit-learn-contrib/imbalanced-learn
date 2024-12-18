@@ -1,6 +1,7 @@
 """
 Test the pipeline module.
 """
+
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
 # License: MIT
@@ -15,7 +16,8 @@ import numpy as np
 import pytest
 from joblib import Memory
 from pytest import raises
-from sklearn.base import BaseEstimator, clone
+from sklearn import config_context
+from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin, clone
 from sklearn.cluster import KMeans
 from sklearn.datasets import load_iris, make_classification
 from sklearn.decomposition import PCA
@@ -30,11 +32,13 @@ from sklearn.utils._testing import (
     assert_array_almost_equal,
     assert_array_equal,
 )
+from sklearn.utils.fixes import parse_version
 
 from imblearn.datasets import make_imbalance
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import EditedNearestNeighbours as ENN
 from imblearn.under_sampling import RandomUnderSampler
+from imblearn.utils._sklearn_compat import sklearn_version
 from imblearn.utils.estimator_checks import check_param_validation
 
 JUNK_FOOD_DOCS = (
@@ -1365,3 +1369,129 @@ def test_pipeline_with_set_output():
     assert isinstance(X_res, pd.DataFrame)
     # transformer will not change `y` and sampler will always preserve the type of `y`
     assert isinstance(y_res, type(y))
+
+
+# TODO(0.15): change warning to checking for NotFittedError
+@pytest.mark.parametrize(
+    "method",
+    [
+        "predict",
+        "predict_proba",
+        "predict_log_proba",
+        "decision_function",
+        "score",
+        "score_samples",
+        "transform",
+        "inverse_transform",
+    ],
+)
+def test_pipeline_warns_not_fitted(method):
+    class StatelessEstimator(BaseEstimator):
+        """Stateless estimator that doesn't check if it's fitted.
+        Stateless estimators that don't require fit, should properly set the
+        `requires_fit` flag and implement a `__sklearn_check_is_fitted__` returning
+        `True`.
+        """
+
+        def fit(self, X, y):
+            return self  # pragma: no cover
+
+        def transform(self, X):
+            return X
+
+        def predict(self, X):
+            return np.ones(len(X))
+
+        def predict_proba(self, X):
+            return np.ones(len(X))
+
+        def predict_log_proba(self, X):
+            return np.zeros(len(X))
+
+        def decision_function(self, X):
+            return np.ones(len(X))
+
+        def score(self, X, y):
+            return 1
+
+        def score_samples(self, X):
+            return np.ones(len(X))
+
+        def inverse_transform(self, X):
+            return X
+
+    pipe = Pipeline([("estimator", StatelessEstimator())])
+    with pytest.warns(FutureWarning, match="This Pipeline instance is not fitted yet."):
+        getattr(pipe, method)([[1]])
+
+
+# transform_input tests
+# =====================
+
+
+@pytest.mark.skipif(
+    sklearn_version < parse_version("1.4"),
+    reason="scikit-learn < 1.4 does not support transform_input",
+)
+@config_context(enable_metadata_routing=True)
+def test_transform_input_explicit_value_check():
+    """Test that the right transformed values are passed to `fit`."""
+
+    class Transformer(TransformerMixin, BaseEstimator):
+        def fit(self, X, y):
+            self.fitted_ = True
+            return self
+
+        def transform(self, X):
+            return X + 1
+
+    class Estimator(ClassifierMixin, BaseEstimator):
+        def fit(self, X, y, X_val=None, y_val=None):
+            assert_array_equal(X, np.array([[1, 2]]))
+            assert_array_equal(y, np.array([0, 1]))
+            assert_array_equal(X_val, np.array([[2, 3]]))
+            assert_array_equal(y_val, np.array([0, 1]))
+            return self
+
+    X = np.array([[0, 1]])
+    y = np.array([0, 1])
+    X_val = np.array([[1, 2]])
+    y_val = np.array([0, 1])
+    pipe = Pipeline(
+        [
+            ("transformer", Transformer()),
+            ("estimator", Estimator().set_fit_request(X_val=True, y_val=True)),
+        ],
+        transform_input=["X_val"],
+    )
+    pipe.fit(X, y, X_val=X_val, y_val=y_val)
+
+
+def test_transform_input_no_slep6():
+    """Make sure the right error is raised if slep6 is not enabled."""
+    X = np.array([[1, 2], [3, 4]])
+    y = np.array([0, 1])
+    msg = "The `transform_input` parameter can only be set if metadata"
+    with pytest.raises(ValueError, match=msg):
+        make_pipeline(DummyTransf(), transform_input=["blah"]).fit(X, y)
+
+
+@pytest.mark.skipif(
+    sklearn_version >= parse_version("1.4"),
+    reason="scikit-learn >= 1.4 supports transform_input",
+)
+@config_context(enable_metadata_routing=True)
+def test_transform_input_sklearn_version():
+    """Test that transform_input raises error with sklearn < 1.4."""
+    X = np.array([[1, 2], [3, 4]])
+    y = np.array([0, 1])
+    msg = (
+        "The `transform_input` parameter is not supported in scikit-learn versions "
+        "prior to 1.4"
+    )
+    with pytest.raises(ValueError, match=msg):
+        make_pipeline(DummyTransf(), transform_input=["blah"]).fit(X, y)
+
+
+# end of transform_input tests
+# =============================

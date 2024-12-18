@@ -4,7 +4,6 @@ import warnings
 from copy import deepcopy
 
 import numpy as np
-import sklearn
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble._base import _set_random_states
@@ -19,10 +18,8 @@ from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
-from ..utils._sklearn_compat import _fit_context
+from ..utils._sklearn_compat import _fit_context, sklearn_version
 from ._common import _adaboost_classifier_parameter_constraints
-
-sklearn_version = parse_version(sklearn.__version__)
 
 
 @Substitution(

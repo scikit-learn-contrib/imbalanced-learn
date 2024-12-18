@@ -82,3 +82,13 @@ def test_rusboost_sample_weight(imbalanced_dataset):
 
     with pytest.raises(AssertionError):
         assert_array_equal(y_pred_no_sample_weight, y_pred_sample_weight)
+
+
+@pytest.mark.parametrize("algorithm", ["SAMME", "SAMME.R"])
+def test_rusboost_algorithm(imbalanced_dataset, algorithm):
+    X, y = imbalanced_dataset
+
+    rusboost = RUSBoostClassifier(algorithm=algorithm)
+    warn_msg = "`algorithm` parameter is deprecated in 0.12 and will be removed"
+    with pytest.warns(FutureWarning, match=warn_msg):
+        rusboost.fit(X, y)

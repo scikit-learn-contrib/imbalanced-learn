@@ -15,11 +15,6 @@ from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.over_sampling import SMOTENC
 
-# from imblearn.utils.estimator_checks import (
-#     _set_checking_parameters,
-#     check_param_validation,
-# )
-
 
 def data_heterogneous_ordered():
     rng = np.random.RandomState(42)
@@ -291,17 +286,6 @@ def test_smotenc_deprecation_ohe_():
 
     with pytest.warns(FutureWarning, match="'ohe_' attribute has been deprecated"):
         smote.ohe_
-
-
-# """ def test_smotenc_param_validation():
-#     """Check that we validate the parameters correctly since this estimator requires
-#     a specific parameter.
-#     """
-#     categorical_features = [0]
-#     smote = SMOTENC(categorical_features=categorical_features, random_state=0)
-#     name = smote.__class__.__name__
-#     _set_checking_parameters(smote)
-#     check_param_validation(name, smote) """
 
 
 def test_smotenc_bool_categorical():

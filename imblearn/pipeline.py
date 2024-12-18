@@ -29,6 +29,7 @@ from sklearn.utils._metadata_requests import (
     get_routing_for_object,
 )
 from sklearn.utils._param_validation import HasMethods
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.validation import check_is_fitted, check_memory
 
@@ -38,6 +39,7 @@ from .utils._sklearn_compat import (
     _raise_for_params,
     get_tags,
     process_routing,
+    sklearn_version,
     validate_params,
 )
 
@@ -55,7 +57,7 @@ def _raise_or_warn_if_not_fitted(estimator):
     """A context manager to make sure a NotFittedError is raised, if a sub-estimator
     raises the error.
     Otherwise, we raise a warning if the pipeline is not fitted, with the deprecation.
-    TODO(1.8): remove this context manager and replace with check_is_fitted.
+    TODO(0.15): remove this context manager and replace with check_is_fitted.
     """
     try:
         yield
@@ -70,7 +72,7 @@ def _raise_or_warn_if_not_fitted(estimator):
             (
                 "This Pipeline instance is not fitted yet. Call 'fit' with "
                 "appropriate arguments before using other methods such as transform, "
-                "predict, etc. This will raise an error in 1.8 instead of the current "
+                "predict, etc. This will raise an error in 0.15 instead of the current "
                 "warning."
             ),
             FutureWarning,
@@ -509,6 +511,13 @@ class Pipeline(pipeline.Pipeline):
                 "The `transform_input` parameter can only be set if metadata "
                 "routing is enabled. You can enable metadata routing using "
                 "`sklearn.set_config(enable_metadata_routing=True)`."
+            )
+
+        if sklearn_version < parse_version("1.4") and self.transform_input is not None:
+            raise ValueError(
+                "The `transform_input` parameter is not supported in scikit-learn "
+                "versions prior to 1.4. Please upgrade to scikit-learn 1.4 or "
+                "later."
             )
 
         routed_params = self._check_method_params(method="fit", props=params)

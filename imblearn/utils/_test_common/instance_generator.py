@@ -8,7 +8,6 @@ from contextlib import suppress
 from functools import partial
 from inspect import isfunction
 
-import sklearn
 from sklearn import clone, config_context
 from sklearn.exceptions import SkipTestWarning
 from sklearn.linear_model import LogisticRegression
@@ -42,9 +41,8 @@ from imblearn.under_sampling import (
     OneSidedSelection,
     RandomUnderSampler,
 )
+from imblearn.utils._sklearn_compat import sklearn_version
 from imblearn.utils.testing import all_estimators
-
-sklearn_version = parse_version(sklearn.__version__).base_version
 
 # The following dictionary is to indicate constructor arguments suitable for the test
 # suite, which uses very small datasets, and is intended to run rather quickly.
@@ -232,7 +230,7 @@ PER_ESTIMATOR_XFAIL_CHECKS = {
     },
 }
 
-if sklearn_version < "1.4":
+if sklearn_version < parse_version("1.4"):
     for _, Estimator in all_estimators():
         if Estimator in PER_ESTIMATOR_XFAIL_CHECKS:
             PER_ESTIMATOR_XFAIL_CHECKS[Estimator]["check_estimators_pickle"] = "FIXME"

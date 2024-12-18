@@ -8,7 +8,6 @@ import copy
 import numbers
 
 import numpy as np
-import sklearn
 from sklearn.base import clone
 from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
@@ -25,10 +24,8 @@ from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._sklearn_compat import _fit_context, validate_data
+from ..utils._sklearn_compat import _fit_context, sklearn_version, validate_data
 from ._common import _bagging_parameter_constraints, _estimator_has
-
-sklearn_version = parse_version(sklearn.__version__)
 
 
 @Substitution(
