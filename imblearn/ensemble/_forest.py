@@ -437,10 +437,10 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         max_features="sqrt",
         max_leaf_nodes=None,
         min_impurity_decrease=0.0,
-        bootstrap="warn",
+        bootstrap=False,
         oob_score=False,
-        sampling_strategy="warn",
-        replacement="warn",
+        sampling_strategy="all",
+        replacement=True,
         n_jobs=None,
         random_state=None,
         verbose=0,
@@ -498,7 +498,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         self.base_sampler_ = RandomUnderSampler(
             sampling_strategy=self._sampling_strategy,
-            replacement=self._replacement,
+            replacement=self.replacement,
         )
 
     def _make_sampler_estimator(self, random_state=None):
@@ -544,49 +544,6 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             The fitted instance.
         """
         self._validate_params()
-        # TODO: remove in 0.13
-        if self.sampling_strategy == "warn":
-            warn(
-                (
-                    "The default of `sampling_strategy` will change from `'auto'` to"
-                    " `'all'` in version 0.13. This change will follow the"
-                    " implementation proposed in the original paper. Set to `'all'` to"
-                    " silence this warning and adopt the future behaviour."
-                ),
-                FutureWarning,
-            )
-            self._sampling_strategy = "auto"
-        else:
-            self._sampling_strategy = self.sampling_strategy
-
-        if self.replacement == "warn":
-            warn(
-                (
-                    "The default of `replacement` will change from `False` to `True` in"
-                    " version 0.13. This change will follow the implementation proposed"
-                    " in the original paper. Set to `True` to silence this warning and"
-                    " adopt the future behaviour."
-                ),
-                FutureWarning,
-            )
-            self._replacement = False
-        else:
-            self._replacement = self.replacement
-
-        if self.bootstrap == "warn":
-            warn(
-                (
-                    "The default of `bootstrap` will change from `True` to `False` in"
-                    " version 0.13. This change will follow the implementation proposed"
-                    " in the original paper. Set to `False` to silence this warning and"
-                    " adopt the future behaviour."
-                ),
-                FutureWarning,
-            )
-            self._bootstrap = True
-        else:
-            self._bootstrap = self.bootstrap
-
         # Validate or convert input data
         if issparse(y):
             raise ValueError("sparse multilabel-indicator for y is not supported.")
@@ -657,7 +614,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         if getattr(y, "dtype", None) != DOUBLE or not y.flags.contiguous:
             y_encoded = np.ascontiguousarray(y_encoded, dtype=DOUBLE)
 
-        if isinstance(self._sampling_strategy, dict):
+        if isinstance(self.sampling_strategy, dict):
             self._sampling_strategy = {
                 np.where(self.classes_[0] == key)[0][0]: value
                 for key, value in check_sampling_strategy(
@@ -667,7 +624,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                 ).items()
             }
         else:
-            self._sampling_strategy = self._sampling_strategy
+            self._sampling_strategy = self.sampling_strategy
 
         if expanded_class_weight is not None:
             if sample_weight is not None:
@@ -683,7 +640,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
         # Check parameters
         self._validate_estimator()
 
-        if not self._bootstrap and self.oob_score:
+        if not self.bootstrap and self.oob_score:
             raise ValueError("Out of bag estimation only available if bootstrap=True")
 
         random_state = check_random_state(self.random_state)
@@ -735,7 +692,7 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                 delayed(_local_parallel_build_trees)(
                     s,
                     t,
-                    self._bootstrap,
+                    self.bootstrap,
                     X,
                     y_encoded,
                     sample_weight,

@@ -29,7 +29,7 @@ from sklearn.utils.validation import _num_features
 
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
-from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ...utils._docstring import _random_state_docstring
 from ...utils._sklearn_compat import _get_column_indices, _is_pandas_df, validate_data
 from ...utils._validation import _check_X
 from ..base import BaseOverSampler
@@ -44,7 +44,6 @@ class BaseSMOTE(BaseOverSampler):
             Interval(numbers.Integral, 1, None, closed="left"),
             HasMethods(["kneighbors", "kneighbors_graph"]),
         ],
-        "n_jobs": [numbers.Integral, None],
     }
 
     def __init__(
@@ -52,12 +51,10 @@ class BaseSMOTE(BaseOverSampler):
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
-        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.k_neighbors = k_neighbors
-        self.n_jobs = n_jobs
 
     def _validate_estimator(self):
         """Check the NN estimators shared across the different SMOTE
@@ -238,7 +235,6 @@ class BaseSMOTE(BaseOverSampler):
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class SMOTE(BaseSMOTE):
@@ -267,14 +263,6 @@ class SMOTE(BaseSMOTE):
           instance, it could correspond to a
           :class:`~sklearn.neighbors.NearestNeighbors` but could be extended to
           any compatible class.
-
-    {n_jobs}
-
-        .. deprecated:: 0.10
-           `n_jobs` has been deprecated in 0.10 and will be removed in 0.12.
-           It was previously used to set `n_jobs` of nearest neighbors
-           algorithm. From now on, you can pass an estimator where `n_jobs` is
-           already set instead.
 
     Attributes
     ----------
@@ -348,27 +336,14 @@ class SMOTE(BaseSMOTE):
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
-        n_jobs=None,
     ):
         super().__init__(
             sampling_strategy=sampling_strategy,
             random_state=random_state,
             k_neighbors=k_neighbors,
-            n_jobs=n_jobs,
         )
 
     def _fit_resample(self, X, y):
-        # FIXME: to be removed in 0.12
-        if self.n_jobs is not None:
-            warnings.warn(
-                (
-                    "The parameter `n_jobs` has been deprecated in 0.10 and will be"
-                    " removed in 0.12. You can pass an nearest neighbors estimator"
-                    " where `n_jobs` is already set instead."
-                ),
-                FutureWarning,
-            )
-
         self._validate_estimator()
 
         X_resampled = [X.copy()]
@@ -399,7 +374,6 @@ class SMOTE(BaseSMOTE):
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class SMOTENC(SMOTE):
@@ -451,14 +425,6 @@ class SMOTENC(SMOTE):
           :class:`~sklearn.neighbors.NearestNeighbors` but could be extended to
           any compatible class.
 
-    {n_jobs}
-
-        .. deprecated:: 0.10
-           `n_jobs` has been deprecated in 0.10 and will be removed in 0.12.
-           It was previously used to set `n_jobs` of nearest neighbors
-           algorithm. From now on, you can pass an estimator where `n_jobs` is
-           already set instead.
-
     Attributes
     ----------
     sampling_strategy_ : dict
@@ -468,13 +434,6 @@ class SMOTENC(SMOTE):
 
     nn_k_ : estimator object
         Validated k-nearest neighbours created from the `k_neighbors` parameter.
-
-    ohe_ : :class:`~sklearn.preprocessing.OneHotEncoder`
-        The one-hot encoder used to encode the categorical features.
-
-        .. deprecated:: 0.11
-           `ohe_` is deprecated in 0.11 and will be removed in 0.13. Use
-           `categorical_encoder_` instead.
 
     categorical_encoder_ : estimator
         The encoder used to encode the categorical features.
@@ -577,13 +536,11 @@ class SMOTENC(SMOTE):
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
-        n_jobs=None,
     ):
         super().__init__(
             sampling_strategy=sampling_strategy,
             random_state=random_state,
             k_neighbors=k_neighbors,
-            n_jobs=n_jobs,
         )
         self.categorical_features = categorical_features
         self.categorical_encoder = categorical_encoder
@@ -634,17 +591,6 @@ class SMOTENC(SMOTE):
             )
 
     def _fit_resample(self, X, y):
-        # FIXME: to be removed in 0.12
-        if self.n_jobs is not None:
-            warnings.warn(
-                (
-                    "The parameter `n_jobs` has been deprecated in 0.10 and will be"
-                    " removed in 0.12. You can pass an nearest neighbors estimator"
-                    " where `n_jobs` is already set instead."
-                ),
-                FutureWarning,
-            )
-
         self.n_features_ = _num_features(X)
         self._validate_column_types(X)
         self._validate_estimator()
@@ -801,18 +747,6 @@ class SMOTENC(SMOTE):
 
         return X_new
 
-    @property
-    def ohe_(self):
-        """One-hot encoder used to encode the categorical features."""
-        warnings.warn(
-            (
-                "'ohe_' attribute has been deprecated in 0.11 and will be removed "
-                "in 0.13. Use 'categorical_encoder_' instead."
-            ),
-            FutureWarning,
-        )
-        return self.categorical_encoder_
-
     def _more_tags(self):
         return {"X_types": ["2darray", "dataframe", "string"]}
 
@@ -825,7 +759,6 @@ class SMOTENC(SMOTE):
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class SMOTEN(SMOTE):
@@ -860,14 +793,6 @@ class SMOTEN(SMOTE):
           instance, it could correspond to a
           :class:`~sklearn.neighbors.NearestNeighbors` but could be extended to
           any compatible class.
-
-    {n_jobs}
-
-        .. deprecated:: 0.10
-           `n_jobs` has been deprecated in 0.10 and will be removed in 0.12.
-           It was previously used to set `n_jobs` of nearest neighbors
-           algorithm. From now on, you can pass an estimator where `n_jobs` is
-           already set instead.
 
     Attributes
     ----------
@@ -951,13 +876,11 @@ class SMOTEN(SMOTE):
         sampling_strategy="auto",
         random_state=None,
         k_neighbors=5,
-        n_jobs=None,
     ):
         super().__init__(
             sampling_strategy=sampling_strategy,
             random_state=random_state,
             k_neighbors=k_neighbors,
-            n_jobs=n_jobs,
         )
         self.categorical_encoder = categorical_encoder
 
@@ -996,17 +919,6 @@ class SMOTEN(SMOTE):
         return X_new, y_new
 
     def _fit_resample(self, X, y):
-        # FIXME: to be removed in 0.12
-        if self.n_jobs is not None:
-            warnings.warn(
-                (
-                    "The parameter `n_jobs` has been deprecated in 0.10 and will be"
-                    " removed in 0.12. You can pass an nearest neighbors estimator"
-                    " where `n_jobs` is already set instead."
-                ),
-                FutureWarning,
-            )
-
         if sparse.issparse(X):
             X_sparse_format = X.format
             X = X.toarray()

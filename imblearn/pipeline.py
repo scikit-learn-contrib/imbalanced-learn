@@ -655,7 +655,7 @@ class Pipeline(pipeline.Pipeline):
         y_pred : ndarray
             Result of calling `predict` on the final estimator.
         """
-        # TODO(1.8): Remove the context manager and use check_is_fitted(self)
+        # TODO(0.15): Remove the context manager and use check_is_fitted(self)
         with _raise_or_warn_if_not_fitted(self):
             Xt = X
 
@@ -849,7 +849,7 @@ class Pipeline(pipeline.Pipeline):
         y_proba : ndarray of shape (n_samples, n_classes)
             Result of calling `predict_proba` on the final estimator.
         """
-        # TODO(1.8): Remove the context manager and use check_is_fitted(self)
+        # TODO(0.15): Remove the context manager and use check_is_fitted(self)
         with _raise_or_warn_if_not_fitted(self):
             Xt = X
 
@@ -896,7 +896,7 @@ class Pipeline(pipeline.Pipeline):
         y_score : ndarray of shape (n_samples, n_classes)
             Result of calling `decision_function` on the final estimator.
         """
-        # TODO(1.8): Remove the context manager and use check_is_fitted(self)
+        # TODO(0.15): Remove the context manager and use check_is_fitted(self)
         with _raise_or_warn_if_not_fitted(self):
             _raise_for_params(params, self, "decision_function")
 
@@ -934,7 +934,7 @@ class Pipeline(pipeline.Pipeline):
         y_score : ndarray of shape (n_samples,)
             Result of calling `score_samples` on the final estimator.
         """
-        # TODO(1.8): Remove the context manager and use check_is_fitted(self)
+        # TODO(0.15): Remove the context manager and use check_is_fitted(self)
         with _raise_or_warn_if_not_fitted(self):
             Xt = X
             for _, _, transformer in self._iter(with_final=False):
@@ -983,7 +983,7 @@ class Pipeline(pipeline.Pipeline):
         y_log_proba : ndarray of shape (n_samples, n_classes)
             Result of calling `predict_log_proba` on the final estimator.
         """
-        # TODO(1.8): Remove the context manager and use check_is_fitted(self)
+        # TODO(0.15): Remove the context manager and use check_is_fitted(self)
         with _raise_or_warn_if_not_fitted(self):
             Xt = X
 
@@ -1038,7 +1038,7 @@ class Pipeline(pipeline.Pipeline):
         Xt : ndarray of shape (n_samples, n_transformed_features)
             Transformed data.
         """
-        # TODO(1.8): Remove the context manager and use check_is_fitted(self)
+        # TODO(0.15): Remove the context manager and use check_is_fitted(self)
         with _raise_or_warn_if_not_fitted(self):
             _raise_for_params(params, self, "transform")
 
@@ -1083,7 +1083,7 @@ class Pipeline(pipeline.Pipeline):
             Inverse transformed data, that is, data in the original feature
             space.
         """
-        # TODO(1.8): Remove the context manager and use check_is_fitted(self)
+        # TODO(0.15): Remove the context manager and use check_is_fitted(self)
         with _raise_or_warn_if_not_fitted(self):
             _raise_for_params(params, self, "inverse_transform")
 
@@ -1134,7 +1134,7 @@ class Pipeline(pipeline.Pipeline):
         score : float
             Result of calling `score` on the final estimator.
         """
-        # TODO(1.8): Remove the context manager and use check_is_fitted(self)
+        # TODO(0.15): Remove the context manager and use check_is_fitted(self)
         with _raise_or_warn_if_not_fitted(self):
             Xt = X
             if not _routing_enabled():

@@ -5,7 +5,6 @@
 # License: MIT
 
 import numbers
-import warnings
 
 import numpy as np
 from scipy import sparse
@@ -13,13 +12,12 @@ from sklearn.utils import _safe_indexing, check_random_state
 from sklearn.utils._param_validation import HasMethods, Interval
 
 from ..utils import Substitution, check_neighbors_object
-from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
+from ..utils._docstring import _random_state_docstring
 from .base import BaseOverSampler
 
 
 @Substitution(
     sampling_strategy=BaseOverSampler._sampling_strategy_docstring,
-    n_jobs=_n_jobs_docstring,
     random_state=_random_state_docstring,
 )
 class ADASYN(BaseOverSampler):
@@ -49,14 +47,6 @@ class ADASYN(BaseOverSampler):
           instance, it could correspond to a
           :class:`~sklearn.neighbors.NearestNeighbors` but could be extended to
           any compatible class.
-
-    {n_jobs}
-
-        .. deprecated:: 0.10
-           `n_jobs` has been deprecated in 0.10 and will be removed in 0.12.
-           It was previously used to set `n_jobs` of nearest neighbors
-           algorithm. From now on, you can pass an estimator where `n_jobs` is
-           already set instead.
 
     Attributes
     ----------
@@ -128,7 +118,6 @@ class ADASYN(BaseOverSampler):
             Interval(numbers.Integral, 1, None, closed="left"),
             HasMethods(["kneighbors", "kneighbors_graph"]),
         ],
-        "n_jobs": [numbers.Integral, None],
     }
 
     def __init__(
@@ -137,12 +126,10 @@ class ADASYN(BaseOverSampler):
         sampling_strategy="auto",
         random_state=None,
         n_neighbors=5,
-        n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.random_state = random_state
         self.n_neighbors = n_neighbors
-        self.n_jobs = n_jobs
 
     def _validate_estimator(self):
         """Create the necessary objects for ADASYN"""
@@ -151,17 +138,6 @@ class ADASYN(BaseOverSampler):
         )
 
     def _fit_resample(self, X, y):
-        # FIXME: to be removed in 0.12
-        if self.n_jobs is not None:
-            warnings.warn(
-                (
-                    "The parameter `n_jobs` has been deprecated in 0.10 and will be"
-                    " removed in 0.12. You can pass an nearest neighbors estimator"
-                    " where `n_jobs` is already set instead."
-                ),
-                FutureWarning,
-            )
-
         self._validate_estimator()
         random_state = check_random_state(self.random_state)
 

@@ -141,7 +141,6 @@ class SMOTEENN(BaseSampler):
             self.smote_ = SMOTE(
                 sampling_strategy=self.sampling_strategy,
                 random_state=self.random_state,
-                n_jobs=self.n_jobs,
             )
 
         if self.enn is not None:

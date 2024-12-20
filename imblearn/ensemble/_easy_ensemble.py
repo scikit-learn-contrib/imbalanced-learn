@@ -6,7 +6,6 @@
 
 import copy
 import numbers
-import warnings
 
 import numpy as np
 from sklearn.base import clone
@@ -247,20 +246,6 @@ class EasyEnsembleClassifier(BaggingClassifier):
             replacement=self.replacement,
         )
         self.estimator_ = Pipeline([("sampler", sampler), ("classifier", estimator)])
-
-    # TODO: remove when supporting scikit-learn>=1.2
-    @property
-    def n_features_(self):
-        """Number of features when ``fit`` is performed."""
-        warnings.warn(
-            (
-                "`n_features_` was deprecated in scikit-learn 1.0. This attribute will "
-                "not be accessible when the minimum supported version of scikit-learn "
-                "is 1.2."
-            ),
-            FutureWarning,
-        )
-        return self.n_features_in_
 
     @_fit_context(prefer_skip_nested_validation=False)
     def fit(self, X, y):

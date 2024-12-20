@@ -277,17 +277,6 @@ def test_smotenc_categorical_encoder():
     assert getattr(smote.categorical_encoder_, "sparse_output") is False
 
 
-# TODO(0.13): remove this test
-def test_smotenc_deprecation_ohe_():
-    """Check that we raise a deprecation warning when using `ohe_`."""
-    X, y, categorical_features = data_heterogneous_unordered()
-    smote = SMOTENC(categorical_features=categorical_features, random_state=0)
-    smote.fit_resample(X, y)
-
-    with pytest.warns(FutureWarning, match="'ohe_' attribute has been deprecated"):
-        smote.ohe_
-
-
 def test_smotenc_bool_categorical():
     """Check that we don't try to early convert the full input data to numeric when
     handling a pandas dataframe.
