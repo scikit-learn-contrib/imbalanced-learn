@@ -396,6 +396,7 @@ class RUSBoostClassifier(AdaBoostClassifier):
 
         return sample_weight, estimator_weight, estimator_error
 
+    # TODO(0.14): remove this method because algorithm is deprecated.
     def _boost(self, iboost, X, y, sample_weight, random_state):
         if self.algorithm != "deprecated":
             warnings.warn(
