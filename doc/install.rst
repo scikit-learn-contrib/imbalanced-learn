@@ -7,9 +7,35 @@ Getting Started
 Prerequisites
 =============
 
-You can find the complete list of the dependencies in the following table:
+.. |PythonMinVersion| replace:: 3.10
+.. |NumPyMinVersion| replace:: 1.24.3
+.. |SciPyMinVersion| replace:: 1.10.1
+.. |ScikitLearnMinVersion| replace:: 1.3.2
+.. |MatplotlibMinVersion| replace:: 3.7.3
+.. |PandasMinVersion| replace:: 1.5.3
+.. |TensorflowMinVersion| replace:: 2.13.1
+.. |KerasMinVersion| replace:: 3.0.5
+.. |SeabornMinVersion| replace:: 0.12.2
+.. |PytestMinVersion| replace:: 7.2.2
 
-.. include:: min_dependency_table.rst
+`imbalanced-learn` requires the following dependencies:
+
+- Python (>= |PythonMinVersion|)
+- NumPy (>= |NumPyMinVersion|)
+- SciPy (>= |SciPyMinVersion|)
+- Scikit-learn (>= |ScikitLearnMinVersion|)
+- Pytest (>= |PytestMinVersion|)
+
+Additionally, `imbalanced-learn` requires the following optional dependencies:
+
+- Pandas (>= |PandasMinVersion|) for dealing with dataframes
+- Tensorflow (>= |TensorflowMinVersion|) for dealing with TensorFlow models
+- Keras (>= |KerasMinVersion|) for dealing with Keras models
+
+The examples will requires the following additional dependencies:
+
+- Matplotlib (>= |MatplotlibMinVersion|)
+- Seaborn (>= |SeabornMinVersion|)
 
 Install
 =======

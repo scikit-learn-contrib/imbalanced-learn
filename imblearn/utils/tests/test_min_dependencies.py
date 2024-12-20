@@ -76,6 +76,8 @@ def test_min_dependencies_readme():
 
             package, version = matched.group(2), matched.group(5)
             package = package.lower()
+            if package == "scikitlearn":
+                package = "scikit-learn"
 
             if package in min_dependencies:
                 version = parse(version)
