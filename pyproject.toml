@@ -102,6 +102,11 @@ threadpoolctl = ">=2.0.0,<4"
 ipykernel = "*"
 ipython = "*"
 jupyterlab = "*"
+pip = "*"
+twine = "*"
+
+[tool.pixi.feature.dev.pypi-dependencies]
+"build" = "*"
 
 [tool.pixi.feature.docs.dependencies]
 matplotlib = ">=3.7.3,<4"
