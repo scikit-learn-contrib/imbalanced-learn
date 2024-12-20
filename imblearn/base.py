@@ -9,11 +9,18 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 from sklearn.base import BaseEstimator, OneToOneFeatureMixin
 from sklearn.preprocessing import label_binarize
+from sklearn.utils._metadata_requests import METHODS
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
 from .utils._sklearn_compat import _fit_context, get_tags, validate_data
 from .utils._validation import ArraysTransformer
+
+if "fit_predict" not in METHODS:
+    METHODS.append("fit_predict")
+if "fit_transform" not in METHODS:
+    METHODS.append("fit_transform")
+METHODS.append("fit_resample")
 
 
 class SamplerMixin(metaclass=ABCMeta):
