@@ -9,7 +9,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 from sklearn.base import BaseEstimator, OneToOneFeatureMixin
 from sklearn.preprocessing import label_binarize
-from sklearn.utils._metadata_requests import METHODS, SIMPLE_METHODS
+from sklearn.utils._metadata_requests import METHODS
 from sklearn.utils.multiclass import check_classification_targets
 
 from .utils import check_sampling_strategy, check_target_type
@@ -21,7 +21,14 @@ if "fit_predict" not in METHODS:
 if "fit_transform" not in METHODS:
     METHODS.append("fit_transform")
 METHODS.append("fit_resample")
-SIMPLE_METHODS.append("fit_resample")
+
+try:
+    from sklearn.utils._metadata_requests import SIMPLE_METHODS
+
+    SIMPLE_METHODS.append("fit_resample")
+except ImportError:
+    # in older versions of scikit-learn, only METHODS is used
+    pass
 
 
 class SamplerMixin(metaclass=ABCMeta):
