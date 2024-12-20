@@ -155,6 +155,7 @@ class KMeansSMOTE(BaseSMOTE):
         ],
         "cluster_balance_threshold": [StrOptions({"auto"}), numbers.Real],
         "density_exponent": [StrOptions({"auto"}), numbers.Real],
+        "n_jobs": [numbers.Integral, None],
     }
 
     def __init__(
@@ -172,11 +173,11 @@ class KMeansSMOTE(BaseSMOTE):
             sampling_strategy=sampling_strategy,
             random_state=random_state,
             k_neighbors=k_neighbors,
-            n_jobs=n_jobs,
         )
         self.kmeans_estimator = kmeans_estimator
         self.cluster_balance_threshold = cluster_balance_threshold
         self.density_exponent = density_exponent
+        self.n_jobs = n_jobs
 
     def _validate_estimator(self):
         super()._validate_estimator()

@@ -217,24 +217,6 @@ def test_balanced_random_forest_oob_binomial(ratio):
     assert np.abs(erf.oob_score_ - 0.5) < 0.1
 
 
-# TODO: remove in 0.13
-def test_balanced_random_forest_change_behaviour(imbalanced_dataset):
-    """Check that we raise a change of behaviour for the parameters `sampling_strategy`
-    and `replacement`.
-    """
-    estimator = BalancedRandomForestClassifier(sampling_strategy="all", bootstrap=False)
-    with pytest.warns(FutureWarning, match="The default of `replacement`"):
-        estimator.fit(*imbalanced_dataset)
-    estimator = BalancedRandomForestClassifier(replacement=True, bootstrap=False)
-    with pytest.warns(FutureWarning, match="The default of `sampling_strategy`"):
-        estimator.fit(*imbalanced_dataset)
-    estimator = BalancedRandomForestClassifier(
-        sampling_strategy="all", replacement=True
-    )
-    with pytest.warns(FutureWarning, match="The default of `bootstrap`"):
-        estimator.fit(*imbalanced_dataset)
-
-
 @pytest.mark.skipif(
     parse_version(sklearn_version.base_version) < parse_version("1.4"),
     reason="scikit-learn should be >= 1.4",

@@ -123,23 +123,3 @@ def test_numerical_smote_extra_custom_nn(numerical_data, smote):
 
     assert X_res.shape == (120, 2)
     assert Counter(y_res) == {0: 60, 1: 60}
-
-
-# FIXME: to be removed in 0.12
-@pytest.mark.parametrize(
-    "sampler",
-    [
-        ADASYN(random_state=0),
-        BorderlineSMOTE(random_state=0),
-        SMOTE(random_state=0),
-        SMOTEN(random_state=0),
-        SMOTENC([0], random_state=0),
-        SVMSMOTE(random_state=0),
-    ],
-)
-def test_n_jobs_deprecation_warning(numerical_data, sampler):
-    X, y = numerical_data
-    sampler.set_params(n_jobs=2)
-    warning_msg = "The parameter `n_jobs` has been deprecated"
-    with pytest.warns(FutureWarning, match=warning_msg):
-        sampler.fit_resample(X, y)

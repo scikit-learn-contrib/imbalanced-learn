@@ -77,8 +77,7 @@ def test_ros_fit_resample(X_type, data, params):
 
     if X_type == "dataframe":
         assert hasattr(X_resampled, "loc")
-        # FIXME: we should use to_numpy with pandas >= 0.25
-        X_resampled = X_resampled.values
+        X_resampled = X_resampled.to_numpy()
 
     assert_allclose(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)

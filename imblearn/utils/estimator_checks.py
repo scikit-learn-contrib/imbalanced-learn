@@ -71,10 +71,6 @@ def _set_checking_parameters(estimator):
         )
     if name == "KMeansSMOTE":
         estimator.set_params(kmeans_estimator=12)
-    if name == "BalancedRandomForestClassifier":
-        # TODO: remove in 0.13
-        # future default in 0.13
-        estimator.set_params(replacement=True, sampling_strategy="all", bootstrap=False)
 
 
 def _yield_sampler_checks(sampler):
@@ -491,9 +487,8 @@ def check_samplers_pandas_sparse(name, sampler_orig):
     assert X_df.columns.tolist() == X_res_df.columns.tolist()
     assert y_s.name == y_res_s.name
 
-    # FIXME: we should use to_numpy with pandas >= 0.25
-    assert_allclose(X_res_df.values, X_res)
-    assert_allclose(y_res_s.values, y_res)
+    assert_allclose(X_res_df.to_numpy(), X_res)
+    assert_allclose(y_res_s.to_numpy(), y_res)
 
 
 def check_samplers_pandas(name, sampler_orig):
@@ -523,10 +518,9 @@ def check_samplers_pandas(name, sampler_orig):
     assert y_df.columns.tolist() == y_res_df.columns.tolist()
     assert y_s.name == y_res_s.name
 
-    # FIXME: we should use to_numpy with pandas >= 0.25
-    assert_allclose(X_res_df.values, X_res)
-    assert_allclose(y_res_df.values.ravel(), y_res)
-    assert_allclose(y_res_s.values, y_res)
+    assert_allclose(X_res_df.to_numpy(), X_res)
+    assert_allclose(y_res_df.to_numpy().ravel(), y_res)
+    assert_allclose(y_res_s.to_numpy(), y_res)
 
 
 def check_samplers_list(name, sampler_orig):

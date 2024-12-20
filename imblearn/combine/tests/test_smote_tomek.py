@@ -156,12 +156,10 @@ def test_parallelisation():
     smt = SMOTETomek(random_state=RND_SEED)
     smt._validate_estimator()
     assert smt.n_jobs is None
-    assert smt.smote_.n_jobs is None
     assert smt.tomek_.n_jobs is None
 
     # Check if job count is set
     smt = SMOTETomek(random_state=RND_SEED, n_jobs=8)
     smt._validate_estimator()
     assert smt.n_jobs == 8
-    assert smt.smote_.n_jobs == 8
     assert smt.tomek_.n_jobs == 8
