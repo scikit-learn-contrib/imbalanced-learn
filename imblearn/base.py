@@ -22,6 +22,14 @@ if "fit_transform" not in METHODS:
     METHODS.append("fit_transform")
 METHODS.append("fit_resample")
 
+try:
+    from sklearn.utils._metadata_requests import SIMPLE_METHODS
+
+    SIMPLE_METHODS.append("fit_resample")
+except ImportError:
+    # in older versions of scikit-learn, only METHODS is used
+    pass
+
 
 class SamplerMixin(metaclass=ABCMeta):
     """Mixin class for samplers with abstract method.
@@ -33,7 +41,7 @@ class SamplerMixin(metaclass=ABCMeta):
     _estimator_type = "sampler"
 
     @_fit_context(prefer_skip_nested_validation=True)
-    def fit(self, X, y):
+    def fit(self, X, y, **params):
         """Check inputs and statistics of the sampler.
 
         You should use ``fit_resample`` in all cases.
@@ -47,6 +55,9 @@ class SamplerMixin(metaclass=ABCMeta):
         y : array-like of shape (n_samples,)
             Target array.
 
+        **params : dict
+            Extra parameters to use by the sampler.
+
         Returns
         -------
         self : object
@@ -58,7 +69,8 @@ class SamplerMixin(metaclass=ABCMeta):
         )
         return self
 
-    def fit_resample(self, X, y):
+    @_fit_context(prefer_skip_nested_validation=True)
+    def fit_resample(self, X, y, **params):
         """Resample the dataset.
 
         Parameters
@@ -69,6 +81,9 @@ class SamplerMixin(metaclass=ABCMeta):
 
         y : array-like of shape (n_samples,)
             Corresponding label for each sample in X.
+
+        **params : dict
+            Extra parameters to use by the sampler.
 
         Returns
         -------
@@ -87,7 +102,7 @@ class SamplerMixin(metaclass=ABCMeta):
             self.sampling_strategy, y, self._sampling_type
         )
 
-        output = self._fit_resample(X, y)
+        output = self._fit_resample(X, y, **params)
 
         y_ = (
             label_binarize(output[1], classes=np.unique(y)) if binarize_y else output[1]
@@ -97,7 +112,7 @@ class SamplerMixin(metaclass=ABCMeta):
         return (X_, y_) if len(output) == 2 else (X_, y_, output[2])
 
     @abstractmethod
-    def _fit_resample(self, X, y):
+    def _fit_resample(self, X, y, **params):
         """Base method defined in each sampler to defined the sampling
         strategy.
 
@@ -108,6 +123,9 @@ class SamplerMixin(metaclass=ABCMeta):
 
         y : array-like of shape (n_samples,)
             Corresponding label for each sample in X.
+
+        **params : dict
+            Extra parameters to use by the sampler.
 
         Returns
         -------
@@ -139,7 +157,7 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin, BaseEstimator):
         X, y = validate_data(self, X=X, y=y, reset=True, accept_sparse=accept_sparse)
         return X, y, binarize_y
 
-    def fit(self, X, y):
+    def fit(self, X, y, **params):
         """Check inputs and statistics of the sampler.
 
         You should use ``fit_resample`` in all cases.
@@ -158,10 +176,9 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin, BaseEstimator):
         self : object
             Return the instance itself.
         """
-        self._validate_params()
-        return super().fit(X, y)
+        return super().fit(X, y, **params)
 
-    def fit_resample(self, X, y):
+    def fit_resample(self, X, y, **params):
         """Resample the dataset.
 
         Parameters
@@ -182,8 +199,7 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin, BaseEstimator):
         y_resampled : array-like of shape (n_samples_new,)
             The corresponding label of `X_resampled`.
         """
-        self._validate_params()
-        return super().fit_resample(X, y)
+        return super().fit_resample(X, y, **params)
 
     def _more_tags(self):
         return {"X_types": ["2darray", "sparse", "dataframe"]}

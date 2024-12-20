@@ -1168,34 +1168,45 @@ class Pipeline(pipeline.Pipeline):
         router = MetadataRouter(owner=self.__class__.__name__)
 
         # first we add all steps except the last one
-        for _, name, trans in self._iter(with_final=False, filter_passthrough=True):
+        for _, name, trans in self._iter(
+            with_final=False, filter_passthrough=True, filter_resample=False
+        ):
             method_mapping = MethodMapping()
             # fit, fit_predict, and fit_transform call fit_transform if it
             # exists, or else fit and transform
             if hasattr(trans, "fit_transform"):
-                method_mapping.add(caller="fit", callee="fit_transform")
-                method_mapping.add(caller="fit_transform", callee="fit_transform")
-                method_mapping.add(caller="fit_predict", callee="fit_transform")
-                method_mapping.add(caller="fit_resample", callee="fit_transform")
+                (
+                    method_mapping.add(caller="fit", callee="fit_transform")
+                    .add(caller="fit_transform", callee="fit_transform")
+                    .add(caller="fit_predict", callee="fit_transform")
+                )
             else:
-                method_mapping.add(caller="fit", callee="fit")
-                method_mapping.add(caller="fit", callee="transform")
-                method_mapping.add(caller="fit_transform", callee="fit")
-                method_mapping.add(caller="fit_transform", callee="transform")
-                method_mapping.add(caller="fit_predict", callee="fit")
-                method_mapping.add(caller="fit_predict", callee="transform")
-                method_mapping.add(caller="fit_resample", callee="fit")
-                method_mapping.add(caller="fit_resample", callee="transform")
+                (
+                    method_mapping.add(caller="fit", callee="fit")
+                    .add(caller="fit", callee="transform")
+                    .add(caller="fit_transform", callee="fit")
+                    .add(caller="fit_transform", callee="transform")
+                    .add(caller="fit_predict", callee="fit")
+                    .add(caller="fit_predict", callee="transform")
+                )
 
-            method_mapping.add(caller="predict", callee="transform")
-            method_mapping.add(caller="predict", callee="transform")
-            method_mapping.add(caller="predict_proba", callee="transform")
-            method_mapping.add(caller="decision_function", callee="transform")
-            method_mapping.add(caller="predict_log_proba", callee="transform")
-            method_mapping.add(caller="transform", callee="transform")
-            method_mapping.add(caller="inverse_transform", callee="inverse_transform")
-            method_mapping.add(caller="score", callee="transform")
-            method_mapping.add(caller="fit_resample", callee="transform")
+            (
+                # handling sampler if the fit_* stage
+                method_mapping.add(caller="fit", callee="fit_resample")
+                .add(caller="fit_transform", callee="fit_resample")
+                .add(caller="fit_predict", callee="fit_resample")
+            )
+            (
+                method_mapping.add(caller="predict", callee="transform")
+                .add(caller="predict", callee="transform")
+                .add(caller="predict_proba", callee="transform")
+                .add(caller="decision_function", callee="transform")
+                .add(caller="predict_log_proba", callee="transform")
+                .add(caller="transform", callee="transform")
+                .add(caller="inverse_transform", callee="inverse_transform")
+                .add(caller="score", callee="transform")
+                .add(caller="fit_resample", callee="transform")
+            )
 
             router.add(method_mapping=method_mapping, **{name: trans})
 
@@ -1207,23 +1218,24 @@ class Pipeline(pipeline.Pipeline):
         method_mapping = MethodMapping()
         if hasattr(final_est, "fit_transform"):
             method_mapping.add(caller="fit_transform", callee="fit_transform")
-            method_mapping.add(caller="fit_resample", callee="fit_transform")
         else:
+            (
+                method_mapping.add(caller="fit", callee="fit").add(
+                    caller="fit", callee="transform"
+                )
+            )
+        (
             method_mapping.add(caller="fit", callee="fit")
-            method_mapping.add(caller="fit", callee="transform")
-            method_mapping.add(caller="fit_resample", callee="fit")
-            method_mapping.add(caller="fit_resample", callee="transform")
-
-        method_mapping.add(caller="fit", callee="fit")
-        method_mapping.add(caller="predict", callee="predict")
-        method_mapping.add(caller="fit_predict", callee="fit_predict")
-        method_mapping.add(caller="predict_proba", callee="predict_proba")
-        method_mapping.add(caller="decision_function", callee="decision_function")
-        method_mapping.add(caller="predict_log_proba", callee="predict_log_proba")
-        method_mapping.add(caller="transform", callee="transform")
-        method_mapping.add(caller="inverse_transform", callee="inverse_transform")
-        method_mapping.add(caller="score", callee="score")
-        method_mapping.add(caller="fit_resample", callee="fit_resample")
+            .add(caller="predict", callee="predict")
+            .add(caller="fit_predict", callee="fit_predict")
+            .add(caller="predict_proba", callee="predict_proba")
+            .add(caller="decision_function", callee="decision_function")
+            .add(caller="predict_log_proba", callee="predict_log_proba")
+            .add(caller="transform", callee="transform")
+            .add(caller="inverse_transform", callee="inverse_transform")
+            .add(caller="score", callee="score")
+            .add(caller="fit_resample", callee="fit_resample")
+        )
 
         router.add(method_mapping=method_mapping, **{final_name: final_est})
         return router

@@ -34,6 +34,7 @@ from sklearn.utils._testing import (
 )
 from sklearn.utils.fixes import parse_version
 
+from imblearn.base import BaseSampler
 from imblearn.datasets import make_imbalance
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import EditedNearestNeighbours as ENN
@@ -1495,3 +1496,24 @@ def test_transform_input_sklearn_version():
 
 # end of transform_input tests
 # =============================
+
+
+def test_metadata_routing_with_sampler():
+    """Check that we can use a sampler with metadata routing."""
+    X, y = make_classification()
+    cost_matrix = np.random.rand(X.shape[0], 2, 2)
+
+    class CostSensitiveSampler(BaseSampler):
+        def fit_resample(self, X, y, cost_matrix=None):
+            return self._fit_resample(X, y, cost_matrix=cost_matrix)
+
+        def _fit_resample(self, X, y, cost_matrix=None):
+            self.cost_matrix_ = cost_matrix
+            return X, y
+
+    with config_context(enable_metadata_routing=True):
+        sampler = CostSensitiveSampler().set_fit_resample_request(cost_matrix=True)
+        pipeline = Pipeline([("sampler", sampler), ("model", LogisticRegression())])
+        pipeline.fit(X, y, cost_matrix=cost_matrix)
+
+        assert_allclose(pipeline[0].cost_matrix_, cost_matrix)
