@@ -21,18 +21,18 @@ from sklearn import pipeline
 from sklearn.base import clone
 from sklearn.exceptions import NotFittedError
 from sklearn.utils import Bunch
-from sklearn.utils._metadata_requests import (
-    METHODS,
+from sklearn.utils._param_validation import HasMethods
+from sklearn.utils.fixes import parse_version
+from sklearn.utils.metadata_routing import (
     MetadataRouter,
     MethodMapping,
     _routing_enabled,
     get_routing_for_object,
 )
-from sklearn.utils._param_validation import HasMethods
-from sklearn.utils.fixes import parse_version
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.validation import check_is_fitted, check_memory
 
+from .base import METHODS
 from .utils._sklearn_compat import (
     _fit_context,
     _print_elapsed_time,
@@ -42,12 +42,6 @@ from .utils._sklearn_compat import (
     sklearn_version,
     validate_params,
 )
-
-if "fit_predict" not in METHODS:
-    METHODS.append("fit_predict")
-if "fit_transform" not in METHODS:
-    METHODS.append("fit_transform")
-METHODS.append("fit_resample")
 
 __all__ = ["Pipeline", "make_pipeline"]
 
