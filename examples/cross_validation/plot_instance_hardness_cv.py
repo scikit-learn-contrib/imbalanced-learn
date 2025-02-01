@@ -78,7 +78,7 @@ skf_result = cross_validate(clf, X, y, cv=skf_cv, scoring="average_precision")
 
 # %%
 ih_cv = InstanceHardnessCV(n_splits=5, random_state=10)
-ih_result = cross_validate(clf, X, y, cv=ih_cv)
+ih_result = cross_validate(clf, X, y, cv=ih_cv, scoring="average_precision")
 
 # %%
 # The boxplot below shows that the `InstanceHardnessCV` splitter results
