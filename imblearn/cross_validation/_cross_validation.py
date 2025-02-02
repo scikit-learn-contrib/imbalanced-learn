@@ -10,6 +10,8 @@ class InstanceHardnessCV:
     CV splitter that distributes samples with large instance hardness equally
     over the folds
 
+    Read more in the :ref:`User Guide <instance_hardness_threshold>`.
+
     Parameters
     ----------
     n_splits : int, default=5
