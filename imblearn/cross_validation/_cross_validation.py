@@ -45,6 +45,31 @@ class InstanceHardnessCV:
         self.random_state = random_state
 
     def split(self, X, y, groups=None):
+        """
+        Generate indices to split data into training and test set.
+
+        Parameters
+        ----------
+        X: array-like of shape (n_samples, n_features)
+            Training data, where n_samples is the number of samples and
+            n_features is the number of features.
+
+        y: array-like of shape (n_samples,)
+            The target variable.
+
+        groups: object
+            Always ignored, exists for compatibility.
+
+        Yields
+        ------
+
+        train: ndarray
+            The training set indices for that split.
+
+        test: ndarray
+            The testing set indices for that split.
+
+        """
         df = pd.DataFrame(X)
         features = df.columns
         df["y"] = y
@@ -67,4 +92,24 @@ class InstanceHardnessCV:
             yield train_index, test_index
 
     def get_n_splits(self, X=None, y=None, groups=None):
+        """
+        Returns the number of splitting iterations in the cross-validator.
+
+        Parameters
+        ----------
+        X: object
+            Always ignored, exists for compatibility.
+
+        y: object
+            Always ignored, exists for compatibility.
+
+        groups: object
+            Always ignored, exists for compatibility.
+
+        Returns
+        -------
+        n_splits: int
+            Returns the number of splitting iterations in the cross-validator.
+
+        """
         return self.n_splits
