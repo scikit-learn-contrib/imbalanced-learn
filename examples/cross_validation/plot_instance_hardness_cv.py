@@ -86,20 +86,8 @@ ih_result = cross_validate(clf, X, y, cv=ih_cv, scoring="average_precision")
 # When doing hyperparameter tuning or feature selection using a wrapper
 # method (like `RFECV`) this will give more stable results.
 
-import pandas as pd
-
-ax = (
-    pd.concat(
-        (pd.DataFrame(skf_result), pd.DataFrame(ih_result)),
-        axis=1,
-        keys=["StratifiedKFold", "InstanceHardnessCV"],
-    )
-    .swaplevel(axis="columns")["test_score"]
-    .plot.box(
-        color={"whiskers": "black", "medians": "black", "caps": "black"}, vert=False
-    )
-)
-plt.xlabel("Average precision")
-_ = plt.title("Test score via cross-validation")
+# %%
+plt.boxplot([skf_result['test_score'], ih_result['test_score']],
+            labels=["StratifiedKFold", "InstanceHardnessCV"], vert=False)
 plt.tight_layout()
 plt.show()
