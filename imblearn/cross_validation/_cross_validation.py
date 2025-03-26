@@ -1,7 +1,6 @@
 import numpy as np
-import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import StratifiedGroupKFold, cross_val_predict
+from sklearn.model_selection import LeaveOneGroupOut, cross_val_predict
 
 
 class InstanceHardnessCV:
@@ -70,25 +69,22 @@ class InstanceHardnessCV:
             The testing set indices for that split.
 
         """
-        df = pd.DataFrame(X)
-        features = df.columns
-        df["y"] = y
         if self.clf is not None:
             self.clf_ = self.clf
         else:
             self.clf_ = RandomForestClassifier(
                 n_jobs=-1, class_weight="balanced", random_state=self.random_state
             )
-        df["proba"] = cross_val_predict(
-            self.clf_, df[features], df["y"], cv=self.n_splits, method="predict_proba"
-        )[:, 1]
-        df["hardness"] = abs(df["y"] - df["proba"])
-        df = df.sort_values("hardness")
-        df["group"] = np.arange(len(df)) % self.n_splits
-        cv = StratifiedGroupKFold(
-            n_splits=self.n_splits, shuffle=True, random_state=self.random_state
+        probas = cross_val_predict(
+            self.clf_, X, y, cv=self.n_splits, method="predict_proba"
         )
-        for train_index, test_index in cv.split(df[features], df["y"], df["group"]):
+        # by sorting first on y then on proba rows are ordered by instance hardness
+        # within the group having the same label
+        sorted_indices = np.lexsort((probas[:, 1], y))
+        groups = np.zeros(len(X), dtype=int)
+        groups[sorted_indices] = np.arange(len(X)) % self.n_splits
+        cv = LeaveOneGroupOut()
+        for train_index, test_index in cv.split(X, y, groups):
             yield train_index, test_index
 
     def get_n_splits(self, X=None, y=None, groups=None):
