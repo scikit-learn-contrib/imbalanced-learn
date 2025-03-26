@@ -1,8 +1,9 @@
 import pytest
+
 from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_validate
-from sklearn.utils._testing import assert_almost_equal
+from sklearn.utils._testing import assert_array_equal
 
 from imblearn.cross_validation import InstanceHardnessCV
 
@@ -18,10 +19,10 @@ X, y = make_classification(
 
 
 def test_instancehardness_cv():
-    ih_cv = InstanceHardnessCV()
+    ih_cv = InstanceHardnessCV(random_state=10)
     clf = LogisticRegression(random_state=10)
     cv_result = cross_validate(clf, X, y, cv=ih_cv)
-    assert_almost_equal(cv_result["test_score"].std(), 0.005, decimal=3)
+    assert_array_equal(cv_result['test_score'], [0.965, 0.965, 0.96, 0.965, 0.955])
 
 
 @pytest.mark.parametrize("n_splits", [2, 3, 4])
