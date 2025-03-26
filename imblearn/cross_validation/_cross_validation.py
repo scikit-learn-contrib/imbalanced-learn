@@ -16,7 +16,7 @@ class InstanceHardnessCV:
     n_splits : int, default=5
         Number of folds. Must be at least 2.
 
-    clf : classifier, default=None
+    estimator : classifier, default=None
         Classifier used to determine instance hardness. Defaults to
         RandomForestClassifier when set to `None`
 
@@ -32,15 +32,15 @@ class InstanceHardnessCV:
     >>> X, y = make_classification(weights=[0.9, 0.1], class_sep=2,
     ... n_informative=3, n_redundant=1, flip_y=0.05, n_samples=1000, random_state=10)
     >>> ih_cv = InstanceHardnessCV(n_splits=5, random_state=10)
-    >>> clf = LogisticRegression(random_state=10)
-    >>> cv_result = cross_validate(clf, X, y, cv=ih_cv)
+    >>> estimator = LogisticRegression(random_state=10)
+    >>> cv_result = cross_validate(estimator, X, y, cv=ih_cv)
     >>> print(f"Standard deviation of test_scores: {cv_result['test_score'].std():.3f}")
     Standard deviation of test_scores: 0.004
     """
 
-    def __init__(self, n_splits=5, clf=None, random_state=None):
+    def __init__(self, n_splits=5, estimator=None, random_state=None):
         self.n_splits = n_splits
-        self.clf = clf
+        self.estimator = estimator
         self.random_state = random_state
 
     def split(self, X, y, groups=None):
@@ -69,14 +69,14 @@ class InstanceHardnessCV:
             The testing set indices for that split.
 
         """
-        if self.clf is not None:
-            self.clf_ = self.clf
+        if self.estimator is not None:
+            self.estimator_ = self.estimator
         else:
-            self.clf_ = RandomForestClassifier(
+            self.estimator_ = RandomForestClassifier(
                 n_jobs=-1, class_weight="balanced", random_state=self.random_state
             )
         probas = cross_val_predict(
-            self.clf_, X, y, cv=self.n_splits, method="predict_proba"
+            self.estimator_, X, y, cv=self.n_splits, method="predict_proba"
         )
         # by sorting first on y then on proba rows are ordered by instance hardness
         # within the group having the same label
