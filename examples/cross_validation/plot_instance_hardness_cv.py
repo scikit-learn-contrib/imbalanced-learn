@@ -21,36 +21,24 @@ print(__doc__)
 # ---------------------------------------------------
 #
 # We will create an imbalanced dataset with using scikit-learn's `make_blobs`
-# function and the `make_imbalance` function. The imbalancedness is set to
-# 0.1; only 10% of the labels is positive.
+# function and set the imbalancedness to 5%; only 5% of the labels is positive.
 
 
 import numpy as np
 from matplotlib import pyplot as plt
 from sklearn.datasets import make_blobs
 
-from imblearn.datasets import make_imbalance
-
-X, y = make_blobs(n_samples=1000, centers=((-3, 0), (3, 0)), random_state=10)
-
-
-# %%
-def sampling_strategy(ratio):
-    def strategy(y):
-        return {0: sum(y), 1: int(ratio * sum(y) / (1 - ratio))}
-
-    return strategy
-
-
-X, y = make_imbalance(X, y, sampling_strategy=sampling_strategy(0.1), random_state=10)
+X, y = make_blobs(n_samples=[950,50], centers=((-3, 0), (3, 0)), random_state=10)
 plt.scatter(X[:, 0], X[:, 1], c=y)
 plt.show()
 
 # %%
-# To introduce instance hardness in our dataset, we flip the labels at the
-# boundaries of the feature space
-y[np.argsort(X[:, 0])[:5]] = 1
-y[np.argsort(X[:, 0])[-5:]] = 0
+# To introduce instance hardness in our dataset, we add some hard to classify samples:
+X_hard, y_hard = make_blobs(n_samples=10, centers=((3, 0), (-3, 0)),
+                            cluster_std=1,
+                            random_state=10)
+X = np.vstack((X, X_hard))
+y = np.hstack((y, y_hard))
 plt.scatter(X[:, 0], X[:, 1], c=y)
 plt.show()
 
@@ -70,14 +58,14 @@ from sklearn.model_selection import StratifiedKFold, cross_validate
 from imblearn.cross_validation import InstanceHardnessCV
 
 # %%
-clf = LogisticRegression()
+clf = LogisticRegression(random_state=10)
 
 # %%
-skf_cv = StratifiedKFold(n_splits=5)
+skf_cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=10)
 skf_result = cross_validate(clf, X, y, cv=skf_cv, scoring="average_precision")
 
 # %%
-ih_cv = InstanceHardnessCV(n_splits=5, random_state=10)
+ih_cv = InstanceHardnessCV(n_splits=5, estimator=clf, random_state=10)
 ih_result = cross_validate(clf, X, y, cv=ih_cv, scoring="average_precision")
 
 # %%
