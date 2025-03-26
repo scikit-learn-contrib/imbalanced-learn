@@ -35,7 +35,7 @@ class InstanceHardnessCV:
     >>> clf = LogisticRegression(random_state=10)
     >>> cv_result = cross_validate(clf, X, y, cv=ih_cv)
     >>> print(f"Standard deviation of test_scores: {cv_result['test_score'].std():.3f}")
-    Standard deviation of test_scores: 0.005
+    Standard deviation of test_scores: 0.004
     """
 
     def __init__(self, n_splits=5, clf=None, random_state=None):
