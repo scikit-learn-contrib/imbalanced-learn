@@ -77,5 +77,6 @@ ih_result = cross_validate(clf, X, y, cv=ih_cv, scoring="average_precision")
 # %%
 plt.boxplot([skf_result['test_score'], ih_result['test_score']],
             tick_labels=["StratifiedKFold", "InstanceHardnessCV"], vert=False)
+plt.xlabel('Average precision')
 plt.tight_layout()
 plt.show()
