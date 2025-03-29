@@ -22,6 +22,36 @@ We will discuss instance hardness in this document and explain how to use the
 
 Instance hardness and average precision
 =======================================
+Instance hardness is defined as 1 minus the probability of the most probable class:
+
+.. math::
+
+   H(x) = 1 - P(\hat{y}|x)
+
+In this equation :math:`H(x)` is the instance hardness for a sample with features
+:math:`x` and :math:`P(\hat{y}|x)` the probability of predicted label :math:`\hat{y}`
+given the features. If the model predicts label 0 and gives a `predict_proba` output
+of [0.9, 0.1], the probability of the most probable class (0) is 0.9 and the
+instance hardness is 1-0.9=0.1.
+
+Samples with large instance hardness have significant effect on the area under
+precision-recall curve, or average precision. Especially samples with label 0
+with large instance hardness (so the model predicts label 1) reduce the average
+precision a lot as these points affect the precision-recall curve in the left
+where the area is largest; the precision is lowered in the range of low recall
+and high thresholds. When doing cross validation, e.g. in case of hyperparameter
+tuning or recursive feature elimination, random gathering of these points in
+some folds introduce variance in CV results that deteriorates robustness of the
+cross validation task. The `InstanceHardnessCV`
+splitter aims to distribute the samples with large instance hardness over the
+folds in order to reduce undesired variance. Note that one should use this
+splitter to make model *selection* tasks robust like hyperparameter tuning and
+feature selection but not for model *performance estimation* for which you also
+want to know the variance of performance to be expected in production.
+
+
+Create imbalanced dataset with samples with large instance hardness
+===================================================================
 
 Let’s start by creating a dataset to work with. We create a dataset with 5% class
 imbalance using scikit-learn’s `make_blobs` function.
@@ -54,6 +84,9 @@ Now we add some samples with large instance hardness
    :target: ./auto_examples/cross_validation/plot_instance_hardness_cv.html
    :align: center
 
+Assess cross validation performance variance using InstanceHardnessCV splitter
+==============================================================================
+
 Then we take a `LogisticRegressionClassifier` and assess the cross validation
 performance using a `StratifiedKFold` cv splitter and the `cross_validate`
 function.
@@ -78,6 +111,7 @@ the `InstanceHardnessCV` splitter is lower than for the `StratifiedKFold` splitt
   >>> plt.boxplot([skf_result['test_score'], ih_result['test_score']],
   ...               tick_labels=["StratifiedKFold", "InstanceHardnessCV"],
   ...               vert=False)
+  >>> plt.xlabel('Average precision')
   >>> plt.tight_layout()
 
 .. image:: ./auto_examples/cross_validation/images/sphx_glr_plot_instance_hardness_cv_003.png
