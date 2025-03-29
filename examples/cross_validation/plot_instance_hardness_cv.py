@@ -1,7 +1,7 @@
 """
-===================================================
-Distribute hard-to-classify datapoint over CV folds
-===================================================
+====================================================
+Distribute hard-to-classify datapoints over CV folds
+====================================================
 
 'Instance hardness' refers to the difficulty to classify an instance. The way
 hard-to-classify instances are distributed over train and test sets has
