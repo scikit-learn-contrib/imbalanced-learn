@@ -101,7 +101,7 @@ Now, we do the same using an `InstanceHardnessCV` splitter. We use provide our
 classifier to the splitter to calculate instance hardness and distribute samples
 with large instance hardness equally over the folds.
 
-  >>> ih_cv = InstanceHardnessCV(n_splits=5, estimator=clf,
+  >>> ih_cv = InstanceHardnessCV(estimator=clf, n_splits=5,
   ...                               random_state=random_state)
   >>> ih_result = cross_validate(clf, X, y, cv=ih_cv, scoring="average_precision")
 

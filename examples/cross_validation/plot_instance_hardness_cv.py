@@ -65,7 +65,7 @@ skf_cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=10)
 skf_result = cross_validate(clf, X, y, cv=skf_cv, scoring="average_precision")
 
 # %%
-ih_cv = InstanceHardnessCV(n_splits=5, estimator=clf, random_state=10)
+ih_cv = InstanceHardnessCV(estimator=clf, n_splits=5, random_state=10)
 ih_result = cross_validate(clf, X, y, cv=ih_cv, scoring="average_precision")
 
 # %%
