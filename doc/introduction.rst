@@ -31,7 +31,7 @@ Imbalanced-learn samplers accept the same inputs as scikit-learn estimators:
 * `data`, 2-dimensional array-like structures, such as:
    * Python's list of lists :class:`list`,
    * Numpy arrays :class:`numpy.ndarray`,
-   * Panda dataframes :class:`pandas.DataFrame`,
+   * Pandas dataframes :class:`pandas.DataFrame`,
    * Scipy sparse matrices :class:`scipy.sparse.csr_matrix` or :class:`scipy.sparse.csc_matrix`;
 
 * `targets`, 1-dimensional array-like structures, such as:
