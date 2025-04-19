@@ -17,6 +17,7 @@ PARAM_VALIDATION_FUNCTION_LIST = [
     "imblearn.metrics.classification_report_imbalanced",
     "imblearn.metrics.geometric_mean_score",
     "imblearn.metrics.macro_averaged_mean_absolute_error",
+    "imblearn.metrics.macro_averaged_mean_squared_error",
     "imblearn.metrics.make_index_balanced_accuracy",
     "imblearn.metrics.sensitivity_specificity_support",
     "imblearn.metrics.sensitivity_score",

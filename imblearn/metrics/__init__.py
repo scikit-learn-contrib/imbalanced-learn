@@ -7,6 +7,7 @@ from ._classification import (
     classification_report_imbalanced,
     geometric_mean_score,
     macro_averaged_mean_absolute_error,
+    macro_averaged_mean_squared_error,
     make_index_balanced_accuracy,
     sensitivity_score,
     sensitivity_specificity_support,
@@ -21,4 +22,5 @@ __all__ = [
     "make_index_balanced_accuracy",
     "classification_report_imbalanced",
     "macro_averaged_mean_absolute_error",
+    "macro_averaged_mean_squared_error",
 ]

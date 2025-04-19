@@ -30,6 +30,7 @@ from imblearn.metrics import (
     classification_report_imbalanced,
     geometric_mean_score,
     macro_averaged_mean_absolute_error,
+    macro_averaged_mean_squared_error,
     make_index_balanced_accuracy,
     sensitivity_score,
     sensitivity_specificity_support,
@@ -544,6 +545,36 @@ def test_macro_averaged_mean_absolute_error_sample_weight():
 
     sample_weight = [1, 1, 1, 1, 1, 1]
     ma_mae_unit_weights = macro_averaged_mean_absolute_error(
+        y_true,
+        y_pred,
+        sample_weight=sample_weight,
+    )
+
+    assert ma_mae_unit_weights == pytest.approx(ma_mae_no_weights)
+
+
+@pytest.mark.parametrize(
+    "y_true, y_pred, expected_ma_mae",
+    [
+        ([1, 1, 1, 2, 2, 2], [1, 2, 1, 2, 1, 2], 0.333),
+        ([1, 1, 1, 1, 1, 2], [1, 2, 1, 2, 1, 2], 0.2),
+        ([1, 1, 1, 2, 2, 2, 3, 3, 3], [1, 3, 1, 2, 1, 1, 2, 3, 3], 0.777),
+        ([1, 1, 1, 1, 1, 1, 2, 3, 3], [1, 3, 1, 2, 1, 1, 2, 3, 3], 0.277),
+    ],
+)
+def test_macro_averaged_mean_squared_error(y_true, y_pred, expected_ma_mae):
+    ma_mae = macro_averaged_mean_squared_error(y_true, y_pred)
+    assert ma_mae == pytest.approx(expected_ma_mae, rel=R_TOL)
+
+
+def test_macro_averaged_mean_squared_error_sample_weight():
+    y_true = [1, 1, 1, 2, 2, 2]
+    y_pred = [1, 2, 1, 2, 1, 2]
+
+    ma_mae_no_weights = macro_averaged_mean_squared_error(y_true, y_pred)
+
+    sample_weight = [1, 1, 1, 1, 1, 1]
+    ma_mae_unit_weights = macro_averaged_mean_squared_error(
         y_true,
         y_pred,
         sample_weight=sample_weight,
