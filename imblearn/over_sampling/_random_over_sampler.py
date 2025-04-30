@@ -241,10 +241,7 @@ class RandomOverSampler(BaseOverSampler):
 
         self.sample_indices_ = np.array(sample_indices)
 
-        if sparse.issparse(X):
-            X_resampled = sparse.vstack(X_resampled, format=X.format)
-        else:
-            X_resampled = np.vstack(X_resampled)
+        X_resampled = np.vstack(X_resampled)
         y_resampled = np.hstack(y_resampled)
 
         return X_resampled, y_resampled
