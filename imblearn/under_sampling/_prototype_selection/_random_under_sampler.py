@@ -112,7 +112,7 @@ class RandomUnderSampler(BaseUnderSampler):
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
                 index_target_class = random_state.choice(
-                    range(np.count_nonzero(y == target_class)),
+                    range(np.count_nonzero(y != target_class)),
                     size=n_samples,
                     replace=self.replacement,
                 )
@@ -122,7 +122,7 @@ class RandomUnderSampler(BaseUnderSampler):
             idx_under = np.concatenate(
                 (
                     idx_under,
-                    np.flatnonzero(y == target_class)[index_target_class],
+                    np.flatnonzero(y != target_class)[index_target_class],
                 ),
                 axis=0,
             )
