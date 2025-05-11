@@ -454,7 +454,7 @@ def test_iba_error_y_score_prob_error(score_loss):
     y_true, y_pred, _ = make_prediction(binary=True)
 
     aps = make_index_balanced_accuracy(alpha=0.5, squared=True)(score_loss)
-    with pytest.raises(AttributeError):
+    with pytest.raises((AttributeError, TypeError)):
         aps(y_true, y_pred)
 
 

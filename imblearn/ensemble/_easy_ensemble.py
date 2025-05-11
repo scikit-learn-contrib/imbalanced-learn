@@ -5,6 +5,7 @@
 # License: MIT
 
 import copy
+import inspect
 import numbers
 
 import numpy as np
@@ -13,7 +14,6 @@ from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.ensemble._bagging import _parallel_decision_function
 from sklearn.ensemble._base import _partition_estimators
 from sklearn.utils._param_validation import Interval, StrOptions
-from sklearn.utils._tags import _safe_tags
 from sklearn.utils.fixes import parse_version
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.parallel import Parallel, delayed
@@ -312,11 +312,16 @@ class EasyEnsembleClassifier(BaggingClassifier):
         # Parallel loop
         n_jobs, _, starts = _partition_estimators(self.n_estimators, self.n_jobs)
 
+        kwargs = {}
+        if "params" in inspect.signature(_parallel_decision_function).parameters:
+            kwargs["params"] = {}
+
         all_decisions = Parallel(n_jobs=n_jobs, verbose=self.verbose)(
             delayed(_parallel_decision_function)(
                 self.estimators_[starts[i] : starts[i + 1]],
                 self.estimators_features_[starts[i] : starts[i + 1]],
                 X,
+                **kwargs,
             )
             for i in range(n_jobs)
         )
@@ -343,7 +348,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
         return self.estimator
 
     def _more_tags(self):
-        return {"allow_nan": _safe_tags(self._get_estimator(), "allow_nan")}
+        return {"allow_nan": get_tags(self._get_estimator()).input_tags.allow_nan}
 
     def __sklearn_tags__(self):
         tags = super().__sklearn_tags__()
