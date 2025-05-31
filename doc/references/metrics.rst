@@ -23,6 +23,7 @@ See the :ref:`metrics` section of the user guide for further details.
    specificity_score
    geometric_mean_score
    macro_averaged_mean_absolute_error
+   macro_averaged_mean_squared_error
    make_index_balanced_accuracy
 
 Pairwise metrics
