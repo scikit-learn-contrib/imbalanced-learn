@@ -137,6 +137,7 @@ platforms = ["linux-64", "osx-arm64", "osx-64"]
 
 [tool.pixi.feature.tensorflow.dependencies]
 tensorflow = ">=2.13.1,<2.18"
+keras = ">=3.0.5,<3.8"
 
 [tool.pixi.feature.min-dependencies.dependencies]
 numpy = "==1.24.3"
