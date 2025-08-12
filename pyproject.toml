@@ -166,6 +166,9 @@ scikit-learn = "~=1.4.0"
 [tool.pixi.feature.sklearn-1-5.dependencies]
 scikit-learn = "~=1.5.0"
 
+[tool.pixi.feature.sklearn-1-6.dependencies]
+scikit-learn = "~=1.6.0"
+
 [tool.pixi.feature.py310.dependencies]
 python = "~=3.10.0"
 
@@ -211,6 +214,7 @@ ci-py310-min-tensorflow = ["py310", "min-tensorflow", "tests"]
 
 ci-py311-sklearn-1-4 = ["py311", "sklearn-1-4", "tests"]
 ci-py311-sklearn-1-5 = ["py311", "sklearn-1-5", "tests"]
+ci-py312-sklearn-1-6 = ["py312", "sklearn-1-6", "tests"]
 ci-py311-latest-tensorflow = ["py311", "tensorflow", "tests"]
 ci-py311-latest-keras = ["py311", "keras", "tests"]
 

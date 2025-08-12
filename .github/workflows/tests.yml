@@ -20,6 +20,7 @@ jobs:
             ci-py310-min-tensorflow,
             ci-py311-sklearn-1-4,
             ci-py311-sklearn-1-5,
+            ci-py312-sklearn-1-6,
             ci-py311-latest-keras,
             ci-py311-latest-tensorflow,
             ci-py313-latest-dependencies,
@@ -37,9 +38,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: prefix-dev/setup-pixi@v0.8.8
+      - uses: prefix-dev/setup-pixi@v0.8.14
         with:
-          pixi-version: v0.39.2
+          pixi-version: v0.51.0
           environments: ${{ matrix.environment }}
           # we can freeze the environment and manually bump the dependencies to the
           # latest version time to time.
