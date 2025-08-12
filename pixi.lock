@@ -1421,7 +1421,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/importlib-metadata-8.7.0-pyhe01879c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/iniconfig-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/joblib-1.5.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/keyutils-1.6.3-hb9d3cd8_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/krb5-1.21.3-h659f571_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ld_impl_linux-64-2.44-h1423503_1.conda
@@ -1539,7 +1539,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/importlib-metadata-8.7.0-pyhe01879c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/iniconfig-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/joblib-1.5.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/krb5-1.21.3-h37d8d59_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/libabseil-20240722.0-cxx17_h0e468a2_4.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/libaec-1.1.4-ha6bc127_0.conda
@@ -1649,7 +1649,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/importlib-metadata-8.7.0-pyhe01879c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/iniconfig-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/joblib-1.5.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/krb5-1.21.3-h237132a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libabseil-20240722.0-cxx17_h07bc746_4.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libaec-1.1.4-h51d1e36_0.conda
@@ -2990,7 +2990,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab-4.4.5-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab_pygments-0.3.0-pyhd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab_server-2.27.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/keyring-25.6.0-pyha804496_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/keyutils-1.6.3-hb9d3cd8_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/kiwisolver-1.4.9-py311h724c32c_0.conda
@@ -3335,7 +3335,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab-4.4.5-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab_pygments-0.3.0-pyhd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab_server-2.27.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/keyring-25.6.0-pyh534df25_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/kiwisolver-1.4.9-py311ha94bed4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/krb5-1.21.3-h37d8d59_0.conda
@@ -3629,7 +3629,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab-4.4.5-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab_pygments-0.3.0-pyhd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab_server-2.27.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/keyring-25.6.0-pyh534df25_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/kiwisolver-1.4.9-py311h63e5c0c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/krb5-1.21.3-h237132a_0.conda
@@ -3887,7 +3887,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/importlib-metadata-8.7.0-pyhe01879c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jinja2-3.1.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/joblib-1.5.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/keyutils-1.6.3-hb9d3cd8_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/kiwisolver-1.4.9-py312h0a2e395_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/krb5-1.21.3-h659f571_0.conda
@@ -4108,7 +4108,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/importlib-metadata-8.7.0-pyhe01879c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jinja2-3.1.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/joblib-1.5.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/kiwisolver-1.4.9-py312hef387a8_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/krb5-1.21.3-h37d8d59_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/latexcodec-2.0.1-pyh9f0ad1d_0.tar.bz2
@@ -4277,7 +4277,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/importlib-metadata-8.7.0-pyhe01879c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jinja2-3.1.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/joblib-1.5.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/kiwisolver-1.4.9-py312hdc12c9d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/krb5-1.21.3-h237132a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/latexcodec-2.0.1-pyh9f0ad1d_0.tar.bz2
@@ -4823,7 +4823,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/importlib-metadata-8.7.0-pyhe01879c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/iniconfig-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/joblib-1.5.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/keyutils-1.6.3-hb9d3cd8_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/krb5-1.21.3-h659f571_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ld_impl_linux-64-2.44-h1423503_1.conda
@@ -4941,7 +4941,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/importlib-metadata-8.7.0-pyhe01879c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/iniconfig-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/joblib-1.5.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/krb5-1.21.3-h37d8d59_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/libabseil-20240722.0-cxx17_h0e468a2_4.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/libaec-1.1.4-ha6bc127_0.conda
@@ -5051,7 +5051,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/importlib-metadata-8.7.0-pyhe01879c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/iniconfig-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/joblib-1.5.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/krb5-1.21.3-h237132a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libabseil-20240722.0-cxx17_h07bc746_4.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libaec-1.1.4-h51d1e36_0.conda
@@ -7960,7 +7960,7 @@ packages:
 - pypi: ./
   name: imbalanced-learn
   version: 0.14.dev0
-  sha256: 8d8edefb3320f87f0671c7fbd8df92af02c3422a7679501e09f55f16ebb35a0e
+  sha256: 5d183a630cbc14fc28a1b72fba2b0427190fae8aa51ac03ded2c8c7d8218c817
   requires_dist:
   - numpy>=1.24.3,<3
   - scipy>=1.10.1,<2
@@ -8546,9 +8546,9 @@ packages:
   - pkg:pypi/keras?source=hash-mapping
   size: 778350
   timestamp: 1747722951119
-- conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.7.0-pyh753f3f9_1.conda
-  sha256: 9974f55453878ba95eb2d0b6655a0fdca2f37a528ac571e09145b67a98357ab5
-  md5: a57cc257120ce3f63448d212b89890f2
+- conda: https://conda.anaconda.org/conda-forge/noarch/keras-3.8.0-pyh753f3f9_0.conda
+  sha256: 71be487fcaa14b57a29654de223a333d9ca373dd9ea988b6312a77ecb65fb3ff
+  md5: fdb4c844d7bd8baed40a01225d837fca
   depends:
   - absl-py
   - h5py
@@ -8560,15 +8560,15 @@ packages:
   - python >=3.9
   - rich
   constrains:
-  - tensorflow >=2.15.0
   - jax >=0.4.0
   - pytorch >=2.1.0
+  - tensorflow >=2.15.0
   license: Apache-2.0
   license_family: APACHE
   purls:
   - pkg:pypi/keras?source=hash-mapping
-  size: 697131
-  timestamp: 1733860576982
+  size: 733634
+  timestamp: 1736538851193
 - conda: https://conda.anaconda.org/conda-forge/noarch/keyring-25.6.0-pyh534df25_0.conda
   sha256: c8b436fa9853bf8b836c96afbb7684a04955b80b37f5d5285fd836b6a8566cc5
   md5: d2c0c5bda93c249f877c7fceea9e63af
