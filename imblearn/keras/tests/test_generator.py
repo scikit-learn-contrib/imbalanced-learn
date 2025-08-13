@@ -24,7 +24,8 @@ def data():
     X, y = make_imbalance(
         iris.data, iris.target, sampling_strategy={0: 30, 1: 50, 2: 40}
     )
-    y = LabelBinarizer().fit_transform(y)
+    X = X.astype(np.float32)
+    y = LabelBinarizer().fit_transform(y).astype(np.int32)
     return X, y
 
 
@@ -103,7 +104,7 @@ def test_balanced_batch_generator_function_no_return_indices(data):
         (None, None),
         (RandomOverSampler(), None),
         (NearMiss(), None),
-        (None, np.random.uniform(size=120)),
+        (None, np.random.uniform(size=120).astype(np.float32)),
     ],
 )
 def test_balanced_batch_generator_function(data, sampler, sample_weight):
@@ -117,6 +118,7 @@ def test_balanced_batch_generator_function(data, sampler, sample_weight):
         batch_size=10,
         random_state=42,
     )
+    print(next(training_generator))
     model.fit(
         training_generator,
         steps_per_epoch=steps_per_epoch,

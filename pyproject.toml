@@ -137,6 +137,7 @@ platforms = ["linux-64", "osx-arm64", "osx-64"]
 
 [tool.pixi.feature.tensorflow.dependencies]
 tensorflow = ">=2.13.1,<3"
+keras = ">=3.0.5,<3.9"
 
 [tool.pixi.feature.min-dependencies.dependencies]
 numpy = "==1.24.3"
@@ -165,6 +166,13 @@ scikit-learn = "~=1.4.0"
 
 [tool.pixi.feature.sklearn-1-5.dependencies]
 scikit-learn = "~=1.5.0"
+
+[tool.pixi.feature.sklearn-1-6.dependencies]
+scikit-learn = "~=1.6.0"
+
+[tool.pixi.feature.scipy-1-15.dependencies]
+# for scikit-learn < 1.7, scipy > 1.15 is raising a deprecation warning
+scipy = "~=1.15.0"
 
 [tool.pixi.feature.py310.dependencies]
 python = "~=3.10.0"
@@ -209,8 +217,9 @@ ci-py310-min-optional-dependencies = ["py310", "min-dependencies", "min-optional
 ci-py310-min-keras = ["py310", "min-keras", "tests"]
 ci-py310-min-tensorflow = ["py310", "min-tensorflow", "tests"]
 
-ci-py311-sklearn-1-4 = ["py311", "sklearn-1-4", "tests"]
-ci-py311-sklearn-1-5 = ["py311", "sklearn-1-5", "tests"]
+ci-py311-sklearn-1-4 = ["py311", "sklearn-1-4", "scipy-1-15", "tests"]
+ci-py311-sklearn-1-5 = ["py311", "sklearn-1-5", "scipy-1-15", "tests"]
+ci-py312-sklearn-1-6 = ["py312", "sklearn-1-6", "scipy-1-15", "tests"]
 ci-py311-latest-tensorflow = ["py311", "tensorflow", "tests"]
 ci-py311-latest-keras = ["py311", "keras", "tests"]
 
