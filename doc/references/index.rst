@@ -18,6 +18,6 @@ This is the full API documentation of the `imbalanced-learn` toolbox.
    miscellaneous
    pipeline
    metrics
-   cross_validation
+   model_selection
    datasets
    utils

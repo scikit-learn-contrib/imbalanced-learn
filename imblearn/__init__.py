@@ -11,7 +11,7 @@ ensemble
     Module which provides methods generating an ensemble of
     under-sampled subsets.
 exceptions
-    Module including custom warnings and error clases used across
+    Module including custom warnings and error classes used across
     imbalanced-learn.
 keras
     Module which provides custom generator, layers for deep learning using
@@ -19,6 +19,8 @@ keras
 metrics
     Module which provides metrics to quantified the classification performance
     with imbalanced dataset.
+model_selection
+    Module which provides methods to split the dataset into training and test sets.
 over_sampling
     Module which provides methods to over-sample a dataset.
 tensorflow
@@ -54,6 +56,7 @@ else:
         ensemble,
         exceptions,
         metrics,
+        model_selection,
         over_sampling,
         pipeline,
         tensorflow,
@@ -113,6 +116,7 @@ else:
         "exceptions",
         "keras",
         "metrics",
+        "model_selection",
         "over_sampling",
         "tensorflow",
         "under_sampling",
