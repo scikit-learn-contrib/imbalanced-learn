@@ -328,8 +328,6 @@ def _sampling_strategy_dict(sampling_strategy, y, sampling_type):
         )
     sampling_strategy_ = {}
     if sampling_type == "over-sampling":
-        max(target_stats.values())
-        max(target_stats, key=target_stats.get)
         for class_sample, n_samples in sampling_strategy.items():
             if n_samples < target_stats[class_sample]:
                 raise ValueError(
