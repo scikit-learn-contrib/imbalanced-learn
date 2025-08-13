@@ -19,7 +19,7 @@ Bagging classifier
 In ensemble classifiers, bagging methods build several estimators on different
 randomly selected subset of data. In scikit-learn, this classifier is named
 :class:`~sklearn.ensemble.BaggingClassifier`. However, this classifier does not
-allow to balance each subset of data. Therefore, when training on imbalanced
+allow each subset of data to be balanced. Therefore, when training on an imbalanced
 data set, this classifier will favor the majority classes::
 
   >>> from sklearn.datasets import make_classification
@@ -59,10 +59,10 @@ sampling is controlled by the parameter `sampler` or the two parameters
   >>> balanced_accuracy_score(y_test, y_pred)
   0.8...
 
-Changing the `sampler` will give rise to different known implementation
+Changing the `sampler` will give rise to different known implementations
 :cite:`maclin1997empirical`, :cite:`hido2009roughly`,
-:cite:`wang2009diversity`. You can refer to the following example shows in
-practice these different methods:
+:cite:`wang2009diversity`. You can refer to the following example which shows these
+different methods in practice:
 :ref:`sphx_glr_auto_examples_ensemble_plot_bagging_classifier.py`
 
 .. _forest:
@@ -93,7 +93,7 @@ Boosting
 
 Several methods taking advantage of boosting have been designed.
 
-:class:`RUSBoostClassifier` randomly under-sample the dataset before to perform
+:class:`RUSBoostClassifier` randomly under-samples the dataset before performing
 a boosting iteration :cite:`seiffert2009rusboost`::
 
   >>> from imblearn.ensemble import RUSBoostClassifier
@@ -107,7 +107,7 @@ a boosting iteration :cite:`seiffert2009rusboost`::
 
 A specific method which uses :class:`~sklearn.ensemble.AdaBoostClassifier` as
 learners in the bagging classifier is called "EasyEnsemble". The
-:class:`EasyEnsembleClassifier` allows to bag AdaBoost learners which are
+:class:`EasyEnsembleClassifier` allows bagging AdaBoost learners which are
 trained on balanced bootstrap samples :cite:`liu2008exploratory`. Similarly to
 the :class:`BalancedBaggingClassifier` API, one can construct the ensemble as::
 

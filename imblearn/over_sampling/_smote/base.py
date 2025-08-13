@@ -981,6 +981,5 @@ class SMOTEN(SMOTE):
 
     def __sklearn_tags__(self):
         tags = super().__sklearn_tags__()
-        tags.input_tags.sparse = False
         tags.input_tags.string = True
         return tags

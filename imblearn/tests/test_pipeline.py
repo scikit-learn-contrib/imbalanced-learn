@@ -39,7 +39,7 @@ from imblearn.datasets import make_imbalance
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import EditedNearestNeighbours as ENN
 from imblearn.under_sampling import RandomUnderSampler
-from imblearn.utils._sklearn_compat import sklearn_version
+from imblearn.utils._sklearn_compat import Tags, sklearn_version
 from imblearn.utils.estimator_checks import check_param_validation
 
 JUNK_FOOD_DOCS = (
@@ -60,6 +60,9 @@ class NoFit:
     def __init__(self, a=None, b=None):
         self.a = a
         self.b = b
+
+    def __sklearn_tags__(self):
+        return Tags()
 
 
 class NoTrans(NoFit):
