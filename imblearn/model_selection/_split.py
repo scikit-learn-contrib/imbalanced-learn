@@ -1,12 +1,14 @@
+import warnings
+
 import numpy as np
 from sklearn.base import clone
 from sklearn.model_selection import LeaveOneGroupOut, cross_val_predict
-from sklearn.model_selection._split import BaseCrossValidator, _UnsupportedGroupCVMixin
+from sklearn.model_selection._split import BaseCrossValidator
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _num_samples
 
 
-class InstanceHardnessCV(_UnsupportedGroupCVMixin, BaseCrossValidator):
+class InstanceHardnessCV(BaseCrossValidator):
     """Instance-hardness cross-validation splitter.
 
     Cross-validation splitter that distributes samples with large instance hardness
@@ -72,6 +74,12 @@ class InstanceHardnessCV(_UnsupportedGroupCVMixin, BaseCrossValidator):
         test : ndarray
             The testing set indices for that split.
         """
+        if groups is not None:
+            warnings.warn(
+                f"The groups parameter is ignored by {self.__class__.__name__}",
+                UserWarning,
+            )
+
         classes = np.unique(y)
         y_type = type_of_target(y)
         if y_type != "binary":

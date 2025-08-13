@@ -21,6 +21,16 @@ def data():
     )
 
 
+def test_groups_parameter_warning(data):
+    """Test that a warning is raised when groups parameter is provided."""
+    X, y = data
+    ih_cv = InstanceHardnessCV(estimator=LogisticRegression())
+
+    warning_msg = "The groups parameter is ignored by InstanceHardnessCV"
+    with pytest.warns(UserWarning, match=warning_msg):
+        list(ih_cv.split(X, y, groups=np.ones_like(y)))
+
+
 def test_error_on_multiclass():
     """Test that an error is raised when the target is not binary."""
     X, y = make_classification(n_classes=3, n_clusters_per_class=1)
