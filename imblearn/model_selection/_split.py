@@ -94,7 +94,7 @@ class InstanceHardnessCV(BaseCrossValidator):
         )
         # sorting first on y and then by the instance hardness
         sorted_indices = np.lexsort((y_proba[:, pos_label], y))
-        groups = np.zeros(len(X), dtype=int)
+        groups = np.empty(_num_samples(X), dtype=int)
         groups[sorted_indices] = np.arange(_num_samples(X)) % self.n_splits
         cv = LeaveOneGroupOut()
         for train_index, test_index in cv.split(X, y, groups):
