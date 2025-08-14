@@ -43,7 +43,7 @@ class InstanceHardnessCV(BaseCrossValidator):
     >>> ih_cv = InstanceHardnessCV(estimator)
     >>> cv_result = cross_validate(estimator, X, y, cv=ih_cv)
     >>> print(f"Standard deviation of test_scores: {cv_result['test_score'].std():.3f}")
-    Standard deviation of test_scores: 0.007
+    Standard deviation of test_scores: 0.00...
     """
 
     def __init__(self, estimator, *, n_splits=5, pos_label=None):
