@@ -20,7 +20,7 @@ def import_keras():
             if hasattr(keras.utils, "Sequence"):
                 return (keras.utils.Sequence,), True
             else:
-                return (keras.utils.data_utils.Sequence,), True
+                return (keras.utils.PyDataset,), True
         except ImportError:
             return tuple(), False
 
@@ -31,7 +31,7 @@ def import_keras():
             if hasattr(keras.utils, "Sequence"):
                 return (keras.utils.Sequence,), True
             else:
-                return (keras.utils.data_utils.Sequence,), True
+                return (keras.utils.PyDataset,), True
         except ImportError:
             return tuple(), False
 

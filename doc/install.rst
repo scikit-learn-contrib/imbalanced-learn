@@ -14,7 +14,7 @@ Prerequisites
 .. |MatplotlibMinVersion| replace:: 3.7.3
 .. |PandasMinVersion| replace:: 2.0.3
 .. |TensorflowMinVersion| replace:: 2.16.1
-.. |KerasMinVersion| replace:: 3.0.5
+.. |KerasMinVersion| replace:: 3.3.3
 .. |SeabornMinVersion| replace:: 0.12.2
 .. |PytestMinVersion| replace:: 7.2.2
 
