@@ -12,15 +12,13 @@ from sklearn.base import clone
 from sklearn.ensemble import BaggingClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
-from sklearn.utils.fixes import parse_version
 
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
 from ..under_sampling.base import BaseUnderSampler
 from ..utils import Substitution, check_sampling_strategy, check_target_type
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._sklearn_compat import _fit_context, sklearn_version
-from ._common import _bagging_parameter_constraints
+from ..utils._sklearn_compat import _fit_context
 
 
 @Substitution(
@@ -224,11 +222,7 @@ class BalancedBaggingClassifier(BaggingClassifier):
     """
 
     # make a deepcopy to not modify the original dictionary
-    if sklearn_version >= parse_version("1.4"):
-        _parameter_constraints = copy.deepcopy(BaggingClassifier._parameter_constraints)
-    else:
-        _parameter_constraints = copy.deepcopy(_bagging_parameter_constraints)
-
+    _parameter_constraints = copy.deepcopy(BaggingClassifier._parameter_constraints)
     _parameter_constraints.update(
         {
             "sampling_strategy": [
@@ -241,9 +235,6 @@ class BalancedBaggingClassifier(BaggingClassifier):
             "sampler": [HasMethods(["fit_resample"]), None],
         }
     )
-    # TODO: remove when minimum supported version of scikit-learn is 1.4
-    if "base_estimator" in _parameter_constraints:
-        del _parameter_constraints["base_estimator"]
 
     def __init__(
         self,

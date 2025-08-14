@@ -6,7 +6,6 @@ method."""
 # License: MIT
 
 import numbers
-import warnings
 from collections import Counter
 
 import numpy as np
@@ -56,14 +55,6 @@ class CondensedNearestNeighbour(BaseCleaningSampler):
         Dictionary containing the information to sample the dataset. The keys
         corresponds to the class labels from which to sample and the values
         are the number of samples to sample.
-
-    estimator_ : estimator object
-        The validated K-nearest neighbor estimator created from `n_neighbors` parameter.
-
-        .. deprecated:: 0.12
-           `estimator_` is deprecated in 0.12 and will be removed in 0.14. Use
-           `estimators_` instead that contains the list of all K-nearest
-           neighbors estimator used for each pair of class.
 
     estimators_ : list of estimator objects of shape (n_resampled_classes - 1,)
         Contains the K-nearest neighbor estimator used for per of classes.
@@ -246,18 +237,6 @@ CondensedNearestNeighbour  # doctest: +SKIP
         self.sample_indices_ = idx_under
 
         return _safe_indexing(X, idx_under), _safe_indexing(y, idx_under)
-
-    @property
-    def estimator_(self):
-        """Last fitted k-NN estimator."""
-        warnings.warn(
-            (
-                "`estimator_` attribute has been deprecated in 0.12 and will be "
-                "removed in 0.14. Use `estimators_` instead."
-            ),
-            FutureWarning,
-        )
-        return self.estimators_[-1]
 
     def _more_tags(self):
         return {"sample_indices": True}

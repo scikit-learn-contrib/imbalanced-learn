@@ -28,7 +28,7 @@ from matplotlib import pyplot as plt
 from sklearn.datasets import make_blobs
 
 X, y = make_blobs(n_samples=[950, 50], centers=((-3, 0), (3, 0)), random_state=10)
-plt.scatter(X[:, 0], X[:, 1], c=y)
+_ = plt.scatter(X[:, 0], X[:, 1], c=y)
 
 # %%
 # To introduce instance hardness in our dataset, we add some hard to classify samples:
@@ -36,7 +36,7 @@ X_hard, y_hard = make_blobs(
     n_samples=10, centers=((3, 0), (-3, 0)), cluster_std=1, random_state=10
 )
 X, y = np.vstack((X, X_hard)), np.hstack((y, y_hard))
-plt.scatter(X[:, 0], X[:, 1], c=y)
+_ = plt.scatter(X[:, 0], X[:, 1], c=y)
 
 # %%
 # Compare cross validation scores using `StratifiedKFold` and `InstanceHardnessCV`
@@ -69,7 +69,7 @@ logistic_regression = LogisticRegression()
 results = {}
 for cv in (
     StratifiedKFold(n_splits=5, shuffle=True, random_state=10),
-    InstanceHardnessCV(estimator=LogisticRegression(), n_splits=5, random_state=10),
+    InstanceHardnessCV(estimator=LogisticRegression()),
 ):
     result = cross_validate(
         logistic_regression,
@@ -83,7 +83,7 @@ results = pd.DataFrame(results)
 
 # %%
 ax = results.plot.box(vert=False, whis=[0, 100])
-ax.set(
+_ = ax.set(
     xlabel="Average precision",
     title="Cross validation scores with different splitters",
     xlim=(0, 1),

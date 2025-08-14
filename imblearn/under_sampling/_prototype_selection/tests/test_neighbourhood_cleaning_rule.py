@@ -73,12 +73,3 @@ def test_ncr_n_neighbors(data):
 
     # we should have a more aggressive cleaning with n_neighbors is larger
     assert len(sample_indices_3_nn) > len(sample_indices_10_nn)
-
-
-# TODO: remove in 0.14
-@pytest.mark.parametrize("kind_sel", ["all", "mode"])
-def test_ncr_deprecate_kind_sel(data, kind_sel):
-    X, y = data
-
-    with pytest.warns(FutureWarning, match="`kind_sel` is deprecated"):
-        NeighbourhoodCleaningRule(kind_sel=kind_sel).fit_resample(X, y)

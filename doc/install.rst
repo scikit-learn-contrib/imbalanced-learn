@@ -8,13 +8,13 @@ Prerequisites
 =============
 
 .. |PythonMinVersion| replace:: 3.10
-.. |NumPyMinVersion| replace:: 1.24.3
-.. |SciPyMinVersion| replace:: 1.10.1
-.. |ScikitLearnMinVersion| replace:: 1.3.2
+.. |NumPyMinVersion| replace:: 1.25.2
+.. |SciPyMinVersion| replace:: 1.11.4
+.. |ScikitLearnMinVersion| replace:: 1.4.2
 .. |MatplotlibMinVersion| replace:: 3.7.3
-.. |PandasMinVersion| replace:: 1.5.3
-.. |TensorflowMinVersion| replace:: 2.13.1
-.. |KerasMinVersion| replace:: 3.0.5
+.. |PandasMinVersion| replace:: 2.0.3
+.. |TensorflowMinVersion| replace:: 2.16.1
+.. |KerasMinVersion| replace:: 3.3.3
 .. |SeabornMinVersion| replace:: 0.12.2
 .. |PytestMinVersion| replace:: 7.2.2
 

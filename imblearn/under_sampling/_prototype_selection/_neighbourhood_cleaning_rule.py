@@ -5,14 +5,13 @@
 # License: MIT
 
 import numbers
-import warnings
 from collections import Counter
 
 import numpy as np
 from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
 from sklearn.utils import _safe_indexing
-from sklearn.utils._param_validation import HasMethods, Hidden, Interval, StrOptions
+from sklearn.utils._param_validation import HasMethods, Interval
 
 from ...utils import Substitution
 from ...utils._docstring import _n_jobs_docstring
@@ -47,22 +46,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         K-nearest neighbors. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the nearest-neighbors. By default, it will be a 3-NN.
-
-    kind_sel : {{"all", "mode"}}, default='all'
-        Strategy to use in order to exclude samples in the ENN sampling.
-
-        - If ``'all'``, all neighbours will have to agree with the samples of
-          interest to not be excluded.
-        - If ``'mode'``, the majority vote of the neighbours will be used in
-          order to exclude a sample.
-
-        The strategy `"all"` will be less conservative than `'mode'`. Thus,
-        more samples will be removed when `kind_sel="all"` generally.
-
-        .. deprecated:: 0.12
-           `kind_sel` is deprecated in 0.12 and will be removed in 0.14.
-           Currently the parameter has no effect and corresponds always to the
-           `"all"` strategy.
 
     threshold_cleaning : float, default=0.5
         Threshold used to whether consider a class or not during the cleaning
@@ -150,7 +133,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
             Interval(numbers.Integral, 1, None, closed="left"),
             HasMethods(["kneighbors", "kneighbors_graph"]),
         ],
-        "kind_sel": [StrOptions({"all", "mode"}), Hidden(StrOptions({"deprecated"}))],
         "threshold_cleaning": [Interval(numbers.Real, 0, None, closed="neither")],
         "n_jobs": [numbers.Integral, None],
     }
@@ -161,14 +143,12 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
         sampling_strategy="auto",
         edited_nearest_neighbours=None,
         n_neighbors=3,
-        kind_sel="deprecated",
         threshold_cleaning=0.5,
         n_jobs=None,
     ):
         super().__init__(sampling_strategy=sampling_strategy)
         self.edited_nearest_neighbours = edited_nearest_neighbours
         self.n_neighbors = n_neighbors
-        self.kind_sel = kind_sel
         self.threshold_cleaning = threshold_cleaning
         self.n_jobs = n_jobs
 
@@ -197,14 +177,6 @@ class NeighbourhoodCleaningRule(BaseCleaningSampler):
             self.edited_nearest_neighbours_ = clone(self.edited_nearest_neighbours)
 
     def _fit_resample(self, X, y):
-        if self.kind_sel != "deprecated":
-            warnings.warn(
-                (
-                    "`kind_sel` is deprecated in 0.12 and will be removed in 0.14. "
-                    "It already has not effect and corresponds to the `'all'` option."
-                ),
-                FutureWarning,
-            )
         self._validate_estimator()
         self.edited_nearest_neighbours_.fit_resample(X, y)
         index_not_a1 = self.edited_nearest_neighbours_.sample_indices_

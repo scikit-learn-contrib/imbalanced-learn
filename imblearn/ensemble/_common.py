@@ -19,10 +19,8 @@ def _estimator_has(attr):
     def check(self):
         if hasattr(self, "estimators_"):
             return hasattr(self.estimators_[0], attr)
-        elif self.estimator is not None:
+        else:  # self.estimator is not None
             return hasattr(self.estimator, attr)
-        else:  # TODO(1.4): Remove when the base_estimator deprecation cycle ends
-            return hasattr(self.base_estimator, attr)
 
     return check
 
@@ -45,11 +43,6 @@ _bagging_parameter_constraints = {
     "n_jobs": [None, Integral],
     "random_state": ["random_state"],
     "verbose": ["verbose"],
-    "base_estimator": [
-        HasMethods(["fit", "predict"]),
-        StrOptions({"deprecated"}),
-        None,
-    ],
 }
 
 _adaboost_classifier_parameter_constraints = {
