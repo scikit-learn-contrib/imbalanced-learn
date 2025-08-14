@@ -19,6 +19,7 @@ User Guide
    ensemble.rst
    miscellaneous.rst
    metrics.rst
+   model_selection.rst
    common_pitfalls.rst
    Dataset loading utilities <datasets/index.rst>
    developers_utils.rst

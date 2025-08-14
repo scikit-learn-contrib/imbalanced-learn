@@ -14,6 +14,10 @@ Bug fixes
 Enhancements
 ............
 
+- Add :class:`~imblearn.model_selection.InstanceHardnessCV` to split data and ensure
+  that samples are distributed in folds based on their instance hardness.
+  :pr:`1125` by :user:`Frits Hermans <fritshermans>`.
+
 Compatibility
 .............
 
