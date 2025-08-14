@@ -5,19 +5,13 @@
 # License: MIT
 
 import copy
-import inspect
 import numbers
 
 import numpy as np
 from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
-from sklearn.ensemble._bagging import _parallel_decision_function
-from sklearn.ensemble._base import _partition_estimators
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.fixes import parse_version
-from sklearn.utils.metaestimators import available_if
-from sklearn.utils.parallel import Parallel, delayed
-from sklearn.utils.validation import check_is_fitted
 
 from ..pipeline import Pipeline
 from ..under_sampling import RandomUnderSampler
@@ -28,9 +22,8 @@ from ..utils._sklearn_compat import (
     _fit_context,
     get_tags,
     sklearn_version,
-    validate_data,
 )
-from ._common import _bagging_parameter_constraints, _estimator_has
+from ._common import _bagging_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -275,61 +268,6 @@ class EasyEnsembleClassifier(BaggingClassifier):
         # RandomUnderSampler is not supporting sample_weight. We need to pass
         # None.
         return super()._fit(X, y, self.max_samples)
-
-    # TODO: remove when minimum supported version of scikit-learn is 1.1
-    @available_if(_estimator_has("decision_function"))
-    def decision_function(self, X):
-        """Average of the decision functions of the base classifiers.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
-            The training input samples. Sparse matrices are accepted only if
-            they are supported by the base estimator.
-
-        Returns
-        -------
-        score : ndarray of shape (n_samples, k)
-            The decision function of the input samples. The columns correspond
-            to the classes in sorted order, as they appear in the attribute
-            ``classes_``. Regression and binary classification are special
-            cases with ``k == 1``, otherwise ``k==n_classes``.
-        """
-        check_is_fitted(self)
-
-        # Check data
-        X = validate_data(
-            self,
-            X=X,
-            accept_sparse=["csr", "csc"],
-            dtype=None,
-            ensure_all_finite=(
-                "allow_nan" if get_tags(self).input_tags.allow_nan else True
-            ),
-            reset=False,
-        )
-
-        # Parallel loop
-        n_jobs, _, starts = _partition_estimators(self.n_estimators, self.n_jobs)
-
-        kwargs = {}
-        if "params" in inspect.signature(_parallel_decision_function).parameters:
-            kwargs["params"] = {}
-
-        all_decisions = Parallel(n_jobs=n_jobs, verbose=self.verbose)(
-            delayed(_parallel_decision_function)(
-                self.estimators_[starts[i] : starts[i + 1]],
-                self.estimators_features_[starts[i] : starts[i + 1]],
-                X,
-                **kwargs,
-            )
-            for i in range(n_jobs)
-        )
-
-        # Reduce
-        decisions = sum(all_decisions) / self.n_estimators
-
-        return decisions
 
     @property
     def base_estimator_(self):

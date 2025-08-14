@@ -160,6 +160,7 @@ platforms = ["linux-64", "osx-arm64", "osx-64"]
 
 [tool.pixi.feature.min-tensorflow.dependencies]
 tensorflow = "==2.16.1"
+keras = "==3.0.5"
 
 [tool.pixi.feature.sklearn-1-4.dependencies]
 scikit-learn = "~=1.4.0"
