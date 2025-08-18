@@ -60,6 +60,14 @@ The :func:`macro_averaged_mean_absolute_error` :cite:`esuli2009ordinal` is used
 for imbalanced ordinal classification. The mean absolute error is computed for
 each class and averaged over classes, giving an equal weight to each class.
 
+.. _macro_averaged_mean_squared_error:
+
+Macro-Averaged Mean Squared Error (MA-MSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Like MA-MAE, but it penalizes errors that are further from the ground truth more
+harshly, in the same fashion as MSE for MAE.
+
 .. _classification_report:
 
 Summary of important metrics
