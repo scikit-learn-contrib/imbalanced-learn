@@ -1,14 +1,43 @@
 #!/usr/bin/env python
 """
-Text sentiment classification (negative/neutral/positive) with Linear SVM
-and class imbalance handling using imbalanced-learn.
+Text Sentiment with LinearSVC and Class Rebalancing
+===================================================
 
-Dataset: tweet_eval/sentiment (3 classes)
-Requires: pip install datasets matplotlib
+What
+----
+A runnable example for 3-class sentiment (negative/neutral/positive) using a
+TF–IDF → RandomUnderSampler → LinearSVC pipeline.
 
-Run:
-    python examples/text_sentiment_svm_with_resampling.py --plot --max-samples 6000
+Why
+---
+Text data is typically represented as **sparse** features. Popular over-sampling
+methods (e.g., SMOTE) operate on dense, continuous features, so we demonstrate
+**under-sampling** as a practical alternative for sparse TF–IDF.
+
+Usage
+-----
+$ python examples/text_sentiment_svm_with_resampling.py --plot --max-samples 6000
+
+Outputs
+-------
+- Prints balanced accuracy and a classification report.
+- Saves a confusion-matrix image when `--plot` is supplied (default: confmat_svm_imblearn.png).
+
+Dependencies
+------------
+pip install datasets matplotlib
+
+Reproducibility
+---------------
+- `--max-samples` bounds runtime and memory.
+- Fixed `random_state` for deterministic sampling.
+
+Limitations
+-----------
+- Under-sampling discards majority samples (variance can increase on small data).
+- SMOTE is not used because it doesn’t support sparse TF–IDF.
 """
+
 
 from __future__ import annotations
 import argparse
