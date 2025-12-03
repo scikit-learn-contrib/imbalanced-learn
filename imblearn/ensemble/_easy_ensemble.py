@@ -226,12 +226,14 @@ class EasyEnsembleClassifier(BaggingClassifier):
             self._sampling_strategy = self.sampling_strategy
         return y_encoded
 
-    def _validate_estimator(self, default=AdaBoostClassifier(algorithm="SAMME")):
+    def _validate_estimator(self, default=None):
         """Check the estimator and the n_estimator attribute, set the
         `estimator_` attribute."""
         if self.estimator is not None:
             estimator = clone(self.estimator)
         else:
+            if default is None:
+                default = self._get_estimator()
             estimator = clone(default)
 
         sampler = RandomUnderSampler(
@@ -279,7 +281,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
 
     def _get_estimator(self):
         if self.estimator is None:
-            if parse_version("1.4") <= sklearn_version < parse_version("1.6"):
+            if sklearn_version < parse_version("1.6"):
                 return AdaBoostClassifier(algorithm="SAMME")
             else:
                 return AdaBoostClassifier()

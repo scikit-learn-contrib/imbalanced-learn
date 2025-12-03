@@ -194,10 +194,16 @@ fig.tight_layout()
 
 # %%
 from sklearn.ensemble import AdaBoostClassifier
+from sklearn.utils.fixes import parse_version
 
 from imblearn.ensemble import EasyEnsembleClassifier, RUSBoostClassifier
+from imblearn.utils._sklearn_compat import sklearn_version
 
-estimator = AdaBoostClassifier(n_estimators=10, algorithm="SAMME")
+if sklearn_version < parse_version("1.6"):
+    estimator = AdaBoostClassifier(n_estimators=10, algorithm="SAMME")
+else:
+    estimator = AdaBoostClassifier(n_estimators=10)
+
 eec = EasyEnsembleClassifier(n_estimators=10, estimator=estimator)
 eec.fit(X_train, y_train)
 y_pred_eec = eec.predict(X_test)
