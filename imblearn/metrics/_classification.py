@@ -25,10 +25,11 @@ from sklearn.metrics import mean_absolute_error, precision_recall_fscore_support
 from sklearn.metrics._classification import _check_targets, _prf_divide
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils._param_validation import Interval, StrOptions
+from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_consistent_length, column_or_1d
 
-from ..utils._sklearn_compat import validate_params
+from ..utils._sklearn_compat import sklearn_version, validate_params
 
 
 @validate_params(
@@ -166,7 +167,12 @@ def sensitivity_specificity_support(
     if average not in average_options and average != "binary":
         raise ValueError("average has to be one of " + str(average_options))
 
-    y_type, y_true, y_pred = _check_targets(y_true, y_pred)
+    if sklearn_version >= parse_version("1.8"):
+        y_type, y_true, y_pred, sample_weight = _check_targets(
+            y_true, y_pred, sample_weight
+        )
+    else:
+        y_type, y_true, y_pred = _check_targets(y_true, y_pred)
     present_labels = unique_labels(y_true, y_pred)
 
     if average == "binary":
@@ -1119,11 +1125,18 @@ def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
     >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
     0.16...
     """
-    _, y_true, y_pred = _check_targets(y_true, y_pred)
-    if sample_weight is not None:
-        sample_weight = column_or_1d(sample_weight)
+    if sklearn_version >= parse_version("1.8"):
+        _, y_true, y_pred, sample_weight = _check_targets(
+            y_true, y_pred, sample_weight
+        )
+        if sample_weight is None:
+            sample_weight = np.ones(y_true.shape)
     else:
-        sample_weight = np.ones(y_true.shape)
+        _, y_true, y_pred = _check_targets(y_true, y_pred)
+        if sample_weight is not None:
+            sample_weight = column_or_1d(sample_weight)
+        else:
+            sample_weight = np.ones(y_true.shape)
     check_consistent_length(y_true, y_pred, sample_weight)
     labels = unique_labels(y_true, y_pred)
     mae = []
