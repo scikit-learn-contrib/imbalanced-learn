@@ -36,7 +36,30 @@ from ..base import BaseOverSampler
 
 
 class BaseSMOTE(BaseOverSampler):
-    """Base class for the different SMOTE algorithms."""
+    """
+    Synthetic Minority Over-sampling Technique (SMOTE).
+
+    SMOTE is an over-sampling method that generates synthetic samples
+    for the minority class instead of duplicating existing samples.
+    New samples are created by interpolating between a data point
+    and its nearest neighbors in feature space.
+
+    This technique is commonly used in imbalanced classification
+    problems such as fraud detection, medical diagnosis, or
+    anomaly detection.
+
+    Example
+    -------
+    >>> from imblearn.over_sampling import SMOTE
+    >>> smote = SMOTE(random_state=42)
+    >>> X_resampled, y_resampled = smote.fit_resample(X, y)
+
+    Notes
+    -----
+    SMOTE works best when features are continuous and may not be
+    suitable for datasets with many categorical variables.
+    """
+
 
     _parameter_constraints: dict = {
         **BaseOverSampler._parameter_constraints,
