@@ -639,7 +639,7 @@ def _check_X(X):
         raise ValueError(
             f"Found array with {n_samples} sample(s) while a minimum of 1 is required."
         )
-    if _is_pandas_df(X):
+    if is_pandas_df(X):
         return X
     return check_array(
         X, dtype=None, accept_sparse=["csr", "csc"], ensure_all_finite=False

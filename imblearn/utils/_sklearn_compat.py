@@ -240,7 +240,7 @@ if sklearn_version < parse_version("1.4"):
                 f" details. Extra parameters passed are: {set(params)}"
             )
 
-    def _is_pandas_df(X):
+    def is_pandas_df(X):
         """Return True if the X is a pandas dataframe."""
         try:
             pd = sys.modules["pandas"]

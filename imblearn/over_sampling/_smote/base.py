@@ -557,7 +557,7 @@ class SMOTENC(SMOTE):
     def _validate_column_types(self, X):
         """Compute the indices of the categorical and continuous features."""
         if self.categorical_features == "auto":
-            if not _is_pandas_df(X):
+            if not is_pandas_df(X):
                 raise ValueError(
                     "When `categorical_features='auto'`, the input data "
                     f"should be a pandas.DataFrame. Got {type(X)} instead."
