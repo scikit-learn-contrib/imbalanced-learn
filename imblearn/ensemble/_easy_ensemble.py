@@ -226,7 +226,7 @@ class EasyEnsembleClassifier(BaggingClassifier):
             self._sampling_strategy = self.sampling_strategy
         return y_encoded
 
-    def _validate_estimator(self, default=AdaBoostClassifier(algorithm="SAMME")):
+    def _validate_estimator(self, default=AdaBoostClassifier()):
         """Check the estimator and the n_estimator attribute, set the
         `estimator_` attribute."""
         if self.estimator is not None:

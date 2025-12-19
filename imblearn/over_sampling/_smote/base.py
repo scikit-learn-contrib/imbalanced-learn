@@ -30,7 +30,7 @@ from sklearn.utils.validation import _num_features
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _random_state_docstring
-from ...utils._sklearn_compat import _get_column_indices, _is_pandas_df, validate_data
+from ...utils._sklearn_compat import _get_column_indices, is_pandas_df, validate_data
 from ...utils._validation import _check_X
 from ..base import BaseOverSampler
 
