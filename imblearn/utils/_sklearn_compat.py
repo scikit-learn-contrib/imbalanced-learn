@@ -255,7 +255,7 @@ else:
     )
     from sklearn.utils.validation import (
         _is_fitted,  # noqa: F401
-        _is_pandas_df,  # noqa: F401
+        is_pandas_df,  # noqa: F401
     )
 
 
