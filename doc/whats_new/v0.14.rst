@@ -12,7 +12,8 @@ Maintenance
 ...........
 
 - Compatibility with scikit-learn 1.8
-  :pr:`1158` by :user:`Guillaume Lemaitre <glemaitre>`.
+  :pr:`1158` by :user:`Guillaume Lemaitre <glemaitre>` and
+  :user:`stratakis <stratakis>`.
 
 Version 0.14.0
 ==============
