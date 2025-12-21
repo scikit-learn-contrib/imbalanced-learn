@@ -43,7 +43,7 @@ def all_estimators(
         List of (name, class), where ``name`` is the class name as string
         and ``class`` is the actual type of the class.
     """
-    from ..base import SamplerMixin
+    from imblearn.base import SamplerMixin
 
     def is_abstract(c):
         if not (hasattr(c, "__abstractmethods__")):

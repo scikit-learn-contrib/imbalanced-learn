@@ -8,8 +8,8 @@
 from collections import Counter
 from collections.abc import Mapping
 
-from ..under_sampling import RandomUnderSampler
-from ..utils import check_sampling_strategy
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.utils import check_sampling_strategy
 from sklearn_compat.utils._param_validation import validate_params
 
 

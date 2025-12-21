@@ -3,7 +3,7 @@ The :mod:`imblearn.metrics` module includes score functions, performance
 metrics and pairwise metrics and distance computations.
 """
 
-from ._classification import (
+from imblearn.metrics._classification import (
     classification_report_imbalanced,
     geometric_mean_score,
     macro_averaged_mean_absolute_error,

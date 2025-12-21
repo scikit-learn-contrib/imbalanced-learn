@@ -9,7 +9,7 @@ from collections.abc import Mapping
 
 from sklearn.utils._param_validation import Interval, StrOptions
 
-from ..base import BaseSampler
+from imblearn.base import BaseSampler
 
 
 class BaseUnderSampler(BaseSampler):

@@ -226,7 +226,6 @@ PER_ESTIMATOR_XFAIL_CHECKS = {
         "check_sample_weight_equivalence_on_dense_data": "FIXME",
         "check_estimator_sparse_data": "FIXME",
         "check_estimator_sparse_matrix": "FIXME",
-        "check_valid_tag_types": "We have our own InputTags",
     },
 }
 

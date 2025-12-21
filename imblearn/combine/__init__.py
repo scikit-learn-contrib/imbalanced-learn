@@ -2,7 +2,7 @@
 over-sampling and under-sampling.
 """
 
-from ._smote_enn import SMOTEENN
-from ._smote_tomek import SMOTETomek
+from imblearn.combine._smote_enn import SMOTEENN
+from imblearn.combine._smote_tomek import SMOTETomek
 
 __all__ = ["SMOTEENN", "SMOTETomek"]

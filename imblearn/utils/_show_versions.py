@@ -8,7 +8,7 @@ which was adapted from :func:`pandas.show_versions`
 # Author: Alexander L. Hayes <hayesall@iu.edu>
 # License: MIT
 
-from .. import __version__
+from imblearn import __version__
 
 
 def _get_deps_info():

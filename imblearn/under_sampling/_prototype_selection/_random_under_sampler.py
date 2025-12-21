@@ -7,11 +7,11 @@
 import numpy as np
 from sklearn.utils import _safe_indexing, check_random_state
 
-from ...utils import Substitution, check_target_type
-from ...utils._docstring import _random_state_docstring
+from imblearn.utils import Substitution, check_target_type
+from imblearn.utils._docstring import _random_state_docstring
 from sklearn_compat.utils.validation import validate_data
-from ...utils._validation import _check_X
-from ..base import BaseUnderSampler
+from imblearn.utils._validation import _check_X
+from imblearn.under_sampling.base import BaseUnderSampler
 
 
 @Substitution(

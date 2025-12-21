@@ -3,8 +3,8 @@ The :mod:`imblearn.under_sampling` provides methods to under-sample
 a dataset.
 """
 
-from ._prototype_generation import ClusterCentroids
-from ._prototype_selection import (
+from imblearn.under_sampling._prototype_generation import ClusterCentroids
+from imblearn.under_sampling._prototype_selection import (
     AllKNN,
     CondensedNearestNeighbour,
     EditedNearestNeighbours,

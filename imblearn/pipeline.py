@@ -1,4 +1,4 @@
-﻿"""
+"""
 The :mod:`imblearn.pipeline` module implements utilities to build a
 composite estimator, as a chain of transforms, samples and estimators.
 """
@@ -32,13 +32,14 @@ from sklearn.utils.metadata_routing import (
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.validation import check_is_fitted, check_memory
 
-from .base import METHODS
+from imblearn.base import METHODS
 from sklearn_compat.base import _fit_context
-from sklearn_compat.utils import get_tags
 from sklearn_compat.utils._param_validation import validate_params
 from sklearn_compat.utils._user_interface import _print_elapsed_time
 from sklearn_compat._sklearn_compat import sklearn_version
 from sklearn_compat.utils.metadata_routing import _raise_for_params, process_routing
+
+from imblearn.utils._tags import get_tags
 
 __all__ = ["Pipeline", "make_pipeline"]
 

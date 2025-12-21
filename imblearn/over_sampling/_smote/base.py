@@ -30,12 +30,12 @@ from sklearn_compat.utils._indexing import _get_column_indices
 from sklearn_compat.utils.validation import validate_data
 from sklearn_compat.utils._dataframe import is_pandas_df
 
-from ...metrics.pairwise import ValueDifferenceMetric
-from ...utils import Substitution, check_neighbors_object, check_target_type
-from ...utils._docstring import _random_state_docstring
+from imblearn.metrics.pairwise import ValueDifferenceMetric
+from imblearn.utils import Substitution, check_neighbors_object, check_target_type
+from imblearn.utils._docstring import _random_state_docstring
 
-from ...utils._validation import _check_X
-from ..base import BaseOverSampler
+from imblearn.utils._validation import _check_X
+from imblearn.over_sampling.base import BaseOverSampler
 
 
 class BaseSMOTE(BaseOverSampler):
