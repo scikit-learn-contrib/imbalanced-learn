@@ -41,7 +41,7 @@ from imblearn.under_sampling import (
     OneSidedSelection,
     RandomUnderSampler,
 )
-from imblearn.utils._sklearn_compat import sklearn_version
+from sklearn_compat._sklearn_compat import sklearn_version
 from imblearn.utils.testing import all_estimators
 
 # The following dictionary is to indicate constructor arguments suitable for the test
@@ -226,7 +226,7 @@ PER_ESTIMATOR_XFAIL_CHECKS = {
         "check_sample_weight_equivalence_on_dense_data": "FIXME",
         "check_estimator_sparse_data": "FIXME",
         "check_estimator_sparse_matrix": "FIXME",
-        "check_estimator_sparse_array": "FIXME",
+        "check_valid_tag_types": "We have our own InputTags",
     },
 }
 

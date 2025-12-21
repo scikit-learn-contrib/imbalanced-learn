@@ -97,8 +97,7 @@ Several methods taking advantage of boosting have been designed.
 a boosting iteration :cite:`seiffert2009rusboost`::
 
   >>> from imblearn.ensemble import RUSBoostClassifier
-  >>> rusboost = RUSBoostClassifier(n_estimators=200, algorithm='SAMME.R',
-  ...                               random_state=0)
+  >>> rusboost = RUSBoostClassifier(n_estimators=200, random_state=0)
   >>> rusboost.fit(X_train, y_train)
   RUSBoostClassifier(...)
   >>> y_pred = rusboost.predict(X_test)

@@ -15,7 +15,7 @@ from sklearn.utils.sparsefuncs import mean_variance_axis
 
 from ..utils import Substitution, check_target_type
 from ..utils._docstring import _random_state_docstring
-from ..utils._sklearn_compat import validate_data
+from sklearn_compat.utils.validation import validate_data
 from ..utils._validation import _check_X
 from .base import BaseOverSampler
 

@@ -26,11 +26,14 @@ from sklearn.utils.sparsefuncs_fast import (
     csr_mean_variance_axis0,
 )
 from sklearn.utils.validation import _num_features
+from sklearn_compat.utils._indexing import _get_column_indices
+from sklearn_compat.utils.validation import validate_data
+from sklearn_compat.utils._dataframe import is_pandas_df
 
 from ...metrics.pairwise import ValueDifferenceMetric
 from ...utils import Substitution, check_neighbors_object, check_target_type
 from ...utils._docstring import _random_state_docstring
-from ...utils._sklearn_compat import _get_column_indices, _is_pandas_df, validate_data
+
 from ...utils._validation import _check_X
 from ..base import BaseOverSampler
 
@@ -557,7 +560,7 @@ class SMOTENC(SMOTE):
     def _validate_column_types(self, X):
         """Compute the indices of the categorical and continuous features."""
         if self.categorical_features == "auto":
-            if not _is_pandas_df(X):
+            if not is_pandas_df(X):
                 raise ValueError(
                     "When `categorical_features='auto'`, the input data "
                     f"should be a pandas.DataFrame. Got {type(X)} instead."

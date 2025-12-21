@@ -32,7 +32,9 @@ from ..pipeline import make_pipeline
 from ..under_sampling import RandomUnderSampler
 from ..utils import Substitution
 from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._sklearn_compat import _fit_context, sklearn_version, validate_data
+from sklearn_compat.base import _fit_context
+from sklearn_compat._sklearn_compat import sklearn_version
+from sklearn_compat.utils.validation import validate_data
 from ..utils._validation import check_sampling_strategy
 from ._common import _random_forest_classifier_parameter_constraints
 
