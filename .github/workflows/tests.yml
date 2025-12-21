@@ -37,8 +37,8 @@ jobs:
               environment: ci-py311-latest-tensorflow
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: prefix-dev/setup-pixi@v0.8.14
+      - uses: actions/checkout@v5
+      - uses: prefix-dev/setup-pixi@v0.9.0
         with:
           pixi-version: v0.51.0
           environments: ${{ matrix.environment }}
@@ -50,7 +50,7 @@ jobs:
         run: pixi run -e ${{ matrix.environment }} tests -n 3
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5.4.3
+        uses: codecov/codecov-action@v5.5.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: scikit-learn-contrib/imbalanced-learn
