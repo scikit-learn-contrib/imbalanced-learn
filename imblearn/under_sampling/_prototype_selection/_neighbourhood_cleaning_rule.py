@@ -13,10 +13,12 @@ from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
 from sklearn.utils import _safe_indexing
 from sklearn.utils._param_validation import HasMethods, Interval
 
-from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring
-from ..base import BaseCleaningSampler
-from ._edited_nearest_neighbours import EditedNearestNeighbours
+from imblearn.under_sampling._prototype_selection._edited_nearest_neighbours import (
+    EditedNearestNeighbours,
+)
+from imblearn.under_sampling.base import BaseCleaningSampler
+from imblearn.utils import Substitution
+from imblearn.utils._docstring import _n_jobs_docstring
 
 SEL_KIND = ("all", "mode")
 

@@ -16,10 +16,10 @@ from sklearn.metrics import pairwise_distances
 from sklearn.utils import _safe_indexing
 from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
 
-from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..base import BaseOverSampler
-from .base import BaseSMOTE
+from imblearn.over_sampling._smote.base import BaseSMOTE
+from imblearn.over_sampling.base import BaseOverSampler
+from imblearn.utils import Substitution
+from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
 
 
 @Substitution(

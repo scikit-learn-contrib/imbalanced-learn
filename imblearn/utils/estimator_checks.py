@@ -40,7 +40,7 @@ from sklearn.utils.multiclass import type_of_target
 from imblearn.datasets import make_imbalance
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.under_sampling.base import BaseCleaningSampler, BaseUnderSampler
-from imblearn.utils._sklearn_compat import get_tags
+from imblearn.utils._tags import get_tags
 from imblearn.utils._test_common.instance_generator import (
     _get_check_estimator_ids,
     _yield_instances_for_check,

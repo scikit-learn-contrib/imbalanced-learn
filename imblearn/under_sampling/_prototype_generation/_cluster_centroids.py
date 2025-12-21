@@ -14,9 +14,9 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import _safe_indexing
 from sklearn.utils._param_validation import HasMethods, StrOptions
 
-from ...utils import Substitution
-from ...utils._docstring import _random_state_docstring
-from ..base import BaseUnderSampler
+from imblearn.under_sampling.base import BaseUnderSampler
+from imblearn.utils import Substitution
+from imblearn.utils._docstring import _random_state_docstring
 
 VOTING_KIND = ("auto", "hard", "soft")
 

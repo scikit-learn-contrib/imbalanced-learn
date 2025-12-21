@@ -126,7 +126,7 @@ for model in pipeline:
             fpr=mean_fpr,
             tpr=mean_tpr,
             roc_auc=mean_auc,
-            estimator_name=f"{model[0].__class__.__name__}",
+            name=f"{model[0].__class__.__name__}",
         )
     )
 
@@ -137,7 +137,7 @@ for model in pipeline:
 # %%
 fig, ax = plt.subplots(figsize=(9, 9))
 for d in disp:
-    d.plot(ax=ax, linestyle="--")
+    d.plot(ax=ax, curve_kwargs={"linestyle": "--"})
 ax.plot([0, 1], [0, 1], linestyle="--", color="k")
 ax.axis("square")
 fig.suptitle("Comparison of over-sampling methods \nwith a 3NN classifier")

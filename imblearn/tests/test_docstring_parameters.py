@@ -92,9 +92,7 @@ def test_docstring_parameters():
             with warnings.catch_warnings(record=True) as w:
                 cdoc = docscrape.ClassDoc(cls)
             if len(w):
-                raise RuntimeError(
-                    "Error for __init__ of %s in %s:\n%s" % (cls, name, w[0])
-                )
+                raise RuntimeError(f"Error for __init__ of {cls} in {name}:\n{w[0]}")
 
             cls_init = getattr(cls, "__init__", None)
 
@@ -150,11 +148,10 @@ def test_tabs():
 
         try:
             source = inspect.getsource(mod)
-        except IOError:  # user probably should have run "make clean"
+        except OSError:  # user probably should have run "make clean"
             continue
         assert "\t" not in source, (
-            '"%s" has tabs, please remove them ',
-            "or add it to the ignore list" % modname,
+            f'"{modname}" has tabs, please remove them or add it to the ignore list',
         )
 
 

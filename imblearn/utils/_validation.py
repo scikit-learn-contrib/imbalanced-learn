@@ -16,8 +16,8 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import column_or_1d
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _num_samples
-
-from ..utils._sklearn_compat import _is_pandas_df, check_array
+from sklearn_compat.utils._dataframe import is_pandas_df
+from sklearn_compat.utils.validation import check_array
 
 SAMPLING_KIND = (
     "over-sampling",
@@ -404,7 +404,7 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
             for (key, value) in target_stats.items()
             if key != class_majority
         }
-        if any([n_samples <= 0 for n_samples in sampling_strategy_.values()]):
+        if any(n_samples <= 0 for n_samples in sampling_strategy_.values()):
             raise ValueError(
                 "The specified ratio required to remove samples "
                 "from the minority class while trying to "
@@ -420,10 +420,8 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
             if key != class_minority
         }
         if any(
-            [
-                n_samples > target_stats[target]
-                for target, n_samples in sampling_strategy_.items()
-            ]
+            n_samples > target_stats[target]
+            for target, n_samples in sampling_strategy_.items()
         ):
             raise ValueError(
                 "The specified ratio required to generate new "
@@ -626,7 +624,7 @@ def _deprecate_positional_args(f):
                 ),
                 FutureWarning,
             )
-        kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
+        kwargs.update(dict(zip(sig.parameters, args)))
         return f(**kwargs)
 
     return inner_f
@@ -639,7 +637,7 @@ def _check_X(X):
         raise ValueError(
             f"Found array with {n_samples} sample(s) while a minimum of 1 is required."
         )
-    if _is_pandas_df(X):
+    if is_pandas_df(X):
         return X
     return check_array(
         X, dtype=None, accept_sparse=["csr", "csc"], ensure_all_finite=False

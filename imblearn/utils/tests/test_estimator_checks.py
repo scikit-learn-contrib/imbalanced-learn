@@ -2,11 +2,11 @@ import numpy as np
 import pytest
 from sklearn.base import BaseEstimator
 from sklearn.utils.multiclass import check_classification_targets
+from sklearn_compat.utils.validation import validate_data
 
 from imblearn.base import BaseSampler
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.utils import check_target_type as target_check
-from imblearn.utils._sklearn_compat import validate_data
 from imblearn.utils.estimator_checks import (
     check_samplers_fit,
     check_samplers_nan,

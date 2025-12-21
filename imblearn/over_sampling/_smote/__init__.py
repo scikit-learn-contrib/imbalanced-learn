@@ -1,6 +1,6 @@
-from .base import SMOTE, SMOTEN, SMOTENC
-from .cluster import KMeansSMOTE
-from .filter import SVMSMOTE, BorderlineSMOTE
+from imblearn.over_sampling._smote.base import SMOTE, SMOTEN, SMOTENC
+from imblearn.over_sampling._smote.cluster import KMeansSMOTE
+from imblearn.over_sampling._smote.filter import SVMSMOTE, BorderlineSMOTE
 
 __all__ = [
     "SMOTE",

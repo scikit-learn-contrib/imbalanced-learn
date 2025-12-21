@@ -23,8 +23,8 @@ jobs:
             ci-py312-sklearn-1-6,
             ci-py311-latest-keras,
             ci-py311-latest-tensorflow,
-            ci-py313-latest-dependencies,
-            ci-py313-latest-optional-dependencies,
+            ci-py314-latest-dependencies,
+            ci-py314-latest-optional-dependencies,
         ]
         exclude:
             - os: windows-latest

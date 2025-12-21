@@ -33,13 +33,14 @@ from sklearn.utils._testing import (
     assert_array_equal,
 )
 from sklearn.utils.fixes import parse_version
+from sklearn_compat._sklearn_compat import sklearn_version
+from sklearn_compat.utils._tags import Tags
 
 from imblearn.base import BaseSampler
 from imblearn.datasets import make_imbalance
 from imblearn.pipeline import Pipeline, make_pipeline
 from imblearn.under_sampling import EditedNearestNeighbours as ENN
 from imblearn.under_sampling import RandomUnderSampler
-from imblearn.utils._sklearn_compat import Tags, sklearn_version
 from imblearn.utils.estimator_checks import check_param_validation
 
 JUNK_FOOD_DOCS = (

@@ -1,4 +1,4 @@
-﻿"""
+"""
 The :mod:`imblearn.pipeline` module implements utilities to build a
 composite estimator, as a chain of transforms, samples and estimators.
 """
@@ -31,17 +31,14 @@ from sklearn.utils.metadata_routing import (
 )
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils.validation import check_is_fitted, check_memory
+from sklearn_compat._sklearn_compat import sklearn_version
+from sklearn_compat.base import _fit_context
+from sklearn_compat.utils._param_validation import validate_params
+from sklearn_compat.utils._user_interface import _print_elapsed_time
+from sklearn_compat.utils.metadata_routing import _raise_for_params, process_routing
 
-from .base import METHODS
-from .utils._sklearn_compat import (
-    _fit_context,
-    _print_elapsed_time,
-    _raise_for_params,
-    get_tags,
-    process_routing,
-    sklearn_version,
-    validate_params,
-)
+from imblearn.base import METHODS
+from imblearn.utils._tags import get_tags
 
 __all__ = ["Pipeline", "make_pipeline"]
 
@@ -274,7 +271,7 @@ class Pipeline(pipeline.Pipeline):
                     "All intermediate steps of the chain should "
                     "be estimators that implement fit and transform or "
                     "fit_resample (but not both) or be a string 'passthrough' "
-                    "'%s' (type %s) doesn't)" % (t, type(t))
+                    f"'{t}' (type {type(t)}) doesn't)"
                 )
 
             if is_transfomer and is_sampler:
@@ -282,7 +279,7 @@ class Pipeline(pipeline.Pipeline):
                     "All intermediate steps of the chain should "
                     "be estimators that implement fit and transform or "
                     "fit_resample."
-                    " '%s' implements both)" % (t)
+                    f" '{t}' implements both)"
                 )
 
             if isinstance(t, pipeline.Pipeline):
@@ -297,9 +294,8 @@ class Pipeline(pipeline.Pipeline):
             and not hasattr(estimator, "fit")
         ):
             raise TypeError(
-                "Last step of Pipeline should implement fit or be "
-                "the string 'passthrough'. '%s' (type %s) doesn't"
-                % (estimator, type(estimator))
+                "Last step of Pipeline should implement fit or be the string"
+                f" 'passthrough'. '{estimator}' (type {type(estimator)}) doesn't"
             )
 
     def _iter(self, with_final=True, filter_passthrough=True, filter_resample=True):
@@ -1255,11 +1251,11 @@ class Pipeline(pipeline.Pipeline):
             for pname, pval in props.items():
                 if "__" not in pname:
                     raise ValueError(
-                        "Pipeline.fit does not accept the {} parameter. "
+                        f"Pipeline.fit does not accept the {pname} parameter. "
                         "You can pass parameters to specific steps of your "
                         "pipeline using the stepname__parameter format, e.g. "
                         "`Pipeline.fit(X, y, logisticregression__sample_weight"
-                        "=sample_weight)`.".format(pname)
+                        "=sample_weight)`."
                     )
                 step, param = pname.split("__", 1)
                 fit_params_steps[step]["fit"][param] = pval

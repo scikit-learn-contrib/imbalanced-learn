@@ -1,4 +1,3 @@
-# coding: utf-8
 """Metrics to assess performance on a classification task given class
 predictions. The available metrics are complementary from the metrics available
 in scikit-learn.
@@ -22,13 +21,13 @@ from inspect import signature
 import numpy as np
 import scipy as sp
 from sklearn.metrics import mean_absolute_error, precision_recall_fscore_support
-from sklearn.metrics._classification import _check_targets, _prf_divide
+from sklearn.metrics._classification import _prf_divide
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_consistent_length, column_or_1d
-
-from ..utils._sklearn_compat import validate_params
+from sklearn_compat.metrics._classification import _check_targets
+from sklearn_compat.utils._param_validation import validate_params
 
 
 @validate_params(
@@ -166,7 +165,9 @@ def sensitivity_specificity_support(
     if average not in average_options and average != "binary":
         raise ValueError("average has to be one of " + str(average_options))
 
-    y_type, y_true, y_pred = _check_targets(y_true, y_pred)
+    y_type, y_true, y_pred, sample_weight = _check_targets(
+        y_true, y_pred, sample_weight=sample_weight
+    )
     present_labels = unique_labels(y_true, y_pred)
 
     if average == "binary":
@@ -177,21 +178,22 @@ def sensitivity_specificity_support(
                     return (0.0, 0.0, 0)
                 else:
                     raise ValueError(
-                        "pos_label=%r is not a valid label: %r"
-                        % (pos_label, present_labels)
+                        f"pos_label={pos_label!r} is not a valid label:"
+                        f" {present_labels!r}"
                     )
             labels = [pos_label]
         else:
             raise ValueError(
-                "Target is %s but average='binary'. Please "
-                "choose another average setting." % y_type
+                f"Target is {y_type} but average='binary'. Please "
+                "choose another average setting."
             )
     elif pos_label not in (None, 1):
         warnings.warn(
-            "Note that pos_label (set to %r) is ignored when "
-            "average != 'binary' (got %r). You may use "
-            "labels=[pos_label] to specify a single positive class."
-            % (pos_label, average),
+            (
+                f"Note that pos_label (set to {pos_label!r}) is ignored when "
+                f"average != 'binary' (got {average!r}). You may use "
+                "labels=[pos_label] to specify a single positive class."
+            ),
             UserWarning,
         )
 
@@ -1119,7 +1121,7 @@ def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
     >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
     0.16...
     """
-    _, y_true, y_pred = _check_targets(y_true, y_pred)
+    _, y_true, y_pred, sample_weight = _check_targets(y_true, y_pred, sample_weight)
     if sample_weight is not None:
         sample_weight = column_or_1d(sample_weight)
     else:

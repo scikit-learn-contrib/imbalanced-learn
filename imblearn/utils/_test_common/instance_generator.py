@@ -14,6 +14,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils._testing import SkipTest
 from sklearn.utils.fixes import parse_version
+from sklearn_compat._sklearn_compat import sklearn_version
 
 from imblearn.combine import SMOTEENN, SMOTETomek
 from imblearn.ensemble import (
@@ -41,7 +42,6 @@ from imblearn.under_sampling import (
     OneSidedSelection,
     RandomUnderSampler,
 )
-from imblearn.utils._sklearn_compat import sklearn_version
 from imblearn.utils.testing import all_estimators
 
 # The following dictionary is to indicate constructor arguments suitable for the test
@@ -101,8 +101,7 @@ SKIPPED_ESTIMATORS = [SMOTENC]
 def _tested_estimators(type_filter=None):
     for _, Estimator in all_estimators(type_filter=type_filter):
         with suppress(SkipTest):
-            for estimator in _construct_instances(Estimator):
-                yield estimator
+            yield from _construct_instances(Estimator)
 
 
 def _construct_instances(Estimator):
@@ -157,8 +156,8 @@ def _get_check_estimator_ids(obj):
     if isinstance(obj, partial):
         if not obj.keywords:
             return obj.func.__name__
-        kwstring = ",".join(["{}={}".format(k, v) for k, v in obj.keywords.items()])
-        return "{}({})".format(obj.func.__name__, kwstring)
+        kwstring = ",".join([f"{k}={v}" for k, v in obj.keywords.items()])
+        return f"{obj.func.__name__}({kwstring})"
     if hasattr(obj, "get_params"):
         with config_context(print_changed_only=True):
             return re.sub(r"\s", "", str(obj))

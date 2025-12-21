@@ -1,4 +1,4 @@
-﻿"""Base class for sampling"""
+"""Base class for sampling"""
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
@@ -11,10 +11,12 @@ from sklearn.base import BaseEstimator, OneToOneFeatureMixin
 from sklearn.preprocessing import label_binarize
 from sklearn.utils._metadata_requests import METHODS
 from sklearn.utils.multiclass import check_classification_targets
+from sklearn_compat.base import _fit_context
+from sklearn_compat.utils.validation import validate_data
 
-from .utils import check_sampling_strategy, check_target_type
-from .utils._sklearn_compat import _fit_context, get_tags, validate_data
-from .utils._validation import ArraysTransformer
+from imblearn.utils import check_sampling_strategy, check_target_type
+from imblearn.utils._tags import get_tags
+from imblearn.utils._validation import ArraysTransformer
 
 if "fit_predict" not in METHODS:
     METHODS.append("fit_predict")
@@ -205,8 +207,9 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin, BaseEstimator):
         return {"X_types": ["2darray", "sparse", "dataframe"]}
 
     def __sklearn_tags__(self):
-        from .utils._sklearn_compat import TargetTags
-        from .utils._tags import InputTags, SamplerTags, Tags
+        from sklearn_compat.utils._tags import TargetTags
+
+        from imblearn.utils._tags import InputTags, SamplerTags, Tags
 
         tags = Tags(
             estimator_type="sampler",

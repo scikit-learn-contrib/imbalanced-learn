@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering",
     "Topic :: Software Development :: Libraries",
 ]
@@ -28,6 +29,7 @@ dependencies = [
    "numpy>=1.25.2,<3",
    "scipy>=1.11.4,<2",
    "scikit-learn>=1.4.2,<2",
+   "sklearn-compat>=0.1.5,<0.2",
    "joblib>=1.2.0,<2",
    "threadpoolctl>=2.0.0,<4",
 ]
@@ -58,7 +60,7 @@ docs = [
 ]
 linters = [
     "black==23.3.0",
-    "ruff==0.4.8",
+    "ruff==0.14.2",
     "pre-commit",
 ]
 optional = [
@@ -85,7 +87,7 @@ Issues = "https://github.com/scikit-learn-contrib/imbalanced-learn/issues"
 [tool.setuptools]
 packages = ["imblearn"]
 
-[tool.pixi.project]
+[tool.pixi.workspace]
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 
@@ -93,6 +95,7 @@ platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 numpy = ">=1.25.2,<3"
 scipy = ">=1.11.4,<2"
 scikit-learn = ">=1.4.2,<2"
+sklearn-compat = ">=0.1.5,<0.2"
 joblib = ">=1.2.0,<2"
 threadpoolctl = ">=2.0.0,<4"
 
@@ -120,7 +123,7 @@ sphinx-design = ">=0.6.1,<1"
 
 [tool.pixi.feature.linters.dependencies]
 black = "==23.3.0"
-ruff = "==0.4.8"
+ruff = "==0.14.2"
 pre-commit = "*"
 
 [tool.pixi.feature.optional.dependencies]
@@ -187,6 +190,9 @@ python = "~=3.12.0"
 [tool.pixi.feature.py313.dependencies]
 python = "~=3.13.0"
 
+[tool.pixi.feature.py314.dependencies]
+python = "~=3.14.0"
+
 [tool.pixi.feature.tests.dependencies]
 packaging = ">=23.2,<25"
 pytest = ">=7.2.2,<9"
@@ -224,8 +230,8 @@ ci-py312-sklearn-1-6 = ["py312", "sklearn-1-6", "scipy-1-15", "tests"]
 ci-py311-latest-tensorflow = ["py311", "tensorflow", "tests"]
 ci-py311-latest-keras = ["py311", "keras", "tests"]
 
-ci-py313-latest-dependencies = ["py313", "tests"]
-ci-py313-latest-optional-dependencies = ["py313", "optional", "tests"]
+ci-py314-latest-dependencies = ["py314", "tests"]
+ci-py314-latest-optional-dependencies = ["py314", "optional", "tests"]
 
 [tool.black]
 line-length = 88
@@ -256,18 +262,27 @@ exclude=[
     "doc/_build",
     "doc/auto_examples",
     "build",
+    "pixi.lock",
 ]
 
 [tool.ruff.lint]
 # all rules can be found here: https://beta.ruff.rs/docs/rules/
-select = ["E", "F", "W", "I"]
-ignore=[
-    # space before : (needed for how black formats slicing)
-    "E203",
-    # do not assign a lambda expression, use a def
-    "E731",
-    # do not use variables named 'l', 'O', or 'I'
-    "E741",
+select = ["E", "F", "W", "C4", "I", "UP"]
+ignore = [
+  # use `is` and `is not` for type comparisons
+  "E721",
+  # do not assign a lambda expression, use a def
+  "E731",
+  # do not use variables named 'l', 'O', or 'I'
+  "E741",
+  # unnecessary list comprehension (rewrite as a set comprehension)
+  "C403",
+  # unnecessary tuple literal (rewrite as a set literal)
+  "C405",
+  # unnecessary `dict()` call (rewrite as a literal)
+  "C408",
+  # unnecessary list literal passed to `tuple()` (rewrite as a tuple literal)
+  "C409",
 ]
 
 [tool.ruff.lint.per-file-ignores]

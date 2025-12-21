@@ -4,9 +4,9 @@ from scipy.sparse import issparse
 from sklearn.base import clone
 from sklearn.utils import _safe_indexing, check_random_state
 
-from ..under_sampling import RandomUnderSampler
-from ..utils import Substitution
-from ..utils._docstring import _random_state_docstring
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.utils import Substitution
+from imblearn.utils._docstring import _random_state_docstring
 
 
 @Substitution(random_state=_random_state_docstring)

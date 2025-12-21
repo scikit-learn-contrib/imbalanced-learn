@@ -54,8 +54,7 @@ from urllib.request import urlopen
 import numpy as np
 from sklearn.datasets import get_data_home
 from sklearn.utils import Bunch, check_random_state
-
-from ..utils._sklearn_compat import validate_params
+from sklearn_compat.utils._param_validation import validate_params
 
 URL = "https://zenodo.org/record/61452/files/benchmark-imbalanced-learn.tar.gz"
 PRE_FILENAME = "x"
@@ -277,7 +276,7 @@ def fetch_datasets(
         if download_if_missing and not available:
             makedirs(zenodo_dir, exist_ok=True)
             if verbose:
-                print("Downloading %s" % URL)
+                print(f"Downloading {URL}")
             f = BytesIO(urlopen(URL).read())
             tar = tarfile.open(fileobj=f)
             if "filter" in signature(tar.extractall).parameters:
@@ -285,7 +284,7 @@ def fetch_datasets(
             else:  # Python < 3.12
                 tar.extractall(path=zenodo_dir)
         elif not download_if_missing and not available:
-            raise IOError("Data not found and `download_if_missing` is False")
+            raise OSError("Data not found and `download_if_missing` is False")
 
         data = np.load(filename)
         X, y = data["data"], data["label"]

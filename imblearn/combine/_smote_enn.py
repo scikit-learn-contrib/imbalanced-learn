@@ -9,12 +9,12 @@ import numbers
 from sklearn.base import clone
 from sklearn.utils import check_X_y
 
-from ..base import BaseSampler
-from ..over_sampling import SMOTE
-from ..over_sampling.base import BaseOverSampler
-from ..under_sampling import EditedNearestNeighbours
-from ..utils import Substitution, check_target_type
-from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
+from imblearn.base import BaseSampler
+from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling.base import BaseOverSampler
+from imblearn.under_sampling import EditedNearestNeighbours
+from imblearn.utils import Substitution, check_target_type
+from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
 
 
 @Substitution(

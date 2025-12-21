@@ -1,4 +1,3 @@
-# coding: utf-8
 """Testing the metric for classification with imbalanced dataset"""
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas
@@ -493,14 +492,12 @@ def test_classification_report_imbalanced_dict_with_target_names():
 def test_classification_report_imbalanced_dict_without_target_names():
     iris = datasets.load_iris()
     y_true, y_pred, _ = make_prediction(dataset=iris, binary=False)
-    print(iris.target_names)
     report = classification_report_imbalanced(
         y_true,
         y_pred,
         labels=np.arange(len(iris.target_names)),
         output_dict=True,
     )
-    print(report.keys())
     outer_keys = set(report.keys())
     inner_keys = set(report["0"].keys())
 

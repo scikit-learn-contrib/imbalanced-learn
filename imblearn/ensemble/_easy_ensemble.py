@@ -12,18 +12,16 @@ from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.fixes import parse_version
+from sklearn_compat._sklearn_compat import sklearn_version
+from sklearn_compat.base import _fit_context
 
-from ..pipeline import Pipeline
-from ..under_sampling import RandomUnderSampler
-from ..under_sampling.base import BaseUnderSampler
-from ..utils import Substitution, check_sampling_strategy, check_target_type
-from ..utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..utils._sklearn_compat import (
-    _fit_context,
-    get_tags,
-    sklearn_version,
-)
-from ._common import _bagging_parameter_constraints
+from imblearn.ensemble._common import _bagging_parameter_constraints
+from imblearn.pipeline import Pipeline
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.under_sampling.base import BaseUnderSampler
+from imblearn.utils import Substitution, check_sampling_strategy, check_target_type
+from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
+from imblearn.utils._tags import get_tags
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -226,12 +224,14 @@ class EasyEnsembleClassifier(BaggingClassifier):
             self._sampling_strategy = self.sampling_strategy
         return y_encoded
 
-    def _validate_estimator(self, default=AdaBoostClassifier(algorithm="SAMME")):
+    def _validate_estimator(self, default=None):
         """Check the estimator and the n_estimator attribute, set the
         `estimator_` attribute."""
         if self.estimator is not None:
             estimator = clone(self.estimator)
         else:
+            if default is None:
+                default = self._get_estimator()
             estimator = clone(default)
 
         sampler = RandomUnderSampler(

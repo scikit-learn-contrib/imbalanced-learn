@@ -43,7 +43,7 @@ def all_estimators(
         List of (name, class), where ``name`` is the class name as string
         and ``class`` is the actual type of the class.
     """
-    from ..base import SamplerMixin
+    from imblearn.base import SamplerMixin
 
     def is_abstract(c):
         if not (hasattr(c, "__abstractmethods__")):
@@ -101,8 +101,7 @@ def all_estimators(
         estimators = filtered_estimators
         if type_filter:
             raise ValueError(
-                "Parameter type_filter must be 'sampler' or None, got %s."
-                % repr(type_filter)
+                f"Parameter type_filter must be 'sampler' or None, got {type_filter!r}."
             )
 
     # drop duplicates, sort for reproducibility

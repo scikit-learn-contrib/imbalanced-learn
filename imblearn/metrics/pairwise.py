@@ -12,8 +12,8 @@ from sklearn.utils import check_consistent_length
 from sklearn.utils._param_validation import StrOptions
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_is_fitted
-
-from ..utils._sklearn_compat import _fit_context, check_array, validate_data
+from sklearn_compat.base import _fit_context
+from sklearn_compat.utils.validation import check_array, validate_data
 
 
 class ValueDifferenceMetric(BaseEstimator):

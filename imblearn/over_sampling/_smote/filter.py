@@ -1,4 +1,4 @@
-﻿"""SMOTE variant applying some filtering before the generation process."""
+"""SMOTE variant applying some filtering before the generation process."""
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Fernando Nogueira
@@ -15,10 +15,10 @@ from sklearn.svm import SVC
 from sklearn.utils import _safe_indexing, check_random_state
 from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
 
-from ...utils import Substitution, check_neighbors_object
-from ...utils._docstring import _random_state_docstring
-from ..base import BaseOverSampler
-from .base import BaseSMOTE
+from imblearn.over_sampling._smote.base import BaseSMOTE
+from imblearn.over_sampling.base import BaseOverSampler
+from imblearn.utils import Substitution, check_neighbors_object
+from imblearn.utils._docstring import _random_state_docstring
 
 
 @Substitution(

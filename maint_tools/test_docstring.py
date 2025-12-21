@@ -3,7 +3,6 @@ import inspect
 import pkgutil
 import re
 from inspect import signature
-from typing import Optional
 
 import pytest
 
@@ -162,7 +161,7 @@ def filter_errors(errors, method, Estimator=None):
         yield code, message
 
 
-def repr_errors(res, estimator=None, method: Optional[str] = None) -> str:
+def repr_errors(res, estimator=None, method: str | None = None) -> str:
     """Pretty print original docstring and the obtained errors
 
     Parameters
@@ -209,9 +208,7 @@ def repr_errors(res, estimator=None, method: Optional[str] = None) -> str:
             obj_name + str(obj_signature),
             res["docstring"],
             "# Errors",
-            "\n".join(
-                " - {}: {}".format(code, message) for code, message in res["errors"]
-            ),
+            "\n".join(f" - {code}: {message}" for code, message in res["errors"]),
         ]
     )
     return msg
@@ -290,4 +287,4 @@ if __name__ == "__main__":
         print(msg)
         sys.exit(1)
     else:
-        print("All docstring checks passed for {}!".format(args.import_path))
+        print(f"All docstring checks passed for {args.import_path}!")

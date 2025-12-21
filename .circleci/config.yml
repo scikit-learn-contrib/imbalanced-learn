@@ -1,45 +1,38 @@
-version: 2
+version: 2.1
 
 jobs:
-  doc:
+  python3:
     docker:
-      - image: cimg/python:3.8.12
+      - image: cimg/python:3.9
     environment:
-      - USERNAME: "glemaitre"
-      - ORGANIZATION: "imbalanced-learn"
-      - DOC_REPO: "imbalanced-learn.github.io"
-      - DOC_URL: ""
-      - EMAIL: "g.lemaitre58@gmail.com"
-      - MINICONDA_PATH: ~/miniconda
-      - CONDA_ENV_NAME: testenv
       - OMP_NUM_THREADS: 1
-      - PYTHON_VERSION: 3
-      - NUMPY_VERSION: 'latest'
-      - SCIPY_VERSION: 'latest'
-      - SKLEARN_VERSION: 'latest'
-      - MATPLOTLIB_VERSION: 'latest'
-      - SPHINX_VERSION: 'min'
-      - PANDAS_VERSION: 'latest'
-      - SPHINX_GALLERY_VERSION: 'latest'
-      - NUMPYDOC_VERSION: 'latest'
-      - SPHINXCONTRIB_BIBTEX_VERSION: 'latest'
-      - PYDATA_SPHINX_THEME_VERSION: 'latest'
-      - SPHINX_DESIGN_VERSION: 'latest'
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "34:ea:b1:d9:b1:e2:5d:79:81:c4:d0:39:ca:85:e1:ef"
       - checkout
       - run: ./build_tools/circle/checkout_merge_commit.sh
-      - run: ./build_tools/circle/build_doc.sh
+      - run:
+          command: ./build_tools/circle/build_doc.sh
+          no_output_timeout: 30m
       - store_artifacts:
           path: doc/_build/html
           destination: doc
       - store_artifacts:
           path: ~/log.txt
+          destination: log.txt
       - persist_to_workspace:
           root: doc/_build/html
           paths: .
+
+  deploy:
+    docker:
+      - image: cimg/python:3.9
+    environment:
+      - USERNAME: "glemaitre"
+      - ORGANIZATION: "imbalanced-learn"
+      - DOC_REPO: "imbalanced-learn.github.io"
+      - EMAIL: "g.lemaitre58@gmail.com"
+    steps:
+      - checkout
+      - run: ./build_tools/circle/checkout_merge_commit.sh
       - attach_workspace:
           at: doc/_build/html
       - run: ls -ltrh doc/_build/html
@@ -48,12 +41,12 @@ jobs:
             if [[ "${CIRCLE_BRANCH}" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
               bash ./build_tools/circle/push_doc.sh doc/_build/html
             fi
-    filters:
-      branches:
-        ignore: gh-pages
 
 workflows:
   version: 2
   build-doc-and-deploy:
     jobs:
-      - doc
+      - python3
+      - deploy:
+          requires:
+            - python3

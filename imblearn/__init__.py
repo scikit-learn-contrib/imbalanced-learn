@@ -83,7 +83,7 @@ else:
             self._parent_module_globals = parent_module_globals
             self._warning = warning
 
-            super(LazyLoader, self).__init__(name)
+            super().__init__(name)
 
         def _load(self):
             """Load the module and insert it into the parent's globals."""

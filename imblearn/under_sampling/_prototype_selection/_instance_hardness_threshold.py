@@ -17,9 +17,9 @@ from sklearn.model_selection import StratifiedKFold, cross_val_predict
 from sklearn.utils import _safe_indexing, check_random_state
 from sklearn.utils._param_validation import HasMethods
 
-from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..base import BaseUnderSampler
+from imblearn.under_sampling.base import BaseUnderSampler
+from imblearn.utils import Substitution
+from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
 
 
 @Substitution(

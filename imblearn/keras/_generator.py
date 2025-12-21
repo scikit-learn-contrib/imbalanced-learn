@@ -55,10 +55,10 @@ from sklearn.base import clone  # noqa
 from sklearn.utils import _safe_indexing  # noqa
 from sklearn.utils import check_random_state  # noqa
 
-from ..tensorflow import balanced_batch_generator as tf_bbg  # noqa
-from ..under_sampling import RandomUnderSampler  # noqa
-from ..utils import Substitution  # noqa
-from ..utils._docstring import _random_state_docstring  # noqa
+from imblearn.tensorflow import balanced_batch_generator as tf_bbg  # noqa
+from imblearn.under_sampling import RandomUnderSampler  # noqa
+from imblearn.utils import Substitution  # noqa
+from imblearn.utils._docstring import _random_state_docstring  # noqa
 
 
 class BalancedBatchGenerator(*ParentClass):  # type: ignore

@@ -15,9 +15,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import _safe_indexing, check_random_state
 from sklearn.utils._param_validation import HasMethods, Interval
 
-from ...utils import Substitution
-from ...utils._docstring import _n_jobs_docstring, _random_state_docstring
-from ..base import BaseCleaningSampler
+from imblearn.under_sampling.base import BaseCleaningSampler
+from imblearn.utils import Substitution
+from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
 
 
 @Substitution(

@@ -97,8 +97,7 @@ class InstanceHardnessCV(BaseCrossValidator):
         groups = np.empty(_num_samples(X), dtype=int)
         groups[sorted_indices] = np.arange(_num_samples(X)) % self.n_splits
         cv = LeaveOneGroupOut()
-        for train_index, test_index in cv.split(X, y, groups):
-            yield train_index, test_index
+        yield from cv.split(X, y, groups)
 
     def get_n_splits(self, X=None, y=None, groups=None):
         """Returns the number of splitting iterations in the cross-validator.
