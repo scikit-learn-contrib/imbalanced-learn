@@ -288,7 +288,7 @@ def test_smotenc_bool_categorical():
 
     X = pd.DataFrame(
         {
-            "c": pd.Categorical([x for x in "abbacaba" * 3]),
+            "c": pd.Categorical(list("abbacaba" * 3)),
             "f": [0.3, 0.5, 0.1, 0.2] * 6,
             "b": [False, False, True] * 8,
         }
