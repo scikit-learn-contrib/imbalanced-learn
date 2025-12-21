@@ -1,4 +1,3 @@
-# coding: utf-8
 """Metrics to assess performance on a classification task given class
 predictions. The available metrics are complementary from the metrics available
 in scikit-learn.
@@ -27,7 +26,6 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_consistent_length, column_or_1d
-
 from sklearn_compat.metrics._classification import _check_targets
 from sklearn_compat.utils._param_validation import validate_params
 
@@ -180,21 +178,22 @@ def sensitivity_specificity_support(
                     return (0.0, 0.0, 0)
                 else:
                     raise ValueError(
-                        "pos_label=%r is not a valid label: %r"
-                        % (pos_label, present_labels)
+                        f"pos_label={pos_label!r} is not a valid label:"
+                        f" {present_labels!r}"
                     )
             labels = [pos_label]
         else:
             raise ValueError(
-                "Target is %s but average='binary'. Please "
-                "choose another average setting." % y_type
+                f"Target is {y_type} but average='binary'. Please "
+                "choose another average setting."
             )
     elif pos_label not in (None, 1):
         warnings.warn(
-            "Note that pos_label (set to %r) is ignored when "
-            "average != 'binary' (got %r). You may use "
-            "labels=[pos_label] to specify a single positive class."
-            % (pos_label, average),
+            (
+                f"Note that pos_label (set to {pos_label!r}) is ignored when "
+                f"average != 'binary' (got {average!r}). You may use "
+                "labels=[pos_label] to specify a single positive class."
+            ),
             UserWarning,
         )
 

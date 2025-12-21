@@ -60,7 +60,7 @@ docs = [
 ]
 linters = [
     "black==23.3.0",
-    "ruff==0.4.8",
+    "ruff==0.14.2",
     "pre-commit",
 ]
 optional = [
@@ -123,7 +123,7 @@ sphinx-design = ">=0.6.1,<1"
 
 [tool.pixi.feature.linters.dependencies]
 black = "==23.3.0"
-ruff = "==0.4.8"
+ruff = "==0.14.2"
 pre-commit = "*"
 
 [tool.pixi.feature.optional.dependencies]
@@ -262,18 +262,27 @@ exclude=[
     "doc/_build",
     "doc/auto_examples",
     "build",
+    "pixi.lock",
 ]
 
 [tool.ruff.lint]
 # all rules can be found here: https://beta.ruff.rs/docs/rules/
-select = ["E", "F", "W", "I"]
-ignore=[
-    # space before : (needed for how black formats slicing)
-    "E203",
-    # do not assign a lambda expression, use a def
-    "E731",
-    # do not use variables named 'l', 'O', or 'I'
-    "E741",
+select = ["E", "F", "W", "C4", "I", "UP"]
+ignore = [
+  # use `is` and `is not` for type comparisons
+  "E721",
+  # do not assign a lambda expression, use a def
+  "E731",
+  # do not use variables named 'l', 'O', or 'I'
+  "E741",
+  # unnecessary list comprehension (rewrite as a set comprehension)
+  "C403",
+  # unnecessary tuple literal (rewrite as a set literal)
+  "C405",
+  # unnecessary `dict()` call (rewrite as a literal)
+  "C408",
+  # unnecessary list literal passed to `tuple()` (rewrite as a tuple literal)
+  "C409",
 ]
 
 [tool.ruff.lint.per-file-ignores]

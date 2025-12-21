@@ -1,20 +1,18 @@
-import sys
 from dataclasses import dataclass, field
 
 from sklearn_compat.utils._tags import (
-    InputTags as SklearnInputTags,
-    TargetTags,
-    TransformerTags,
     ClassifierTags,
     RegressorTags,
-    Tags,
+    TargetTags,
+    TransformerTags,
+)
+from sklearn_compat.utils._tags import (
+    InputTags as SklearnInputTags,
 )
 
 
 # tags infrastructure
 def _dataclass_args():
-    if sys.version_info < (3, 10):
-        return {}
     return {"slots": True}
 
 

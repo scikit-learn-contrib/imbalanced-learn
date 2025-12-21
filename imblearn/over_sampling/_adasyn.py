@@ -11,9 +11,9 @@ from scipy import sparse
 from sklearn.utils import _safe_indexing, check_random_state
 from sklearn.utils._param_validation import HasMethods, Interval
 
+from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.utils import Substitution, check_neighbors_object
 from imblearn.utils._docstring import _random_state_docstring
-from imblearn.over_sampling.base import BaseOverSampler
 
 
 @Substitution(

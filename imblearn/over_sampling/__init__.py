@@ -5,7 +5,14 @@ perform over-sampling.
 
 from imblearn.over_sampling._adasyn import ADASYN
 from imblearn.over_sampling._random_over_sampler import RandomOverSampler
-from imblearn.over_sampling._smote import SMOTE, SMOTEN, SMOTENC, SVMSMOTE, BorderlineSMOTE, KMeansSMOTE
+from imblearn.over_sampling._smote import (
+    SMOTE,
+    SMOTEN,
+    SMOTENC,
+    SVMSMOTE,
+    BorderlineSMOTE,
+    KMeansSMOTE,
+)
 
 __all__ = [
     "ADASYN",

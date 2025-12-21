@@ -105,8 +105,9 @@ idx_max = test_scores_mean.argmax()
 ax.scatter(
     param_range[idx_max],
     test_scores_mean[idx_max],
-    label=r"Cohen Kappa: ${:.2f}\pm{:.2f}$".format(
-        test_scores_mean[idx_max], test_scores_std[idx_max]
+    label=(
+        r"Cohen Kappa:"
+        rf" ${test_scores_mean[idx_max]:.2f}\pm{test_scores_std[idx_max]:.2f}$"
     ),
 )
 

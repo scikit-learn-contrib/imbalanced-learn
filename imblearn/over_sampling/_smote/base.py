@@ -26,16 +26,15 @@ from sklearn.utils.sparsefuncs_fast import (
     csr_mean_variance_axis0,
 )
 from sklearn.utils.validation import _num_features
+from sklearn_compat.utils._dataframe import is_pandas_df
 from sklearn_compat.utils._indexing import _get_column_indices
 from sklearn_compat.utils.validation import validate_data
-from sklearn_compat.utils._dataframe import is_pandas_df
 
 from imblearn.metrics.pairwise import ValueDifferenceMetric
+from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.utils import Substitution, check_neighbors_object, check_target_type
 from imblearn.utils._docstring import _random_state_docstring
-
 from imblearn.utils._validation import _check_X
-from imblearn.over_sampling.base import BaseOverSampler
 
 
 class BaseSMOTE(BaseOverSampler):

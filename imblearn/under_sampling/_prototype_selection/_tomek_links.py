@@ -11,9 +11,9 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import _safe_indexing
 
+from imblearn.under_sampling.base import BaseCleaningSampler
 from imblearn.utils import Substitution
 from imblearn.utils._docstring import _n_jobs_docstring
-from imblearn.under_sampling.base import BaseCleaningSampler
 
 
 @Substitution(

@@ -12,16 +12,15 @@ from sklearn.base import clone
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.fixes import parse_version
+from sklearn_compat._sklearn_compat import sklearn_version
+from sklearn_compat.base import _fit_context
 
+from imblearn.ensemble._common import _bagging_parameter_constraints
 from imblearn.pipeline import Pipeline
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.under_sampling.base import BaseUnderSampler
 from imblearn.utils import Substitution, check_sampling_strategy, check_target_type
 from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
-from sklearn_compat.base import _fit_context
-from sklearn_compat._sklearn_compat import sklearn_version
-from imblearn.ensemble._common import _bagging_parameter_constraints
-
 from imblearn.utils._tags import get_tags
 
 MAX_INT = np.iinfo(np.int32).max

@@ -27,16 +27,16 @@ from sklearn.utils.fixes import parse_version
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import _check_sample_weight
+from sklearn_compat._sklearn_compat import sklearn_version
+from sklearn_compat.base import _fit_context
+from sklearn_compat.utils.validation import validate_data
 
+from imblearn.ensemble._common import _random_forest_classifier_parameter_constraints
 from imblearn.pipeline import make_pipeline
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.utils import Substitution
 from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
-from sklearn_compat.base import _fit_context
-from sklearn_compat._sklearn_compat import sklearn_version
-from sklearn_compat.utils.validation import validate_data
 from imblearn.utils._validation import check_sampling_strategy
-from imblearn.ensemble._common import _random_forest_classifier_parameter_constraints
 
 MAX_INT = np.iinfo(np.int32).max
 

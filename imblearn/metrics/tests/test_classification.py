@@ -1,4 +1,3 @@
-# coding: utf-8
 """Testing the metric for classification with imbalanced dataset"""
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 #          Christos Aridas

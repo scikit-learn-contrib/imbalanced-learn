@@ -14,8 +14,8 @@ from sklearn.utils.multiclass import check_classification_targets
 from sklearn_compat.base import _fit_context
 from sklearn_compat.utils.validation import validate_data
 
-from imblearn.utils._tags import get_tags
 from imblearn.utils import check_sampling_strategy, check_target_type
+from imblearn.utils._tags import get_tags
 from imblearn.utils._validation import ArraysTransformer
 
 if "fit_predict" not in METHODS:
@@ -208,6 +208,7 @@ class BaseSampler(SamplerMixin, OneToOneFeatureMixin, BaseEstimator):
 
     def __sklearn_tags__(self):
         from sklearn_compat.utils._tags import TargetTags
+
         from imblearn.utils._tags import InputTags, SamplerTags, Tags
 
         tags = Tags(

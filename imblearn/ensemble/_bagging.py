@@ -12,13 +12,13 @@ from sklearn.base import clone
 from sklearn.ensemble import BaggingClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils._param_validation import HasMethods, Interval, StrOptions
+from sklearn_compat.base import _fit_context
 
 from imblearn.pipeline import Pipeline
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.under_sampling.base import BaseUnderSampler
 from imblearn.utils import Substitution, check_sampling_strategy, check_target_type
 from imblearn.utils._docstring import _n_jobs_docstring, _random_state_docstring
-from sklearn_compat.base import _fit_context
 
 
 @Substitution(
