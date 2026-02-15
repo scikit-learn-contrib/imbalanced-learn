@@ -547,3 +547,22 @@ def test_macro_averaged_mean_absolute_error_sample_weight():
     )
 
     assert ma_mae_unit_weights == pytest.approx(ma_mae_no_weights)
+
+def test_geometric_mean_score_binary_macro_vs_per_class():
+    """Check that binary + macro average matches mean of per-class scores.
+    
+    Regression test for issue where binary macro was computed as 
+    sqrt(mean_tpr * mean_tnr) instead of mean(sqrt(tpr*tnr)).
+    """
+    y_true = [0, 0, 1, 0, 1, 1]
+    y_pred = [0, 0, 0, 0, 0, 1]
+
+    # Calculate per-class scores manually
+    per_class_scores = geometric_mean_score(y_true, y_pred, average=None)
+    expected_macro = np.mean(per_class_scores)
+
+    # Calculate the library's macro score
+    library_macro = geometric_mean_score(y_true, y_pred, average="macro")
+
+    # They should be equal
+    assert library_macro == pytest.approx(expected_macro)
