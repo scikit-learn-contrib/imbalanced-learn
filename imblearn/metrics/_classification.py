@@ -1131,7 +1131,8 @@ def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
     mae = []
     for possible_class in labels:
         indices = np.flatnonzero(y_true == possible_class)
-
+        if len(indices) == 0:
+            continue
         mae.append(
             mean_absolute_error(
                 y_true[indices],
@@ -1140,4 +1141,4 @@ def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
             )
         )
 
-    return np.sum(mae) / len(mae)
+    return np.mean(mae) if mae else 0.0

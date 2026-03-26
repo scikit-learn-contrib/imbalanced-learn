@@ -547,3 +547,11 @@ def test_macro_averaged_mean_absolute_error_sample_weight():
     )
 
     assert ma_mae_unit_weights == pytest.approx(ma_mae_no_weights)
+def test_macro_averaged_mean_absolute_error_missing_class():
+    # Regression test for issue #1094
+    # Class 1 is missing in y_true, but exists in y_pred
+    y_true = [0, 0]
+    y_pred = [0, 1]
+    # Expected: (MAE for class 0 only) / 1 class = 0.5
+    res = macro_averaged_mean_absolute_error(y_true, y_pred)
+    assert res == 0.5
