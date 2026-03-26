@@ -228,7 +228,7 @@ def test_geometric_mean_multiclass(y_true, y_pred, correction, expected_gmean):
 @pytest.mark.parametrize(
     "y_true, y_pred, average, expected_gmean",
     [
-        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "macro", 0.471),
+        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "macro", 0.288675),
         ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "micro", 0.471),
         ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "weighted", 0.471),
         ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], None, [0.8660254, 0.0, 0.0]),
@@ -277,7 +277,7 @@ def test_geometric_mean_sample_weight(
     [
         ("multiclass", 0.41),
         (None, [0.85, 0.29, 0.7]),
-        ("macro", 0.68),
+        ("macro", 0.614633),
         ("weighted", 0.65),
     ],
 )
@@ -547,3 +547,12 @@ def test_macro_averaged_mean_absolute_error_sample_weight():
     )
 
     assert ma_mae_unit_weights == pytest.approx(ma_mae_no_weights)
+def test_geometric_mean_score_binary_macro():
+    """Regression test for issue #1096: macro average on binary data."""
+    import numpy as np
+    from imblearn.metrics import geometric_mean_score
+    y_true = [0, 0, 1, 0, 1, 1]
+    y_pred = [0, 0, 0, 0, 0, 1]
+    res = geometric_mean_score(y_true, y_pred, average='macro')
+    # The fix should result in ~0.577, not 0.666
+    assert np.isclose(res, 0.5773502691)

@@ -670,6 +670,19 @@ def geometric_mean_score(
     >>> geometric_mean_score(y_true, y_pred, average=None)
     array([0.866...,  0.       ,  0.       ])
     """
+    if average == "macro":
+        # We compute the macro-average by calculating the score for each
+        # class and then taking the arithmetic mean.
+        scores = geometric_mean_score(
+            y_true,
+            y_pred,
+            labels=labels,
+            pos_label=pos_label,
+            average=None,
+            sample_weight=sample_weight,
+        )
+        return np.mean(scores)
+
     if average is None or average != "multiclass":
         sen, spe, _ = sensitivity_specificity_support(
             y_true,
