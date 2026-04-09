@@ -350,10 +350,10 @@ def test_pipeline_methods_pca_svm():
     iris = load_iris()
     X = iris.data
     y = iris.target
-    # Test with PCA + SVC
-    clf = SVC(gamma="scale", probability=True, random_state=0)
+    # Test with PCA + LogisticRegression
+    clf = LogisticRegression()
     pca = PCA(svd_solver="full", n_components="mle", whiten=True)
-    pipe = Pipeline([("pca", pca), ("svc", clf)])
+    pipe = Pipeline([("pca", pca), ("clf", clf)])
     pipe.fit(X, y)
     pipe.predict(X)
     pipe.predict_proba(X)
@@ -370,15 +370,10 @@ def test_pipeline_methods_preprocessing_svm():
     n_classes = len(np.unique(y))
     scaler = StandardScaler()
     pca = PCA(n_components=2, svd_solver="randomized", whiten=True)
-    clf = SVC(
-        gamma="scale",
-        probability=True,
-        random_state=0,
-        decision_function_shape="ovr",
-    )
+    clf = LogisticRegression()
 
     for preprocessing in [scaler, pca]:
-        pipe = Pipeline([("preprocess", preprocessing), ("svc", clf)])
+        pipe = Pipeline([("preprocess", preprocessing), ("clf", clf)])
         pipe.fit(X, y)
 
         # check shapes of various prediction functions
@@ -671,11 +666,11 @@ def test_pipeline_memory_transformer():
     cachedir = mkdtemp()
     try:
         memory = Memory(cachedir, verbose=10)
-        # Test with Transformer + SVC
-        clf = SVC(gamma="scale", probability=True, random_state=0)
+        # Test with Transformer + LogisticRegression
+        clf = LogisticRegression()
         transf = DummyTransf()
-        pipe = Pipeline([("transf", clone(transf)), ("svc", clf)])
-        cached_pipe = Pipeline([("transf", transf), ("svc", clf)], memory=memory)
+        pipe = Pipeline([("transf", clone(transf)), ("clf", clf)])
+        cached_pipe = Pipeline([("transf", transf), ("clf", clf)], memory=memory)
 
         # Memoize the transformer at the first fit
         cached_pipe.fit(X, y)
@@ -707,10 +702,10 @@ def test_pipeline_memory_transformer():
         assert cached_pipe.named_steps["transf"].timestamp_ == expected_ts
         # Create a new pipeline with cloned estimators
         # Check that even changing the name step does not affect the cache hit
-        clf_2 = SVC(gamma="scale", probability=True, random_state=0)
+        clf_2 = LogisticRegression(random_state=0)
         transf_2 = DummyTransf()
         cached_pipe_2 = Pipeline(
-            [("transf_2", transf_2), ("svc", clf_2)], memory=memory
+            [("transf_2", transf_2), ("clf", clf_2)], memory=memory
         )
         cached_pipe_2.fit(X, y)
 
@@ -746,11 +741,11 @@ def test_pipeline_memory_sampler():
     cachedir = mkdtemp()
     try:
         memory = Memory(cachedir, verbose=10)
-        # Test with Transformer + SVC
-        clf = SVC(gamma="scale", probability=True, random_state=0)
+        # Test with Sampler + LogisticRegression
+        clf = LogisticRegression()
         transf = DummySampler()
-        pipe = Pipeline([("transf", clone(transf)), ("svc", clf)])
-        cached_pipe = Pipeline([("transf", transf), ("svc", clf)], memory=memory)
+        pipe = Pipeline([("transf", clone(transf)), ("clf", clf)])
+        cached_pipe = Pipeline([("transf", transf), ("clf", clf)], memory=memory)
 
         # Memoize the transformer at the first fit
         cached_pipe.fit(X, y)
@@ -782,10 +777,10 @@ def test_pipeline_memory_sampler():
         assert cached_pipe.named_steps["transf"].timestamp_ == expected_ts
         # Create a new pipeline with cloned estimators
         # Check that even changing the name step does not affect the cache hit
-        clf_2 = SVC(gamma="scale", probability=True, random_state=0)
+        clf_2 = LogisticRegression(random_state=0)
         transf_2 = DummySampler()
         cached_pipe_2 = Pipeline(
-            [("transf_2", transf_2), ("svc", clf_2)], memory=memory
+            [("transf_2", transf_2), ("clf", clf_2)], memory=memory
         )
         cached_pipe_2.fit(X, y)
 
@@ -820,11 +815,11 @@ def test_pipeline_methods_pca_rus_svm():
         random_state=0,
     )
 
-    # Test with PCA + SVC
-    clf = SVC(gamma="scale", probability=True, random_state=0)
+    # Test with PCA + LogisticRegression
+    clf = LogisticRegression()
     pca = PCA()
     rus = RandomUnderSampler(random_state=0)
-    pipe = Pipeline([("pca", pca), ("rus", rus), ("svc", clf)])
+    pipe = Pipeline([("pca", pca), ("rus", rus), ("clf", clf)])
     pipe.fit(X, y)
     pipe.predict(X)
     pipe.predict_proba(X)
@@ -847,11 +842,11 @@ def test_pipeline_methods_rus_pca_svm():
         random_state=0,
     )
 
-    # Test with PCA + SVC
-    clf = SVC(gamma="scale", probability=True, random_state=0)
+    # Test with PCA + LogisticRegression
+    clf = LogisticRegression()
     pca = PCA()
     rus = RandomUnderSampler(random_state=0)
-    pipe = Pipeline([("rus", rus), ("pca", pca), ("svc", clf)])
+    pipe = Pipeline([("rus", rus), ("pca", pca), ("clf", clf)])
     pipe.fit(X, y)
     pipe.predict(X)
     pipe.predict_proba(X)
