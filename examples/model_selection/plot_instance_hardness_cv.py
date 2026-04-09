@@ -56,41 +56,36 @@ _ = plt.scatter(X[:, 0], X[:, 1], c=y)
 #
 # Let's make an experiment to compare the results that we get with both splitters.
 # We use a :class:`~sklearn.linear_model.LogisticRegression` classifier and
-# :func:`~sklearn.model_selection.cross_validate` to calculate the cross validation
-# scores. We use average precision for scoring.
-import pandas as pd
+# `skore.evaluate` to calculate the cross-validation scores.
+import skore
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.model_selection import StratifiedKFold
 
 from imblearn.model_selection import InstanceHardnessCV
 
 logistic_regression = LogisticRegression()
 
+splitters = {
+    "StratifiedKFold": StratifiedKFold(n_splits=5, shuffle=True, random_state=10),
+    "InstanceHardnessCV": InstanceHardnessCV(estimator=LogisticRegression()),
+}
+
+reports = {}
+for name, cv in splitters.items():
+    reports[name] = skore.evaluate(logistic_regression, X, y, splitter=cv)
+
+# %%
+import pandas as pd
+
 results = {}
-for cv in (
-    StratifiedKFold(n_splits=5, shuffle=True, random_state=10),
-    InstanceHardnessCV(estimator=LogisticRegression()),
-):
-    result = cross_validate(
-        logistic_regression,
-        X,
-        y,
-        cv=cv,
-        scoring="average_precision",
-    )
-    results[cv.__class__.__name__] = result["test_score"]
-results = pd.DataFrame(results)
+for name, report in reports.items():
+    scores = report.metrics.summarize().frame()
+    results[name] = scores
+results = pd.concat(results)
+results
 
 # %%
-ax = results.plot.box(vert=False, whis=[0, 100])
-_ = ax.set(
-    xlabel="Average precision",
-    title="Cross validation scores with different splitters",
-    xlim=(0, 1),
-)
-
-# %%
-# The boxplot shows that the :class:`~imblearn.model_selection.InstanceHardnessCV`
+# The :class:`~imblearn.model_selection.InstanceHardnessCV`
 # splitter results in less variation of average precision than
 # :class:`~sklearn.model_selection.StratifiedKFold` splitter. When doing
 # hyperparameter tuning or feature selection using a wrapper method (like

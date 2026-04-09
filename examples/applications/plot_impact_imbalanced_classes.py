@@ -54,43 +54,28 @@ df_res, y_res = make_imbalance(
 y_res.value_counts()
 
 # %% [markdown]
-# We will perform a cross-validation evaluation to get an estimate of the test
-# score.
+# We will use `skore.evaluate` to get an estimate of the test scores using
+# cross-validation.
 #
 # As a baseline, we could use a classifier which will always predict the
 # majority class independently of the features provided.
 
+# %%
+import skore
 from sklearn.dummy import DummyClassifier
 
-# %%
-from sklearn.model_selection import cross_validate
-
 dummy_clf = DummyClassifier(strategy="most_frequent")
-scoring = ["accuracy", "balanced_accuracy"]
-cv_result = cross_validate(dummy_clf, df_res, y_res, scoring=scoring)
-print(f"Accuracy score of a dummy classifier: {cv_result['test_accuracy'].mean():.3f}")
-
-# %% [markdown]
-# Instead of using the accuracy, we can use the balanced accuracy which will
-# take into account the balancing issue.
-
-# %%
-print(
-    "Balanced accuracy score of a dummy classifier: "
-    f"{cv_result['test_balanced_accuracy'].mean():.3f}"
-)
+report = skore.evaluate(dummy_clf, df_res, y_res, splitter=5)
+report.metrics.summarize().frame()
 
 # %% [markdown]
 # Strategies to learn from an imbalanced dataset
-# ----------------------------------------------
-# We will use a dictionary and a list to continuously store the results of
-# our experiments and show them as a pandas dataframe.
-
-# %%
-index = []
-scores = {"Accuracy": [], "Balanced accuracy": []}
-
-# %% [markdown]
+# -----------------------------------------------
+#
+# We will compare different strategies to learn from an imbalanced dataset by
+# collecting all estimators and evaluating each using `skore.evaluate` to
+# compute cross-validated metrics.
+#
 # Dummy baseline
 # ..............
 #
@@ -98,15 +83,7 @@ scores = {"Accuracy": [], "Balanced accuracy": []}
 # obtained with our :class:`~sklearn.dummy.DummyClassifier`.
 
 # %%
-import pandas as pd
-
-index += ["Dummy classifier"]
-cv_result = cross_validate(dummy_clf, df_res, y_res, scoring=scoring)
-scores["Accuracy"].append(cv_result["test_accuracy"].mean())
-scores["Balanced accuracy"].append(cv_result["test_balanced_accuracy"].mean())
-
-df_scores = pd.DataFrame(scores, index=index)
-df_scores
+estimators = [("Dummy classifier", dummy_clf)]
 
 # %% [markdown]
 # Linear classifier baseline
@@ -150,27 +127,15 @@ preprocessor_linear = make_column_transformer(
 
 # %% [markdown]
 # Finally, we connect our preprocessor with our
-# :class:`~sklearn.linear_model.LogisticRegression`. We can then evaluate our
-# model.
+# :class:`~sklearn.linear_model.LogisticRegression`.
 
 # %%
 from sklearn.linear_model import LogisticRegression
 
 lr_clf = make_pipeline(preprocessor_linear, LogisticRegression(max_iter=1000))
-
-# %%
-index += ["Logistic regression"]
-cv_result = cross_validate(lr_clf, df_res, y_res, scoring=scoring)
-scores["Accuracy"].append(cv_result["test_accuracy"].mean())
-scores["Balanced accuracy"].append(cv_result["test_balanced_accuracy"].mean())
-
-df_scores = pd.DataFrame(scores, index=index)
-df_scores
+estimators.append(("Logistic regression", lr_clf))
 
 # %% [markdown]
-# We can see that our linear model is learning slightly better than our dummy
-# baseline. However, it is impacted by the class imbalance.
-#
 # We can verify that something similar is happening with a tree-based model
 # such as :class:`~sklearn.ensemble.RandomForestClassifier`. With this type of
 # classifier, we will not need to scale the numerical data, and we will only
@@ -196,21 +161,9 @@ preprocessor_tree = make_column_transformer(
 rf_clf = make_pipeline(
     preprocessor_tree, RandomForestClassifier(random_state=42, n_jobs=2)
 )
-
-# %%
-index += ["Random forest"]
-cv_result = cross_validate(rf_clf, df_res, y_res, scoring=scoring)
-scores["Accuracy"].append(cv_result["test_accuracy"].mean())
-scores["Balanced accuracy"].append(cv_result["test_balanced_accuracy"].mean())
-
-df_scores = pd.DataFrame(scores, index=index)
-df_scores
+estimators.append(("Random forest", rf_clf))
 
 # %% [markdown]
-# The :class:`~sklearn.ensemble.RandomForestClassifier` is as well affected by
-# the class imbalanced, slightly less than the linear model. Now, we will
-# present different approach to improve the performance of these 2 models.
-#
 # Use `class_weight`
 # ..................
 #
@@ -223,34 +176,17 @@ df_scores
 # linear model and tree-based model.
 
 # %%
-lr_clf.set_params(logisticregression__class_weight="balanced")
+from sklearn.base import clone
 
-index += ["Logistic regression with balanced class weights"]
-cv_result = cross_validate(lr_clf, df_res, y_res, scoring=scoring)
-scores["Accuracy"].append(cv_result["test_accuracy"].mean())
-scores["Balanced accuracy"].append(cv_result["test_balanced_accuracy"].mean())
+lr_clf_balanced = clone(lr_clf).set_params(logisticregression__class_weight="balanced")
+estimators.append(("Logistic regression with balanced class weights", lr_clf_balanced))
 
-df_scores = pd.DataFrame(scores, index=index)
-df_scores
-
-# %%
-rf_clf.set_params(randomforestclassifier__class_weight="balanced")
-
-index += ["Random forest with balanced class weights"]
-cv_result = cross_validate(rf_clf, df_res, y_res, scoring=scoring)
-scores["Accuracy"].append(cv_result["test_accuracy"].mean())
-scores["Balanced accuracy"].append(cv_result["test_balanced_accuracy"].mean())
-
-df_scores = pd.DataFrame(scores, index=index)
-df_scores
+rf_clf_balanced = clone(rf_clf).set_params(
+    randomforestclassifier__class_weight="balanced"
+)
+estimators.append(("Random forest with balanced class weights", rf_clf_balanced))
 
 # %% [markdown]
-# We can see that using `class_weight` was really effective for the linear
-# model, alleviating the issue of learning from imbalanced classes. However,
-# the :class:`~sklearn.ensemble.RandomForestClassifier` is still biased toward
-# the majority class, mainly due to the criterion which is not suited enough to
-# fight the class imbalance.
-#
 # Resample the training set during learning
 # .........................................
 #
@@ -262,49 +198,21 @@ df_scores
 from imblearn.pipeline import make_pipeline as make_pipeline_with_sampler
 from imblearn.under_sampling import RandomUnderSampler
 
-lr_clf = make_pipeline_with_sampler(
+lr_clf_undersampled = make_pipeline_with_sampler(
     preprocessor_linear,
     RandomUnderSampler(random_state=42),
     LogisticRegression(max_iter=1000),
 )
+estimators.append(("Under-sampling + Logistic regression", lr_clf_undersampled))
 
-# %%
-index += ["Under-sampling + Logistic regression"]
-cv_result = cross_validate(lr_clf, df_res, y_res, scoring=scoring)
-scores["Accuracy"].append(cv_result["test_accuracy"].mean())
-scores["Balanced accuracy"].append(cv_result["test_balanced_accuracy"].mean())
-
-df_scores = pd.DataFrame(scores, index=index)
-df_scores
-
-# %%
-rf_clf = make_pipeline_with_sampler(
+rf_clf_undersampled = make_pipeline_with_sampler(
     preprocessor_tree,
     RandomUnderSampler(random_state=42),
     RandomForestClassifier(random_state=42, n_jobs=2),
 )
-
-# %%
-index += ["Under-sampling + Random forest"]
-cv_result = cross_validate(rf_clf, df_res, y_res, scoring=scoring)
-scores["Accuracy"].append(cv_result["test_accuracy"].mean())
-scores["Balanced accuracy"].append(cv_result["test_balanced_accuracy"].mean())
-
-df_scores = pd.DataFrame(scores, index=index)
-df_scores
+estimators.append(("Under-sampling + Random forest", rf_clf_undersampled))
 
 # %% [markdown]
-# Applying a random under-sampler before the training of the linear model or
-# random forest, allows to not focus on the majority class at the cost of
-# making more mistake for samples in the majority class (i.e. decreased
-# accuracy).
-#
-# We could apply any type of samplers and find which sampler is working best
-# on the current dataset.
-#
-# Instead, we will present another way by using classifiers which will apply
-# sampling internally.
-#
 # Use of specific balanced algorithms from imbalanced-learn
 # .........................................................
 #
@@ -317,7 +225,7 @@ df_scores
 # %%
 from imblearn.ensemble import BalancedRandomForestClassifier
 
-rf_clf = make_pipeline(
+brf_clf = make_pipeline(
     preprocessor_tree,
     BalancedRandomForestClassifier(
         sampling_strategy="all",
@@ -327,22 +235,9 @@ rf_clf = make_pipeline(
         n_jobs=2,
     ),
 )
+estimators.append(("Balanced random forest", brf_clf))
 
 # %%
-index += ["Balanced random forest"]
-cv_result = cross_validate(rf_clf, df_res, y_res, scoring=scoring)
-scores["Accuracy"].append(cv_result["test_accuracy"].mean())
-scores["Balanced accuracy"].append(cv_result["test_balanced_accuracy"].mean())
-
-df_scores = pd.DataFrame(scores, index=index)
-df_scores
-
-# %% [markdown]
-# The performance with the
-# :class:`~imblearn.ensemble.BalancedRandomForestClassifier` is better than
-# applying a single random under-sampling. We will use a gradient-boosting
-# classifier within a :class:`~imblearn.ensemble.BalancedBaggingClassifier`.
-
 from sklearn.ensemble import HistGradientBoostingClassifier
 
 from imblearn.ensemble import BalancedBaggingClassifier
@@ -356,14 +251,22 @@ bag_clf = make_pipeline(
         n_jobs=2,
     ),
 )
+estimators.append(("Balanced bag of histogram gradient boosting", bag_clf))
 
-index += ["Balanced bag of histogram gradient boosting"]
-cv_result = cross_validate(bag_clf, df_res, y_res, scoring=scoring)
-scores["Accuracy"].append(cv_result["test_accuracy"].mean())
-scores["Balanced accuracy"].append(cv_result["test_balanced_accuracy"].mean())
+# %% [markdown]
+# Now, we can use `skore.evaluate` to evaluate each estimator with
+# cross-validation and collect all results in a single dataframe.
 
-df_scores = pd.DataFrame(scores, index=index)
-df_scores
+# %%
+import pandas as pd
+
+results = {}
+for name, est in estimators:
+    report = skore.evaluate(est, df_res, y_res, splitter=5)
+    results[name] = report.metrics.summarize().frame()
+
+df_results = pd.concat(results)
+df_results
 
 # %% [markdown]
 # This last approach is the most effective. The different under-sampling allows

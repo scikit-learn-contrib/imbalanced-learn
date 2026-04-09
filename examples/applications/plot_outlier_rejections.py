@@ -15,10 +15,10 @@ the current scikit-learn pipeline.
 
 import matplotlib.pyplot as plt
 import numpy as np
+import skore
 from sklearn.datasets import make_blobs, make_moons
 from sklearn.ensemble import IsolationForest
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report
 
 from imblearn import FunctionSampler
 from imblearn.pipeline import make_pipeline
@@ -111,11 +111,17 @@ pipe = make_pipeline(
     FunctionSampler(func=outlier_rejection),
     LogisticRegression(random_state=rng),
 )
-y_pred = pipe.fit(X_train, y_train).predict(X_test)
-print(classification_report(y_test, y_pred))
+pipe.fit(X_train, y_train)
 
+report_with_rejection = skore.evaluate(pipe, X_test, y_test, splitter="prefit")
+report_with_rejection.metrics.summarize().frame()
+
+# %%
 clf = LogisticRegression(random_state=rng)
-y_pred = clf.fit(X_train, y_train).predict(X_test)
-print(classification_report(y_test, y_pred))
+clf.fit(X_train, y_train)
 
+report_without_rejection = skore.evaluate(clf, X_test, y_test, splitter="prefit")
+report_without_rejection.metrics.summarize().frame()
+
+# %%
 plt.show()
