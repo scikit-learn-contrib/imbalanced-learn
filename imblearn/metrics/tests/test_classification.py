@@ -7,7 +7,8 @@ from functools import partial
 
 import numpy as np
 import pytest
-from sklearn import datasets, svm
+from sklearn import datasets
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
     average_precision_score,
@@ -43,7 +44,7 @@ R_TOL = 1e-2
 
 
 def make_prediction(dataset=None, binary=False):
-    """Make some classification predictions on a toy dataset using a SVC
+    """Make some classification predictions on a toy dataset using a classifier.
     If binary is True restrict to a binary classification problem instead of a
     multiclass classification problem
     """
@@ -72,7 +73,7 @@ def make_prediction(dataset=None, binary=False):
     X = np.c_[X, rng.randn(n_samples, 200 * n_features)]
 
     # run classifier, get class probabilities and label predictions
-    clf = svm.SVC(kernel="linear", probability=True, random_state=0)
+    clf = LogisticRegression()
     probas_pred = clf.fit(X[:half], y[:half]).predict_proba(X[half:])
 
     if binary:
@@ -275,10 +276,10 @@ def test_geometric_mean_sample_weight(
 @pytest.mark.parametrize(
     "average, expected_gmean",
     [
-        ("multiclass", 0.41),
-        (None, [0.85, 0.29, 0.7]),
-        ("macro", 0.68),
-        ("weighted", 0.65),
+        ("multiclass", 0.36),
+        (None, [0.82, 0.24, 0.72]),
+        ("macro", 0.67),
+        ("weighted", 0.64),
     ],
 )
 def test_geometric_mean_score_prediction(average, expected_gmean):
@@ -309,10 +310,10 @@ def test_classification_report_imbalanced_multiclass():
 
     # print classification report with class names
     expected_report = (
-        "pre rec spe f1 geo iba sup setosa 0.83 0.79 0.92 "
-        "0.81 0.85 0.72 24 versicolor 0.33 0.10 0.86 0.15 "
-        "0.29 0.08 31 virginica 0.42 0.90 0.55 0.57 0.70 "
-        "0.51 20 avg / total 0.51 0.53 0.80 0.47 0.58 0.40 75"
+        "pre rec spe f1 geo iba sup setosa 0.70 0.79 0.84 "
+        "0.75 0.82 0.66 24 versicolor 0.29 0.06 0.89 0.11 "
+        "0.24 0.05 31 virginica 0.44 0.90 0.58 0.59 0.72 "
+        "0.54 20 avg / total 0.46 0.52 0.79 0.44 0.55 0.38 75"
     )
 
     report = classification_report_imbalanced(
@@ -324,10 +325,10 @@ def test_classification_report_imbalanced_multiclass():
     assert _format_report(report) == expected_report
     # print classification report with label detection
     expected_report = (
-        "pre rec spe f1 geo iba sup 0 0.83 0.79 0.92 0.81 "
-        "0.85 0.72 24 1 0.33 0.10 0.86 0.15 0.29 0.08 31 "
-        "2 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total "
-        "0.51 0.53 0.80 0.47 0.58 0.40 75"
+        "pre rec spe f1 geo iba sup 0 0.70 0.79 0.84 0.75 "
+        "0.82 0.66 24 1 0.29 0.06 0.89 0.11 0.24 0.05 31 "
+        "2 0.44 0.90 0.58 0.59 0.72 0.54 20 avg / total "
+        "0.46 0.52 0.79 0.44 0.55 0.38 75"
     )
 
     report = classification_report_imbalanced(y_true, y_pred)
@@ -340,12 +341,12 @@ def test_classification_report_imbalanced_multiclass_with_digits():
 
     # print classification report with class names
     expected_report = (
-        "pre rec spe f1 geo iba sup setosa 0.82609 0.79167 "
-        "0.92157 0.80851 0.85415 0.72010 24 versicolor "
-        "0.33333 0.09677 0.86364 0.15000 0.28910 0.07717 "
-        "31 virginica 0.41860 0.90000 0.54545 0.57143 0.70065 "
-        "0.50831 20 avg / total 0.51375 0.53333 0.79733 "
-        "0.47310 0.57966 0.39788 75"
+        "pre rec spe f1 geo iba sup setosa 0.70370 0.79167 "
+        "0.84314 0.74510 0.81700 0.66405 24 versicolor "
+        "0.28571 0.06452 0.88636 0.10526 0.23913 0.05249 "
+        "31 virginica 0.43902 0.90000 0.58182 0.59016 0.72363 "
+        "0.54030 20 avg / total 0.46035 0.52000 0.79132 "
+        "0.43932 0.55325 0.37827 75"
     )
     report = classification_report_imbalanced(
         y_true,
@@ -357,10 +358,10 @@ def test_classification_report_imbalanced_multiclass_with_digits():
     assert _format_report(report) == expected_report
     # print classification report with label detection
     expected_report = (
-        "pre rec spe f1 geo iba sup 0 0.83 0.79 0.92 0.81 "
-        "0.85 0.72 24 1 0.33 0.10 0.86 0.15 0.29 0.08 31 "
-        "2 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total 0.51 "
-        "0.53 0.80 0.47 0.58 0.40 75"
+        "pre rec spe f1 geo iba sup 0 0.70 0.79 0.84 0.75 "
+        "0.82 0.66 24 1 0.29 0.06 0.89 0.11 0.24 0.05 31 "
+        "2 0.44 0.90 0.58 0.59 0.72 0.54 20 avg / total 0.46 "
+        "0.52 0.79 0.44 0.55 0.38 75"
     )
     report = classification_report_imbalanced(y_true, y_pred)
     assert _format_report(report) == expected_report
@@ -373,19 +374,19 @@ def test_classification_report_imbalanced_multiclass_with_string_label():
     y_pred = np.array(["blue", "green", "red"])[y_pred]
 
     expected_report = (
-        "pre rec spe f1 geo iba sup blue 0.83 0.79 0.92 0.81 "
-        "0.85 0.72 24 green 0.33 0.10 0.86 0.15 0.29 0.08 31 "
-        "red 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total "
-        "0.51 0.53 0.80 0.47 0.58 0.40 75"
+        "pre rec spe f1 geo iba sup blue 0.70 0.79 0.84 0.75 "
+        "0.82 0.66 24 green 0.29 0.06 0.89 0.11 0.24 0.05 31 "
+        "red 0.44 0.90 0.58 0.59 0.72 0.54 20 avg / total "
+        "0.46 0.52 0.79 0.44 0.55 0.38 75"
     )
     report = classification_report_imbalanced(y_true, y_pred)
     assert _format_report(report) == expected_report
 
     expected_report = (
-        "pre rec spe f1 geo iba sup a 0.83 0.79 0.92 0.81 0.85 "
-        "0.72 24 b 0.33 0.10 0.86 0.15 0.29 0.08 31 c 0.42 "
-        "0.90 0.55 0.57 0.70 0.51 20 avg / total 0.51 0.53 "
-        "0.80 0.47 0.58 0.40 75"
+        "pre rec spe f1 geo iba sup a 0.70 0.79 0.84 0.75 0.82 "
+        "0.66 24 b 0.29 0.06 0.89 0.11 0.24 0.05 31 c 0.44 "
+        "0.90 0.58 0.59 0.72 0.54 20 avg / total 0.46 0.52 "
+        "0.79 0.44 0.55 0.38 75"
     )
     report = classification_report_imbalanced(
         y_true, y_pred, target_names=["a", "b", "c"]
@@ -401,10 +402,10 @@ def test_classification_report_imbalanced_multiclass_with_unicode_label():
     y_pred = labels[y_pred]
 
     expected_report = (
-        "pre rec spe f1 geo iba sup blue¢ 0.83 0.79 0.92 0.81 "
-        "0.85 0.72 24 green¢ 0.33 0.10 0.86 0.15 0.29 0.08 31 "
-        "red¢ 0.42 0.90 0.55 0.57 0.70 0.51 20 avg / total "
-        "0.51 0.53 0.80 0.47 0.58 0.40 75"
+        "pre rec spe f1 geo iba sup blue¢ 0.70 0.79 0.84 0.75 "
+        "0.82 0.66 24 green¢ 0.29 0.06 0.89 0.11 0.24 0.05 31 "
+        "red¢ 0.44 0.90 0.58 0.59 0.72 0.54 20 avg / total "
+        "0.46 0.52 0.79 0.44 0.55 0.38 75"
     )
     report = classification_report_imbalanced(y_true, y_pred)
     assert _format_report(report) == expected_report
@@ -418,10 +419,10 @@ def test_classification_report_imbalanced_multiclass_with_long_string_label():
     y_pred = labels[y_pred]
 
     expected_report = (
-        "pre rec spe f1 geo iba sup blue 0.83 0.79 0.92 0.81 "
-        "0.85 0.72 24 greengreengreengreengreen 0.33 0.10 "
-        "0.86 0.15 0.29 0.08 31 red 0.42 0.90 0.55 0.57 0.70 "
-        "0.51 20 avg / total 0.51 0.53 0.80 0.47 0.58 0.40 75"
+        "pre rec spe f1 geo iba sup blue 0.70 0.79 0.84 0.75 "
+        "0.82 0.66 24 greengreengreengreengreen 0.29 0.06 "
+        "0.89 0.11 0.24 0.05 31 red 0.44 0.90 0.58 0.59 0.72 "
+        "0.54 20 avg / total 0.46 0.52 0.79 0.44 0.55 0.38 75"
     )
 
     report = classification_report_imbalanced(y_true, y_pred)

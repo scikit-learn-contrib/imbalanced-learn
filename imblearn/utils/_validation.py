@@ -78,8 +78,8 @@ class ArraysTransformer:
                 for col in ret.columns:
                     if (
                         ret[col].isnull().all()
-                        and ret[col].dtype == "datetime64[ns]"
-                        and props["dtypes"][col] == "timedelta64[ns]"
+                        and ret[col].dtype.kind == "M"  # datetime64
+                        and props["dtypes"][col].kind == "m"  # timedelta64
                     ):
                         ret[col] = pd.to_timedelta(["NaT"] * len(ret[col]))
                 # try again
