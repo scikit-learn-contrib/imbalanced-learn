@@ -45,7 +45,7 @@ classes_count
 # %%
 from imblearn.datasets import make_imbalance
 
-ratio = 30
+ratio, pos_label = 30, ">50K"
 df_res, y_res = make_imbalance(
     df,
     y,
@@ -65,7 +65,7 @@ import skore
 from sklearn.dummy import DummyClassifier
 
 dummy_clf = DummyClassifier(strategy="most_frequent")
-report = skore.evaluate(dummy_clf, df_res, y_res, splitter=5)
+report = skore.evaluate(dummy_clf, df_res, y_res, splitter=5, pos_label=pos_label)
 report.metrics.summarize().frame()
 
 # %% [markdown]
@@ -89,78 +89,29 @@ estimators = [("Dummy classifier", dummy_clf)]
 # Linear classifier baseline
 # ..........................
 #
-# We will create a machine learning pipeline using a
-# :class:`~sklearn.linear_model.LogisticRegression` classifier. In this regard,
-# we will need to one-hot encode the categorical columns and standardized the
-# numerical columns before to inject the data into the
-# :class:`~sklearn.linear_model.LogisticRegression` classifier.
-#
-# First, we define our numerical and categorical pipelines.
-
-# %%
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-
-num_pipe = make_pipeline(
-    StandardScaler(), SimpleImputer(strategy="mean", add_indicator=True)
-)
-cat_pipe = make_pipeline(
-    SimpleImputer(strategy="constant", fill_value="missing"),
-    OneHotEncoder(handle_unknown="ignore"),
-)
-
-# %% [markdown]
-# Then, we can create a preprocessor which will dispatch the categorical
-# columns to the categorical pipeline and the numerical columns to the
-# numerical pipeline
-
-# %%
-from sklearn.compose import make_column_selector as selector
-from sklearn.compose import make_column_transformer
-
-preprocessor_linear = make_column_transformer(
-    (num_pipe, selector(dtype_include="number")),
-    (cat_pipe, selector(dtype_include="category")),
-    n_jobs=2,
-)
-
-# %% [markdown]
-# Finally, we connect our preprocessor with our
-# :class:`~sklearn.linear_model.LogisticRegression`.
+# We use `skrub.tabular_pipeline` to create a machine learning pipeline with
+# proper preprocessing automatically adapted to the estimator. For a
+# :class:`~sklearn.linear_model.LogisticRegression`, it will automatically
+# handle missing values, encode categorical columns, and scale numerical
+# columns.
 
 # %%
 from sklearn.linear_model import LogisticRegression
+from skrub import tabular_pipeline
 
-lr_clf = make_pipeline(preprocessor_linear, LogisticRegression(max_iter=1000))
+lr_clf = tabular_pipeline(LogisticRegression(max_iter=1000))
 estimators.append(("Logistic regression", lr_clf))
 
 # %% [markdown]
 # We can verify that something similar is happening with a tree-based model
-# such as :class:`~sklearn.ensemble.RandomForestClassifier`. With this type of
-# classifier, we will not need to scale the numerical data, and we will only
-# need to ordinal encode the categorical data.
-
-from sklearn.ensemble import RandomForestClassifier
+# such as :class:`~sklearn.ensemble.RandomForestClassifier`. `tabular_pipeline`
+# will automatically adapt the preprocessing for tree-based models (e.g. no
+# scaling needed).
 
 # %%
-from sklearn.preprocessing import OrdinalEncoder
+from sklearn.ensemble import RandomForestClassifier
 
-num_pipe = SimpleImputer(strategy="mean", add_indicator=True)
-cat_pipe = make_pipeline(
-    SimpleImputer(strategy="constant", fill_value="missing"),
-    OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1),
-)
-
-preprocessor_tree = make_column_transformer(
-    (num_pipe, selector(dtype_include="number")),
-    (cat_pipe, selector(dtype_include="category")),
-    n_jobs=2,
-)
-
-rf_clf = make_pipeline(
-    preprocessor_tree, RandomForestClassifier(random_state=42, n_jobs=2)
-)
+rf_clf = tabular_pipeline(RandomForestClassifier(random_state=42, n_jobs=2))
 estimators.append(("Random forest", rf_clf))
 
 # %% [markdown]
@@ -176,13 +127,13 @@ estimators.append(("Random forest", rf_clf))
 # linear model and tree-based model.
 
 # %%
-from sklearn.base import clone
-
-lr_clf_balanced = clone(lr_clf).set_params(logisticregression__class_weight="balanced")
+lr_clf_balanced = tabular_pipeline(
+    LogisticRegression(max_iter=1000, class_weight="balanced")
+)
 estimators.append(("Logistic regression with balanced class weights", lr_clf_balanced))
 
-rf_clf_balanced = clone(rf_clf).set_params(
-    randomforestclassifier__class_weight="balanced"
+rf_clf_balanced = tabular_pipeline(
+    RandomForestClassifier(random_state=42, n_jobs=2, class_weight="balanced")
 )
 estimators.append(("Random forest with balanced class weights", rf_clf_balanced))
 
@@ -193,22 +144,24 @@ estimators.append(("Random forest with balanced class weights", rf_clf_balanced)
 # Another way is to resample the training set by under-sampling or
 # over-sampling some of the samples. `imbalanced-learn` provides some samplers
 # to do such processing.
+#
+# We need to use the `imbalanced-learn` pipeline to properly handle the
+# samplers within the pipeline. We insert the sampler before the final
+# estimator in the pipeline created by `skrub.tabular_pipeline`.
 
 # %%
 from imblearn.pipeline import make_pipeline as make_pipeline_with_sampler
 from imblearn.under_sampling import RandomUnderSampler
 
+# We extract the preprocessing steps and the estimator from the tabular
+# pipeline and insert the sampler before the estimator.
 lr_clf_undersampled = make_pipeline_with_sampler(
-    preprocessor_linear,
-    RandomUnderSampler(random_state=42),
-    LogisticRegression(max_iter=1000),
+    *lr_clf[:-1], RandomUnderSampler(random_state=42), lr_clf[-1]
 )
 estimators.append(("Under-sampling + Logistic regression", lr_clf_undersampled))
 
 rf_clf_undersampled = make_pipeline_with_sampler(
-    preprocessor_tree,
-    RandomUnderSampler(random_state=42),
-    RandomForestClassifier(random_state=42, n_jobs=2),
+    *rf_clf[:-1], RandomUnderSampler(random_state=42), rf_clf[-1]
 )
 estimators.append(("Under-sampling + Random forest", rf_clf_undersampled))
 
@@ -225,15 +178,14 @@ estimators.append(("Under-sampling + Random forest", rf_clf_undersampled))
 # %%
 from imblearn.ensemble import BalancedRandomForestClassifier
 
-brf_clf = make_pipeline(
-    preprocessor_tree,
+brf_clf = tabular_pipeline(
     BalancedRandomForestClassifier(
         sampling_strategy="all",
         replacement=True,
         bootstrap=False,
         random_state=42,
         n_jobs=2,
-    ),
+    )
 )
 estimators.append(("Balanced random forest", brf_clf))
 
@@ -242,14 +194,13 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 
 from imblearn.ensemble import BalancedBaggingClassifier
 
-bag_clf = make_pipeline(
-    preprocessor_tree,
+bag_clf = tabular_pipeline(
     BalancedBaggingClassifier(
         estimator=HistGradientBoostingClassifier(random_state=42),
         n_estimators=10,
         random_state=42,
         n_jobs=2,
-    ),
+    )
 )
 estimators.append(("Balanced bag of histogram gradient boosting", bag_clf))
 
@@ -258,15 +209,23 @@ estimators.append(("Balanced bag of histogram gradient boosting", bag_clf))
 # cross-validation and collect all results in a single dataframe.
 
 # %%
-import pandas as pd
+report = skore.evaluate(
+    [est for _, est in estimators], df_res, y_res, splitter=5, pos_label=pos_label
+)
+report
 
-results = {}
-for name, est in estimators:
-    report = skore.evaluate(est, df_res, y_res, splitter=5)
-    results[name] = report.metrics.summarize().frame()
-
-df_results = pd.concat(results)
-df_results
+# %%
+results = report.metrics.summarize().frame(favorability=False)
+results.rename(
+    {
+        previous_name: new_name
+        for previous_name, (new_name, _) in zip(
+            results.columns.get_level_values(1), estimators
+        )
+    },
+    axis="columns",
+    level=1,
+)
 
 # %% [markdown]
 # This last approach is the most effective. The different under-sampling allows
