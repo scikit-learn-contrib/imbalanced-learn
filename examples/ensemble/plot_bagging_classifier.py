@@ -45,16 +45,20 @@ pd.Series(y).value_counts(normalize=True)
 # been proposed over the years. We intend to illustrate how one can reuse the
 # :class:`~imblearn.ensemble.BalancedBaggingClassifier` by passing different
 # sampler.
-
-from sklearn.ensemble import BaggingClassifier
+#
+# We collect all estimators and use `skore.evaluate` to compare them
+# with cross-validation.
 
 # %%
-from sklearn.model_selection import cross_validate
+from sklearn.ensemble import BaggingClassifier
 
-ebb = BaggingClassifier()
-cv_results = cross_validate(ebb, X, y, scoring="balanced_accuracy")
+from imblearn.ensemble import BalancedBaggingClassifier
+from imblearn.over_sampling import SMOTE, RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
 
-print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std():.3f}")
+estimators = {}
+
+estimators["Bagging"] = BaggingClassifier()
 
 # %% [markdown]
 # Exactly Balanced Bagging and Over-Bagging
@@ -67,23 +71,13 @@ print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std(
 # been proposed first in [1]_.
 
 # %%
-from imblearn.ensemble import BalancedBaggingClassifier
-from imblearn.under_sampling import RandomUnderSampler
-
 # Exactly Balanced Bagging
-ebb = BalancedBaggingClassifier(sampler=RandomUnderSampler())
-cv_results = cross_validate(ebb, X, y, scoring="balanced_accuracy")
-
-print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std():.3f}")
-
-# %%
-from imblearn.over_sampling import RandomOverSampler
+estimators["Exactly Balanced Bagging"] = BalancedBaggingClassifier(
+    sampler=RandomUnderSampler()
+)
 
 # Over-bagging
-over_bagging = BalancedBaggingClassifier(sampler=RandomOverSampler())
-cv_results = cross_validate(over_bagging, X, y, scoring="balanced_accuracy")
-
-print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std():.3f}")
+estimators["Over-Bagging"] = BalancedBaggingClassifier(sampler=RandomOverSampler())
 
 # %% [markdown]
 # SMOTE-Bagging
@@ -95,13 +89,8 @@ print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std(
 # SMOTE-Bagging [2]_.
 
 # %%
-from imblearn.over_sampling import SMOTE
-
 # SMOTE-Bagging
-smote_bagging = BalancedBaggingClassifier(sampler=SMOTE())
-cv_results = cross_validate(smote_bagging, X, y, scoring="balanced_accuracy")
-
-print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std():.3f}")
+estimators["SMOTE-Bagging"] = BalancedBaggingClassifier(sampler=SMOTE())
 
 # %% [markdown]
 # Roughly Balanced Bagging
@@ -116,7 +105,7 @@ print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std(
 # Here, we illustrate this method by implementing a function in charge of
 # resampling and use the :class:`~imblearn.FunctionSampler` to integrate it
 # within a :class:`~imblearn.pipeline.Pipeline` and
-# :class:`~sklearn.model_selection.cross_validate`.
+# :func:`~sklearn.model_selection.cross_validate`.
 
 # %%
 from collections import Counter
@@ -155,12 +144,25 @@ def roughly_balanced_bagging(X, y, replace=False):
 
 
 # Roughly Balanced Bagging
-rbb = BalancedBaggingClassifier(
+estimators["Roughly Balanced Bagging"] = BalancedBaggingClassifier(
     sampler=FunctionSampler(func=roughly_balanced_bagging, kw_args={"replace": True})
 )
-cv_results = cross_validate(rbb, X, y, scoring="balanced_accuracy")
 
-print(f"{cv_results['test_score'].mean():.3f} +/- {cv_results['test_score'].std():.3f}")
+# %% [markdown]
+# Now, we can use `skore.evaluate` to evaluate each estimator with
+# cross-validation and compare the results.
+
+# %%
+import pandas as pd
+import skore
+
+results = {}
+for name, est in estimators.items():
+    report = skore.evaluate(est, X, y, splitter=5)
+    results[name] = report.metrics.summarize().frame()
+
+df_results = pd.concat(results)
+df_results
 
 
 # %% [markdown]

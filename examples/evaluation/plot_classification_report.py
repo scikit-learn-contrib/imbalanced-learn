@@ -4,15 +4,15 @@ Evaluate classification by compiling a report
 =============================================
 
 Specific metrics have been developed to evaluate classifier which has been
-trained using imbalanced data. :mod:`imblearn` provides a classification report
-similar to :mod:`sklearn`, with additional metrics specific to imbalanced
-learning problem.
+trained using imbalanced data. We use `skore.evaluate` to get a structured
+report of the classifier performance.
 """
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
 
+import skore
 from sklearn import datasets
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -20,7 +20,6 @@ from sklearn.preprocessing import StandardScaler
 
 from imblearn import over_sampling as os
 from imblearn import pipeline as pl
-from imblearn.metrics import classification_report_imbalanced
 
 print(__doc__)
 
@@ -52,8 +51,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=RANDOM_ST
 # Train the classifier with balancing
 pipeline.fit(X_train, y_train)
 
-# Test the classifier and get the prediction
-y_pred_bal = pipeline.predict(X_test)
-
-# Show the classification report
-print(classification_report_imbalanced(y_test, y_pred_bal))
+# Evaluate the classifier using skore
+report = skore.evaluate(pipeline, X_test, y_test, splitter="prefit")
+report.metrics.summarize().frame()

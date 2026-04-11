@@ -68,8 +68,9 @@ model = make_pipeline(pca, enn, smote, knn)
 # `predict_proba`, or `predict`.
 
 # %%
-from sklearn.metrics import classification_report
+import skore
 
 model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-print(classification_report(y_test, y_pred))
+
+report = skore.evaluate(model, X_test, y_test, splitter="prefit")
+report.metrics.summarize().frame()

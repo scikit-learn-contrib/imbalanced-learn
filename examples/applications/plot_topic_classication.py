@@ -37,8 +37,10 @@ categories = [
 newsgroups_train = fetch_20newsgroups(subset="train", categories=categories)
 newsgroups_test = fetch_20newsgroups(subset="test", categories=categories)
 
-X_train = newsgroups_train.data
-X_test = newsgroups_test.data
+import numpy as np
+
+X_train = np.array(newsgroups_train.data)
+X_test = np.array(newsgroups_test.data)
 
 y_train = newsgroups_train.target
 y_test = newsgroups_test.target
@@ -61,18 +63,17 @@ print(f"Test class distributions summary: {Counter(y_test)}")
 # imbalanced.
 
 # %%
+import skore
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import make_pipeline
 
 model = make_pipeline(TfidfVectorizer(), MultinomialNB())
 model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
 
 # %%
-from imblearn.metrics import classification_report_imbalanced
-
-print(classification_report_imbalanced(y_test, y_pred))
+report = skore.evaluate(model, X_test, y_test, splitter="prefit")
+report.metrics.summarize().frame()
 
 # %% [markdown]
 # Balancing the class before classification
@@ -95,7 +96,6 @@ from imblearn.under_sampling import RandomUnderSampler
 model = make_pipeline_imb(TfidfVectorizer(), RandomUnderSampler(), MultinomialNB())
 
 model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
 
 # %% [markdown]
 # Although the results are almost identical, it can be seen that the resampling
@@ -104,4 +104,5 @@ y_pred = model.predict(X_test)
 # slightly better.
 
 # %%
-print(classification_report_imbalanced(y_test, y_pred))
+report = skore.evaluate(model, X_test, y_test, splitter="prefit")
+report.metrics.summarize().frame()

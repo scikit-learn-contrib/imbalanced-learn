@@ -8,9 +8,8 @@ to single learner. However, they will be affected by class imbalance. This
 example shows the benefit of balancing the training set before to learn
 learners. We are making the comparison with non-balanced ensemble methods.
 
-We make a comparison using the balanced accuracy and geometric mean which are
-metrics widely used in the literature to evaluate models learned on imbalanced
-set.
+We make a comparison using `skore.evaluate` to obtain a structured report
+of the different classifiers.
 """
 
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
@@ -43,36 +42,21 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_sta
 # We train a decision tree classifier which will be used as a baseline for the
 # rest of this example.
 #
-# The results are reported in terms of balanced accuracy and geometric mean
-# which are metrics widely used in the literature to validate model trained on
-# imbalanced set.
+# The results are reported using `skore.evaluate` which provides a structured
+# report of the classifier performance.
 
 # %%
+import skore
 from sklearn.tree import DecisionTreeClassifier
 
 tree = DecisionTreeClassifier()
 tree.fit(X_train, y_train)
-y_pred_tree = tree.predict(X_test)
+
+report_tree = skore.evaluate(tree, X_test, y_test, splitter="prefit")
+report_tree.metrics.summarize().frame()
 
 # %%
-from sklearn.metrics import balanced_accuracy_score
-
-from imblearn.metrics import geometric_mean_score
-
-print("Decision tree classifier performance:")
-print(
-    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_tree):.2f} - "
-    f"Geometric mean {geometric_mean_score(y_test, y_pred_tree):.2f}"
-)
-
-# %%
-import seaborn as sns
-from sklearn.metrics import ConfusionMatrixDisplay
-
-sns.set_context("poster")
-
-disp = ConfusionMatrixDisplay.from_estimator(tree, X_test, y_test, colorbar=False)
-_ = disp.ax_.set_title("Decision tree")
+report_tree.metrics.confusion_matrix().plot()
 
 # %% [markdown]
 # Classification using bagging classifier with and without sampling
@@ -94,40 +78,25 @@ balanced_bagging = BalancedBaggingClassifier(n_estimators=50, random_state=0)
 bagging.fit(X_train, y_train)
 balanced_bagging.fit(X_train, y_train)
 
-y_pred_bc = bagging.predict(X_test)
-y_pred_bbc = balanced_bagging.predict(X_test)
-
 # %% [markdown]
 # Balancing each bootstrap sample allows to increase significantly the balanced
 # accuracy and the geometric mean.
 
 # %%
-print("Bagging classifier performance:")
-print(
-    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_bc):.2f} - "
-    f"Geometric mean {geometric_mean_score(y_test, y_pred_bc):.2f}"
-)
-print("Balanced Bagging classifier performance:")
-print(
-    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_bbc):.2f} - "
-    f"Geometric mean {geometric_mean_score(y_test, y_pred_bbc):.2f}"
-)
+report_bagging = skore.evaluate(bagging, X_test, y_test, splitter="prefit")
+report_bagging.metrics.summarize().frame()
 
 # %%
-import matplotlib.pyplot as plt
-
-fig, axs = plt.subplots(ncols=2, figsize=(10, 5))
-ConfusionMatrixDisplay.from_estimator(
-    bagging, X_test, y_test, ax=axs[0], colorbar=False
+report_balanced_bagging = skore.evaluate(
+    balanced_bagging, X_test, y_test, splitter="prefit"
 )
-axs[0].set_title("Bagging")
+report_balanced_bagging.metrics.summarize().frame()
 
-ConfusionMatrixDisplay.from_estimator(
-    balanced_bagging, X_test, y_test, ax=axs[1], colorbar=False
-)
-axs[1].set_title("Balanced Bagging")
+# %%
+report_bagging.metrics.confusion_matrix().plot()
 
-fig.tight_layout()
+# %%
+report_balanced_bagging.metrics.confusion_matrix().plot()
 
 # %% [markdown]
 # Classification using random forest classifier with and without sampling
@@ -154,35 +123,24 @@ brf = BalancedRandomForestClassifier(
 rf.fit(X_train, y_train)
 brf.fit(X_train, y_train)
 
-y_pred_rf = rf.predict(X_test)
-y_pred_brf = brf.predict(X_test)
-
 # %% [markdown]
 # Similarly to the previous experiment, the balanced classifier outperform the
 # classifier which learn from imbalanced bootstrap samples. In addition, random
 # forest outperforms the bagging classifier.
 
 # %%
-print("Random Forest classifier performance:")
-print(
-    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_rf):.2f} - "
-    f"Geometric mean {geometric_mean_score(y_test, y_pred_rf):.2f}"
-)
-print("Balanced Random Forest classifier performance:")
-print(
-    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_brf):.2f} - "
-    f"Geometric mean {geometric_mean_score(y_test, y_pred_brf):.2f}"
-)
+report_rf = skore.evaluate(rf, X_test, y_test, splitter="prefit")
+report_rf.metrics.summarize().frame()
 
 # %%
-fig, axs = plt.subplots(ncols=2, figsize=(10, 5))
-ConfusionMatrixDisplay.from_estimator(rf, X_test, y_test, ax=axs[0], colorbar=False)
-axs[0].set_title("Random forest")
+report_brf = skore.evaluate(brf, X_test, y_test, splitter="prefit")
+report_brf.metrics.summarize().frame()
 
-ConfusionMatrixDisplay.from_estimator(brf, X_test, y_test, ax=axs[1], colorbar=False)
-axs[1].set_title("Balanced random forest")
+# %%
+report_rf.metrics.confusion_matrix().plot()
 
-fig.tight_layout()
+# %%
+report_brf.metrics.confusion_matrix().plot()
 
 # %% [markdown]
 # Boosting classifier
@@ -200,33 +158,23 @@ from imblearn.ensemble import EasyEnsembleClassifier, RUSBoostClassifier
 estimator = AdaBoostClassifier(n_estimators=10)
 eec = EasyEnsembleClassifier(n_estimators=10, estimator=estimator)
 eec.fit(X_train, y_train)
-y_pred_eec = eec.predict(X_test)
 
 rusboost = RUSBoostClassifier(n_estimators=10, estimator=estimator)
 rusboost.fit(X_train, y_train)
-y_pred_rusboost = rusboost.predict(X_test)
 
 # %%
-print("Easy ensemble classifier performance:")
-print(
-    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_eec):.2f} - "
-    f"Geometric mean {geometric_mean_score(y_test, y_pred_eec):.2f}"
-)
-print("RUSBoost classifier performance:")
-print(
-    f"Balanced accuracy: {balanced_accuracy_score(y_test, y_pred_rusboost):.2f} - "
-    f"Geometric mean {geometric_mean_score(y_test, y_pred_rusboost):.2f}"
-)
+report_eec = skore.evaluate(eec, X_test, y_test, splitter="prefit")
+report_eec.metrics.summarize().frame()
 
 # %%
-fig, axs = plt.subplots(ncols=2, figsize=(10, 5))
+report_rusboost = skore.evaluate(rusboost, X_test, y_test, splitter="prefit")
+report_rusboost.metrics.summarize().frame()
 
-ConfusionMatrixDisplay.from_estimator(eec, X_test, y_test, ax=axs[0], colorbar=False)
-axs[0].set_title("Easy Ensemble")
-ConfusionMatrixDisplay.from_estimator(
-    rusboost, X_test, y_test, ax=axs[1], colorbar=False
-)
-axs[1].set_title("RUSBoost classifier")
+# %%
+report_eec.metrics.confusion_matrix().plot()
 
-fig.tight_layout()
+# %%
+import matplotlib.pyplot as plt
+
+report_rusboost.metrics.confusion_matrix().plot()
 plt.show()

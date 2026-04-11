@@ -14,13 +14,13 @@ not differ from the binary case.
 
 from collections import Counter
 
+import skore
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 from imblearn.datasets import make_imbalance
-from imblearn.metrics import classification_report_imbalanced
 from imblearn.pipeline import make_pipeline
 from imblearn.under_sampling import NearMiss
 
@@ -47,4 +47,5 @@ pipeline = make_pipeline(NearMiss(version=2), StandardScaler(), LogisticRegressi
 pipeline.fit(X_train, y_train)
 
 # Classify and report the results
-print(classification_report_imbalanced(y_test, pipeline.predict(X_test)))
+report = skore.evaluate(pipeline, X_test, y_test, splitter="prefit")
+report.metrics.summarize().frame()
