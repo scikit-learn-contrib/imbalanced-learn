@@ -1,4 +1,4 @@
-.. _over-sampling:
+oo.. _over-sampling:
 
 =============
 Over-sampling
@@ -11,6 +11,17 @@ A practical guide
 
 You can refer to
 :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`.
+
+.. warning::
+
+   Over-sampling methods (including random over-sampling, SMOTE, and ADASYN) do
+   not guarantee improved predictive performance. In particular, they may not
+   improve ranking metrics such as ROC-AUC and can degrade probability
+   calibration. We recommend validating the impact using the metric(s) that
+   matter for your use case, and considering alternatives such as using
+   ``class_weight`` or ``sample_weight`` in the estimator, tuning the decision
+   threshold, or collecting more minority class data when possible.
+
 
 .. _random_over_sampler:
 
