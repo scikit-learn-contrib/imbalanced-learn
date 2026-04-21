@@ -1,10 +1,24 @@
-.. _over-sampling:
-
 =============
 Over-sampling
 =============
 
 .. currentmodule:: imblearn.over_sampling
+
+.. warning::
+
+   Oversampling methods such as RandomOverSampler, SMOTE and ADASYN
+   artificially modify the class distribution of the training data.
+   While they can improve the recall of the minority class, they do not
+   necessarily improve ranking metrics such as ROC-AUC and can lead to
+   poorly calibrated predicted probabilities.
+
+   In many situations, using ``class_weight`` or ``sample_weight`` in the
+   classifier is a simpler and often more reliable alternative.
+
+   There is ongoing discussion in the research and practitioner community
+   about the usefulness of oversampling methods. These techniques should be
+   used with care and always validated using appropriate metrics, including
+   both discrimination (e.g. ROC-AUC) and probability calibration.
 
 A practical guide
 =================
