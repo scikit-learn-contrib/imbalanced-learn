@@ -586,7 +586,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         self.n_outputs_ = y.shape[1]
 
-        y_encoded, expanded_class_weight = self._validate_y_class_weight(y)
+        if sklearn_version >= parse_version("1.9"):
+            y_encoded, expanded_class_weight = self._validate_y_class_weight(
+                y, sample_weight
+            )
+        else:
+            y_encoded, expanded_class_weight = self._validate_y_class_weight(y)
 
         if getattr(y, "dtype", None) != DOUBLE or not y.flags.contiguous:
             y_encoded = np.ascontiguousarray(y_encoded, dtype=DOUBLE)
@@ -610,9 +615,16 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                 sample_weight = expanded_class_weight
 
         # Get bootstrap sample size
-        n_samples_bootstrap = _get_n_samples_bootstrap(
-            n_samples=X.shape[0], max_samples=self.max_samples
-        )
+        if sklearn_version >= parse_version("1.9"):
+            n_samples_bootstrap = _get_n_samples_bootstrap(
+                n_samples=X.shape[0],
+                max_samples=self.max_samples,
+                sample_weight=sample_weight,
+            )
+        else:
+            n_samples_bootstrap = _get_n_samples_bootstrap(
+                n_samples=X.shape[0], max_samples=self.max_samples
+            )
 
         # Check parameters
         self._validate_estimator()
@@ -781,13 +793,26 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             y_resample = y[sampler.sample_indices_]
 
             n_sample_subset = y_resample.shape[0]
-            n_samples_bootstrap = _get_n_samples_bootstrap(
-                n_sample_subset, self.max_samples
-            )
+            if sklearn_version >= parse_version("1.9"):
+                n_samples_bootstrap = _get_n_samples_bootstrap(
+                    n_sample_subset, self.max_samples, sample_weight=None
+                )
+            else:
+                n_samples_bootstrap = _get_n_samples_bootstrap(
+                    n_sample_subset, self.max_samples
+                )
 
-            unsampled_indices = _generate_unsampled_indices(
-                estimator.random_state, n_sample_subset, n_samples_bootstrap
-            )
+            if sklearn_version >= parse_version("1.9"):
+                unsampled_indices = _generate_unsampled_indices(
+                    estimator.random_state,
+                    n_sample_subset,
+                    n_samples_bootstrap,
+                    sample_weight=None,
+                )
+            else:
+                unsampled_indices = _generate_unsampled_indices(
+                    estimator.random_state, n_sample_subset, n_samples_bootstrap
+                )
 
             y_pred = self._get_oob_predictions(
                 estimator, X_resample[unsampled_indices, :]

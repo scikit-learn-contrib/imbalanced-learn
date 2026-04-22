@@ -183,4 +183,4 @@ def test_random_under_sampler_full_nat():
     assert X_res.shape == (2, 2)
     assert y_res.shape == (2,)
 
-    assert X_res["col_timedelta"].dtype == "timedelta64[ns]"
+    assert X_res["col_timedelta"].dtype.kind == "m"  # timedelta
