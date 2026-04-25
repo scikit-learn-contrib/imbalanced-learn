@@ -95,6 +95,8 @@ def _yield_sampler_checks(sampler):
     if allow_nan:
         yield check_samplers_nan
     yield check_samplers_list
+    yield check_samplers_empty_input
+    yield check_samplers_mismatched_input
     yield check_samplers_multiclass_ova
     yield check_samplers_preserve_dtype
     # we don't filter samplers based on their tag here because we want to make
@@ -610,6 +612,24 @@ def check_samplers_nan(name, sampler_orig):
     assert X_res.dtype == np.float64
     assert X_res.shape[0] == y_res.shape[0]
     assert np.any(np.isnan(X_res.ravel()))
+
+def check_samplers_empty_input(name, sampler_orig):
+    sampler = clone(sampler_orig)
+
+    X = np.empty((0, 3))
+    y = np.array([])
+
+    with raises(ValueError):
+        sampler.fit_resample(X,y)
+
+def check_samplers_mismatched_input(name, sampler_orig):
+    sampler = clone(sampler_orig)
+
+    X = np.array([7, 9])
+    y = np.array([0, 2, 1])
+
+    with raises(ValueError):
+        sampler.fit_resample(X,y)
 
 
 def check_classifier_on_multilabel_or_multioutput_targets(name, estimator_orig):
