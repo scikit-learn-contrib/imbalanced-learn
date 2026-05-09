@@ -229,9 +229,13 @@ def test_geometric_mean_multiclass(y_true, y_pred, correction, expected_gmean):
 @pytest.mark.parametrize(
     "y_true, y_pred, average, expected_gmean",
     [
-        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "macro", 0.471),
+        # Macro / weighted G-mean is the (weighted) mean of the per-class
+        # G-mean array — which for this input is [0.866, 0, 0]. Their
+        # value is therefore 0.866/3 = 0.2887, NOT sqrt(macro_sen *
+        # macro_spe) = 0.471 as the metric used to return before #1096.
+        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "macro", 0.2887),
         ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "micro", 0.471),
-        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "weighted", 0.471),
+        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "weighted", 0.2887),
         ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], None, [0.8660254, 0.0, 0.0]),
     ],
 )
@@ -251,12 +255,18 @@ def test_geometric_mean_average(y_true, y_pred, average, expected_gmean):
             "multiclass",
             0.707,
         ),
+        # weighted G-mean with labels=[0, 1] and the given sample
+        # weights: per-class (sen, spe) restricted to [0, 1] are
+        # [(1.0, 0.5), (0.5, 0.0)] with supports [2, 4]; per-class
+        # G-means = [sqrt(0.5), 0] = [0.707, 0]; weighted average =
+        # (2*0.707 + 4*0)/6 = 0.236. Old expected 0.333 came from
+        # sqrt(weighted_sen * weighted_spe), the bug fixed in #1096.
         (
             [0, 1, 2, 0, 1, 2],
             [0, 1, 1, 0, 0, 1],
             [1, 2, 1, 1, 2, 1],
             "weighted",
-            0.333,
+            0.236,
         ),
     ],
 )
@@ -278,8 +288,13 @@ def test_geometric_mean_sample_weight(
     [
         ("multiclass", 0.36),
         (None, [0.82, 0.24, 0.72]),
-        ("macro", 0.67),
-        ("weighted", 0.64),
+        # macro / weighted updated in #1096: now mean(per-class gmean)
+        # rather than sqrt(macro_sen * macro_spe). Per-class G-means
+        # for this fixture are [0.82, 0.24, 0.72]; macro = mean = 0.59;
+        # weighted mean over class supports (which differ slightly due
+        # to the 50/50 train/test split) = 0.55.
+        ("macro", 0.59),
+        ("weighted", 0.55),
     ],
 )
 def test_geometric_mean_score_prediction(average, expected_gmean):
@@ -287,6 +302,29 @@ def test_geometric_mean_score_prediction(average, expected_gmean):
 
     gmean = geometric_mean_score(y_true, y_pred, average=average)
     assert gmean == pytest.approx(expected_gmean, rel=R_TOL)
+
+
+@pytest.mark.parametrize(
+    "y_true, y_pred",
+    [
+        # binary case from #1096
+        ([0, 0, 1, 0, 1, 1], [0, 0, 0, 0, 0, 1]),
+        # binary, fully balanced
+        ([0, 1, 0, 1], [0, 1, 1, 0]),
+        # 3-class, asymmetric errors
+        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 1, 2]),
+    ],
+)
+def test_geometric_mean_macro_equals_mean_of_per_class(y_true, y_pred):
+    # Non-regression test for #1096: the macro G-mean MUST equal the
+    # arithmetic mean of the per-class G-mean array. Before #1096 the
+    # macro path returned sqrt(macro_sen * macro_spe), which generally
+    # disagrees with mean(per_class_gmean) — most visibly on binary
+    # inputs, where the original report observed 0.745 (correct ~0.577)
+    # for y_true=[0,0,1,0,1,1], y_pred=[0,0,0,0,0,1].
+    per_class = geometric_mean_score(y_true, y_pred, average=None)
+    macro = geometric_mean_score(y_true, y_pred, average="macro")
+    assert macro == pytest.approx(np.mean(per_class))
 
 
 def test_iba_geo_mean_binary():

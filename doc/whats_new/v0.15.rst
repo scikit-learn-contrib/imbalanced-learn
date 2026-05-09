@@ -11,6 +11,14 @@ Changelog
 Bug fixes
 .........
 
+- Fix :func:`~imblearn.metrics.geometric_mean_score` with
+  ``average='macro'`` (and ``'weighted'``): the function now returns the
+  (weighted) mean of the per-class G-means, matching ``np.mean`` of
+  ``geometric_mean_score(..., average=None)`` as users expect. The
+  previous implementation returned ``sqrt(macro_sen * macro_spe)``,
+  which disagreed with the per-class average — most visibly on binary
+  inputs. :pr:`0` by :user:`jbbqqf`.
+
 Enhancements
 ............
 

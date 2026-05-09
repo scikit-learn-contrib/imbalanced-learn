@@ -662,15 +662,47 @@ def geometric_mean_score(
     >>> geometric_mean_score(y_true, y_pred, correction=0.001)
     0.010...
     >>> geometric_mean_score(y_true, y_pred, average='macro')
-    0.471...
+    0.288...
     >>> geometric_mean_score(y_true, y_pred, average='micro')
     0.471...
     >>> geometric_mean_score(y_true, y_pred, average='weighted')
-    0.471...
+    0.288...
     >>> geometric_mean_score(y_true, y_pred, average=None)
     array([0.866...,  0.       ,  0.       ])
     """
     if average is None or average != "multiclass":
+        # For macro/weighted averaging the previous implementation passed
+        # ``average`` directly to sensitivity_specificity_support, which
+        # returns the macro/weighted average of sensitivity and
+        # specificity, and then took ``sqrt(sen * spe)`` of those scalars.
+        # That is the geometric mean of mean-sensitivity and
+        # mean-specificity, NOT the mean of per-class G-means — and the two
+        # disagree on binary inputs (see #1096). Compute the per-class
+        # G-mean first and aggregate, so that
+        # ``geometric_mean_score(..., average='macro')`` equals
+        # ``np.mean(geometric_mean_score(..., average=None))`` as users
+        # rightly expect.
+        if average in ("macro", "weighted"):
+            sen, spe, sup = sensitivity_specificity_support(
+                y_true,
+                y_pred,
+                labels=labels,
+                pos_label=pos_label,
+                average=None,
+                warn_for=("specificity", "specificity"),
+                sample_weight=sample_weight,
+            )
+            per_class = np.sqrt(sen * spe)
+            if average == "macro":
+                return np.mean(per_class)
+            # weighted: mean weighted by support (true samples per class).
+            # Mirror sklearn's behaviour and return 0 when the total
+            # support is zero rather than producing a NaN from 0/0.
+            total = sup.sum()
+            if total == 0:
+                return 0.0
+            return np.average(per_class, weights=sup)
+
         sen, spe, _ = sensitivity_specificity_support(
             y_true,
             y_pred,
