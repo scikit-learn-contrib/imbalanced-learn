@@ -17,7 +17,7 @@ Bug fixes
   is undefined when there are no ground-truth samples), matching the
   graceful handling of missing labels in :func:`sklearn.metrics.f1_score`
   with ``average='macro'``.
-  :pr:`0` by :user:`jbbqqf`.
+  :pr:`1172` by :user:`jbbqqf`.
 
 Enhancements
 ............
