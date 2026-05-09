@@ -17,7 +17,7 @@ Bug fixes
   ``geometric_mean_score(..., average=None)`` as users expect. The
   previous implementation returned ``sqrt(macro_sen * macro_spe)``,
   which disagreed with the per-class average — most visibly on binary
-  inputs. :pr:`0` by :user:`jbbqqf`.
+  inputs. :pr:`1173` by :user:`jbbqqf`.
 
 Enhancements
 ............
