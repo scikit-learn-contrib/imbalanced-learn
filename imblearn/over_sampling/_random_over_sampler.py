@@ -39,7 +39,7 @@ class RandomOverSampler(BaseOverSampler):
     {random_state}
 
     shrinkage : float or dict, default=None
-        Parameter controlling the shrinkage applied to the covariance matrix.
+        Parameter controlling the shrinkage applied to the covariance matrix
         when a smoothed bootstrap is generated. The options are:
 
         - if `None`, a normal bootstrap will be generated without perturbation.
@@ -52,6 +52,18 @@ class RandomOverSampler(BaseOverSampler):
 
         The value needs of the shrinkage parameter needs to be higher or equal
         to 0.
+
+        Note that this parameter does not appear in the original ROSE
+        paper [1]_. It plays the role of a smoothing bandwidth on the
+        kernel-density bootstrap (analogous to the *learning_rate* /
+        shrinkage in gradient boosting and to shrunk-covariance
+        estimation): ``shrinkage=0`` (or ``None``) recovers ordinary
+        random over-sampling without perturbation, while increasing
+        ``shrinkage`` widens the smoothing kernel and yields the ROSE
+        smoothed bootstrap. A single parameter therefore selects between
+        plain random over-sampling and ROSE without exposing two
+        separate classes to the user. See discussion in
+        scikit-learn-contrib/imbalanced-learn#1030.
 
         .. versionadded:: 0.8
 
