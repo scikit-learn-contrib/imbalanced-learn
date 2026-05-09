@@ -307,8 +307,12 @@ class SMOTE(BaseSMOTE):
     -----
     See the original papers: [1]_ for more details.
 
-    Supports multi-class resampling. A one-vs.-rest scheme is used as
-    originally proposed in [1]_.
+    Supports multi-class resampling. The multi-class extension uses a
+    one-vs.-rest scheme: when generating samples for a given minority
+    class, every other class is temporarily merged into a single "rest"
+    class. Note that the original reference [1]_ describes the binary
+    case only; the one-vs.-rest extension is a design choice of
+    ``imbalanced-learn``.
 
     References
     ----------
@@ -484,8 +488,12 @@ class SMOTENC(SMOTE):
     -----
     See the original paper [1]_ for more details.
 
-    Supports multi-class resampling. A one-vs.-rest scheme is used as
-    originally proposed in [1]_.
+    Supports multi-class resampling. The multi-class extension uses a
+    one-vs.-rest scheme: when generating samples for a given minority
+    class, every other class is temporarily merged into a single "rest"
+    class. Note that the original reference [1]_ describes the binary
+    case only; the one-vs.-rest extension is a design choice of
+    ``imbalanced-learn``.
 
     See
     :ref:`sphx_glr_auto_examples_over-sampling_plot_comparison_over_sampling.py`,
@@ -839,8 +847,12 @@ class SMOTEN(SMOTE):
     -----
     See the original papers: [1]_ for more details.
 
-    Supports multi-class resampling. A one-vs.-rest scheme is used as
-    originally proposed in [1]_.
+    Supports multi-class resampling. The multi-class extension uses a
+    one-vs.-rest scheme: when generating samples for a given minority
+    class, every other class is temporarily merged into a single "rest"
+    class. Note that the original reference [1]_ describes the binary
+    case only; the one-vs.-rest extension is a design choice of
+    ``imbalanced-learn``.
 
     References
     ----------

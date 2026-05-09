@@ -97,8 +97,12 @@ class EditedNearestNeighbours(BaseCleaningSampler):
     -----
     The method is based on [1]_.
 
-    Supports multi-class resampling. A one-vs.-rest scheme is used when
-    sampling a class as proposed in [1]_.
+    Supports multi-class resampling. The multi-class extension uses a
+    one-vs.-rest scheme: when cleaning a given class, all other classes
+    are temporarily treated as a single "rest" class. Note that the
+    original reference [1]_ does not discuss the multi-class case
+    explicitly; the one-vs.-rest extension is a design choice of
+    ``imbalanced-learn``.
 
     References
     ----------
@@ -286,10 +290,14 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
 
     Notes
     -----
-    The method is based on [1]_. A one-vs.-rest scheme is used when
-    sampling a class as proposed in [1]_.
+    The method is based on [1]_.
 
-    Supports multi-class resampling.
+    Supports multi-class resampling. The multi-class extension uses a
+    one-vs.-rest scheme: when cleaning a given class, all other classes
+    are temporarily treated as a single "rest" class. Note that the
+    original reference [1]_ does not discuss the multi-class case
+    explicitly; the one-vs.-rest extension is a design choice of
+    ``imbalanced-learn``.
 
     References
     ----------
@@ -513,8 +521,12 @@ class AllKNN(BaseCleaningSampler):
     -----
     The method is based on [1]_.
 
-    Supports multi-class resampling. A one-vs.-rest scheme is used when
-    sampling a class as proposed in [1]_.
+    Supports multi-class resampling. The multi-class extension uses a
+    one-vs.-rest scheme: when cleaning a given class, all other classes
+    are temporarily treated as a single "rest" class. Note that the
+    original reference [1]_ does not discuss the multi-class case
+    explicitly; the one-vs.-rest extension is a design choice of
+    ``imbalanced-learn``.
 
     References
     ----------

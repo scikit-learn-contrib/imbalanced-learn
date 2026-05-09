@@ -66,8 +66,11 @@ class TomekLinks(BaseCleaningSampler):
     -----
     This method is based on [1]_.
 
-    Supports multi-class resampling. A one-vs.-rest scheme is used as
-    originally proposed in [1]_.
+    Supports multi-class resampling. The one-vs.-rest scheme used here is
+    an extension introduced by ``imbalanced-learn``: when sampling each
+    minority class, all other classes are temporarily treated as a
+    single "rest" class for the purpose of identifying Tomek links. The
+    original reference [1]_ does not discuss the multi-class case.
 
     References
     ----------
