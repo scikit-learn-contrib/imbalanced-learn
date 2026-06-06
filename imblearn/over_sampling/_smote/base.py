@@ -619,6 +619,26 @@ class SMOTENC(SMOTE):
         if not sparse.issparse(X_ohe):
             X_ohe = sparse.csr_matrix(X_ohe, dtype=dtype_ohe)
 
+        # SMOTENC reconstructs the categorical features by activating exactly one
+        # column per categorical feature (see `_generate_samples`). This requires
+        # a complete one-hot encoding with one column per category. Encoders that
+        # emit fewer columns -- e.g. ``OneHotEncoder(drop=...)`` or one merging
+        # infrequent categories -- break this assumption and previously raised an
+        # opaque "zero-size array" error or silently produced wrong categories.
+        n_categories = sum(
+            categories.size for categories in self.categorical_encoder_.categories_
+        )
+        if X_ohe.shape[1] != n_categories:
+            raise ValueError(
+                "SMOTENC requires a one-hot encoding with one column per category "
+                "for the categorical features. The provided `categorical_encoder` "
+                f"produced {X_ohe.shape[1]} columns for {n_categories} categories. "
+                "This happens when the encoder drops columns (e.g. "
+                "`OneHotEncoder(drop=...)`) or merges infrequent categories, which "
+                "is not supported. Pass an encoder that keeps all categories, such "
+                "as `OneHotEncoder(handle_unknown='ignore')`."
+            )
+
         X_encoded = sparse.hstack((X_continuous, X_ohe), format="csr", dtype=dtype_ohe)
         X_resampled = [X_encoded.copy()]
         y_resampled = [y.copy()]
