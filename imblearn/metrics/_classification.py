@@ -165,7 +165,7 @@ def sensitivity_specificity_support(
     if average not in average_options and average != "binary":
         raise ValueError("average has to be one of " + str(average_options))
 
-    y_type, y_true, y_pred, sample_weight = _check_targets(
+    y_type, _, y_true, y_pred, sample_weight = _check_targets(
         y_true, y_pred, sample_weight=sample_weight
     )
     present_labels = unique_labels(y_true, y_pred)
@@ -1121,7 +1121,7 @@ def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
     >>> macro_averaged_mean_absolute_error(y_true_imbalanced, y_pred)
     0.16...
     """
-    _, y_true, y_pred, sample_weight = _check_targets(y_true, y_pred, sample_weight)
+    _, _, y_true, y_pred, sample_weight = _check_targets(y_true, y_pred, sample_weight)
     if sample_weight is not None:
         sample_weight = column_or_1d(sample_weight)
     else:

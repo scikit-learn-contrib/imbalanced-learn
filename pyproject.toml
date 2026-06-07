@@ -29,7 +29,7 @@ dependencies = [
    "numpy>=1.25.2,<3",
    "scipy>=1.11.4,<2",
    "scikit-learn>=1.4.2,<2",
-   "sklearn-compat>=0.1.5,<0.2",
+   "sklearn-compat>=0.1.6,<0.2",
    "joblib>=1.2.0,<2",
    "threadpoolctl>=2.0.0,<4",
 ]
@@ -95,7 +95,7 @@ platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 numpy = ">=1.25.2,<3"
 scipy = ">=1.11.4,<2"
 scikit-learn = ">=1.4.2,<2"
-sklearn-compat = ">=0.1.5,<0.2"
+sklearn-compat = ">=0.1.6,<0.2"
 joblib = ">=1.2.0,<2"
 threadpoolctl = ">=2.0.0,<4"
 
