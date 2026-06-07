@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from sklearn.exceptions import DataConversionWarning
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-from sklearn.utils._testing import _convert_container
+from sklearn_compat.utils._testing import _convert_container
 
 from imblearn.over_sampling import SMOTEN
 

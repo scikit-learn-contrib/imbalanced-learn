@@ -10,10 +10,10 @@ import numpy as np
 import pytest
 from sklearn.datasets import make_classification
 from sklearn.utils._testing import (
-    _convert_container,
     assert_allclose,
     assert_array_equal,
 )
+from sklearn_compat.utils._testing import _convert_container
 
 from imblearn.over_sampling import RandomOverSampler
 
