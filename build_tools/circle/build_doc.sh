@@ -9,7 +9,7 @@ fi
 
 # Install pixi
 # Keep this version in sync with `pixi-version` in `.github/workflows/*.yml`.
-PIXI_VERSION="v0.51.0"
+PIXI_VERSION="v0.70.1"
 curl -fsSL https://pixi.sh/install.sh | PIXI_VERSION="${PIXI_VERSION}" bash
 export PATH=/home/circleci/.pixi/bin:$PATH
 
