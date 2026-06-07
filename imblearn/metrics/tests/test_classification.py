@@ -548,3 +548,22 @@ def test_macro_averaged_mean_absolute_error_sample_weight():
     )
 
     assert ma_mae_unit_weights == pytest.approx(ma_mae_no_weights)
+
+
+def test_macro_averaged_mean_absolute_error_class_only_in_y_pred():
+    # Non-regression test for #1094: when a label appears only in y_pred
+    # (predicted but absent from ground truth), the metric must not raise.
+    # The per-class MAE for a class with zero ground-truth samples is
+    # undefined and is therefore excluded from the macro average — this
+    # matches the docstring intent ("computes each MAE for each class") and
+    # mirrors the graceful handling of absent labels by sklearn's
+    # f1_score(average='macro').
+    # y_true = [0, 0], y_pred = [0, 1]: only class 0 is in y_true, with
+    # samples [0, 0] vs predictions [0, 1] -> MAE = (0+1)/2 = 0.5; macro
+    # over the single ground-truth class = 0.5. Crucially, no exception.
+    assert macro_averaged_mean_absolute_error([0, 0], [0, 1]) == pytest.approx(0.5)
+
+    # Symmetric sanity check: when a label is missing from y_pred but
+    # present in y_true, we still compute MAE on each ground-truth slice.
+    # class 0: |0-0|=0; class 1: |1-0|=1; macro = (0+1)/2 = 0.5.
+    assert macro_averaged_mean_absolute_error([0, 1], [0, 0]) == pytest.approx(0.5)

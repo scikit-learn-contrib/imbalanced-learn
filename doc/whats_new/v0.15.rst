@@ -11,6 +11,14 @@ Changelog
 Bug fixes
 .........
 
+- Fix a bug in :func:`~imblearn.metrics.macro_averaged_mean_absolute_error`
+  where a ``ValueError`` was raised when a class was present in ``y_pred``
+  but absent from ``y_true``. Such classes are now skipped (per-class MAE
+  is undefined when there are no ground-truth samples), matching the
+  graceful handling of missing labels in :func:`sklearn.metrics.f1_score`
+  with ``average='macro'``.
+  :pr:`1172` by :user:`jbbqqf`.
+
 Enhancements
 ............
 

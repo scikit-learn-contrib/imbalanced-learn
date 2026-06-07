@@ -1127,7 +1127,12 @@ def macro_averaged_mean_absolute_error(y_true, y_pred, *, sample_weight=None):
     else:
         sample_weight = np.ones(y_true.shape)
     check_consistent_length(y_true, y_pred, sample_weight)
-    labels = unique_labels(y_true, y_pred)
+    # Iterate only over classes present in y_true: per-class MAE is undefined
+    # for a class that has zero ground-truth samples (mean_absolute_error
+    # rejects empty arrays). This matches the metric's documented intent
+    # ("computes each MAE for each class") and aligns the macro behaviour
+    # with sklearn's f1_score(average='macro') on labels missing from y_true.
+    labels = unique_labels(y_true)
     mae = []
     for possible_class in labels:
         indices = np.flatnonzero(y_true == possible_class)
