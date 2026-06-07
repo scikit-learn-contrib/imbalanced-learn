@@ -1,5 +1,30 @@
 .. _changes_0_14:
 
+Version 0.14.2
+==============
+
+**June 7, 2026**
+
+Changelog
+---------
+
+Maintenance
+...........
+
+- Compatibility with scikit-learn 1.9
+  :pr:`1178` by :user:`Guillaume Lemaitre <glemaitre>`.
+
+Bug fixes
+.........
+
+- Raise an informative error in :class:`~imblearn.over_sampling.SMOTENC` when the
+  provided `categorical_encoder` does not keep one column per category (e.g.
+  `OneHotEncoder(drop=...)` or an encoder merging infrequent categories), instead
+  of failing with an opaque ``zero-size array`` NumPy error.
+  :issue:`1035` by :user:`Imran Ahamed <immu4989>`.
+
+- Compatibility
+
 Version 0.14.1
 ==============
 
