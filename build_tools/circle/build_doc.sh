@@ -8,7 +8,9 @@ if [[ `type -t deactivate` ]]; then
 fi
 
 # Install pixi
-curl -fsSL https://pixi.sh/install.sh | bash
+# Keep this version in sync with `pixi-version` in `.github/workflows/*.yml`.
+PIXI_VERSION="v0.51.0"
+curl -fsSL https://pixi.sh/install.sh | PIXI_VERSION="${PIXI_VERSION}" bash
 export PATH=/home/circleci/.pixi/bin:$PATH
 
 # The pipefail is requested to propagate exit code
