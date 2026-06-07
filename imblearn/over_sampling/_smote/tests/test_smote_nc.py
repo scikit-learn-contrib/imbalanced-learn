@@ -277,6 +277,39 @@ def test_smotenc_categorical_encoder():
     assert getattr(smote.categorical_encoder_, "sparse_output") is False
 
 
+@pytest.mark.parametrize("drop", ["first", "if_binary"])
+def test_smotenc_categorical_encoder_dropped_columns(drop):
+    """Check that a clear error is raised when the categorical encoder does not
+    keep one column per category (e.g. ``OneHotEncoder(drop=...)``).
+
+    Non-regression test for:
+    https://github.com/scikit-learn-contrib/imbalanced-learn/issues/1035
+    """
+    rng = np.random.RandomState(0)
+    n_samples = 200
+    X = np.hstack(
+        [
+            rng.randn(n_samples, 2),
+            rng.randint(0, 2, size=(n_samples, 1)),  # binary categorical
+            rng.randint(0, 4, size=(n_samples, 1)),
+            rng.randint(0, 3, size=(n_samples, 1)),
+        ]
+    ).astype(object)
+    y = np.array([1] * 40 + [0] * (n_samples - 40))
+    rng.shuffle(y)
+
+    encoder = OneHotEncoder(drop=drop, handle_unknown="ignore")
+    smote = SMOTENC(
+        categorical_features=[2, 3, 4],
+        categorical_encoder=encoder,
+        sampling_strategy="minority",
+        random_state=0,
+    )
+    err_msg = "SMOTENC requires a one-hot encoding with one column per category"
+    with pytest.raises(ValueError, match=err_msg):
+        smote.fit_resample(X, y)
+
+
 def test_smotenc_bool_categorical():
     """Check that we don't try to early convert the full input data to numeric when
     handling a pandas dataframe.
