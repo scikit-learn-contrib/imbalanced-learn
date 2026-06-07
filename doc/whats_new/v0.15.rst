@@ -11,12 +11,6 @@ Changelog
 Bug fixes
 .........
 
-- Raise an informative error in :class:`~imblearn.over_sampling.SMOTENC` when the
-  provided `categorical_encoder` does not keep one column per category (e.g.
-  `OneHotEncoder(drop=...)` or an encoder merging infrequent categories), instead
-  of failing with an opaque ``zero-size array`` NumPy error.
-  :issue:`1035` by :user:`Imran Ahamed <immu4989>`.
-
 Enhancements
 ............
 
