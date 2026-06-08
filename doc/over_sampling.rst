@@ -20,7 +20,7 @@ Naive random over-sampling
 One way to fight this issue is to generate new samples in the classes which are
 under-represented. The most naive strategy is to generate new samples by
 randomly sampling with replacement the current available samples. The
-:class:`RandomOverSampler` offers such scheme::
+:class:`RandomOverSampler` offers such a scheme::
 
    >>> from sklearn.datasets import make_classification
    >>> X, y = make_classification(n_samples=5000, n_features=2, n_informative=2,
@@ -55,7 +55,7 @@ As a result, the majority class does not take over the other classes during the
 training process. Consequently, all classes are represented by the decision
 function.
 
-In addition, :class:`RandomOverSampler` allows to sample heterogeneous data
+In addition, :class:`RandomOverSampler` allows one to sample heterogeneous data
 (e.g. containing some strings)::
 
   >>> import numpy as np
@@ -84,8 +84,8 @@ If repeating samples is an issue, the parameter `shrinkage` allows to create a
 smoothed bootstrap. However, the original data needs to be numerical. The
 `shrinkage` parameter controls the dispersion of the new generated samples. We
 show an example illustrate that the new samples are not overlapping anymore
-once using a smoothed bootstrap. This ways of generating smoothed bootstrap is
-also known a Random Over-Sampling Examples
+once using a smoothed bootstrap. This way of generating smoothed bootstrap is
+also known as Random Over-Sampling Examples
 (ROSE) :cite:`torelli2014rose`.
 
 .. image:: ./auto_examples/over-sampling/images/sphx_glr_plot_comparison_over_sampling_003.png
@@ -127,7 +127,7 @@ Ill-posed examples
 
 While the :class:`RandomOverSampler` is over-sampling by duplicating some of
 the original samples of the minority class, :class:`SMOTE` and :class:`ADASYN`
-generate new samples in by interpolation. However, the samples used to
+generate new samples by interpolation. However, the samples used to
 interpolate/generate new synthetic samples differ. In fact, :class:`ADASYN`
 focuses on generating samples next to the original samples which are wrongly
 classified using a k-Nearest Neighbors classifier while the basic
@@ -174,7 +174,7 @@ SMOTE algorithm::
   [(0, 4674), (1, 4674), (2, 4674)]
 
 When dealing with mixed data type such as continuous and categorical features,
-none of the presented methods (apart of the class :class:`RandomOverSampler`)
+none of the presented methods (apart from the class :class:`RandomOverSampler`)
 can deal with the categorical features. The :class:`SMOTENC`
 :cite:`chawla2002smote` is an extension of the :class:`SMOTE` algorithm for
 which categorical data are treated differently::
@@ -213,8 +213,8 @@ Therefore, it can be seen that the samples generated in the first and last
 columns are belonging to the same categories originally presented without any
 other extra interpolation.
 
-However, :class:`SMOTENC` is only working when data is a mixed of numerical and
-categorical features. If data are made of only categorical data, one can use
+However, :class:`SMOTENC` only works when data is a mix of numerical and
+categorical features. If data consists of only categorical features, one can use
 the :class:`SMOTEN` variant :cite:`chawla2002smote`. The algorithm changes in
 two ways:
 
