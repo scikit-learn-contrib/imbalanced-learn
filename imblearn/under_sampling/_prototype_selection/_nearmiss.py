@@ -35,20 +35,17 @@ class NearMiss(BaseUnderSampler):
 
     n_neighbors : int or estimator object, default=3
         If ``int``, size of the neighbourhood to consider to compute the
-        average distance to the minority point samples.  If object, an
+        average distance to the minority samples.  If object, an
         estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
-        By default, it will be a 3-NN.
 
     n_neighbors_ver3 : int or estimator object, default=3
-        If ``int``, NearMiss-3 algorithm start by a phase of re-sampling. This
-        parameter correspond to the number of neighbours selected create the
-        subset in which the selection will be performed.  If object, an
-        estimator that inherits from
+        Only used if `version=3`. If ``int``, the number of target class samples that
+        are closest to a minority sample that will be retained in the first subsampling
+        step. If object, an estimator that inherits from
         :class:`~sklearn.neighbors.base.KNeighborsMixin` that will be used to
         find the k_neighbors.
-        By default, it will be a 3-NN.
 
     {n_jobs}
 
@@ -56,7 +53,7 @@ class NearMiss(BaseUnderSampler):
     ----------
     sampling_strategy_ : dict
         Dictionary containing the information to sample the dataset. The keys
-        corresponds to the class labels from which to sample and the values
+        correspond to the class labels from which to sample and the values
         are the number of samples to sample.
 
     nn_ : estimator object
@@ -147,7 +144,7 @@ class NearMiss(BaseUnderSampler):
     def _selection_dist_based(
         self, X, y, dist_vec, num_samples, key, sel_strategy="nearest"
     ):
-        """Select the appropriate samples depending of the strategy selected.
+        """Select the appropriate samples depending on the selected strategy.
 
         Parameters
         ----------
