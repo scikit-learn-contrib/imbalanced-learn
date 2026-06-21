@@ -210,15 +210,14 @@ In the next example, the different :class:`NearMiss` variant are applied on the
 previous toy example. It can be seen that the decision functions obtained in
 each case are different.
 
-When under-sampling a specific class, NearMiss-1 can be altered by the presence
-of noise. In fact, it will implied that samples of the targeted class will be
-selected around these samples as it is the case in the illustration below for
-the yellow class. However, in the normal case, samples next to the boundaries
-will be selected. NearMiss-2 will not have this effect since it does not focus
-on the nearest samples but rather on the farthest samples. We can imagine that
-the presence of noise can also altered the sampling mainly in the presence of
-marginal outliers. NearMiss-3 is probably the version which will be less
-affected by noise due to the first step sample selection.
+When under-sampling a specific class, NearMiss-1 tends to select majority 
+class samples closest to the decision boundary. These samples are the hardest 
+to classify correctly, but should not be confused with noisy samples. 
+NearMiss-2, in contrast, focuses on the farthest minority samples, making it 
+more robust to overlapping class distributions. NearMiss-3 is the least 
+sensitive to class overlap due to its two-step selection process, which 
+first ensures minimum coverage of minority samples before selecting majority 
+samples.
 
 .. image:: ./auto_examples/under-sampling/images/sphx_glr_plot_comparison_under_sampling_003.png
    :target: ./auto_examples/under-sampling/plot_comparison_under_sampling.html
