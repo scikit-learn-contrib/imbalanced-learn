@@ -174,3 +174,7 @@ You can refer to the `imbalanced-learn`_ documentation to find details about
 the implemented algorithms.
 
 .. _imbalanced-learn: https://imbalanced-learn.org/stable/user_guide.html
+
+---
+
+*[Mukller](https://github.com/Mukller)*
