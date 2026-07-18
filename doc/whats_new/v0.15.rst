@@ -17,5 +17,12 @@ Enhancements
 Compatibility
 .............
 
+- Replace the deprecated ``scipy.spatial.distance_matrix`` with
+  ``scipy.spatial.distance.cdist`` (Minkowski metric) in
+  :class:`~imblearn.metrics.pairwise.ValueDifferenceMetric`. This silences a
+  ``DeprecationWarning`` under SciPy 1.18 (the function is scheduled for
+  removal in SciPy 1.20); the computed distances are unchanged.
+  :pr:`1188` by :user:`chaoz23`.
+
 Deprecations
 ............

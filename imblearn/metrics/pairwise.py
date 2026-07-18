@@ -6,7 +6,7 @@
 import numbers
 
 import numpy as np
-from scipy.spatial import distance_matrix
+from scipy.spatial.distance import cdist
 from sklearn.base import BaseEstimator
 from sklearn.utils import check_consistent_length
 from sklearn.utils._param_validation import StrOptions
@@ -227,7 +227,8 @@ class ValueDifferenceMetric(BaseEstimator):
             else:
                 proba_feature_Y = proba_feature_X
             distance += (
-                distance_matrix(proba_feature_X, proba_feature_Y, p=self.k) ** self.r
+                cdist(proba_feature_X, proba_feature_Y, metric="minkowski", p=self.k)
+                ** self.r
             )
         return distance
 
