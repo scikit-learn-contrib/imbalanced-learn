@@ -264,7 +264,6 @@ class KMeansSMOTE(BaseSMOTE):
                 cluster_sparsities.append(self._find_cluster_sparsity(X_cluster_class))
 
             cluster_sparsities = np.array(cluster_sparsities)
-            cluster_weights = cluster_sparsities / cluster_sparsities.sum()
 
             if not valid_clusters:
                 raise RuntimeError(
@@ -273,6 +272,19 @@ class KMeansSMOTE(BaseSMOTE):
                     "cluster_balance_threshold or increasing the number of "
                     "clusters."
                 )
+
+            sparsity_sum = cluster_sparsities.sum()
+            if sparsity_sum == 0:
+                # All valid clusters are degenerate: every sample within each
+                # cluster is identical, so the pairwise distances -- and hence
+                # the sparsities -- are all zero. Dividing by the (zero) sum
+                # would yield NaN weights and later crash ``math.ceil``. Fall
+                # back to weighting the valid clusters uniformly.
+                cluster_weights = np.full(
+                    len(cluster_sparsities), 1 / len(cluster_sparsities)
+                )
+            else:
+                cluster_weights = cluster_sparsities / sparsity_sum
 
             for valid_cluster_idx, valid_cluster in enumerate(valid_clusters):
                 X_cluster = _safe_indexing(X, valid_cluster)

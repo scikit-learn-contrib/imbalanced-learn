@@ -11,6 +11,12 @@ Changelog
 Bug fixes
 .........
 
+- Fix a bug in :class:`~imblearn.over_sampling.KMeansSMOTE` where degenerate
+  clusters -- every sample identical, hence zero sparsity -- produced ``NaN``
+  cluster weights and crashed with ``ValueError: cannot convert float NaN to
+  integer``. Such clusters are now weighted uniformly.
+  :pr:`1187` by :user:`chaoz23`.
+
 Enhancements
 ............
 

@@ -93,6 +93,27 @@ def test_sample_kmeans_not_enough_clusters(data):
         smote.fit_resample(X, y)
 
 
+def test_sample_kmeans_degenerate_clusters():
+    """Check that identical samples within every valid cluster do not raise.
+
+    Non-regression test for
+    https://github.com/scikit-learn-contrib/imbalanced-learn/issues/1186:
+    when all valid clusters are degenerate (every point identical), their
+    sparsities are all zero and the weights used to be ``NaN``, crashing
+    ``math.ceil`` with ``ValueError: cannot convert float NaN to integer``.
+    """
+    X = np.array([[1.0, 1.0]] * 4 + [[2.0, 2.0]] * 4 + [[3.0, 3.0]] * 4)
+    y = np.array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0])
+    smote = KMeansSMOTE(
+        kmeans_estimator=KMeans(n_clusters=2, random_state=42),
+        random_state=42,
+        cluster_balance_threshold=0.1,
+    )
+    X_res, y_res = smote.fit_resample(X, y)
+    # the minority class has been oversampled up to the majority count
+    assert (y_res == 1).sum() == (y_res == 0).sum()
+
+
 @pytest.mark.parametrize("density_exponent", ["auto", 10])
 @pytest.mark.parametrize("cluster_balance_threshold", ["auto", 0.1])
 def test_sample_kmeans_density_estimation(density_exponent, cluster_balance_threshold):
