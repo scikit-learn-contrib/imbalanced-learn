@@ -207,6 +207,8 @@ class KMeansSMOTE(BaseSMOTE):
             euclidean_distances[ind, ind] = 0
 
         non_diag_elements = (X.shape[0] ** 2) - X.shape[0]
+        if non_diag_elements == 0:
+            return 0.0
         mean_distance = euclidean_distances.sum() / non_diag_elements
         exponent = (
             math.log(X.shape[0], 1.6) ** 1.8 * 0.16
@@ -288,7 +290,7 @@ class KMeansSMOTE(BaseSMOTE):
                 ]
 
                 cluster_n_samples = int(
-                    math.ceil(n_samples * cluster_weights[valid_cluster_idx])
+                    round(n_samples * cluster_weights[valid_cluster_idx])
                 )
 
                 X_new, y_new = self._make_samples(
