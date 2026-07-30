@@ -969,6 +969,12 @@ def classification_report_imbalanced(
 
     if target_names is None:
         target_names = [f"{label}" for label in labels]
+    elif len(labels) != len(target_names):
+        raise ValueError(
+            f"Number of classes, {len(labels)}, does not match size of "
+            f"target_names, {len(target_names)}. Try specifying the labels "
+            "parameter"
+        )
     name_width = max(len(cn) for cn in target_names)
     width = max(name_width, len(last_line_heading), digits)
 

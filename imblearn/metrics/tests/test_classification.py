@@ -520,6 +520,28 @@ def test_classification_report_imbalanced_dict_without_target_names():
     assert inner_keys == expected_inner_keys
 
 
+def test_classification_report_imbalanced_target_names_mismatch():
+    # A target_names whose length does not match the number of classes must
+    # raise a clear ValueError, matching sklearn.metrics.classification_report,
+    # instead of an opaque IndexError from deep inside the formatting loop.
+    y_true = [0, 1, 2, 2, 2]
+    y_pred = [0, 0, 2, 2, 1]
+
+    for target_names in (["a", "b"], ["a", "b", "c", "d"]):
+        with pytest.raises(ValueError, match="does not match size of target_names"):
+            classification_report_imbalanced(y_true, y_pred, target_names=target_names)
+
+    # A matching-length target_names still works in text and dict modes.
+    assert isinstance(
+        classification_report_imbalanced(y_true, y_pred, target_names=["a", "b", "c"]),
+        str,
+    )
+    report = classification_report_imbalanced(
+        y_true, y_pred, target_names=["a", "b", "c"], output_dict=True
+    )
+    assert {"a", "b", "c"}.issubset(report)
+
+
 @pytest.mark.parametrize(
     "y_true, y_pred, expected_ma_mae",
     [

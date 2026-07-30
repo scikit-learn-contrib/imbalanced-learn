@@ -11,6 +11,12 @@ Changelog
 Bug fixes
 .........
 
+- :func:`~imblearn.metrics.classification_report_imbalanced` now raises a
+  clear ``ValueError`` when the length of ``target_names`` does not match the
+  number of classes, matching :func:`sklearn.metrics.classification_report`,
+  instead of failing with an opaque ``IndexError``.
+  :pr:`1192` by :user:`Jayesh Suryavanshi <JayeshSuryavanshi>`.
+
 Enhancements
 ............
 
