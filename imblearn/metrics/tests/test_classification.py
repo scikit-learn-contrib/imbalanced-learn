@@ -394,6 +394,24 @@ def test_classification_report_imbalanced_multiclass_with_string_label():
     assert _format_report(report) == expected_report
 
 
+def test_classification_report_imbalanced_target_names_mismatch_raises():
+    # target_names shorter than inferred classes -> clear ValueError, not IndexError
+    y_true = [0, 1, 2, 2, 2]
+    y_pred = [0, 0, 2, 2, 1]
+    with pytest.raises(ValueError, match="Number of classes, 3, does not match size of target_names, 2"):
+        classification_report_imbalanced(y_true, y_pred, target_names=["a", "b"])
+
+
+def test_classification_report_imbalanced_target_names_mismatch_with_labels_warns():
+    # when labels is explicitly provided and shorter than target_names -> warning not error
+    y_true = [0, 1, 2, 2, 2]
+    y_pred = [0, 0, 2, 2, 1]
+    with pytest.warns(UserWarning, match="labels size, 2, does not match size of target_names, 3"):
+        classification_report_imbalanced(
+            y_true, y_pred, labels=[0, 1], target_names=["a", "b", "c"]
+        )
+
+
 def test_classification_report_imbalanced_multiclass_with_unicode_label():
     y_true, y_pred, _ = make_prediction(binary=False)
 
