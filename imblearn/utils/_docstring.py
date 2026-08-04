@@ -3,6 +3,10 @@
 # Authors: Guillaume Lemaitre <g.lemaitre58@gmail.com>
 # License: MIT
 
+from typing import Any, Dict, Tuple, TypeVar, Union
+
+T = TypeVar("T")
+
 
 class Substitution:
     """Decorate a function's or a class' docstring to perform string
@@ -12,13 +16,13 @@ class Substitution:
     (for example, if -OO was passed to the interpreter)
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         if args and kwargs:
             raise AssertionError("Only positional or keyword args are allowed")
 
-        self.params = args or kwargs
+        self.params: Union[Tuple[Any, ...], Dict[str, Any]] = args or kwargs
 
-    def __call__(self, obj):
+    def __call__(self, obj: T) -> T:
         if obj.__doc__:
             obj.__doc__ = obj.__doc__.format(**self.params)
         return obj
