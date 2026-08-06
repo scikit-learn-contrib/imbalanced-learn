@@ -4,9 +4,15 @@
 # License: MIT
 
 import warnings
+from typing import Any, Optional
 
 
-def deprecate_parameter(sampler, version_deprecation, param_deprecated, new_param=None):
+def deprecate_parameter(
+    sampler: Any,
+    version_deprecation: str,
+    param_deprecated: str,
+    new_param: Optional[str] = None,
+) -> None:
     """Helper to deprecate a parameter by another one.
 
     Parameters
