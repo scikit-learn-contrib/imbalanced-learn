@@ -33,12 +33,12 @@ class ArraysTransformer:
     """A class to convert sampler output arrays to their original types."""
 
     def __init__(self, X, y):
-        self.x_props = self._gets_props(X)
-        self.y_props = self._gets_props(y)
+        self.x_props = self._get_props(X)
+        self.y_props = self._get_props(y)
 
     def transform(self, X, y):
-        X = self._transfrom_one(X, self.x_props)
-        y = self._transfrom_one(y, self.y_props)
+        X = self._transform_one(X, self.x_props)
+        y = self._transform_one(y, self.y_props)
         if self.x_props["type"].lower() == "dataframe" and self.y_props[
             "type"
         ].lower() in {"series", "dataframe"}:
@@ -47,7 +47,7 @@ class ArraysTransformer:
             y.index = X.index
         return X, y
 
-    def _gets_props(self, array):
+    def _get_props(self, array):
         props = {}
         props["type"] = array.__class__.__name__
         props["columns"] = getattr(array, "columns", None)
@@ -55,7 +55,7 @@ class ArraysTransformer:
         props["dtypes"] = getattr(array, "dtypes", None)
         return props
 
-    def _transfrom_one(self, array, props):
+    def _transform_one(self, array, props):
         type_ = props["type"].lower()
         if type_ == "list":
             ret = array.tolist()
@@ -114,32 +114,15 @@ def _is_neighbors_object(estimator):
 
 
 def check_neighbors_object(nn_name, nn_object, additional_neighbor=0):
-    """Check the objects is consistent to be a k nearest neighbors.
-
-    Several methods in `imblearn` relies on k nearest neighbors. These objects
-    can be passed at initialisation as an integer or as an object that has
-    KNeighborsMixin-like attributes. This utility will create or clone said
-    object, ensuring it is KNeighbors-like.
-
-    Parameters
-    ----------
-    nn_name : str
-        The name associated to the object to raise an error if needed.
-
-    nn_object : int or KNeighborsMixin
-        The object to be checked.
-
-    additional_neighbor : int, default=0
-        Sometimes, some algorithm need an additional neighbors.
-
-    Returns
-    -------
-    nn_object : KNeighborsMixin
-        The k-NN object.
-    """
     if isinstance(nn_object, Integral):
         return NearestNeighbors(n_neighbors=nn_object + additional_neighbor)
-    # _is_neighbors_object(nn_object)
+    
+    if not _is_neighbors_object(nn_object):
+        raise TypeError(
+            f"[{nn_name}] has to be an integer or an estimator implementing "
+            f"the KNeighborsMixin API. Got {type(nn_object)} instead."
+        )
+        
     return clone(nn_object)
 
 
@@ -149,18 +132,15 @@ def _count_class_sample(y):
 
 
 def check_target_type(y, indicate_one_vs_all=False):
-    """Check the target types to be conform to the current samplers.
-
-    The current samplers should be compatible with ``'binary'``,
-    ``'multilabel-indicator'`` and ``'multiclass'`` targets only.
+    """Check target type and return target with optional one-vs-all indicator.
 
     Parameters
     ----------
     y : ndarray
-        The array containing the target.
+        Target values.
 
     indicate_one_vs_all : bool, default=False
-        Either to indicate if the targets are encoded in a one-vs-all fashion.
+        Whether to return a boolean indicating if target is one-vs-all.
 
     Returns
     -------
@@ -169,22 +149,20 @@ def check_target_type(y, indicate_one_vs_all=False):
 
     is_one_vs_all : bool, optional
         Indicate if the target was originally encoded in a one-vs-all fashion.
-        Only returned if ``indicate_multilabel=True``.
+        Only returned if indicate_one_vs_all=True.
     """
-    type_y = type_of_target(y)
-    if type_y == "multilabel-indicator":
-        if np.any(y.sum(axis=1) > 1):
-            raise ValueError(
-                "Imbalanced-learn currently supports binary, multiclass and "
-                "binarized encoded multiclasss targets. Multilabel and "
-                "multioutput targets are not supported."
-            )
-        y = y.argmax(axis=1)
-    else:
-        y = column_or_1d(y)
+    target_type = type_of_target(y)
+    if target_type not in TARGET_KIND:
+        raise ValueError(
+            "check_target_type can only be used with binary, multilabel-indicator, or "
+            "binarized encoded multiclass targets."
+        )
 
-    return (y, type_y == "multilabel-indicator") if indicate_one_vs_all else y
+    if indicate_one_vs_all:
+        is_one_vs_all = target_type == "multiclass"
+        return y, is_one_vs_all
 
+    return y
 
 def _sampling_strategy_all(y, sampling_type):
     """Returns sampling target by targeting all classes."""
@@ -435,7 +413,7 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
     return sampling_strategy_
 
 
-def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
+def check_sampling_strategy(sampling_strategy, y, sampling_type, *, **kwargs):
     """Sampling target validation for samplers.
 
     Checks that ``sampling_strategy`` is of consistent type and return a
@@ -575,6 +553,14 @@ def check_sampling_strategy(sampling_strategy, y, sampling_type, **kwargs):
             )
         )
 
+SAMPLING_KIND = (
+    "over-sampling",
+    "under-sampling",
+    "clean-sampling",
+    "ensemble",
+    "bypass",
+)
+TARGET_KIND = ("binary", "multiclass", "multilabel-indicator")
 
 SAMPLING_TARGET_KIND = {
     "minority": _sampling_strategy_minority,
