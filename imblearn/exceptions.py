@@ -27,6 +27,6 @@ def raise_isinstance_error(variable_name, possible_type, variable):
         If the instance is not of the possible type.
     """
     raise ValueError(
-        f"{variable_name} has to be one of {possible_type}. "
+        f"{variable_name} has to be one of {possible_type}."
         f"Got {type(variable)} instead."
     )
