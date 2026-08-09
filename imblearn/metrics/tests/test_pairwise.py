@@ -170,3 +170,15 @@ def test_value_difference_value_unfitted(data):
 
     with pytest.raises(NotFittedError):
         ValueDifferenceMetric().pairwise(X_encoded)
+
+
+@pytest.mark.parametrize("invalid_arg", ["X", "Y"])
+def test_value_difference_metric_wrong_n_features(data, invalid_arg):
+    X, y = data
+    X_encoded = OrdinalEncoder(dtype=np.int32).fit_transform(X)
+    X_invalid = np.column_stack([X_encoded, np.zeros(X_encoded.shape[0])])
+    vdm = ValueDifferenceMetric().fit(X_encoded, y)
+
+    pairwise_args = (X_invalid,) if invalid_arg == "X" else (X_encoded, X_invalid)
+    with pytest.raises(ValueError, match="X has 4 features"):
+        vdm.pairwise(*pairwise_args)

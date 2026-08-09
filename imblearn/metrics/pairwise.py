@@ -210,11 +210,15 @@ class ValueDifferenceMetric(BaseEstimator):
             The VDM pairwise distance.
         """
         check_is_fitted(self)
-        X = check_array(X, ensure_non_negative=True, dtype=np.int32)
+        X = validate_data(
+            self, X=X, reset=False, ensure_non_negative=True, dtype=np.int32
+        )
         n_samples_X = X.shape[0]
 
         if Y is not None:
-            Y = check_array(Y, ensure_non_negative=True, dtype=np.int32)
+            Y = validate_data(
+                self, X=Y, reset=False, ensure_non_negative=True, dtype=np.int32
+            )
             n_samples_Y = Y.shape[0]
         else:
             n_samples_Y = n_samples_X

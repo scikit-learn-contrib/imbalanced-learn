@@ -11,6 +11,11 @@ Changelog
 Bug fixes
 .........
 
+- Fix :meth:`~imblearn.metrics.pairwise.ValueDifferenceMetric.pairwise` to
+  validate the number of features in `X` and `Y` instead of silently ignoring
+  extra features.
+  :issue:`1198` by :user:`A Aswanth Raj <aswanth-07>`.
+
 Enhancements
 ............
 
