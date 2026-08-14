@@ -671,21 +671,9 @@ def geometric_mean_score(
     array([0.866...,  0.       ,  0.       ])
     """
     if average is None or average != "multiclass":
-        # Check if we are doing binary classification
-        # Safe check: infer from data first
-        unique_y = np.unique(np.hstack((y_true, y_pred)))
-        is_binary = len(unique_y) <= 2
-
-        # If labels are explicitly provided and indicate multiclass (>2), respect that
-        if labels is not None and len(labels) > 2:
-            is_binary = False
-
         # LOGIC:
-        # If Binary + Macro/Weighted: Use your FIX (calculate per-class first)
-        # If Multiclass: Keep OLD behavior (calculate average first) to pass existing tests
-        calc_average = average
-        if is_binary and average in ["macro", "weighted"]:
-            calc_average = None
+        # For macro and weighted, calculate per-class first, then average
+        calc_average = None if average in ["macro", "weighted"] else average
 
         sen, spe, sup = sensitivity_specificity_support(
             y_true,
@@ -697,8 +685,7 @@ def geometric_mean_score(
             sample_weight=sample_weight,
         )
 
-        # If we forced None (Binary fix), calculate mean of G-means
-        if calc_average is None and average in ["macro", "weighted"]:
+        if average in ["macro", "weighted"]:
             gmean_per_class = np.sqrt(sen * spe)
             if average == "macro":
                 return np.mean(gmean_per_class)

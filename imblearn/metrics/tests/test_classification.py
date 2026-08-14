@@ -228,9 +228,9 @@ def test_geometric_mean_multiclass(y_true, y_pred, correction, expected_gmean):
 @pytest.mark.parametrize(
     "y_true, y_pred, average, expected_gmean",
     [
-        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "macro", 0.471),
+        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "macro", 0.289),
         ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "micro", 0.471),
-        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "weighted", 0.471),
+        ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], "weighted", 0.289),
         ([0, 1, 2, 0, 1, 2], [0, 2, 1, 0, 0, 1], None, [0.8660254, 0.0, 0.0]),
     ],
 )
@@ -255,7 +255,7 @@ def test_geometric_mean_average(y_true, y_pred, average, expected_gmean):
             [0, 1, 1, 0, 0, 1],
             [1, 2, 1, 1, 2, 1],
             "weighted",
-            0.333,
+            0.236,
         ),
     ],
 )
@@ -277,8 +277,8 @@ def test_geometric_mean_sample_weight(
     [
         ("multiclass", 0.41),
         (None, [0.85, 0.29, 0.7]),
-        ("macro", 0.68),
-        ("weighted", 0.65),
+        ("macro", 0.61),
+        ("weighted", 0.58),
     ],
 )
 def test_geometric_mean_score_prediction(average, expected_gmean):
