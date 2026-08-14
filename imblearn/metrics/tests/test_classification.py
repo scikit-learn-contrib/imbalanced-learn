@@ -566,3 +566,15 @@ def test_geometric_mean_score_binary_macro_vs_per_class():
 
     # They should be equal
     assert library_macro == pytest.approx(expected_macro)
+
+def test_geometric_mean_score_multiclass_macro_vs_per_class():
+    """Check that multiclass + macro average matches mean of per-class scores."""
+    y_true = [0, 1, 2, 0, 1, 2]
+    y_pred = [0, 2, 1, 0, 1, 2]
+
+    per_class_scores = geometric_mean_score(y_true, y_pred, average=None)
+    expected_macro = np.mean(per_class_scores)
+
+    library_macro = geometric_mean_score(y_true, y_pred, average="macro")
+
+    assert library_macro == pytest.approx(expected_macro)
