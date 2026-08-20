@@ -1,5 +1,7 @@
 """Implement generators for ``tensorflow`` which will balance the data."""
 
+from math import ceil
+
 from scipy.sparse import issparse
 from sklearn.base import clone
 from sklearn.utils import _safe_indexing, check_random_state
@@ -61,7 +63,8 @@ def balanced_batch_generator(
         y_batch) or (X_batch, y_batch, sampler_weight_batch).
 
     steps_per_epoch : int
-        The number of samples per epoch.
+        The number of batches per epoch. The final batch may contain fewer
+        than ``batch_size`` samples.
     """
 
     random_state = check_random_state(random_state)
@@ -93,5 +96,5 @@ def balanced_batch_generator(
 
     return (
         generator(X, y, sample_weight, indices, batch_size),
-        int(indices.size // batch_size),
+        ceil(indices.size / batch_size),
     )

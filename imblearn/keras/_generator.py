@@ -1,5 +1,7 @@
 """Implement generators for ``keras`` which will balance the data."""
 
+from math import ceil
+
 
 # This is a trick to avoid an error during tests collection with pytest. We
 # avoid the error when importing the package raise the error at the moment of
@@ -177,7 +179,7 @@ class BalancedBatchGenerator(*ParentClass):  # type: ignore
         random_state.shuffle(self.indices_)
 
     def __len__(self):
-        return int(self.indices_.size // self.batch_size)
+        return ceil(self.indices_.size / self.batch_size)
 
     def __getitem__(self, index):
         X_resampled = _safe_indexing(
@@ -253,8 +255,8 @@ def balanced_batch_generator(
         y_batch) or (X_batch, y_batch, sampler_weight_batch).
 
     steps_per_epoch : int
-        The number of samples per epoch. Required by ``fit_generator`` in
-        keras.
+        The number of batches per epoch. The final batch may contain fewer
+        than ``batch_size`` samples. Required by ``fit_generator`` in keras.
 
     Examples
     --------
