@@ -87,6 +87,23 @@ def test_balanced_batch_generator_class_sparse(data, keep_sparse):
             assert not sparse.issparse(X_batch)
 
 
+@pytest.mark.parametrize(
+    "batch_size, expected_batch_sizes", [(64, [64, 26]), (128, [90])]
+)
+def test_balanced_batch_generator_class_includes_partial_batch(
+    data, batch_size, expected_batch_sizes
+):
+    training_generator = BalancedBatchGenerator(
+        *data, batch_size=batch_size, random_state=42
+    )
+
+    assert len(training_generator) == len(expected_batch_sizes)
+    assert [
+        training_generator[index][0].shape[0]
+        for index in range(len(training_generator))
+    ] == expected_batch_sizes
+
+
 def test_balanced_batch_generator_function_no_return_indices(data):
     with pytest.raises(ValueError, match="needs to have an attribute"):
         balanced_batch_generator(

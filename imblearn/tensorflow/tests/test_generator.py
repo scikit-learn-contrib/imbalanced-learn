@@ -169,3 +169,19 @@ def test_balanced_batch_generator_function_sparse(data, keep_sparse):
             assert sparse.issparse(X_batch)
         else:
             assert not sparse.issparse(X_batch)
+
+
+@pytest.mark.parametrize(
+    "batch_size, expected_batch_sizes", [(64, [64, 26]), (128, [90])]
+)
+def test_balanced_batch_generator_includes_partial_batch(
+    data, batch_size, expected_batch_sizes
+):
+    training_generator, steps_per_epoch = balanced_batch_generator(
+        *data, batch_size=batch_size, random_state=42
+    )
+
+    assert steps_per_epoch == len(expected_batch_sizes)
+    assert [
+        next(training_generator)[0].shape[0] for _ in range(steps_per_epoch)
+    ] == expected_batch_sizes
