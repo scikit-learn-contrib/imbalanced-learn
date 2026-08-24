@@ -216,9 +216,12 @@ class ValueDifferenceMetric(BaseEstimator):
         n_samples_X = X.shape[0]
 
         if Y is not None:
-            Y = validate_data(
-                self, X=Y, reset=False, ensure_non_negative=True, dtype=np.int32
-            )
+            Y = check_array(Y, ensure_non_negative=True, dtype=np.int32, input_name="Y")
+            if Y.shape[1] != self.n_features_in_:
+                raise ValueError(
+                    f"Y has {Y.shape[1]} features, but {self.__class__.__name__} "
+                    f"is expecting {self.n_features_in_} features as input."
+                )
             n_samples_Y = Y.shape[0]
         else:
             n_samples_Y = n_samples_X

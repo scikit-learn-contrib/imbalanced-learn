@@ -180,5 +180,5 @@ def test_value_difference_metric_wrong_n_features(data, invalid_arg):
     vdm = ValueDifferenceMetric().fit(X_encoded, y)
 
     pairwise_args = (X_invalid,) if invalid_arg == "X" else (X_encoded, X_invalid)
-    with pytest.raises(ValueError, match="X has 4 features"):
+    with pytest.raises(ValueError, match=rf"{invalid_arg} has 4 features"):
         vdm.pairwise(*pairwise_args)
