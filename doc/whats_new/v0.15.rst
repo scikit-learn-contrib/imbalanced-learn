@@ -11,6 +11,15 @@ Changelog
 Bug fixes
 .........
 
+- Fix a bug in :func:`~imblearn.metrics.sensitivity_specificity_support` where
+  the specificity was computed incorrectly when ``sample_weight`` was provided
+  (the true-negative count mixed the raw sample count with weighted sums, which
+  could make the specificity exceed 1). This also affects
+  :func:`~imblearn.metrics.specificity_score`,
+  :func:`~imblearn.metrics.geometric_mean_score` and
+  :func:`~imblearn.metrics.classification_report_imbalanced`, which rely on it.
+  :issue:`1180` by :user:`Imran Ahamed <immu4989>`.
+
 Enhancements
 ............
 

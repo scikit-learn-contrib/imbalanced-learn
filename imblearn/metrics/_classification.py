@@ -244,7 +244,16 @@ def sensitivity_specificity_support(
             true_sum = np.bincount(y_true, weights=sample_weight, minlength=len(labels))
 
         # Compute the true negative
-        tn_sum = y_true.size - (pred_sum + true_sum - tp_sum)
+        # ``pred_sum``, ``true_sum`` and ``tp_sum`` are weighted sums when
+        # ``sample_weight`` is provided, so the population size must be the total
+        # weight rather than the raw number of samples. Using ``y_true.size``
+        # here mixes counts with weighted sums and can make ``tn_sum`` negative
+        # (and the resulting specificity exceed 1).
+        if sample_weight is not None:
+            total = np.sum(sample_weight)
+        else:
+            total = y_true.size
+        tn_sum = total - (pred_sum + true_sum - tp_sum)
 
         # Retain only selected labels
         indices = np.searchsorted(sorted_labels, labels[:n_labels])
