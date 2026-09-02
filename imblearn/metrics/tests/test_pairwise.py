@@ -170,3 +170,60 @@ def test_value_difference_value_unfitted(data):
 
     with pytest.raises(NotFittedError):
         ValueDifferenceMetric().pairwise(X_encoded)
+
+
+def test_pairwise_rejects_extra_features():
+    X_train = np.array(
+        [
+            [0, 0],
+            [0, 1],
+            [1, 0],
+            [1, 1],
+        ],
+        dtype=np.int32,
+    )
+
+    y = np.array([0, 0, 1, 1])
+
+    vdm = ValueDifferenceMetric().fit(X_train, y)
+
+    X_valid = np.array(
+        [
+            [0, 0],
+            [1, 1],
+        ],
+        dtype=np.int32,
+    )
+
+    X_extra = np.column_stack([X_valid, [999, 999]])
+
+    with pytest.raises(ValueError):
+        vdm.pairwise(X_extra)
+
+def test_pairwise_rejects_extra_features_in_y():
+    X_train = np.array(
+        [
+            [0, 0],
+            [0, 1],
+            [1, 0],
+            [1, 1],
+        ],
+        dtype=np.int32,
+    )
+
+    y = np.array([0, 0, 1, 1])
+
+    vdm = ValueDifferenceMetric().fit(X_train, y)
+
+    X_valid = np.array(
+        [
+            [0, 0],
+            [1, 1],
+        ],
+        dtype=np.int32,
+    )
+
+    Y_extra = np.column_stack([X_valid, [999, 999]])
+
+    with pytest.raises(ValueError):
+        vdm.pairwise(X_valid, Y_extra)

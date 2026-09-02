@@ -209,15 +209,29 @@ class ValueDifferenceMetric(BaseEstimator):
         distance_matrix : ndarray of shape (n_samples, n_samples)
             The VDM pairwise distance.
         """
+
         check_is_fitted(self)
-        X = check_array(X, ensure_non_negative=True, dtype=np.int32)
-        n_samples_X = X.shape[0]
+        X = validate_data(
+            self,
+            X=X,
+            reset=False,
+            dtype=np.int32,
+            ensure_non_negative=True,
+        )
+        n_samples_X=X.shape[0]
 
         if Y is not None:
-            Y = check_array(Y, ensure_non_negative=True, dtype=np.int32)
-            n_samples_Y = Y.shape[0]
+            Y=validate_data(
+                self,
+                X=Y,
+                reset=False,
+                dtype=np.int32,
+                ensure_non_negative=True,
+            )
+            n_samples_Y=Y.shape[0]
         else:
-            n_samples_Y = n_samples_X
+            n_samples_Y=n_samples_X
+
 
         distance = np.zeros(shape=(n_samples_X, n_samples_Y), dtype=np.float64)
         for feature_idx in range(self.n_features_in_):
