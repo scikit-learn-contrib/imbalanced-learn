@@ -450,7 +450,7 @@ Our implementation offers the possibility to set the number of observations
 to put at random in the set :math:`C` through the parameter ``n_seeds_S``.
 
 :class:`NeighbourhoodCleaningRule` will focus on cleaning the data than
-condensing them :cite:`laurikkala2001improving`. Therefore, it will used the
+condensing them :cite:`laurikkala2001improving`. Therefore, it will use the
 union of samples to be rejected between the :class:`EditedNearestNeighbours`
 and the output a 3 nearest neighbors classifier. The class can be used as::
 
