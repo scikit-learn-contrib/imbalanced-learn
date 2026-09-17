@@ -15,7 +15,7 @@ from sklearn_compat.utils.estimator_checks import (
     parametrize_with_checks as parametrize_with_checks_sklearn,
 )
 
-from imblearn.over_sampling import RandomOverSampler
+from imblearn.over_sampling import MLSMOTE, RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.utils._test_common.instance_generator import (
     _get_check_estimator_ids,
@@ -92,6 +92,10 @@ def test_strategy_as_ordered_dict(Sampler):
     "estimator", _tested_estimators(), ids=_get_check_estimator_ids
 )
 def test_pandas_column_name_consistency(estimator):
+    # MLSMOTE exclusively supports multilabel-indicator targets while this
+    # check uses single-label targets.
+    if isinstance(estimator, MLSMOTE):
+        pytest.skip("MLSMOTE requires multilabel-indicator targets.")
     _set_checking_parameters(estimator)
     with ignore_warnings(category=(FutureWarning)):
         with warnings.catch_warnings(record=True) as record:

@@ -4,6 +4,7 @@ perform over-sampling.
 """
 
 from imblearn.over_sampling._adasyn import ADASYN
+from imblearn.over_sampling._mlsmote import MLSMOTE
 from imblearn.over_sampling._random_over_sampler import RandomOverSampler
 from imblearn.over_sampling._smote import (
     SMOTE,
@@ -16,6 +17,7 @@ from imblearn.over_sampling._smote import (
 
 __all__ = [
     "ADASYN",
+    "MLSMOTE",
     "RandomOverSampler",
     "KMeansSMOTE",
     "SMOTE",

@@ -25,10 +25,19 @@ SMOTE algorithms
    :toctree: generated/
    :template: class.rst
 
-   SMOTE
-   SMOTENC
-   SMOTEN
-   ADASYN
-   BorderlineSMOTE
-   KMeansSMOTE
-   SVMSMOTE
+    SMOTE
+    SMOTENC
+    SMOTEN
+    ADASYN
+    BorderlineSMOTE
+    KMeansSMOTE
+    SVMSMOTE
+
+Multilabel over-sampling
+------------------------
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+   MLSMOTE

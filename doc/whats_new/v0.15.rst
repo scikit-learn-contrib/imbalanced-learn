@@ -14,6 +14,13 @@ Bug fixes
 Enhancements
 ............
 
+- Add :class:`~imblearn.over_sampling.MLSMOTE`, an over-sampler for
+  imbalanced multilabel data based on Charte et al. (2015). It detects
+  minority labels with the imbalance ratio per label and generates synthetic
+  samples by interpolating continuous features and voting categorical
+  features and labelsets among nearest neighbors.
+  :pr:`1213` by :user:`OmarAlaaeldein <OmarAlaaeldein>`.
+
 Compatibility
 .............
 

@@ -251,6 +251,36 @@ being "not apple", we expect new data generated belonging to the category
    array(['not apple', 'not apple', 'not apple', 'not apple', 'not apple',
           'not apple'], dtype=object)
 
+.. _mlsmote:
+
+Multilabel over-sampling with MLSMOTE
+-------------------------------------
+
+None of the samplers above support multilabel targets in which each sample
+is associated with a set of labels. The :class:`MLSMOTE` sampler
+:cite:`charte2015mlsmote` fills this gap. It detects the minority labels
+with the imbalance ratio per label (`IRLbl`) and its mean (`MeanIR`): every
+label with an `IRLbl` greater than the `MeanIR` is oversampled. For each
+instance carrying such a label, the `k` nearest neighbors within the
+instances carrying the same label are found using the Euclidean distance
+over continuous features and the Value Difference Metric over categorical
+features (declared through `categorical_features`). Continuous features of a
+new sample are interpolated while categorical features take the most
+frequent value among the neighbors. The labelset of a new sample is derived
+from the labelsets of its seed instance and neighbors according to
+`labelset_strategy` (``ranking``, ``union``, or ``intersection``)::
+
+  >>> from sklearn.datasets import make_multilabel_classification
+  >>> from imblearn.over_sampling import MLSMOTE
+  >>> X, y = make_multilabel_classification(
+  ...     n_samples=50, n_classes=3, n_labels=1, random_state=0)
+  >>> print(y.sum(axis=0))
+  [15 21 17]
+  >>> sampler = MLSMOTE(random_state=0)
+  >>> X_res, y_res = sampler.fit_resample(X, y)
+  >>> print(y_res.sum(axis=0))
+  [41 27 42]
+
 Mathematical formulation
 ========================
 

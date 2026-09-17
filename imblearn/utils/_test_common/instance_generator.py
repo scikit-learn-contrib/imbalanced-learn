@@ -25,6 +25,7 @@ from imblearn.ensemble import (
 )
 from imblearn.over_sampling import (
     ADASYN,
+    MLSMOTE,
     SMOTE,
     SMOTEN,
     SMOTENC,
@@ -66,6 +67,7 @@ INIT_PARAMS = {
     ADASYN: dict(random_state=42),
     BorderlineSMOTE: dict(random_state=42),
     KMeansSMOTE: dict(random_state=0),
+    MLSMOTE: dict(random_state=42),
     RandomOverSampler: dict(random_state=42),
     SMOTE: dict(random_state=42),
     SMOTEN: dict(random_state=42),
@@ -203,6 +205,82 @@ PER_ESTIMATOR_XFAIL_CHECKS = {
         "check_sample_weight_equivalence": "FIXME",
         "check_sample_weight_equivalence_on_sparse_data": "FIXME",
         "check_sample_weight_equivalence_on_dense_data": "FIXME",
+    },
+    MLSMOTE: {
+        # MLSMOTE exclusively supports multilabel-indicator targets while the
+        # common checks below use single-label targets.
+        "check_target_type": (
+            "MLSMOTE supports multilabel targets by design instead of raising an error."
+        ),
+        "check_samplers_one_label": "MLSMOTE requires multilabel-indicator targets.",
+        "check_samplers_fit": "MLSMOTE requires multilabel-indicator targets.",
+        "check_samplers_fit_resample": "MLSMOTE requires multilabel-indicator targets.",
+        "check_samplers_sampling_strategy_fit_resample": (
+            "MLSMOTE only supports sampling_strategy='auto' and requires"
+            " multilabel-indicator targets."
+        ),
+        "check_samplers_pandas": "MLSMOTE requires multilabel-indicator targets.",
+        "check_samplers_pandas_sparse": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_samplers_list": "MLSMOTE requires multilabel-indicator targets.",
+        "check_samplers_multiclass_ova": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_samplers_preserve_dtype": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_samplers_sample_indices": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_samplers_2d_target": "MLSMOTE requires multilabel-indicator targets.",
+        "check_sampler_get_feature_names_out": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_sampler_get_feature_names_out_pandas": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_fit_score_takes_y": "MLSMOTE requires multilabel-indicator targets.",
+        "check_estimators_overwrite_params": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_dont_overwrite_parameters": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_estimators_fit_returns_self": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_readonly_memmap_input": "MLSMOTE requires multilabel-indicator targets.",
+        "check_n_features_in_after_fitting": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_positive_only_tag_during_fit": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_estimators_dtypes": "MLSMOTE requires multilabel-indicator targets.",
+        "check_dtype_object": "MLSMOTE requires multilabel-indicator targets.",
+        "check_estimators_empty_data_messages": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_pipeline_consistency": "MLSMOTE requires multilabel-indicator targets.",
+        "check_estimators_nan_inf": "MLSMOTE requires multilabel-indicator targets.",
+        "check_estimators_pickle": "MLSMOTE requires multilabel-indicator targets.",
+        "check_f_contiguous_array_estimator": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_methods_sample_order_invariance": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_methods_subset_invariance": (
+            "MLSMOTE requires multilabel-indicator targets."
+        ),
+        "check_fit2d_1sample": "MLSMOTE requires multilabel-indicator targets.",
+        "check_fit2d_1feature": "MLSMOTE requires multilabel-indicator targets.",
+        "check_dict_unchanged": "MLSMOTE requires multilabel-indicator targets.",
+        "check_fit_idempotent": "MLSMOTE requires multilabel-indicator targets.",
+        "check_fit_check_is_fitted": "MLSMOTE requires multilabel-indicator targets.",
+        "check_n_features_in": "MLSMOTE requires multilabel-indicator targets.",
+        "check_fit2d_predict1d": "MLSMOTE requires multilabel-indicator targets.",
     },
     NearMiss: {
         "check_samplers_fit_resample": "FIXME",
