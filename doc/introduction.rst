@@ -66,7 +66,7 @@ The output will be of the following type:
 Problem statement regarding imbalanced data sets
 ------------------------------------------------
 
-The learning and prediction phrases of machine learning algorithms
+The learning and prediction phases of machine learning algorithms
 can be impacted by the issue of **imbalanced datasets**. This imbalance
 refers to the difference in the number of samples across different classes.
 We demonstrate the effect of training a `Logistic Regression classifier
