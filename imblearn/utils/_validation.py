@@ -400,7 +400,7 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
         n_sample_majority = max(target_stats.values())
         class_majority = max(target_stats, key=target_stats.get)
         sampling_strategy_ = {
-            key: int(n_sample_majority * sampling_strategy - value)
+            key: int(round(n_sample_majority * sampling_strategy)) - value
             for (key, value) in target_stats.items()
             if key != class_majority
         }
@@ -415,7 +415,7 @@ def _sampling_strategy_float(sampling_strategy, y, sampling_type):
         n_sample_minority = min(target_stats.values())
         class_minority = min(target_stats, key=target_stats.get)
         sampling_strategy_ = {
-            key: int(n_sample_minority / sampling_strategy)
+            key: int(round(n_sample_minority / sampling_strategy))
             for (key, value) in target_stats.items()
             if key != class_minority
         }
