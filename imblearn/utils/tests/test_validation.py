@@ -380,3 +380,20 @@ def test_deprecate_positional_args_warns_for_function():
 )
 def test_is_neighbors_object(estimator, is_neighbor_estimator):
     assert _is_neighbors_object(estimator) == is_neighbor_estimator
+
+
+def test_sampling_strategy_float_no_fp_truncation():
+    # regression for gh-1215: a float ratio whose exact target is a whole number
+    # must not be truncated by float error into a spurious ValueError
+    from collections import Counter
+
+    import numpy as np
+
+    from imblearn.over_sampling import RandomOverSampler
+
+    X = np.arange(128).reshape(-1, 1)
+    y = np.array([0] * 100 + [1] * 28)
+    _, y_res = RandomOverSampler(sampling_strategy=0.29, random_state=0).fit_resample(
+        X, y
+    )
+    assert Counter(y_res)[1] == 29
