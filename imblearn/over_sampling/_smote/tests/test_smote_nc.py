@@ -416,3 +416,41 @@ def test_smote_nc_categorical_features_auto_error():
     err_msg = "SMOTE-NC is not designed to work only with numerical features"
     with pytest.raises(ValueError, match=err_msg):
         smote.fit_resample(X, y)
+
+
+
+def test_smotenc_categorical_features_bool_mask_array():
+    """Check that a numpy boolean mask array for `categorical_features` works.
+
+    Non-regression test for:
+    https://github.com/scikit-learn-contrib/imbalanced-learn/issues/1217
+    """
+    X, y, categorical_features = data_heterogneous_masked()
+    categorical_features = np.array(categorical_features)
+    smote = SMOTENC(categorical_features=categorical_features, random_state=0)
+    X_res, y_res = smote.fit_resample(X, y)
+    assert X_res.shape[1] == X.shape[1]
+
+
+def test_smotenc_categorical_features_str_array():
+    """Check that a numpy array of strings for `categorical_features` works.
+
+    Non-regression test for:
+    https://github.com/scikit-learn-contrib/imbalanced-learn/issues/1217
+    """
+    pd = pytest.importorskip("pandas")
+
+    X = pd.DataFrame(
+        {
+            "A": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "B": ["a", "b"] * 5,
+            "C": ["a", "b", "c"] * 3 + ["a"],
+        }
+    )
+    X = pd.concat([X] * 10, ignore_index=True)
+    y = np.array([0] * 70 + [1] * 30)
+    smote = SMOTENC(categorical_features=np.array(["B", "C"]), random_state=0)
+    X_res, y_res = smote.fit_resample(X, y)
+    assert X_res["B"].isin(["a", "b"]).all()
+    assert X_res["C"].isin(["a", "b", "c"]).all()
+
