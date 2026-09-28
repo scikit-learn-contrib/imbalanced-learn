@@ -336,3 +336,16 @@ def test_renn_iter_attribute(max_iter, n_iter):
     renn = RepeatedEditedNearestNeighbours(max_iter=max_iter)
     renn.fit_resample(X, Y)
     assert renn.n_iter_ == n_iter
+
+
+def test_renn_sample_indices_when_converging_at_first_iteration():
+    """Check that `sample_indices_` matches the resampled data when no sample is
+    removed at the first iteration and the classes are not sorted in `y`."""
+    X = np.array([[0.0], [10.0], [0.1], [10.1], [0.2], [10.2], [0.3], [10.3], [0.4]])
+    y = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0])
+    renn = RepeatedEditedNearestNeighbours(n_neighbors=2)
+    X_resampled, y_resampled = renn.fit_resample(X, y)
+
+    assert renn.n_iter_ == 1
+    assert_array_equal(X_resampled, X[renn.sample_indices_])
+    assert_array_equal(y_resampled, y[renn.sample_indices_])
