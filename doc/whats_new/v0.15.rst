@@ -11,6 +11,9 @@ Changelog
 Bug fixes
 .........
 
+- Fix :class:`~imblearn.under_sampling.CondensedNearestNeighbour` that could skip a sample misclassified by the 1-NN classifier and therefore not add it to the condensed set.
+  :pr:`1222` by :user:`Mohammad Hijjawi <MohammadHijjawi97>`.
+
 Enhancements
 ............
 

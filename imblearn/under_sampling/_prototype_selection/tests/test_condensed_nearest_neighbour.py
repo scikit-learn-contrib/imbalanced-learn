@@ -117,3 +117,16 @@ def test_condensed_nearest_neighbour_multiclass():
         assert est.classes_[1] in {1, 2, 3}  # other classes
         other_classes.append(est.classes_[1])
     assert len(set(other_classes)) == len(other_classes)
+
+
+@pytest.mark.parametrize("random_state", range(10))
+def test_condensed_nearest_neighbour_keeps_misclassified_samples(random_state):
+    """Check that a sample misclassified by the 1-NN fitted on the minority class
+    and the seed is kept, whatever the seed selected."""
+    X = np.array([[0.0], [0.1], [10.0], [10.1], [0.2], [10.2], [10.3]])
+    y = np.array([0, 0, 1, 1, 1, 1, 1])
+    cnn = CondensedNearestNeighbour(random_state=random_state)
+    cnn.fit_resample(X, y)
+
+    # the sample [0.2] of the majority class is closer to the minority class
+    assert 4 in cnn.sample_indices_
