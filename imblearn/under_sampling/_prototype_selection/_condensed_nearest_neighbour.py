@@ -171,13 +171,12 @@ CondensedNearestNeighbour  # doctest: +SKIP
                 # Randomly get one sample from the majority class
                 # Generate the index to select
                 idx_maj = np.flatnonzero(y == target_class)
-                idx_maj_sample = idx_maj[
-                    random_state.randint(
-                        low=0,
-                        high=target_stats[target_class],
-                        size=self.n_seeds_S,
-                    )
-                ]
+                sel_idx_maj = random_state.randint(
+                    low=0,
+                    high=target_stats[target_class],
+                    size=self.n_seeds_S,
+                )
+                idx_maj_sample = idx_maj[sel_idx_maj]
 
                 # Create the set C - One majority samples and all minority
                 C_indices = np.append(
@@ -194,7 +193,9 @@ CondensedNearestNeighbour  # doctest: +SKIP
                 # fit knn on C
                 self.estimators_.append(clone(estimator).fit(C_x, C_y))
 
-                good_classif_label = idx_maj_sample.copy()
+                # indices relative to S of the samples that do not need to be
+                # checked
+                good_classif_label = sel_idx_maj.copy()
                 # Check each sample in S if we keep it or drop it
                 for idx_sam, (x_sam, y_sam) in enumerate(zip(S_x, S_y)):
                     # Do not select sample which are already well classified
@@ -210,6 +211,7 @@ CondensedNearestNeighbour  # doctest: +SKIP
                     # append it in C_x
                     if y_sam != pred_y:
                         # Keep the index for later
+                        sel_idx_maj = np.append(sel_idx_maj, idx_sam)
                         idx_maj_sample = np.append(idx_maj_sample, idx_maj[idx_sam])
 
                         # Update C
@@ -225,7 +227,7 @@ CondensedNearestNeighbour  # doctest: +SKIP
                         # well classified elements
                         pred_S_y = self.estimators_[-1].predict(S_x)
                         good_classif_label = np.unique(
-                            np.append(idx_maj_sample, np.flatnonzero(pred_S_y == S_y))
+                            np.append(sel_idx_maj, np.flatnonzero(pred_S_y == S_y))
                         )
 
                 idx_under = np.concatenate((idx_under, idx_maj_sample), axis=0)
