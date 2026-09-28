@@ -397,17 +397,6 @@ class RepeatedEditedNearestNeighbours(BaseCleaningSampler):
             self.sample_indices_ = self.sample_indices_[self.enn_.sample_indices_]
 
             if b_conv or b_min_bec_maj or b_remove_maj_class:
-                if b_conv:
-                    (
-                        X_,
-                        y_,
-                    ) = (
-                        X_enn,
-                        y_enn,
-                    )
-                    self.sample_indices_ = self.sample_indices_[
-                        self.enn_.sample_indices_
-                    ]
                 break
 
         self.n_iter_ = n_iter + 1
