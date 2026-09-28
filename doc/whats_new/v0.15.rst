@@ -11,6 +11,9 @@ Changelog
 Bug fixes
 .........
 
+- Fix the attribute `sample_indices_` of :class:`~imblearn.under_sampling.RepeatedEditedNearestNeighbours` that did not match the resampled data when the algorithm stopped at the first iteration because no sample was removed.
+  :pr:`1221` by :user:`Mohammad Hijjawi <MohammadHijjawi97>`.
+
 Enhancements
 ............
 
