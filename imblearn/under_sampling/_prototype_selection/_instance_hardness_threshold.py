@@ -171,11 +171,12 @@ class InstanceHardnessThreshold(BaseUnderSampler):
             n_jobs=self.n_jobs,
             method="predict_proba",
         )
-        probabilities = probabilities[range(len(y)), y]
+        classes, y_indices = np.unique(y, return_inverse=True)
+        probabilities = probabilities[range(len(y)), y_indices]
 
         idx_under = np.empty((0,), dtype=int)
 
-        for target_class in np.unique(y):
+        for target_class in classes:
             if target_class in self.sampling_strategy_.keys():
                 n_samples = self.sampling_strategy_[target_class]
                 threshold = np.percentile(

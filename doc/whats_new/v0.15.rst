@@ -11,6 +11,10 @@ Changelog
 Bug fixes
 .........
 
+- Fix :class:`~imblearn.under_sampling.InstanceHardnessThreshold` to select
+  true-class probabilities for arbitrary class labels, including negative integers
+  and strings.
+
 Enhancements
 ............
 

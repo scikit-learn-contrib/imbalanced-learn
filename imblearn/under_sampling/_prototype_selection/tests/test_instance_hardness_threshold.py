@@ -4,6 +4,8 @@
 # License: MIT
 
 import numpy as np
+import pytest
+from sklearn.datasets import make_classification
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB as NB
 from sklearn.pipeline import make_pipeline
@@ -110,3 +112,53 @@ def test_iht_estimator_pipeline():
     X_resampled, y_resampled = iht.fit_resample(X, Y)
     assert X_resampled.shape == (12, 2)
     assert y_resampled.shape == (12,)
+
+
+@pytest.mark.parametrize(
+    "labels",
+    [
+        [0, 1],
+        [-1, 0],
+        [1, 2],
+        [False, True],
+        ["negative", "positive"],
+        [-2, -1, 0],
+        [2, 5, 9],
+        ["cat", "dog", "bird"],
+    ],
+)
+@pytest.mark.parametrize("estimator", [NB(), RandomForestClassifier(n_estimators=10)])
+@pytest.mark.parametrize("sampling_strategy", ["auto", "dict"])
+def test_iht_fit_resample_target_labels(labels, estimator, sampling_strategy):
+    labels = np.asarray(labels)
+    X, y = make_classification(
+        n_samples=180,
+        n_features=6,
+        n_informative=4,
+        n_redundant=0,
+        n_classes=len(labels),
+        n_clusters_per_class=1,
+        weights=[0.7, 0.3] if len(labels) == 2 else [0.6, 0.25, 0.15],
+        random_state=12,
+    )
+    strategy = (
+        dict.fromkeys(range(len(labels)), 12)
+        if sampling_strategy == "dict"
+        else sampling_strategy
+    )
+    reference = InstanceHardnessThreshold(
+        estimator=estimator, sampling_strategy=strategy, random_state=0, cv=3
+    )
+    reference.fit_resample(X, y)
+    if sampling_strategy == "dict":
+        strategy = dict.fromkeys(labels, 12)
+    sampler = InstanceHardnessThreshold(
+        estimator=estimator, sampling_strategy=strategy, random_state=0, cv=3
+    )
+    X_resampled, y_resampled = sampler.fit_resample(X, labels[y])
+
+    assert_array_equal(
+        np.sort(sampler.sample_indices_), np.sort(reference.sample_indices_)
+    )
+    assert_array_equal(X_resampled, X[sampler.sample_indices_])
+    assert_array_equal(y_resampled, labels[y[sampler.sample_indices_]])
