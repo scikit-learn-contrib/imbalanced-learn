@@ -289,6 +289,28 @@ def test_geometric_mean_score_prediction(average, expected_gmean):
     assert gmean == pytest.approx(expected_gmean, rel=R_TOL)
 
 
+@pytest.mark.parametrize(
+    "y_true, y_pred, sample_weight",
+    [
+        ([1, 1, 1], [1], None),
+        ([0, 1, 1], [0, 1], None),
+        ([1], [1, 1, 1], None),
+        ([0, 1, 1], [0, 1, 1], [1, 2]),
+    ],
+)
+@pytest.mark.parametrize("average", ["multiclass", "binary", "macro", None])
+def test_geometric_mean_inconsistent_length(y_true, y_pred, sample_weight, average):
+    """Check that an error is raised when the inputs have inconsistent lengths.
+
+    Non-regression test for:
+    https://github.com/scikit-learn-contrib/imbalanced-learn/issues/1220
+    """
+    with pytest.raises(ValueError, match="inconsistent numbers of samples"):
+        geometric_mean_score(
+            y_true, y_pred, sample_weight=sample_weight, average=average
+        )
+
+
 def test_iba_geo_mean_binary():
     y_true, y_pred, _ = make_prediction(binary=True)
 

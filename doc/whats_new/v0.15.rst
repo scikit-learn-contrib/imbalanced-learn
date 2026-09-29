@@ -11,6 +11,12 @@ Changelog
 Bug fixes
 .........
 
+- Raise an informative error in :func:`~imblearn.metrics.geometric_mean_score`
+  when `y_true`, `y_pred` and `sample_weight` have inconsistent lengths with the
+  default `average="multiclass"`, instead of silently returning a score or
+  failing with an opaque NumPy error.
+  :issue:`1220` by :user:`Aditi Patil <AditiPatil31>`.
+
 Enhancements
 ............
 
