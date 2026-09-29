@@ -108,6 +108,20 @@ def test_value_difference_metric_property(dtype, k, r, y_type, encode_label):
     assert dist_2 < dist_3
 
 
+def test_value_difference_metric_k_is_an_inner_exponent():
+    # k=2, r=1 is the sum of squared probability gaps. The Euclidean norm is
+    # the square root of that sum.
+    X = np.array(["green"] * 10 + ["red"] * 10).reshape(-1, 1)
+    y = np.array([1] * 8 + [0] * 2 + [0] * 3 + [1] * 7)
+    encoder = OrdinalEncoder(dtype=np.int32)
+    X_encoded = encoder.fit_transform(X)
+    vdm = ValueDifferenceMetric(k=2, r=1).fit(X_encoded, y)
+    green = encoder.transform([["green"]])
+    red = encoder.transform([["red"]])
+    dist = vdm.pairwise(green, red).item()
+    assert dist == pytest.approx(0.02)
+
+
 def test_value_difference_metric_categories(data):
     # Check that "auto" is equivalent to provide the number categories
     # beforehand
