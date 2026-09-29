@@ -683,6 +683,7 @@ def geometric_mean_score(
 
         return np.sqrt(sen * spe)
     else:
+        check_consistent_length(y_true, y_pred, sample_weight)
         present_labels = unique_labels(y_true, y_pred)
 
         if labels is None:
