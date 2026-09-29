@@ -226,9 +226,10 @@ class ValueDifferenceMetric(BaseEstimator):
                 proba_feature_Y = self.proba_per_class_[feature_idx][Y[:, feature_idx]]
             else:
                 proba_feature_Y = proba_feature_X
-            distance += (
-                distance_matrix(proba_feature_X, proba_feature_Y, p=self.k) ** self.r
-            )
+            # Minkowski norm ** (k * r) is (sum |diff|^k)^r.
+            distance += distance_matrix(
+                proba_feature_X, proba_feature_Y, p=self.k
+            ) ** (self.k * self.r)
         return distance
 
     def _more_tags(self):
