@@ -29,6 +29,7 @@ Prerequisites
 Additionally, `imbalanced-learn` requires the following optional dependencies:
 
 - Pandas (>= |PandasMinVersion|) for dealing with dataframes
+- Polars (>= 1.0) for preserving Polars DataFrames and Series during resampling
 - Tensorflow (>= |TensorflowMinVersion|) for dealing with TensorFlow models
 - Keras (>= |KerasMinVersion|) for dealing with Keras models
 

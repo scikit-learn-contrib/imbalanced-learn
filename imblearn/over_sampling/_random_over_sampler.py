@@ -12,6 +12,7 @@ from scipy import sparse
 from sklearn.utils import _safe_indexing, check_array, check_random_state
 from sklearn.utils._param_validation import Interval
 from sklearn.utils.sparsefuncs import mean_variance_axis
+from sklearn_compat.utils._dataframe import is_polars_df
 from sklearn_compat.utils.validation import validate_data
 
 from imblearn.over_sampling.base import BaseOverSampler
@@ -199,7 +200,7 @@ class RandomOverSampler(BaseOverSampler):
                     "sample."
                 ) from exc
 
-        X_resampled = [X.copy()]
+        X_resampled = [X.clone() if is_polars_df(X) else X.copy()]
         y_resampled = [y.copy()]
 
         sample_indices = range(X.shape[0])
@@ -241,7 +242,10 @@ class RandomOverSampler(BaseOverSampler):
 
         self.sample_indices_ = np.array(sample_indices)
 
-        if sparse.issparse(X):
+        if is_polars_df(X) and self.shrinkage_ is None:
+            # Bootstrap rows directly to preserve nulls and heterogeneous dtypes.
+            X_resampled = _safe_indexing(X, self.sample_indices_)
+        elif sparse.issparse(X):
             X_resampled = sparse.vstack(X_resampled, format=X.format)
         else:
             X_resampled = np.vstack(X_resampled)
