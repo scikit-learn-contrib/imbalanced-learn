@@ -26,7 +26,7 @@ from sklearn.utils.sparsefuncs_fast import (
     csr_mean_variance_axis0,
 )
 from sklearn.utils.validation import _num_features
-from sklearn_compat.utils._dataframe import is_pandas_df
+from sklearn_compat.utils._dataframe import is_pandas_df, is_polars_df
 from sklearn_compat.utils._indexing import _get_column_indices
 from sklearn_compat.utils.validation import validate_data
 
@@ -396,12 +396,13 @@ class SMOTENC(SMOTE):
         Specified which features are categorical. Can either be:
 
         - "auto" (default) to automatically detect categorical features. Only
-          supported when `X` is a :class:`pandas.DataFrame` and it corresponds
-          to columns that have a :class:`pandas.CategoricalDtype`;
+          supported for columns with a :class:`pandas.CategoricalDtype` in a
+          :class:`pandas.DataFrame`, or ``Categorical`` and ``Enum`` columns in a
+          Polars DataFrame;
         - array of `int` corresponding to the indices specifying the categorical
           features;
         - array of `str` corresponding to the feature names. `X` should be a pandas
-          :class:`pandas.DataFrame` in this case.
+          or Polars DataFrame in this case.
         - mask array of shape (n_features, ) and ``bool`` dtype for which
           ``True`` indicates the categorical features.
 
@@ -559,16 +560,30 @@ class SMOTENC(SMOTE):
     def _validate_column_types(self, X):
         """Compute the indices of the categorical and continuous features."""
         if self.categorical_features == "auto":
-            if not is_pandas_df(X):
+            if is_polars_df(X):
+                import polars as pl
+
+                are_columns_categorical = np.array(
+                    [
+                        dtype.base_type() in (pl.Categorical, pl.Enum)
+                        for dtype in X.dtypes
+                    ]
+                )
+            elif is_pandas_df(X):
+                import pandas as pd  # safely import pandas now
+
+                are_columns_categorical = np.array(
+                    [
+                        isinstance(col_dtype, pd.CategoricalDtype)
+                        for col_dtype in X.dtypes
+                    ]
+                )
+            else:
                 raise ValueError(
                     "When `categorical_features='auto'`, the input data "
-                    f"should be a pandas.DataFrame. Got {type(X)} instead."
+                    "should be a pandas.DataFrame or polars.DataFrame. "
+                    f"Got {type(X)} instead."
                 )
-            import pandas as pd  # safely import pandas now
-
-            are_columns_categorical = np.array(
-                [isinstance(col_dtype, pd.CategoricalDtype) for col_dtype in X.dtypes]
-            )
             self.categorical_features_ = np.flatnonzero(are_columns_categorical)
             self.continuous_features_ = np.flatnonzero(~are_columns_categorical)
         else:

@@ -16,7 +16,12 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import column_or_1d
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import _num_samples
-from sklearn_compat.utils._dataframe import is_pandas_df
+from sklearn_compat.utils._dataframe import (
+    is_pandas_df,
+    is_pandas_df_or_series,
+    is_polars_df,
+    is_polars_df_or_series,
+)
 from sklearn_compat.utils.validation import check_array
 
 SAMPLING_KIND = (
@@ -39,9 +44,7 @@ class ArraysTransformer:
     def transform(self, X, y):
         X = self._transfrom_one(X, self.x_props)
         y = self._transfrom_one(y, self.y_props)
-        if self.x_props["type"].lower() == "dataframe" and self.y_props[
-            "type"
-        ].lower() in {"series", "dataframe"}:
+        if self.x_props["is_pandas"] and self.y_props["is_pandas"]:
             # We lost the y.index during resampling. We can safely use X.index to align
             # them.
             y.index = X.index
@@ -53,11 +56,42 @@ class ArraysTransformer:
         props["columns"] = getattr(array, "columns", None)
         props["name"] = getattr(array, "name", None)
         props["dtypes"] = getattr(array, "dtypes", None)
+        props["is_pandas"] = is_pandas_df_or_series(array)
+        props["is_polars"] = is_polars_df_or_series(array)
+        if props["is_polars"]:
+            props["schema"] = (
+                array.schema if is_polars_df(array) else {array.name: array.dtype}
+            )
         return props
 
     def _transfrom_one(self, array, props):
         type_ = props["type"].lower()
-        if type_ == "list":
+        if props["is_polars"]:
+            import polars as pl
+
+            if is_polars_df(array):
+                return array.cast(props["schema"])
+            if issparse(array):
+                array = array.toarray()
+            array = np.asarray(array)
+            if type_ == "series":
+                if array.dtype == object:
+                    array = array.tolist()
+                return pl.Series(props["name"], array, strict=False).cast(
+                    props["schema"][props["name"]]
+                )
+            if array.ndim == 1:
+                array = array.reshape(-1, 1)
+            # Mixed columns produce an object array. Construct each column
+            # separately so Polars infers its values before restoring its dtype.
+            columns = []
+            for idx, (name, dtype) in enumerate(props["schema"].items()):
+                values = array[:, idx]
+                if values.dtype == object:
+                    values = values.tolist()
+                columns.append(pl.Series(name, values, strict=False).cast(dtype))
+            ret = pl.DataFrame(columns)
+        elif type_ == "list":
             ret = array.tolist()
         elif type_ == "dataframe":
             import pandas as pd
@@ -171,6 +205,8 @@ def check_target_type(y, indicate_one_vs_all=False):
         Indicate if the target was originally encoded in a one-vs-all fashion.
         Only returned if ``indicate_multilabel=True``.
     """
+    if is_polars_df_or_series(y):
+        y = y.to_numpy()
     type_y = type_of_target(y)
     if type_y == "multilabel-indicator":
         if np.any(y.sum(axis=1) > 1):
@@ -637,7 +673,7 @@ def _check_X(X):
         raise ValueError(
             f"Found array with {n_samples} sample(s) while a minimum of 1 is required."
         )
-    if is_pandas_df(X):
+    if is_pandas_df(X) or is_polars_df(X):
         return X
     return check_array(
         X, dtype=None, accept_sparse=["csr", "csc"], ensure_all_finite=False

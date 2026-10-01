@@ -14,6 +14,12 @@ Bug fixes
 Enhancements
 ............
 
+- Samplers preserve eager Polars DataFrames and Series, including their column
+  names and dtypes. :class:`~imblearn.over_sampling.SMOTENC` supports Polars
+  categorical column names and automatic detection of ``Categorical`` and
+  ``Enum`` columns. See :ref:`Polars input/output <polars_in_out>`.
+  :issue:`1092` by :user:`Nikhil <Nikhi00718>`.
+
 Compatibility
 .............
 

@@ -54,6 +54,33 @@ The output will be of the following type:
    Unlike scikit-learn, imbalanced-learn provides support for pandas in/out.
    Therefore providing a dataframe, will output as well a dataframe.
 
+.. _polars_in_out:
+
+.. topic:: Polars in/out
+
+   Samplers also accept eager `Polars <https://pola.rs/>`_ DataFrames and Series
+   and return the same container types, preserving column names and dtypes.
+   Polars is an optional dependency; install it with ``pip install polars``.
+   There is no need to convert a Polars dataset to pandas before resampling.
+   NumPy is still used internally for numerical sampling, so this does not
+   provide lazy or streaming execution. Collect a LazyFrame before passing it
+   to a sampler.
+
+   :class:`~imblearn.over_sampling.SMOTENC` accepts categorical column names,
+   indices, or a boolean mask. With ``categorical_features="auto"``, it detects
+   Polars ``Categorical`` and ``Enum`` columns; string columns must be selected
+   explicitly. Random over- and under-sampling preserve the selected rows,
+   including null values. Algorithms that generate numerical samples retain
+   their usual input validation requirements. As with pandas inputs, restoring
+   an integer column's dtype casts synthetic values back to integers; use
+   floating-point columns when fractional synthetic values should be retained.
+
+   This also works with scikit-learn transformers configured with
+   ``set_output(transform="polars")``. See
+   :ref:`sphx_glr_auto_examples_pipeline_plot_pipeline_polars.py` for an example
+   that combines standardization, SMOTE, and logistic regression while keeping
+   feature names available to the classifier.
+
 .. topic:: Sparse input
 
    For sparse input the data is **converted to the Compressed Sparse Rows
