@@ -79,7 +79,8 @@ def evaluate_resampling_methods():
             {
                 "Method": method_name,
                 "Balanced accuracy": balanced_accuracy_score(y_test, predictions),
-                "F1 score": f1_score(y_test, predictions),
+                # Class 0 is malignant and is the minority class in this experiment.
+                "F1 score": f1_score(y_test, predictions, pos_label=0),
                 "Geometric mean": geometric_mean_score(
                     y_test, predictions, average="binary"
                 ),
@@ -100,17 +101,18 @@ def main():
         y=["Balanced accuracy", "F1 score", "Geometric mean"],
         kind="bar",
         figsize=(10, 6),
-        ylim=(0, 1),
         rot=0,
     )
 
     ax.set_title("Comparison of Resampling Methods")
     ax.set_ylabel("Score")
     ax.set_xlabel("")
+    ax.set_ylim(0.9, 1.0)
     ax.legend(title="Metric", loc="upper left", bbox_to_anchor=(1.02, 1))
-    plt.tight_layout()
-    plt.show()
 
+    plt.tight_layout()
+
+    plt.show()
 
 if __name__ == "__main__":
     main()
