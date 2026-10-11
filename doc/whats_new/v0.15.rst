@@ -11,6 +11,10 @@ Changelog
 Bug fixes
 .........
 
+- Fix :class:`~imblearn.over_sampling.RandomOverSampler` to use a normal
+  bootstrap when all shrinkage factors are zero, preserving heterogeneous
+  inputs, non-finite values, data types, and seeded sampling across classes.
+
 Enhancements
 ............
 
