@@ -225,6 +225,50 @@ def test_random_over_sampler_equivalence_shrinkage(data):
     assert X_res_not_shrink.shape == (14, 2)
 
 
+@pytest.mark.parametrize("shrinkage_type", ["scalar", "dict"])
+@pytest.mark.parametrize(
+    "input_type", ["heterogeneous", "nonfinite", "integer", "dataframe", "multiclass"]
+)
+def test_random_over_sampler_zero_shrinkage_equivalence(shrinkage_type, input_type):
+    """A zero shrinkage must retain normal bootstrap inputs and random draws."""
+    y = np.array([0, 0, 0, 1, 1])
+    X = np.arange(10, dtype=np.int32).reshape(5, 2)
+    if input_type == "heterogeneous":
+        X = np.array(
+            [["cat", 1], ["dog", 2], ["fox", 3], ["owl", 4], ["rat", 5]], dtype=object
+        )
+    elif input_type == "nonfinite":
+        X = X.astype(float)
+        X[0, 0], X[1, 0] = np.nan, np.inf
+    elif input_type == "dataframe":
+        pd = pytest.importorskip("pandas")
+        X = pd.DataFrame(
+            {
+                "category": ["cat", "dog", "fox", "owl", "rat"],
+                "when": pd.date_range("2020-01-01", periods=5),
+            }
+        )
+    elif input_type == "multiclass":
+        y = np.array([0] * 6 + [1] * 3 + [2] * 2)
+        X = np.arange(22, dtype=float).reshape(11, 2)
+
+    zero_factors = dict.fromkeys(np.unique(y), 0)
+    shrinkage = 0 if shrinkage_type == "scalar" else zero_factors
+    normal = RandomOverSampler(random_state=42)
+    zero = RandomOverSampler(random_state=42, shrinkage=shrinkage)
+    X_expected, y_expected = normal.fit_resample(X, y)
+    X_result, y_result = zero.fit_resample(X, y)
+
+    if input_type == "dataframe":
+        pd.testing.assert_frame_equal(X_result, X_expected)
+    else:
+        assert_array_equal(X_result, X_expected)
+        assert X_result.dtype == X_expected.dtype
+    assert_array_equal(y_result, y_expected)
+    assert_array_equal(zero.sample_indices_, normal.sample_indices_)
+    assert all(factor == 0 for factor in zero.shrinkage_.values())
+
+
 def test_random_over_sampler_shrinkage_behaviour(data):
     # check the behaviour of the shrinkage parameter
     # the covariance of the data generated with the larger shrinkage factor

@@ -191,7 +191,8 @@ class RandomOverSampler(BaseOverSampler):
             # smoothed bootstrap imposes to make numerical operation; we need
             # to be sure to have only numerical data in X
             try:
-                X = check_array(X, accept_sparse=["csr", "csc"], dtype="numeric")
+                if any(self.shrinkage_.values()):
+                    X = check_array(X, accept_sparse=["csr", "csc"], dtype="numeric")
             except ValueError as exc:
                 raise ValueError(
                     "When shrinkage is not None, X needs to contain only "
@@ -211,7 +212,7 @@ class RandomOverSampler(BaseOverSampler):
                 replace=True,
             )
             sample_indices = np.append(sample_indices, bootstrap_indices)
-            if self.shrinkage_ is not None:
+            if self.shrinkage_ is not None and any(self.shrinkage_.values()):
                 # generate a smoothed bootstrap with a perturbation
                 n_samples, n_features = X.shape
                 smoothing_constant = (4 / ((n_features + 2) * n_samples)) ** (
