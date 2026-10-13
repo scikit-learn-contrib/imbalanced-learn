@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import NearestNeighbors
 from sklearn.svm import SVC
 from sklearn.utils._testing import assert_allclose, assert_array_equal
@@ -59,9 +60,13 @@ def test_svm_smote_not_svm(data):
     """Check that we raise a proper error if passing an estimator that does not
     expose a `support_` fitted attribute."""
 
-    err_msg = "`svm_estimator` is required to exposed a `support_` fitted attribute."
+    err_msg = (
+        "`svm_estimator` is required to expose a `support_` fitted "
+        "attribute or a `decision_function`. Such estimator belongs "
+        "to the family of Support Vector Machines."
+    )
     with pytest.raises(RuntimeError, match=err_msg):
-        SVMSMOTE(svm_estimator=LogisticRegression()).fit_resample(*data)
+        SVMSMOTE(svm_estimator=DecisionTreeClassifier()).fit_resample(*data)
 
 
 def test_svm_smote_all_noise(data):
