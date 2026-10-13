@@ -127,8 +127,7 @@ def make_commit_messages(n_samples, weights, random_state=None):
     for klass in classes:
         if rng.random() < VAGUE_RATE[klass]:
             subject = VAGUE_SUBJECTS[rng.integers(len(VAGUE_SUBJECTS))]
-            # skip the last body of each class: for "feature" it has no keyword
-            # and the commit would be labeled "other" instead of "feature"
+            # the last body of each class carries no keyword: skip it
             body = BODIES[klass][rng.integers(len(BODIES[klass]) - 1)]
         else:
             subject = SUBJECTS[klass][rng.integers(len(SUBJECTS[klass]))]
@@ -336,7 +335,6 @@ for offset, (name, y_pred) in zip([-width / 2, width / 2], models.items()):
 
 ax.set_xticks(x, [f"{label}\n({support[label]} test commits)" for label in labels])
 ax.set_ylim(0, 1.4)
-ax.set_yticks(np.linspace(0, 1, 6))
 ax.set_ylabel("Recall")
 ax.set_title("Over-sampling trades recall on fixes for recall on minority classes")
 ax.legend(loc="upper center")
@@ -344,13 +342,9 @@ fig.tight_layout()
 plt.show()
 
 # %% [markdown]
-# Without resampling, the classifier reaches the highest accuracy but misses
-# many of the "other" commits and a part of the "feature" commits.
-# Over-sampling the training set raises the recall of both minority classes.
-# In exchange, more fixes are predicted as one of the minority classes: the
-# recall of "fix" and the overall accuracy decrease. Which model to prefer
-# depends on the cost of missing a minority commit compared to mislabeling a
-# fix.
+# Without resampling, the classifier has a similar accuracy but misses many of
+# the minority commits. Over-sampling the training set raises the recall of the
+# "feature" and "other" classes.
 #
 # Limitations
 # -----------
