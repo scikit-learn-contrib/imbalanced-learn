@@ -17,5 +17,14 @@ Enhancements
 Compatibility
 .............
 
+Documentation
+.............
+
+- Add the example
+  :ref:`sphx_glr_auto_examples_applications_plot_sentiment_svm_resampling.py`,
+  which classifies tweets as negative, neutral or positive with a linear SVM
+  and compares class weighting, random under-sampling and random over-sampling.
+  :user:`Mansi Verma <mansiid9-coder>`.
+
 Deprecations
 ............
