@@ -121,6 +121,23 @@ After installation, you can use `pytest` to run the test suite::
 
   make coverage
 
+Example: three-class sentiment analysis with an SVM
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``examples/applications/plot_sentiment_svm_resampling.py`` classifies tweets
+as negative, neutral or positive with a TF-IDF + linear SVM pipeline and
+compares ``class_weight="balanced"``, random under-sampling and random
+over-sampling. Install the example dependencies and run it from the
+repository root::
+
+  pip install -e . matplotlib pandas
+  python examples/applications/plot_sentiment_svm_resampling.py
+
+The TweetEval data (about 6 MB) is downloaded once and cached; a run takes
+about 30 seconds on a CPU. The helper functions are tested with::
+
+  pytest examples/applications/tests/test_plot_sentiment_svm_resampling.py
+
 Development
 -----------
 
