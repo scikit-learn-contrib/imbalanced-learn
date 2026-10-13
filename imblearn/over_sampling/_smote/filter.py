@@ -412,15 +412,23 @@ class SVMSMOTE(BaseSMOTE):
             X_class = _safe_indexing(X, target_class_indices)
 
             self.svm_estimator_.fit(X, y)
-            if not hasattr(self.svm_estimator_, "support_"):
-                raise RuntimeError(
-                    "`svm_estimator` is required to exposed a `support_` fitted "
-                    "attribute. Such estimator belongs to the familly of Support "
-                    "Vector Machine."
-                )
-            support_index = self.svm_estimator_.support_[
+            if hasattr(self.svm_estimator_, "support_"):
+                support_index = self.svm_estimator_.support_[
                 y[self.svm_estimator_.support_] == class_sample
             ]
+            elif hasattr(self.svm_estimator_, "decision_function"):
+                distances = self.svm_estimator_.decision_function(X)
+                all_support_indices = np.flatnonzero(np.abs(distances) <= 1.0 + 1e-7)
+                support_index = all_support_indices[
+                    y[all_support_indices] == class_sample
+                ]
+            else:
+                raise RuntimeError(
+                    "`svm_estimator` is required to expose a `support_` fitted "
+                    "attribute or a `decision_function`. Such estimator belongs "
+                    "to the family of Support Vector Machines."
+                )
+            
             support_vector = _safe_indexing(X, support_index)
 
             self.nn_m_.fit(X)
