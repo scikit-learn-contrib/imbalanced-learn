@@ -12,8 +12,6 @@ of the 20 newsgroups data set (``sci.space`` vs. a rare ``sci.med``) and shows
 how adding a :class:`~imblearn.under_sampling.RandomUnderSampler` to the
 pipeline improves the recall of the minority topic.
 """
-
-# Authors: The imbalanced-learn developers
 # License: MIT
 
 # %%
