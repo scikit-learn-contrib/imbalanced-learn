@@ -170,3 +170,30 @@ def test_value_difference_value_unfitted(data):
 
     with pytest.raises(NotFittedError):
         ValueDifferenceMetric().pairwise(X_encoded)
+
+
+@pytest.mark.parametrize("n_features", [1, 4])
+@pytest.mark.parametrize("use_y", [True, False])
+def test_value_difference_metric_pairwise_feature_mismatch(
+    data, n_features, use_y
+):
+    """Check that pairwise rejects inputs with an incorrect feature count."""
+    X, y = data
+    encoder = OrdinalEncoder(dtype=np.int32)
+    X_encoded = encoder.fit_transform(X)
+
+    vdm = ValueDifferenceMetric().fit(X_encoded, y)
+
+    if n_features < X_encoded.shape[1]:
+        X_invalid = X_encoded[:, :n_features]
+    else:
+        X_invalid = np.column_stack(
+            [X_encoded, np.zeros(X_encoded.shape[0], dtype=np.int32)]
+        )
+
+    if use_y:
+        with pytest.raises(ValueError, match="features"):
+            vdm.pairwise(X_encoded, X_invalid)
+    else:
+        with pytest.raises(ValueError, match="features"):
+            vdm.pairwise(X_invalid)
