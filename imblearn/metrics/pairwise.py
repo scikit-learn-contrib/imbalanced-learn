@@ -211,10 +211,26 @@ class ValueDifferenceMetric(BaseEstimator):
         """
         check_is_fitted(self)
         X = check_array(X, ensure_non_negative=True, dtype=np.int32)
+
+        if X.shape[1] != self.n_features_in_:
+            raise ValueError(
+                f"X has {X.shape[1]} features, but "
+                f"ValueDifferenceMetric was fitted with "
+                f"{self.n_features_in_} features."
+            )
+
         n_samples_X = X.shape[0]
 
         if Y is not None:
             Y = check_array(Y, ensure_non_negative=True, dtype=np.int32)
+
+            if Y.shape[1] != self.n_features_in_:
+                raise ValueError(
+                    f"Y has {Y.shape[1]} features, but "
+                    f"ValueDifferenceMetric was fitted with "
+                    f"{self.n_features_in_} features."
+                )
+
             n_samples_Y = Y.shape[0]
         else:
             n_samples_Y = n_samples_X
