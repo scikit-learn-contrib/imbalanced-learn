@@ -217,6 +217,110 @@ def test_balanced_random_forest_oob_binomial(ratio):
     assert np.abs(erf.oob_score_ - 0.5) < 0.1
 
 
+def _noise_dataset(n_samples=600, seed=0):
+    rng = np.random.RandomState(seed)
+    X = rng.normal(size=(n_samples, 3))
+    y = (rng.uniform(size=n_samples) < 0.3).astype(int)
+    return X, y
+
+
+@pytest.mark.parametrize(
+    "weights, max_samples",
+    [
+        ("ones", None),
+        ("random", None),
+        ("balanced", None),
+        (None, 0.5),
+        ("random", 0.5),
+        (None, 500),
+    ],
+)
+@pytest.mark.parametrize("seed", [0, 1, 2])
+@pytest.mark.filterwarnings("ignore:Some inputs do not have OOB scores")
+def test_balanced_random_forest_oob_matches_in_bag_samples(weights, max_samples, seed):
+    # Non-regression test: the OOB samples must be the resampled samples that
+    # were not used to grow the tree. The root node of a fully grown tree
+    # counts the unique in-bag samples.
+    X, y = _noise_dataset()
+    sample_weight, class_weight = None, None
+    if weights == "ones":
+        sample_weight = np.ones(y.shape[0])
+    elif weights == "random":
+        sample_weight = np.random.RandomState(42).uniform(0.5, 2, size=y.shape[0])
+    elif weights == "balanced":
+        class_weight = "balanced"
+
+    brf = BalancedRandomForestClassifier(
+        n_estimators=1,
+        bootstrap=True,
+        replacement=False,
+        oob_score=True,
+        max_samples=max_samples,
+        class_weight=class_weight,
+        random_state=seed,
+    ).fit(X, y, sample_weight=sample_weight)
+
+    oob_samples = np.flatnonzero(brf.oob_decision_function_.sum(axis=1) > 0)
+    resampled_samples = brf.samplers_[0].sample_indices_
+    n_in_bag = brf.estimators_[0].tree_.n_node_samples[0]
+
+    assert np.isin(oob_samples, resampled_samples).all()
+    assert oob_samples.size == resampled_samples.size - n_in_bag
+
+
+@pytest.mark.parametrize(
+    "sample_weight, class_weight",
+    [("ones", None), ("random", None), (None, "balanced")],
+)
+def test_balanced_random_forest_oob_score_with_weights(sample_weight, class_weight):
+    # Non-regression test: weights must not inflate the OOB score on labels
+    # that are independent of X.
+    X, y = _noise_dataset(n_samples=1000)
+    y = np.random.RandomState(1).binomial(1, 0.5, size=y.shape[0])
+    if sample_weight == "ones":
+        sample_weight = np.ones(y.shape[0])
+    elif sample_weight == "random":
+        sample_weight = np.random.RandomState(42).uniform(0.5, 2, size=y.shape[0])
+
+    params = dict(
+        n_estimators=50,
+        bootstrap=True,
+        replacement=False,
+        oob_score=True,
+        random_state=0,
+    )
+    brf = BalancedRandomForestClassifier(class_weight=class_weight, **params)
+    brf.fit(X, y, sample_weight=sample_weight)
+    brf_unweighted = BalancedRandomForestClassifier(**params).fit(X, y)
+
+    assert abs(brf.oob_score_ - 0.5) < 0.1
+    assert abs(brf.oob_score_ - brf_unweighted.oob_score_) < 0.1
+
+
+def test_balanced_random_forest_oob_score_with_weights_warm_start():
+    # OOB predictions of trees grown in previous warm-start calls must also
+    # use the bootstrap drawn with the sample weights.
+    X, y = _noise_dataset(n_samples=1000)
+    y = np.random.RandomState(1).binomial(1, 0.5, size=y.shape[0])
+    sample_weight = np.random.RandomState(42).uniform(0.5, 2, size=y.shape[0])
+    brf = BalancedRandomForestClassifier(
+        n_estimators=25,
+        bootstrap=True,
+        replacement=False,
+        oob_score=True,
+        warm_start=True,
+        random_state=0,
+    )
+    brf.fit(X, y, sample_weight=sample_weight)
+    first_trees = list(brf.estimators_)
+    brf.set_params(n_estimators=50)
+    brf.fit(X, y, sample_weight=sample_weight)
+
+    assert len(brf.estimators_) == 50
+    assert all(old is new for old, new in zip(first_trees, brf.estimators_[:25]))
+    assert abs(brf.oob_score_ - 0.5) < 0.1
+
+
 @pytest.mark.skipif(
     parse_version(sklearn_version.base_version) < parse_version("1.4"),
     reason="scikit-learn should be >= 1.4",

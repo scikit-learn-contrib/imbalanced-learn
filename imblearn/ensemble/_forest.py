@@ -722,7 +722,12 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
                     "supported: continuous, continuous-multioutput, binary, "
                     "multiclass, multilabel-indicator."
                 )
-            self._set_oob_score_and_attributes(X, y_encoded)
+            self._set_oob_score_and_attributes(
+                X,
+                y_encoded,
+                sample_weight=sample_weight,
+                n_samples_bootstrap=n_samples_bootstrap,
+            )
 
         # Decapsulate classes_ attributes
         if hasattr(self, "classes_") and self.n_outputs_ == 1:
@@ -731,7 +736,9 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         return self
 
-    def _set_oob_score_and_attributes(self, X, y):
+    def _set_oob_score_and_attributes(
+        self, X, y, *, sample_weight=None, n_samples_bootstrap=None
+    ):
         """Compute and set the OOB score and attributes.
 
         Parameters
@@ -740,8 +747,16 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             The data matrix.
         y : ndarray of shape (n_samples, n_outputs)
             The target matrix.
+        sample_weight : ndarray of shape (n_samples,), default=None
+            The effective sample weights (including `class_weight`) used to
+            draw the bootstrap samples in `fit`.
+        n_samples_bootstrap : int, default=None
+            The number of bootstrap samples computed in `fit`, before being
+            capped by the number of resampled samples of each tree.
         """
-        self.oob_decision_function_ = self._compute_oob_predictions(X, y)
+        self.oob_decision_function_ = self._compute_oob_predictions(
+            X, y, sample_weight=sample_weight, n_samples_bootstrap=n_samples_bootstrap
+        )
         if self.oob_decision_function_.shape[-1] == 1:
             # drop the n_outputs axis if there is a single output
             self.oob_decision_function_ = self.oob_decision_function_.squeeze(axis=-1)
@@ -751,7 +766,9 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             y, np.argmax(self.oob_decision_function_, axis=1)
         )
 
-    def _compute_oob_predictions(self, X, y):
+    def _compute_oob_predictions(
+        self, X, y, *, sample_weight=None, n_samples_bootstrap=None
+    ):
         """Compute and set the OOB score.
 
         Parameters
@@ -760,6 +777,13 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
             The data matrix.
         y : ndarray of shape (n_samples, n_outputs)
             The target matrix.
+        sample_weight : ndarray of shape (n_samples,), default=None
+            The effective sample weights (including `class_weight`) used to
+            draw the bootstrap samples in `fit`.
+        n_samples_bootstrap : int, default=None
+            The number of bootstrap samples computed in `fit`, before being
+            capped by the number of resampled samples of each tree. If None,
+            the number of resampled samples of each tree is used.
 
         Returns
         -------
@@ -790,28 +814,31 @@ class BalancedRandomForestClassifier(RandomForestClassifier):
 
         for sampler, estimator in zip(self.samplers_, self.estimators_):
             X_resample = X[sampler.sample_indices_]
-            y_resample = y[sampler.sample_indices_]
+            n_sample_subset = sampler.sample_indices_.shape[0]
 
-            n_sample_subset = y_resample.shape[0]
-            if sklearn_version >= parse_version("1.9"):
-                n_samples_bootstrap = _get_n_samples_bootstrap(
-                    n_sample_subset, self.max_samples, sample_weight=None
-                )
+            # Replay the exact bootstrap drawn in `_local_parallel_build_trees`:
+            # same number of samples and same per-tree sample weights.
+            if n_samples_bootstrap is None:
+                n_samples_bootstrap_tree = n_sample_subset
             else:
-                n_samples_bootstrap = _get_n_samples_bootstrap(
-                    n_sample_subset, self.max_samples
-                )
+                n_samples_bootstrap_tree = min(n_samples_bootstrap, n_sample_subset)
 
             if sklearn_version >= parse_version("1.9"):
+                if sample_weight is not None:
+                    sample_weight_tree = _safe_indexing(
+                        sample_weight, sampler.sample_indices_
+                    )
+                else:
+                    sample_weight_tree = None
                 unsampled_indices = _generate_unsampled_indices(
                     estimator.random_state,
                     n_sample_subset,
-                    n_samples_bootstrap,
-                    sample_weight=None,
+                    n_samples_bootstrap_tree,
+                    sample_weight=sample_weight_tree,
                 )
             else:
                 unsampled_indices = _generate_unsampled_indices(
-                    estimator.random_state, n_sample_subset, n_samples_bootstrap
+                    estimator.random_state, n_sample_subset, n_samples_bootstrap_tree
                 )
 
             y_pred = self._get_oob_predictions(
