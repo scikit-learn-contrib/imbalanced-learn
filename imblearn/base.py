@@ -5,6 +5,7 @@
 # License: MIT
 
 from abc import ABCMeta, abstractmethod
+from typing import TYPE_CHECKING, TypeVar
 
 import numpy as np
 from sklearn.base import BaseEstimator, OneToOneFeatureMixin
@@ -17,6 +18,9 @@ from sklearn_compat.utils.validation import validate_data
 from imblearn.utils import check_sampling_strategy, check_target_type
 from imblearn.utils._tags import get_tags
 from imblearn.utils._validation import ArraysTransformer
+
+if TYPE_CHECKING:
+    _SamplerT = TypeVar("_SamplerT", bound="SamplerMixin")
 
 if "fit_predict" not in METHODS:
     METHODS.append("fit_predict")
@@ -41,6 +45,13 @@ class SamplerMixin(metaclass=ABCMeta):
     """
 
     _estimator_type = "sampler"
+
+    if TYPE_CHECKING:  # pragma: no cover
+
+        def set_fit_resample_request(
+            self: _SamplerT, **kwargs: bool | None | str
+        ) -> _SamplerT:
+            ...
 
     @_fit_context(prefer_skip_nested_validation=True)
     def fit(self, X, y, **params):
