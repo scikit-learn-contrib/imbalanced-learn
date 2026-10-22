@@ -11,6 +11,10 @@ Changelog
 Bug fixes
 .........
 
+- Expose ``set_fit_resample_request`` to static type checkers while preserving
+  the sampler type returned by the method.
+  :issue:`1111` by :user:`Arin <ska2704>`.
+
 Enhancements
 ............
 
