@@ -141,7 +141,7 @@ class OneSidedSelection(BaseCleaningSampler):
         """Private function to create the NN estimator"""
         if self.n_neighbors is None:
             estimator = KNeighborsClassifier(n_neighbors=1, n_jobs=self.n_jobs)
-        elif isinstance(self.n_neighbors, int):
+        elif isinstance(self.n_neighbors, numbers.Integral):
             estimator = KNeighborsClassifier(
                 n_neighbors=self.n_neighbors, n_jobs=self.n_jobs
             )

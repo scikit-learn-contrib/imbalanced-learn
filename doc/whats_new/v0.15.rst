@@ -11,6 +11,10 @@ Changelog
 Bug fixes
 .........
 
+- Accept NumPy integer values for ``n_neighbors`` in
+  :class:`~imblearn.under_sampling.OneSidedSelection`.
+  :pr:`1238` by :user:`kocean9-freedom`.
+
 Enhancements
 ............
 

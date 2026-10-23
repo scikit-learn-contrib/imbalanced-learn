@@ -67,7 +67,9 @@ def test_oss_fit_resample():
     assert_array_equal(y_resampled, y_gt)
 
 
-@pytest.mark.parametrize("n_neighbors", [1, KNeighborsClassifier(n_neighbors=1)])
+@pytest.mark.parametrize(
+    "n_neighbors", [1, np.int32(1), np.int64(1), KNeighborsClassifier(n_neighbors=1)]
+)
 def test_oss_with_object(n_neighbors):
     oss = OneSidedSelection(random_state=RND_SEED, n_neighbors=n_neighbors)
     X_resampled, y_resampled = oss.fit_resample(X, Y)
