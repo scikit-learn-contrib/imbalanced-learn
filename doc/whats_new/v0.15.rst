@@ -11,6 +11,11 @@ Changelog
 Bug fixes
 .........
 
+- Validate per-class shrinkage factors in
+  :class:`~imblearn.over_sampling.RandomOverSampler`, rejecting non-finite or
+  non-numeric values before generating a smoothed bootstrap sample.
+  :pr:`1239` by :user:`Gabriel Demetrios Lafis <galafis>`.
+
 Enhancements
 ............
 

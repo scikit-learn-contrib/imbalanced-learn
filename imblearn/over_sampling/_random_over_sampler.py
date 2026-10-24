@@ -50,8 +50,8 @@ class RandomOverSampler(BaseOverSampler):
           class. The key correspond to the targeted class and the value is
           the shrinkage factor.
 
-        The value needs of the shrinkage parameter needs to be higher or equal
-        to 0.
+        Each shrinkage factor must be a finite real number greater than or
+        equal to 0.
 
         .. versionadded:: 0.8
 
@@ -181,10 +181,12 @@ class RandomOverSampler(BaseOverSampler):
                     f"classes are: {repr(missing_shrinkage_keys)}"
                 )
 
+            shrinkage_constraint = Interval(Real, 0, None, closed="left")
             for klass, shrink_factor in self.shrinkage_.items():
-                if shrink_factor < 0:
+                if not shrinkage_constraint.is_satisfied_by(shrink_factor):
                     raise ValueError(
-                        "The shrinkage factor needs to be >= 0. "
+                        "The shrinkage factor needs to be >= 0 and a finite real "
+                        "number. "
                         f"Got {shrink_factor} for class {klass}."
                     )
 

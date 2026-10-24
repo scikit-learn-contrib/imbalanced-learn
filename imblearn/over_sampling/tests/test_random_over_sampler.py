@@ -258,6 +258,30 @@ def test_random_over_sampler_shrinkage_error(data, shrinkage, err_msg):
         ros.fit_resample(X, y)
 
 
+@pytest.mark.parametrize("X_type", ["array", "sparse_csr"])
+@pytest.mark.parametrize("factor", [np.nan, np.inf, -np.inf, "1", None, 1 + 1j])
+def test_random_over_sampler_invalid_shrinkage_factor(data, X_type, factor):
+    X, y = data
+    X = _convert_container(X, X_type)
+    sampler = RandomOverSampler(shrinkage={0: factor}, random_state=0)
+    with pytest.raises(ValueError, match="shrinkage factor.*class 0"):
+        sampler.fit_resample(X, y)
+
+
+@pytest.mark.parametrize("factor", [0, 0.5, np.float64(0.5), np.int64(1)])
+def test_random_over_sampler_scalar_and_dict_shrinkage(data, factor):
+    X, y = data
+    scalar_sampler = RandomOverSampler(shrinkage=factor, random_state=0)
+    dict_sampler = RandomOverSampler(shrinkage={0: factor}, random_state=0)
+
+    X_scalar, y_scalar = scalar_sampler.fit_resample(X, y)
+    X_dict, y_dict = dict_sampler.fit_resample(X, y)
+
+    assert_allclose(X_dict, X_scalar)
+    assert_array_equal(y_dict, y_scalar)
+    assert_array_equal(dict_sampler.sample_indices_, scalar_sampler.sample_indices_)
+
+
 @pytest.mark.parametrize(
     "sampling_strategy", ["auto", "minority", "not minority", "not majority", "all"]
 )
