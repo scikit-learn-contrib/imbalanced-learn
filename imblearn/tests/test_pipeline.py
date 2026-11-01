@@ -1193,6 +1193,103 @@ def test_resampler_last_stage_passthrough():
     pipe.fit_resample(X, y)
 
 
+@pytest.mark.parametrize("passthrough", [None, "passthrough"])
+@pytest.mark.parametrize("enable_metadata_routing", [False, True])
+@pytest.mark.parametrize("with_transformer", [False, True])
+def test_fit_resample_passthrough_returns_resampled_targets(
+    passthrough, enable_metadata_routing, with_transformer
+):
+    X = np.arange(20).reshape(10, 2)
+    y = np.array([0] * 7 + [1] * 3)
+    X_expected, y_expected = RandomUnderSampler(random_state=0).fit_resample(X, y)
+    steps = [("sampler", RandomUnderSampler(random_state=0))]
+    if with_transformer:
+        steps.append(("transformer", StandardScaler()))
+        X_expected = StandardScaler().fit_transform(X_expected)
+    steps.append(("final", passthrough))
+
+    with config_context(enable_metadata_routing=enable_metadata_routing):
+        result = Pipeline(steps).fit_resample(X, y)
+
+    assert isinstance(result, tuple)
+    X_resampled, y_resampled = result
+    assert_allclose(X_resampled, X_expected)
+    assert_array_equal(y_resampled, y_expected)
+    assert len(y_resampled) < len(y)
+
+
+@pytest.mark.parametrize("passthrough", [None, "passthrough"])
+@pytest.mark.parametrize("enable_metadata_routing", [False, True])
+@pytest.mark.parametrize("with_transformer", [False, True])
+@pytest.mark.parametrize("with_y", [False, True])
+def test_fit_resample_passthrough_preserves_targets_without_sampler(
+    passthrough, enable_metadata_routing, with_transformer, with_y
+):
+    X = np.arange(20).reshape(10, 2)
+    y = np.array([0] * 7 + [1] * 3) if with_y else None
+    steps = [("identity", "passthrough")]
+    X_expected = X
+    if with_transformer:
+        steps.append(("transformer", StandardScaler()))
+        X_expected = StandardScaler().fit_transform(X)
+    steps.append(("final", passthrough))
+
+    with config_context(enable_metadata_routing=enable_metadata_routing):
+        result = Pipeline(steps).fit_resample(X, y)
+
+    assert isinstance(result, tuple)
+    X_resampled, y_resampled = result
+    assert_allclose(X_resampled, X_expected)
+    assert y_resampled is y
+    if not with_transformer:
+        assert X_resampled is X
+
+
+@pytest.mark.parametrize("enable_metadata_routing", [False, True])
+def test_fit_resample_final_sampler_returns_resampled_targets(enable_metadata_routing):
+    X = np.arange(20).reshape(10, 2)
+    y = np.array([0] * 7 + [1] * 3)
+    X_expected, y_expected = RandomUnderSampler(random_state=0).fit_resample(X, y)
+    pipe = Pipeline(
+        [("identity", None), ("sampler", RandomUnderSampler(random_state=0))]
+    )
+
+    with config_context(enable_metadata_routing=enable_metadata_routing):
+        X_resampled, y_resampled = pipe.fit_resample(X, y)
+
+    assert_array_equal(X_resampled, X_expected)
+    assert_array_equal(y_resampled, y_expected)
+
+
+@pytest.mark.parametrize("passthrough", [None, "passthrough"])
+@pytest.mark.parametrize("enable_metadata_routing", [False, True])
+@pytest.mark.parametrize("with_transformer", [False, True])
+def test_fit_resample_passthrough_preserves_dataframe_targets(
+    passthrough, enable_metadata_routing, with_transformer
+):
+    pd = pytest.importorskip("pandas")
+    index = pd.Index(np.arange(10) + 100, name="sample")
+    X = pd.DataFrame(np.arange(20).reshape(10, 2), index=index, columns=["a", "b"])
+    y = pd.Series([0] * 7 + [1] * 3, index=index, name="target")
+    X_expected, y_expected = RandomUnderSampler(random_state=0).fit_resample(X, y)
+    steps = [("sampler", RandomUnderSampler(random_state=0))]
+    if with_transformer:
+        steps.append(("transformer", StandardScaler().set_output(transform="pandas")))
+        X_expected = (
+            StandardScaler().set_output(transform="pandas").fit_transform(X_expected)
+        )
+    steps.append(("final", passthrough))
+
+    with config_context(enable_metadata_routing=enable_metadata_routing):
+        result = Pipeline(steps).fit_resample(X, y)
+
+    assert isinstance(result, tuple)
+    X_resampled, y_resampled = result
+    pd.testing.assert_frame_equal(X_resampled, X_expected)
+    pd.testing.assert_series_equal(y_resampled, y_expected)
+    assert X_resampled.index.equals(y_resampled.index)
+
+
 def test_pipeline_score_samples_pca_lof_binary():
     X, y = make_classification(
         n_classes=2,
