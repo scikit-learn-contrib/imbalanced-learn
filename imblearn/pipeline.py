@@ -723,7 +723,7 @@ class Pipeline(pipeline.Pipeline):
         last_step = self._final_estimator
         with _print_elapsed_time("Pipeline", self._log_message(len(self.steps) - 1)):
             if last_step == "passthrough":
-                return Xt
+                return Xt, yt
             last_step_params = routed_params[self.steps[-1][0]]
             if hasattr(last_step, "fit_resample"):
                 return last_step.fit_resample(
