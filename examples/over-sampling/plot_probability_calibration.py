@@ -76,7 +76,7 @@ plt.show()
 
 # %% [markdown]
 # Interpreting the comparison
-# --------------------------
+# ---------------------------
 # An improvement in ROC-AUC does not guarantee better probability estimates.
 # Brier score reflects more than calibration alone, so inspect it together with
 # the reliability diagram. These observations describe this synthetic dataset
