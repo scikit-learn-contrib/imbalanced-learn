@@ -26,9 +26,11 @@ from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import make_pipeline as make_imb_pipeline
 
-# %%
+# %% [markdown]
 # Create an imbalanced binary classification task and leave the original
 # test distribution unchanged for all model evaluations.
+
+# %%
 X, y = make_classification(
     n_samples=5000,
     n_features=12,
@@ -52,10 +54,12 @@ models = {
     ),
 }
 
-# %%
+# %% [markdown]
 # ROC-AUC measures ranking discrimination. Brier score evaluates probabilistic
 # predictions (lower is better), but is not a calibration-only metric. The
 # reliability curves compare predicted probabilities with observed frequencies.
+
+# %%
 fig, ax = plt.subplots(figsize=(7, 6))
 for name, model in models.items():
     model.fit(X_train, y_train)
@@ -70,7 +74,7 @@ ax.set_title("Calibration on the unchanged test distribution")
 fig.tight_layout()
 plt.show()
 
-# %%
+# %% [markdown]
 # Interpreting the comparison
 # --------------------------
 # An improvement in ROC-AUC does not guarantee better probability estimates.
