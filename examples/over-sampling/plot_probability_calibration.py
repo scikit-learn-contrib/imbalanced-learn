@@ -53,9 +53,9 @@ models = {
 }
 
 # %%
-# ROC-AUC measures ranking discrimination. Brier score measures the quality of
-# predicted probabilities (lower is better). These two metrics capture
-# different properties of a classifier.
+# ROC-AUC measures ranking discrimination. Brier score evaluates probabilistic
+# predictions (lower is better), but is not a calibration-only metric. The
+# reliability curves compare predicted probabilities with observed frequencies.
 fig, ax = plt.subplots(figsize=(7, 6))
 for name, model in models.items():
     model.fit(X_train, y_train)
@@ -69,3 +69,11 @@ for name, model in models.items():
 ax.set_title("Calibration on the unchanged test distribution")
 fig.tight_layout()
 plt.show()
+
+# %%
+# Interpreting the comparison
+# --------------------------
+# An improvement in ROC-AUC does not guarantee better probability estimates.
+# Brier score reflects more than calibration alone, so inspect it together with
+# the reliability diagram. These observations describe this synthetic dataset
+# and should not be generalized to every classifier or sampling strategy.
