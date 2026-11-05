@@ -183,7 +183,7 @@ class KMeansSMOTE(BaseSMOTE):
         super()._validate_estimator()
         if self.kmeans_estimator is None:
             self.kmeans_estimator_ = MiniBatchKMeans(random_state=self.random_state)
-        elif isinstance(self.kmeans_estimator, int):
+        elif isinstance(self.kmeans_estimator, numbers.Integral):
             self.kmeans_estimator_ = MiniBatchKMeans(
                 n_clusters=self.kmeans_estimator,
                 random_state=self.random_state,
