@@ -182,7 +182,11 @@ class ADASYN(BaseOverSampler):
             enumerated_class_indices = np.arange(len(target_class_indices))
             rows = np.repeat(enumerated_class_indices, n_samples_generate)
             cols = random_state.choice(n_neighbors, size=n_samples)
-            diffs = X_class[nns[rows, cols]] - X_class[rows]
+            neighbors = X_class[nns[rows, cols]]
+            # Avoid overflow or underflow when subtracting integer feature values.
+            if np.issubdtype(X.dtype, np.integer):
+                neighbors = neighbors.astype(np.float64)
+            diffs = neighbors - X_class[rows]
             steps = random_state.uniform(size=(n_samples, 1))
 
             if sparse.issparse(X):

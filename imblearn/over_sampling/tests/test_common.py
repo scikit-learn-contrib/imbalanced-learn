@@ -2,6 +2,8 @@ from collections import Counter
 
 import numpy as np
 import pytest
+from scipy import sparse
+from sklearn.base import clone
 from sklearn.cluster import MiniBatchKMeans
 
 from imblearn.over_sampling import (
@@ -14,6 +16,70 @@ from imblearn.over_sampling import (
     KMeansSMOTE,
 )
 from imblearn.utils.testing import _CustomNearestNeighbors
+
+
+@pytest.mark.parametrize(
+    "sampler, container",
+    [
+        (SMOTE(k_neighbors=2, random_state=0), np.asarray),
+        (SMOTE(k_neighbors=2, random_state=0), sparse.csr_matrix),
+        (SMOTE(k_neighbors=2, random_state=0), sparse.csc_matrix),
+        (ADASYN(n_neighbors=2, random_state=0), np.asarray),
+        (ADASYN(n_neighbors=2, random_state=0), sparse.csr_matrix),
+        (ADASYN(n_neighbors=2, random_state=0), sparse.csc_matrix),
+        (
+            BorderlineSMOTE(
+                k_neighbors=2, m_neighbors=4, kind="borderline-2", random_state=0
+            ),
+            np.asarray,
+        ),
+    ],
+    ids=[
+        "smote-dense",
+        "smote-csr",
+        "smote-csc",
+        "adasyn-dense",
+        "adasyn-csr",
+        "adasyn-csc",
+        "borderline-2-dense",
+    ],
+)
+@pytest.mark.parametrize(
+    "dtype",
+    [
+        np.int8,
+        np.uint8,
+        np.int32,
+        np.uint32,
+        np.int64,
+        np.uint64,
+        np.float32,
+        np.float64,
+    ],
+)
+def test_numerical_smote_integer_interpolation(sampler, dtype, container):
+    X = np.array([0, 80, 200, 1, 10, 71, 91, 181, 199]).reshape(-1, 1)
+    if np.issubdtype(dtype, np.signedinteger):
+        X = X - 100
+    X = X.astype(dtype)
+    y = np.array([0] * 3 + [1] * 6)
+
+    X_expected, y_expected = clone(sampler).fit_resample(
+        container(X.astype(np.float64)), y
+    )
+    X_resampled, y_resampled = sampler.fit_resample(container(X), y)
+
+    assert X_resampled.dtype == dtype
+    if sparse.issparse(X_resampled):
+        assert X_resampled.format == container(X).format
+        X_resampled = X_resampled.toarray()
+        X_expected = X_expected.toarray()
+    assert len(X_resampled) > len(X)
+    np.testing.assert_array_equal(X_resampled[: len(X)], X)
+    np.testing.assert_array_equal(y_resampled, y_expected)
+    np.testing.assert_allclose(X_resampled, X_expected.astype(dtype), rtol=1e-6)
+    assert X_resampled.min() >= X.min()
+    assert X_resampled.max() <= X.max()
 
 
 @pytest.fixture

@@ -171,7 +171,11 @@ class BaseSMOTE(BaseOverSampler):
         X_new : {ndarray, sparse matrix} of shape (n_samples, n_features)
             Synthetically generated samples.
         """
-        diffs = nn_data[nn_num[rows, cols]] - X[rows]
+        neighbors = nn_data[nn_num[rows, cols]]
+        # Avoid overflow or underflow when subtracting integer feature values.
+        if np.issubdtype(X.dtype, np.integer):
+            neighbors = neighbors.astype(np.float64)
+        diffs = neighbors - X[rows]
         if y is not None:  # only entering for BorderlineSMOTE-2
             random_state = check_random_state(self.random_state)
             mask_pair_samples = y[nn_num[rows, cols]] != y_type
