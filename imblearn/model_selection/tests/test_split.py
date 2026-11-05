@@ -4,7 +4,7 @@ from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import make_scorer, precision_score
 from sklearn.model_selection import cross_validate
-from sklearn.utils._testing import assert_allclose
+from sklearn.utils._testing import assert_allclose, assert_array_equal
 
 from imblearn.model_selection import InstanceHardnessCV
 
@@ -38,6 +38,54 @@ def test_error_on_multiclass():
     err_msg = "InstanceHardnessCV only supports binary classification."
     with pytest.raises(ValueError, match=err_msg):
         next(InstanceHardnessCV(estimator=LogisticRegression()).split(X, y))
+
+
+@pytest.mark.parametrize(
+    "labels, pos_label",
+    [
+        ([0, 1], 2),
+        ([-3, 7], 0),
+        (["defaulted", "paid"], "missing"),
+        ([False, True], "missing"),
+        ([0, 1], "missing"),
+        (["defaulted", "paid"], 1),
+    ],
+)
+def test_invalid_pos_label(data, labels, pos_label):
+    """An unknown positive label should identify the valid target labels."""
+    X, y = data
+    y = np.asarray(labels)[y]
+    ih_cv = InstanceHardnessCV(
+        estimator=LogisticRegression(), pos_label=pos_label, n_splits=3
+    )
+
+    with pytest.raises(ValueError, match="is not a valid label") as exc_info:
+        next(ih_cv.split(X, y))
+
+    expected_message = (
+        f"pos_label={pos_label!r} is not a valid label. It should be one of {labels}."
+    )
+    assert str(exc_info.value) == expected_message
+
+
+@pytest.mark.parametrize("labels", [[-3, 7], ["defaulted", "paid"], [False, True]])
+@pytest.mark.parametrize("pos_label", [0, 1])
+def test_valid_pos_label_preserves_splits(data, labels, pos_label):
+    """Relabeling a binary target should preserve the train and test indices."""
+    X, y = data
+    labels = np.asarray(labels)
+    original_cv = InstanceHardnessCV(
+        estimator=LogisticRegression(), pos_label=pos_label, n_splits=3
+    )
+    relabeled_cv = InstanceHardnessCV(
+        estimator=LogisticRegression(), pos_label=labels[pos_label], n_splits=3
+    )
+
+    for (train, test), (relabeled_train, relabeled_test) in zip(
+        original_cv.split(X, y), relabeled_cv.split(X, labels[y])
+    ):
+        assert_array_equal(relabeled_train, train)
+        assert_array_equal(relabeled_test, test)
 
 
 def test_default_params(data):

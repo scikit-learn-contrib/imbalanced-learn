@@ -87,7 +87,13 @@ class InstanceHardnessCV(BaseCrossValidator):
         if self.pos_label is None:
             pos_label = 1
         else:
-            pos_label = np.flatnonzero(classes == self.pos_label)[0]
+            class_labels = classes.tolist()
+            if self.pos_label not in class_labels:
+                raise ValueError(
+                    f"pos_label={self.pos_label!r} is not a valid label. "
+                    f"It should be one of {class_labels}."
+                )
+            pos_label = class_labels.index(self.pos_label)
 
         y_proba = cross_val_predict(
             clone(self.estimator), X, y, cv=self.n_splits, method="predict_proba"
