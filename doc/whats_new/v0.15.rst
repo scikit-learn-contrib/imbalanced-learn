@@ -14,7 +14,7 @@ Bug fixes
 - Raise an informative error in
   :class:`~imblearn.model_selection.InstanceHardnessCV` when ``pos_label`` is
   absent from the target labels, instead of raising an ``IndexError``.
-  By :user:`Swapnil Dwivedi <Swapnil-byte-798>`.
+  :pr:`1243` by :user:`Swapnil Dwivedi <Swapnil-byte-798>`.
 
 Enhancements
 ............
