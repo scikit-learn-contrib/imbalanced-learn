@@ -13,7 +13,7 @@ Bug fixes
 
 - Accept NumPy integer cluster counts in
   :class:`~imblearn.over_sampling.KMeansSMOTE` consistently with Python integers.
-  By :user:`Swapnil Dwivedi <Swapnil-byte-798>`.
+  :pr:`1244` by :user:`Swapnil Dwivedi <Swapnil-byte-798>`.
 
 Enhancements
 ............
