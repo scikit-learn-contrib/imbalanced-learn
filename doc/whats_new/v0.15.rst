@@ -11,6 +11,13 @@ Changelog
 Bug fixes
 .........
 
+- Avoid integer overflow and unsigned underflow during interpolation in
+  :class:`~imblearn.over_sampling.SMOTE` and
+  :class:`~imblearn.over_sampling.ADASYN`, and allow dense integer input in
+  :class:`~imblearn.over_sampling.BorderlineSMOTE` with ``kind="borderline-2"``.
+  The resampled data retains the input dtype.
+  By :user:`Sandipan kundu <skundu42>`.
+
 Enhancements
 ............
 
