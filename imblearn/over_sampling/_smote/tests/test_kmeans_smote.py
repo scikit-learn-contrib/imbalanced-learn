@@ -85,6 +85,25 @@ def test_sample_kmeans_custom(data, k_neighbors, kmeans_estimator):
     assert kmeans_smote.kmeans_estimator_.n_clusters == 3
 
 
+@pytest.mark.parametrize(
+    "integer_type", [int, np.int32, np.int64, np.uint32, np.uint64]
+)
+@pytest.mark.parametrize("n_clusters", [1, 3])
+def test_kmeans_smote_integer_cluster_count(data, integer_type, n_clusters):
+    """NumPy cluster counts should resample identically to Python integers."""
+    X, y = data
+    expected_sampler = KMeansSMOTE(kmeans_estimator=n_clusters, random_state=42)
+    sampler = KMeansSMOTE(kmeans_estimator=integer_type(n_clusters), random_state=42)
+
+    X_expected, y_expected = expected_sampler.fit_resample(X, y)
+    X_resampled, y_resampled = sampler.fit_resample(X, y)
+
+    assert_allclose(X_resampled, X_expected)
+    assert_array_equal(y_resampled, y_expected)
+    assert isinstance(sampler.kmeans_estimator_, MiniBatchKMeans)
+    assert sampler.kmeans_estimator_.n_clusters == n_clusters
+
+
 @pytest.mark.filterwarnings("ignore:The default value of `n_init` will change")
 def test_sample_kmeans_not_enough_clusters(data):
     X, y = data
