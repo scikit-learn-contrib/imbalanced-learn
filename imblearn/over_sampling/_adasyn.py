@@ -109,7 +109,7 @@ class ADASYN(BaseOverSampler):
     >>> ada = ADASYN(random_state=42)
     >>> X_res, y_res = ada.fit_resample(X, y)
     >>> print('Resampled dataset shape %s' % Counter(y_res))
-    Resampled dataset shape Counter({{0: 904, 1: 900}})
+    Resampled dataset shape Counter({{0: 900, 1: 900}})
     """
 
     _parameter_constraints: dict = {
@@ -166,13 +166,18 @@ class ADASYN(BaseOverSampler):
                     " Use SMOTE instead."
                 )
             ratio_nn /= np.sum(ratio_nn)
-            n_samples_generate = np.rint(ratio_nn * n_samples).astype(int)
-            # rounding may cause new amount for n_samples
+            # Allocate the samples to generate proportionally to the ratio of
+            # neighbors belonging to another class. Rounding each share
+            # independently would generate a total number of samples different
+            # from the requested one, and no sample at all when the shares are
+            # smaller than 0.5, so use the largest remainder method instead.
+            n_samples_generate = np.floor(ratio_nn * n_samples).astype(int)
+            n_remaining = n_samples - n_samples_generate.sum()
+            if n_remaining > 0:
+                remainders = ratio_nn * n_samples - n_samples_generate
+                largest_remainders = np.argsort(-remainders, kind="stable")
+                n_samples_generate[largest_remainders[:n_remaining]] += 1
             n_samples = np.sum(n_samples_generate)
-            if not n_samples:
-                raise ValueError(
-                    "No samples will be generated with the provided ratio settings."
-                )
 
             # the nearest neighbors need to be fitted only on the current class
             # to find the class NN to generate new samples

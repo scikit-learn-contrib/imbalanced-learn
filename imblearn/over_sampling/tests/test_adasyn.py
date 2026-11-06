@@ -4,6 +4,7 @@
 # License: MIT
 
 import numpy as np
+from sklearn.datasets import make_classification
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._testing import assert_allclose, assert_array_equal
 
@@ -119,3 +120,25 @@ def test_ada_fit_resample_nn_obj():
     )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
+
+
+def test_ada_fit_resample_small_sampling_strategy():
+    """Check that the requested number of samples is always generated.
+
+    Non-regression test for:
+    https://github.com/scikit-learn-contrib/imbalanced-learn/issues/1245
+    """
+    X_few, y_few = make_classification(
+        n_samples=120,
+        n_classes=3,
+        n_informative=5,
+        n_redundant=0,
+        weights=[0.5, 0.3, 0.2],
+        random_state=0,
+    )
+    n_samples_class = np.sum(y_few == 1) + 2
+    ada = ADASYN(sampling_strategy={1: n_samples_class}, random_state=RND_SEED)
+
+    _, y_resampled = ada.fit_resample(X_few, y_few)
+
+    assert np.sum(y_resampled == 1) == n_samples_class

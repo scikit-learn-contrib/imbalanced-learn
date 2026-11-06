@@ -11,6 +11,13 @@ Changelog
 Bug fixes
 .........
 
+- Fix :class:`~imblearn.over_sampling.ADASYN` raising a ``ValueError`` when the
+  requested number of samples is small: the per-neighbor number of samples to
+  generate was rounded independently and could be zero for all neighbors. The
+  samples are now allocated proportionally so that the requested number of
+  samples is always generated.
+  :issue:`1245` by :user:`Davis <davrens101>`.
+
 Enhancements
 ............
 
