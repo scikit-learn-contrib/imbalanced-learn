@@ -6,7 +6,7 @@
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._testing import assert_allclose, assert_array_equal
-
+from sklearn.datasets import make_classification
 from imblearn.over_sampling import ADASYN
 
 RND_SEED = 0
@@ -119,3 +119,21 @@ def test_ada_fit_resample_nn_obj():
     )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
+def test_ada_generates_exact_number_of_samples():
+    X, y = make_classification(
+        n_classes=2,
+        class_sep=2,
+        weights=[0.1, 0.9],
+        n_informative=3,
+        n_redundant=1,
+        flip_y=0,
+        n_features=20,
+        n_clusters_per_class=1,
+        n_samples=1000,
+        random_state=10,
+    )
+
+    ada = ADASYN(random_state=42)
+    _, y_resampled = ada.fit_resample(X, y)
+
+    assert_array_equal(np.bincount(y_resampled), [900, 900])

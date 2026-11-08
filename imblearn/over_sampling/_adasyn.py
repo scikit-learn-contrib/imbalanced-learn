@@ -166,13 +166,15 @@ class ADASYN(BaseOverSampler):
                     " Use SMOTE instead."
                 )
             ratio_nn /= np.sum(ratio_nn)
-            n_samples_generate = np.rint(ratio_nn * n_samples).astype(int)
-            # rounding may cause new amount for n_samples
-            n_samples = np.sum(n_samples_generate)
-            if not n_samples:
-                raise ValueError(
-                    "No samples will be generated with the provided ratio settings."
-                )
+            # Allocate the requested number of samples without losing samples
+            # due to rounding.
+            n_samples_generate = np.floor(ratio_nn * n_samples).astype(int)
+            remainder = n_samples - np.sum(n_samples_generate)
+
+            if remainder > 0:
+                fractional_parts = ratio_nn * n_samples - n_samples_generate
+                indices = np.argsort(fractional_parts)[-remainder:]
+                n_samples_generate[indices] += 1
 
             # the nearest neighbors need to be fitted only on the current class
             # to find the class NN to generate new samples
