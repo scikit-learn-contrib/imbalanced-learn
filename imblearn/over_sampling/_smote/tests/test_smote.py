@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._testing import assert_allclose, assert_array_equal
 
-from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling import SMOTE, SMOTENC
 
 RND_SEED = 0
 X = np.array(
@@ -147,3 +147,51 @@ def test_sample_regular_with_nn():
     )
     assert_allclose(X_resampled, X_gt, rtol=R_TOL)
     assert_array_equal(y_resampled, y_gt)
+def test_smotenc_numpy_boolean_mask():
+    from sklearn.datasets import make_classification
+
+    X, y = make_classification(
+        n_samples=100,
+        n_features=5,
+        n_informative=3,
+        n_redundant=0,
+        random_state=RND_SEED,
+    )
+
+    categorical_features = np.array([False, True, False, True, False])
+
+    smote = SMOTENC(
+        categorical_features=categorical_features,
+        random_state=RND_SEED,
+    )
+
+    X_resampled, y_resampled = smote.fit_resample(X, y)
+
+    assert X_resampled.shape[1] == X.shape[1]
+    assert len(X_resampled) == len(y_resampled)
+    assert len(X_resampled) >= len(X)
+def test_smotenc_numpy_feature_names():
+    import pandas as pd
+    from sklearn.datasets import make_classification
+
+    X, y = make_classification(
+        n_samples=100,
+        n_features=5,
+        n_informative=3,
+        n_redundant=0,
+        random_state=RND_SEED,
+    )
+
+    X = pd.DataFrame(X, columns=["a", "b", "c", "d", "e"])
+    categorical_features = np.array(["b", "d"])
+
+    smote = SMOTENC(
+        categorical_features=categorical_features,
+        random_state=RND_SEED,
+    )
+
+    X_resampled, y_resampled = smote.fit_resample(X, y)
+
+    assert X_resampled.shape[1] == X.shape[1]
+    assert len(X_resampled) == len(y_resampled)
+    assert len(X_resampled) >= len(X)
