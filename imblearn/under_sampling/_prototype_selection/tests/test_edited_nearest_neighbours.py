@@ -4,6 +4,7 @@
 # License: MIT
 
 import numpy as np
+import pytest
 from sklearn.datasets import make_classification
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._testing import assert_array_equal
@@ -90,6 +91,33 @@ def test_enn_fit_resample_mode():
     y_gt = np.array([0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2])
     assert_array_equal(X_resampled, X_gt)
     assert_array_equal(y_resampled, y_gt)
+
+
+@pytest.mark.parametrize(
+    "classes", [np.array(["a", "b", "c"]), np.array([10, 20, 30]), np.array([-5, 0, 3])]
+)
+def test_enn_fit_resample_mode_label_names(classes):
+    """Check that the result does not depend on how the classes are named.
+
+    `scipy.stats.mode` cannot be applied to string labels directly.
+    """
+    enn = EditedNearestNeighbours(kind_sel="mode")
+    enn.fit_resample(X, Y)
+    sample_indices_expected = enn.sample_indices_
+
+    enn.fit_resample(X, classes[Y])
+    assert_array_equal(enn.sample_indices_, sample_indices_expected)
+
+
+def test_enn_fit_resample_mode_boolean_labels():
+    """Check that boolean labels are supported with `kind_sel="mode"`."""
+    y = Y > 1
+    enn = EditedNearestNeighbours(kind_sel="mode")
+    enn.fit_resample(X, y.astype(int))
+    sample_indices_expected = enn.sample_indices_
+
+    enn.fit_resample(X, y)
+    assert_array_equal(enn.sample_indices_, sample_indices_expected)
 
 
 def test_enn_fit_resample_with_nn_object():

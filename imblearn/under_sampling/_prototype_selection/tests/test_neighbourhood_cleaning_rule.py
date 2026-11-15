@@ -73,3 +73,17 @@ def test_ncr_n_neighbors(data):
 
     # we should have a more aggressive cleaning with n_neighbors is larger
     assert len(sample_indices_3_nn) > len(sample_indices_10_nn)
+
+
+@pytest.mark.parametrize("classes", [np.array(["a", "b"]), np.array([False, True])])
+def test_ncr_non_numeric_labels(data, classes):
+    """Check that string and boolean labels give the same result as integers."""
+    X, y = data
+    y_binary = (y == y.max()).astype(int)
+
+    ncr = NeighbourhoodCleaningRule()
+    ncr.fit_resample(X, y_binary)
+    sample_indices_expected = ncr.sample_indices_
+
+    ncr.fit_resample(X, classes[y_binary])
+    assert_array_equal(ncr.sample_indices_, sample_indices_expected)
