@@ -160,16 +160,19 @@ class EditedNearestNeighbours(BaseCleaningSampler):
 
         self.nn_.fit(X)
 
+        _, y_enc = np.unique(y, return_inverse=True)
+
         for target_class in np.unique(y):
             if target_class in self.sampling_strategy_.keys():
                 target_class_indices = np.flatnonzero(y == target_class)
                 X_class = _safe_indexing(X, target_class_indices)
-                y_class = _safe_indexing(y, target_class_indices)
                 nnhood_idx = self.nn_.kneighbors(X_class, return_distance=False)[:, 1:]
                 nnhood_label = y[nnhood_idx]
                 if self.kind_sel == "mode":
-                    nnhood_label, _ = mode(nnhood_label, axis=1, keepdims=False)
-                    nnhood_bool = np.ravel(nnhood_label) == y_class
+                    # `mode` only supports numeric arrays, so vote on the integer
+                    # codes of the labels; this also works for strings and booleans.
+                    nnhood_label, _ = mode(y_enc[nnhood_idx], axis=1, keepdims=False)
+                    nnhood_bool = np.ravel(nnhood_label) == y_enc[target_class_indices]
                 elif self.kind_sel == "all":
                     nnhood_label = nnhood_label == target_class
                     nnhood_bool = np.all(nnhood_label, axis=1)
